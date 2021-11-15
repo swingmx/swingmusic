@@ -1,0 +1,57 @@
+#app {
+  font-family: Avenir, Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  color: #2c3e50;
+}
+
+a {
+  text-decoration: none;
+  color: #fff;
+}
+
+.l-container {
+  display: grid;
+  grid-template-columns: 300px 4fr 2fr;
+  grid-template-rows: 0.1fr 1fr 1fr;
+  gap: 4px;
+  grid-auto-flow: row;
+  grid-template-areas:
+    "l-sidebar nav nav"
+    "l-sidebar content r-sidebar"
+    "l-sidebar content r-sidebar";
+  width: 100vw;
+  height: 100vh;
+}
+
+.l-sidebar {
+  grid-area: l-sidebar;
+  padding-left: 20px;
+  padding-top: 0.5em;
+  background-color: #131313b2;
+  /* border: 1px solid rgb(109, 109, 109); */
+  border-radius: 5px;
+}
+
+.nav {
+  grid-area: nav;
+  max-height: 70px;
+  border: 1px solid rgb(109, 109, 109);
+  border-radius: 5px;
+}
+
+.content {
+  grid-area: content;
+  border: 1px solid rgb(109, 109, 109);
+  border-radius: 5px;
+}
+body {
+  margin: 0;
+  background: #0e141a;
+}
+
+.r-sidebar {
+  grid-area: r-sidebar;
+  border: 1px solid rgb(109, 109, 109);
+  border-radius: 5px;
+}
