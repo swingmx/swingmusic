@@ -14,3 +14,10 @@ export default {
   },
 };
 </script>
+
+<style>
+  .home {
+    padding-left: 20px;
+    text-align: center;
+  }
+</style>

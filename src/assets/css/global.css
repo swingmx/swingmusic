@@ -1,3 +1,12 @@
+:root {
+  --grey: #ffffff48;
+}
+
+body {
+  margin: 0;
+  background: #0e141a;
+}
+
 #app {
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
@@ -10,10 +19,16 @@ a {
   color: #fff;
 }
 
+hr,
+.seperator {
+  border: 1px solid;
+  color: #ffffff48;
+}
+
 .l-container {
   display: grid;
-  grid-template-columns: 300px 4fr 2fr;
-  grid-template-rows: 0.1fr 1fr 1fr;
+  grid-template-columns: 250px 4fr 2fr;
+  grid-template-rows: 78px 1fr 1fr;
   gap: 4px;
   grid-auto-flow: row;
   grid-template-areas:
@@ -26,28 +41,24 @@ a {
 
 .l-sidebar {
   grid-area: l-sidebar;
-  padding-left: 20px;
   padding-top: 0.5em;
   background-color: #131313b2;
-  /* border: 1px solid rgb(109, 109, 109); */
-  border-radius: 5px;
+}
+
+@media (max-width: 1000px) {
+  .l-sidebar {
+    width: 70px;
+  }
 }
 
 .nav {
   grid-area: nav;
-  max-height: 70px;
-  border: 1px solid rgb(109, 109, 109);
   border-radius: 5px;
 }
 
 .content {
   grid-area: content;
-  border: 1px solid rgb(109, 109, 109);
   border-radius: 5px;
-}
-body {
-  margin: 0;
-  background: #0e141a;
 }
 
 .r-sidebar {
