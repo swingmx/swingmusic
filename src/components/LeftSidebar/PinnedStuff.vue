@@ -1,5 +1,9 @@
 <template>
-  <div class="nav-container hidden" id="pinned-container">
+  <div
+    class="nav-container"
+    :class="{ hidden: collapsed }"
+    id="pinned-container"
+  >
     <div>
       <div class="nav-button" id="pinned-button">
         <!-- <div class="nav-icon" id="pinned-icon"></div> -->
@@ -50,10 +54,14 @@
   </div>
 </template>
 
+<script>
+export default {
+  props: ["collapsed"],
+  setup() {},
+};
+</script>
+
 <style>
-.hidden {
-  display: none;
-}
 
 #pinned-container .nav-button {
   color: rgba(255, 255, 255, 0.671);
@@ -119,5 +127,11 @@
 
 #pinned-container .seperator {
   color: var(--grey);
+}
+
+#pinned-container {
+  transition-timing-function: linear;
+  transition-property: width;
+  transition-duration: 20s;
 }
 </style>
