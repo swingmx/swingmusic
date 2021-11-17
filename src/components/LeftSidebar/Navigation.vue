@@ -91,7 +91,7 @@ export default {
 
 .collapsed span {
   font-size: small;
-  margin-top: 20px;
+  margin-top: 5px;
 }
 
 .nav-container .nav-button:hover {

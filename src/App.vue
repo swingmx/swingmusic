@@ -12,8 +12,10 @@
       <hr class="seperator" />
       <PinnedStuff :collapsed="collapsed" />
       <div id="settings-button">
-        <div class="nav-icon" id="settings-icon"></div>
-        <span id="text">Settings</span>
+        <div class="in">
+          <div class="nav-icon" id="settings-icon"></div>
+          <span id="text">Settings</span>
+        </div>
       </div>
     </div>
     <div class="nav">
@@ -62,6 +64,14 @@ export default {
   animation-duration: 2s;
   animation-iteration-count: 1;
 }
+.nav-container .in {
+  display: flex;
+  align-items: center;
+}
+
+.collapsed .in {
+  flex-direction: column;
+}
 
 #logo-container {
   height: 60px;
@@ -94,12 +104,16 @@ export default {
 .l-container #settings-button {
   position: absolute;
   bottom: 0;
-  color: #fff;
   display: flex;
-  align-items: center;
-  justify-content: flex-start;
+  color: #fff;
   height: 50px;
   width: 100%;
+}
+
+#settings-button  .in {
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .l-container #settings-button:hover {
@@ -108,7 +122,7 @@ export default {
 }
 
 .l-container #settings-button #settings-icon {
-  margin-left: 10px;
+  margin-left: 23px;
   margin-right: 5px;
   width: 24px;
   height: 24px;
@@ -118,13 +132,7 @@ export default {
   background-position: center;
 }
 
-.collapsed #settings-button {
-  flex-direction: column;
-  justify-content: center;
-}
-
 .collapsed #settings-button #settings-icon {
-  margin-left: 0;
   margin-right: 0;
 }
 
