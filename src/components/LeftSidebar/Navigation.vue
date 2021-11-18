@@ -45,7 +45,7 @@
       </div>
     </router-link>
     <hr />
-    <router-link :to="{ name: 'Home' }">
+    <router-link :to="{ name: 'FolderView' }">
       <div class="nav-button" id="folders-button">
         <div class="in">
           <div class="nav-icon" id="folders-icon"></div>
@@ -77,6 +77,9 @@ export default {
 
 .nav-container {
   color: #fff;
+  border-top: 1px solid rgba(255, 255, 255, 0.158);
+  margin-bottom: 10px;
+  padding-top: 10px;
 }
 
 .nav-container .nav-button {
@@ -89,7 +92,7 @@ export default {
 }
 
 
-.collapsed span {
+.collapsed .nav-button span {
   font-size: small;
   margin-top: 5px;
 }

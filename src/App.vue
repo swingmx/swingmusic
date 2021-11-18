@@ -1,4 +1,5 @@
 <template>
+  <div id="bg-blur"></div>
   <div class="l-container" :class="{ collapsed: collapsed }">
     <div class="l-sidebar">
       <div id="logo-container">
@@ -7,9 +8,9 @@
           ><div ref="logo" class="logo"></div
         ></router-link>
       </div>
-      <hr class="seperator" />
+      <!-- <hr class="seperator" /> -->
       <Navigation :collapsed="collapsed" />
-      <hr class="seperator" />
+      <!-- <hr class="seperator" /> -->
       <PinnedStuff :collapsed="collapsed" />
       <div id="settings-button">
         <div class="in">
@@ -39,7 +40,7 @@ export default {
     PinnedStuff,
   },
   setup() {
-    const collapsed = ref(false);
+    const collapsed = ref(true);
 
     const logo = ref(null);
 
@@ -52,6 +53,8 @@ export default {
 </script>
 
 <style>
+
+
 .logo {
   height: 30px;
   width: 150px;
@@ -78,6 +81,7 @@ export default {
   margin-left: 20px;
   display: flex;
   align-items: center;
+  margin-bottom: 10px;
 }
 
 .l-sidebar {
@@ -108,9 +112,10 @@ export default {
   color: #fff;
   height: 50px;
   width: 100%;
+  border-top: 1px solid #ffffff27;
 }
 
-#settings-button  .in {
+#settings-button .in {
   display: flex;
   align-items: center;
   justify-content: center;
