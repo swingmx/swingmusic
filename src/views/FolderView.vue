@@ -1,6 +1,8 @@
 <template>
   <div id="f-view-parent" class="rounded">
-    <SearchBox />
+    <div class="fixed">
+      <SearchBox />
+    </div>
     <div id="scrollable">
       <SongList />
       <FolderList />
@@ -29,17 +31,19 @@ export default {
 
 <style>
 #f-view-parent {
-  height: 100%;
+  height: 99%;
   background-color: rgba(0, 0, 0, 0.24);
   padding-left: 20px;
   padding-right: 20px;
   padding-top: 1em;
-  overflow: hidden;
-  /* border: solid; */
 }
 
+#f-view-parent .fixed {
+  height: min-content;
+}
 #scrollable {
-  overflow: scroll;
-  
+  overflow-y: auto;
+  height: 90%;
+  margin-bottom: 2em;
 }
 </style>

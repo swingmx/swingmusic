@@ -62,7 +62,7 @@ export default {};
 }
 
 .folder-top .fsearch input:focus {
-  color: rgb(75, 74, 74);
-  outline: 0.1em solid var(--green);
+  color: rgb(255, 255, 255);
+  outline: 0.1em solid #9d0208;
 }
 </style>

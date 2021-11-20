@@ -47,6 +47,7 @@ a {
   background: rgba(0, 0, 0, 0.575);
   backdrop-filter: blur(40px);
   -webkit-backdrop-filter: blur(40px);
+  -moz-backdrop-filter: blur(40px)
 }
 
 #bg-blur {
@@ -96,7 +97,6 @@ a {
   border-radius: 5px;
   padding: 10px;
   overflow: hidden;
-  height: 100%;
 }
 
 .r-sidebar {
@@ -104,3 +104,35 @@ a {
   border: 1px solid rgb(109, 109, 109);
   border-radius: 5px;
 }
+
+
+/* scrollbars */
+
+/* width */
+::-webkit-scrollbar {
+  width: .5em;
+  display: none;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: var(--green);
+  border-radius: 1em;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: #21a13d;
+}
+
+
+:root {
+  scrollbar-color: transparent transparent !important;
+  scrollbar-width: none !important;
+}
+

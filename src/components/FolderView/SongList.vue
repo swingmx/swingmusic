@@ -115,7 +115,6 @@ tr {
 
 .folder {
   padding-bottom: 1em;
-  margin-bottom: 1em;
 }
 
 td .artist {
