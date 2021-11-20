@@ -8,9 +8,7 @@
           ><div ref="logo" class="logo"></div
         ></router-link>
       </div>
-      <!-- <hr class="seperator" /> -->
       <Navigation :collapsed="collapsed" />
-      <!-- <hr class="seperator" /> -->
       <PinnedStuff :collapsed="collapsed" />
       <div id="settings-button">
         <div class="in">
@@ -53,8 +51,6 @@ export default {
 </script>
 
 <style>
-
-
 .logo {
   height: 30px;
   width: 150px;

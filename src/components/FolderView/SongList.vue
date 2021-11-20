@@ -1,115 +1,126 @@
 <template>
-  <div class="rounded folder">
-    <div class="folder-top flex">
-      <div class="fname">
-        <span>Oldies Volume 1</span>
-      </div>
-      <div class="fsearch">
-        <div>
-          <input type="text" placeholder="Search here" />
-        </div>
-      </div>
-    </div>
-    <div class="table">
-      <div>
-        <div class="theaders">
-          <div>Track</div>
-          <div>Artist</div>
-          <div>Album</div>
-          <div>Duration</div>
-        </div>
-        <hr />
-        <div class="theaders">
-          <div class="flex">
+  <div class="folder">
+    <div class="table" ref="songtitle">
+      <table>
+        <tr>
+          <th>Track</th>
+          <th>Artist</th>
+          <th>Album</th>
+          <th v-if="songTitleWidth > minWidth">Duration</th>
+        </tr>
+        <tr v-for="song in songs" :key="song">
+          <td class="flex">
             <div class="album-art rounded"></div>
-            <span>Some broken hearts never mend</span>
-          </div>
-          <div class="flex">Don Williams</div>
-          <div class="flex">Best Of</div>
-          <div class="flex">3:17</div>
-        </div>
-      </div>
+            <div class="title-artist">
+              <span :style="{ width: songTitleWidth + 'px' }">{{
+                song.title
+              }}</span>
+            </div>
+          </td>
+          <td :style="{ width: songTitleWidth + 'px' }"><span class="artist" v-for="artist in song.artists" :key="artist">{{ artist}}</span></td>
+          <td :style="{ width: songTitleWidth + 'px' }">{{ song.album }}</td>
+          <td
+            :style="{ width: songTitleWidth + 'px' }"
+            v-if="songTitleWidth > minWidth"
+          >
+            {{ song.duration }}
+          </td>
+        </tr>
+      </table>
     </div>
   </div>
 </template>
 
 <script>
-export default {};
+import { ref } from "@vue/reactivity";
+import { onMounted, onUnmounted } from "@vue/runtime-core";
+import Songs from '../../data/songs.js'
+
+export default {
+  setup() {
+    const songtitle = ref(null);
+    const songTitleWidth = ref(null);
+
+    const minWidth = ref(250);
+
+    const songs = Songs.songs
+
+    const resizeSongTitleWidth = () => {
+      songTitleWidth.value = songtitle.value.clientWidth / 3;
+      console.log(songtitle.value.clientWidth / 3);
+    };
+
+    onMounted(() => {
+      window.addEventListener("resize", () => {
+        resizeSongTitleWidth();
+      });
+    });
+
+    onUnmounted(() => {
+      window.removeEventListener("resize", () => {
+        resizeSongTitleWidth();
+      });
+    });
+
+    return { songtitle, songTitleWidth, songs, minWidth };
+  },
+};
 </script>
 
 <style>
-.theaders {
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr 1fr;
-  grid-auto-columns: 1fr;
-  gap: 0px 0px;
-  grid-auto-flow: row;
+.table {
+  width: 100%;
 }
 
-.theaders .flex {
+.folder .table table {
+  border-collapse: collapse;
+  width: 100%;
+  text-transform: capitalize;
+}
+
+.folder .table table td .album-art {
+  width: 3em;
+  height: 3em;
+  margin-right: 1em;
+  background-color: #ccc;
+  background-image: url(../../assets/images/Jim_Reeves.png);
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
+}
+
+.folder .table .flex {
   align-items: center;
-  /* border: solid; */
+  justify-content: flex-start;
 }
 
-.theaders .flex span {
+.folder .table .flex span {
   overflow: hidden;
-  text-overflow: ellipsis;
   white-space: nowrap;
-  
+  text-overflow: ellipsis;
 }
-.theaders .album-art {
-  width: 50px;
-  height: 50px;
-  margin-right: 10px;
-  background: rgb(172, 13, 13);
+
+td,
+th {
+  text-align: left;
+  padding: 8px;
+}
+th {
+  text-transform: uppercase;
+  font-weight: normal;
+}
+tr {
+  border-bottom: 1px solid var(--seperator);
 }
 
 .folder {
-  background-color: rgba(0, 0, 0, 0.144);
-  padding: 20px 20px 20px 20px;
+  padding-bottom: 1em;
+  margin-bottom: 1em;
 }
 
-.folder-top {
-  padding-bottom: 20px;
-  margin-bottom: 20px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.445);
-}
-
-.folder-top .fname {
-  width: 50%;
-  color: rgba(255, 255, 255, 0.438);
-  text-transform: uppercase;
-  font-weight: bold;
-  display: flex;
-  align-items: center;
-}
-
-.folder-top .fsearch {
-  width: 50%;
-  display: flex;
-  justify-content: flex-end;
-  margin-right: 10px;
-}
-
-.folder-top .fsearch div {
-  width: 100%;
-  padding-right: 20px;
-}
-
-.folder-top .fsearch input {
-  width: 100%;
-  height: 50px;
-  border: none;
-  border-radius: 10px;
-  outline: none;
-  padding-left: 10px;
-  background-color: #0101016c;
-  color: rgba(255, 255, 255, 0.521);
-  font-size: large;
-  line-height: 50px;
-}
-
-.folder-top .fsearch input:focus {
-  color: #fff;
+td .artist {
+  color: #b1b1b1fd;
+  font-weight: lighter;
+  margin-right: 0.5em;
 }
 </style>

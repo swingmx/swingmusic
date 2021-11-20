@@ -126,7 +126,7 @@ export default {
 }
 
 #pinned-container .seperator {
-  color: var(--grey);
+  color: var(--seperator);
 }
 
 #pinned-container {

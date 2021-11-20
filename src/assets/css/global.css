@@ -1,5 +1,6 @@
 :root {
-  --grey: #ffffff48;
+  --seperator: #ffffff48;
+  --green: #4AD168;
 }
 
 body {
@@ -19,10 +20,10 @@ a {
   color: #fff;
 }
 
-hr,
 .seperator {
   border: 1px solid;
-  color: #ffffff48;
+  color: transparent;
+  margin: 0em;
 }
 
 .hidden {
@@ -75,7 +76,10 @@ hr,
 }
 .rounded {
   border-radius: 10px;
-  overflow: hidden;
+}
+
+.circular {
+  border-radius: 20px;
 }
 
 .flex {
@@ -91,6 +95,8 @@ hr,
   grid-area: content;
   border-radius: 5px;
   padding: 10px;
+  overflow: hidden;
+  height: 100%;
 }
 
 .r-sidebar {
