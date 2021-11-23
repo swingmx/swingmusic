@@ -1,9 +1,9 @@
 <template>
-  <div class="f-container">
+  <div class="f-container rounded">
     <p>folders in this directory</p>
     <div id="f-items">
       <router-link :to="{ path: '/' }" v-for="folder in folders" :key="folder">
-        <div class="f-item circular">
+        <div class="f-item rounded">
           <span class="f-item-text">{{ folder.name }}</span>
         </div>
       </router-link>
@@ -25,27 +25,29 @@ export default {
 
 <style>
 .f-container {
-  margin-bottom: 20em;
+  margin-bottom: 1em;
+  background: rgba(31, 30, 30, 0.521);
+  padding: 1em;
 }
 
-#f-items {  
+#f-items {
   display: flex;
   flex-wrap: wrap;
-  align-items: center;
-  justify-content: flex-start;
   border-top: 1px solid var(--seperator);
-  margin-top: 2em;
+  gap: 1em;
+  padding-top: 1em;
 }
+
 .f-container p {
   text-transform: uppercase;
   font-weight: normal;
   color: rgba(255, 255, 255, 0.438);
-  margin-bottom: 0em;
+  margin-bottom: 1em;
 }
 
 .f-container .f-item {
-  width: 11em;
-  height: 5em;
+  min-width: 15em;
+  min-height: 5em;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -54,8 +56,6 @@ export default {
   background-repeat: no-repeat;
   background-position: 1em;
   background-size: 10% 100%;
-  margin-top: 1em;
-  margin-right: 1em;
   background-color: rgba(80, 80, 80, 0.247);
 }
 

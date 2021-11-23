@@ -46,7 +46,7 @@ export default {};
   border: none;
   border-radius: 2em;
   padding-left: 1em;
-  background-color: #0101016c;
+  background-color: #4645456c;
   color: rgba(255, 255, 255, 0.521);
   font-size: 1em;
   line-height: 3em;
@@ -63,6 +63,6 @@ export default {};
 
 .folder-top .fsearch input:focus {
   color: rgb(255, 255, 255);
-  outline: 0.1em solid #9d0208;
+  outline: 0.1em solid #fafafa;
 }
 </style>

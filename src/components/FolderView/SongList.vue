@@ -1,6 +1,6 @@
 <template>
   <div class="folder">
-    <div class="table" ref="songtitle">
+    <div class="table rounded" ref="songtitle">
       <table>
         <tr>
           <th>Track</th>
@@ -9,15 +9,17 @@
           <th v-if="songTitleWidth > minWidth">Duration</th>
         </tr>
         <tr v-for="song in songs" :key="song">
-          <td class="flex">
+          <td :style="{ width: songTitleWidth + 'px' }" class="flex">
             <div class="album-art rounded"></div>
-            <div class="title-artist">
-              <span :style="{ width: songTitleWidth + 'px' }">{{
-                song.title
-              }}</span>
+            <div>
+              <span>{{ song.title }}</span>
             </div>
           </td>
-          <td :style="{ width: songTitleWidth + 'px' }"><span class="artist" v-for="artist in song.artists" :key="artist">{{ artist}}</span></td>
+          <td :style="{ width: songTitleWidth + 'px' }">
+            <span class="artist" v-for="artist in song.artists" :key="artist">{{
+              artist
+            }}</span>
+          </td>
           <td :style="{ width: songTitleWidth + 'px' }">{{ song.album }}</td>
           <td
             :style="{ width: songTitleWidth + 'px' }"
@@ -34,7 +36,7 @@
 <script>
 import { ref } from "@vue/reactivity";
 import { onMounted, onUnmounted } from "@vue/runtime-core";
-import Songs from '../../data/songs.js'
+import Songs from "../../data/songs.js";
 
 export default {
   setup() {
@@ -43,17 +45,21 @@ export default {
 
     const minWidth = ref(250);
 
-    const songs = Songs.songs
+    const songs = Songs.songs;
 
     const resizeSongTitleWidth = () => {
-      songTitleWidth.value = songtitle.value.clientWidth / 3;
-      console.log(songtitle.value.clientWidth / 3);
+      songTitleWidth.value =
+        songtitle.value.clientWidth > minWidth.value * 4
+          ? songtitle.value.clientWidth / 4
+          : (songTitleWidth.value = songtitle.value.clientWidth / 3);
     };
 
     onMounted(() => {
+      resizeSongTitleWidth();
       window.addEventListener("resize", () => {
         resizeSongTitleWidth();
       });
+      console.log(songTitleWidth.value);
     });
 
     onUnmounted(() => {
@@ -70,6 +76,8 @@ export default {
 <style>
 .table {
   width: 100%;
+  background: transparent;
+  overflow: hidden;
 }
 
 .folder .table table {
@@ -90,14 +98,17 @@ export default {
 }
 
 .folder .table .flex {
+  position: relative;
   align-items: center;
-  justify-content: flex-start;
 }
 
-.folder .table .flex span {
+.folder .table .flex > div > span {
+  position: absolute;
+  bottom: 1.5em;
+  width: calc(100% - 6em);
   overflow: hidden;
-  white-space: nowrap;
   text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 td,
@@ -105,12 +116,17 @@ th {
   text-align: left;
   padding: 8px;
 }
+
+tr:nth-child(even) {
+  background-color: rgba(29, 29, 29, 0.767);
+}
+tr:nth-child(odd) {
+  background-color: rgba(56, 56, 56, 0.363);
+}
+
 th {
   text-transform: uppercase;
   font-weight: normal;
-}
-tr {
-  border-bottom: 1px solid var(--seperator);
 }
 
 .folder {

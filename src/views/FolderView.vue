@@ -31,19 +31,24 @@ export default {
 
 <style>
 #f-view-parent {
-  height: 99%;
-  background-color: rgba(0, 0, 0, 0.24);
-  padding-left: 20px;
-  padding-right: 20px;
-  padding-top: 1em;
+  position: relative;
+  height: 100%;
+  background-color: rgba(41, 37, 37, 0.301);
+  padding-left: 1em;
+  padding-right: 1em;
+  padding-top: 5em;
 }
 
 #f-view-parent .fixed {
+  position: absolute;
   height: min-content;
+  width: calc(100% - 2em);
+  top: .5em;
 }
+
 #scrollable {
-  overflow-y: auto;
-  height: 90%;
-  margin-bottom: 2em;
+  overflow-y: scroll;
+  height: calc(100% - 5em);
+  padding-right: 1em;
 }
 </style>

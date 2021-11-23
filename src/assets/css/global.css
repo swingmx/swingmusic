@@ -94,8 +94,8 @@ a {
 
 .content {
   grid-area: content;
-  border-radius: 5px;
-  padding: 10px;
+  border-radius: .25em;
+  padding: .5em;
   overflow: hidden;
 }
 
@@ -111,28 +111,22 @@ a {
 /* width */
 ::-webkit-scrollbar {
   width: .5em;
-  display: none;
 }
 
 /* Track */
 ::-webkit-scrollbar-track {
-  background: transparent;
+  background: rgba(51, 51, 51, 0.459);
+  border-radius: 1em;
 }
 
 /* Handle */
 ::-webkit-scrollbar-thumb {
-  background: var(--green);
+  background: grey;
   border-radius: 1em;
 }
 
 /* Handle on hover */
 ::-webkit-scrollbar-thumb:hover {
-  background: #21a13d;
-}
-
-
-:root {
-  scrollbar-color: transparent transparent !important;
-  scrollbar-width: none !important;
+  background: rgb(163, 163, 163);
 }
 
