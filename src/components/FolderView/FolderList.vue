@@ -1,11 +1,13 @@
 <template>
   <div class="f-container">
-    <h3>folders in this directory</h3>
-    <router-link :to="{ path: '/' }" v-for="folder in folders" :key="folder">
-      <div class="f-item circular">
-        <span class="f-item-text">{{ folder.name }}</span>
-      </div>
-    </router-link>
+    <p>folders in this directory</p>
+    <div id="f-items">
+      <router-link :to="{ path: '/' }" v-for="folder in folders" :key="folder">
+        <div class="f-item circular">
+          <span class="f-item-text">{{ folder.name }}</span>
+        </div>
+      </router-link>
+    </div>
   </div>
 </template>
 
@@ -25,27 +27,35 @@ export default {
 .f-container {
   margin-bottom: 20em;
 }
-.f-container h3 {
+
+#f-items {  
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-start;
+  border-top: 1px solid var(--seperator);
+  margin-top: 2em;
+}
+.f-container p {
   text-transform: uppercase;
   font-weight: normal;
   color: rgba(255, 255, 255, 0.438);
   margin-bottom: 0em;
 }
+
 .f-container .f-item {
-  float: left;
-  width: 9em;
-  height: 8em;
-  /* background-color: #9d020781; */
+  width: 11em;
+  height: 5em;
   display: flex;
   justify-content: center;
+  align-items: center;
   position: relative;
   background-image: url(../../assets/icons/folder.svg);
   background-repeat: no-repeat;
-  background-position: center;
-  background-size: 30%;
-  margin: 2em 2em 0em 0;
-  padding: 1em;
-  /* border: .1em solid var(--seperator); */
+  background-position: 1em;
+  background-size: 10% 100%;
+  margin-top: 1em;
+  margin-right: 1em;
   background-color: rgba(80, 80, 80, 0.247);
 }
 
@@ -54,16 +64,14 @@ export default {
 }
 
 .f-container .f-item-text {
-  width: calc(100% - 10%);
-  line-height-step: 2;
   position: absolute;
-  bottom: 0.5em;
-  text-align: center;
+  left: 3em;
+  text-align: left;
   overflow: hidden;
   text-overflow: ellipsis;
   display: -webkit-box;
-  -webkit-line-clamp: 2;
-  line-clamp: 2;
+  -webkit-line-clamp: 1;
+  line-clamp: 1;
   -webkit-box-orient: vertical;
 }
 </style>

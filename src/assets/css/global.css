@@ -54,7 +54,7 @@ a {
   position: absolute;
   width: 100vw;
   height: 100vh;
-  background-color: rgba(255, 0, 0, 0.274);
+  background-color: rgba(27, 27, 27, 0.548);
   background-image: url(../images/dark-bg.jpg);
   z-index: -1;
 }
