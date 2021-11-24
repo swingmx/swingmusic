@@ -7,13 +7,14 @@ body {
   margin: 0;
   background: #0d0e0e;
   color: #fff;
+  font-family: 'Helvetica Neue', sans-serif;
 }
 
-#app {
+/* #app {
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-}
+} */
 
 a {
   text-decoration: none;

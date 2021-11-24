@@ -38,7 +38,7 @@ export default {
     PinnedStuff,
   },
   setup() {
-    const collapsed = ref(true);
+    const collapsed = ref(false);
 
     const logo = ref(null);
 

@@ -33,7 +33,7 @@ export default {
 #f-view-parent {
   position: relative;
   height: 100%;
-  background-color: rgba(41, 37, 37, 0.301);
+  background-color: #131313b2;
   padding-left: 1em;
   padding-right: 1em;
   padding-top: 5em;

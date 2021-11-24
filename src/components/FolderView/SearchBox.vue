@@ -32,17 +32,17 @@ export default {};
 
 .folder-top .fsearch {
   width: 50%;
-  display: flex;
-  justify-content: flex-end;
-  margin-right: 10px;
+  margin-right: 1em;
 }
 
 .folder-top .fsearch div {
   width: 100%;
+  display: flex;
+  justify-content: flex-end;
 }
 
 .folder-top .fsearch input {
-  width: 100%;
+  width: 30em;
   border: none;
   border-radius: 2em;
   padding-left: 1em;
@@ -52,13 +52,13 @@ export default {};
   line-height: 3em;
   outline: none;
 }
+
 .folder-top .fsearch input::-webkit-search-cancel-button {
   position: relative;
   right: 20px;
   cursor: pointer;
   width: 50px;
   height: 50px;
-  border: solid;
 }
 
 .folder-top .fsearch input:focus {
