@@ -2,9 +2,9 @@
   <div class="right-search">
     <input type="search" id="search" placeholder="Michael Jackson" />
     <div class="scrollable">
-      <h3 class="heading">TRACKS <span class="more">MORE</span></h3>
 
       <div class="tracks-results">
+      <h3 class="heading">TRACKS <span class="more">SEE ALL</span></h3>
         <div class="result-item" v-for="song in songs" :key="song">
           <div class="album-art image"></div>
           <div class="tags">
@@ -15,21 +15,29 @@
         </div>
       </div>
       <div class="albums-results">
-        <h3 class="heading">ALBUMS <span class="more">MORE</span></h3>
+        <h3 class="heading">ALBUMS <span class="more">SEE ALL</span></h3>
         <div class="grid">
-          <div class="result-item result-item3" v-for="album in albums" :key="album">
+          <div
+            class="result-item result-item3"
+            v-for="album in albums"
+            :key="album"
+          >
             <div class="album-art image"></div>
             <div class="title ellipsis">{{ album }}</div>
           </div>
         </div>
       </div>
 
-      <div class="artists-results">
-        <h3 class="heading">ARTISTS <span class="more">MORE</span></h3>
+      <div class="artists-results" v-if="artists">
+        <h3 class="heading">ARTISTS <span class="more" v-if="artists.length>3">SEE ALL</span></h3>
         <div class="grid">
-          <div class="result-item result-item3" v-for="album in albums" :key="album">
+          <div
+            class="result-item result-item3"
+            v-for="artist in artists"
+            :key="artist"
+          >
             <div class="image"></div>
-            <div class="name ellipsis">{{ album }}</div>
+            <div class="name ellipsis">{{ artist }}</div>
           </div>
         </div>
       </div>
@@ -49,6 +57,18 @@ export default {
         title: "We are the world",
         artist: "Michael jackson",
       },
+      {
+        title: "Thriller",
+        artist: "Michael jackson",
+      },
+      {
+        title: "We are the world",
+        artist: "Michael jackson",
+      },
+      {
+        title: "We are the world",
+        artist: "Michael jackson",
+      },
     ];
 
     const albums = [
@@ -57,7 +77,9 @@ export default {
       "USA for Africa",
     ];
 
-    return { songs, albums };
+    const artists = ["Michael Jackson", "Jackson 5"]
+
+    return { songs, albums, artists };
   },
 };
 </script>
@@ -86,15 +108,22 @@ export default {
 .right-search .heading {
   font-size: small;
   position: relative;
+  padding: 1em;
+  display: flex;
+  align-items: center;
 }
 
 .right-search .heading .more {
   position: absolute;
-  right: 0;
+  right: 1em;
+  padding: 0.5em;
+}
+
+.right-search .heading .more:hover {
+  background: rgb(62, 69, 77);
   border-radius: 0.5em;
   cursor: pointer;
 }
-
 .right-search input {
   width: 100%;
   border: 0.1em solid;
@@ -118,20 +147,26 @@ export default {
   color: rgb(255, 255, 255);
 }
 
+/*  */
+
 .right-search .tracks-results {
   border-radius: 0.5em;
   overflow: hidden;
 }
 
+.right-search .tracks-results .heading {
+  padding: 0.5em;
+}
+
 .right-search .tracks-results .result-item {
   display: flex;
   align-items: center;
-  height: 5em;
+  height: 4.5em;
   background-color: rgba(20, 20, 20, 0.733);
 }
 
 .right-search .tracks-results .result-item:nth-child(odd) {
-  background-color: rgba(90, 90, 90, 0.233);
+  background-color: rgba(27, 26, 27, 0.589);
 }
 .right-search .tracks-results .result-item .album-art {
   width: 4em;
@@ -151,12 +186,14 @@ export default {
   font-size: small;
   color: rgba(255, 255, 255, 0.63);
 }
+/*  */
 
 .right-search .albums-results {
   border-radius: 0.5em;
   background-color: rgba(8, 3, 1, 0.274);
   margin-top: 1em;
 }
+
 .right-search .albums-results .grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -180,15 +217,14 @@ export default {
 .right-search .albums-results .result-item .title {
   width: 7em;
   text-align: center;
+  margin-bottom: 0.5em;
 }
+
+/*  */
 
 .right-search .artists-results {
   border-radius: 0.5em;
   background-color: rgba(8, 3, 1, 0.274);
-}
-
-.right-search  h3 {
-  padding: 1em 1em 0 1em;
 }
 
 .right-search .artists-results .grid {
@@ -200,14 +236,17 @@ export default {
   height: 7em;
   width: 7em;
   border-radius: 50%;
-  background-color: rgba(26, 26, 26, 0.452);
+  background-color: rgba(16, 65, 14, 0.356);
   margin-bottom: 0.5em;
+  background-image: url(../../assets/icons/logo-small.svg);
+  background-size: 50%;
   background-image: url(../../assets/images/thriller.jpg);
+  background-size: cover;
 }
 
 .right-search .artists-results .result-item .name {
   width: 7em;
   text-align: center;
+  margin-bottom: 0.5em;
 }
-
 </style>

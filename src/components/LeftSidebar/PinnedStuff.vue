@@ -12,42 +12,42 @@
     </div>
     <router-link :to="{ name: 'Home' }">
       <div class="nav-button" id="album-button">
-        <div class="nav-icon" id="album-icon"></div>
+        <div class="nav-icon image" id="album-icon"></div>
         <span id="text">Legends Never Die</span>
       </div>
     </router-link>
     <hr />
     <router-link :to="{ name: 'Home' }">
       <div class="nav-button" id="album-button">
-        <div class="nav-icon" id="album-icon"></div>
+        <div class="nav-icon image" id="album-icon"></div>
         <span id="text">The Party Never Ends</span>
       </div>
     </router-link>
     <hr />
     <router-link :to="{ name: 'Home' }">
       <div class="nav-button" id="artists-button">
-        <div class="nav-icon" id="artists-icon"></div>
+        <div class="nav-icon image" id="artists-icon"></div>
         <span id="text">Juice WRLD</span>
       </div>
     </router-link>
     <hr />
     <router-link :to="{ name: 'Home' }">
       <div class="nav-button" id="playlists-button">
-        <div class="nav-icon" id="playlists-icon"></div>
+        <div class="nav-icon image" id="playlists-icon"></div>
         <span id="text">Juice WRLD Discography</span>
       </div>
     </router-link>
     <hr />
     <router-link :to="{ name: 'Home' }">
       <div class="nav-button" id="mixes-button">
-        <div class="nav-icon" id="mixes-icon"></div>
+        <div class="nav-icon image" id="mixes-icon"></div>
         <span id="text">Lil Peep Radio</span>
       </div>
     </router-link>
     <hr />
     <router-link :to="{ name: 'Home' }">
       <div class="nav-button" id="folders-button">
-        <div class="nav-icon" id="folders-icon"></div>
+        <div class="nav-icon image" id="folders-icon"></div>
         <span id="text">Ngogoyo ya Kamarú</span>
       </div>
     </router-link>
