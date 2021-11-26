@@ -10,9 +10,9 @@
         </tr>
         <tr v-for="song in songs" :key="song">
           <td :style="{ width: songTitleWidth + 'px' }" class="flex">
-            <div class="album-art rounded"></div>
+            <div class="album-art rounded image"></div>
             <div>
-              <span>{{ song.title }}</span>
+              <span class="ellipsis">{{ song.title }}</span>
             </div>
           </td>
           <td :style="{ width: songTitleWidth + 'px' }">
@@ -92,9 +92,6 @@ export default {
   margin-right: 1em;
   background-color: #ccc;
   background-image: url(../../assets/images/Jim_Reeves.png);
-  background-position: center;
-  background-size: cover;
-  background-repeat: no-repeat;
 }
 
 .folder .table .flex {
@@ -106,9 +103,6 @@ export default {
   position: absolute;
   bottom: 1.5em;
   width: calc(100% - 6em);
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
 }
 
 td,

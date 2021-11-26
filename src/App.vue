@@ -12,33 +12,36 @@
       <PinnedStuff :collapsed="collapsed" />
       <div id="settings-button">
         <div class="in">
-          <div class="nav-icon" id="settings-icon"></div>
+          <div class="nav-icon image" id="settings-icon"></div>
           <span id="text">Settings</span>
         </div>
       </div>
     </div>
-    <div class="nav">
-      <div id="nav"></div>
-    </div>
     <div class="content">
       <router-view />
     </div>
-    <div class="r-sidebar"></div>
+    <div class="r-sidebar">
+      <Search/>
+    </div>
   </div>
 </template>
 
 <script>
 import { ref } from "@vue/reactivity";
+
 import Navigation from "./components/LeftSidebar/Navigation.vue";
 import PinnedStuff from "./components/LeftSidebar/PinnedStuff.vue";
+
+import Search from "./components/RightSideBar/Search.vue"
 
 export default {
   components: {
     Navigation,
     PinnedStuff,
+    Search
   },
   setup() {
-    const collapsed = ref(false);
+    const collapsed = ref(true);
 
     const logo = ref(null);
 
@@ -52,9 +55,9 @@ export default {
 
 <style>
 .logo {
-  height: 30px;
-  width: 150px;
-  margin-left: 35px;
+  height: 2em;
+  width: 9em;
+  margin-left: 2.25em;
   background: url(./assets/logo.svg);
   background-size: contain;
   background-repeat: no-repeat;
@@ -73,32 +76,28 @@ export default {
 }
 
 #logo-container {
-  height: 60px;
-  margin-left: 20px;
+  height: 3.60em;
+  margin-left: 1em;
   display: flex;
   align-items: center;
-  margin-bottom: 10px;
+  margin-bottom: .5em;
 }
 
 .l-sidebar {
   position: relative;
 }
 
-.l-container .seperator {
-  margin-left: -2em;
-}
-
 .l-container #toggle {
   position: fixed;
-  top: 7px;
-  width: 30px;
-  height: 60px;
+  top: 1em;
+  width: 1.75em;
+  height: 3.75em;
   background: url(./assets/icons/menu.svg);
   background-size: contain;
   background-repeat: no-repeat;
   background-position: center;
   cursor: pointer;
-  margin-right: 5px;
+  margin-left: .25em;
 }
 
 .l-container #settings-button {
@@ -108,7 +107,7 @@ export default {
   color: #fff;
   height: 50px;
   width: 100%;
-  border-top: 1px solid #ffffff27;
+  border-top: 1px solid var(--seperator);
 }
 
 #settings-button .in {
@@ -123,14 +122,14 @@ export default {
 }
 
 .l-container #settings-button #settings-icon {
-  margin-left: 23px;
-  margin-right: 5px;
-  width: 24px;
-  height: 24px;
+  margin-left: 1em;
+  margin-right: .25em;
+  width: 1.5em;
+  height: 1.5em;
   background-image: url(./assets/icons/settings.svg);
-  background-size: contain;
+  /* background-size: contain;
   background-repeat: no-repeat;
-  background-position: center;
+  background-position: center; */
 }
 
 .collapsed #settings-button #settings-icon {

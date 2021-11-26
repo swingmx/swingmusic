@@ -5,7 +5,7 @@
     </div>
     <div class="fsearch">
       <div>
-        <input type="search" placeholder="Search here" />
+        <input type="search" placeholder="Search this directory" />
       </div>
     </div>
   </div>
@@ -44,7 +44,7 @@ export default {};
 .folder-top .fsearch input {
   width: 30em;
   border: none;
-  border-radius: 2em;
+  border-radius: .5em;
   padding-left: 1em;
   background-color: #4645456c;
   color: rgba(255, 255, 255, 0.521);
@@ -63,6 +63,6 @@ export default {};
 
 .folder-top .fsearch input:focus {
   color: rgb(255, 255, 255);
-  outline: 0.1em solid #fafafa;
+  outline: 0.1em solid #fafafa52;
 }
 </style>
