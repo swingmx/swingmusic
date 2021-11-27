@@ -1,10 +1,14 @@
 <template>
   <div class="right-search">
-    <input type="search" id="search" placeholder="Michael Jackson" />
-    <div class="scrollable">
-
+    <input
+      type="search"
+      id="search"
+      placeholder="Michael Jackson"
+      v-model="query"
+    />
+    <div class="scrollable" :class="{ hidden: !query }">
       <div class="tracks-results">
-      <h3 class="heading">TRACKS <span class="more">SEE ALL</span></h3>
+        <h3 class="heading">TRACKS<span class="more">SEE ALL</span></h3>
         <div class="result-item" v-for="song in songs" :key="song">
           <div class="album-art image"></div>
           <div class="tags">
@@ -14,6 +18,7 @@
           </div>
         </div>
       </div>
+      <!--  -->
       <div class="albums-results">
         <h3 class="heading">ALBUMS <span class="more">SEE ALL</span></h3>
         <div class="grid">
@@ -27,9 +32,11 @@
           </div>
         </div>
       </div>
-
+      <!--  -->
       <div class="artists-results" v-if="artists">
-        <h3 class="heading">ARTISTS <span class="more" v-if="artists.length>3">SEE ALL</span></h3>
+        <h3 class="heading">
+          ARTISTS <span class="more" v-if="artists.length > 3">SEE ALL</span>
+        </h3>
         <div class="grid">
           <div
             class="result-item result-item3"
@@ -46,23 +53,13 @@
 </template>
 
 <script>
+import { ref } from "@vue/reactivity";
 export default {
+  props: ["collapser"],
   setup() {
     const songs = [
       {
         title: "Thriller",
-        artist: "Michael jackson",
-      },
-      {
-        title: "We are the world",
-        artist: "Michael jackson",
-      },
-      {
-        title: "Thriller",
-        artist: "Michael jackson",
-      },
-      {
-        title: "We are the world",
         artist: "Michael jackson",
       },
       {
@@ -77,9 +74,11 @@ export default {
       "USA for Africa",
     ];
 
-    const artists = ["Michael Jackson", "Jackson 5"]
+    const artists = ["Michael Jackson", "Jackson 5"];
 
-    return { songs, albums, artists };
+    const query = ref("");
+
+    return { songs, albums, artists, query };
   },
 };
 </script>
@@ -87,16 +86,15 @@ export default {
 <style>
 .right-search {
   position: relative;
-  height: 30em;
   border-radius: 1em;
   margin: 0.5em 0 0 0;
   padding: 0.75em;
-  background-color: rgba(32, 31, 31, 0.5);
+  background-color: #131313b2;
   overflow: hidden;
 }
 
 .right-search .scrollable {
-  height: calc(100% - 4em);
+  height: 26em;
   overflow-y: scroll;
   scroll-behavior: smooth;
 }
@@ -117,6 +115,8 @@ export default {
   position: absolute;
   right: 1em;
   padding: 0.5em;
+  user-select: none;
+
 }
 
 .right-search .heading .more:hover {
@@ -126,25 +126,24 @@ export default {
 }
 .right-search input {
   width: 100%;
-  border: 0.1em solid;
-  border-radius: 0.5em;
+  border: none;
+  border-radius: .5em;
   padding-left: 1em;
-  background-color: transparent;
+  background-color: #4645456c;
   color: rgba(255, 255, 255, 0.479);
   font-size: 1em;
   line-height: 3em;
   outline: none;
-  margin-bottom: 1em;
+}
+.right-search input:focus {
+  color: rgb(255, 255, 255);
+  outline: 0.1em solid #fafafa52;
 }
 
 .right-search input::-webkit-search-cancel-button {
   position: relative;
   right: 1em;
   cursor: pointer;
-}
-
-.right-search input:focus {
-  color: rgb(255, 255, 255);
 }
 
 /*  */

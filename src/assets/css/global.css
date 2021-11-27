@@ -93,6 +93,7 @@ a {
     grid-area: r-sidebar;
     border-radius: 5px;
     margin-right: .5em;
+    overflow-y: scroll;
 }
 
 .image {

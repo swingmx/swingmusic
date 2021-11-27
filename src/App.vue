@@ -21,7 +21,9 @@
       <router-view />
     </div>
     <div class="r-sidebar">
-      <Search/>
+      <Search :collapser="collapser"/>
+      <NowPlaying />
+      <UpNext :collapser="collapser" @updateCollapser="updateCollapser"/>
     </div>
   </div>
 </template>
@@ -32,13 +34,17 @@ import { ref } from "@vue/reactivity";
 import Navigation from "./components/LeftSidebar/Navigation.vue";
 import PinnedStuff from "./components/LeftSidebar/PinnedStuff.vue";
 
-import Search from "./components/RightSideBar/Search.vue"
+import Search from "./components/RightSideBar/Search.vue";
+import NowPlaying from "./components/RightSideBar/NowPlaying.vue";
+import UpNext from "./components/RightSideBar/UpNext.vue";
 
 export default {
   components: {
     Navigation,
     PinnedStuff,
-    Search
+    Search,
+    NowPlaying,
+    UpNext
   },
   setup() {
     const collapsed = ref(true);
@@ -48,7 +54,14 @@ export default {
     function toggleNav() {
       collapsed.value = !collapsed.value;
     }
-    return { logo, toggleNav, collapsed };
+
+    const collapser = ref(false)
+    const updateCollapser = ()=> {
+      collapser.value = !collapser.value
+      console.log(collapser.value);
+    }
+
+    return { logo, toggleNav, collapsed, collapser, updateCollapser };
   },
 };
 </script>
@@ -76,11 +89,11 @@ export default {
 }
 
 #logo-container {
-  height: 3.60em;
+  height: 3.6em;
   margin-left: 1em;
   display: flex;
   align-items: center;
-  margin-bottom: .5em;
+  margin-bottom: 0.5em;
 }
 
 .l-sidebar {
@@ -97,7 +110,7 @@ export default {
   background-repeat: no-repeat;
   background-position: center;
   cursor: pointer;
-  margin-left: .25em;
+  margin-left: 0.25em;
 }
 
 .l-container #settings-button {
@@ -123,7 +136,7 @@ export default {
 
 .l-container #settings-button #settings-icon {
   margin-left: 1em;
-  margin-right: .25em;
+  margin-right: 0.25em;
   width: 1.5em;
   height: 1.5em;
   background-image: url(./assets/icons/settings.svg);
