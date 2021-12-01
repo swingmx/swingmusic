@@ -104,7 +104,7 @@ export default {
 .side-nav-container .nav-button .nav-icon {
   height: 24px;
   width: 24px;
-  margin-right: 0.5em;
+  margin-right: 0.5rem;
   margin-left: 10px;
 }
 

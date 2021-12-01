@@ -24,6 +24,7 @@
       <Search :collapser="collapser"/>
       <NowPlaying />
       <UpNext :collapser="collapser" @updateCollapser="updateCollapser"/>
+      <RecommendedArtist/>
     </div>
   </div>
 </template>
@@ -37,6 +38,7 @@ import PinnedStuff from "./components/LeftSidebar/PinnedStuff.vue";
 import Search from "./components/RightSideBar/Search.vue";
 import NowPlaying from "./components/RightSideBar/NowPlaying.vue";
 import UpNext from "./components/RightSideBar/UpNext.vue";
+import RecommendedArtist from "./components/RightSideBar/Recommendation.vue"
 
 export default {
   components: {
@@ -44,7 +46,8 @@ export default {
     PinnedStuff,
     Search,
     NowPlaying,
-    UpNext
+    UpNext,
+    RecommendedArtist
   },
   setup() {
     const collapsed = ref(true);
@@ -68,9 +71,9 @@ export default {
 
 <style>
 .logo {
-  height: 2em;
-  width: 9em;
-  margin-left: 2.25em;
+  height: 2rem;
+  width: 9rem;
+  margin-left: 2.25rem;
   background: url(./assets/logo.svg);
   background-size: contain;
   background-repeat: no-repeat;
@@ -79,6 +82,7 @@ export default {
   animation-duration: 2s;
   animation-iteration-count: 1;
 }
+
 .nav-container .in {
   display: flex;
   align-items: center;
@@ -89,11 +93,11 @@ export default {
 }
 
 #logo-container {
-  height: 3.6em;
-  margin-left: 1em;
+  height: 3.6rem;
+  margin-left: 1rem;
   display: flex;
   align-items: center;
-  margin-bottom: 0.5em;
+  margin-bottom: 0.5rem;
 }
 
 .l-sidebar {
@@ -102,15 +106,15 @@ export default {
 
 .l-container #toggle {
   position: fixed;
-  top: 1em;
-  width: 1.75em;
-  height: 3.75em;
+  top: 1rem;
+  width: 1.75rem;
+  height: 3.75rem;
   background: url(./assets/icons/menu.svg);
   background-size: contain;
   background-repeat: no-repeat;
   background-position: center;
   cursor: pointer;
-  margin-left: 0.25em;
+  margin-left: 0.25rem;
 }
 
 .l-container #settings-button {
@@ -135,14 +139,11 @@ export default {
 }
 
 .l-container #settings-button #settings-icon {
-  margin-left: 1em;
-  margin-right: 0.25em;
-  width: 1.5em;
-  height: 1.5em;
+  margin-left: 1rem;
+  margin-right: 0.25rem;
+  width: 1.5rem;
+  height: 1.5rem;
   background-image: url(./assets/icons/settings.svg);
-  /* background-size: contain;
-  background-repeat: no-repeat;
-  background-position: center; */
 }
 
 .collapsed #settings-button #settings-icon {

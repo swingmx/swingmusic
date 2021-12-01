@@ -25,36 +25,36 @@ export default {
 
 <style>
 .f-container {
-  margin-bottom: 1em;
+  margin-bottom: 1rem;
   background: rgba(31, 30, 30, 0.521);
-  padding: 1em;
+  padding: 1rem;
 }
 
 #f-items {
   display: flex;
   flex-wrap: wrap;
   border-top: 1px solid var(--seperator);
-  gap: 1em;
-  padding-top: 1em;
+  gap: 1rem;
+  padding-top: 1rem;
 }
 
 .f-container p {
   text-transform: uppercase;
   font-weight: normal;
   color: rgba(255, 255, 255, 0.438);
-  margin-bottom: 1em;
+  margin-bottom: 1rem;
 }
 
 .f-container .f-item {
-  min-width: 15em;
-  min-height: 5em;
+  min-width: 14.4rem;
+  min-height: 5rem;
   display: flex;
   justify-content: center;
   align-items: center;
   position: relative;
   background-image: url(../../assets/icons/folder.svg);
   background-repeat: no-repeat;
-  background-position: 1em;
+  background-position: 1rem;
   background-size: 10% 100%;
   background-color: rgba(80, 80, 80, 0.247);
 }
@@ -65,7 +65,7 @@ export default {
 
 .f-container .f-item-text {
   position: absolute;
-  left: 3em;
+  left: 3rem;
   text-align: left;
   overflow: hidden;
   text-overflow: ellipsis;

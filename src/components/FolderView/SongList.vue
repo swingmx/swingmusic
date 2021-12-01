@@ -87,22 +87,22 @@ export default {
 }
 
 .folder .table table td .album-art {
-  width: 3em;
-  height: 3em;
-  margin-right: 1em;
+  width: 3rem;
+  height: 3rem;
+  margin-right: 1rem;
   background-color: #ccc;
   background-image: url(../../assets/images/Jim_Reeves.png);
 }
 
 .folder .table .flex {
   position: relative;
-  align-items: center;
+  align-itrems: center;
 }
 
 .folder .table .flex > div > span {
   position: absolute;
-  bottom: 1.5em;
-  width: calc(100% - 6em);
+  bottom: 1.5rem;
+  width: calc(100% - 6rem);
 }
 
 td,
@@ -124,12 +124,12 @@ th {
 }
 
 .folder {
-  padding-bottom: 1em;
+  padding-bottom: 1rem;
 }
 
 td .artist {
   color: #b1b1b1fd;
   font-weight: lighter;
-  margin-right: 0.5em;
+  margin-right: 0.5rem;
 }
 </style>

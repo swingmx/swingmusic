@@ -22,10 +22,10 @@ export default {};
 
 <style>
 .now-playing {
-  height: 5em;
-  border-radius: 0.5em;
-  margin-top: 1em;
-  padding: 0.5em;
+  height: 5rem;
+  border-radius: 0.5rem;
+  margin-top: 1rem;
+  padding: 0.5rem;
   background-color: #131313b2;
 
   display: grid;
@@ -38,21 +38,21 @@ export default {};
 }
 
 .now-playing .art-tags .album-art {
-  width: 4.5em;
-  height: 4.5em;
-  border-radius: 0.5em;
-  margin-right: 0.5em;
+  width: 4.5rem;
+  height: 4.5rem;
+  border-radius: 0.5rem;
+  margin-right: 0.5rem;
   background-color: #ad1717a8;
   background-image: url(../../assets/images/tk.jpg);
 }
 
 .now-playing .art-tags hr {
   border: none;
-  margin: 0.3em;
+  margin: 0.3rem;
 }
 .now-playing .art-tags #title {
   margin: 0;
-  width: 14em;
+  width: 14rem;
   color: #fff;
 }
 
@@ -69,11 +69,11 @@ export default {};
 }
 
 .now-playing .controls * {
-  height: 3em;
-  width: 3em;
+  height: 3rem;
+  width: 3rem;
   background-size: 50%;
   cursor: pointer;
-  border-radius: 0.5em;
+  border-radius: 0.5rem;
 }
 
 .now-playing .controls *:hover {

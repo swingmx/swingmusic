@@ -86,15 +86,15 @@ export default {
 <style>
 .right-search {
   position: relative;
-  border-radius: 1em;
-  margin: 0.5em 0 0 0;
-  padding: 0.75em;
+  border-radius: 1rem;
+  margin: 0.5rem 0 0 0;
+  padding: 0.75rem;
   background-color: #131313b2;
   overflow: hidden;
 }
 
 .right-search .scrollable {
-  height: 26em;
+  height: 26rem;
   overflow-y: scroll;
   scroll-behavior: smooth;
 }
@@ -106,61 +106,61 @@ export default {
 .right-search .heading {
   font-size: small;
   position: relative;
-  padding: 1em;
+  padding: 1rem;
   display: flex;
   align-items: center;
 }
 
 .right-search .heading .more {
   position: absolute;
-  right: 1em;
-  padding: 0.5em;
+  right: 1rem;
+  padding: 0.5rem;
   user-select: none;
 
 }
 
 .right-search .heading .more:hover {
   background: rgb(62, 69, 77);
-  border-radius: 0.5em;
+  border-radius: 0.5rem;
   cursor: pointer;
 }
 .right-search input {
   width: 100%;
   border: none;
-  border-radius: .5em;
-  padding-left: 1em;
+  border-radius: .5rem;
+  padding-left: 1rem;
   background-color: #4645456c;
   color: rgba(255, 255, 255, 0.479);
-  font-size: 1em;
-  line-height: 3em;
+  font-size: 1rem;
+  line-height: 3rem;
   outline: none;
 }
 .right-search input:focus {
   color: rgb(255, 255, 255);
-  outline: 0.1em solid #fafafa52;
+  outline: 0.1rem solid #fafafa52;
 }
 
 .right-search input::-webkit-search-cancel-button {
   position: relative;
-  right: 1em;
+  right: 1rem;
   cursor: pointer;
 }
 
 /*  */
 
 .right-search .tracks-results {
-  border-radius: 0.5em;
+  border-radius: 0.5rem;
   overflow: hidden;
 }
 
 .right-search .tracks-results .heading {
-  padding: 0.5em;
+  padding: 0.5rem;
 }
 
 .right-search .tracks-results .result-item {
   display: flex;
   align-items: center;
-  height: 4.5em;
+  height: 4.5rem;
   background-color: rgba(20, 20, 20, 0.733);
 }
 
@@ -168,16 +168,16 @@ export default {
   background-color: rgba(27, 26, 27, 0.589);
 }
 .right-search .tracks-results .result-item .album-art {
-  width: 4em;
-  height: 4em;
+  width: 4rem;
+  height: 4rem;
   background-color: rgb(27, 150, 74);
-  border-radius: 0.5em;
-  margin: 0 0.5em 0 0.25em;
+  border-radius: 0.5rem;
+  margin: 0 0.5rem 0 0.25rem;
   background-image: url(../../assets/images/thriller.jpg);
 }
 
 .right-search hr {
-  margin: 0.1em;
+  margin: 0.1rem;
   border: none;
 }
 
@@ -188,9 +188,9 @@ export default {
 /*  */
 
 .right-search .albums-results {
-  border-radius: 0.5em;
+  border-radius: 0.5rem;
   background-color: rgba(8, 3, 1, 0.274);
-  margin-top: 1em;
+  margin-top: 1rem;
 }
 
 .right-search .albums-results .grid {
@@ -205,24 +205,24 @@ export default {
 }
 
 .right-search .albums-results .result-item .album-art {
-  height: 7em;
-  width: 7em;
+  height: 7rem;
+  width: 7rem;
   background-color: rgba(26, 26, 26, 0.452);
-  border-radius: 0.5em;
-  margin-bottom: 0.5em;
+  border-radius: 0.5rem;
+  margin-bottom: 0.5rem;
   background-image: url(../../assets/images/thriller.jpg);
 }
 
 .right-search .albums-results .result-item .title {
-  width: 7em;
+  width: 7rem;
   text-align: center;
-  margin-bottom: 0.5em;
+  margin-bottom: 0.5rem;
 }
 
 /*  */
 
 .right-search .artists-results {
-  border-radius: 0.5em;
+  border-radius: 0.5rem;
   background-color: rgba(8, 3, 1, 0.274);
 }
 
@@ -232,11 +232,11 @@ export default {
 }
 
 .right-search .artists-results .result-item .image {
-  height: 7em;
-  width: 7em;
+  height: 7rem;
+  width: 7rem;
   border-radius: 50%;
   background-color: rgba(16, 65, 14, 0.356);
-  margin-bottom: 0.5em;
+  margin-bottom: 0.5rem;
   background-image: url(../../assets/icons/logo-small.svg);
   background-size: 50%;
   background-image: url(../../assets/images/thriller.jpg);
@@ -244,8 +244,8 @@ export default {
 }
 
 .right-search .artists-results .result-item .name {
-  width: 7em;
+  width: 7rem;
   text-align: center;
-  margin-bottom: 0.5em;
+  margin-bottom: 0.5rem;
 }
 </style>

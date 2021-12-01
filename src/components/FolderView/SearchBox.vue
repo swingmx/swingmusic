@@ -17,8 +17,8 @@ export default {};
 
 <style>
 .folder-top {
-  padding-bottom: 1em;
-  margin-bottom: 1em;
+  padding-bottom: 1rem;
+  margin-bottom: 1rem;
   border-bottom: 1px solid var(--seperator);
 }
 
@@ -27,12 +27,12 @@ export default {};
   color: rgba(255, 255, 255, 0.438);
   text-transform: uppercase;
   display: flex;
-  align-items: center;
+  align-itrems: center;
 }
 
 .folder-top .fsearch {
   width: 50%;
-  margin-right: 1em;
+  margin-right: 1rem;
 }
 
 .folder-top .fsearch div {
@@ -42,14 +42,14 @@ export default {};
 }
 
 .folder-top .fsearch input {
-  width: 30em;
+  width: 30rem;
   border: none;
-  border-radius: .5em;
-  padding-left: 1em;
+  border-radius: .5rem;
+  padding-left: 1rem;
   background-color: #4645456c;
   color: rgba(255, 255, 255, 0.521);
-  font-size: 1em;
-  line-height: 3em;
+  font-size: 1rem;
+  line-height: 3rem;
   outline: none;
 }
 
@@ -63,6 +63,6 @@ export default {};
 
 .folder-top .fsearch input:focus {
   color: rgb(255, 255, 255);
-  outline: 0.1em solid #fafafa52;
+  outline: 0.1rem solid #fafafa52;
 }
 </style>

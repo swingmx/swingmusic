@@ -8,8 +8,16 @@ body {
     background: #0d0e0e;
     color: #fff;
     font-family: 'Helvetica Neue', sans-serif;
+    font-size: 1rem;
 }
 
+.heading {
+    font-size: small;
+    font-weight: bold;
+    color: #ffffffb2;
+    display: flex;
+    align-items: center;
+}
 a {
     text-decoration: none;
     color: #fff;
@@ -18,7 +26,7 @@ a {
 .seperator {
     border: 1px solid;
     color: transparent;
-    margin: 0em;
+    margin: 0rem;
 }
 
 .hidden {
@@ -27,8 +35,8 @@ a {
 
 .l-container {
     display: grid;
-    grid-template-columns: min-content 4fr 30em;
-    grid-template-rows: 4em 1fr 1fr;
+    grid-template-columns: min-content 4fr 30rem;
+    grid-template-rows: 4rem 1fr 1fr;
     grid-auto-flow: row;
     grid-template-areas: "l-sidebar content r-sidebar" "l-sidebar content r-sidebar" "l-sidebar content r-sidebar";
     width: 100vw;
@@ -61,9 +69,9 @@ a {
 .l-sidebar {
     width: 250px;
     grid-area: l-sidebar;
-    padding-top: 0.5em;
-    margin: .5em 0 .5em .5em;
-    border-radius: .5em;
+    padding-top: 0.5rem;
+    margin: .5rem 0 .5rem .5rem;
+    border-radius: .5rem;
     background-color: #131313b2;
     transition-timing-function: cubic-bezier(0.165, 0.84, 0.44, 1);
     transition-duration: 0.3s;
@@ -84,16 +92,16 @@ a {
 
 .content {
     grid-area: content;
-    border-radius: .25em;
-    padding: .5em;
+    border-radius: .25rem;
+    padding: .5rem;
     overflow: hidden;
 }
 
 .r-sidebar {
     grid-area: r-sidebar;
     border-radius: 5px;
-    margin-right: .5em;
-    overflow-y: scroll;
+    margin-right: .5rem;
+    overflow-y: auto;
 }
 
 .image {
@@ -115,7 +123,7 @@ a {
 /* width */
 
 ::-webkit-scrollbar {
-    width: .5em;
+    width: .5rem;
 }
 
 
@@ -123,7 +131,7 @@ a {
 
 ::-webkit-scrollbar-track {
     background: rgba(51, 51, 51, 0.459);
-    border-radius: 1em;
+    border-radius: 1rem;
 }
 
 
@@ -131,7 +139,7 @@ a {
 
 ::-webkit-scrollbar-thumb {
     background: grey;
-    border-radius: 1em;
+    border-radius: 1rem;
 }
 
 

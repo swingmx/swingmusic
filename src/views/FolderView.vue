@@ -34,21 +34,21 @@ export default {
   position: relative;
   height: 100%;
   background-color: #131313b2;
-  padding-left: 1em;
-  padding-right: 1em;
-  padding-top: 5em;
+  padding-left: 1rem;
+  padding-right: 1rem;
+  padding-top: 5rem;
 }
 
 #f-view-parent .fixed {
   position: absolute;
   height: min-content;
-  width: calc(100% - 2em);
-  top: .5em;
+  width: calc(100% - 2rem);
+  top: .5rem;
 }
 
 #scrollable {
   overflow-y: scroll;
-  height: calc(100% - 5em);
-  padding-right: 1em;
+  height: calc(100% - 5rem);
+  padding-right: 1rem;
 }
 </style>

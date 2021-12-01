@@ -1,6 +1,8 @@
 <template>
   <div class="up-next">
-    <p>COMING UP NEXT <span class="more" @click="collapse">SEE ALL</span></p>
+    <p class="heading">
+      COMING UP NEXT <span class="more" @click="collapse">SEE ALL</span>
+    </p>
     <div class="main-item">
       <div class="album-art image"></div>
       <div class="tags">
@@ -25,10 +27,10 @@
 </template>
 
 <script>
-import { ref } from '@vue/reactivity';
+import { ref } from "@vue/reactivity";
 export default {
   props: ["collapser"],
-  emits: ['updateCollapser'],
+  emits: ["updateCollapser"],
   setup(props, context) {
     const songs = [
       {
@@ -109,13 +111,13 @@ export default {
       },
     ];
 
-    const collapsed = ref(false)
-    const another_is_open = ref(props.collapser)
+    const collapsed = ref(false);
+    const another_is_open = ref(props.collapser);
 
-    let collapse = ()=> {
+    let collapse = () => {
       collapsed.value = !collapsed.value;
-      context.emit('updateCollapser')
-    }
+      context.emit("updateCollapser");
+    };
 
     return { songs, collapsed, collapse, another_is_open };
   },
@@ -124,27 +126,22 @@ export default {
 
 <style>
 .up-next {
-  padding: 0.5em;
-  margin-top: 1em;
+  padding: 0.5rem;
+  margin-top: 1rem;
   background-color: #131313b2;
-  border-radius: 0.5em;
+  border-radius: 0.5rem;
 }
 
-.up-next > p {
+.up-next .heading {
   position: relative;
-  font-size: small;
-  font-weight: bold;
-  color: #ffffffb2;
-  margin: 0.5em 0 1em 1em;
-  display: flex;
-  align-items: center;
+  margin: 0.5rem 0 1rem 0rem;
 }
 
 .up-next > p > span {
   position: absolute;
-  right: 0.5em;
-  padding: 0.5em;
-  border-radius: 0.5em;
+  right: 0.5rem;
+  padding: 0.5rem;
+  border-radius: 0.5rem;
   user-select: none;
 }
 
@@ -156,37 +153,37 @@ export default {
 .up-next .main-item {
   display: flex;
   align-items: center;
-  padding: 0.5em;
-  border-radius: 0.5em;
+  padding: 0.5rem;
+  border-radius: 0.5rem;
   cursor: pointer;
-  margin-bottom: 0.5em;
+  margin-bottom: 0.5rem;
 }
 
 .up-next .main-item:hover {
-  background-color: #aa343441;
+  background-color: #3a39393d;
 }
 
 .up-next .main-item .album-art {
-  width: 4.5em;
-  height: 4.5em;
+  width: 4.5rem;
+  height: 4.5rem;
   background-color: #ccc;
-  margin: 0 0.5em 0 0;
-  border-radius: 0.5em;
+  margin: 0 0.5rem 0 0;
+  border-radius: 0.5rem;
   background-image: url(../../assets/images/htf.jpeg);
 }
 
 .up-next .main-item .tags hr {
   border: none;
-  margin: 0.3em;
+  margin: 0.3rem;
 }
 
 .up-next .main-item .tags .title {
-  width: 20em;
+  width: 20rem;
   margin: 0;
 }
 
 .up-next .main-item .tags .artist {
-  width: 20em;
+  width: 20rem;
   margin: 0;
   font-size: small;
   color: rgba(255, 255, 255, 0.61);
@@ -197,12 +194,12 @@ export default {
 }
 
 .up-next .all-items .scrollable {
-  height: 20em;
+  height: 20rem;
   overflow-y: scroll;
-  padding: 0.5em;
-  margin-top: 0.5em;
+  padding: 0.5rem;
+  margin-top: 0.5rem;
   background-color: rgba(2, 6, 14, 0.425);
-  border-radius: 0.5em;
+  border-radius: 0.5rem;
 }
 
 .up-next .all-items p {
@@ -212,8 +209,8 @@ export default {
 .up-next .all-items .scrollable .song-item {
   display: flex;
   align-items: center;
-  padding: 0.5em;
-  border-radius: 0.5em;
+  padding: 0.5rem;
+  border-radius: 0.5rem;
 }
 
 .up-next .all-items .scrollable .song-item:hover {
@@ -223,15 +220,15 @@ export default {
 
 .up-next .all-items .scrollable .song-item hr {
   border: none;
-  margin: 0.1em;
+  margin: 0.1rem;
 }
 
 .up-next .all-items .album-art {
-  width: 3em;
-  height: 3em;
+  width: 3rem;
+  height: 3rem;
   background-color: #ccc;
-  margin: 0 0.5em 0 0;
-  border-radius: 0.5em;
+  margin: 0 0.5rem 0 0;
+  border-radius: 0.5rem;
   background-image: url(../../assets/images/htf.jpeg);
 }
 
