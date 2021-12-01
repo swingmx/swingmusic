@@ -1,6 +1,6 @@
 <template>
   <div class="r-tracks rounded">
-    <p class="heading">RECOMMENDED TRACKS</p>
+    <p class="heading">SIMILAR TRACKS</p>
     <div class="tracks">
       <div class="song-item" v-for="song in songs" :key="song">
         <div class="album-art image"></div>
@@ -24,21 +24,22 @@ export default {
       },
       {
         title: "Slim shady",
-        artist: "Eminem"
-      }
+        artist: "Eminem",
+      },
     ];
 
-    return { songs };
+    const r_albums = ["Crybaby", "Everybody's Everything", "Castles II"];
+
+    return { songs, r_albums };
   },
 };
 </script>
 
 <style>
 .r-tracks {
-  margin-top: .5rem;
+  margin-top: 0.5rem;
   background-color: #131313b2;
-  padding: .5rem;
-
+  padding: 0.5rem;
 }
 
 .r-tracks .tracks .song-item {

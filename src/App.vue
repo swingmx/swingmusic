@@ -21,10 +21,12 @@
       <router-view />
     </div>
     <div class="r-sidebar">
-      <Search :collapser="collapser"/>
-      <NowPlaying />
-      <UpNext :collapser="collapser" @updateCollapser="updateCollapser"/>
-      <RecommendedArtist/>
+      <Search />
+      <div class="m-np">
+        <NowPlaying />
+      </div>
+      <UpNext v-model:up_next="up_next" @updateCollapser="updateCollapser" :key="componentKey"/>
+      <RecommendedArtist />
     </div>
   </div>
 </template>
@@ -38,7 +40,7 @@ import PinnedStuff from "./components/LeftSidebar/PinnedStuff.vue";
 import Search from "./components/RightSideBar/Search.vue";
 import NowPlaying from "./components/RightSideBar/NowPlaying.vue";
 import UpNext from "./components/RightSideBar/UpNext.vue";
-import RecommendedArtist from "./components/RightSideBar/Recommendation.vue"
+import RecommendedArtist from "./components/RightSideBar/Recommendation.vue";
 
 export default {
   components: {
@@ -47,8 +49,9 @@ export default {
     Search,
     NowPlaying,
     UpNext,
-    RecommendedArtist
+    RecommendedArtist,
   },
+
   setup() {
     const collapsed = ref(true);
 
@@ -58,13 +61,16 @@ export default {
       collapsed.value = !collapsed.value;
     }
 
-    const collapser = ref(false)
-    const updateCollapser = ()=> {
-      collapser.value = !collapser.value
-      console.log(collapser.value);
-    }
+    let up_next = ref(true);
+    const componentKey = ref(0);
 
-    return { logo, toggleNav, collapsed, collapser, updateCollapser };
+    const updateCollapser = () => {
+      up_next.value = !up_next.value
+      console.log(up_next.value)
+      componentKey.value +=1;
+    };
+
+    return { logo, toggleNav, collapsed, up_next, updateCollapser, componentKey };
   },
 };
 </script>
@@ -152,5 +158,13 @@ export default {
 
 .collapsed #settings-button #text {
   display: none;
+}
+.r-sidebar {
+  position: relative;
+  margin-bottom: .5em;
+}
+.m-np {
+  position: absolute;
+  bottom: 0;
 }
 </style>

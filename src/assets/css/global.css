@@ -18,6 +18,15 @@ body {
     display: flex;
     align-items: center;
 }
+
+.t-center {
+    text-align: center;
+}
+
+.h-1:hover {
+    background-color: #3a39393d;
+}
+
 a {
     text-decoration: none;
     color: #fff;

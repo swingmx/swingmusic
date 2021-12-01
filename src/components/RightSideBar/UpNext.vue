@@ -3,7 +3,7 @@
     <p class="heading">
       COMING UP NEXT <span class="more" @click="collapse">SEE ALL</span>
     </p>
-    <div class="main-item">
+    <div class="main-item h-1">
       <div class="album-art image"></div>
       <div class="tags">
         <p class="title">Hard to forget</p>
@@ -11,9 +11,9 @@
         <p class="artist">Sam hunt</p>
       </div>
     </div>
-    <div class="all-items" v-if="collapsed && !another_is_open">
+    <div class="all-items" v-if="!toggle">
       <div class="scrollable">
-        <div class="song-item" v-for="song in songs" :key="song">
+        <div class="song-item h-1" v-for="song in songs" :key="song">
           <div class="album-art image"></div>
           <div class="tags">
             <p class="title">{{ song.title }}</p>
@@ -28,8 +28,9 @@
 
 <script>
 import { ref } from "@vue/reactivity";
+
 export default {
-  props: ["collapser"],
+  props: ["up_next"],
   emits: ["updateCollapser"],
   setup(props, context) {
     const songs = [
@@ -111,15 +112,15 @@ export default {
       },
     ];
 
-    const collapsed = ref(false);
-    const another_is_open = ref(props.collapser);
+    // const collapsed = ref(false);
+    const toggle = ref(props.up_next);
 
     let collapse = () => {
-      collapsed.value = !collapsed.value;
-      context.emit("updateCollapser");
+      // collapsed.value = !collapsed.value;
+      context.emit('updateCollapser');
     };
 
-    return { songs, collapsed, collapse, another_is_open };
+    return { songs, collapse, toggle };
   },
 };
 </script>
@@ -157,10 +158,6 @@ export default {
   border-radius: 0.5rem;
   cursor: pointer;
   margin-bottom: 0.5rem;
-}
-
-.up-next .main-item:hover {
-  background-color: #3a39393d;
 }
 
 .up-next .main-item .album-art {
@@ -214,7 +211,6 @@ export default {
 }
 
 .up-next .all-items .scrollable .song-item:hover {
-  background-color: #3a39393d;
   cursor: pointer;
 }
 
