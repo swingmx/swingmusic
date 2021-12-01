@@ -112,12 +112,10 @@ export default {
       },
     ];
 
-    // const collapsed = ref(false);
     const toggle = ref(props.up_next);
 
     let collapse = () => {
-      // collapsed.value = !collapsed.value;
-      context.emit('updateCollapser');
+      context.emit("updateCollapser");
     };
 
     return { songs, collapse, toggle };

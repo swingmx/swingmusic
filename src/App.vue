@@ -66,7 +66,6 @@ export default {
 
     const updateCollapser = () => {
       up_next.value = !up_next.value
-      console.log(up_next.value)
       componentKey.value +=1;
     };
 
