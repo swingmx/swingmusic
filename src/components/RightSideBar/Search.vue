@@ -6,7 +6,7 @@
       placeholder="Michael Jackson"
       v-model="query"
     />
-    <div class="scrollable" :class="{ hidden: !query }">
+    <div class="scrollable" :class="{ hidden: !is_hidden }">
       <div class="tracks-results">
         <h3 class="heading">TRACKS<span class="more">SEE ALL</span></h3>
         <div class="result-item" v-for="song in songs" :key="song">
@@ -53,10 +53,12 @@
 </template>
 
 <script>
-import { ref } from "@vue/reactivity";
+import { ref, toRefs } from "@vue/reactivity";
+import { watch } from '@vue/runtime-core';
+
 export default {
-  props: ["collapser"],
-  setup() {
+  props: ["search"],
+  setup(props, { emit }) {
     const songs = [
       {
         title: "Thriller",
@@ -76,9 +78,20 @@ export default {
 
     const artists = ["Michael Jackson", "Jackson 5"];
 
-    const query = ref("");
+    const query = ref(null);
 
-    return { songs, albums, artists, query };
+    const is_hidden = toRefs(props).search;
+
+    watch(query, (new_query) => {
+      if (new_query.length > 0) {
+        emit("expandSearch");
+      }
+      else {
+        emit("collapseSearch");
+      }
+    });
+
+    return { songs, albums, artists, query, is_hidden };
   },
 };
 </script>
@@ -116,7 +129,6 @@ export default {
   right: 1rem;
   padding: 0.5rem;
   user-select: none;
-
 }
 
 .right-search .heading .more:hover {
@@ -127,7 +139,7 @@ export default {
 .right-search input {
   width: 100%;
   border: none;
-  border-radius: .5rem;
+  border-radius: 0.5rem;
   padding-left: 1rem;
   background-color: #4645456c;
   color: rgba(255, 255, 255, 0.479);

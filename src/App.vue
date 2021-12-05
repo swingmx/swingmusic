@@ -5,7 +5,7 @@
       <div id="logo-container">
         <div id="toggle" @click="toggleNav"></div>
         <router-link :to="{ name: 'FolderView' }" v-if="!collapsed"
-          ><div ref="logo" class="logo"></div
+          ><div class="logo"></div
         ></router-link>
       </div>
       <Navigation :collapsed="collapsed" />
@@ -21,11 +21,15 @@
       <router-view />
     </div>
     <div class="r-sidebar">
-      <Search />
+      <Search
+        v-model:search="search"
+        @expandSearch="expandSearch"
+        @collapseSearch="collapseSearch"
+      />
       <div class="m-np">
         <NowPlaying />
       </div>
-      <UpNext v-model:up_next="up_next" @updateCollapser="updateCollapser" :key="componentKey"/>
+      <UpNext v-model:up_next="up_next" @expandQueue="expandQueue" />
       <RecommendedArtist />
     </div>
   </div>
@@ -55,21 +59,36 @@ export default {
   setup() {
     const collapsed = ref(true);
 
-    const logo = ref(null);
-
     function toggleNav() {
       collapsed.value = !collapsed.value;
     }
 
-    let up_next = ref(true);
-    const componentKey = ref(0);
+    let up_next = ref(false);
+    let search = ref(false);
 
-    const updateCollapser = () => {
-      up_next.value = !up_next.value
-      componentKey.value +=1;
+    const expandQueue = () => {
+      up_next.value = !up_next.value;
+      search.value = false;
     };
 
-    return { logo, toggleNav, collapsed, up_next, updateCollapser, componentKey };
+    const expandSearch = () => {
+      search.value = true;
+      up_next.value = false;
+    };
+
+    const collapseSearch = () => {
+      search.value = false;
+    };
+
+    return {
+      toggleNav,
+      collapsed,
+      up_next,
+      expandQueue,
+      expandSearch,
+      collapseSearch,
+      search,
+    };
   },
 };
 </script>
@@ -160,7 +179,7 @@ export default {
 }
 .r-sidebar {
   position: relative;
-  margin-bottom: .5em;
+  margin-bottom: 0.5em;
 }
 .m-np {
   position: absolute;

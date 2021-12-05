@@ -11,7 +11,7 @@
         <p class="artist">Sam hunt</p>
       </div>
     </div>
-    <div class="all-items" v-if="!toggle">
+    <div class="all-items" v-if="is_expanded">
       <div class="scrollable">
         <div class="song-item h-1" v-for="song in songs" :key="song">
           <div class="album-art image"></div>
@@ -27,12 +27,12 @@
 </template>
 
 <script>
-import { ref } from "@vue/reactivity";
+import { toRefs } from "@vue/reactivity";
 
 export default {
   props: ["up_next"],
-  emits: ["updateCollapser"],
-  setup(props, context) {
+  emits: ["expandQueue"],
+  setup(props, { emit }) {
     const songs = [
       {
         title: "Hard to forget",
@@ -112,13 +112,13 @@ export default {
       },
     ];
 
-    const toggle = ref(props.up_next);
+    const is_expanded = toRefs(props).up_next;
 
     let collapse = () => {
-      context.emit("updateCollapser");
+      emit("expandQueue");
     };
 
-    return { songs, collapse, toggle };
+    return { songs, collapse, is_expanded };
   },
 };
 </script>
