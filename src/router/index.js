@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from "vue-router";
 import Home from "../views/Home.vue";
 import FolderView from "../views/FolderView.vue";
+import PlaylistView from "../views/PlaylistView.vue";
 
 const routes = [
   {
@@ -13,6 +14,11 @@ const routes = [
     name: "FolderView",
     component: FolderView,
   },
+  {
+    path: "/playlist",
+    name: "PlaylistView",
+    component: PlaylistView,
+  }
 ];
 
 const router = createRouter({

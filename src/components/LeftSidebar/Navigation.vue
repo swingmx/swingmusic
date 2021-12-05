@@ -27,7 +27,7 @@
       </div>
     </router-link>
     <hr />
-    <router-link :to="{ name: 'Home' }">
+    <router-link :to="{ name: 'PlaylistView' }">
       <div class="nav-button" id="playlists-button">
         <div class="in">
           <div class="nav-icon image" id="playlists-icon"></div>

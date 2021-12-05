@@ -11,8 +11,11 @@
     "animate.css": "^4.1.1",
     "core-js": "^3.6.5",
     "register-service-worker": "^1.7.1",
+    "sass": "^1.44.0",
+    "sass-loader": "^10",
     "vue": "^3.0.0",
-    "vue-router": "^4.0.0-0"
+    "vue-router": "^4.0.0-0",
+    "webpack": "^5.64.4"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "~4.5.0",
