@@ -43,23 +43,22 @@ export default {
     const songtitle = ref(null);
     const songTitleWidth = ref(null);
 
-    const minWidth = ref(250);
+    const minWidth = ref(300);
 
     const songs = Songs.songs;
 
     const resizeSongTitleWidth = () => {
-      songTitleWidth.value =
-        songtitle.value.clientWidth > minWidth.value * 4
-          ? songtitle.value.clientWidth / 4
-          : (songTitleWidth.value = songtitle.value.clientWidth / 3);
+      let a = songtitle.value.clientWidth;
+
+      songTitleWidth.value = a > minWidth.value * 4 ? a / 4 : a / 3;
     };
 
     onMounted(() => {
       resizeSongTitleWidth();
+      
       window.addEventListener("resize", () => {
         resizeSongTitleWidth();
       });
-      console.log(songTitleWidth.value);
     });
 
     onUnmounted(() => {

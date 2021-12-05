@@ -177,10 +177,6 @@ export default {
 .collapsed #settings-button #text {
   display: none;
 }
-.r-sidebar {
-  position: relative;
-  margin-bottom: 0.5em;
-}
 .m-np {
   position: absolute;
   bottom: 0;
