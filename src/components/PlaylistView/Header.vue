@@ -22,14 +22,13 @@
         <div class="item first image"></div>
       </div>
     </div>
-    <div class="banner rounded"></div>
   </div>
 </template>
 
 <style lang="scss">
 .p-header {
   display: grid;
-  grid-template-columns: 1fr .75fr;
+  grid-template-columns: 1fr;
   height: 15rem;
   margin-bottom: 1em;
   background: rgb(42, 46, 54);
@@ -42,7 +41,6 @@
 .p-header .info {
   background-color: rgb(1, 5, 17);
   padding: 0.5rem;
-  margin: 0.5rem 0 0.5rem 0.5rem;
   position: relative;
   overflow: hidden;
 }
@@ -54,7 +52,7 @@
   overflow: hidden;
   font-size: 2rem;
   font-weight: bold;
-  margin: 0;
+  margin: 0.2em 0 .5em 0;
 }
 
 .p-header .info .text {

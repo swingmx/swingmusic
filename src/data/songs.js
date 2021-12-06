@@ -1,51 +1,27 @@
 const songs = [{
-        title: "Loved by the best and if you don't fkn fsfsd",
-        album: "Love songs",
-        artists: ["Don Williams,", "Kenny Rogers"],
+        title: "Because I got high",
+        album: "The best of",
+        artists: ["Weedman, ", "Bobby Brown"],
         duration: "03:14",
     },
     {
-        title: "Loved by the best",
-        album: "Love songs",
-        artists: ["Don Williams"],
+        title: "Is this love",
+        album: "Natural Mystic",
+        artists: ["Bob Marley"],
         duration: "03:14",
     },
     {
-        title: "Loved by the best",
+        title: "I'm a little teapot",
         album: "Love songs",
-        artists: ["Don Williams"],
+        artists: ["Ricky Martin"],
         duration: "03:14",
     },
     {
-        title: "Loved by the best",
-        album: "Love songs",
-        artists: ["Don Williams"],
+        title: "Don't stop me now",
+        album: "Remastered 2011",
+        artists: ["Queen"],
         duration: "03:14",
-    },
-    // {
-    //   title: "Loved by the best",
-    //   album: "Love songs",
-    //   artists: ["Don Williams"],
-    //   duration: "03:14",
-    // },
-    // {
-    //   title: "Loved by the best",
-    //   album: "Love songs",
-    //   artists: ["Don Williams,", "Kenny Rogers"],
-    //   duration: "03:14",
-    // },
-    // {
-    //   title: "Loved by the best",
-    //   album: "Love songs",
-    //   artists: ["Don Williams"],
-    //   duration: "03:14",
-    // },
-    // {
-    //   title: "Loved by the best",
-    //   album: "Love songs",
-    //   artists: ["Don Williams"],
-    //   duration: "03:14",
-    // },
+    }
 ];
 
 export default {

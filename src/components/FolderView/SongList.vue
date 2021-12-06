@@ -90,12 +90,12 @@ export default {
   height: 3rem;
   margin-right: 1rem;
   background-color: #ccc;
-  background-image: url(../../assets/images/Jim_Reeves.png);
+  background-image: url(../../assets/images/weed.jpg);
 }
 
 .folder .table .flex {
   position: relative;
-  align-itrems: center;
+  align-items: center;
 }
 
 .folder .table .flex > div > span {
