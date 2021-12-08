@@ -110,6 +110,9 @@ th {
   padding: 8px;
 }
 
+th {
+  height: 2em;
+}
 tr:nth-child(even) {
   background-color: rgba(29, 29, 29, 0.767);
 }

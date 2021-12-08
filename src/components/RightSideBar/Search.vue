@@ -6,7 +6,7 @@
       placeholder="Michael Jackson"
       v-model="query"
     />
-    <div class="scrollable" :class="{ hidden: !is_hidden }">
+    <div class="scrollable" :class="{ v0: !is_hidden, v1: is_hidden }">
       <div class="tracks-results">
         <h3 class="heading">TRACKS<span class="more">SEE ALL</span></h3>
         <div class="result-item" v-for="song in songs" :key="song">
@@ -54,7 +54,7 @@
 
 <script>
 import { ref, toRefs } from "@vue/reactivity";
-import { watch } from '@vue/runtime-core';
+import { watch } from "@vue/runtime-core";
 
 export default {
   props: ["search"],
@@ -85,8 +85,7 @@ export default {
     watch(query, (new_query) => {
       if (new_query.length > 0) {
         emit("expandSearch");
-      }
-      else {
+      } else {
         emit("collapseSearch");
       }
     });
@@ -97,6 +96,16 @@ export default {
 </script>
 
 <style>
+.right-search .v0 {
+  max-height: 0em;
+  transition: max-height 0.5s ease;
+}
+
+.right-search .v1 {
+  max-height: 26rem;
+  transition: max-height 0.5s ease;
+}
+
 .right-search {
   position: relative;
   border-radius: 1rem;
@@ -146,8 +155,10 @@ export default {
   font-size: 1rem;
   line-height: 3rem;
   outline: none;
+  transition: all 0.5s ease;
 }
 .right-search input:focus {
+  transition: all 0.5s ease;
   color: rgb(255, 255, 255);
   outline: 0.1rem solid #fafafa52;
 }

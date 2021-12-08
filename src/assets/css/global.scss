@@ -126,6 +126,12 @@ a {
   background-position: center;
   background-repeat: no-repeat;
   background-size: cover;
+  transition: transform 0.3s ease-in-out;
+}
+
+.image:hover {
+  transform: matrix(1.1, 0, 0, 1.1, 0, 0);
+  transition: transform 0.3s ease-in-out;
 }
 
 .ellipsis {

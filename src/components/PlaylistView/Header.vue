@@ -134,7 +134,6 @@
   background-color: $blue;
   border-radius: $small;
   transition: transform 0.5s;
-  transform: scale(1.1);
 }
 
 .p-header .info .albums .first {

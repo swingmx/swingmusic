@@ -11,14 +11,16 @@
         <p class="artist">Sam hunt</p>
       </div>
     </div>
-    <div class="all-items" v-if="is_expanded">
-      <div class="scrollable">
-        <div class="song-item h-1" v-for="song in songs" :key="song">
-          <div class="album-art image"></div>
-          <div class="tags">
-            <p class="title">{{ song.title }}</p>
-            <hr />
-            <p class="artist">{{ song.artist }}</p>
+    <div :class="{ v0: !is_expanded, v1: is_expanded }">
+      <div class="all-items">
+        <div class="scrollable">
+          <div class="song-item h-1" v-for="song in songs" :key="song">
+            <div class="album-art image"></div>
+            <div class="tags">
+              <p class="title">{{ song.title }}</p>
+              <hr />
+              <p class="artist">{{ song.artist }}</p>
+            </div>
           </div>
         </div>
       </div>
@@ -123,7 +125,19 @@ export default {
 };
 </script>
 
-<style>
+<style lang="scss">
+.up-next .v0 {
+  max-height: 0em;
+  overflow: hidden;
+  transition: max-height 0.5s ease;
+}
+
+.up-next .v1 {
+  max-height: 23em;
+  border-top: 1px solid var(--seperator);
+  transition: max-height 0.5s ease;
+}
+
 .up-next {
   padding: 0.5rem;
   margin-top: 1rem;
@@ -185,14 +199,12 @@ export default {
 }
 
 .up-next .all-items {
-  border-top: 1px solid var(--seperator);
+  padding-top: $small;
 }
 
 .up-next .all-items .scrollable {
   height: 20rem;
-  overflow-y: scroll;
-  padding: 0.5rem;
-  margin-top: 0.5rem;
+  overflow-y: auto;
   background-color: rgba(2, 6, 14, 0.425);
   border-radius: 0.5rem;
 }
