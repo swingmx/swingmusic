@@ -1,6 +1,6 @@
 <template>
   <div class="f-artists">
-    <div class="artists">
+    <div class="artists" id="meeee">
       <div class="artist c1">
         <div class="blur"></div>
         <div class="s2"></div>
@@ -19,7 +19,23 @@
 <script>
 export default {
   setup() {
-    const artists = ["Eminem", "Drake", "Kendrick Lamar"];
+    const artists = [
+      "Eminem",
+      "Drake",
+      "Kendrick Lamar",
+      "Eminem",
+      "Drake",
+      "Kendrick Lamar",
+      "Eminem",
+      "Drake",
+      "Kendrick Lamar",
+      "Eminem",
+      "Drake",
+      "Kendrick Lamar",
+      "Eminem",
+      "Drake",
+      "Kendrick Lamar",
+    ];
 
     return {
       artists,
@@ -30,7 +46,8 @@ export default {
 
 <style lang="scss">
 .f-artists {
-  height: 10em;
+  position: relative;
+  height: 12em;
   width: calc(100% - 1em);
   background-color: #1f1e1d;
   padding: $small;
@@ -43,12 +60,22 @@ export default {
 }
 
 .f-artists .artists {
+  position: absolute;
+  bottom: 1em;
+  width: calc(100% - 1em);
+  height: 11em;
   display: flex;
-  flex-wrap: wrap;
-  align-items: center;
+  align-items: flex-end;
+  flex-wrap: nowrap;
+  overflow-y: scroll;
+}
+
+.f-artists .artists::-webkit-scrollbar {
+  display: none;
 }
 
 .f-artists .artist {
+  flex: 0 0 auto;
   overflow: hidden;
   position: relative;
   margin-left: $smaller;
@@ -56,15 +83,16 @@ export default {
   width: 9em;
   height: 9em;
   border-radius: $small;
-  background-color: #565066;
+  background-color: #fd5c63;
   display: flex;
   align-items: center;
   justify-content: center;
   transition: all 0.5s ease-in-out;
+  scroll-snap-type: x mandatory;
 }
 
 .f-artists .artist:hover {
-  transform: translateY(-1.5em);
+  transform: translateY(-1em);
   transition: all 0.5s ease-in-out;
 }
 
@@ -132,5 +160,4 @@ export default {
   border-radius: 50%;
   transition: all 0.5s ease;
 }
-
 </style>
