@@ -93,11 +93,18 @@ export default {
 };
 </script>
 
-<style>
+<style lang="scss">
+#logo-container {
+  position: relative;
+  height: 3.6rem;
+  display: flex;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
 .logo {
   height: 2rem;
   width: 9rem;
-  margin-left: 2.25rem;
+  margin-left: 4rem;
   background: url(./assets/logo.svg);
   background-size: contain;
   background-repeat: no-repeat;
@@ -116,39 +123,31 @@ export default {
   flex-direction: column;
 }
 
-#logo-container {
-  height: 3.6rem;
-  margin-left: 1rem;
-  display: flex;
-  align-items: center;
-  margin-bottom: 0.5rem;
-}
-
 .l-sidebar {
   position: relative;
 }
 
 .l-container #toggle {
-  position: fixed;
-  top: 1rem;
-  width: 1.75rem;
-  height: 3.75rem;
+  position: absolute;
+  left: 0.2rem;
+  width: 4rem;
+  height: 100%;
   background: url(./assets/icons/menu.svg);
-  background-size: contain;
+  background-size: 50%;
   background-repeat: no-repeat;
   background-position: center;
   cursor: pointer;
-  margin-left: 0.25rem;
 }
 
 .l-container #settings-button {
   position: absolute;
   bottom: 0;
   display: flex;
-  color: #fff;
   height: 50px;
   width: 100%;
-  border-top: 1px solid var(--seperator);
+  cursor: pointer;
+  border-radius: 0 0 $small $small;
+  border-top: solid .1rem $seperator
 }
 
 #settings-button .in {
@@ -157,13 +156,8 @@ export default {
   justify-content: center;
 }
 
-.l-container #settings-button:hover {
-  background: #17c93d7c;
-  cursor: pointer;
-}
-
 .l-container #settings-button #settings-icon {
-  margin-left: 1rem;
+  margin-left: 1.5rem;
   margin-right: 0.25rem;
   width: 1.5rem;
   height: 1.5rem;

@@ -3,7 +3,8 @@
     <div class="info rounded">
       <p class="name">Because I Got High Radio</p>
       <p class="text">
-        The best music to fade to while doing my thing. Featuring artists like Wiz Khalifa, Lil Wayne, Ne-Yo, Ace Of Base, ...
+        The best music to fade to while doing my thing. Featuring artists like
+        Wiz Khalifa, Lil Wayne, Ne-Yo, Ace Of Base, ...
       </p>
       <div class="lower">
         <div class="statistics">
@@ -52,7 +53,7 @@
   overflow: hidden;
   font-size: 2rem;
   font-weight: bold;
-  margin: 0.2em 0 .5em 0;
+  margin: 0.2em 0 0.5em 0;
 }
 
 .p-header .info .text {
@@ -123,7 +124,7 @@
   grid-gap: 0.5rem;
   // border: solid;
   position: absolute;
-  bottom: -.5em;
+  bottom: -0.5em;
   right: -1em;
 }
 
@@ -132,12 +133,14 @@
   width: 5em;
   background-color: $blue;
   border-radius: $small;
+  transition: transform 0.5s;
+  transform: scale(1.1);
 }
 
 .p-header .info .albums .first {
   position: absolute;
   transform: rotate(-30deg);
-  right: .5em;
+  right: 0.5em;
   bottom: 0em;
   background-color: $red;
   background-image: url(../../assets/images/girl2.jpg);
@@ -149,7 +152,7 @@
   right: 4em;
   bottom: -1em !important;
   background-color: $green;
-  background-image: url(../../assets/images/tk.jpg);
+  background-image: url(../../assets/images/girl1.jpg);
   z-index: 1;
 }
 
@@ -161,5 +164,12 @@
   background-color: $green;
   background-image: url(../../assets/images/girl3.jpg);
   z-index: 2;
+}
+
+.p-header .info .albums .item:hover {
+  transition: transform 1s;
+  transform: scale(1.5);
+  cursor: pointer;
+  z-index: 3;
 }
 </style>
