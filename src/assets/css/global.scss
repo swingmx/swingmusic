@@ -2,6 +2,9 @@
   --seperator: #ffffff46;
   --green: #4ad168;
 }
+* {
+  box-sizing: border-box;
+}
 
 body {
   margin: 0;
@@ -129,10 +132,6 @@ a {
   transition: transform 0.3s ease-in-out;
 }
 
-.image:hover {
-  transform: matrix(1.1, 0, 0, 1.1, 0, 0);
-  transition: transform 0.3s ease-in-out;
-}
 
 .ellipsis {
   overflow: hidden;
