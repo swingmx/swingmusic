@@ -11,9 +11,9 @@
         <p class="artist">Sam hunt</p>
       </div>
     </div>
-    <div :class="{ v0: !is_expanded, v1: is_expanded }">
-      <div class="all-items">
-        <div class="scrollable">
+    <div>
+      <div :class="{ hr: is_expanded }" class="all-items">
+        <div :class="{ v0: !is_expanded, v1: is_expanded }" class="scrollable">
           <div class="song-item h-1" v-for="song in songs" :key="song">
             <div class="album-art image"></div>
             <div class="tags">
@@ -126,6 +126,9 @@ export default {
 </script>
 
 <style lang="scss">
+.up-next .hr {
+  border-top: 1px solid var(--seperator);
+}
 .up-next .v0 {
   max-height: 0em;
   overflow: hidden;
@@ -133,8 +136,7 @@ export default {
 }
 
 .up-next .v1 {
-  max-height: 23em;
-  border-top: 1px solid var(--seperator);
+  max-height: 20em;
   transition: max-height 0.5s ease;
 }
 
