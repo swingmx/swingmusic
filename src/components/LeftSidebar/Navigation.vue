@@ -53,6 +53,15 @@
         </div>
       </div>
     </router-link>
+    <hr />
+    <router-link :to="{ name: 'FolderView' }">
+      <div class="nav-button" id="folders-button">
+        <div class="in">
+          <div class="nav-icon image" id="settings-icon"></div>
+          <span id="text">Settings</span>
+        </div>
+      </div>
+    </router-link>
   </div>
 </template>
 
@@ -65,7 +74,7 @@ export default {
 
 
 
-<style>
+<style lang="scss">
 .side-nav-container .in {
   display: flex;
   align-items: center;
@@ -89,12 +98,13 @@ export default {
   background-color: transparent;
   height: 100%;
   padding: 10px;
+  transition: all 0.3s ease-in-out;
 }
 
-
-.collapsed .nav-button span {
-  font-size: small;
+.collapsed .nav-button {
+  font-size: smaller;
   margin-top: 5px;
+  transition: all .2s ease-in-out;
 }
 
 .side-nav-container .nav-button:hover {
@@ -134,6 +144,9 @@ export default {
 
 .side-nav-container #folders-button #folders-icon {
   background-image: url(../../assets/icons/folder.svg);
+}
+.side-nav-container #folders-button #settings-icon {
+  background-image: url(../../assets/icons/settings.svg);
 }
 
 .side-nav-container #folders-button #text {

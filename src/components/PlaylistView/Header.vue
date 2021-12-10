@@ -152,7 +152,7 @@
   width: 5em;
   background-color: $blue;
   border-radius: $small;
-  transition: transform 0.5s;
+  transition: transform 1s;
 }
 
 .p-header .info .albums .first {
@@ -185,7 +185,7 @@
 }
 
 .p-header .info .albums .item:hover {
-  transition: transform 1s;
+  transition: transform .5s;
   transform: scale(1.5);
   cursor: pointer;
   z-index: 3;

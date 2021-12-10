@@ -6,7 +6,6 @@
   >
     <div>
       <div class="nav-button" id="pinned-button">
-        <!-- <div class="nav-icon" id="pinned-icon"></div> -->
         <span id="text">Quick access</span>
       </div>
     </div>
@@ -62,7 +61,6 @@ export default {
 </script>
 
 <style>
-
 #pinned-container .nav-button {
   color: rgba(255, 255, 255, 0.671);
 }

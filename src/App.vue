@@ -10,12 +10,6 @@
       </div>
       <Navigation :collapsed="collapsed" />
       <PinnedStuff :collapsed="collapsed" />
-      <div id="settings-button">
-        <div class="in">
-          <div class="nav-icon image" id="settings-icon"></div>
-          <span id="text">Settings</span>
-        </div>
-      </div>
     </div>
     <div class="content">
       <router-view />
@@ -114,15 +108,6 @@ export default {
   animation-iteration-count: 1;
 }
 
-.nav-container .in {
-  display: flex;
-  align-items: center;
-}
-
-.collapsed .in {
-  flex-direction: column;
-}
-
 .l-sidebar {
   position: relative;
 }
@@ -139,40 +124,9 @@ export default {
   cursor: pointer;
 }
 
-.l-container #settings-button {
-  position: absolute;
-  bottom: 0;
-  display: flex;
-  height: 50px;
-  width: 100%;
-  cursor: pointer;
-  border-radius: 0 0 $small $small;
-  border-top: solid .1rem $seperator
-}
-
-#settings-button .in {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.l-container #settings-button #settings-icon {
-  margin-left: 1.5rem;
-  margin-right: 0.25rem;
-  width: 1.5rem;
-  height: 1.5rem;
-  background-image: url(./assets/icons/settings.svg);
-}
-
-.collapsed #settings-button #settings-icon {
-  margin-right: 0;
-}
-
-.collapsed #settings-button #text {
-  display: none;
-}
 .m-np {
   position: absolute;
   bottom: 0;
 }
+
 </style>

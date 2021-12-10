@@ -1,5 +1,9 @@
 <template>
   <div class="f-artists">
+    <div class="xcontrols">
+      <div class="prev" @click="scrollLeftX"></div>
+      <div class="next" @click="scrollRightX"></div>
+    </div>
     <div class="artists" ref="artists_dom" v-on:mouseover="say">
       <div class="artist c1">
         <div class="blur"></div>
@@ -9,7 +13,7 @@
       <div class="artist" v-for="artist in artists" :key="artist">
         <div>
           <div class="artist-image image"></div>
-          <p class="artist-name">{{ artist }}</p>
+          <p class="artist-name ellipsis">{{ artist }}</p>
           <div class="a-circle"></div>
         </div>
       </div>
@@ -17,38 +21,62 @@
   </div>
 </template>
 <script>
-import { ref } from '@vue/reactivity';
+import { ref } from "@vue/reactivity";
 
 export default {
   setup() {
     const artists = [
-      "Eminem",
-      "Drake",
-      "Kendrick Lamar",
-      "Eminem",
-      "Drake",
-      "Kendrick Lamar",
-      "Eminem",
-      "Drake",
-      "Kendrick Lamar",
-      "Eminem",
-      "Drake",
-      "Kendrick Lamar",
-      "Eminem",
-      "Drake",
-      "Kendrick Lamar",
+      "Michael John Montgomery",
+      "2",
+      "3",
+      "4",
+      "5",
+      "6",
+      "7",
+      "8",
+      "9",
+      "10",
+      "11",
     ];
 
-    const artists_dom = ref(null)
+    const artists_dom = ref(null);
+
+    const scrollLeftX = () => {
+      const dom = artists_dom.value;
+      dom.scrollBy({
+        left: -700,
+        behavior: "smooth",
+      });
+    };
+
+    const scrollRightX = () => {
+      const dom = artists_dom.value;
+      dom.scrollBy({
+        left: 700,
+        behavior: "smooth",
+      });
+    };
+
+    const scroll = (e) => {
+      artists_dom.value.scrollBy({
+        left: e.deltaY < 0 ? -700 : 700,
+        behavior: "smooth",
+      });
+    };
 
     const say = () => {
-      
-    }
+      artists_dom.value.addEventListener("wheel", (e) => {
+        e.preventDefault();
+        scroll(e);
+      });
+    };
 
     return {
       artists,
       artists_dom,
-      say
+      say,
+      scrollLeftX,
+      scrollRightX,
     };
   },
 };
@@ -57,12 +85,58 @@ export default {
 <style lang="scss">
 .f-artists {
   position: relative;
-  height: 12em;
+  height: 14em;
   width: calc(100% - 1em);
   background-color: #1f1e1d;
   padding: $small;
   border-radius: $small;
   user-select: none;
+}
+
+.f-artists .xcontrols {
+  z-index: 1;
+  width: 5rem;
+  height: 2rem;
+  position: absolute;
+  top: 0.75rem;
+  right: 0.5rem;
+  display: flex;
+  justify-content: space-between;
+
+  .next,
+  .prev {
+    width: 2em;
+    height: 2em;
+    cursor: pointer;
+    transition: all 0.5s ease;
+  }
+
+  .next {
+    background: url(../../assets/icons/right-arrow.svg) no-repeat center;
+  }
+
+  .prev {
+    background: url(../../assets/icons/right-arrow.svg) no-repeat center;
+    transform: rotate(180deg);
+  }
+
+  .next:hover,
+  .prev:hover {
+    transform: scale(1.2);
+    transition: all 0.5s ease;
+  }
+
+  .prev:hover {
+    transform: rotate(180deg) scale(1.2);
+  }
+
+  .next:active {
+    transform: scale(0.5);
+  }
+
+  .prev:active {
+    transform: rotate(180deg) scale(0.5);
+  }
 }
 
 .f-artists .heading {
@@ -74,11 +148,11 @@ export default {
   position: absolute;
   bottom: 1em;
   width: calc(100% - 1em);
-  height: 11em;
+  height: 13em;
   display: flex;
   align-items: flex-end;
   flex-wrap: nowrap;
-  overflow-y: scroll;
+  overflow-x: scroll;
 }
 
 .f-artists .artists::-webkit-scrollbar {
@@ -107,9 +181,14 @@ export default {
   transition: all 0.5s ease-in-out;
 }
 
+.f-artists .artist:active {
+  transform: translateY(0.9);
+}
+
 .f-artists .artist-image {
   width: 7em;
   height: 7em;
+  margin-left: 0.5em;
   border-radius: 50%;
   margin-bottom: $small;
   background: url(../../assets/images/girl1.jpg);
@@ -127,7 +206,7 @@ export default {
   margin-left: -0.1rem;
 }
 
-.f-artists .c1:hover > .s2 {
+.c1:hover > .s2 {
   background: rgba(53, 53, 146, 0.8);
   transition: all 0.5s ease;
   width: 12em;
@@ -148,6 +227,7 @@ export default {
   margin: 0;
   text-align: center;
   font-size: small;
+  width: 10em;
 }
 
 .f-artists .blur {
