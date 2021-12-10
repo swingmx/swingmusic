@@ -85,7 +85,7 @@ export default {
 <style lang="scss">
 .f-artists {
   position: relative;
-  height: 14em;
+  height: 12em;
   width: calc(100% - 1em);
   background-color: #1f1e1d;
   padding: $small;
@@ -98,7 +98,7 @@ export default {
   width: 5rem;
   height: 2rem;
   position: absolute;
-  top: 0.75rem;
+  top: 0.0rem;
   right: 0.5rem;
   display: flex;
   justify-content: space-between;

@@ -40,7 +40,7 @@ export default {
 .p-bg .clip {
   height: calc(100% - 14em);
   padding-bottom: $small;
-  border-bottom: solid 1px $seperator;
+  border-bottom: solid 1px $separator;
 }
 
 .p-bg .scrollable {

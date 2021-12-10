@@ -1,5 +1,5 @@
 :root {
-  --seperator: #ffffff46;
+  --separator: #ffffff46;
   --green: #4ad168;
 }
 * {
@@ -35,8 +35,8 @@ a {
   color: #fff;
 }
 
-.seperator {
-  border-top: .1em $seperator solid;
+.separator {
+  border-top: .1em $separator solid;
   color: transparent;
   margin: $small 0 $small 0;
 }

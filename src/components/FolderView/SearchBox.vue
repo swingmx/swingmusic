@@ -19,7 +19,7 @@ export default {};
 .folder-top {
   padding-bottom: 1rem;
   margin-bottom: 1rem;
-  border-bottom: 1px solid var(--seperator);
+  border-bottom: 1px solid var(--separator);
 }
 
 .folder-top .fname {

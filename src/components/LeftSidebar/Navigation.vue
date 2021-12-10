@@ -86,7 +86,7 @@ export default {
 
 .side-nav-container {
   color: #fff;
-  border-top: 1px solid var(--seperator);
+  border-top: 1px solid var(--separator);
   margin-bottom: 10px;
   padding-top: 10px;
 }

@@ -33,7 +33,7 @@ export default {
 #f-items {
   display: flex;
   flex-wrap: wrap;
-  border-top: 1px solid var(--seperator);
+  border-top: 1px solid var(--separator);
   gap: 1rem;
   padding-top: 1rem;
 }

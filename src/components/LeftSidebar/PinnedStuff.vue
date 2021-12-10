@@ -123,8 +123,8 @@ export default {
   color: transparent;
 }
 
-#pinned-container .seperator {
-  color: var(--seperator);
+#pinned-container .separator {
+  color: var(--separator);
 }
 
 #pinned-container {

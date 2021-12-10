@@ -127,7 +127,7 @@ export default {
 
 <style lang="scss">
 .up-next .hr {
-  border-top: 1px solid var(--seperator);
+  border-top: 1px solid var(--separator);
 }
 .up-next .v0 {
   max-height: 0em;
