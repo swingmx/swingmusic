@@ -1,7 +1,11 @@
 <template>
   <Header />
   <div class="p-bg rounded">
-    <SongList />
+    <div class="clip">
+      <div class="scrollable">
+        <SongList />
+      </div>
+    </div>
     <div class="f-artists-p">
       <FeaturedArtists />
     </div>
@@ -31,6 +35,19 @@ export default {
   background: $card-dark;
   height: calc(100% - 16em);
   padding: $small;
+}
+
+.p-bg .clip {
+  height: calc(100% - 14em);
+  padding-bottom: $small;
+  border-bottom: solid 1px $seperator;
+}
+
+.p-bg .scrollable {
+  height: 100%;
+  border-radius: $small;
+  overflow-y: auto;
+  padding-right: $small;
 }
 
 .p-bg .f-artists {
