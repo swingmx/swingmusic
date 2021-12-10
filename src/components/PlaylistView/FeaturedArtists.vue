@@ -181,10 +181,6 @@ export default {
   transition: all 0.5s ease-in-out;
 }
 
-.f-artists .artist:active {
-  transform: translateY(0.9);
-}
-
 .f-artists .artist-image {
   width: 7em;
   height: 7em;
