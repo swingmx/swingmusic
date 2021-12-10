@@ -48,7 +48,7 @@ export default {
 
 #scrollable {
   overflow-y: scroll;
-  height: calc(100% - 5rem);
+  height: 100%;
   padding-right: 1rem;
 }
 </style>

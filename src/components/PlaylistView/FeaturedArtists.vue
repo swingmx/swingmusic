@@ -1,6 +1,6 @@
 <template>
   <div class="f-artists">
-    <div class="artists" id="meeee">
+    <div class="artists" ref="artists_dom" v-on:mouseover="say">
       <div class="artist c1">
         <div class="blur"></div>
         <div class="s2"></div>
@@ -17,6 +17,8 @@
   </div>
 </template>
 <script>
+import { ref } from '@vue/reactivity';
+
 export default {
   setup() {
     const artists = [
@@ -37,8 +39,16 @@ export default {
       "Kendrick Lamar",
     ];
 
+    const artists_dom = ref(null)
+
+    const say = () => {
+      
+    }
+
     return {
       artists,
+      artists_dom,
+      say
     };
   },
 };
@@ -52,6 +62,7 @@ export default {
   background-color: #1f1e1d;
   padding: $small;
   border-radius: $small;
+  user-select: none;
 }
 
 .f-artists .heading {
@@ -88,7 +99,7 @@ export default {
   align-items: center;
   justify-content: center;
   transition: all 0.5s ease-in-out;
-  scroll-snap-type: x mandatory;
+  cursor: pointer;
 }
 
 .f-artists .artist:hover {

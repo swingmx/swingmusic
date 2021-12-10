@@ -14,6 +14,7 @@
         <hr />
         <div class="btns">
           <div class="play s-item"><p>Play Now</p></div>
+          <div class="options s-item image"></div>
         </div>
       </div>
       <!--  -->
@@ -107,6 +108,7 @@
 
 .p-header .info .btns {
   height: 2.5rem;
+  display: flex;
 }
 
 .p-header .info .btns .play {
@@ -117,12 +119,29 @@
   background-image: url(../../assets/icons/play.svg);
 }
 
+.p-header .info .btns .options {
+  width: 2.5rem;
+  height: 100%;
+  background-color: #0465a7;
+  border-radius: 50%;
+  background-image: url(../../assets/icons/options.svg);
+  background-size: 80%;
+  background-position: center;
+  border: none;
+  transition: all 0.5s ease;
+}
+
+.p-header .info .btns .options:hover {
+  transform: rotate(90deg);
+  transition: all 0.5s ease;
+  background-color: #2da8c7;
+}
+
 .p-header .info .albums {
   position: relative;
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   grid-gap: 0.5rem;
-  // border: solid;
   position: absolute;
   bottom: -0.5em;
   right: -1em;
