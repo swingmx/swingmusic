@@ -36,9 +36,9 @@ a {
 }
 
 .seperator {
-  border: 1px solid;
+  border-top: .1em $seperator solid;
   color: transparent;
-  margin: 0rem;
+  margin: $small 0 $small 0;
 }
 
 .hidden {
@@ -90,6 +90,14 @@ a {
   transition-property: width;
 }
 
+.ellip {
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 .rounded {
   border-radius: 10px;
 }
@@ -131,7 +139,6 @@ a {
   background-size: cover;
   transition: transform 0.3s ease-in-out;
 }
-
 
 .ellipsis {
   overflow: hidden;

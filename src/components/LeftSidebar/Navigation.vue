@@ -9,7 +9,7 @@
       </div>
     </router-link>
     <hr />
-    <router-link :to="{ name: 'Home' }">
+    <router-link :to="{ name: 'AlbumsExplorer' }">
       <div class="nav-button" id="album-button">
         <div class="in">
           <div class="nav-icon image" id="album-icon"></div>

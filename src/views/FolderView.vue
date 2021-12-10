@@ -29,13 +29,13 @@ export default {
 };
 </script>
 
-<style>
+<style lang="scss">
 #f-view-parent {
   position: relative;
   height: 100%;
   background-color: #131313b2;
-  padding-left: 1rem;
-  padding-right: 1rem;
+  padding-left: $small;
+  padding-right: $small;
   padding-top: 5rem;
 }
 

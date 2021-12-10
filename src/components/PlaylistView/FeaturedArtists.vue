@@ -153,10 +153,10 @@ export default {
   align-items: flex-end;
   flex-wrap: nowrap;
   overflow-x: scroll;
-}
 
-.f-artists .artists::-webkit-scrollbar {
-  display: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
 }
 
 .f-artists .artist {
@@ -174,23 +174,29 @@ export default {
   justify-content: center;
   transition: all 0.5s ease-in-out;
   cursor: pointer;
-}
 
-.f-artists .artist:hover {
-  transform: translateY(-1em);
-  transition: all 0.5s ease-in-out;
-}
+  .artist-image {
+    width: 7em;
+    height: 7em;
+    margin-left: 0.5em;
+    border-radius: 50%;
+    margin-bottom: $small;
+    background: url(../../assets/images/girl1.jpg);
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+  }
 
-.f-artists .artist-image {
-  width: 7em;
-  height: 7em;
-  margin-left: 0.5em;
-  border-radius: 50%;
-  margin-bottom: $small;
-  background: url(../../assets/images/girl1.jpg);
-  background-size: cover;
-  background-repeat: no-repeat;
-  background-position: center;
+  .artist-name {
+    margin: 0;
+    text-align: center;
+    font-size: small;
+    width: 10em;
+  }
+  &:hover {
+    transform: translateY(-1em);
+    transition: all 0.5s ease-in-out;
+  }
 }
 
 .f-artists .c1 {
@@ -200,51 +206,44 @@ export default {
   background-image: url(../../assets/images/gradient1.gif);
   overflow: hidden;
   margin-left: -0.1rem;
-}
 
-.c1:hover > .s2 {
-  background: rgba(53, 53, 146, 0.8);
-  transition: all 0.5s ease;
-  width: 12em;
-  height: 12em;
-}
+  &:hover > .s2 {
+    background: rgba(53, 53, 146, 0.8);
+    transition: all 0.5s ease;
+    width: 12em;
+    height: 12em;
+  }
 
-.f-artists .c1 p {
-  position: absolute;
-  bottom: -2rem;
-  margin-left: 0.5rem;
-  z-index: 1;
-  font-size: 2rem;
-  font-weight: 700;
-  color: #ffffff;
-}
+  p {
+    position: absolute;
+    bottom: -2rem;
+    margin-left: 0.5rem;
+    z-index: 1;
+    font-size: 2rem;
+    font-weight: 700;
+    color: #ffffff;
+  }
 
-.f-artists .artist-name {
-  margin: 0;
-  text-align: center;
-  font-size: small;
-  width: 10em;
-}
+   .blur {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0);
+    backdrop-filter: blur(100px);
+    -webkit-backdrop-filter: blur(100px);
+    -moz-backdrop-filter: blur(100px);
+    border-radius: $small;
+  }
 
-.f-artists .blur {
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0);
-  backdrop-filter: blur(100px);
-  -webkit-backdrop-filter: blur(100px);
-  -moz-backdrop-filter: blur(100px);
-  border-radius: $small;
-}
-
-.f-artists .s2 {
-  position: absolute;
-  left: -2em;
-  bottom: -4em;
-  width: 10em;
-  height: 10em;
-  background: rgba(53, 53, 146, 0.445);
-  border-radius: 50%;
-  transition: all 0.5s ease;
+   .s2 {
+    position: absolute;
+    left: -2em;
+    bottom: -4em;
+    width: 10em;
+    height: 10em;
+    background: rgba(53, 53, 146, 0.445);
+    border-radius: 50%;
+    transition: all 0.5s ease;
+  }
 }
 </style>

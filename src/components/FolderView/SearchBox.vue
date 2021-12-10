@@ -27,7 +27,7 @@ export default {};
   color: rgba(255, 255, 255, 0.438);
   text-transform: uppercase;
   display: flex;
-  align-itrems: center;
+  align-items: center;
 }
 
 .folder-top .fsearch {
