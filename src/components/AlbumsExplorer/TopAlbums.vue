@@ -65,6 +65,7 @@ export default {
     .item {
       height: 10rem;
       width: 100%;
+      max-width: 25rem;
       background-color: rgb(7, 6, 6);
       display: grid;
       align-items: center;
@@ -91,6 +92,7 @@ export default {
 
       .info .artist {
         font-size: small;
+        color: rgba(255, 255, 255, 0.699);
       }
 
       .info .top {

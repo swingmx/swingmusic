@@ -38,7 +38,7 @@ export default {
 }
 
 .p-bg .clip {
-  height: calc(100% - 14em);
+  height: calc(100% - 12em);
   padding-bottom: $small;
   border-bottom: solid 1px $separator;
 }

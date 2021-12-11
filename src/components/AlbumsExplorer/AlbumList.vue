@@ -10,8 +10,8 @@
       <div class="item rounded" v-for="album in albums" :key="album">
         <div class="play"></div>
         <div class="album-art image rounded"></div>
-        <div class="name ellip">{{album.title}}</div>
-        <div class="artist ellip">{{album.artist}}</div>
+        <div class="name ellip">{{ album.title }}</div>
+        <div class="artist ellip">{{ album.artist }}</div>
       </div>
     </div>
   </div>
@@ -20,15 +20,16 @@
 export default {
   setup() {
     const albums = [
-      
       {
         title: "Album 2 af sjf s d kjf saf ",
-        artist: "Artist  ad asd f adf d da df d adf ds d fadsf fs dfds sf dadf d",
+        artist:
+          "Artist  ad asd f adf d da df d adf ds d fadsf fs dfds sf dadf d",
       },
       {
         title: "Album 3",
         artist: "Artist 3",
-      },{
+      },
+      {
         title: "Album 1",
         artist: "Artist 1",
       },
@@ -39,7 +40,8 @@ export default {
       {
         title: "Album 3",
         artist: "Artist 3",
-      },{
+      },
+      {
         title: "Album 1",
         artist: "Artist 1",
       },
@@ -50,7 +52,8 @@ export default {
       {
         title: "Album 3",
         artist: "Artist 3",
-      },{
+      },
+      {
         title: "Album 1",
         artist: "Artist 1",
       },
@@ -61,7 +64,8 @@ export default {
       {
         title: "Album 3",
         artist: "Artist 3",
-      },{
+      },
+      {
         title: "Album 1",
         artist: "Artist 1",
       },
@@ -72,7 +76,8 @@ export default {
       {
         title: "Album 3",
         artist: "Artist 3",
-      },{
+      },
+      {
         title: "Album 1",
         artist: "Artist 1",
       },
@@ -83,7 +88,8 @@ export default {
       {
         title: "Album 3",
         artist: "Artist 3",
-      },{
+      },
+      {
         title: "Album 1",
         artist: "Artist 1",
       },
@@ -166,6 +172,7 @@ export default {
         font-size: small;
         font-weight: lighter;
         text-align: left;
+        color: rgba(255, 255, 255, 0.699);
       }
     }
   }

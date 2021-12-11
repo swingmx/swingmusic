@@ -143,11 +143,6 @@ export default {
   }
 }
 
-.f-artists .heading {
-  color: #fff;
-  margin: 0 0 1em 1em;
-}
-
 .f-artists .artists {
   position: absolute;
   bottom: 1em;
