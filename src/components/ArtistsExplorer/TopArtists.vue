@@ -1,16 +1,16 @@
 <template>
-  <div class="top-albums">
-    <div class="heading">TOP ALBUMS</div>
+  <div class="top-artists">
+    <div class="heading">TOP ARTISTS</div>
     <div class="items">
-      <div class="item rounded" v-for="album in albums" :key="album">
-        <div class="image rounded"></div>
+      <div class="item rounded" v-for="artist in artists" :key="artist">
+        <div class="image"></div>
         <div class="info">
-          <div class="name ellip">{{ album.title }}</div>
-          <div class="artist ellip">{{ album.artist }}</div>
+          <div class="name ellip">{{ artist.name }}</div>
+          <div class="artist ellip">{{ artist.album_count }} Albums</div>
           <div class="separator"></div>
           <div class="top">
             <div class="play-icon"></div>
-            <div class="text ellip">{{ album.top_track }}</div>
+            <div class="text ellip">{{ artist.top_track }}</div>
           </div>
         </div>
       </div>
@@ -21,33 +21,33 @@
 <script>
 export default {
   setup() {
-    const albums = [
+    const artists = [
       {
-        title: "Thriller",
-        artist: "Michael Jackson, Sting, Shaggy, Juice WRLD",
-        top_track: "Beat It and althought you whatever",
+        name: "Sting",
+        album_count: "12",
+        top_track: "Alien in Newyork",
       },
       {
-        title: "Figting Demons",
-        artist: "Juice WRLD",
+        name: "Juice Wrld",
+        album_count: "4",
         top_track: "Girl Of My Dreams",
       },
       {
-        title: "Crybaby",
-        artist: "Lil Peep",
-        top_track: "Lil kennedy",
+        name: "Lil Peep",
+        album_count: "6",
+        top_track: "Haunt U",
       },
     ];
 
     return {
-      albums,
+      artists,
     };
   },
 };
 </script>
 
 <style lang="scss">
-.top-albums {
+.top-artists {
   height: 14rem;
   border-radius: $small;
   background-color: $card-dark;
@@ -82,7 +82,7 @@ export default {
         height: 7rem;
         width: 7rem;
         background-image: url(../../assets/images/girl1.jpg);
-        border-radius: $small;
+        border-radius: 50%;
       }
 
       .info .name {
