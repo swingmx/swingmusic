@@ -98,10 +98,14 @@ export default {
   width: 5rem;
   height: 2rem;
   position: absolute;
-  top: 0.0rem;
-  right: 0.5rem;
+  top: -.2rem;
+  right: 0rem;
   display: flex;
   justify-content: space-between;
+
+  &:hover {
+    z-index: 1;
+  }
 
   .next,
   .prev {
@@ -194,7 +198,7 @@ export default {
     width: 10em;
   }
   &:hover {
-    transform: translateY(-1em);
+    transform: translateY(-.5em);
     transition: all 0.5s ease-in-out;
   }
 }
