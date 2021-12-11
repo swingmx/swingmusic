@@ -48,13 +48,13 @@ export default {
 
 <style lang="scss">
 .top-albums {
-  height: 12.5rem;
+  height: 14rem;
   border-radius: $small;
-  background-color: rgb(44, 42, 42);
+  background-color: $card-dark;
   padding: $small;
 
   .heading {
-    margin: 0 0 $small;
+    margin: $small 0 1.5em $small;
   }
 
   .items {
@@ -73,10 +73,14 @@ export default {
       cursor: pointer;
       transition: all 0.2s ease-in-out;
 
+      &:hover {
+        transform: translateY(-.5em);
+      }
+
       .image {
         height: 7rem;
         width: 7rem;
-        background-image: url(../../assets/images/tk.jpg);
+        background-image: url(../../assets/images/girl1.jpg);
         border-radius: $small;
       }
 
@@ -91,7 +95,7 @@ export default {
 
       .info .top {
         height: 2.5rem;
-        background-color: rgb(20, 46, 129);
+        background-color: rgb(51, 129, 20);
         border-radius: $small;
         margin-left: auto;
         display: grid;
@@ -102,8 +106,8 @@ export default {
 
         .play-icon {
           margin: 0 0 0 $small;
-          height: 1.5rem;
-          width: 1.5rem;
+          height: 1.2rem;
+          width: 1.2rem;
           background-image: url(../../assets/icons/play.svg);
           background-size: contain;
           background-repeat: no-repeat;
@@ -116,7 +120,7 @@ export default {
         }
 
         &:hover {
-          background-color: rgb(31, 68, 150);
+          background-color: rgb(0, 134, 89);
           transition: all 0.2s ease-in-out;
 
           .play-icon {
@@ -129,6 +133,25 @@ export default {
           transform: scale(0.95);
           transition: all 0.1s ease-in-out;
         }
+      }
+      &:first-child {
+        background-color: rgb(177, 116, 2);
+
+        .image {
+          background-image: url(../../assets/images/girl2.jpg);
+        }
+      }
+
+      &:nth-child(2){
+        background-color: rgb(0, 74, 117);
+
+        .image {
+          background-image: url(../../assets/images/girl3.jpg);
+        }
+      }
+
+      &:nth-child(3){
+        background-color: rgb(161, 106, 106);
       }
     }
   }

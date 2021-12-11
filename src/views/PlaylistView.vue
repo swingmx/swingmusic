@@ -14,7 +14,7 @@
 
 <script>
 import Header from "@/components/PlaylistView/Header.vue";
-import SongList from "@/components/FolderView/SongList.vue";
+import SongList from "@/components/PlaylistView/SongList.vue";
 import FeaturedArtists from "@/components/PlaylistView/FeaturedArtists.vue";
 
 export default {
@@ -46,8 +46,6 @@ export default {
 .p-bg .scrollable {
   height: 100%;
   border-radius: $small;
-  overflow-y: auto;
-  padding-right: $small;
 }
 
 .p-bg .f-artists {

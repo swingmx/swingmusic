@@ -21,7 +21,5 @@ export default {
 .a-container {
   height: 100%;
   border-radius: $small;
-  // background-color: $card-dark;
-  // padding: $small;
 }
 </style>
