@@ -175,3 +175,49 @@ a {
 ::-webkit-scrollbar-thumb:hover {
   background: rgb(163, 163, 163);
 }
+
+
+@-webkit-keyframes similarAlbums {
+  0% {
+    background-position: 0% 38%;
+  }
+  50% {
+    background-position: 100% 63%;
+  }
+  100% {
+    background-position: 0% 38%;
+  }
+}
+@-moz-keyframes similarAlbums {
+  0% {
+    background-position: 0% 38%;
+  }
+  50% {
+    background-position: 100% 63%;
+  }
+  100% {
+    background-position: 0% 38%;
+  }
+}
+@-o-keyframes similarAlbums {
+  0% {
+    background-position: 0% 38%;
+  }
+  50% {
+    background-position: 100% 63%;
+  }
+  100% {
+    background-position: 0% 38%;
+  }
+}
+@keyframes similarAlbums {
+  0% {
+    background-position: 0% 38%;
+  }
+  50% {
+    background-position: 100% 63%;
+  }
+  100% {
+    background-position: 0% 38%;
+  }
+}

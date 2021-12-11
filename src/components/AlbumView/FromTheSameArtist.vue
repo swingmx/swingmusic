@@ -1,5 +1,5 @@
 <template>
-  <div class="f-artists">
+  <div class="f-a-artists">
     <div class="xcontrols">
       <div class="prev" @click="scrollLeftX"></div>
       <div class="next" @click="scrollRightX"></div>
@@ -8,12 +8,12 @@
       <div class="artist c1">
         <div class="blur"></div>
         <div class="s2"></div>
-        <p>Featured Artists</p>
+        <p>From The Same Artists</p>
       </div>
-      <div class="artist" v-for="artist in artists" :key="artist">
+      <div class="artist" v-for="album in albums" :key="album">
         <div>
-          <div class="artist-image image"></div>
-          <p class="artist-name ellipsis">{{ artist }}</p>
+          <div class="artist-image rounded"></div>
+          <p class="artist-name ellipsis">{{ album }}</p>
           <div class="a-circle"></div>
         </div>
       </div>
@@ -25,7 +25,7 @@ import { ref } from "@vue/reactivity";
 
 export default {
   setup() {
-    const artists = [
+    const albums = [
       "Michael John Montgomery",
       "2",
       "3",
@@ -72,7 +72,7 @@ export default {
     };
 
     return {
-      artists,
+      albums,
       artists_dom,
       say,
       scrollLeftX,
@@ -83,7 +83,7 @@ export default {
 </script>
 
 <style lang="scss">
-.f-artists {
+.f-a-artists {
   position: relative;
   height: 12em;
   width: calc(100%);
@@ -93,7 +93,7 @@ export default {
   user-select: none;
 }
 
-.f-artists .xcontrols {
+.f-a-artists .xcontrols {
   z-index: 1;
   width: 5rem;
   height: 2rem;
@@ -143,7 +143,7 @@ export default {
   }
 }
 
-.f-artists .artists {
+.f-a-artists .artists {
   position: absolute;
   bottom: 1em;
   width: calc(100% - 1em);
@@ -158,16 +158,16 @@ export default {
   }
 }
 
-.f-artists .artist {
+.f-a-artists .artist {
   flex: 0 0 auto;
   overflow: hidden;
   position: relative;
   margin-left: $smaller;
   margin-right: $smaller;
   width: 9em;
-  height: 9em;
+  height: 10em;
   border-radius: $small;
-  background-color: #fd5c63;
+  background-color: #210368;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -178,12 +178,8 @@ export default {
     width: 7em;
     height: 7em;
     margin-left: 0.5em;
-    border-radius: 50%;
     margin-bottom: $small;
-    background: url(../../assets/images/girl1.jpg);
-    background-size: cover;
-    background-repeat: no-repeat;
-    background-position: center;
+    background: no-repeat center/cover url(../../assets/images/girl4.jpg);
   }
 
   .artist-name {
@@ -198,17 +194,25 @@ export default {
   }
 }
 
-.f-artists .c1 {
+.f-a-artists .c1 {
   position: relative;
   background: rgb(145, 42, 56);
   width: 15em;
-  background-image: url(../../assets/images/gradient1.gif);
   overflow: hidden;
   margin-left: -0.1rem;
 
+  background: linear-gradient(239deg, #704bca, #d77422, #140059, #9cb0c3);
+  background-size: 800% 800%;
+
+  -webkit-animation: similarAlbums 29s ease infinite;
+  -moz-animation: similarAlbums 29s ease infinite;
+  -o-animation: similarAlbums 29s ease infinite;
+  animation: similarAlbums 29s ease infinite;
+
+
   &:hover > .s2 {
-    background: rgba(53, 53, 146, 0.8);
     transition: all 0.5s ease;
+    background: rgba(53, 53, 146, 0.8);
     width: 12em;
     height: 12em;
   }
@@ -236,8 +240,9 @@ export default {
 
   .s2 {
     position: absolute;
-    left: -2em;
-    bottom: -4em;
+    display: n;
+    right: -3em;
+    bottom: -3em;
     width: 10em;
     height: 10em;
     background: rgba(53, 53, 146, 0.445);

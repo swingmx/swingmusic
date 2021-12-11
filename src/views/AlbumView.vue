@@ -1,5 +1,5 @@
 <template>
-  <div class="al-view">
+  <div class="al-view rounded">
     <div class="header">
       <Header />
     </div>
@@ -9,17 +9,26 @@
     </div>
     <div class="separator" id="av-sep"></div>
     <FeaturedArtists />
+    <div class="separator" id="av-sep"></div>
+    <AlbumBio />
+    <div class="separator" id="av-sep"></div>
+    <FromTheSameArtist/>
   </div>
 </template>
 
 <script>
 import Header from "../components/AlbumView/Header.vue";
+import AlbumBio from "../components/AlbumView/AlbumBio.vue";
+import FromTheSameArtist from "../components/AlbumView/FromTheSameArtist.vue";
+
 import SongList from "../components/PlaylistView/SongList.vue";
 import FeaturedArtists from "../components/PlaylistView/FeaturedArtists.vue";
 
 export default {
   components: {
     Header,
+    AlbumBio,
+    FromTheSameArtist,
     SongList,
     FeaturedArtists,
   },
@@ -30,12 +39,6 @@ export default {
 .al-view {
   height: 100%;
   overflow: auto;
-
-  .header {
-    position: sticky;
-    top: 0;
-    z-index: 60;
-  }
 
   &::-webkit-scrollbar {
     display: none;
