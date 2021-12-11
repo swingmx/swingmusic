@@ -2,7 +2,10 @@ import { createRouter, createWebHistory } from "vue-router";
 import Home from "../views/Home.vue";
 import FolderView from "../views/FolderView.vue";
 import PlaylistView from "../views/PlaylistView.vue";
+
 import AlbumsExplorer from "../views/AlbumsExplorer.vue";
+import AlbumView from "../views/AlbumView.vue";
+
 import ArtistsExplorer from "../views/ArtistsExplorer.vue";
 
 const routes = [
@@ -25,6 +28,11 @@ const routes = [
     path: "/albums",
     name: "AlbumsExplorer",
     component: AlbumsExplorer,
+  },
+  {
+    path: "/albums/:id",
+    name: "AlbumView",
+    component: AlbumView,
   },
   {
     path: "/artists",
