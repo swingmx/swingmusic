@@ -86,7 +86,7 @@ export default {
 .f-artists {
   position: relative;
   height: 12em;
-  width: calc(100% - 1em);
+  width: calc(100%);
   background-color: #1f1e1d;
   padding: $small;
   border-radius: $small;

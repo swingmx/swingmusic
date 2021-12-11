@@ -1,7 +1,7 @@
 <template>
-  <div class="folder">
-    <div class="table rounded" ref="songtitle">
-      <table class="rounded">
+  <div class="folder" id="p-table">
+    <div class="table rounded"  ref="songtitle">
+      <table>
         <tr>
           <th>Track</th>
           <th>Artist</th>
@@ -73,71 +73,22 @@ export default {
 </script>
 
 <style lang="scss">
-.table {
-  width: 100%;
-  height: calc(100%);
-  background: transparent;
-  overflow-y: auto;
+#p-table {
+  height: calc(100% - 0rem) !important;
+  overflow: hidden;
+  padding-bottom: 0rem;
 
-  &::-webkit-scrollbar {
-    display: none;
+  table {    
+    &::-webkit-scrollbar {
+      display: none;
+    }
+
+    th {
+      position: sticky;
+      background-color: rgb(58, 57, 57);
+      top: 0;
+      z-index: 5;
+    }
   }
-}
-
-.folder .table table {
-  border-collapse: collapse;
-  width: 100%;
-  text-transform: capitalize;
-  position: relative;
-}
-
-.folder .table table td .album-art {
-  width: 3rem;
-  height: 3rem;
-  margin-right: 1rem;
-  background-color: #ccc;
-  background-image: url(../../assets/images/weed.jpg);
-}
-
-.folder .table .flex {
-  position: relative;
-  align-items: center;
-}
-
-.folder .table .flex > div > span {
-  position: absolute;
-  bottom: 1.5rem;
-  width: calc(100% - 6rem);
-}
-
-td,
-th {
-  text-align: left;
-  padding: 8px;
-}
-
-th {
-  height: 3rem;
-}
-tr:nth-child(even) {
-  background-color: rgba(29, 29, 29, 0.767);
-}
-tr:nth-child(odd) {
-  background-color: rgba(56, 56, 56, 0.363);
-}
-
-th {
-  text-transform: uppercase;
-  font-weight: normal;
-}
-
-.folder {
-  padding-bottom: 1rem;
-}
-
-td .artist {
-  color: #b1b1b1fd;
-  font-weight: lighter;
-  margin-right: 0.5rem;
 }
 </style>

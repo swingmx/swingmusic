@@ -48,9 +48,7 @@ export default {
   border-radius: $small;
 }
 
-.p-bg .f-artists {
-  position: absolute;
-  bottom: 0;
-  margin-top: 1em;
+.p-bg .f-artists-p {
+  margin-top: $small;
 }
 </style>
