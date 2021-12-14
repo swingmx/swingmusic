@@ -96,7 +96,7 @@ export default {
   height: 3rem;
   margin-right: 1rem;
   background-color: #ccc;
-  background-image: url(../../assets/images/weed.jpg);
+  background-image: url(../../assets/images/jw.jpeg);
 }
 
 .folder .table .flex {

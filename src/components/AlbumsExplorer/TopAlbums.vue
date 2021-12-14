@@ -2,7 +2,12 @@
   <div class="top-albums">
     <div class="heading">TOP ALBUMS</div>
     <div class="items">
-      <div class="item rounded" v-for="album in albums" :key="album">
+      <router-link
+        :to="{ path: '/albums/1' }"
+        class="item rounded"
+        v-for="album in albums"
+        :key="album"
+      >
         <div class="image rounded"></div>
         <div class="info">
           <div class="name ellip">{{ album.title }}</div>
@@ -13,7 +18,7 @@
             <div class="text ellip">{{ album.top_track }}</div>
           </div>
         </div>
-      </div>
+      </router-link>
     </div>
   </div>
 </template>
@@ -64,8 +69,7 @@ export default {
 
     .item {
       height: 10rem;
-      width: 100%;
-      max-width: 25rem;
+      width: clamp(10rem, 100%, 25rem);
       background-color: rgb(7, 6, 6);
       display: grid;
       align-items: center;
@@ -75,7 +79,7 @@ export default {
       transition: all 0.2s ease-in-out;
 
       &:hover {
-        transform: translateY(-.5em);
+        transform: translateY(-0.5em);
       }
 
       .image {
@@ -144,7 +148,7 @@ export default {
         }
       }
 
-      &:nth-child(2){
+      &:nth-child(2) {
         background-color: rgb(0, 74, 117);
 
         .image {
@@ -152,7 +156,7 @@ export default {
         }
       }
 
-      &:nth-child(3){
+      &:nth-child(3) {
         background-color: rgb(161, 106, 106);
       }
     }

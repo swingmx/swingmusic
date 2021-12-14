@@ -7,12 +7,17 @@
       </div>
     </div>
     <div class="all-albums">
-      <div class="item rounded" v-for="album in albums" :key="album">
+      <router-link
+        :to="{ path: '/albums/1' }"
+        class="item rounded"
+        v-for="album in albums"
+        :key="album"
+      >
         <div class="play"></div>
         <div class="album-art image rounded"></div>
         <div class="name ellip">{{ album.title }}</div>
         <div class="artist ellip">{{ album.artist }}</div>
-      </div>
+      </router-link>
     </div>
   </div>
 </template>

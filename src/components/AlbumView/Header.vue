@@ -43,7 +43,7 @@ export default {
 <style lang="scss">
 .a-header {
   height: 14rem;
-  background: rgb(228, 151, 151);
+  background: rgb(0, 0, 0);
   display: flex;
   align-items: center;
   padding: 0 1rem 0 1rem;
@@ -51,7 +51,7 @@ export default {
   .art {
     width: 12rem;
     height: 12rem;
-    background: no-repeat center/cover url(../../assets/images/girl1.jpg);
+    background: no-repeat center/cover url(../../assets/images/jw.jpeg);
     margin-right: 1rem;
   }
 

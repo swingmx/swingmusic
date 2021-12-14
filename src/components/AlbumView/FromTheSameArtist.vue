@@ -85,7 +85,7 @@ export default {
 <style lang="scss">
 .f-a-artists {
   position: relative;
-  height: 12em;
+  height: 13rem;
   width: calc(100%);
   background-color: #1f1e1d;
   padding: $small;
@@ -167,7 +167,7 @@ export default {
   width: 9em;
   height: 10em;
   border-radius: $small;
-  background-color: #210368;
+  background-color: #064e92;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -201,7 +201,7 @@ export default {
   overflow: hidden;
   margin-left: -0.1rem;
 
-  background: linear-gradient(239deg, #704bca, #d77422, #140059, #9cb0c3);
+  background: linear-gradient(239deg, #704bca, #d77422, #064e92, #9cb0c3);
   background-size: 800% 800%;
 
   -webkit-animation: similarAlbums 29s ease infinite;
