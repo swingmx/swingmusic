@@ -12,11 +12,13 @@
     <div class="separator" id="av-sep"></div>
     <AlbumBio />
     <div class="separator" id="av-sep"></div>
-    <FromTheSameArtist/>
+    <FromTheSameArtist />
   </div>
 </template>
 
 <script>
+// import { useRoute } from 'vue-router'
+
 import Header from "../components/AlbumView/Header.vue";
 import AlbumBio from "../components/AlbumView/AlbumBio.vue";
 import FromTheSameArtist from "../components/AlbumView/FromTheSameArtist.vue";
@@ -32,6 +34,7 @@ export default {
     SongList,
     FeaturedArtists,
   },
+  setup() {},
 };
 </script>
 

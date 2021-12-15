@@ -1,29 +1,32 @@
 <template>
   <div class="f-container rounded">
-    <p>folders in this directory</p>
-    <div id="f-items">
-      <router-link :to="{ path: '/' }" v-for="folder in folders" :key="folder">
+    <p v-if="folders.length">folders in this directory</p>
+    <div id="f-items" v-if="folders.length">
+      <router-link
+        :to="{ name: 'FolderView', params: { path: folder.path } }"
+        v-for="folder in folders"
+        :key="folder"
+      >
         <div class="f-item rounded">
-          <span class="f-item-text">{{ folder.name }}</span>
+          <div class="f-item-text ellip">{{ folder.name }}</div>
+          <div class="f-item-count">{{ folder.count }} tracks</div>
         </div>
       </router-link>
+    </div>
+    <div v-else>
+      <p>No folders in this directory</p>
     </div>
   </div>
 </template>
 
 <script>
-import Folders from "../../data/folders.js";
-
 export default {
-  setup() {
-    const folders = Folders.folders;
-
-    return { folders };
-  },
+  props: ["folders"],
+  setup() {},
 };
 </script>
 
-<style>
+<style lang="scss">
 .f-container {
   margin-bottom: 1rem;
   background: rgba(31, 30, 30, 0.521);
@@ -49,7 +52,6 @@ export default {
   min-width: 14.4rem;
   min-height: 5rem;
   display: flex;
-  justify-content: center;
   align-items: center;
   position: relative;
   background-image: url(../../assets/icons/folder.svg);
@@ -57,21 +59,23 @@ export default {
   background-position: 1rem;
   background-size: 10% 100%;
   background-color: rgba(80, 80, 80, 0.247);
+
+  .f-item-count {
+    position: absolute;
+    top: 70%;
+    left: 3rem;
+    font-size: 0.8rem;
+    color: rgba(255, 255, 255, 0.5);
+  }
+
+  .f-item-text {
+    position: absolute;
+    left: 3rem;
+    text-align: left;
+  }
 }
 
 .f-container .f-item:hover {
   background-color: rgba(0, 0, 0, 0.527);
-}
-
-.f-container .f-item-text {
-  position: absolute;
-  left: 3rem;
-  text-align: left;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  display: -webkit-box;
-  -webkit-line-clamp: 1;
-  line-clamp: 1;
-  -webkit-box-orient: vertical;
 }
 </style>

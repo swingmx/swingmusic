@@ -5,15 +5,20 @@
     </div>
     <div id="scrollable">
       <SongList />
-      <FolderList />
+      <FolderList :folders="folders" />
     </div>
   </div>
 </template>
 
 <script>
+import { ref } from "@vue/reactivity";
+import { useRoute } from 'vue-router'
+
 import SongList from "@/components/FolderView/SongList.vue";
 import FolderList from "@/components/FolderView/FolderList.vue";
 import SearchBox from "@/components/FolderView/SearchBox.vue";
+
+import getData from "../composables/getFiles.js";
 
 export default {
   components: {
@@ -22,8 +27,22 @@ export default {
     SearchBox,
   },
   setup() {
+    const route = useRoute();
+
+    const path = route.params.path;
+
+    console.log(path);
+
+    const songs = ref([]);
+    const folders = ref([]);
+
+    getData("/Music").then((data) => {
+      songs.value = data.songs.value;
+      folders.value = data.folders.value;
+    });
     return {
-      //
+      songs,
+      folders,
     };
   },
 };
@@ -43,7 +62,7 @@ export default {
   position: absolute;
   height: min-content;
   width: calc(100% - 2rem);
-  top: .5rem;
+  top: 0.5rem;
 }
 
 #scrollable {

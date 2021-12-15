@@ -45,7 +45,7 @@
       </div>
     </router-link>
     <hr />
-    <router-link :to="{ name: 'FolderView' }">
+    <router-link :to="{ name: 'FolderView', params: { path: ' ' } }">
       <div class="nav-button" id="folders-button">
         <div class="in">
           <div class="nav-icon image" id="folders-icon"></div>
@@ -54,7 +54,7 @@
       </div>
     </router-link>
     <hr />
-    <router-link :to="{ name: 'FolderView' }">
+    <router-link :to="{ name: 'FolderView', params: { path: ' ' } }">
       <div class="nav-button" id="folders-button">
         <div class="in">
           <div class="nav-icon image" id="settings-icon"></div>
@@ -104,7 +104,7 @@ export default {
 .collapsed .nav-button {
   font-size: smaller;
   margin-top: 5px;
-  transition: all .2s ease-in-out;
+  transition: all 0.2s ease-in-out;
 }
 
 .side-nav-container .nav-button:hover {
