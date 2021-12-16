@@ -1,5 +1,5 @@
 <template>
-  <div class="f-container rounded">
+  <div class="f-container rounded" :class="{ info: !folders.length }">
     <p v-if="folders.length">folders in this directory</p>
     <div id="f-items" v-if="folders.length">
       <router-link
@@ -23,7 +23,7 @@
 export default {
   props: ["folders"],
   setup() {
-    console.log('props.folders')
+    console.log("props.folders");
   },
 };
 </script>
@@ -33,6 +33,14 @@ export default {
   margin-bottom: 1rem;
   background: rgba(31, 30, 30, 0.521);
   padding: 1rem;
+}
+
+.info {
+  background-image: url(../../assets/icons/info.svg);
+  background-repeat: no-repeat;
+  background-position: 1rem;
+  background-size: 2rem 2rem;
+  padding-left: 4rem;
 }
 
 #f-items {

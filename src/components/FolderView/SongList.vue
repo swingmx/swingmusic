@@ -17,13 +17,18 @@
               }"
             ></div>
             <div>
-              <span class="ellipsis">{{ song.title }}</span>
+              <span class="ellip">{{ song.title }}</span>
             </div>
           </td>
           <td :style="{ width: songTitleWidth + 'px' }">
-            <span class="artist" v-for="artist in song.artists" :key="artist">{{
-              artist
-            }}</span>
+            <div class="ellip">
+              <span
+                class="artist"
+                v-for="artist in song.artists"
+                :key="artist"
+                >{{ artist }}</span
+              >
+            </div>
           </td>
           <td :style="{ width: songTitleWidth + 'px' }">{{ song.album }}</td>
           <td
@@ -146,7 +151,6 @@ th {
 }
 
 td .artist {
-  color: #b1b1b1fd;
   font-weight: lighter;
   margin-right: 0.5rem;
 }
