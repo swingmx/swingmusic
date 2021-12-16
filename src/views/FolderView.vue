@@ -1,11 +1,11 @@
 <template>
   <div id="f-view-parent" class="rounded">
     <div class="fixed">
-      <SearchBox />
+      <SearchBox :path="path"/>
     </div>
     <div id="scrollable">
-      <SongList :songs="songs" />
       <FolderList :folders="folders" />
+      <SongList :songs="songs" />
     </div>
   </div>
 </template>
@@ -36,6 +36,7 @@ export default {
 
     const getPathFolders = (path) => {
       getData(path).then((data) => {
+        document.getElementById('scrollable').scrollTop = 0;
         songs.value = data.songs.value;
         folders.value = data.folders.value;
       });
@@ -44,13 +45,14 @@ export default {
     getPathFolders(path.value);
 
     watch(route, (new_route) => {
-      const path = ref(new_route.params.path);
-      getPathFolders(path.value);
+      path.value = new_route.params.path;
+      getPathFolders(encodeURI(path.value));
     });
 
     return {
       songs,
       folders,
+      path
     };
   },
 };
@@ -76,6 +78,6 @@ export default {
 #scrollable {
   overflow-y: scroll;
   height: 100%;
-  padding-right: 1rem;
+  padding: $small 1rem 0 0;
 }
 </style>

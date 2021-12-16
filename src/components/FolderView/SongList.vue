@@ -12,7 +12,9 @@
           <td :style="{ width: songTitleWidth + 'px' }" class="flex">
             <div
               class="album-art rounded image"
-              :style='{ backgroundImage: `url("${image_path + song.image}")` }'
+              :style="{
+                backgroundImage: `url(&quot;${image_path + song.image}&quot;)`,
+              }"
             ></div>
             <div>
               <span class="ellipsis">{{ song.title }}</span>
@@ -28,7 +30,7 @@
             :style="{ width: songTitleWidth + 'px' }"
             v-if="songTitleWidth > minWidth"
           >
-            {{ song.length/60 }}
+            {{ `${Math.trunc(song.length / 60)} min` }}
           </td>
         </tr>
       </table>
@@ -45,6 +47,7 @@ export default {
   props: ["songs"],
   setup() {
     const songtitle = ref(null);
+    console.log(songtitle);
     const songTitleWidth = ref(null);
     const image_path = "http://127.0.0.1:8900/images/thumbnails/";
 
@@ -79,7 +82,7 @@ export default {
 .table {
   width: 100%;
   height: calc(100%);
-  background: transparent;
+  background-color: rgba(56, 56, 56, 0.363);
   overflow-y: auto;
 
   &::-webkit-scrollbar {
@@ -89,17 +92,24 @@ export default {
 
 .folder .table table {
   border-collapse: collapse;
-  width: 100%;
   text-transform: capitalize;
   position: relative;
+  margin: 1rem;
+
+  tr {
+    &:hover {
+      td {
+        background-color: rgba(255, 174, 0, 0.534);
+      }
+    }
+  }
 }
 
 .folder .table table td .album-art {
   width: 3rem;
   height: 3rem;
   margin-right: 1rem;
-  // background-color: rgb(194, 67, 67);
-  // background-image: url(../../assets/images/jw.jpeg);
+  background-image: url(../../assets/icons/file.svg);
 }
 
 .folder .table .flex {
@@ -112,21 +122,18 @@ export default {
   bottom: 1.5rem;
   width: calc(100% - 6rem);
 }
-
 td,
 th {
-  text-align: left;
   padding: 8px;
+  text-align: left;
 }
 
 th {
   height: 3rem;
 }
+
 tr:nth-child(even) {
   background-color: rgba(29, 29, 29, 0.767);
-}
-tr:nth-child(odd) {
-  background-color: rgba(56, 56, 56, 0.363);
 }
 
 th {

@@ -1,7 +1,9 @@
 <template>
   <div class="folder-top flex">
     <div class="fname">
-      <span>Oldies Volume 1</span>
+      <div>
+        <div class="ellip">{{ path.split('/').splice(-1) + "" }}</div>
+      </div>
     </div>
     <div class="fsearch">
       <div>
@@ -12,10 +14,12 @@
 </template>
 
 <script>
-export default {};
+export default {
+  props: ["path"]
+};
 </script>
 
-<style>
+<style lang="scss">
 .folder-top {
   padding-bottom: 1rem;
   margin-bottom: 1rem;
@@ -28,6 +32,16 @@ export default {};
   text-transform: uppercase;
   display: flex;
   align-items: center;
+  // border: solid;
+  // height: 4rem;
+
+  // .name {
+  //   font-size: large;
+  // }
+
+  // .path {
+  //   font-size: $small;
+  // }
 }
 
 .folder-top .fsearch {
@@ -44,7 +58,7 @@ export default {};
 .folder-top .fsearch input {
   width: 30rem;
   border: none;
-  border-radius: .5rem;
+  border-radius: 0.5rem;
   padding-left: 1rem;
   background-color: #4645456c;
   color: rgba(255, 255, 255, 0.521);
