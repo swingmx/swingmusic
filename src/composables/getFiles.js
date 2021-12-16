@@ -14,7 +14,7 @@ const getData = async (path) => {
   }
 
   const data = await res.json();
-  songs.value = data.songs;
+  songs.value = data.files;
   folders.value = data.folders;
 
   return { songs, folders };

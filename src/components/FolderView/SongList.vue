@@ -1,6 +1,6 @@
 <template>
   <div class="folder">
-    <div class="table rounded" ref="songtitle">
+    <div class="table rounded" ref="songtitle" v-if="songs.length">
       <table class="rounded">
         <tr>
           <th>Track</th>
@@ -10,7 +10,10 @@
         </tr>
         <tr v-for="song in songs" :key="song">
           <td :style="{ width: songTitleWidth + 'px' }" class="flex">
-            <div class="album-art rounded image"></div>
+            <div
+              class="album-art rounded image"
+              :style='{ backgroundImage: `url("${image_path + song.image}")` }'
+            ></div>
             <div>
               <span class="ellipsis">{{ song.title }}</span>
             </div>
@@ -25,27 +28,27 @@
             :style="{ width: songTitleWidth + 'px' }"
             v-if="songTitleWidth > minWidth"
           >
-            {{ song.duration }}
+            {{ song.length/60 }}
           </td>
         </tr>
       </table>
     </div>
+    <div v-else ref="songtitle"></div>
   </div>
 </template>
 
 <script>
 import { ref } from "@vue/reactivity";
 import { onMounted, onUnmounted } from "@vue/runtime-core";
-import Songs from "../../data/songs.js";
 
 export default {
+  props: ["songs"],
   setup() {
     const songtitle = ref(null);
     const songTitleWidth = ref(null);
+    const image_path = "http://127.0.0.1:8900/images/thumbnails/";
 
     const minWidth = ref(300);
-
-    const songs = Songs.songs;
 
     const resizeSongTitleWidth = () => {
       let a = songtitle.value.clientWidth;
@@ -55,7 +58,7 @@ export default {
 
     onMounted(() => {
       resizeSongTitleWidth();
-      
+
       window.addEventListener("resize", () => {
         resizeSongTitleWidth();
       });
@@ -67,7 +70,7 @@ export default {
       });
     });
 
-    return { songtitle, songTitleWidth, songs, minWidth };
+    return { songtitle, image_path, songTitleWidth, minWidth };
   },
 };
 </script>
@@ -95,8 +98,8 @@ export default {
   width: 3rem;
   height: 3rem;
   margin-right: 1rem;
-  background-color: #ccc;
-  background-image: url(../../assets/images/jw.jpeg);
+  // background-color: rgb(194, 67, 67);
+  // background-image: url(../../assets/images/jw.jpeg);
 }
 
 .folder .table .flex {

@@ -22,7 +22,9 @@
 <script>
 export default {
   props: ["folders"],
-  setup() {},
+  setup() {
+    console.log('props.folders')
+  },
 };
 </script>
 
