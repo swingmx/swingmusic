@@ -1,12 +1,19 @@
 import { ref } from "@vue/reactivity";
 
-let home_url = "http://127.0.0.1:9876";
+let folders_uri = "http://127.0.0.1:9876";
 
-const getData = async (path) => {
+const getData = async (path, last_id) => {
+  let url;
   const songs = ref(null);
   const folders = ref(null);
 
-  const res = await fetch(`${home_url}/?f=${path}`);
+  if (last_id) {
+    url = `${folders_uri}/?f=${path}&last_id=${last_id}`;
+  } else {
+    url = url = `${folders_uri}/?f=${path}`;
+  }
+
+  const res = await fetch(url);
 
   if (!res.ok) {
     const message = `An erro has occured: ${res.status}`;
@@ -14,6 +21,7 @@ const getData = async (path) => {
   }
 
   const data = await res.json();
+
   songs.value = data.files;
   folders.value = data.folders;
 

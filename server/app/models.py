@@ -45,12 +45,13 @@ class AllSongs(Mongo):
 
     # def drop_db(self):
     #     self.collection.drop()
-    
+
     def get_song_by_id(self, file_id):
         return self.collection.find_one({'_id': ObjectId(file_id)})
 
     def insert_song(self, song_obj):
-        self.collection.update({'filepath': song_obj['filepath']}, song_obj, upsert=True)
+        self.collection.update(
+            {'filepath': song_obj['filepath']}, song_obj, upsert=True)
 
     def find_song_by_title(self, query):
         self.collection.create_index([('title', pymongo.TEXT)])
@@ -62,8 +63,12 @@ class AllSongs(Mongo):
     def get_all_songs(self):
         return self.collection.find()
 
-    def find_songs_by_folder(self, query):
-        return self.collection.find({'folder': query})
+    def find_songs_by_folder(self, query, last_id=None):
+        limit = 18
+        if last_id is None:
+            return self.collection.find({'folder': query}).limit(limit)
+        else:
+            return self.collection.find({'folder': query, '_id': {'$gt': ObjectId(last_id)}}).limit(limit)
 
     def find_songs_by_artist(self, query):
         return self.collection.find({'artists': {'$regex': query, '$options': 'i'}})

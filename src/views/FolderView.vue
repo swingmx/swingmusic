@@ -1,9 +1,9 @@
 <template>
   <div id="f-view-parent" class="rounded">
     <div class="fixed">
-      <SearchBox :path="path"/>
+      <SearchBox :path="path" />
     </div>
-    <div id="scrollable">
+    <div id="scrollable" ref="scrollable">
       <FolderList :folders="folders" />
       <SongList :songs="songs" />
     </div>
@@ -19,7 +19,7 @@ import FolderList from "@/components/FolderView/FolderList.vue";
 import SearchBox from "@/components/FolderView/SearchBox.vue";
 
 import getData from "../composables/getFiles.js";
-import { watch } from "@vue/runtime-core";
+import { onMounted, watch } from "@vue/runtime-core";
 
 export default {
   components: {
@@ -34,25 +34,58 @@ export default {
     const songs = ref([]);
     const folders = ref([]);
 
-    const getPathFolders = (path) => {
-      getData(path).then((data) => {
-        document.getElementById('scrollable').scrollTop = 0;
-        songs.value = data.songs.value;
-        folders.value = data.folders.value;
+    const scrollable = ref(null);
+
+    const last_song_id = ref(null);
+    const last_page = ref([]);
+
+    onMounted(() => {
+      const getPathFolders = (path, last_id) => {
+        getData(path, last_id).then((data) => {
+          scrollable.value.scrollTop = 0;
+
+          songs.value = data.songs.value;
+          last_page.value = songs.value;
+
+          if (songs.value.length) {
+            last_song_id.value = songs.value.slice(-1)[0]._id.$oid;
+          }
+
+          folders.value = data.folders.value;
+        });
+      };
+
+      getPathFolders(path.value);
+
+      watch(route, (new_route) => {
+        path.value = new_route.params.path;
+        getPathFolders(encodeURI(path.value));
       });
-    };
 
-    getPathFolders(path.value);
+      scrollable.value.onscroll = () => {
+        let dom = scrollable.value;
 
-    watch(route, (new_route) => {
-      path.value = new_route.params.path;
-      getPathFolders(encodeURI(path.value));
+        let scrollY = dom.scrollHeight - dom.scrollTop;
+        let height = dom.offsetHeight;
+        let offset = height - scrollY;
+
+        if (offset == 0 || offset == 1) {
+          getData(path.value, last_song_id.value).then((data) => {
+            songs.value = songs.value.concat(data.songs.value);
+
+            if (songs.value.length) {
+              last_song_id.value = songs.value.slice(-1)[0]._id.$oid;
+            }
+          });
+        }
+      };
     });
 
     return {
       songs,
       folders,
-      path
+      path,
+      scrollable,
     };
   },
 };
@@ -78,6 +111,9 @@ export default {
 #scrollable {
   overflow-y: scroll;
   height: 100%;
-  padding: $small 1rem 0 0;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
 }
 </style>

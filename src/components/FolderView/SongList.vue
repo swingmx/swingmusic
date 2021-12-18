@@ -1,7 +1,7 @@
 <template>
   <div class="folder">
     <div class="table rounded" ref="songtitle" v-if="songs.length">
-      <table class="rounded">
+      <table>
         <tr>
           <th>Track</th>
           <th>Artist</th>
@@ -30,7 +30,7 @@
               >
             </div>
           </td>
-          <td :style="{ width: songTitleWidth + 'px' }">{{ song.album }}</td>
+          <td :style="{ width: songTitleWidth + 'px' }"> <div class="ellip">{{ song.album }}</div></td>
           <td
             :style="{ width: songTitleWidth + 'px' }"
             v-if="songTitleWidth > minWidth"
@@ -52,7 +52,6 @@ export default {
   props: ["songs"],
   setup() {
     const songtitle = ref(null);
-    console.log(songtitle);
     const songTitleWidth = ref(null);
     const image_path = "http://127.0.0.1:8900/images/thumbnails/";
 
@@ -86,7 +85,7 @@ export default {
 <style lang="scss">
 .table {
   width: 100%;
-  height: calc(100%);
+  height: 100%;
   background-color: rgba(56, 56, 56, 0.363);
   overflow-y: auto;
 

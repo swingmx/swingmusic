@@ -46,18 +46,20 @@ def search_by_title():
     else:
         query = request.args.get('q')
 
+    all_songs = []
+
     songs = all_songs_instance.find_song_by_title(query)
-    all_songs = convert_to_json(songs)
+    all_songs.append(convert_to_json(songs))
 
-    albums = all_songs_instance.find_songs_by_album(query)
-    all_songs.append(convert_to_json(albums))
+    songs_by_albums = all_songs_instance.find_songs_by_album(query)
+    all_songs.append(convert_to_json(songs_by_albums))
 
-    artists = all_songs_instance.find_songs_by_artist(query)
-    all_songs.append(convert_to_json(artists))
+    songs_by_artists = all_songs_instance.find_songs_by_artist(query)
+    all_songs.append(convert_to_json(songs_by_artists))
 
-    songs = remove_duplicates(all_songs)
+    # songs = remove_duplicates(all_songs)
 
-    return {'songs': songs}
+    return {'songs': all_songs}
 
 
 @bp.route('/populate')
@@ -272,6 +274,7 @@ def getFolderTree():
     start = time.time()
 
     req_dir = request.args.get('f')
+    last_id = request.args.get('last_id')
 
     if req_dir is not None:
         requested_dir = home_dir + req_dir
@@ -298,7 +301,7 @@ def getFolderTree():
 
         if entry.is_file():
             if isValidFile(entry.name) == True:
-                songs_array = all_songs_instance.find_songs_by_folder(req_dir)
+                songs_array = all_songs_instance.find_songs_by_folder(req_dir, last_id)
                 songs = convert_to_json(songs_array)
                 for song in songs:
                     song['artists'] = song['artists'].split(', ')
