@@ -15,7 +15,7 @@ const routes = [
     component: Home,
   },
   {
-    path: "/folder:path",
+    path: "/folder/:path",
     name: "FolderView",
     component: FolderView,
   },

@@ -8,7 +8,7 @@
           <th>Album</th>
           <th v-if="songTitleWidth > minWidth">Duration</th>
         </tr>
-        <tr v-for="song in songs" :key="song">
+        <tr v-for="song in songs" :key="song" @click="playAudio(song.filepath)">
           <td :style="{ width: songTitleWidth + 'px' }" class="flex">
             <div
               class="album-art rounded image"
@@ -30,7 +30,9 @@
               >
             </div>
           </td>
-          <td :style="{ width: songTitleWidth + 'px' }"> <div class="ellip">{{ song.album }}</div></td>
+          <td :style="{ width: songTitleWidth + 'px' }">
+            <div class="ellip">{{ song.album }}</div>
+          </td>
           <td
             :style="{ width: songTitleWidth + 'px' }"
             v-if="songTitleWidth > minWidth"
@@ -47,6 +49,7 @@
 <script>
 import { ref } from "@vue/reactivity";
 import { onMounted, onUnmounted } from "@vue/runtime-core";
+import { playAudio } from "@/composables/playAudio.js";
 
 export default {
   props: ["songs"],
@@ -77,7 +80,7 @@ export default {
       });
     });
 
-    return { songtitle, image_path, songTitleWidth, minWidth };
+    return { songtitle, image_path, songTitleWidth, minWidth, playAudio };
   },
 };
 </script>

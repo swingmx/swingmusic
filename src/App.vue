@@ -4,7 +4,7 @@
     <div class="l-sidebar">
       <div id="logo-container">
         <div id="toggle" @click="toggleNav"></div>
-        <router-link :to="{ name: 'FolderView' }" v-if="!collapsed"
+        <router-link :to="{ name: 'Home' }" v-if="!collapsed"
           ><div class="logo"></div
         ></router-link>
       </div>

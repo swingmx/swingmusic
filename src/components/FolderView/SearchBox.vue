@@ -32,16 +32,6 @@ export default {
   text-transform: uppercase;
   display: flex;
   align-items: center;
-  // border: solid;
-  // height: 4rem;
-
-  // .name {
-  //   font-size: large;
-  // }
-
-  // .path {
-  //   font-size: $small;
-  // }
 }
 
 .folder-top .fsearch {

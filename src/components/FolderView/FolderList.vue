@@ -1,5 +1,5 @@
 <template>
-  <div class="f-container rounded" :class="{ info: !folders.length }">
+  <div class="f-container rounded" :class="{ no_f: !folders.length }">
     <p v-if="folders.length">folders in this directory</p>
     <div id="f-items" v-if="folders.length">
       <router-link
@@ -35,7 +35,7 @@ export default {
   padding: 1rem;
 }
 
-.info {
+.no_f {
   background-image: url(../../assets/icons/info.svg);
   background-repeat: no-repeat;
   background-position: 1rem;

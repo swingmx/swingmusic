@@ -45,7 +45,7 @@
       </div>
     </router-link>
     <hr />
-    <router-link :to="{ name: 'FolderView', params: { path: '/' } }">
+    <router-link :to="{ name: 'FolderView', params: { path: ' ' } }">
       <div class="nav-button" id="folders-button">
         <div class="in">
           <div class="nav-icon image" id="folders-icon"></div>
@@ -54,7 +54,7 @@
       </div>
     </router-link>
     <hr />
-    <router-link :to="{ name: 'FolderView', params: { path: '/' } }">
+    <router-link :to="{ name: 'FolderView', params: { path: ' ' } }">
       <div class="nav-button" id="folders-button">
         <div class="in">
           <div class="nav-icon image" id="settings-icon"></div>

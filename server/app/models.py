@@ -50,8 +50,9 @@ class AllSongs(Mongo):
         return self.collection.find_one({'_id': ObjectId(file_id)})
 
     def insert_song(self, song_obj):
-        self.collection.update(
-            {'filepath': song_obj['filepath']}, song_obj, upsert=True)
+        self.collection.update_one(
+            {'filepath': song_obj['filepath']}, { "$set": song_obj}, upsert=True)
+        # self.collection.insert_one(song_obj)
 
     def find_song_by_title(self, query):
         self.collection.create_index([('title', pymongo.TEXT)])

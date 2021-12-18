@@ -57,22 +57,31 @@ def search_by_title():
     songs_by_artists = all_songs_instance.find_songs_by_artist(query)
     all_songs.append(convert_to_json(songs_by_artists))
 
-    # songs = remove_duplicates(all_songs)
-
     return {'songs': all_songs}
 
 
 @bp.route('/populate')
 def populate():
-    sub_dirs, files = run_fast_scandir(home_dir, [".flac", ".mp3"])
+    '''
+    Populate the database with all songs in the music directory
+
+    checks if the song is in the database, if not, it adds it
+    also checks if the album art exists in the image path, if not tries to
+    extract it.
+    '''
+    files = run_fast_scandir(home_dir, [".flac", ".mp3"])[1]
 
     bar = Bar('Processing', max=len(files))
+
     for file in files:
         file_in_db_obj = all_songs_instance.find_song_by_path(file)
         song_obj = convert_one_to_json(file_in_db_obj)
 
         try:
             image = song_obj['image']
+
+            if not os.path.exists(os.path.join(app_dir, 'images', 'thumbnails', image)):
+                extract_thumb(file)
         except:
             image = None
 
@@ -82,48 +91,10 @@ def populate():
             except MutagenError:
                 pass
 
-        if image is not None and not os.path.exists(image):
-
-            extract_thumb(file)
-
         bar.next()
 
     bar.finish()
-
-    # dirs = []
-    # files = []
-
-    # for dir in sub_dirs:
-
-    #     files_in_dir = run_fast_scandir(dir, [".flac", ".mp3"])[1]
-
-    #     if len(files_in_dir) != 0:
-    #         dir_content = os.scandir(dir)
-
-    #         for entry in dir_content:
-    #             dirs = []
-    #             files = []
-
-    #             if entry.is_dir() and not entry.name.startswith('.'):
-    #                 print(dir)
-    #                 files_in_dir = run_fast_scandir(entry.path, [".flac", ".mp3"])[1]
-
-    #                 if len(files_in_dir) != 0:
-    #                     dir_data = {
-    #                         "name": entry.name,
-    #                         "count": len(files_in_dir),
-    #                         "path": entry.path.replace(home_dir, "")
-    #                     }
-
-    #                     dirs.append(dir_data)
-
-    #             if entry.is_file():
-    #                 if isValidFile(entry.name) == True:
-    #                     files.append(entry.path)
-
-    #             print(dirs)
-
-    # return {"info": ''}
+    return {'msg': 'updated everything'}
 
 
 @bp.route('/file/<file_id>')
@@ -151,7 +122,7 @@ def get_folder_artists():
         this_artists = song['artists'].split(', ')
 
         for artist in this_artists:
-            
+
             if artist not in artists:
                 artists.append(artist)
 
@@ -277,7 +248,8 @@ def getFolderTree():
     last_id = request.args.get('last_id')
 
     if req_dir is not None:
-        requested_dir = home_dir + req_dir
+        requested_dir = os.path.join(home_dir, req_dir)
+        print(requested_dir)
     else:
         requested_dir = home_dir
 
@@ -289,7 +261,7 @@ def getFolderTree():
     for entry in dir_content:
         if entry.is_dir() and not entry.name.startswith('.'):
             files_in_dir = run_fast_scandir(entry.path, [".flac", ".mp3"])[1]
-            
+
             if len(files_in_dir) != 0:
                 dir = {
                     "name": entry.name,
@@ -301,7 +273,8 @@ def getFolderTree():
 
         if entry.is_file():
             if isValidFile(entry.name) == True:
-                songs_array = all_songs_instance.find_songs_by_folder(req_dir, last_id)
+                songs_array = all_songs_instance.find_songs_by_folder(
+                    req_dir, last_id)
                 songs = convert_to_json(songs_array)
                 for song in songs:
                     song['artists'] = song['artists'].split(', ')
@@ -309,7 +282,7 @@ def getFolderTree():
                 files = songs
 
     for file in files:
-        del file['filepath']
+        file['filepath'] = file['filepath'].replace(home_dir, '')
 
     dir_content.close()
     end = time.time()

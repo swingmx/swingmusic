@@ -20,8 +20,8 @@ all_songs_instance = AllSongs()
 music_dir = os.environ.get("music_dir")
 music_dirs = os.environ.get("music_dirs")
 
-home_dir = os.path.expanduser('~')
-app_dir = home_dir + '/.shit'
+home_dir = os.path.expanduser('~') + "/"
+app_dir = home_dir + '/.musicx'
 
 
 PORT = os.environ.get("PORT")
@@ -47,10 +47,11 @@ def run_fast_scandir(dir, ext):
 
 
 def extract_thumb(path):
-    img_path = app_dir + "/images/thumbnails/" + path.split('/')[-1] + '.jpg'
+    webp_path = path.split('/')[-1] + '.webp'
+    img_path = app_dir + "/images/thumbnails/" + webp_path
 
     if os.path.exists(img_path):
-        return path.split('/')[-1] + '.jpg'
+        return webp_path
 
     if path.endswith('.flac'):
         audio = FLAC(path)
@@ -65,18 +66,27 @@ def extract_thumb(path):
         except IndexError:
             album_art = None
 
-    if album_art is not None:
-
+    if album_art is None:
+        return "null.webp"
+    else:
         img = Image.open(BytesIO(album_art))
 
         try:
-            img.save(img_path, 'JPEG')
+            small_img = img.resize((150, 150), Image.ANTIALIAS)
+            small_img.save(img_path, format="webp")
         except OSError:
             try:
-                img.convert('RGB'.save(img_path, 'JPEG'))
+                png = img.convert('RGB')
+                small_img = png.resize((150, 150), Image.ANTIALIAS)
+                small_img.save(img_path, format="webp")
+                print('{} :: was png'.format(
+                    img_path
+                ))
+
             except:
                 img_path = None
-        return path.split('/')[-1] + '.jpg'
+
+    return webp_path
 
 
 def getTags(full_path):
@@ -253,7 +263,7 @@ def getFolderContents(filepath, folder):
 
 def create_config_dir():
     home_dir = os.path.expanduser('~')
-    config_folder = home_dir + "/.shit"
+    config_folder = home_dir + app_dir
 
     dirs = ["", "/images", "/images/artists", "/images/thumbnails"]
 
