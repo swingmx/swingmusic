@@ -18,7 +18,6 @@ from app import cache
 import os
 import requests
 import urllib
-import time
 
 from progress.bar import Bar
 from mutagen.flac import MutagenError
@@ -259,8 +258,6 @@ def getFolderTree(folder: str = None):
         if req_dir:
             dir_list = req_dir.split('/')
             requested_dir = os.path.join(home_dir, *dir_list)
-            
-    print(requested_dir)
 
     dir_content = os.scandir(requested_dir)
 
@@ -292,6 +289,7 @@ def getFolderTree(folder: str = None):
 
     for file in files:
         file['filepath'] = file['filepath'].replace(home_dir, '')
+
 
     return {"files": files, "folders": folders}
 

@@ -1,7 +1,7 @@
 <template>
   <div id="f-view-parent" class="rounded">
     <div class="fixed">
-      <SearchBox :path="path" />
+      <SearchBox :path="path" :loading="loading" />
     </div>
     <div id="scrollable" ref="scrollable">
       <FolderList :folders="folders" />
@@ -33,14 +33,15 @@ export default {
 
     const songs = ref([]);
     const folders = ref([]);
+    const last_page = ref([]);
+    const last_song_id = ref(null);
 
     const scrollable = ref(null);
-
-    const last_song_id = ref(null);
-    const last_page = ref([]);
+    const loading = ref(false);
 
     onMounted(() => {
       const getPathFolders = (path, last_id) => {
+        loading.value = true;
         getData(path, last_id).then((data) => {
           scrollable.value.scrollTop = 0;
 
@@ -52,6 +53,7 @@ export default {
           }
 
           folders.value = data.folders.value;
+          loading.value = false;
         });
       };
 
@@ -59,7 +61,7 @@ export default {
 
       watch(route, (new_route) => {
         path.value = new_route.params.path;
-          getPathFolders(path.value);
+        getPathFolders(path.value);
       });
 
       scrollable.value.onscroll = () => {
@@ -70,8 +72,11 @@ export default {
         let offset = height - scrollY;
 
         if (offset == 0 || offset == 1) {
+          loading.value = true;
           getData(path.value, last_song_id.value).then((data) => {
             songs.value = songs.value.concat(data.songs.value);
+
+            loading.value = false;
 
             if (songs.value.length) {
               last_song_id.value = songs.value.slice(-1)[0]._id.$oid;
@@ -86,6 +91,7 @@ export default {
       folders,
       path,
       scrollable,
+      loading,
     };
   },
 };
@@ -111,6 +117,7 @@ export default {
 #scrollable {
   overflow-y: scroll;
   height: 100%;
+  margin-top: $small;
 
   &::-webkit-scrollbar {
     display: none;

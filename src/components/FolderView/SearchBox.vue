@@ -2,20 +2,21 @@
   <div class="folder-top flex">
     <div class="fname">
       <div>
-        <div class="ellip">{{ path.split('/').splice(-1) + "" }}</div>
+        <div class="ellip">{{ path.split("/").splice(-1) + "" }}</div>
       </div>
     </div>
     <div class="fsearch">
       <div>
         <input type="search" placeholder="Search this directory" />
       </div>
+      <div v-if="loading" class="loader"></div>
     </div>
   </div>
 </template>
 
 <script>
 export default {
-  props: ["path"]
+  props: ["path", "loading"],
 };
 </script>
 
@@ -35,8 +36,31 @@ export default {
 }
 
 .folder-top .fsearch {
+  position: relative;
   width: 50%;
-  margin-right: 1rem;
+  padding-right: 3rem;
+
+  .loader {
+    position: absolute;
+    top: $small;
+    right: 0;
+    width: 2rem;
+    height: 2rem;
+    border-radius: 50%;
+    border: solid;
+    border-top: solid rgb(255, 174, 0);
+    border-left: solid rgb(255, 174, 0);
+    animation: spin .2s linear infinite;
+
+    @keyframes spin {
+      0% {
+        transform: rotate(0deg);
+      }
+      100% {
+        transform: rotate(360deg);
+      }
+    }
+  }
 }
 
 .folder-top .fsearch div {
