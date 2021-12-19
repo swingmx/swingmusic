@@ -7,12 +7,12 @@ const getData = async (path, last_id) => {
   const songs = ref(null);
   const folders = ref(null);
   
-  path = encodeURIComponent(path.replaceAll("/", "|"));
+  const encoded_path = encodeURIComponent(path.replaceAll("/", "|"));
 
   if (last_id) {
-    url = `${folders_uri}/f/${path}::${last_id}`;
+    url = `${folders_uri}/f/${encoded_path}::${last_id}`;
   } else {
-    url = url = `${folders_uri}/f/${path}`;
+    url = url = `${folders_uri}/f/${encoded_path}`;
   }
 
   const res = await fetch(url);

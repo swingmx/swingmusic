@@ -244,11 +244,9 @@ def getArtistData():
 def getFolderTree(folder: str = None):
     if folder == "$home":
         requested_dir = home_dir
-
     else:
         try:
             req_dir, last_id = folder.split('::')
-            print(req_dir)
         except (ValueError):
             req_dir = folder
             last_id = None
