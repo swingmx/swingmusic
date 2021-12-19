@@ -157,7 +157,11 @@ def getTags(full_path):
         "genre": genre,
         "length": round(audio.info.length),
         "bitrate": audio.info.bitrate,
-        "image": img_path
+        "image": img_path,
+        "type": {
+            "name": None,
+            "id": None
+        }
     }
 
     all_songs_instance.insert_song(tags)

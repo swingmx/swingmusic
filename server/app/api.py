@@ -242,8 +242,9 @@ def getArtistData():
 @bp.route("/f/<folder>")
 @cache.cached()
 def getFolderTree(folder: str = None):
-    if folder == "$home":
+    if folder == "home":
         requested_dir = home_dir
+
     else:
         try:
             req_dir, last_id = folder.split('::')
@@ -287,6 +288,7 @@ def getFolderTree(folder: str = None):
 
     for file in files:
         file['filepath'] = file['filepath'].replace(home_dir, '')
+        
 
 
     return {"files": files, "folders": folders}
