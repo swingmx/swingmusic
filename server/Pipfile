@@ -4,17 +4,19 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-flask = "*"
+Flask = "*"
 tk = "*"
-flask-cors = "*"
+Flask-Cors = "*"
 mutagen = "*"
 pymongo = "*"
 click = "*"
 requests = "*"
 watchdog = "*"
 progress = "*"
-pillow = "*"
+Pillow = "*"
 gunicorn = "*"
+Flask-Cache = "*"
+flask-caching = "*"
 
 [dev-packages]
 autopep8 = "*"

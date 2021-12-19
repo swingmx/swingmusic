@@ -59,7 +59,7 @@ export default {
 
       watch(route, (new_route) => {
         path.value = new_route.params.path;
-        getPathFolders(encodeURI(path.value));
+          getPathFolders(path.value);
       });
 
       scrollable.value.onscroll = () => {

@@ -1,17 +1,4 @@
-import os
-from re import sub
-import requests
-import urllib
-import time
-
-
-from progress.bar import Bar
-from mutagen.flac import MutagenError
-from flask import Blueprint, request, send_from_directory
-
-from app.models import AllSongs, Folders, Artists
-from app.configs import default_configs
-
+from app.models import Folders, Artists
 from app.helpers import (
     all_songs_instance,
     convert_one_to_json,
@@ -25,6 +12,19 @@ from app.helpers import (
     home_dir, app_dir,
     run_fast_scandir
 )
+
+from app import cache
+
+import os
+import requests
+import urllib
+import time
+
+from progress.bar import Bar
+from mutagen.flac import MutagenError
+
+from flask import Blueprint, request, send_from_directory
+
 
 bp = Blueprint('api', __name__, url_prefix='')
 
@@ -240,18 +240,27 @@ def getArtistData():
     return {'artist': artist_obj_json, 'songs': songs, 'albums': getArtistAlbums()}
 
 
-@bp.route("/")
-def getFolderTree():
-    start = time.time()
-
-    req_dir = request.args.get('f')
-    last_id = request.args.get('last_id')
-
-    if req_dir is not None:
-        requested_dir = os.path.join(home_dir, req_dir)
-        print(requested_dir)
-    else:
+@bp.route("/f/<folder>")
+@cache.cached()
+def getFolderTree(folder: str = None):
+    if folder == "$home":
         requested_dir = home_dir
+
+    else:
+        try:
+            req_dir, last_id = folder.split('::')
+            print(req_dir)
+        except (ValueError):
+            req_dir = folder
+            last_id = None
+
+        req_dir = req_dir.replace('|', '/')
+
+        if req_dir:
+            dir_list = req_dir.split('/')
+            requested_dir = os.path.join(home_dir, *dir_list)
+            
+    print(requested_dir)
 
     dir_content = os.scandir(requested_dir)
 
@@ -284,10 +293,7 @@ def getFolderTree():
     for file in files:
         file['filepath'] = file['filepath'].replace(home_dir, '')
 
-    dir_content.close()
-    end = time.time()
-    print(end - start)
-    return {"requested": req_dir, "files": files[:25], "folders": folders}
+    return {"files": files, "folders": folders}
 
 
 @bp.route('/image/<img_type>/<image_id>')

@@ -21,10 +21,7 @@
 
 <script>
 export default {
-  props: ["folders"],
-  setup() {
-    console.log("props.folders");
-  },
+  props: ["folders"]
 };
 </script>
 
