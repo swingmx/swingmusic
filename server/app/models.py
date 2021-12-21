@@ -51,8 +51,7 @@ class AllSongs(Mongo):
 
     def insert_song(self, song_obj):
         self.collection.update_one(
-            {'filepath': song_obj['filepath']}, { "$set": song_obj}, upsert=True)
-        # self.collection.insert_one(song_obj)
+            {'filepath': song_obj['filepath']}, {"$set": song_obj}, upsert=True)
 
     def find_song_by_title(self, query):
         self.collection.create_index([('title', pymongo.TEXT)])
@@ -70,6 +69,9 @@ class AllSongs(Mongo):
             return self.collection.find({'folder': query}).limit(limit)
         else:
             return self.collection.find({'folder': query, '_id': {'$gt': ObjectId(last_id)}}).limit(limit)
+
+    def find_songs_by_folder_og(self, query):
+        return self.collection.find({'folder': query})
 
     def find_songs_by_artist(self, query):
         return self.collection.find({'artists': {'$regex': query, '$options': 'i'}})

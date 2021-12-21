@@ -2,44 +2,52 @@
   <div class="folder">
     <div class="table rounded" ref="songtitle" v-if="songs.length">
       <table>
-        <tr>
-          <th>Track</th>
-          <th>Artist</th>
-          <th>Album</th>
-          <th v-if="songTitleWidth > minWidth">Duration</th>
-        </tr>
-        <tr v-for="song in songs" :key="song" @click="playAudio(song.filepath)">
-          <td :style="{ width: songTitleWidth + 'px' }" class="flex">
-            <div
-              class="album-art rounded image"
-              :style="{
-                backgroundImage: `url(&quot;${image_path + song.image}&quot;)`,
-              }"
-            ></div>
-            <div>
-              <span class="ellip">{{ song.title }}</span>
-            </div>
-          </td>
-          <td :style="{ width: songTitleWidth + 'px' }">
-            <div class="ellip">
-              <span
-                class="artist"
-                v-for="artist in song.artists"
-                :key="artist"
-                >{{ artist }}</span
-              >
-            </div>
-          </td>
-          <td :style="{ width: songTitleWidth + 'px' }">
-            <div class="ellip">{{ song.album }}</div>
-          </td>
-          <td
-            :style="{ width: songTitleWidth + 'px' }"
-            v-if="songTitleWidth > minWidth"
+        <thead>
+          <tr>
+            <th>Track</th>
+            <th>Artist</th>
+            <th>Album</th>
+            <th v-if="songTitleWidth > minWidth">Duration</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr
+            v-for="song in songs"
+            :key="song"
+            @click="updateQueue(song.type.name, song.type.id)"
           >
-            {{ `${Math.trunc(song.length / 60)} min` }}
-          </td>
-        </tr>
+            <td :style="{ width: songTitleWidth + 'px' }" class="flex">
+              <div
+                class="album-art rounded image"
+                :style="{
+                  backgroundImage: `url(&quot;${song.image}&quot;)`,
+                }"
+              ></div>
+              <div>
+                <span class="ellip">{{ song.title }}</span>
+              </div>
+            </td>
+            <td :style="{ width: songTitleWidth + 'px' }">
+              <div class="ellip">
+                <span
+                  class="artist"
+                  v-for="artist in putCommas(song.artists)"
+                  :key="artist"
+                  >{{ artist }}</span
+                >
+              </div>
+            </td>
+            <td :style="{ width: songTitleWidth + 'px' }">
+              <div class="ellip">{{ song.album }}</div>
+            </td>
+            <td
+              :style="{ width: songTitleWidth + 'px' }"
+              v-if="songTitleWidth > minWidth"
+            >
+              {{ `${Math.trunc(song.length / 60)} min` }}
+            </td>
+          </tr>
+        </tbody>
       </table>
     </div>
     <div v-else ref="songtitle"></div>
@@ -48,15 +56,17 @@
 
 <script>
 import { ref } from "@vue/reactivity";
+
 import { onMounted, onUnmounted } from "@vue/runtime-core";
 import { playAudio } from "@/composables/playAudio.js";
+import getQueue from "@/composables/getQueue.js";
+import putCommas from "@/composables/perks.js";
 
 export default {
   props: ["songs"],
-  setup() {
+  setup(props, context) {
     const songtitle = ref(null);
     const songTitleWidth = ref(null);
-    const image_path = "http://127.0.0.1:8900/images/thumbnails/";
 
     const minWidth = ref(300);
 
@@ -64,6 +74,11 @@ export default {
       let a = songtitle.value.clientWidth;
 
       songTitleWidth.value = a > minWidth.value * 4 ? a / 4 : a / 3;
+    };
+
+    const updateQueue = async (type, id) => {
+      const queue = await getQueue(type, id);
+      context.emit("updateQueue", queue);
     };
 
     onMounted(() => {
@@ -80,7 +95,14 @@ export default {
       });
     });
 
-    return { songtitle, image_path, songTitleWidth, minWidth, playAudio };
+    return {
+      songtitle,
+      songTitleWidth,
+      minWidth,
+      playAudio,
+      updateQueue,
+      putCommas
+    };
   },
 };
 </script>
@@ -103,11 +125,15 @@ export default {
   position: relative;
   margin: 1rem;
 
-  tr {
+  tbody tr {
+    cursor: pointer;
+    transition: all 0.5s ease;
+
     &:hover {
       td {
         background-color: rgba(255, 174, 0, 0.534);
       }
+      transform: scale(0.99);
     }
   }
 }

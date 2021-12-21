@@ -12,13 +12,13 @@ const getData = async (path, last_id) => {
   if (last_id) {
     url = `${folders_uri}/f/${encoded_path}::${last_id}`;
   } else {
-    url = url = `${folders_uri}/f/${encoded_path}`;
+    url = url = `${folders_uri}/f/${encoded_path}::None`;
   }
 
   const res = await fetch(url);
 
   if (!res.ok) {
-    const message = `An erro has occured: ${res.status}`;
+    const message = `An error has occured: ${res.status}`;
     throw new Error(message);
   }
 

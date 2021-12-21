@@ -54,16 +54,16 @@ def extract_thumb(path):
         return webp_path
 
     if path.endswith('.flac'):
-        audio = FLAC(path)
         try:
+            audio = FLAC(path)
             album_art = audio.pictures[0].data
-        except IndexError:
+        except:
             album_art = None
     elif path.endswith('.mp3'):
-        audio = ID3(path)
         try:
+            audio = ID3(path)
             album_art = audio.getall('APIC')[0].data
-        except IndexError:
+        except:
             album_art = None
 
     if album_art is None:
@@ -91,10 +91,16 @@ def extract_thumb(path):
 
 def getTags(full_path):
     if full_path.endswith('.flac'):
-        audio = FLAC(full_path)
+        try:
+            audio = FLAC(full_path)
+        except:
+            return 
     elif full_path.endswith('.mp3'):
-        audio = MP3(full_path)
-
+        try:
+            audio = MP3(full_path)
+        except:
+            return
+        
     try:
         artists = audio['artist'][0]
     except KeyError:
@@ -122,8 +128,8 @@ def getTags(full_path):
             title = audio['TIT2'][0]
         except:
             title = 'Unknown'
-    except IndexError:
-        title = 'Unknown'
+    except:
+        title = full_path.split('/')[-1]
 
     try:
         album = audio['album'][0]

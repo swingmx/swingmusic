@@ -12,7 +12,7 @@
       <PinnedStuff :collapsed="collapsed" />
     </div>
     <div class="content">
-      <router-view />
+      <router-view @sendQueue="updpateQueue"/>
     </div>
     <div class="r-sidebar">
       <Search
@@ -23,7 +23,7 @@
       <div class="m-np">
         <NowPlaying />
       </div>
-      <UpNext v-model:up_next="up_next" @expandQueue="expandQueue" />
+      <UpNext v-model:up_next="up_next" @expandQueue="expandQueue" :queue="queue"/>
       <RecommendedArtist />
     </div>
   </div>
@@ -51,6 +51,12 @@ export default {
   },
 
   setup() {
+    const queue = ref(JSON.parse(localStorage.getItem("queue")) || []);
+
+    const updpateQueue = (data)=> {
+      queue.value = data;
+    }
+
     const collapsed = ref(true);
 
     function toggleNav() {
@@ -76,12 +82,14 @@ export default {
 
     return {
       toggleNav,
+      updpateQueue,
       collapsed,
       up_next,
       expandQueue,
       expandSearch,
       collapseSearch,
       search,
+      queue,
     };
   },
 };

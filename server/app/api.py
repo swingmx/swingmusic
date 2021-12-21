@@ -1,4 +1,6 @@
+import typing
 from app.models import Folders, Artists
+
 from app.helpers import (
     all_songs_instance,
     convert_one_to_json,
@@ -29,6 +31,7 @@ bp = Blueprint('api', __name__, url_prefix='')
 
 artist_instance = Artists()
 folder_instance = Folders()
+img_path = "http://127.0.0.1:8900/images/thumbnails/"
 
 
 def main_whatever():
@@ -242,26 +245,26 @@ def getArtistData():
 @bp.route("/f/<folder>")
 @cache.cached()
 def getFolderTree(folder: str = None):
-    if folder == "home":
-        requested_dir = home_dir
-
-    else:
-        try:
-            req_dir, last_id = folder.split('::')
-        except (ValueError):
-            req_dir = folder
-            last_id = None
+    try:
+        req_dir, last_id = folder.split('::')
 
         req_dir = req_dir.replace('|', '/')
+        dir_list = req_dir.split('/')
+        requested_dir = os.path.join(home_dir, *dir_list)
 
-        if req_dir:
-            dir_list = req_dir.split('/')
-            requested_dir = os.path.join(home_dir, *dir_list)
+        if req_dir == "home":
+            requested_dir = home_dir
+
+        if last_id == "None":
+            last_id = None
+
+    except:
+        requested_dir = home_dir
+        last_id = None
 
     dir_content = os.scandir(requested_dir)
 
     folders = []
-    files = []
 
     for entry in dir_content:
         if entry.is_dir() and not entry.name.startswith('.'):
@@ -278,20 +281,23 @@ def getFolderTree(folder: str = None):
 
         if entry.is_file():
             if isValidFile(entry.name) == True:
-                songs_array = all_songs_instance.find_songs_by_folder(
-                    req_dir, last_id)
-                songs = convert_to_json(songs_array)
-                for song in songs:
-                    song['artists'] = song['artists'].split(', ')
+                file = all_songs_instance.find_song_by_path(entry.path)
 
-                files = songs
+                if not file:
+                    getTags(entry.path)
 
-    for file in files:
-        file['filepath'] = file['filepath'].replace(home_dir, '')
-        
+    songs_array = all_songs_instance.find_songs_by_folder(
+        req_dir, last_id)
+    songs = convert_to_json(songs_array)
+    for song in songs:
+        song['artists'] = song['artists'].split(', ')
+        song['filepath'] = song['filepath'].replace(home_dir, '')
+        song['image'] = img_path + song['image']
 
+        song['type']['name'] = "folder"
+        song['type']['id'] = req_dir
 
-    return {"files": files, "folders": folders}
+    return {"files": songs, "folders": folders}
 
 
 @bp.route('/image/<img_type>/<image_id>')
@@ -313,3 +319,24 @@ def send_image(img_type, image_id):
         print(img_dir + image)
 
     return send_from_directory(img_dir, image)
+
+
+@bp.route('/get/queue', methods=['POST'])
+def post():
+    args = request.get_json()
+
+    type = args['type']
+    id = args['id']
+
+    if type == "folder":
+        songs = all_songs_instance.find_songs_by_folder_og(id)
+        songs_array = convert_to_json(songs)
+
+        for song in songs_array:
+            song['artists'] = song['artists'].split(', ')
+            song['filepath'] = song['filepath'].replace(home_dir, '')
+            song['image'] = img_path + song['image']
+
+        return {'songs': songs_array}
+
+    return {'msg': 'ok'}

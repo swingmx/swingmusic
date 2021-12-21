@@ -14,12 +14,21 @@
     <div>
       <div :class="{ hr: is_expanded }" class="all-items">
         <div :class="{ v0: !is_expanded, v1: is_expanded }" class="scrollable">
-          <div class="song-item h-1" v-for="song in songs" :key="song">
-            <div class="album-art image"></div>
+          <div class="song-item h-1" v-for="song in queue" :key="song">
+            <div
+              class="album-art image"
+              :style="{
+                backgroundImage: `url(&quot;${song.image}&quot;)`,
+              }"
+            ></div>
             <div class="tags">
               <p class="title">{{ song.title }}</p>
               <hr />
-              <p class="artist">{{ song.artist }}</p>
+              <p class="artist">
+                <span v-for="artist in putCommas(song.artists)" :key="artist">{{
+                  artist
+                }}</span>
+              </p>
             </div>
           </div>
         </div>
@@ -30,97 +39,18 @@
 
 <script>
 import { toRefs } from "@vue/reactivity";
+import putCommas from "@/composables/perks.js";
 
 export default {
-  props: ["up_next"],
-  emits: ["expandQueue"],
+  props: ["up_next", "queue"],
   setup(props, { emit }) {
-    const songs = [
-      {
-        title: "Hard to forget",
-        artist: "Sam Hunt",
-      },
-      {
-        title: "Bluebird",
-        artist: "Miranda Lambert",
-      },
-      {
-        title: "I called mama",
-        artist: "Ken Chesseny",
-      },
-      {
-        title: "Bluebird",
-        artist: "Miranda Lambert",
-      },
-      {
-        title: "I called mama",
-        artist: "Ken Chesseny",
-      },
-      {
-        title: "Bluebird",
-        artist: "Miranda Lambert",
-      },
-      {
-        title: "I called mama",
-        artist: "Ken Chesseny",
-      },
-      {
-        title: "Bluebird",
-        artist: "Miranda Lambert",
-      },
-      {
-        title: "I called mama",
-        artist: "Ken Chesseny",
-      },
-      {
-        title: "Bluebird",
-        artist: "Miranda Lambert",
-      },
-      {
-        title: "I called mama",
-        artist: "Ken Chesseny",
-      },
-      {
-        title: "Bluebird",
-        artist: "Miranda Lambert",
-      },
-      {
-        title: "I called mama",
-        artist: "Ken Chesseny",
-      },
-      {
-        title: "Bluebird",
-        artist: "Miranda Lambert",
-      },
-      {
-        title: "I called mama",
-        artist: "Ken Chesseny",
-      },
-      {
-        title: "Bluebird",
-        artist: "Miranda Lambert",
-      },
-      {
-        title: "I called mama",
-        artist: "Ken Chesseny",
-      },
-      {
-        title: "Bluebird",
-        artist: "Miranda Lambert",
-      },
-      {
-        title: "I called mama",
-        artist: "Ken Chesseny",
-      },
-    ];
-
     const is_expanded = toRefs(props).up_next;
 
     let collapse = () => {
       emit("expandQueue");
     };
-
-    return { songs, collapse, is_expanded };
+    
+    return { collapse, is_expanded, putCommas };
   },
 };
 </script>
@@ -177,10 +107,9 @@ export default {
 .up-next .main-item .album-art {
   width: 4.5rem;
   height: 4.5rem;
-  background-color: #ccc;
+  background-image: url(../../assets/images/null.webp);
   margin: 0 0.5rem 0 0;
   border-radius: 0.5rem;
-  background-image: url(../../assets/images/htf.jpeg);
 }
 
 .up-next .main-item .tags hr {
@@ -234,10 +163,9 @@ export default {
 .up-next .all-items .album-art {
   width: 3rem;
   height: 3rem;
-  background-color: #ccc;
   margin: 0 0.5rem 0 0;
   border-radius: 0.5rem;
-  background-image: url(../../assets/images/htf.jpeg);
+  background-image: url(../../assets/images/null.webp);
 }
 
 .up-next .all-items .song-item .artist {
