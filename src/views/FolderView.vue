@@ -5,7 +5,7 @@
     </div>
     <div id="scrollable" ref="scrollable">
       <FolderList :folders="folders" />
-      <SongList :songs="songs" @updateQueue="updateQueue" />
+      <SongList :songs="songs" />
     </div>
   </div>
 </template>
@@ -27,7 +27,7 @@ export default {
     FolderList,
     SearchBox,
   },
-  setup(props, context) {
+  setup() {
     const route = useRoute();
     const path = ref(route.params.path);
 
@@ -38,10 +38,6 @@ export default {
 
     const scrollable = ref(null);
     const loading = ref(false);
-
-    const updateQueue = (queue) => {
-     context.emit("sendQueue", queue);
-    };
 
     onMounted(() => {
       const getPathFolders = (path, last_id) => {
@@ -96,7 +92,6 @@ export default {
       path,
       scrollable,
       loading,
-      updateQueue,
     };
   },
 };

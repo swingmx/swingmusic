@@ -4,11 +4,20 @@
       COMING UP NEXT <span class="more" @click="collapse">SEE ALL</span>
     </p>
     <div class="main-item h-1">
-      <div class="album-art image"></div>
+      <div
+        class="album-art image"
+        :style="{
+          backgroundImage: `url(&quot;${next.image}&quot;)`,
+        }"
+      ></div>
       <div class="tags">
-        <p class="title">Hard to forget</p>
+        <p class="title">{{ next.title }}</p>
         <hr />
-        <p class="artist">Sam hunt</p>
+        <p class="artist">
+          <span v-for="artist in putCommas(next.artists)" :key="artist">{{
+            artist
+          }}</span>
+        </p>
       </div>
     </div>
     <div>
@@ -38,19 +47,25 @@
 </template>
 
 <script>
-import { toRefs } from "@vue/reactivity";
-import putCommas from "@/composables/perks.js";
+import { ref, toRefs } from "@vue/reactivity";
+import perks from "@/composables/perks.js";
 
 export default {
-  props: ["up_next", "queue"],
+  props: ["up_next"],
   setup(props, { emit }) {
     const is_expanded = toRefs(props).up_next;
+
+    const queue = ref(perks.queue);
+
+    const next = ref(perks.next);
 
     let collapse = () => {
       emit("expandQueue");
     };
-    
-    return { collapse, is_expanded, putCommas };
+
+    const putCommas = perks.putCommas;
+
+    return { collapse, is_expanded, putCommas, queue, next };
   },
 };
 </script>

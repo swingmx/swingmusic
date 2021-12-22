@@ -12,7 +12,7 @@
       <PinnedStuff :collapsed="collapsed" />
     </div>
     <div class="content">
-      <router-view @sendQueue="updpateQueue"/>
+      <router-view />
     </div>
     <div class="r-sidebar">
       <Search
@@ -23,7 +23,11 @@
       <div class="m-np">
         <NowPlaying />
       </div>
-      <UpNext v-model:up_next="up_next" @expandQueue="expandQueue" :queue="queue"/>
+      <UpNext
+        v-model:up_next="up_next"
+        @expandQueue="expandQueue"
+        :queue="queue"
+      />
       <RecommendedArtist />
     </div>
   </div>
@@ -40,6 +44,8 @@ import NowPlaying from "./components/RightSideBar/NowPlaying.vue";
 import UpNext from "./components/RightSideBar/UpNext.vue";
 import RecommendedArtist from "./components/RightSideBar/Recommendation.vue";
 
+import perks from "@/composables/perks.js";
+
 export default {
   components: {
     Navigation,
@@ -51,13 +57,10 @@ export default {
   },
 
   setup() {
+    const collapsed = ref(true);
     const queue = ref(JSON.parse(localStorage.getItem("queue")) || []);
 
-    const updpateQueue = (data)=> {
-      queue.value = data;
-    }
-
-    const collapsed = ref(true);
+    perks.readQueue();
 
     function toggleNav() {
       collapsed.value = !collapsed.value;
@@ -82,7 +85,6 @@ export default {
 
     return {
       toggleNav,
-      updpateQueue,
       collapsed,
       up_next,
       expandQueue,
@@ -132,9 +134,8 @@ export default {
   cursor: pointer;
 }
 
-.m-np {
-  position: absolute;
-  bottom: 0;
-}
-
+// .m-np {
+//   position: absolute;
+//   bottom: 0;
+// }
 </style>

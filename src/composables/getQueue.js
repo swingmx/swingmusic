@@ -19,7 +19,6 @@ const getQueue = async (type, id) => {
   }
 
   const data = await res.json();
-  localStorage.setItem("queue", JSON.stringify(data.songs));
 
   return data.songs;
 };

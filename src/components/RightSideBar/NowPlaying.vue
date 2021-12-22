@@ -1,11 +1,20 @@
 <template>
   <div class="now-playing">
     <div class="art-tags">
-      <div class="album-art image"></div>
+      <div
+        class="album-art image"
+        :style="{
+          backgroundImage: `url(&quot;${current.image}&quot;)`,
+        }"
+      ></div>
       <div>
-        <p id="title" class="ellipsis">I love this bar (remix)</p>
+        <p id="title" class="ellipsis">{{ current.title }}</p>
         <hr />
-        <span id="artist">Toby Keith, Morgan Wallen</span>
+        <div id="artist">
+          <span v-for="artist in putCommas(current.artists)" :key="artist">{{
+            artist
+          }}</span>
+        </div>
       </div>
     </div>
     <div class="controls">
@@ -17,7 +26,17 @@
 </template>
 
 <script>
-export default {};
+import { ref } from "@vue/reactivity";
+import perks from "../../composables/perks.js";
+
+export default {
+  setup() {
+    const current = ref(perks.current);
+    const putCommas = perks.putCommas;
+
+    return { current, putCommas };
+  },
+};
 </script>
 
 <style>
@@ -43,7 +62,7 @@ export default {};
   border-radius: 0.5rem;
   margin-right: 0.5rem;
   background-color: #ad1717a8;
-  background-image: url(../../assets/images/tk.jpg);
+  background-image: url(../../assets/images/null.webp);
 }
 
 .now-playing .art-tags hr {
