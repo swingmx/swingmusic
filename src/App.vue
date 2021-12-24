@@ -23,11 +23,7 @@
       <div class="m-np">
         <NowPlaying />
       </div>
-      <UpNext
-        v-model:up_next="up_next"
-        @expandQueue="expandQueue"
-        :queue="queue"
-      />
+      <UpNext v-model:up_next="up_next" @expandQueue="expandQueue" />
       <RecommendedArtist />
     </div>
   </div>
@@ -58,7 +54,6 @@ export default {
 
   setup() {
     const collapsed = ref(true);
-    const queue = ref(JSON.parse(localStorage.getItem("queue")) || []);
 
     perks.readQueue();
 
@@ -91,7 +86,6 @@ export default {
       expandSearch,
       collapseSearch,
       search,
-      queue,
     };
   },
 };
@@ -118,10 +112,6 @@ export default {
   animation-iteration-count: 1;
 }
 
-.l-sidebar {
-  position: relative;
-}
-
 .l-container #toggle {
   position: absolute;
   left: 0.2rem;
@@ -134,8 +124,9 @@ export default {
   cursor: pointer;
 }
 
-// .m-np {
-//   position: absolute;
-//   bottom: 0;
-// }
+.r-sidebar {
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
 </style>

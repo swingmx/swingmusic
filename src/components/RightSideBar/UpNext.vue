@@ -3,7 +3,7 @@
     <p class="heading">
       COMING UP NEXT <span class="more" @click="collapse">SEE ALL</span>
     </p>
-    <div class="main-item h-1">
+    <div class="main-item h-1" @click="playNext">
       <div
         class="album-art image"
         :style="{
@@ -23,7 +23,7 @@
     <div>
       <div :class="{ hr: is_expanded }" class="all-items">
         <div :class="{ v0: !is_expanded, v1: is_expanded }" class="scrollable">
-          <div class="song-item h-1" v-for="song in queue" :key="song">
+          <div class="song-item h-1" v-for="song in queue" :key="song" @click="playThis(song)">
             <div
               class="album-art image"
               :style="{
@@ -49,23 +49,30 @@
 <script>
 import { ref, toRefs } from "@vue/reactivity";
 import perks from "@/composables/perks.js";
+import audio from "@/composables/playAudio.js";
 
 export default {
   props: ["up_next"],
   setup(props, { emit }) {
     const is_expanded = toRefs(props).up_next;
-
-    const queue = ref(perks.queue);
-
-    const next = ref(perks.next);
-
     let collapse = () => {
       emit("expandQueue");
     };
 
+    const { playNext } = audio;
+    const {playAudio} = audio;
+
+    const playThis = (song) => {
+      playAudio(song.filepath);
+      perks.current.value = song;
+    }
+
+    const queue = ref(perks.queue);
+    const next = ref(perks.next);
+
     const putCommas = perks.putCommas;
 
-    return { collapse, is_expanded, putCommas, queue, next };
+    return { collapse, is_expanded, playNext, playThis, putCommas, queue, next };
   },
 };
 </script>

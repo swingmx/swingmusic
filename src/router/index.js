@@ -20,6 +20,10 @@ const routes = [
     component: FolderView,
   },
   {
+    path: "/folder/",
+    redirect: "/folder/home",
+  },
+  {
     path: "/playlist",
     name: "PlaylistView",
     component: PlaylistView,

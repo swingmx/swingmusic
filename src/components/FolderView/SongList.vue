@@ -14,7 +14,10 @@
           <tr
             v-for="song in songs"
             :key="song"
-            @click="updateQueue(song, song.type.name, song.type.id)"
+            @click="
+              updateQueue(song, song.type.name, song.type.id),
+                playAudio(song.filepath)
+            "
           >
             <td :style="{ width: songTitleWidth + 'px' }" class="flex">
               <div
@@ -58,7 +61,7 @@
 import { ref, toRefs } from "@vue/reactivity";
 import { onMounted, onUnmounted } from "@vue/runtime-core";
 
-import { playAudio } from "@/composables/playAudio.js";
+import audio from "@/composables/playAudio.js";
 import getQueue from "@/composables/getQueue.js";
 import perks from "@/composables/perks.js";
 
@@ -81,28 +84,12 @@ export default {
 
       perks.current.value = song;
       localStorage.setItem("current", JSON.stringify(song));
-
-      const index = perks.queue.value.findIndex(
-        (item) => item._id.$oid === song._id.$oid
-      );
-
-      if (index == perks.queue.value.length - 1) {
-        perks.next.value = perks.queue.value[0];
-      } else {
-        perks.next.value = perks.queue.value[index + 1];
-      }
-
-      localStorage.setItem(
-        "next",
-        JSON.stringify(perks.queue.value[index + 1])
-      );
-
     };
 
     const resizeSongTitleWidth = () => {
       try {
         let a = songtitle.value.clientWidth;
-  
+
         songTitleWidth.value = a > minWidth.value * 4 ? a / 4 : a / 3;
       } catch (error) {
         return;
@@ -122,6 +109,8 @@ export default {
         resizeSongTitleWidth();
       });
     });
+
+    const playAudio = audio.playAudio;
 
     return {
       songtitle,
@@ -147,25 +136,6 @@ export default {
   }
 }
 
-.folder .table table {
-  border-collapse: collapse;
-  text-transform: capitalize;
-  position: relative;
-  margin: 1rem;
-
-  tbody tr {
-    cursor: pointer;
-    transition: all 0.5s ease;
-
-    &:hover {
-      td {
-        background-color: rgba(255, 174, 0, 0.534);
-      }
-      transform: scale(0.99);
-    }
-  }
-}
-
 .folder .table table td .album-art {
   width: 3rem;
   height: 3rem;
@@ -187,6 +157,8 @@ td,
 th {
   padding: 8px;
   text-align: left;
+  outline: none;
+  border: none;
 }
 
 th {
@@ -209,5 +181,24 @@ th {
 td .artist {
   font-weight: lighter;
   margin-right: 0.5rem;
+}
+
+.folder .table table {
+  border-collapse: collapse;
+  text-transform: capitalize;
+  position: relative;
+  margin: 1rem;
+
+  tbody tr {
+    cursor: pointer;
+    transition: all 0.5s ease;
+
+    &:hover {
+      & {
+        background-color: rgba(255, 174, 0, 0.534);
+      }
+      transform: scale(0.99);
+    }
+  }
 }
 </style>
