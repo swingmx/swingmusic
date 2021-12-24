@@ -18,7 +18,15 @@
       </div>
     </div>
     <div class="progress">
-      <input type="range" :value="pos" min="0" max="100" />
+      <input
+        id="progress"
+        type="range"
+        :value="pos"
+        min="0"
+        max="100"
+        step="1"
+        @change="seek()"
+      />
     </div>
     <div class="controls">
       <div class="shuffle">
@@ -27,7 +35,11 @@
       </div>
       <div class="nav">
         <div class="image" id="previous" @click="playPrev"></div>
-        <div class="image" id="play-pause" @click="playPause"></div>
+        <div
+          class="image play-pause"
+          @click="playPause"
+          :class="{ isPlaying: isPlaying }"
+        ></div>
         <div class="image" id="next" @click="playNext"></div>
       </div>
       <div class="fav">
@@ -52,8 +64,22 @@ export default {
     const { playNext } = playAudio;
     const { playPrev } = playAudio;
     const { playPause } = playAudio;
+    const isPlaying = playAudio.playing;
 
-    return { current, putCommas, playNext, playPrev, playPause, pos };
+    const seek = () => {
+      playAudio.seek(document.getElementById("progress").value);
+    };
+
+    return {
+      current,
+      putCommas,
+      playNext,
+      playPrev,
+      playPause,
+      pos,
+      seek,
+      isPlaying,
+    };
   },
 };
 </script>
@@ -142,7 +168,11 @@ export default {
         background-image: url(../../assets/icons/previous.svg);
       }
 
-      #play-pause {
+      .play-pause {
+        background-image: url(../../assets/icons/play.svg);
+      }
+
+      .isPlaying {
         background-image: url(../../assets/icons/pause.svg);
       }
 

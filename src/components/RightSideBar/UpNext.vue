@@ -31,9 +31,9 @@
               }"
             ></div>
             <div class="tags">
-              <p class="title">{{ song.title }}</p>
+              <p class="title ellip">{{ song.title }}</p>
               <hr />
-              <p class="artist">
+              <p class="artist ellip">
                 <span v-for="artist in putCommas(song.artists)" :key="artist">{{
                   artist
                 }}</span>
@@ -191,6 +191,7 @@ export default {
 }
 
 .up-next .all-items .song-item .artist {
+  width: 20rem;
   font-size: small;
   color: rgba(255, 255, 255, 0.637);
 }
