@@ -240,7 +240,7 @@ export default {
     .fav *:hover,
     .shuffle *:hover,
     .nav *:hover {
-      background-color: black;
+      background-color: rgb(5, 80, 150);
     }
   }
 

@@ -85,10 +85,15 @@ export default {
 }
 
 .side-nav-container {
+  padding: $small;
   color: #fff;
   border-top: 1px solid var(--separator);
   margin-bottom: 10px;
   padding-top: 10px;
+
+  .nav-button {
+    border-radius: $small;
+  }
 }
 
 .side-nav-container .nav-button {
@@ -98,18 +103,15 @@ export default {
   background-color: transparent;
   height: 100%;
   padding: 10px;
-  // transition: all .3s ease-in-out;
-  // transition-delay: 1s;
 }
 
 .collapsed .nav-button {
   font-size: smaller;
   margin-top: 5px;
-  // transition: all 2s ease-in-out;
 }
 
 .side-nav-container .nav-button:hover {
-  background-color: rgba(220, 20, 60, 0.5);
+  background-color: rgb(5, 80, 150);
 }
 
 .side-nav-container .nav-button .nav-icon {
