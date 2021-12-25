@@ -98,13 +98,14 @@ export default {
   background-color: transparent;
   height: 100%;
   padding: 10px;
-  transition: all 0.3s ease-in-out;
+  // transition: all .3s ease-in-out;
+  // transition-delay: 1s;
 }
 
 .collapsed .nav-button {
   font-size: smaller;
   margin-top: 5px;
-  transition: all 0.2s ease-in-out;
+  // transition: all 2s ease-in-out;
 }
 
 .side-nav-container .nav-button:hover {

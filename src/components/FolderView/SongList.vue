@@ -191,13 +191,12 @@ td .artist {
 
   tbody tr {
     cursor: pointer;
-    transition: all 0.5s ease;
+    transition: all 0.1s ease;
 
     &:hover {
       & {
-        background-color: rgba(255, 174, 0, 0.534);
+        background-color: rgb(5, 80, 150);
       }
-      transform: scale(0.99);
     }
   }
 }

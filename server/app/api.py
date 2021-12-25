@@ -1,5 +1,4 @@
-import typing
-from app.models import Folders, Artists
+from app.models import Artists
 
 from app.helpers import (
     all_songs_instance,
@@ -30,7 +29,6 @@ from flask import Blueprint, request, send_from_directory
 bp = Blueprint('api', __name__, url_prefix='')
 
 artist_instance = Artists()
-folder_instance = Folders()
 img_path = "http://127.0.0.1:8900/images/thumbnails/"
 
 
@@ -190,11 +188,12 @@ def populate_images():
 
     return {'sample': artists_in_db_array[:25]}
 
-
-@bp.route("/artist")
-def getArtistData():
-    artist = urllib.parse.unquote(request.args.get('q'))
-    artist_obj = artist_instance.find_artists_by_name(artist)
+@bp.route("/artist/<artist>")
+@cache.cached()
+def getArtistData(artist: str):
+    print(artist)
+    artist = urllib.parse.unquote(artist)
+    artist_obj = artist_instance.get_artists_by_name(artist)
     artist_obj_json = convert_to_json(artist_obj)
 
     def getArtistSongs():
@@ -340,3 +339,24 @@ def post():
         return {'songs': songs_array}
 
     return {'msg': 'ok'}
+
+@bp.route('/qwerty')
+def populateArtists():
+    all_songs = all_songs_instance.get_all_songs()
+    songs = convert_to_json(all_songs)
+
+    artists = []
+
+    for song in songs:
+        artist = song['artists'].split(', ')
+
+        for a in artist:
+            a_obj = {
+                "name": a,
+            }
+
+            if a_obj not in artists:
+                artists.append(a_obj)
+
+
+    return {'songs': artists}

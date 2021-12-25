@@ -1,6 +1,6 @@
 <template>
   <div
-    class="side-nav-container"
+    class="side-nav-container rounded"
     :class="{ hidden: collapsed }"
     id="pinned-container"
   >
@@ -33,7 +33,7 @@
     <router-link :to="{ name: 'Home' }">
       <div class="nav-button" id="playlists-button">
         <div class="nav-icon image" id="playlists-icon"></div>
-        <span id="text">Juice WRLD Discography</span>
+        <span id="text" class="ellip">Juice WRLD Discography</span>
       </div>
     </router-link>
     <hr />
@@ -60,13 +60,30 @@ export default {
 };
 </script>
 
-<style>
+<style lang="scss">
+#pinned-container {
+  background-color: rgb(0, 0, 0);
+  border-top: none;
+  margin: $small;
+  padding: $small;
+
+  #text {
+    font-size: 0.9rem;
+  }
+
+  .nav-icon {
+    margin: 0 $small 0 0;
+  }
+}
+
 #pinned-container .nav-button {
+  border-radius: $small;
   color: rgba(255, 255, 255, 0.671);
+  // margin-top: $small;
 }
 
 #pinned-container .nav-button:hover {
-  background-color: rgba(5, 80, 150, 0.322);
+  background-color: rgb(5, 80, 150);
 }
 
 #pinned-container .nav-button .nav-icon {

@@ -53,7 +53,7 @@ export default {
   },
 
   setup() {
-    const collapsed = ref(true);
+    const collapsed = ref(false);
 
     perks.readQueue();
 

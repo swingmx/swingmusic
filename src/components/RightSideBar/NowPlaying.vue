@@ -18,6 +18,7 @@
       </div>
     </div>
     <div class="progress">
+      <div class="duration">{{ fmtMSS(current.length) }}</div>
       <input
         id="progress"
         type="range"
@@ -60,6 +61,11 @@ export default {
     const current = ref(perks.current);
     const putCommas = perks.putCommas;
     const pos = playAudio.pos;
+    function fmtMSS(s) {
+      return (s - (s %= 60)) / 60 + (9 < s ? ":" : ":0") + s;
+    }
+
+    // const duration = ref()
 
     const { playNext } = playAudio;
     const { playPrev } = playAudio;
@@ -79,6 +85,7 @@ export default {
       pos,
       seek,
       isPlaying,
+      fmtMSS
     };
   },
 };
@@ -87,9 +94,10 @@ export default {
 <style lang="scss">
 .now-playing {
   border-radius: 0.5rem;
+  height: 14rem;
   margin-top: 1rem;
   padding: 0.5rem;
-  background-color: rgb(12, 12, 12);
+  background-color: rgb(0, 0, 0);
   display: grid;
   grid-template-rows: 3fr 1fr;
 
@@ -97,6 +105,14 @@ export default {
     display: flex;
     align-items: center;
     height: 1.5rem;
+    position: relative;
+
+    .duration {
+      position: absolute;
+      right: 0;
+      top: -1rem;
+      font-size: small;
+    }
 
     input {
       -webkit-appearance: none;
@@ -159,11 +175,6 @@ export default {
         border-radius: 0.5rem;
       }
 
-      & *:hover {
-        filter: invert(66%) sepia(75%) saturate(4335%) hue-rotate(158deg)
-          brightness(89%) contrast(101%);
-      }
-
       #previous {
         background-image: url(../../assets/icons/previous.svg);
       }
@@ -224,6 +235,12 @@ export default {
       & :last-child {
         background-image: url(../../assets/icons/heart.svg);
       }
+    }
+
+    .fav *:hover,
+    .shuffle *:hover,
+    .nav *:hover {
+      background-color: black;
     }
   }
 
