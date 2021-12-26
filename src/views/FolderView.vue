@@ -97,10 +97,6 @@ export default {
 #scrollable {
   overflow-y: scroll;
   height: 100%;
-  margin-top: $small;
-
-  &::-webkit-scrollbar {
-    display: none;
-  }
+  padding-bottom: $small;
 }
 </style>
