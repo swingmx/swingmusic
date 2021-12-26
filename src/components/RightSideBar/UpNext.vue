@@ -23,7 +23,13 @@
     <div>
       <div :class="{ hr: is_expanded }" class="all-items">
         <div :class="{ v0: !is_expanded, v1: is_expanded }" class="scrollable">
-          <div class="song-item h-1" v-for="song in queue" :key="song" @click="playThis(song)">
+          <div
+            class="song-item h-1"
+            v-for="song in queue"
+            :key="song"
+            @click="playThis(song)"
+            :class="{ currentInQueue: current._id.$oid == song._id.$oid }"
+          >
             <div
               class="album-art image"
               :style="{
@@ -50,29 +56,63 @@
 import { ref, toRefs } from "@vue/reactivity";
 import perks from "@/composables/perks.js";
 import audio from "@/composables/playAudio.js";
+import { watch } from "@vue/runtime-core";
 
 export default {
   props: ["up_next"],
   setup(props, { emit }) {
     const is_expanded = toRefs(props).up_next;
+
+    const queue = ref(perks.queue);
+    const next = ref(perks.next);
+    const current = ref(perks.current);
+
     let collapse = () => {
       emit("expandQueue");
     };
 
     const { playNext } = audio;
-    const {playAudio} = audio;
+    const { playAudio } = audio;
+
+    watch(is_expanded, (val) => {
+      if (val == true) {
+        var elem = document.getElementsByClassName("currentInQueue")[0];
+        elem.scrollIntoView({
+          behavior: "smooth",
+          block: "center",
+          inline: "center",
+        });
+      }
+    });
+
+    watch(current, (val) => {
+      if (val) {
+        var elem = document.getElementsByClassName("currentInQueue")[0];
+        elem.scrollIntoView({
+          behavior: "smooth",
+          block: "center",
+          inline: "center",
+        });
+      }
+    });
 
     const playThis = (song) => {
       playAudio(song.filepath);
       perks.current.value = song;
-    }
-
-    const queue = ref(perks.queue);
-    const next = ref(perks.next);
+    };
 
     const putCommas = perks.putCommas;
 
-    return { collapse, is_expanded, playNext, playThis, putCommas, queue, next };
+    return {
+      collapse,
+      is_expanded,
+      playNext,
+      playThis,
+      putCommas,
+      queue,
+      next,
+      current,
+    };
   },
 };
 </script>
@@ -90,6 +130,11 @@ export default {
 .up-next .v1 {
   max-height: 20em;
   transition: max-height 0.5s ease;
+  padding: $small;
+
+  .currentInQueue {
+    background-color: rgba(0, 125, 241, 0.562);
+  }
 }
 
 .up-next {

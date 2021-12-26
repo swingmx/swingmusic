@@ -14,10 +14,8 @@
           <tr
             v-for="song in songs"
             :key="song"
-            @click="
-              updateQueue(song, song.type.name, song.type.id),
-                playAudio(song.filepath)
-            "
+            @click="updateQueue(song), playAudio(song.filepath)"
+            :class="{ current: current._id.$oid == song._id.$oid }"
           >
             <td :style="{ width: songTitleWidth + 'px' }" class="flex">
               <div
@@ -62,7 +60,6 @@ import { ref, toRefs } from "@vue/reactivity";
 import { onMounted, onUnmounted } from "@vue/runtime-core";
 
 import audio from "@/composables/playAudio.js";
-import getQueue from "@/composables/getQueue.js";
 import perks from "@/composables/perks.js";
 
 export default {
@@ -75,9 +72,9 @@ export default {
     const minWidth = ref(300);
     const putCommas = perks.putCommas;
 
-    const updateQueue = async (song, type, id) => {
+    const updateQueue = async (song) => {
       if (perks.queue.value[0]._id.$oid !== song_list.value[0]._id.$oid) {
-        const queue = await getQueue(type, id);
+        const queue = song_list.value;
         localStorage.setItem("queue", JSON.stringify(queue));
         perks.queue.value = queue;
       }
@@ -111,6 +108,7 @@ export default {
     });
 
     const playAudio = audio.playAudio;
+    const current = ref(perks.current);
 
     return {
       songtitle,
@@ -119,6 +117,7 @@ export default {
       playAudio,
       updateQueue,
       putCommas,
+      current,
     };
   },
 };
@@ -133,6 +132,10 @@ export default {
 
   &::-webkit-scrollbar {
     display: none;
+  }
+
+  .current {
+    color: rgb(255, 238, 0);
   }
 }
 
@@ -195,7 +198,17 @@ td .artist {
 
     &:hover {
       & {
-        background-color: rgb(5, 80, 150);
+        & > td {
+          background-color: rgb(5, 80, 150);
+        }
+
+        & td:first-child {
+          border-radius: $small 0 0 $small;
+        }
+
+        & td:last-child {
+          border-radius: 0 $small $small 0;
+        }
       }
     }
   }

@@ -286,7 +286,7 @@ def getFolderTree(folder: str = None):
         song['type']['name'] = "folder"
         song['type']['id'] = req_dir
 
-    return {"files": songs, "folders": folders}
+    return {"files": songs, "folders": sorted(folders, key= lambda i: i['name'])}
 
 
 @bp.route('/get/queue', methods=['POST'])

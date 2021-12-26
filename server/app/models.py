@@ -52,7 +52,7 @@ class AllSongs(Mongo):
         return self.collection.find().limit(25)
 
     def find_songs_by_folder(self, query):
-        return self.collection.find({'folder': query})
+        return self.collection.find({'folder': query}).sort('title', pymongo.ASCENDING)
 
     def find_songs_by_folder_og(self, query):
         return self.collection.find({'folder': query})
