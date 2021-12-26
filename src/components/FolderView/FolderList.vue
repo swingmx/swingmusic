@@ -21,7 +21,7 @@
 
 <script>
 export default {
-  props: ["folders"]
+  props: ["folders"],
 };
 </script>
 
@@ -66,6 +66,7 @@ export default {
   background-position: 1rem;
   background-size: 10% 100%;
   background-color: rgba(80, 80, 80, 0.247);
+  transition: all 0.2s ease;
 
   .f-item-count {
     position: absolute;
@@ -83,6 +84,11 @@ export default {
 }
 
 .f-container .f-item:hover {
-  background-color: rgba(0, 0, 0, 0.527);
+  transition: all 0.2s ease;
+  background: #000000; /* fallback for old browsers */
+  background: no-repeat 8%/100% url(../../assets/icons/folder.svg),
+    -webkit-linear-gradient(to bottom, #434343, #000000); /* Chrome 10-25, Safari 5.1-6 */
+  background: no-repeat 8%/10% url(../../assets/icons/folder.svg),
+    linear-gradient(to bottom, #434343, #000000); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
 }
 </style>

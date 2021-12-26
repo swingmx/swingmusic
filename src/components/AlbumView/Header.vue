@@ -44,6 +44,22 @@ export default {
 .a-header {
   height: 14rem;
   background: rgb(0, 0, 0);
+  background: #355c7d; /* fallback for old browsers */
+  background: -webkit-linear-gradient(
+    to right,
+    #c06c84,
+    #6c5b7b,
+    #355c7d
+  ); /* Chrome 10-25, Safari 5.1-6 */
+  background: linear-gradient(
+    to right,
+    #c06c84,
+    #6c5b7b,
+    #355c7d
+  ); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+
+  background-position: 50% 10%;
+
   display: flex;
   align-items: center;
   padding: 0 1rem 0 1rem;

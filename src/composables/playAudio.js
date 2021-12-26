@@ -21,7 +21,7 @@ const playAudio = (path) => {
   };
 
   audio.ontimeupdate = () => {
-    pos.value = (audio.currentTime / audio.duration) * 100;
+    pos.value = (audio.currentTime / audio.duration) * 1000;
   };
 
   audio.addEventListener("ended", () => {
@@ -41,7 +41,7 @@ function playPrev() {
 
 function seek(pos) {
   console.log(pos);
-  audio.currentTime = (pos / 100) * audio.duration;
+  audio.currentTime = (pos / 1000) * audio.duration;
 }
 
 function playPause() {

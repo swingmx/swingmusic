@@ -24,8 +24,7 @@
         type="range"
         :value="pos"
         min="0"
-        max="100"
-        step="1"
+        max="1000"
         @change="seek()"
       />
     </div>
@@ -85,7 +84,7 @@ export default {
       pos,
       seek,
       isPlaying,
-      fmtMSS
+      fmtMSS,
     };
   },
 };
@@ -97,7 +96,14 @@ export default {
   height: 14rem;
   margin-top: 1rem;
   padding: 0.5rem;
-  background-color: rgb(0, 0, 0);
+  background: rgb(14, 14, 14);
+  background: linear-gradient(
+    326deg,
+    rgb(0, 0, 0) 0%,
+    rgb(10, 10, 10) 13%,
+    rgba(0, 0, 0, 1) 43%,
+    rgba(0, 0, 0, 1) 100%
+  );
   display: grid;
   grid-template-rows: 3fr 1fr;
 
@@ -130,7 +136,17 @@ export default {
       width: 100%;
       height: 0.25rem;
       cursor: pointer;
-      background: #3071a9;
+      background: #1488cc; /* fallback for old browsers */
+      background: -webkit-linear-gradient(
+        to right,
+        #1488cc,
+        #2b32b2
+      ); /* Chrome 10-25, Safari 5.1-6 */
+      background: linear-gradient(
+        to right,
+        #1488cc,
+        #2b32b2
+      ); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
     }
 
     input::-webkit-slider-thumb {
@@ -255,12 +271,13 @@ export default {
 
     #title {
       margin: 0;
-      width: 13rem;
+      width: 22rem;
       color: #fff;
     }
 
     #artist {
       font-size: small;
+      width: 22rem;
       color: rgba(255, 255, 255, 0.712);
     }
 

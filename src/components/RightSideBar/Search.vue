@@ -3,7 +3,7 @@
     <input
       type="search"
       id="search"
-      placeholder="Michael Jackson"
+      placeholder="find your music"
       v-model="query"
     />
     <div class="scrollable" :class="{ v0: !is_hidden, v1: is_hidden }">
@@ -96,6 +96,9 @@ export default {
 </script>
 
 <style>
+.right-search {
+  z-index: 10;
+}
 .right-search .v0 {
   max-height: 0em;
   transition: max-height 0.5s ease;

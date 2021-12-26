@@ -72,8 +72,6 @@ export default {
 };
 </script>
 
-
-
 <style lang="scss">
 .side-nav-container .in {
   display: flex;

@@ -7,13 +7,14 @@ class Mongo:
         mongo_uri = pymongo.MongoClient()
         self.db = mongo_uri[database]
 
+
 class Artists(Mongo):
     def __init__(self):
         super(Artists, self).__init__('ALL_ARTISTS')
         self.collection = self.db['THEM_ARTISTS']
 
     def insert_artist(self, artist_obj):
-        self.collection.update(artist_obj, artist_obj, upsert=True)
+        self.collection.update_one(artist_obj, {'$set': artist_obj}, upsert=True)
 
     def get_all_artists(self):
         return self.collection.find()
@@ -48,20 +49,16 @@ class AllSongs(Mongo):
         return self.collection.find({'album': {'$regex': query, '$options': 'i'}})
 
     def get_all_songs(self):
-        return self.collection.find()
+        return self.collection.find().limit(25)
 
-    def find_songs_by_folder(self, query, last_id=None):
-        limit = 18
-        if last_id is None:
-            return self.collection.find({'folder': query}).limit(limit)
-        else:
-            return self.collection.find({'folder': query, '_id': {'$gt': ObjectId(last_id)}}).limit(limit)
+    def find_songs_by_folder(self, query):
+        return self.collection.find({'folder': query})
 
     def find_songs_by_folder_og(self, query):
         return self.collection.find({'folder': query})
 
     def find_songs_by_artist(self, query):
-        return self.collection.find({'artists': {'$regex': query, '$options': 'i'}})
+        return self.collection.find({'artists': query})
 
     def find_songs_by_album_artist(self, query):
         return self.collection.find({'album_artist': {'$regex': query, '$options': 'i'}})

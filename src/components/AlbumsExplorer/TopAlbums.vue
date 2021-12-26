@@ -101,7 +101,7 @@ export default {
 
       .info .top {
         height: 2.5rem;
-        background-color: rgb(51, 129, 20);
+        background-color: $blue;
         border-radius: $small;
         margin-left: auto;
         display: grid;
@@ -126,7 +126,7 @@ export default {
         }
 
         &:hover {
-          background-color: rgb(0, 134, 89);
+          background-color: rgb(0, 45, 104);
           transition: all 0.2s ease-in-out;
 
           .play-icon {

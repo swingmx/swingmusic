@@ -63,27 +63,6 @@ export default {
         path.value = new_route.params.path;
         getPathFolders(path.value);
       });
-
-      scrollable.value.onscroll = () => {
-        let dom = scrollable.value;
-
-        let scrollY = dom.scrollHeight - dom.scrollTop;
-        let height = dom.offsetHeight;
-        let offset = height - scrollY;
-
-        if (offset == 0 || offset == 1) {
-          loading.value = true;
-          getData(path.value, last_song_id.value).then((data) => {
-            songs.value = songs.value.concat(data.songs.value);
-
-            loading.value = false;
-
-            if (songs.value.length) {
-              last_song_id.value = songs.value.slice(-1)[0]._id.$oid;
-            }
-          });
-        }
-      };
     });
 
     return {
@@ -105,6 +84,7 @@ export default {
   padding-left: $small;
   padding-right: $small;
   padding-top: 5rem;
+  overflow: hidden;
 }
 
 #f-view-parent .fixed {

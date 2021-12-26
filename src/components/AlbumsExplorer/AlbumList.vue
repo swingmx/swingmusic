@@ -6,6 +6,7 @@
         <input type="search" placeholder="Search albums" />
       </div>
     </div>
+    <div class="separator"></div>
     <div class="all-albums">
       <router-link
         :to="{ path: '/albums/1' }"
@@ -125,7 +126,6 @@ export default {
 
   .all-albums {
     height: calc(100% - 4rem);
-    border-top: 1px solid $separator;
     padding: $small 0 0 0;
     overflow-y: auto;
 

@@ -188,6 +188,7 @@ def populate_images():
 
     return {'sample': artists_in_db_array[:25]}
 
+
 @bp.route("/artist/<artist>")
 @cache.cached()
 def getArtistData(artist: str):
@@ -244,24 +245,13 @@ def getArtistData(artist: str):
 @bp.route("/f/<folder>")
 @cache.cached()
 def getFolderTree(folder: str = None):
-    try:
-        req_dir, last_id = folder.split('::')
+    req_dir = folder.replace('|', '/')
+    print(folder)
 
-        req_dir = req_dir.replace('|', '/')
-        dir_list = req_dir.split('/')
-        requested_dir = os.path.join(home_dir, *dir_list)
+    if folder == "home":
+        req_dir = home_dir
 
-        if req_dir == "home":
-            requested_dir = home_dir
-
-        if last_id == "None":
-            last_id = None
-
-    except:
-        requested_dir = home_dir
-        last_id = None
-
-    dir_content = os.scandir(requested_dir)
+    dir_content = os.scandir(os.path.join(home_dir, req_dir))
 
     folders = []
 
@@ -286,7 +276,7 @@ def getFolderTree(folder: str = None):
                     getTags(entry.path)
 
     songs_array = all_songs_instance.find_songs_by_folder(
-        req_dir, last_id)
+        req_dir)
     songs = convert_to_json(songs_array)
     for song in songs:
         song['artists'] = song['artists'].split(', ')
@@ -297,27 +287,6 @@ def getFolderTree(folder: str = None):
         song['type']['id'] = req_dir
 
     return {"files": songs, "folders": folders}
-
-
-@bp.route('/image/<img_type>/<image_id>')
-def send_image(img_type, image_id):
-    if img_type == "thumbnail":
-        song_obj = all_songs_instance.get_song_by_id(image_id)
-        loaded_song = convert_one_to_json(song_obj)
-
-        img_dir = app_dir + "/images/thumbnails"
-        image = loaded_song['image']
-
-    if img_type == "artist":
-        artist_obj = artist_instance.get_artist_by_id(image_id)
-        artist = convert_one_to_json(artist_obj)
-
-        img_dir = app_dir + "/images/artists"
-
-        image = artist['name'] + ".jpg"
-        print(img_dir + image)
-
-    return send_from_directory(img_dir, image)
 
 
 @bp.route('/get/queue', methods=['POST'])
@@ -340,6 +309,7 @@ def post():
 
     return {'msg': 'ok'}
 
+
 @bp.route('/qwerty')
 def populateArtists():
     all_songs = all_songs_instance.get_all_songs()
@@ -358,5 +328,25 @@ def populateArtists():
             if a_obj not in artists:
                 artists.append(a_obj)
 
+            artist_instance.insert_artist(a_obj)
 
     return {'songs': artists}
+
+
+@bp.route('/albums')
+def getAlbums():
+    s = all_songs_instance.get_all_songs()
+    ss = convert_to_json(s)
+
+    albums = []
+
+    for song in ss:
+        al_obj = {
+            "name": song['album'],
+            "artist": song['artists']
+        }
+
+        if al_obj not in albums:
+            albums.append(al_obj)
+
+    return {'albums': albums}
