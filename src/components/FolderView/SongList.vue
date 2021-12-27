@@ -14,10 +14,10 @@
           <tr
             v-for="song in songs"
             :key="song"
-            @click="updateQueue(song), playAudio(song.filepath)"
+           
             :class="{ current: current._id.$oid == song._id.$oid }"
           >
-            <td :style="{ width: songTitleWidth + 'px' }" class="flex">
+            <td :style="{ width: songTitleWidth + 'px' }" class="flex"  @click="updateQueue(song), playAudio(song.filepath)">
               <div
                 class="album-art rounded image"
                 :style="{

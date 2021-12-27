@@ -5,7 +5,7 @@
     </div>
     <div class="separator" id="av-sep"></div>
     <div>
-      <SongList :album_songs="album_songs"/>
+      <SongList :songs="album_songs"/>
     </div>
     <div class="separator" id="av-sep"></div>
     <FeaturedArtists />
@@ -24,7 +24,7 @@ import Header from "../components/AlbumView/Header.vue";
 import AlbumBio from "../components/AlbumView/AlbumBio.vue";
 import FromTheSameArtist from "../components/AlbumView/FromTheSameArtist.vue";
 
-import SongList from "../components/PlaylistView/SongList.vue";
+import SongList from "../components/FolderView/SongList.vue";
 import FeaturedArtists from "../components/PlaylistView/FeaturedArtists.vue";
 
 import getAlbum from "../composables/getAlbum.js";
