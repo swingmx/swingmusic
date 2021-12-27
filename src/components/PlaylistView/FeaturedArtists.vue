@@ -85,7 +85,7 @@ export default {
 <style lang="scss">
 .f-artists {
   position: relative;
-  height: 12em;
+  height: 13em;
   width: calc(100%);
   background-color: #1f1e1d;
   padding: $small;
@@ -98,21 +98,13 @@ export default {
   width: 5rem;
   height: 2rem;
   position: absolute;
-  top: -0.2rem;
-  right: 0rem;
+  top: 0.5rem;
+  right: 0.5rem;
   display: flex;
   justify-content: space-between;
 
   &:hover {
     z-index: 1;
-  }
-
-  .next,
-  .prev {
-    width: 2em;
-    height: 2em;
-    cursor: pointer;
-    transition: all 0.5s ease;
   }
 
   .next {
@@ -123,23 +115,20 @@ export default {
     background: url(../../assets/icons/right-arrow.svg) no-repeat center;
     transform: rotate(180deg);
   }
+  .next,
+  .prev {
+    width: 2em;
+    height: 2em;
+    border-radius: $small;
+    cursor: pointer;
+    transition: all 0.5s ease;
+    background-color: rgb(79, 80, 80);
+  }
 
   .next:hover,
   .prev:hover {
-    transform: scale(1.2);
+    background-color: rgb(3, 1, 1);
     transition: all 0.5s ease;
-  }
-
-  .prev:hover {
-    transform: rotate(180deg) scale(1.2);
-  }
-
-  .next:active {
-    transform: scale(0.5);
-  }
-
-  .prev:active {
-    transform: rotate(180deg) scale(0.5);
   }
 }
 

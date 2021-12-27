@@ -83,34 +83,37 @@ const readQueue = () => {
 
 watch(current, (new_current, old_current) => {
   media.showMediaNotif();
-  localStorage.setItem("current", JSON.stringify(new_current));
 
-  const index = queue.value.findIndex(
-    (item) => item._id.$oid === new_current._id.$oid
-  );
+  new Promise((resolve) => {
+    const index = queue.value.findIndex(
+      (item) => item._id.$oid === new_current._id.$oid
+    );
 
-  if (index == queue.value.length - 1) {
-    next.value = queue.value[0];
-    prev.value = queue.value[queue.value.length - 2];
-  } else if (index == 0) {
-    next.value = queue.value[1];
-  } else {
-    next.value = queue.value[index + 1];
-  }
+    if (index == queue.value.length - 1) {
+      next.value = queue.value[0];
+      prev.value = queue.value[queue.value.length - 2];
+    } else if (index == 0) {
+      next.value = queue.value[1];
+    } else {
+      next.value = queue.value[index + 1];
+    }
 
-  prev.value = old_current;
-  localStorage.setItem("prev", JSON.stringify(prev.value));
-
-  setTimeout(() => {
+    prev.value = old_current;
+    resolve();
+  }).then(() => {
     const elem = document.getElementsByClassName("currentInQueue")[0];
 
     if (elem) {
       elem.scrollIntoView({
         behavior: "smooth",
+        block: "center",
         inline: "center",
       });
     }
-  }, 1000);
+  });
+  
+  localStorage.setItem("current", JSON.stringify(new_current));
+  localStorage.setItem("prev", JSON.stringify(prev.value));
 });
 
 export default { putCommas, doThat, readQueue, current, queue, next, prev };
