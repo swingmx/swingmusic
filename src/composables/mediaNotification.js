@@ -2,38 +2,40 @@ import perks from "./perks.js";
 import playAudio from "./playAudio.js";
 
 let showMediaNotif = () => {
+  let current = perks.current.value;
+
   if ("mediaSession" in navigator) {
     navigator.mediaSession.metadata = new window.MediaMetadata({
-      title: perks.current.value.title,
-      artist: perks.current.value.artists,
+      title: current.title,
+      artist: current.artists,
       artwork: [
         {
-          src: perks.current.value.image,
+          src: current.image,
           sizes: "96x96",
           type: "image/jpeg",
         },
         {
-          src: perks.current.value.image,
+          src: current.image,
           sizes: "128x128",
           type: "image/png",
         },
         {
-          src: perks.current.value.image,
+          src: current.image,
           sizes: "192x192",
           type: "image/png",
         },
         {
-          src: perks.current.value.image,
+          src: current.image,
           sizes: "256x256",
           type: "image/png",
         },
         {
-          src: perks.current.value.image,
+          src: current.image,
           sizes: "384x384",
           type: "image/png",
         },
         {
-          src: perks.current.value.image,
+          src: current.image,
           sizes: "512x512",
           type: "image/png",
         },

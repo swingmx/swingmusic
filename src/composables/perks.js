@@ -1,7 +1,7 @@
 import { ref } from "@vue/reactivity";
 import { watch } from "@vue/runtime-core";
 
-import media from './mediaNotification.js'
+import media from "./mediaNotification.js";
 
 const current = ref({
   title: "Nothing played yet",
@@ -82,7 +82,7 @@ const readQueue = () => {
 };
 
 watch(current, (new_current, old_current) => {
-  media.showMediaNotif()
+  media.showMediaNotif();
   localStorage.setItem("current", JSON.stringify(new_current));
 
   const index = queue.value.findIndex(
@@ -112,6 +112,5 @@ watch(current, (new_current, old_current) => {
     }
   }, 1000);
 });
-
 
 export default { putCommas, doThat, readQueue, current, queue, next, prev };
