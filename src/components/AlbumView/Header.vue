@@ -47,7 +47,7 @@ export default {
   position: absolute;
   z-index: -1;
   left: 0;
-  backdrop-filter: blur(20px);
+  backdrop-filter: blur(40px);
 }
 
 .a-header {
@@ -57,7 +57,7 @@ export default {
   background: -webkit-linear-gradient(to right, #414345, #232526);
   background: linear-gradient(to right, #050107, #00090e);
 
-  backdrop-filter: blur(0px);
+  backdrop-filter: blur(40px);
   overflow: hidden;
 
   display: flex;
@@ -72,6 +72,7 @@ export default {
     background-color: rgb(24, 24, 24);
     border-radius: 1rem;
     right: 1rem;
+    bottom: 1rem;
     width: 25rem;
     height: 5rem;
 
