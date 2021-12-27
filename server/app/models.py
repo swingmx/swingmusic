@@ -14,7 +14,8 @@ class Artists(Mongo):
         self.collection = self.db['THEM_ARTISTS']
 
     def insert_artist(self, artist_obj):
-        self.collection.update_one(artist_obj, {'$set': artist_obj}, upsert=True)
+        self.collection.update_one(
+            artist_obj, {'$set': artist_obj}, upsert=True)
 
     def get_all_artists(self):
         return self.collection.find()
@@ -46,7 +47,7 @@ class AllSongs(Mongo):
         return self.collection.find({'title': {'$regex': query, '$options': 'i'}})
 
     def find_songs_by_album(self, query):
-        return self.collection.find({'album': {'$regex': query, '$options': 'i'}})
+        return self.collection.find({'album': query})
 
     def get_all_songs(self):
         return self.collection.find().limit(25)
