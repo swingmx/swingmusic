@@ -350,3 +350,24 @@ def getAlbums():
             albums.append(al_obj)
 
     return {'albums': albums}
+
+@bp.route('/albums/<album>')
+def getAlbumSongs(album: str):
+    album = urllib.parse.unquote(album)
+    songs = all_songs_instance.find_songs_by_album(album)
+    songs_array = convert_to_json(songs)
+
+    for song in songs_array:
+        song['artists'] = song['artists'].split(', ')
+        song['filepath'] = song['filepath'].replace(home_dir, '')
+        song['image'] = img_path + song['image']
+
+    album_obj = {
+        "name": album,
+        "count": len(songs_array),
+        "duration": sum(song['length'] for song in songs_array),
+        "image": songs_array[0]['image'],
+        "artist": songs_array[0]['album_artist']
+        # "date": songs_array[0]['date']
+    }
+    return {'songs': songs_array, 'info': album_obj}

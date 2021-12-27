@@ -34,7 +34,7 @@ const routes = [
     component: AlbumsExplorer,
   },
   {
-    path: "/albums/:id",
+    path: "/albums/:album",
     name: "AlbumView",
     component: AlbumView,
   },

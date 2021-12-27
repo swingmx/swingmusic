@@ -33,8 +33,6 @@ export default {
 
     const songs = ref([]);
     const folders = ref([]);
-    const last_page = ref([]);
-    const last_song_id = ref(null);
 
     const scrollable = ref(null);
     const loading = ref(false);
@@ -45,14 +43,9 @@ export default {
         getData(path, last_id).then((data) => {
           scrollable.value.scrollTop = 0;
 
-          songs.value = data.songs.value;
-          last_page.value = songs.value;
-
-          if (songs.value.length) {
-            last_song_id.value = songs.value.slice(-1)[0]._id.$oid;
-          }
-
-          folders.value = data.folders.value;
+          songs.value = data.songs;
+          folders.value = data.folders;
+          
           loading.value = false;
         });
       };

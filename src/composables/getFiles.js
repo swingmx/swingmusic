@@ -1,14 +1,10 @@
-import { ref } from "@vue/reactivity";
-
-let folders_uri = "http://127.0.0.1:9876";
+let base_uri = "http://127.0.0.1:9876";
 
 const getData = async (path) => {
   let url;
-  const songs = ref(null);
-  const folders = ref(null);
 
   const encoded_path = encodeURIComponent(path.replaceAll("/", "|"));
-  url = url = `${folders_uri}/f/${encoded_path}`;
+  url = url = `${base_uri}/f/${encoded_path}`;
 
   const res = await fetch(url);
 
@@ -19,8 +15,8 @@ const getData = async (path) => {
 
   const data = await res.json();
 
-  songs.value = data.files;
-  folders.value = data.folders;
+  const songs = data.files;
+  const folders = data.folders;
 
   return { songs, folders };
 };

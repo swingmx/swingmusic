@@ -39,7 +39,11 @@
               </div>
             </td>
             <td :style="{ width: songTitleWidth + 'px' }">
-              <div class="ellip">{{ song.album }}</div>
+              <router-link
+                class="ellip"
+                :to="{ name: 'AlbumView', params: { album: song.album } }"
+                >{{ song.album }}</router-link
+              >
             </td>
             <td
               :style="{ width: songTitleWidth + 'px' }"

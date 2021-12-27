@@ -1,11 +1,11 @@
 <template>
   <div class="al-view rounded">
     <div class="header">
-      <Header />
+      <Header :album_info="album_info"/>
     </div>
     <div class="separator" id="av-sep"></div>
     <div>
-      <SongList />
+      <SongList :album_songs="album_songs"/>
     </div>
     <div class="separator" id="av-sep"></div>
     <FeaturedArtists />
@@ -17,7 +17,8 @@
 </template>
 
 <script>
-// import { useRoute } from 'vue-router'
+import { useRoute } from "vue-router";
+import { onMounted, ref } from "@vue/runtime-core";
 
 import Header from "../components/AlbumView/Header.vue";
 import AlbumBio from "../components/AlbumView/AlbumBio.vue";
@@ -25,6 +26,8 @@ import FromTheSameArtist from "../components/AlbumView/FromTheSameArtist.vue";
 
 import SongList from "../components/PlaylistView/SongList.vue";
 import FeaturedArtists from "../components/PlaylistView/FeaturedArtists.vue";
+
+import getAlbum from "../composables/getAlbum.js";
 
 export default {
   components: {
@@ -34,7 +37,24 @@ export default {
     SongList,
     FeaturedArtists,
   },
-  setup() {},
+  setup() {
+    const route = useRoute();
+    const album_name = route.params.album;
+    const album_songs = ref([]);
+    const album_info = ref({});
+
+    onMounted(() => {
+      getAlbum(album_name).then((data) => {
+        album_songs.value = data.songs;
+        album_info.value = data.info;
+      });
+    });
+
+    return {
+      album_songs,
+      album_info,
+    };
+  },
 };
 </script>
 
