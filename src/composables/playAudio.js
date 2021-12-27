@@ -1,6 +1,7 @@
 import { ref } from "@vue/reactivity";
 
 import perks from "./perks";
+import media from "./mediaNotification.js"
 
 const audio = ref(new Audio()).value;
 const pos = ref(0);
@@ -32,6 +33,7 @@ const playAudio = (path) => {
 function playNext() {
   playAudio(perks.next.value.filepath);
   perks.current.value = perks.next.value;
+  media.showMediaNotif()
 }
 
 function playPrev() {
