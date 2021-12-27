@@ -60,6 +60,7 @@ const readQueue = () => {
   const prev_queue = JSON.parse(localStorage.getItem("queue"));
   const last_played = JSON.parse(localStorage.getItem("current"));
   const next_ = JSON.parse(localStorage.getItem("next"));
+  const prev_ = JSON.parse(localStorage.getItem("prev"));
 
   if (last_played) {
     current.value = last_played;
@@ -72,9 +73,13 @@ const readQueue = () => {
   if (next_) {
     next.value = next_;
   }
+
+  if (prev_) {
+    prev.value = prev_;
+  }
 };
 
-watch(current, (new_current) => {
+watch(current, (new_current, old_current) => {
   localStorage.setItem("current", JSON.stringify(new_current));
 
   const index = queue.value.findIndex(
@@ -86,11 +91,25 @@ watch(current, (new_current) => {
     prev.value = queue.value[queue.value.length - 2];
   } else if (index == 0) {
     next.value = queue.value[1];
-    prev.value = queue.value[queue.value.length - 1];
+    // prev.value = queue.value[queue.value.length - 1];
   } else {
     next.value = queue.value[index + 1];
-    prev.value = queue.value[index - 1];
+    // prev.value = queue.value[index - 1];
   }
+
+  prev.value = old_current;
+  localStorage.setItem("prev", JSON.stringify(prev.value));
+
+  setTimeout(() => {
+    const elem = document.getElementsByClassName("currentInQueue")[0];
+
+    if (elem) {
+      elem.scrollIntoView({
+        behavior: "smooth",
+        inline: "center",
+      });
+    }
+  }, 100);
 });
 
 export default { putCommas, doThat, readQueue, current, queue, next, prev };

@@ -28,7 +28,9 @@
             v-for="song in queue"
             :key="song"
             @click="playThis(song)"
-            :class="{ currentInQueue: current._id.$oid == song._id.$oid }"
+            :class="{
+              currentInQueue: current._id.$oid == song._id.$oid,
+            }"
           >
             <div
               class="album-art image"
@@ -56,7 +58,6 @@
 import { ref, toRefs } from "@vue/reactivity";
 import perks from "@/composables/perks.js";
 import audio from "@/composables/playAudio.js";
-import { watch } from "@vue/runtime-core";
 
 export default {
   props: ["up_next"],
@@ -64,8 +65,8 @@ export default {
     const is_expanded = toRefs(props).up_next;
 
     const queue = ref(perks.queue);
-    const next = ref(perks.next);
     const current = ref(perks.current);
+    const next = ref(perks.next);
 
     let collapse = () => {
       emit("expandQueue");
@@ -73,28 +74,6 @@ export default {
 
     const { playNext } = audio;
     const { playAudio } = audio;
-
-    watch(is_expanded, (val) => {
-      if (val == true) {
-        var elem = document.getElementsByClassName("currentInQueue")[0];
-        elem.scrollIntoView({
-          behavior: "smooth",
-          block: "center",
-          inline: "center",
-        });
-      }
-    });
-
-    watch(current, (val) => {
-      if (val) {
-        var elem = document.getElementsByClassName("currentInQueue")[0];
-        elem.scrollIntoView({
-          behavior: "smooth",
-          block: "center",
-          inline: "center",
-        });
-      }
-    });
 
     const playThis = (song) => {
       playAudio(song.filepath);
@@ -110,8 +89,8 @@ export default {
       playThis,
       putCommas,
       queue,
-      next,
       current,
+      next,
     };
   },
 };
@@ -158,7 +137,7 @@ export default {
 }
 
 .up-next > p > span:hover {
-  background: rgb(62, 69, 77);
+  background: $blue;
   cursor: pointer;
 }
 
@@ -220,6 +199,7 @@ export default {
 
 .up-next .all-items .scrollable .song-item:hover {
   cursor: pointer;
+  background-color: $blue;
 }
 
 .up-next .all-items .scrollable .song-item hr {
