@@ -41,8 +41,9 @@ export default {
 }
 
 #f-items {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(13rem, 1fr));
+  grid-gap: 1rem;
   border-top: 1px solid var(--separator);
   gap: 1rem;
   padding-top: 1rem;
@@ -56,7 +57,6 @@ export default {
 }
 
 .f-container .f-item {
-  min-width: 13rem;
   min-height: 5rem;
   display: flex;
   align-items: center;

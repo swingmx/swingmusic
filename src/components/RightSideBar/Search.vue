@@ -123,7 +123,7 @@ export default {
         icon: "📁",
       },
       {
-        title: "🈁 this page",
+        title: "🈁 ここ",
         icon: "🈁",
       },
     ];
@@ -198,6 +198,21 @@ export default {
   background-color: #131313b2;
   overflow: hidden;
 
+  .item {
+    position: relative;
+    background-color: rgb(39, 37, 37);
+    padding: 0.5rem;
+    border-radius: 0.5rem;
+    cursor: pointer;
+    margin: 0 $small 0 0;
+    display: flex;
+    align-items: center;
+
+    &:hover {
+      background-color: rgb(170, 50, 50);
+    }
+  }
+
   .input {
     display: flex;
     align-items: center;
@@ -208,17 +223,7 @@ export default {
       margin-left: 3rem;
 
       .item {
-        position: relative;
-        background-color: rgb(39, 37, 37);
-        padding: 0.5rem;
-        border-radius: 0.5rem;
-        cursor: pointer;
-        margin: 0 $small 0 0;
-        display: flex;
-        align-items: center;
-
         &:hover {
-          background-color: rgb(170, 50, 50);
           width: 4rem;
 
           .cancel {
@@ -250,7 +255,6 @@ export default {
 
   .v00 {
     opacity: 1;
-    max-height: 3rem;
     transition: all 0.2s ease-in;
   }
 
@@ -260,17 +264,6 @@ export default {
     margin-left: 1rem;
     position: absolute;
     right: 0;
-
-    .item {
-      cursor: pointer;
-      background-color: rgb(75, 70, 70);
-      padding: $small;
-      border-radius: $small;
-
-      &:hover {
-        background-color: rgb(170, 50, 50);
-      }
-    }
 
     .item::before {
       content: "#";
@@ -283,17 +276,10 @@ export default {
   display: flex;
 
   .item {
-    background-color: rgb(39, 37, 37);
-    padding: 0.5rem;
-    border-radius: 0.5rem;
-    cursor: pointer;
     margin: $small;
-
-    &:hover {
-      background-color: rgb(170, 50, 50);
-    }
   }
 }
+
 .right-search .scrollable {
   height: 26rem;
   overflow-y: scroll;
