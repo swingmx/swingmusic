@@ -12,15 +12,16 @@
       <PinnedStuff :collapsed="collapsed" />
     </div>
     <div class="content">
-      <router-view />
-    </div>
-    <div class="r-sidebar">
-      <div class="m-np">
       <Search
         v-model:search="search"
         @expandSearch="expandSearch"
         @collapseSearch="collapseSearch"
       />
+      <div class="separator" style="border: none"></div>
+      <router-view />
+    </div>
+    <div class="r-sidebar">
+      <div class="m-np">
         <NowPlaying />
       </div>
       <UpNext v-model:up_next="up_next" @expandQueue="expandQueue" />

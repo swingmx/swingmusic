@@ -120,4 +120,13 @@ watch(current, (new_current, old_current) => {
   localStorage.setItem("prev", JSON.stringify(prev.value));
 });
 
-export default { putCommas, doThat, readQueue, focusCurrent, current, queue, next, prev };
+export default {
+  putCommas,
+  doThat,
+  readQueue,
+  focusCurrent,
+  current,
+  queue,
+  next,
+  prev,
+};
