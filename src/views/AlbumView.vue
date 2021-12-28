@@ -40,11 +40,12 @@ export default {
   setup() {
     const route = useRoute();
     const album_name = route.params.album;
+    const album_artists = route.params.artist;
     const album_songs = ref([]);
     const album_info = ref({});
 
     onMounted(() => {
-      getAlbum(album_name).then((data) => {
+      getAlbum(album_name, album_artists).then((data) => {
         album_songs.value = data.songs;
         album_info.value = data.info;
       });

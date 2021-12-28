@@ -351,11 +351,15 @@ def getAlbums():
 
     return {'albums': albums}
 
-@bp.route('/albums/<album>')
-def getAlbumSongs(album: str):
-    album = urllib.parse.unquote(album)
-    songs = all_songs_instance.find_songs_by_album(album)
+@bp.route('/albums/<query>')
+def getAlbumSongs(query: str):
+    album = query.split('::')[0]
+    artist = query.split('::')[1]
+
+    songs = all_songs_instance.find_songs_by_album(album, artist)
     songs_array = convert_to_json(songs)
+
+    print(artist)
 
     for song in songs_array:
         song['artists'] = song['artists'].split(', ')

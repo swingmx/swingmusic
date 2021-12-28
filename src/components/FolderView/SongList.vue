@@ -32,7 +32,7 @@
               </div>
             </td>
             <td :style="{ width: songTitleWidth + 'px' }">
-              <div class="ellip">
+              <div class="ellip" v-if="song.artists[0] != ''">
                 <span
                   class="artist"
                   v-for="artist in putCommas(song.artists)"
@@ -40,11 +40,17 @@
                   >{{ artist }}</span
                 >
               </div>
+              <div class="ellip" v-else>
+                <span class="artist">{{ song.album_artist }}</span>
+              </div>
             </td>
             <td :style="{ width: songTitleWidth + 'px' }">
               <router-link
                 class="ellip"
-                :to="{ name: 'AlbumView', params: { album: song.album } }"
+                :to="{
+                  name: 'AlbumView',
+                  params: { album: song.album, artist: song.album_artist },
+                }"
                 >{{ song.album }}</router-link
               >
             </td>
@@ -80,6 +86,7 @@ export default {
     const putCommas = perks.putCommas;
 
     const updateQueue = async (song) => {
+      console.log(song.artists.length);
       if (perks.queue.value[0]._id.$oid !== song_list.value[0]._id.$oid) {
         const queue = song_list.value;
         localStorage.setItem("queue", JSON.stringify(queue));

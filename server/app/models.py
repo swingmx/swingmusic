@@ -46,8 +46,8 @@ class AllSongs(Mongo):
         self.collection.create_index([('title', pymongo.TEXT)])
         return self.collection.find({'title': {'$regex': query, '$options': 'i'}})
 
-    def find_songs_by_album(self, query):
-        return self.collection.find({'album': query})
+    def find_songs_by_album(self, name, artist):
+        return self.collection.find({'album': name, 'album_artist': artist})
 
     def get_all_songs(self):
         return self.collection.find().limit(25)

@@ -10,10 +10,13 @@
       <div>
         <p id="title" class="ellipsis">{{ current.title }}</p>
         <hr />
-        <div id="artist">
+        <div id="artist" v-if="current.artists[0] != ''">
           <span v-for="artist in putCommas(current.artists)" :key="artist">{{
             artist
           }}</span>
+        </div>
+        <div id="artist" v-else>
+          <span>{{ current.album_artist }}</span>
         </div>
       </div>
     </div>
