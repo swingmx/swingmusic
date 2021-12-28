@@ -81,6 +81,18 @@ const readQueue = () => {
   }
 };
 
+function focusCurrent() {
+  const elem = document.getElementsByClassName("currentInQueue")[0];
+
+  if (elem) {
+    elem.scrollIntoView({
+      behavior: "smooth",
+      block: "center",
+      inline: "center",
+    });
+  }
+}
+
 watch(current, (new_current, old_current) => {
   media.showMediaNotif();
 
@@ -101,19 +113,11 @@ watch(current, (new_current, old_current) => {
     prev.value = old_current;
     resolve();
   }).then(() => {
-    const elem = document.getElementsByClassName("currentInQueue")[0];
-
-    if (elem) {
-      elem.scrollIntoView({
-        behavior: "smooth",
-        block: "center",
-        inline: "center",
-      });
-    }
+    focusCurrent();
   });
-  
+
   localStorage.setItem("current", JSON.stringify(new_current));
   localStorage.setItem("prev", JSON.stringify(prev.value));
 });
 
-export default { putCommas, doThat, readQueue, current, queue, next, prev };
+export default { putCommas, doThat, readQueue, focusCurrent, current, queue, next, prev };

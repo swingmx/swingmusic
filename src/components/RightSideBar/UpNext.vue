@@ -58,6 +58,7 @@
 import { ref, toRefs } from "@vue/reactivity";
 import perks from "@/composables/perks.js";
 import audio from "@/composables/playAudio.js";
+import { watch } from "@vue/runtime-core";
 
 export default {
   props: ["up_next"],
@@ -71,6 +72,14 @@ export default {
     let collapse = () => {
       emit("expandQueue");
     };
+
+    watch(is_expanded, (newVal) => {
+      if (newVal) {
+        setTimeout(() => {
+          perks.focusCurrent();
+        }, 1000);
+      }
+    });
 
     const { playNext } = audio;
     const { playAudio } = audio;
