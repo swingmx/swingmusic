@@ -51,7 +51,7 @@ def search_by_title():
     songs = all_songs_instance.find_song_by_title(query)
     all_songs.append(convert_to_json(songs))
 
-    songs_by_albums = all_songs_instance.find_songs_by_album(query)
+    songs_by_albums = all_songs_instance.get_songs_by_album(query)
     all_songs.append(convert_to_json(songs_by_albums))
 
     songs_by_artists = all_songs_instance.find_songs_by_artist(query)
@@ -277,7 +277,9 @@ def getFolderTree(folder: str = None):
 
     songs_array = all_songs_instance.find_songs_by_folder(
         req_dir)
+
     songs = convert_to_json(songs_array)
+
     for song in songs:
         song['artists'] = song['artists'].split(', ')
         song['filepath'] = song['filepath'].replace(home_dir, '')
@@ -286,7 +288,7 @@ def getFolderTree(folder: str = None):
         song['type']['name'] = "folder"
         song['type']['id'] = req_dir
 
-    return {"files": songs, "folders": sorted(folders, key= lambda i: i['name'])}
+    return {"files": remove_duplicates(songs), "folders": sorted(folders, key= lambda i: i['name'])}
 
 
 @bp.route('/get/queue', methods=['POST'])

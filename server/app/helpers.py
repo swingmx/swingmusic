@@ -94,13 +94,13 @@ def getTags(full_path):
         try:
             audio = FLAC(full_path)
         except:
-            return 
+            return
     elif full_path.endswith('.mp3'):
         try:
             audio = MP3(full_path)
         except:
             return
-        
+
     try:
         artists = audio['artist'][0]
     except KeyError:
@@ -202,6 +202,15 @@ def get_folders():
 
 
 def remove_duplicates(array):
+    song_num = 0
+
+    while song_num < len(array):
+        for index, song in enumerate(array):
+            if array[song_num]["title"] == song["title"] and array[song_num]["album"] == song["album"] and array[song_num]["artists"] == song["artists"] and index != song_num:
+                array.remove(song)
+        
+        song_num += 1
+
     return array
 
 

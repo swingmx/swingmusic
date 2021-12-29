@@ -48,6 +48,9 @@ class AllSongs(Mongo):
 
     def find_songs_by_album(self, name, artist):
         return self.collection.find({'album': name, 'album_artist': artist})
+    
+    def get_songs_by_album(self, query):
+        return self.collection.find({'album': query})
 
     def get_all_songs(self):
         return self.collection.find().limit(25)
