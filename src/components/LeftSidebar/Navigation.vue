@@ -73,13 +73,16 @@ export default {
 </script>
 
 <style lang="scss">
-.side-nav-container .in {
-  display: flex;
+.collapsed .nav-button {
+  font-size: smaller;
+  margin-top: 5px;
   align-items: center;
-}
+  justify-content: center;
 
-.collapsed .in {
-  flex-direction: column;
+  .in {
+    width: 100%;
+    flex-direction: column;
+  }
 }
 
 .side-nav-container {
@@ -91,67 +94,60 @@ export default {
 
   .nav-button {
     border-radius: $small;
+    display: flex;
+    align-items: flex-start;
+    justify-content: flex-start;
+    background-color: transparent;
+    height: 100%;
+    padding: 0.6rem 0 0.6rem 0;
+
+    &:hover {
+      background-color: rgb(5, 80, 150);
+    }
+
+    .nav-icon {
+      height: 1.5rem;
+      width: 1.5rem;
+      margin-right: 0.5rem;
+      margin-left: 10px;
+    }
+
+    .in {
+      display: flex;
+      align-items: center;
+    }
+
+    #home-icon {
+      background-image: url(../../assets/icons/home.svg);
+    }
+
+    #album-icon {
+      background-image: url(../../assets/icons/album.svg);
+    }
+
+    #text {
+      margin-top: 5px;
+    }
+
+    #artists-icon {
+      background-image: url(../../assets/icons/artist.svg);
+    }
+
+    #playlists-icon {
+      background-image: url(../../assets/icons/playlist.svg);
+    }
+
+    #mixes-icon {
+      background-image: url(../../assets/icons/mix.svg);
+    }
+
+    #folders-icon {
+      background-image: url(../../assets/icons/folder.svg);
+    }
+    #settings-icon {
+      background-image: url(../../assets/icons/settings.svg);
+    }
   }
-}
-
-.side-nav-container .nav-button {
-  display: flex;
-  align-items: flex-start;
-  justify-content: flex-start;
-  background-color: transparent;
-  height: 100%;
-  padding: 10px;
-}
-
-.collapsed .nav-button {
-  font-size: smaller;
-  margin-top: 5px;
-}
-
-.side-nav-container .nav-button:hover {
-  background-color: rgb(5, 80, 150);
-}
-
-.side-nav-container .nav-button .nav-icon {
-  height: 24px;
-  width: 24px;
-  margin-right: 0.5rem;
-  margin-left: 10px;
-}
-
-.side-nav-container #home-button #home-icon {
-  background-image: url(../../assets/icons/home.svg);
-}
-
-.side-nav-container #album-button #album-icon {
-  background-image: url(../../assets/icons/album.svg);
-}
-
-.side-nav-container #home-button #text {
-  margin-top: 5px;
-}
-
-.side-nav-container #artists-button #artists-icon {
-  background-image: url(../../assets/icons/artist.svg);
-}
-
-.side-nav-container #playlists-button #playlists-icon {
-  background-image: url(../../assets/icons/playlist.svg);
-}
-
-.side-nav-container #mixes-button #mixes-icon {
-  background-image: url(../../assets/icons/mix.svg);
-}
-
-.side-nav-container #folders-button #folders-icon {
-  background-image: url(../../assets/icons/folder.svg);
-}
-.side-nav-container #folders-button #settings-icon {
-  background-image: url(../../assets/icons/settings.svg);
-}
-
-.side-nav-container #folders-button #text {
-  margin-top: 5px;
 }
 
 .side-nav-container hr {

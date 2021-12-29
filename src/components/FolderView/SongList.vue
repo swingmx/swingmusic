@@ -86,7 +86,6 @@ export default {
     const putCommas = perks.putCommas;
 
     const updateQueue = async (song) => {
-      console.log(song.artists.length);
       if (perks.queue.value[0]._id.$oid !== song_list.value[0]._id.$oid) {
         const queue = song_list.value;
         localStorage.setItem("queue", JSON.stringify(queue));

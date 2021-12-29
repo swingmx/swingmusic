@@ -353,8 +353,8 @@ def getAlbums():
 
 @bp.route('/albums/<query>')
 def getAlbumSongs(query: str):
-    album = query.split('::')[0]
-    artist = query.split('::')[1]
+    album = query.split('::')[0].replace('|', '/')
+    artist = query.split('::')[1].replace('|', '/')
 
     songs = all_songs_instance.find_songs_by_album(album, artist)
     songs_array = convert_to_json(songs)

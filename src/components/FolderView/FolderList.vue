@@ -84,11 +84,6 @@ export default {
 }
 
 .f-container .f-item:hover {
-  transition: all 0.2s ease;
-  background: #000000;
-  background: no-repeat 8%/100% url(../../assets/icons/folder.svg),
-    -webkit-linear-gradient(to bottom, #434343, #000000);
-  background: no-repeat 8%/10% url(../../assets/icons/folder.svg),
-    linear-gradient(to bottom, #434343, #000000);
+  background-color: $blue;
 }
 </style>

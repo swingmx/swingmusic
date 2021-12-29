@@ -1,9 +1,5 @@
 <template>
-  <div
-    class="right-search"
-    @mouseenter="magic_flag = true"
-    @mouseleave="toggleMagicFlag"
-  >
+  <div class="right-search" ref="searchComponent">
     <div class="input">
       <div class="search-icon image"></div>
       <div class="filter">
@@ -19,6 +15,9 @@
       <input
         type="search"
         id="search"
+        @focus="toggleMagicFlag"
+        @blur="toggleMagicFlag"
+        @keyup.backspace="removeLastFilter"
         placeholder="find your music"
         v-model="query"
       />
@@ -127,6 +126,7 @@ export default {
         icon: "🈁",
       },
     ];
+    const searchComponent = ref(null);
     const filters = ref([]);
     const albums = [
       "Smooth Criminal like wtf ... and im serious",
@@ -148,14 +148,22 @@ export default {
       filters.value = filters.value.filter((f) => f !== filter);
     }
 
+    function removeLastFilter() {
+      if (query.value === '') {
+        if (filters.value.length) {
+          filters.value.pop();
+        }
+      }
+    }
+
     function toggleMagicFlag() {
       setTimeout(() => {
-        magic_flag.value = false;
-      }, 1000);
+        magic_flag.value = !magic_flag.value;
+      }, 300);
     }
 
     watch(query, (new_query) => {
-      if (new_query.length > 0) {
+      if (new_query) {
         emit("expandSearch");
       } else {
         emit("collapseSearch");
@@ -166,6 +174,7 @@ export default {
       addFilter,
       toggleMagicFlag,
       removeFilter,
+      removeLastFilter,
       songs,
       albums,
       artists,
@@ -174,6 +183,7 @@ export default {
       magic_flag,
       options,
       filters,
+      searchComponent,
     };
   },
 };

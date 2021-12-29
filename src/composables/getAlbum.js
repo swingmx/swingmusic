@@ -1,7 +1,7 @@
 let base_uri = "http://127.0.0.1:9876";
 
 const getAlbum = async (name, artist) => {
-  const res = await fetch(base_uri + "/albums/" + name + "::" + artist);
+  const res = await fetch(base_uri + "/albums/" + name.replaceAll("/", "|") + "::" + artist.replaceAll("/", "|"));
 
   if (!res.ok) {
     const message = `An error has occured: ${res.status}`;
