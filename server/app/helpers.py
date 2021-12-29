@@ -154,7 +154,7 @@ def getTags(full_path):
     img_path = extract_thumb(full_path)
 
     tags = {
-        "filepath": full_path,
+        "filepath": full_path.replace(home_dir, ''),
         "folder": os.path.dirname(full_path).replace(home_dir, ""),
         "title": title,
         "artists": artists,

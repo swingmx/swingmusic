@@ -46,18 +46,50 @@ def search_by_title():
     else:
         query = request.args.get('q')
 
-    all_songs = []
+    albums = []
+    artists = []
 
-    songs = all_songs_instance.find_song_by_title(query)
-    all_songs.append(convert_to_json(songs))
+    s = all_songs_instance.find_song_by_title(query)
+    songs = convert_to_json(s)
 
-    songs_by_albums = all_songs_instance.get_songs_by_album(query)
-    all_songs.append(convert_to_json(songs_by_albums))
+    al = all_songs_instance.search_songs_by_album(query)
+    songs_by_album = convert_to_json(al)
 
-    songs_by_artists = all_songs_instance.find_songs_by_artist(query)
-    all_songs.append(convert_to_json(songs_by_artists))
+    ar = all_songs_instance.search_songs_by_artist(query)
+    songs_by_artists = convert_to_json(ar)
 
-    return {'songs': all_songs}
+
+    for song in songs_by_album:
+        album_obj = {
+            "name": song["album"],
+            "artists": song["artists"],
+        }
+
+        if album_obj not in albums:
+            albums.append(album_obj)
+    
+    for album in albums:
+        try:
+            image = convert_one_to_json(all_songs_instance.get_song_by_album(album['name'], album['artists']))['image']
+        except:
+            image: None
+        
+        album['image'] = image
+
+    for song in songs_by_artists:
+        a = song["artists"].split(', ')
+
+        for artist in a:
+            if query.lower() in artist.lower():
+
+                artist_obj = {
+                    "name": artist,
+                }
+
+                if artist_obj not in artists:
+                    artists.append(artist_obj)
+
+    return {'songs': remove_duplicates(songs), 'albums': albums, 'artists': artists}
 
 
 @bp.route('/populate')
@@ -95,18 +127,6 @@ def populate():
 
     bar.finish()
     return {'msg': 'updated everything'}
-
-
-@bp.route('/file/<file_id>')
-def send_audio(file_id):
-    song_obj = all_songs_instance.get_song_by_id(file_id)
-    loaded_song = convert_one_to_json(song_obj)
-
-    filepath = loaded_song['filepath'].split('/')[-1]
-    print(loaded_song['folder'] + filepath)
-
-    return send_from_directory(home_dir + loaded_song['folder'], filepath)
-
 
 @bp.route("/folder/artists")
 def get_folder_artists():
@@ -282,34 +302,12 @@ def getFolderTree(folder: str = None):
 
     for song in songs:
         song['artists'] = song['artists'].split(', ')
-        song['filepath'] = song['filepath'].replace(home_dir, '')
         song['image'] = img_path + song['image']
 
         song['type']['name'] = "folder"
         song['type']['id'] = req_dir
 
-    return {"files": remove_duplicates(songs), "folders": sorted(folders, key= lambda i: i['name'])}
-
-
-@bp.route('/get/queue', methods=['POST'])
-def post():
-    args = request.get_json()
-
-    type = args['type']
-    id = args['id']
-
-    if type == "folder":
-        songs = all_songs_instance.find_songs_by_folder_og(id)
-        songs_array = convert_to_json(songs)
-
-        for song in songs_array:
-            song['artists'] = song['artists'].split(', ')
-            song['filepath'] = song['filepath'].replace(home_dir, '')
-            song['image'] = img_path + song['image']
-
-        return {'songs': songs_array}
-
-    return {'msg': 'ok'}
+    return {"files": remove_duplicates(songs), "folders": sorted(folders, key=lambda i: i['name'])}
 
 
 @bp.route('/qwerty')
@@ -353,6 +351,7 @@ def getAlbums():
 
     return {'albums': albums}
 
+
 @bp.route('/albums/<query>')
 def getAlbumSongs(query: str):
     album = query.split('::')[0].replace('|', '/')
@@ -365,7 +364,6 @@ def getAlbumSongs(query: str):
 
     for song in songs_array:
         song['artists'] = song['artists'].split(', ')
-        song['filepath'] = song['filepath'].replace(home_dir, '')
         song['image'] = img_path + song['image']
 
     album_obj = {
