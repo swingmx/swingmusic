@@ -36,7 +36,7 @@ import { ref } from "@vue/reactivity";
 import Navigation from "./components/LeftSidebar/Navigation.vue";
 import PinnedStuff from "./components/LeftSidebar/PinnedStuff.vue";
 
-import Search from "./components/RightSideBar/Search.vue";
+import Search from "./components/Search.vue";
 import NowPlaying from "./components/RightSideBar/NowPlaying.vue";
 import UpNext from "./components/RightSideBar/UpNext.vue";
 import RecommendedArtist from "./components/RightSideBar/Recommendation.vue";

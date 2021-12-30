@@ -133,6 +133,7 @@ export default {
       "Xscape",
       "USA for Africa",
     ];
+
     const artists = ["Michael Jackson waihenya", "Jackson 5"];
     const query = ref(null);
     const magic_flag = ref(false);
@@ -148,9 +149,14 @@ export default {
       filters.value = filters.value.filter((f) => f !== filter);
     }
 
+    let counter = 0;
+
     function removeLastFilter() {
-      if (query.value === '') {
-        if (filters.value.length) {
+      console.log("removeLastFilter");
+      if (query.value === "" || query.value === null) {
+        counter ++;
+
+        if (counter > 1 || query.value === null){
           filters.value.pop();
         }
       }
@@ -163,7 +169,8 @@ export default {
     }
 
     watch(query, (new_query) => {
-      if (new_query) {
+      if (new_query !== "") {
+        counter = 0;
         emit("expandSearch");
       } else {
         emit("collapseSearch");
@@ -241,7 +248,7 @@ export default {
             right: 0.5rem;
             width: 1.5rem;
             height: 1.5rem;
-            background-image: url(../../assets/icons/a.svg);
+            background-image: url(../assets/icons/a.svg);
             background-size: 70%;
           }
         }
@@ -253,7 +260,7 @@ export default {
     position: absolute;
     height: 2.5rem;
     width: 2.5rem;
-    background-image: url(../../assets/icons/search.svg);
+    background-image: url(../assets/icons/search.svg);
     background-size: 70%;
   }
 
@@ -359,7 +366,7 @@ export default {
       background-color: rgb(27, 150, 74);
       border-radius: 0.5rem;
       margin: 0 $small 0 $small;
-      background-image: url(../../assets/images/thriller.jpg);
+      background-image: url(../assets/images/thriller.jpg);
     }
 
     .tags .artist {
@@ -411,7 +418,7 @@ export default {
         background-color: rgba(26, 26, 26, 0.452);
         border-radius: 0.5rem;
         margin-bottom: 0.5rem;
-        background-image: url(../../assets/images/thriller.jpg);
+        background-image: url(../assets/images/thriller.jpg);
       }
 
       .title {
@@ -451,7 +458,7 @@ export default {
         background-color: rgba(16, 65, 14, 0.356);
         margin-bottom: 0.5rem;
         background-size: 50%;
-        background-image: url(../../assets/images/thriller.jpg);
+        background-image: url(../assets/images/thriller.jpg);
         background-size: cover;
       }
 
