@@ -11,12 +11,15 @@
       <Navigation :collapsed="collapsed" />
       <PinnedStuff :collapsed="collapsed" />
     </div>
-    <div class="content">
-      <Search
-        v-model:search="search"
-        @expandSearch="expandSearch"
-        @collapseSearch="collapseSearch"
-      />
+    <div class="content" :class="{ isMagicFlag: isMagicFlag }">
+      <div class="search-box">
+        <Search
+          v-model:search="search"
+          @expandSearch="expandSearch"
+          @collapseSearch="collapseSearch"
+        />
+      </div>
+
       <div class="separator" style="border: none"></div>
       <router-view />
     </div>
@@ -31,7 +34,7 @@
 </template>
 
 <script>
-import { ref } from "@vue/reactivity";
+import { computed, ref } from "@vue/reactivity";
 
 import Navigation from "./components/LeftSidebar/Navigation.vue";
 import PinnedStuff from "./components/LeftSidebar/PinnedStuff.vue";
@@ -41,6 +44,7 @@ import NowPlaying from "./components/RightSideBar/NowPlaying.vue";
 import UpNext from "./components/RightSideBar/UpNext.vue";
 import RecommendedArtist from "./components/RightSideBar/Recommendation.vue";
 
+import state from "@/composables/state.js";
 import perks from "@/composables/perks.js";
 
 export default {
@@ -57,6 +61,10 @@ export default {
     const collapsed = ref(true);
 
     perks.readQueue();
+
+    const isMagicFlag = computed(() => {
+      return state.magic_flag.value;
+    });
 
     function toggleNav() {
       collapsed.value = !collapsed.value;
@@ -87,6 +95,7 @@ export default {
       expandSearch,
       collapseSearch,
       search,
+      isMagicFlag,
     };
   },
 };
@@ -129,5 +138,21 @@ export default {
   &::-webkit-scrollbar {
     display: none;
   }
+}
+
+.content {
+  position: relative;
+  padding: 0.5rem;
+  padding-top: 4.5rem;
+
+  .search-box {
+    width: calc(100% - 1rem);
+    position: absolute;
+    top: 0;
+    z-index: 1;
+  }
+}
+.isMagicFlag {
+  padding-top: 7.5rem;
 }
 </style>

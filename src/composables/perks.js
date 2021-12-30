@@ -2,14 +2,9 @@ import { ref } from "@vue/reactivity";
 import { watch } from "@vue/runtime-core";
 
 import media from "./mediaNotification.js";
+import state from "./state.js";
 
-const current = ref({
-  title: "Nothing played yet",
-  artists: ["... blah blah blah"],
-  _id: {
-    $oid: "",
-  },
-});
+const current = ref(state.current);
 
 const next = ref({
   title: "The next song",
@@ -19,23 +14,11 @@ const next = ref({
   },
 });
 
-const prev = ref({
-  title: "The previous song",
-  artists: ["... blah blah blah"],
-  _id: {
-    $oid: "",
-  },
-});
+const prev = ref(state.prev);
 
-const queue = ref([
-  {
-    title: "Nothing played yet",
-    artists: ["... blah blah blah"],
-    _id: {
-      $oid: "",
-    },
-  },
-]);
+const queue = ref(state.queue);
+
+const search = ref("");
 
 const putCommas = (artists) => {
   let result = [];
@@ -51,33 +34,48 @@ const putCommas = (artists) => {
   return result;
 };
 
-const doThat = (songs, current) => {
-  queue.value = songs;
-  current.value = current;
+function updateNext(song_) {
+  const index = state.queue.value.findIndex(
+    (item) => item._id.$oid === song_._id.$oid
+  );
 
-  console.log(queue.value);
-};
+  if (index == queue.value.length - 1) {
+    next.value = queue.value[0];
+    state.prev.value = queue.value[queue.value.length - 2];
+  } else if (index == 0) {
+    next.value = queue.value[1];
+  } else {
+    next.value = queue.value[index + 1];
+  }
+}
+
+function updatePrev(song) {
+  const index = state.queue.value.findIndex(
+    (item) => item._id.$oid === song._id.$oid
+  );
+
+  if (index == 0) {
+    prev.value = queue.value[queue.value.length - 1];
+  } else if (index == queue.value.length - 1) {
+    prev.value = queue.value[index - 1];
+  } else {
+    prev.value = queue.value[index - 1];
+  }
+}
 
 const readQueue = () => {
   const prev_queue = JSON.parse(localStorage.getItem("queue"));
   const last_played = JSON.parse(localStorage.getItem("current"));
-  const next_ = JSON.parse(localStorage.getItem("next"));
-  const prev_ = JSON.parse(localStorage.getItem("prev"));
 
   if (last_played) {
-    current.value = last_played;
+    state.current.value = last_played;
   }
 
   if (prev_queue) {
-    queue.value = prev_queue;
-  }
-
-  if (next_) {
-    next.value = next_;
-  }
-
-  if (prev_) {
-    prev.value = prev_;
+    state.queue.value = prev_queue;
+    
+    updateNext(state.current.value);
+    updatePrev(state.current.value);
   }
 };
 
@@ -93,40 +91,30 @@ function focusCurrent() {
   }
 }
 
-watch(current, (new_current, old_current) => {
-  media.showMediaNotif();
+setTimeout(() => {
+  watch(current, (new_current) => {
+    media.showMediaNotif();
 
-  new Promise((resolve) => {
-    const index = queue.value.findIndex(
-      (item) => item._id.$oid === new_current._id.$oid
-    );
+    new Promise((resolve) => {
+      updateNext(new_current);
+      updatePrev(new_current);
+      resolve();
+    }).then(() => {
+      focusCurrent();
+    });
 
-    if (index == queue.value.length - 1) {
-      next.value = queue.value[0];
-      prev.value = queue.value[queue.value.length - 2];
-    } else if (index == 0) {
-      next.value = queue.value[1];
-    } else {
-      next.value = queue.value[index + 1];
-    }
-
-    prev.value = old_current;
-    resolve();
-  }).then(() => {
-    focusCurrent();
+    localStorage.setItem("current", JSON.stringify(new_current));
+    // localStorage.setItem("prev", JSON.stringify(old_current));
   });
-
-  localStorage.setItem("current", JSON.stringify(new_current));
-  localStorage.setItem("prev", JSON.stringify(prev.value));
-});
+}, 1000);
 
 export default {
   putCommas,
-  doThat,
   readQueue,
   focusCurrent,
   current,
   queue,
   next,
   prev,
+  search,
 };

@@ -20,6 +20,7 @@ import SearchBox from "@/components/FolderView/SearchBox.vue";
 
 import getData from "../composables/getFiles.js";
 import { onMounted, watch } from "@vue/runtime-core";
+import perks from "@/composables/perks.js";
 
 export default {
   components: {
@@ -53,6 +54,7 @@ export default {
       getPathFolders(path.value);
 
       watch(route, (new_route) => {
+        perks.search.value = "";
         path.value = new_route.params.path;
         getPathFolders(path.value);
       });

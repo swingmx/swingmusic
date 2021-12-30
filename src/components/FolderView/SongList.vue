@@ -1,6 +1,6 @@
 <template>
   <div class="folder">
-    <div class="table rounded" ref="songtitle" v-if="songs.length">
+    <div class="table rounded" ref="songtitle" v-if="searchSongs.length">
       <table>
         <thead>
           <tr>
@@ -12,7 +12,7 @@
         </thead>
         <tbody>
           <tr
-            v-for="song in songs"
+            v-for="song in searchSongs"
             :key="song"
             :class="{ current: current._id.$oid == song._id.$oid }"
           >
@@ -64,16 +64,23 @@
         </tbody>
       </table>
     </div>
+    <div ref="songtitle" v-else-if="searchSongs.length === 0 && search_query">
+      <div class="no-results">
+        <div class="icon"></div>
+        <div class="text">❗ Track not found!</div>
+      </div>
+    </div>
     <div v-else ref="songtitle"></div>
   </div>
 </template>
 
 <script>
-import { ref, toRefs } from "@vue/reactivity";
+import { computed, ref, toRefs } from "@vue/reactivity";
 import { onMounted, onUnmounted } from "@vue/runtime-core";
 
 import audio from "@/composables/playAudio.js";
 import perks from "@/composables/perks.js";
+import state from "@/composables/state.js";
 
 export default {
   props: ["songs"],
@@ -86,13 +93,13 @@ export default {
     const putCommas = perks.putCommas;
 
     const updateQueue = async (song) => {
-      if (perks.queue.value[0]._id.$oid !== song_list.value[0]._id.$oid) {
-        const queue = song_list.value;
-        localStorage.setItem("queue", JSON.stringify(queue));
-        perks.queue.value = queue;
+      if (state.queue.value[0]._id.$oid !== song_list.value[0]._id.$oid) {
+        const new_queue = song_list.value;
+        localStorage.setItem("queue", JSON.stringify(new_queue));
+        state.queue.value = new_queue;
       }
 
-      perks.current.value = song;
+      state.current.value = song;
       localStorage.setItem("current", JSON.stringify(song));
     };
 
@@ -122,8 +129,18 @@ export default {
 
     const playAudio = audio.playAudio;
     const current = ref(perks.current);
+    const search_query = ref(state.search_query)
+
+    const searchSongs = computed(() => {
+      return song_list.value.filter((song) => {
+        return song.title
+          .toLowerCase()
+          .includes(state.search_query.value.toLowerCase());
+      });
+    });
 
     return {
+      searchSongs,
       songtitle,
       songTitleWidth,
       minWidth,
@@ -131,12 +148,20 @@ export default {
       updateQueue,
       putCommas,
       current,
+      search_query,
     };
   },
 };
 </script>
 
 <style lang="scss">
+.no-results {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+
 .table {
   width: 100%;
   height: 100%;

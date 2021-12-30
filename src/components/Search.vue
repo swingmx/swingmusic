@@ -1,5 +1,8 @@
 <template>
-  <div class="right-search" ref="searchComponent">
+  <div
+    class="right-search"
+    ref="searchComponent"
+  >
     <div class="input">
       <div class="search-icon image"></div>
       <div class="filter">
@@ -15,28 +18,25 @@
       <input
         type="search"
         id="search"
-        @focus="toggleMagicFlag"
-        @blur="toggleMagicFlag"
+        @focus="activateMagicFlag"
+        @blur="removeMagicFlag"
         @keyup.backspace="removeLastFilter"
         placeholder="find your music"
         v-model="query"
       />
       <div
-        class="suggestions"
+        class="suggestions v00"
         :class="{
           v00: !filters.length && !query,
           v11: filters.length || query,
         }"
       >
         <div class="item">Kenny Rogers</div>
-        <div class="item">Jim Reeves</div>
-        <div class="item">Juice Wrld</div>
-        <div class="item">Dolly Parton</div>
       </div>
     </div>
     <div class="separator no-border"></div>
-    <div class="options" v-if="magic_flag || query || filters.length">
-      <div class="item info">I'm looking for:</div>
+    <div class="options" v-if="magic_flag">
+      <div class="item info">Filter by:</div>
       <div
         class="item"
         v-for="option in options"
@@ -85,9 +85,13 @@
 
 <script>
 import { ref, toRefs } from "@vue/reactivity";
+
 import { watch } from "@vue/runtime-core";
+import state from "@/composables/state.js";
 
 export default {
+
+  emits: ["expandSearch", "collapseSearch"],
   props: ["search"],
   setup(props, { emit }) {
     const songs = [
@@ -121,13 +125,9 @@ export default {
         title: "📁 Folder",
         icon: "📁",
       },
-      {
-        title: "🈁 ここ",
-        icon: "🈁",
-      },
     ];
     const searchComponent = ref(null);
-    const filters = ref([]);
+    const filters = ref(state.filters);
     const albums = [
       "Smooth Criminal like wtf ... and im serious",
       "Xscape",
@@ -135,40 +135,52 @@ export default {
     ];
 
     const artists = ["Michael Jackson waihenya", "Jackson 5"];
-    const query = ref(null);
-    const magic_flag = ref(false);
+    const query = ref(state.searh_query);
+    const magic_flag = ref(state.magic_flag);
     const is_hidden = toRefs(props).search;
 
     function addFilter(filter) {
       if (!filters.value.includes(filter)) {
-        filters.value.push(filter);
+        state.filters.value.push(filter);
       }
     }
 
     function removeFilter(filter) {
-      filters.value = filters.value.filter((f) => f !== filter);
+      state.filters.value = filters.value.filter((f) => f !== filter);
     }
 
     let counter = 0;
 
     function removeLastFilter() {
-      console.log("removeLastFilter");
       if (query.value === "" || query.value === null) {
-        counter ++;
+        counter++;
 
-        if (counter > 1 || query.value === null){
-          filters.value.pop();
+        if (counter > 1 || query.value === null) {
+          state.filters.value.pop();
         }
       }
     }
 
-    function toggleMagicFlag() {
+    function activateMagicFlag() {
       setTimeout(() => {
-        magic_flag.value = !magic_flag.value;
+        state.magic_flag.value = true;
+      }, 300);
+    }
+
+    function removeMagicFlag() {
+      setTimeout(() => {
+        if (
+          (!filters.value.length && query.value == null) ||
+          query.value == ""
+        ) {
+          console.log(query.value);
+          state.magic_flag.value = false;
+        }
       }, 300);
     }
 
     watch(query, (new_query) => {
+      state.search_query.value = new_query;
       if (new_query !== "") {
         counter = 0;
         emit("expandSearch");
@@ -177,11 +189,18 @@ export default {
       }
     });
 
+    function hideScrollable() {
+      document.querySelector(".scrollable").classList.remove("v1");
+      document.querySelector(".scrollable").classList.add("v0");
+    }
+
     return {
       addFilter,
-      toggleMagicFlag,
+      activateMagicFlag,
+      removeMagicFlag,
       removeFilter,
       removeLastFilter,
+      hideScrollable,
       songs,
       albums,
       artists,
@@ -212,7 +231,7 @@ export default {
   border-radius: 1rem;
   margin: 0.5rem 0 0 0;
   padding: $small $small 0 0;
-  background-color: #131313b2;
+  background-color: #000000;
   overflow: hidden;
 
   .item {
@@ -299,9 +318,10 @@ export default {
 
 .right-search .scrollable {
   height: 26rem;
-  overflow-y: scroll;
+  overflow-y: auto;
   scroll-behavior: smooth;
   padding: 0 $small 0 0;
+  margin-bottom: 0.5rem;
 }
 
 .right-search .heading {
@@ -310,20 +330,20 @@ export default {
   padding: 1rem;
   display: flex;
   align-items: center;
+  .more {
+    position: absolute;
+    right: 1rem;
+    padding: 0.5rem;
+    user-select: none;
+  }
+
+  .more:hover {
+    background: $blue;
+    border-radius: 0.5rem;
+    cursor: pointer;
+  }
 }
 
-.right-search .heading .more {
-  position: absolute;
-  right: 1rem;
-  padding: 0.5rem;
-  user-select: none;
-}
-
-.right-search .heading .more:hover {
-  background: $blue;
-  border-radius: 0.5rem;
-  cursor: pointer;
-}
 .right-search input {
   width: 100%;
   height: 2.5rem;
@@ -350,7 +370,8 @@ export default {
 
 .right-search .tracks-results {
   border-radius: 0.5rem;
-  background-color: rgba(8, 3, 1, 0.274);
+  background-color: rgb(27, 26, 26);
+  margin-left: $small;
   padding: $small;
 
   .result-item {
@@ -394,8 +415,9 @@ export default {
 
 .right-search .albums-results {
   border-radius: 0.5rem;
-  background-color: rgba(8, 3, 1, 0.274);
-  margin-top: 1rem;
+  background-color: rgb(27, 26, 26);
+  margin-left: $small;
+  margin-top: $small;
 
   .grid {
     display: flex;
@@ -435,7 +457,8 @@ export default {
 
 .right-search .artists-results {
   border-radius: 0.5rem;
-  background-color: rgba(8, 3, 1, 0.274);
+  background-color: rgb(27, 26, 26);
+  margin: 0 0 0 $small;
 
   .grid {
     padding: 0 0 0 $small;

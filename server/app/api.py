@@ -288,12 +288,12 @@ def getFolderTree(folder: str = None):
 
                 folders.append(dir)
 
-        if entry.is_file():
-            if isValidFile(entry.name) == True:
-                file = all_songs_instance.find_song_by_path(entry.path)
+        # if entry.is_file():
+        #     if isValidFile(entry.name) == True:
+        #         file = all_songs_instance.find_song_by_path(entry.path)
 
-                if not file:
-                    getTags(entry.path)
+        #         if not file:
+        #             getTags(entry.path)
 
     songs_array = all_songs_instance.find_songs_by_folder(
         req_dir)
