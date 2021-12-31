@@ -143,7 +143,7 @@ export default {
 .content {
   position: relative;
   padding: 0.5rem;
-  padding-top: 4.5rem;
+  padding-top: 3.75rem;
 
   .search-box {
     width: calc(100% - 1rem);

@@ -7,11 +7,11 @@ from app.helpers import (
     convert_to_json,
     remove_duplicates,
     save_image,
-    isValidFile,
+    # isValidFile,
     create_config_dir,
     extract_thumb,
+    run_fast_scandir,
     home_dir, app_dir,
-    run_fast_scandir
 )
 
 from app import cache
@@ -358,7 +358,7 @@ def getAlbumSongs(query: str):
     artist = query.split('::')[1].replace('|', '/')
 
     songs = all_songs_instance.find_songs_by_album(album, artist)
-    songs_array = convert_to_json(songs)
+    songs_array = remove_duplicates(convert_to_json(songs))
 
     print(artist)
 
@@ -372,6 +372,5 @@ def getAlbumSongs(query: str):
         "duration": sum(song['length'] for song in songs_array),
         "image": songs_array[0]['image'],
         "artist": songs_array[0]['album_artist']
-        # "date": songs_array[0]['date']
     }
     return {'songs': songs_array, 'info': album_obj}

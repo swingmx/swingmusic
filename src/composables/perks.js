@@ -107,6 +107,12 @@ setTimeout(() => {
   });
 }, 1000);
 
+window.addEventListener('keyup', (e) => {
+  if (e.code) {
+      console.log(e.code);
+  }
+});
+
 export default {
   putCommas,
   readQueue,

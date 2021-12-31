@@ -67,8 +67,6 @@ export default {
       return (s - (s %= 60)) / 60 + (9 < s ? ":" : ":0") + s;
     }
 
-    // const duration = ref()
-
     const { playNext } = playAudio;
     const { playPrev } = playAudio;
     const { playPause } = playAudio;
@@ -97,7 +95,7 @@ export default {
 .now-playing {
   border-radius: 0.5rem;
   height: 14rem;
-  margin-top: 1rem;
+  margin-top: .5rem;
   padding: 0.5rem;
   background: rgb(14, 14, 14);
   background: linear-gradient(

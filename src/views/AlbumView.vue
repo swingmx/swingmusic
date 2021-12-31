@@ -1,11 +1,11 @@
 <template>
   <div class="al-view rounded">
     <div class="header">
-      <Header :album_info="album_info"/>
+      <Header :album_info="album_info" />
     </div>
     <div class="separator" id="av-sep"></div>
     <div>
-      <SongList :songs="album_songs"/>
+      <SongList :songs="album_songs" />
     </div>
     <div class="separator" id="av-sep"></div>
     <FeaturedArtists />
@@ -28,6 +28,7 @@ import SongList from "../components/FolderView/SongList.vue";
 import FeaturedArtists from "../components/PlaylistView/FeaturedArtists.vue";
 
 import getAlbum from "../composables/getAlbum.js";
+import state from "@/composables/state.js";
 
 export default {
   components: {
@@ -45,9 +46,11 @@ export default {
     const album_info = ref({});
 
     onMounted(() => {
+      state.loading.value = true;
       getAlbum(album_name, album_artists).then((data) => {
         album_songs.value = data.songs;
         album_info.value = data.info;
+        state.loading.value = false;
       });
     });
 

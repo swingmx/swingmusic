@@ -127,7 +127,7 @@ def getTags(full_path):
         try:
             title = audio['TIT2'][0]
         except:
-            title = 'Unknown'
+            title = full_path.split('/')[-1]
     except:
         title = full_path.split('/')[-1]
 

@@ -30,6 +30,7 @@ const prev = ref({
 
 const filters = ref([]);
 const magic_flag = ref(false);
+const loading = ref(false);
 
 
 export default {
@@ -39,4 +40,5 @@ export default {
   prev,
   filters,
   magic_flag,
+  loading,
 };

@@ -24,7 +24,7 @@
       </div>
     </div>
     <div class="most-played">
-      <div class="image rounded"></div>
+      <div class="art image rounded"></div>
       <div>
         <div class="title">Girl Of My Dreams</div>
         <div class="artist">Juice Wrld, Suga [BTS]</div>
@@ -76,7 +76,7 @@ export default {
     width: 25rem;
     height: 5rem;
 
-    .image {
+    .art {
       width: 4rem;
       height: 4rem;
       background-image: url(../../assets/images/jw.jpeg);
@@ -96,7 +96,7 @@ export default {
   .art {
     width: 12rem;
     height: 12rem;
-    background: no-repeat center/cover url(../../assets/images/null.webp);
+    background: no-repeat center/cover;
     margin-right: 1rem;
   }
 
@@ -116,6 +116,7 @@ export default {
 
       .artist {
         margin-top: $small;
+
         color: rgba(255, 255, 255, 0.856);
       }
     }

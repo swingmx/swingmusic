@@ -1,7 +1,7 @@
 <template>
   <div id="f-view-parent" class="rounded">
     <div class="fixed">
-      <SearchBox :path="path" :loading="loading" />
+      <SearchBox :path="path"/>
     </div>
     <div id="scrollable" ref="scrollable">
       <FolderList :folders="folders" />
@@ -20,7 +20,7 @@ import SearchBox from "@/components/FolderView/SearchBox.vue";
 
 import getData from "../composables/getFiles.js";
 import { onMounted, watch } from "@vue/runtime-core";
-import perks from "@/composables/perks.js";
+import state from "@/composables/state.js";
 
 export default {
   components: {
@@ -36,36 +36,39 @@ export default {
     const folders = ref([]);
 
     const scrollable = ref(null);
-    const loading = ref(false);
+
+    function focusSearch() {
+      console.log("focusSearch");
+    }
 
     onMounted(() => {
       const getPathFolders = (path, last_id) => {
-        loading.value = true;
+        state.loading.value = true;
         getData(path, last_id).then((data) => {
           scrollable.value.scrollTop = 0;
 
           songs.value = data.songs;
           folders.value = data.folders;
-          
-          loading.value = false;
+
+          state.loading.value = false;
         });
       };
 
       getPathFolders(path.value);
 
       watch(route, (new_route) => {
-        perks.search.value = "";
+        state.search_query.value = "";
         path.value = new_route.params.path;
         getPathFolders(path.value);
       });
     });
 
     return {
+      focusSearch,
       songs,
       folders,
       path,
       scrollable,
-      loading,
     };
   },
 };

@@ -116,7 +116,7 @@ export default {
 }
 
 .up-next .v1 {
-  max-height: 20em;
+  max-height: 21em;
   transition: max-height 0.5s ease;
   padding: $small;
 
@@ -189,7 +189,6 @@ export default {
 }
 
 .up-next .all-items .scrollable {
-  height: 20rem;
   overflow-y: auto;
   background-color: rgba(2, 6, 14, 0.425);
   border-radius: 0.5rem;

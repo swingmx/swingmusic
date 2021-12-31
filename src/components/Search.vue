@@ -1,8 +1,5 @@
 <template>
-  <div
-    class="right-search"
-    ref="searchComponent"
-  >
+  <div class="right-search" ref="searchComponent">
     <div class="input">
       <div class="search-icon image"></div>
       <div class="filter">
@@ -24,6 +21,7 @@
         placeholder="find your music"
         v-model="query"
       />
+      <div class="loader" v-if="loading"></div>
       <div
         class="suggestions v00"
         :class="{
@@ -90,7 +88,6 @@ import { onMounted, watch } from "@vue/runtime-core";
 import state from "@/composables/state.js";
 
 export default {
-
   emits: ["expandSearch", "collapseSearch"],
   props: ["search"],
   setup(props, { emit }) {
@@ -126,10 +123,11 @@ export default {
         icon: "📁",
       },
       {
-        title: "🈁 Here",
+        title: "🈁 This folder",
         icon: "🈁",
-      }
+      },
     ];
+    const loading = ref(state.loading)
     const searchComponent = ref(null);
     const filters = ref(state.filters);
     const albums = [
@@ -139,7 +137,7 @@ export default {
     ];
 
     const artists = ["Michael Jackson waihenya", "Jackson 5"];
-    const query = ref(state.searh_query);
+    const query = ref(state.search_query);
     const magic_flag = ref(state.magic_flag);
     const is_hidden = toRefs(props).search;
 
@@ -177,24 +175,25 @@ export default {
           (!filters.value.length && query.value == null) ||
           query.value == ""
         ) {
-          console.log(query.value);
           state.magic_flag.value = false;
         }
-      }, 300);
+      }, 3000);
     }
 
     watch(query, (new_query) => {
       state.search_query.value = new_query;
       if (new_query !== "") {
         counter = 0;
-        emit("expandSearch");
+        if (!filters.value.includes("🈁")) {
+          emit("expandSearch");
+        }
       } else {
         emit("collapseSearch");
       }
     });
 
     onMounted(() => {
-      const dom = document.getElementsByClassName("right-search")[0]
+      const dom = document.getElementsByClassName("right-search")[0];
 
       document.addEventListener("click", (e) => {
         var isClickedInside = dom.contains(e.target);
@@ -204,7 +203,7 @@ export default {
         }
       });
     });
-    
+
     return {
       addFilter,
       activateMagicFlag,
@@ -220,12 +219,33 @@ export default {
       options,
       filters,
       searchComponent,
+      loading
     };
   },
 };
 </script>
 
 <style lang="scss">
+.loader {
+  position: absolute;
+  right: 0;
+  width: 2rem;
+  height: 2rem;
+  border: solid #fff;
+  border-radius: 50%;
+  border-bottom: solid  rgb(255, 174, 0);
+  border-top: solid  rgb(255, 174, 0);
+  animation: spin .3s linear infinite;
+
+  @keyframes spin {
+    0% {
+      transform: rotate(0deg);
+    }
+    100% {
+      transform: rotate(360deg);
+    }
+  }
+}
 .right-search .v0 {
   max-height: 0em;
   transition: max-height 0.5s ease;
@@ -238,21 +258,23 @@ export default {
 
 .right-search {
   position: relative;
-  border-radius: 1rem;
+  border-radius: $small;
   margin: 0.5rem 0 0 0;
-  padding: $small $small 0 0;
+  padding: 1rem $small 0 0;
   background-color: #000000;
   overflow: hidden;
 
   .item {
     position: relative;
-    background-color: rgb(39, 37, 37);
+    background-color: rgba(39, 37, 37, 0.555);
     padding: 0.5rem;
     border-radius: 0.5rem;
     cursor: pointer;
     margin: 0 $small 0 0;
     display: flex;
     align-items: center;
+    font-size: .9rem;
+    color: rgb(151, 150, 150);
 
     &:hover {
       background-color: rgb(170, 50, 50);
@@ -309,7 +331,7 @@ export default {
     gap: 0.5rem;
     margin-left: 1rem;
     position: absolute;
-    right: 0;
+    right: 2.5rem;
 
     .item::before {
       content: "#";
@@ -355,14 +377,12 @@ export default {
 }
 
 .right-search input {
-  width: 100%;
-  height: 2.5rem;
+  width: calc(100% - 6rem);
   border: none;
   border-radius: 0.5rem;
   background-color: transparent;
   color: rgba(255, 255, 255, 0.479);
   font-size: 1rem;
-  line-height: 3rem;
   outline: none;
   transition: all 0.5s ease;
 }
