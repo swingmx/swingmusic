@@ -86,7 +86,7 @@
 <script>
 import { ref, toRefs } from "@vue/reactivity";
 
-import { watch } from "@vue/runtime-core";
+import { onMounted, watch } from "@vue/runtime-core";
 import state from "@/composables/state.js";
 
 export default {
@@ -125,6 +125,10 @@ export default {
         title: "📁 Folder",
         icon: "📁",
       },
+      {
+        title: "🈁 Here",
+        icon: "🈁",
+      }
     ];
     const searchComponent = ref(null);
     const filters = ref(state.filters);
@@ -189,18 +193,24 @@ export default {
       }
     });
 
-    function hideScrollable() {
-      document.querySelector(".scrollable").classList.remove("v1");
-      document.querySelector(".scrollable").classList.add("v0");
-    }
+    onMounted(() => {
+      const dom = document.getElementsByClassName("right-search")[0]
 
+      document.addEventListener("click", (e) => {
+        var isClickedInside = dom.contains(e.target);
+
+        if (!isClickedInside) {
+          emit("collapseSearch");
+        }
+      });
+    });
+    
     return {
       addFilter,
       activateMagicFlag,
       removeMagicFlag,
       removeFilter,
       removeLastFilter,
-      hideScrollable,
       songs,
       albums,
       artists,

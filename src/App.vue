@@ -65,7 +65,7 @@ export default {
     const isMagicFlag = computed(() => {
       return state.magic_flag.value;
     });
-
+    
     function toggleNav() {
       collapsed.value = !collapsed.value;
     }
@@ -89,13 +89,13 @@ export default {
 
     return {
       toggleNav,
-      collapsed,
-      up_next,
-      expandQueue,
       expandSearch,
       collapseSearch,
-      search,
       isMagicFlag,
+      expandQueue,
+      collapsed,
+      up_next,
+      search,
     };
   },
 };

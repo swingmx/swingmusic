@@ -104,7 +104,6 @@ setTimeout(() => {
     });
 
     localStorage.setItem("current", JSON.stringify(new_current));
-    // localStorage.setItem("prev", JSON.stringify(old_current));
   });
 }, 1000);
 
