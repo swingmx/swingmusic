@@ -1,6 +1,5 @@
 <template>
   <div class="f-container rounded" :class="{ no_f: !folders.length }">
-    <p v-if="folders.length">folders in this directory</p>
     <div id="f-items" v-if="folders.length">
       <router-link
         :to="{ name: 'FolderView', params: { path: folder.path } }"
@@ -13,9 +12,6 @@
         </div>
       </router-link>
     </div>
-    <div v-else>
-      <p>No folders in this directory</p>
-    </div>
   </div>
 </template>
 
@@ -27,26 +23,19 @@ export default {
 
 <style lang="scss">
 .f-container {
-  margin-bottom: 1rem;
-  background: rgba(31, 30, 30, 0.521);
+  margin-top: $small;
   padding: 1rem;
 }
 
 .no_f {
-  background-image: url(../../assets/icons/info.svg);
-  background-repeat: no-repeat;
-  background-position: 1rem;
-  background-size: 2rem 2rem;
-  padding-left: 4rem;
+  display: none;
 }
 
 #f-items {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(13rem, 1fr));
   grid-gap: 1rem;
-  border-top: 1px solid var(--separator);
   gap: 1rem;
-  padding-top: 1rem;
 }
 
 .f-container p {
@@ -65,7 +54,7 @@ export default {
   background-repeat: no-repeat;
   background-position: 1rem;
   background-size: 10% 100%;
-  background-color: rgba(80, 80, 80, 0.247);
+  background-color: rgb(22, 36, 85);
   transition: all 0.2s ease;
 
   .f-item-count {

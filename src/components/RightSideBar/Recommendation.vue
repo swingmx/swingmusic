@@ -35,10 +35,10 @@ export default {
 };
 </script>
 
-<style>
+<style lang="scss">
 .r-tracks {
   margin-top: 0.5rem;
-  background-color: #131313b2;
+  background-color: $card-dark;
   padding: 0.5rem;
 }
 

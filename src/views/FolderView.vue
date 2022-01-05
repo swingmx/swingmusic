@@ -5,6 +5,7 @@
     </div>
     <div id="scrollable" ref="scrollable">
       <FolderList :folders="folders" />
+    <div class="separator"></div>
       <SongList :songs="songs" />
     </div>
   </div>
@@ -78,7 +79,7 @@ export default {
 #f-view-parent {
   position: relative;
   height: 100%;
-  background-color: #131313b2;
+  background-color: $card-dark;
   padding-left: $small;
   padding-right: $small;
   padding-top: 5rem;
@@ -96,5 +97,9 @@ export default {
   overflow-y: scroll;
   height: calc(100% - $small);
   padding-right: $small;
+
+  .separator {
+    margin: 0 1rem 0 1rem;
+  }
 }
 </style>

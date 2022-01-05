@@ -32,6 +32,8 @@ const filters = ref([]);
 const magic_flag = ref(false);
 const loading = ref(false);
 
+const is_playing = ref(false);
+
 
 export default {
   search_query,
@@ -41,4 +43,5 @@ export default {
   filters,
   magic_flag,
   loading,
+  is_playing,
 };

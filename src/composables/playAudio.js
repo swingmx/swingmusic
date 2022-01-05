@@ -2,10 +2,11 @@ import { ref } from "@vue/reactivity";
 
 import perks from "./perks";
 import media from "./mediaNotification.js";
+import state from "./state.js";
 
 const audio = ref(new Audio()).value;
 const pos = ref(0);
-const playing = ref(false);
+const playing = ref(state.is_playing);
 
 const url = "http://127.0.0.1:8901/";
 
@@ -19,7 +20,7 @@ const playAudio = (path) => {
   })
     .then(() => {
       audio.play();
-      playing.value = true;
+      state.is_playing.value = true;
 
       audio.ontimeupdate = () => {
         pos.value = (audio.currentTime / audio.duration) * 1000;
@@ -57,11 +58,11 @@ function playPause() {
 }
 
 audio.addEventListener("play", () => {
-  playing.value = true;
+  state.is_playing.value = true;
 });
 
 audio.addEventListener("pause", () => {
-  playing.value = false;
+  state.is_playing.value = false;
 });
 
 audio.addEventListener("ended", () => {

@@ -261,7 +261,7 @@ export default {
   border-radius: $small;
   margin: 0.5rem 0 0 0;
   padding: 1rem $small 0 0;
-  background-color: #000000;
+  background-color: $card-dark;
   overflow: hidden;
 
   .item {

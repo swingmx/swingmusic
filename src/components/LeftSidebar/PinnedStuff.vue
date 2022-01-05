@@ -62,17 +62,7 @@ export default {
 
 <style lang="scss">
 #pinned-container {
-  background: #000000; /* fallback for old browsers */
-  background: -webkit-linear-gradient(
-    to bottom,
-    #434343,
-    #000000
-  ); /* Chrome 10-25, Safari 5.1-6 */
-  background: linear-gradient(
-    to bottom,
-    #434343,
-    #000000
-  ); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+  background: #6e2c00;
 
   border-top: none;
   margin: $small;
@@ -90,7 +80,7 @@ export default {
 #pinned-container .nav-button {
   border-radius: $small;
   color: rgba(255, 255, 255, 0.671);
-  // margin-top: $small;
+  padding-left: $small;
 }
 
 #pinned-container .nav-button:hover {
@@ -98,38 +88,8 @@ export default {
 }
 
 #pinned-container .nav-button .nav-icon {
-  height: 20px;
-  width: 20px;
-}
-
-#pinned-container #album-button #album-icon {
-  background-image: url(../../assets/icons/album.svg);
-}
-
-#pinned-container #home-button #text {
-  margin-top: 5px;
-}
-
-#pinned-container #artists-button #artists-icon {
-  background-image: url(../../assets/icons/artist.svg);
-}
-
-#pinned-container #playlists-button #playlists-icon {
-  background-image: url(../../assets/icons/playlist.svg);
-}
-
-#pinned-container #mixes-button #mixes-icon {
-  background-image: url(../../assets/icons/mix.svg);
-}
-
-#pinned-container #folders-button #folders-icon {
-  background-image: url(../../assets/icons/folder.svg);
-}
-
-#pinned-container #pinned-button #pinned-icon {
-  background-image: url(../../assets/icons/pin.svg);
-  width: 20px;
-  height: 20px;
+  height: 1.3rem;
+  width: 1.3rem;
 }
 
 #pinned-container #pinned-button #text {
@@ -143,21 +103,4 @@ export default {
   background-color: transparent;
 }
 
-#pinned-container #folders-button #text {
-  margin-top: 5px;
-}
-
-#pinned-container hr {
-  color: transparent;
-}
-
-#pinned-container .separator {
-  color: var(--separator);
-}
-
-#pinned-container {
-  transition-timing-function: linear;
-  transition-property: width;
-  transition-duration: 20s;
-}
 </style>

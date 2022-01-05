@@ -37,7 +37,13 @@
               :style="{
                 backgroundImage: `url(&quot;${song.image}&quot;)`,
               }"
-            ></div>
+            >
+              <div
+                class="now-playing-track image"
+                v-if="current._id.$oid == song._id.$oid"
+                :class="{ active: is_playing, not_active: !is_playing }"
+              ></div>
+            </div>
             <div class="tags">
               <p class="title ellip">{{ song.title }}</p>
               <hr />
@@ -58,6 +64,7 @@
 import { ref, toRefs } from "@vue/reactivity";
 import perks from "@/composables/perks.js";
 import audio from "@/composables/playAudio.js";
+import state from "@/composables/state.js";
 import { watch } from "@vue/runtime-core";
 
 export default {
@@ -94,6 +101,7 @@ export default {
     return {
       collapse,
       is_expanded,
+      is_playing: state.is_playing,
       playNext,
       playThis,
       putCommas,
@@ -128,7 +136,7 @@ export default {
 .up-next {
   padding: 0.5rem;
   margin-top: 1rem;
-  background-color: #131313b2;
+  background-color: $card-dark;
   border-radius: 0.5rem;
 }
 
@@ -190,7 +198,7 @@ export default {
 
 .up-next .all-items .scrollable {
   overflow-y: auto;
-  background-color: rgba(2, 6, 14, 0.425);
+  width: 100%;
   border-radius: 0.5rem;
 }
 
@@ -216,6 +224,10 @@ export default {
 }
 
 .up-next .all-items .album-art {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
   width: 3rem;
   height: 3rem;
   margin: 0 0.5rem 0 0;

@@ -26,7 +26,13 @@
                 :style="{
                   backgroundImage: `url(&quot;${song.image}&quot;)`,
                 }"
-              ></div>
+              >
+                <div
+                  class="now-playing-track image"
+                  v-if="current._id.$oid == song._id.$oid"
+                  :class="{ active: is_playing, not_active: !is_playing }"
+                ></div>
+              </div>
               <div>
                 <span class="ellip">{{ song.title }}</span>
               </div>
@@ -129,7 +135,7 @@ export default {
 
     const playAudio = audio.playAudio;
     const current = ref(perks.current);
-    const search_query = ref(state.search_query)
+    const search_query = ref(state.search_query);
 
     const searchSongs = computed(() => {
       return song_list.value.filter((song) => {
@@ -149,6 +155,7 @@ export default {
       putCommas,
       current,
       search_query,
+      is_playing: state.is_playing,
     };
   },
 };
@@ -165,15 +172,20 @@ export default {
 .table {
   width: 100%;
   height: 100%;
-  background-color: rgba(56, 56, 56, 0.363);
   overflow-y: auto;
 
   &::-webkit-scrollbar {
     display: none;
   }
 
-  .current {
-    color: rgb(255, 238, 0);
+  .current * {
+    color: rgb(0, 110, 255);
+  }
+
+  .current:hover {
+    * {
+      color: rgb(255, 255, 255);
+    }
   }
 }
 
@@ -182,6 +194,8 @@ export default {
   height: 3rem;
   margin-right: 1rem;
   background-image: url(../../assets/icons/file.svg);
+  display: grid;
+  place-items: center;
 }
 
 .folder .table .flex {
@@ -196,18 +210,8 @@ export default {
 }
 td,
 th {
-  padding: 8px;
+  padding: $small;
   text-align: left;
-  outline: none;
-  border: none;
-}
-
-th {
-  height: 3rem;
-}
-
-tr:nth-child(even) {
-  background-color: rgba(29, 29, 29, 0.767);
 }
 
 th {
@@ -216,8 +220,7 @@ th {
 }
 
 td .artist {
-  font-weight: lighter;
-  margin-right: 0.5rem;
+  margin-right: 0.2rem;
 }
 
 .folder .table table {
