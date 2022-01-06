@@ -47,12 +47,14 @@
     <div class="scrollable" :class="{ v0: !is_hidden, v1: is_hidden }">
       <div class="tracks-results">
         <div class="heading">TRACKS<span class="more">SEE ALL</span></div>
-        <div class="result-item" v-for="song in songs" :key="song">
-          <div class="album-art image"></div>
-          <div class="tags">
-            <span class="title">{{ song.title }}</span>
-            <hr />
-            <span class="artist">{{ song.artist }}</span>
+        <div class="items">
+          <div class="result-item" v-for="song in songs" :key="song">
+            <div class="album-art image"></div>
+            <div class="tags">
+              <span class="title">{{ song.title }}</span>
+              <hr />
+              <span class="artist">{{ song.artist }}</span>
+            </div>
           </div>
         </div>
       </div>
@@ -252,7 +254,7 @@ export default {
 }
 
 .right-search .v1 {
-  max-height: 26rem;
+  max-height: 25rem;
   transition: max-height 0.5s ease;
 }
 
@@ -361,19 +363,20 @@ export default {
 .right-search .heading {
   font-size: small;
   position: relative;
-  padding: 1rem;
+  padding:  $small;
   display: flex;
   align-items: center;
+
   .more {
     position: absolute;
-    right: 1rem;
+    right: $small;
     padding: 0.5rem;
     user-select: none;
   }
 
   .more:hover {
-    background: $blue;
-    border-radius: 0.5rem;
+    // background: $blue;
+    // border-radius: 0.5rem;
     cursor: pointer;
   }
 }
@@ -398,20 +401,24 @@ export default {
   }
 }
 
-/*  */
+/* tracks */
 
 .right-search .tracks-results {
   border-radius: 0.5rem;
-  background: #1f0012;
+  background: #ca0377;
   margin-left: $small;
   padding: $small;
+
+  .items {
+    border-radius: $small;
+    background-color: $card-dark;
+  }
 
   .result-item {
     display: flex;
     align-items: center;
     height: 4.5rem;
     width: 100%;
-    background-color: rgba(20, 20, 20, 0.479);
 
     .album-art {
       width: 3.5rem;
@@ -419,16 +426,12 @@ export default {
       background-color: rgb(27, 150, 74);
       border-radius: 0.5rem;
       margin: 0 $small 0 $small;
-      background-image: url(../assets/images/thriller.jpg);
+      background-image: url(../assets/images/girl3.jpg);
     }
 
     .tags .artist {
       font-size: small;
       color: rgba(255, 255, 255, 0.63);
-    }
-
-    &:nth-child(odd) {
-      background-color: transparent;
     }
 
     &:hover {
@@ -443,7 +446,7 @@ export default {
   border: none;
 }
 
-/*  */
+/* albums */
 
 .right-search .albums-results {
   border-radius: 0.5rem;
@@ -487,7 +490,7 @@ export default {
   }
 }
 
-/*  */
+/* artits */
 
 .right-search .artists-results {
   border-radius: 0.5rem;

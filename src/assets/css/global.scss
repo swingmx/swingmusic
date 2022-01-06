@@ -4,7 +4,6 @@
 }
 
 * {
-  user-select: none;
   box-sizing: border-box;
 }
 
@@ -51,6 +50,17 @@ a {
   display: none;
 }
 
+button {
+  border: none;
+  color: inherit;
+  font-size: 1rem;
+  cursor: pointer;
+
+  &:hover {
+    background-color: rgb(158, 58, 58) !important;
+  }
+}
+
 .l-container {
   display: grid;
   grid-template-columns: min-content 4fr min-content;
@@ -90,7 +100,6 @@ a {
   width: 70px;
   transition: all 0.3s ease;
 }
-
 
 .ellip {
   display: -webkit-box;
@@ -172,7 +181,7 @@ a {
 /* Handle on hover */
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgb(163, 163, 163);
+  background: $blue;
 }
 
 @-webkit-keyframes similarAlbums {
@@ -237,5 +246,4 @@ a {
 .not_active {
   background-image: url(../../assets/icons/playing.webp);
   transition: all 0.3s ease-in-out;
-
 }

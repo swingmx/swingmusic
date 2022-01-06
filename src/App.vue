@@ -70,12 +70,10 @@ export default {
 
     const expandQueue = () => {
       up_next.value = !up_next.value;
-      search.value = false;
     };
 
     const expandSearch = () => {
       search.value = true;
-      up_next.value = false;
     };
 
     const collapseSearch = () => {

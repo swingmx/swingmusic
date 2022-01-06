@@ -79,7 +79,7 @@ export default {
 #f-view-parent {
   position: relative;
   background-color: $card-dark;
-  padding: 5rem $small 0 $small;
+  padding: 4rem $small 0 $small;
   overflow: hidden;
   margin: $small 0 $small 0;
 }
@@ -87,17 +87,14 @@ export default {
 #f-view-parent .fixed {
   position: absolute;
   height: min-content;
-  width: calc(100% - 2rem);
+  width: calc(100% - 1rem);
   top: 0.5rem;
+
 }
 
 #scrollable {
   overflow-y: scroll;
-  height: calc(100% - 1rem);
+  height: calc(100% - $small);
   padding-right: $small;
-
-  .separator {
-    margin: 0 1rem 0 1rem;
-  }
 }
 </style>

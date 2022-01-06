@@ -210,13 +210,14 @@ export default {
 }
 td,
 th {
-  padding: $small;
+  padding: $small 0 $small $small;
   text-align: left;
 }
 
 th {
   text-transform: uppercase;
   font-weight: normal;
+  display: none;
 }
 
 td .artist {
@@ -227,7 +228,6 @@ td .artist {
   border-collapse: collapse;
   text-transform: capitalize;
   position: relative;
-  margin: 1rem;
 
   tbody tr {
     cursor: pointer;

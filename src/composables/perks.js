@@ -73,7 +73,7 @@ const readQueue = () => {
 
   if (prev_queue) {
     state.queue.value = prev_queue;
-    
+
     updateNext(state.current.value);
     updatePrev(state.current.value);
   }
@@ -107,9 +107,11 @@ setTimeout(() => {
   });
 }, 1000);
 
-window.addEventListener('keyup', (e) => {
-  if (e.code) {
-      console.log(e.code);
+window.addEventListener("keyup", (e) => {
+  e.preventDefault();
+  
+  if (e.ctrlKey && e.code == "KeyF") {
+    console.log('Ctrl F')
   }
 });
 

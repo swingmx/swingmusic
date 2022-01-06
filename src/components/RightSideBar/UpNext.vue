@@ -21,7 +21,10 @@
       </div>
     </div>
     <div>
-      <div :class="{ hr: is_expanded }" class="all-items">
+      <div
+        :class="{ hr: is_expanded, v0x: !is_expanded, v1x: is_expanded }"
+        class="all-items"
+      >
         <div :class="{ v0: !is_expanded, v1: is_expanded }" class="scrollable">
           <div
             class="song-item h-1"
@@ -114,13 +117,20 @@ export default {
 </script>
 
 <style lang="scss">
-.up-next .hr {
-  border-top: 1px solid var(--separator);
-}
 .up-next .v0 {
   max-height: 0em;
   overflow: hidden;
   transition: max-height 0.5s ease;
+}
+
+.up-next .v0x {
+  background-color: transparent !important;
+  transition: all 0.5s ease;
+}
+
+.up-next .v1x {
+  transition: all .5s ease;
+  background-color: rgb(218, 72, 96);
 }
 
 .up-next .v1 {
@@ -135,7 +145,7 @@ export default {
 
 .up-next {
   padding: 0.5rem;
-  margin-top: 1rem;
+  margin-top: $small;
   background-color: $card-dark;
   border-radius: 0.5rem;
 }
@@ -165,6 +175,10 @@ export default {
   border-radius: 0.5rem;
   cursor: pointer;
   margin-bottom: 0.5rem;
+
+  &:hover {
+    background-color: $blue;
+  }
 }
 
 .up-next .main-item .album-art {
@@ -189,17 +203,22 @@ export default {
   width: 20rem;
   margin: 0;
   font-size: small;
-  color: rgba(255, 255, 255, 0.61);
 }
 
 .up-next .all-items {
   padding-top: $small;
+  border-radius: 0.5rem;
+  padding: $small;
 }
 
 .up-next .all-items .scrollable {
   overflow-y: auto;
-  width: 100%;
+  background-color: $card-dark;
   border-radius: 0.5rem;
+
+  &::-webkit-scrollbar-track {
+    background-color: transparent;
+  }
 }
 
 .up-next .all-items p {
