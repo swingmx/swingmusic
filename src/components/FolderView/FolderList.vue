@@ -23,8 +23,7 @@ export default {
 
 <style lang="scss">
 .f-container {
-  margin-top: $small;
-  padding: 1rem;
+  padding: $small 1rem 1rem 1rem;
 }
 
 .no_f {

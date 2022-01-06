@@ -23,7 +23,9 @@ export default {
 .folder-top {
   padding-bottom: 1rem;
   margin-bottom: 1rem;
-  border-bottom: 1px solid var(--separator);
+  border-bottom: 1px solid $separator;
+  width: calc(100% - 2rem);
+  margin-left: 1rem;
 }
 
 .folder-top .fname {

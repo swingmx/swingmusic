@@ -11,7 +11,7 @@
       <Navigation :collapsed="collapsed" />
       <PinnedStuff :collapsed="collapsed" />
     </div>
-    <div class="content" :class="{ isMagicFlag: isMagicFlag }">
+    <div class="content">
       <div class="search-box">
         <Search
           v-model:search="search"
@@ -20,7 +20,7 @@
         />
       </div>
 
-      <div class="separator" style="border: none"></div>
+      <!-- <div class="separator no-border"></div> -->
       <router-view />
     </div>
     <div class="r-sidebar">
@@ -34,7 +34,7 @@
 </template>
 
 <script>
-import { computed, ref } from "@vue/reactivity";
+import { ref } from "@vue/reactivity";
 
 import Navigation from "./components/LeftSidebar/Navigation.vue";
 import PinnedStuff from "./components/LeftSidebar/PinnedStuff.vue";
@@ -44,7 +44,6 @@ import NowPlaying from "./components/RightSideBar/NowPlaying.vue";
 import UpNext from "./components/RightSideBar/UpNext.vue";
 import RecommendedArtist from "./components/RightSideBar/Recommendation.vue";
 
-import state from "@/composables/state.js";
 import perks from "@/composables/perks.js";
 
 export default {
@@ -62,10 +61,6 @@ export default {
 
     perks.readQueue();
 
-    const isMagicFlag = computed(() => {
-      return state.magic_flag.value;
-    });
-    
     function toggleNav() {
       collapsed.value = !collapsed.value;
     }
@@ -91,7 +86,6 @@ export default {
       toggleNav,
       expandSearch,
       collapseSearch,
-      isMagicFlag,
       expandQueue,
       collapsed,
       up_next,
@@ -141,18 +135,8 @@ export default {
 }
 
 .content {
-  position: relative;
-  padding: 0.5rem;
-  padding-top: 3.75rem;
-
-  .search-box {
-    width: calc(100% - 1rem);
-    position: absolute;
-    top: 0;
-    z-index: 1;
-  }
-}
-.isMagicFlag {
-  padding-top: 7.5rem;
+  padding: 0 $small;
+  display: grid;
+  grid-template-rows: auto 1fr;
 }
 </style>

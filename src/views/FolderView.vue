@@ -1,11 +1,11 @@
 <template>
   <div id="f-view-parent" class="rounded">
     <div class="fixed">
-      <SearchBox :path="path"/>
+      <SearchBox :path="path" />
     </div>
     <div id="scrollable" ref="scrollable">
       <FolderList :folders="folders" />
-    <div class="separator"></div>
+      <div class="separator" v-if="folders.length && songs.length"></div>
       <SongList :songs="songs" />
     </div>
   </div>
@@ -78,12 +78,10 @@ export default {
 <style lang="scss">
 #f-view-parent {
   position: relative;
-  height: 100%;
   background-color: $card-dark;
-  padding-left: $small;
-  padding-right: $small;
-  padding-top: 5rem;
+  padding: 5rem $small 0 $small;
   overflow: hidden;
+  margin: $small 0 $small 0;
 }
 
 #f-view-parent .fixed {
@@ -95,7 +93,7 @@ export default {
 
 #scrollable {
   overflow-y: scroll;
-  height: calc(100% - $small);
+  height: calc(100% - 1rem);
   padding-right: $small;
 
   .separator {

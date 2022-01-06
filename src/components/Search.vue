@@ -127,7 +127,7 @@ export default {
         icon: "🈁",
       },
     ];
-    const loading = ref(state.loading)
+    const loading = ref(state.loading);
     const searchComponent = ref(null);
     const filters = ref(state.filters);
     const albums = [
@@ -219,7 +219,7 @@ export default {
       options,
       filters,
       searchComponent,
-      loading
+      loading,
     };
   },
 };
@@ -233,9 +233,9 @@ export default {
   height: 2rem;
   border: solid #fff;
   border-radius: 50%;
-  border-bottom: solid  rgb(255, 174, 0);
-  border-top: solid  rgb(255, 174, 0);
-  animation: spin .3s linear infinite;
+  border-bottom: solid rgb(255, 174, 0);
+  border-top: solid rgb(255, 174, 0);
+  animation: spin 0.3s linear infinite;
 
   @keyframes spin {
     0% {
@@ -266,15 +266,15 @@ export default {
 
   .item {
     position: relative;
-    background-color: rgba(39, 37, 37, 0.555);
+    background-color: rgba(34, 33, 33, 0.637);
     padding: 0.5rem;
     border-radius: 0.5rem;
     cursor: pointer;
     margin: 0 $small 0 0;
     display: flex;
     align-items: center;
-    font-size: .9rem;
-    color: rgb(151, 150, 150);
+    font-size: 0.9rem;
+    color: rgb(250, 250, 250);
 
     &:hover {
       background-color: rgb(170, 50, 50);
@@ -289,6 +289,8 @@ export default {
     .filter {
       display: flex;
       margin-left: 3rem;
+      height: 2rem;
+      // border: solid;
 
       .item {
         &:hover {
@@ -381,7 +383,7 @@ export default {
   border: none;
   border-radius: 0.5rem;
   background-color: transparent;
-  color: rgba(255, 255, 255, 0.479);
+  color: rgb(255, 255, 255);
   font-size: 1rem;
   outline: none;
   transition: all 0.5s ease;
@@ -400,7 +402,7 @@ export default {
 
 .right-search .tracks-results {
   border-radius: 0.5rem;
-  background-color: rgb(27, 26, 26);
+  background: #1f0012;
   margin-left: $small;
   padding: $small;
 
@@ -445,7 +447,9 @@ export default {
 
 .right-search .albums-results {
   border-radius: 0.5rem;
-  background-color: rgb(27, 26, 26);
+
+  background: #011327;
+
   margin-left: $small;
   margin-top: $small;
 
@@ -461,7 +465,7 @@ export default {
       align-items: center;
       padding: $small;
       border-radius: $small;
-      background-color: rgb(24, 23, 23);
+      background-color: $card-dark;
       margin-bottom: 1rem;
 
       .album-art {
@@ -487,7 +491,7 @@ export default {
 
 .right-search .artists-results {
   border-radius: 0.5rem;
-  background-color: rgb(27, 26, 26);
+  background: #381900;
   margin: 0 0 0 $small;
 
   .grid {
@@ -501,7 +505,7 @@ export default {
       align-items: center;
       padding: $small;
       border-radius: $small;
-      background-color: rgb(24, 23, 23);
+      background-color: $card-dark;
       margin-bottom: 1rem;
 
       .image {

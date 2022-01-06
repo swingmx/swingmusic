@@ -128,11 +128,11 @@ a {
   margin-bottom: 0.5em;
 }
 
-// @media (max-width: 70em) {
-//   .r-sidebar {
-//     display: none;
-//   }
-// }
+@media (max-width: 70em) {
+  .r-sidebar {
+    display: none;
+  }
+}
 
 .image {
   background-position: center;
