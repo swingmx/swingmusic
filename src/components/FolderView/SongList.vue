@@ -14,7 +14,7 @@
           <tr
             v-for="song in searchSongs"
             :key="song"
-            :class="{ current: current._id.$oid == song._id.$oid }"
+            :class="{ current: current._id == song._id }"
           >
             <td
               :style="{ width: songTitleWidth + 'px' }"
@@ -29,7 +29,7 @@
               >
                 <div
                   class="now-playing-track image"
-                  v-if="current._id.$oid == song._id.$oid"
+                  v-if="current._id == song._id"
                   :class="{ active: is_playing, not_active: !is_playing }"
                 ></div>
               </div>
@@ -138,11 +138,26 @@ export default {
     const search_query = ref(state.search_query);
 
     const searchSongs = computed(() => {
-      return song_list.value.filter((song) => {
-        return song.title
-          .toLowerCase()
-          .includes(state.search_query.value.toLowerCase());
-      });
+      const songs = [];
+
+      if (search_query.value.length > 2) {
+        state.loading.value = true;
+        for (let i = 0; i < song_list.value.length; i++) {
+          if (
+            song_list.value[i].title
+              .toLowerCase()
+              .includes(search_query.value.toLowerCase())
+          ) {
+            songs.push(song_list.value[i]);
+          }
+        }
+
+        state.loading.value = false;
+
+        return songs;
+      } else {
+        return song_list.value;
+      }
     });
 
     return {
