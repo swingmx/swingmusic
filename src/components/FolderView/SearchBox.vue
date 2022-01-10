@@ -28,7 +28,7 @@ export default {
 }
 
 .folder-top .fname {
-  width: 50%;
+  // width: 50%;
   display: flex;
   align-items: center;
 

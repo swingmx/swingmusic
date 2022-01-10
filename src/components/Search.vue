@@ -88,21 +88,13 @@ import { ref, toRefs } from "@vue/reactivity";
 
 import { onMounted, watch } from "@vue/runtime-core";
 import state from "@/composables/state.js";
+import searchMusic from "../composables/searchMusic.js";
+// import useDebounce from "../composed/useDebounce.js";
 
 export default {
   emits: ["expandSearch", "collapseSearch"],
   props: ["search"],
   setup(props, { emit }) {
-    const songs = [
-      {
-        title: "Thriller",
-        artist: "Michael jackson",
-      },
-      {
-        title: "We are the world",
-        artist: "Michael jackson",
-      },
-    ];
     const options = [
       {
         title: "🎵 Track",
@@ -129,6 +121,7 @@ export default {
         icon: "🈁",
       },
     ];
+    
     const loading = ref(state.loading);
     const searchComponent = ref(null);
     const filters = ref(state.filters);
@@ -183,6 +176,8 @@ export default {
     }
 
     watch(query, (new_query) => {
+      searchMusic(new_query);
+
       state.search_query.value = new_query;
       if (new_query !== "") {
         counter = 0;
@@ -206,13 +201,14 @@ export default {
       });
     });
 
+
     return {
       addFilter,
       activateMagicFlag,
       removeMagicFlag,
       removeFilter,
       removeLastFilter,
-      songs,
+      songs: state.search_tracks,
       albums,
       artists,
       query,
@@ -222,6 +218,7 @@ export default {
       filters,
       searchComponent,
       loading,
+      searchMusic,
     };
   },
 };
@@ -363,7 +360,7 @@ export default {
 .right-search .heading {
   font-size: small;
   position: relative;
-  padding:  $small;
+  padding: $small;
   display: flex;
   align-items: center;
 

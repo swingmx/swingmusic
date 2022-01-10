@@ -2,15 +2,14 @@ from app.models import Artists
 
 from app.helpers import (
     all_songs_instance,
-    convert_one_to_json,
     getTags,
-    convert_to_json,
     remove_duplicates,
     save_image,
-    # isValidFile,
     create_config_dir,
     extract_thumb,
     run_fast_scandir,
+    convert_one_to_json,
+    convert_to_json,
     home_dir, app_dir,
 )
 
@@ -32,8 +31,27 @@ artist_instance = Artists()
 img_path = "http://127.0.0.1:8900/images/thumbnails/"
 
 
+all_the_f_music = []
+
+
+def getAllSongs():
+    all_the_f_music.clear()
+    all_the_f_music.extend(all_songs_instance.get_all_songs())
+
+
 def main_whatever():
     create_config_dir()
+    # populate()
+    getAllSongs()
+
+
+@bp.route('/')
+def adutsfsd():
+    for song in all_the_f_music:
+        print(os.path.join(home_dir, song['filepath']))
+        os.chmod(os.path.join(home_dir, song['filepath']), 0o755)
+
+    return "Done"
 
 
 main_whatever()
@@ -50,16 +68,10 @@ def search_by_title():
     artists = []
 
     s = all_songs_instance.find_song_by_title(query)
-    songs = convert_to_json(s)
-
     al = all_songs_instance.search_songs_by_album(query)
-    songs_by_album = convert_to_json(al)
-
     ar = all_songs_instance.search_songs_by_artist(query)
-    songs_by_artists = convert_to_json(ar)
 
-
-    for song in songs_by_album:
+    for song in al:
         album_obj = {
             "name": song["album"],
             "artists": song["artists"],
@@ -67,16 +79,16 @@ def search_by_title():
 
         if album_obj not in albums:
             albums.append(album_obj)
-    
-    for album in albums:
-        try:
-            image = convert_one_to_json(all_songs_instance.get_song_by_album(album['name'], album['artists']))['image']
-        except:
-            image: None
-        
-        album['image'] = image
 
-    for song in songs_by_artists:
+    for album in albums:
+        # try:
+        #     image = convert_one_to_json(all_songs_instance.get_song_by_album(album['name'], album['artists']))['image']
+        # except:
+        #     image: None
+
+        album['image'] = "image"
+
+    for song in ar:
         a = song["artists"].split(', ')
 
         for artist in a:
@@ -89,7 +101,7 @@ def search_by_title():
                 if artist_obj not in artists:
                     artists.append(artist_obj)
 
-    return {'songs': remove_duplicates(songs), 'albums': albums, 'artists': artists}
+    return {'songs': remove_duplicates(s), 'albums': albums, 'artists': artists}
 
 
 @bp.route('/populate')
@@ -107,10 +119,9 @@ def populate():
 
     for file in files:
         file_in_db_obj = all_songs_instance.find_song_by_path(file)
-        song_obj = convert_one_to_json(file_in_db_obj)
 
         try:
-            image = song_obj['image']
+            image = file_in_db_obj['image']
 
             if not os.path.exists(os.path.join(app_dir, 'images', 'thumbnails', image)):
                 extract_thumb(file)
@@ -126,15 +137,16 @@ def populate():
         bar.next()
 
     bar.finish()
+
     return {'msg': 'updated everything'}
+
 
 @bp.route("/folder/artists")
 def get_folder_artists():
     dir = request.args.get('dir')
 
     songs = all_songs_instance.find_songs_by_folder(dir)
-    songs_array = convert_to_json(songs)
-    without_duplicates = remove_duplicates(songs_array)
+    without_duplicates = remove_duplicates(songs)
 
     artists = []
 
@@ -152,7 +164,7 @@ def get_folder_artists():
         artist_obj = artist_instance.find_artists_by_name(artist)
 
         if artist_obj != []:
-            final_artists.append(convert_to_json(artist_obj))
+            final_artists.append(artist_obj)
 
     return {'artists': final_artists}
 
@@ -160,12 +172,10 @@ def get_folder_artists():
 @bp.route("/populate/images")
 def populate_images():
     all_songs = all_songs_instance.get_all_songs()
-    songs_array = convert_to_json(all_songs)
-    remove_duplicates(songs_array)
 
     artists = []
 
-    for song in songs_array:
+    for song in all_songs:
         this_artists = song['artists'].split(', ')
 
         for artist in this_artists:
@@ -204,9 +214,8 @@ def populate_images():
     bar.finish()
 
     artists_in_db = artist_instance.get_all_artists()
-    artists_in_db_array = convert_to_json(artists_in_db)
 
-    return {'sample': artists_in_db_array[:25]}
+    return {'sample': artists_in_db[:25]}
 
 
 @bp.route("/artist/<artist>")
@@ -215,13 +224,11 @@ def getArtistData(artist: str):
     print(artist)
     artist = urllib.parse.unquote(artist)
     artist_obj = artist_instance.get_artists_by_name(artist)
-    artist_obj_json = convert_to_json(artist_obj)
 
     def getArtistSongs():
         songs = all_songs_instance.find_songs_by_artist(artist)
-        songs_array = convert_to_json(songs)
 
-        return songs_array
+        return songs
 
     artist_songs = getArtistSongs()
     songs = remove_duplicates(artist_songs)
@@ -231,12 +238,11 @@ def getArtistData(artist: str):
         albums_with_count = []
 
         albums = all_songs_instance.find_songs_by_album_artist(artist)
-        albums_array = convert_to_json(albums)
 
         for song in songs:
             song['artists'] = song['artists'].split(', ')
 
-        for song in albums_array:
+        for song in albums:
             if song['album'] not in artist_albums:
                 artist_albums.append(song['album'])
 
@@ -259,7 +265,7 @@ def getArtistData(artist: str):
 
         return albums_with_count
 
-    return {'artist': artist_obj_json, 'songs': songs, 'albums': getArtistAlbums()}
+    return {'artist': artist_obj, 'songs': songs, 'albums': getArtistAlbums()}
 
 
 @bp.route("/f/<folder>")
@@ -295,17 +301,23 @@ def getFolderTree(folder: str = None):
         #         if not file:
         #             getTags(entry.path)
 
-    songs_array = all_songs_instance.find_songs_by_folder(
-        req_dir)
+    # songs_array = all_songs_instance.find_songs_by_folder(
+    #     req_dir)
 
-    songs = convert_to_json(songs_array)
+    songs = []
+
+    for x in all_the_f_music:
+        if x['folder'] == req_dir:
+            songs.append(x)
 
     for song in songs:
-        song['artists'] = song['artists'].split(', ')
-        song['image'] = img_path + song['image']
+        try:
+            song['artists'] = song['artists'].split(', ') or None
+        except:
+            pass
 
-        song['type']['name'] = "folder"
-        song['type']['id'] = req_dir
+        print(song['image'])
+        song['image'] = img_path + song['image']
 
     return {"files": remove_duplicates(songs), "folders": sorted(folders, key=lambda i: i['name'])}
 
@@ -313,11 +325,10 @@ def getFolderTree(folder: str = None):
 @bp.route('/qwerty')
 def populateArtists():
     all_songs = all_songs_instance.get_all_songs()
-    songs = convert_to_json(all_songs)
 
     artists = []
 
-    for song in songs:
+    for song in all_songs:
         artist = song['artists'].split(', ')
 
         for a in artist:
@@ -336,11 +347,10 @@ def populateArtists():
 @bp.route('/albums')
 def getAlbums():
     s = all_songs_instance.get_all_songs()
-    ss = convert_to_json(s)
 
     albums = []
 
-    for song in ss:
+    for song in s:
         al_obj = {
             "name": song['album'],
             "artist": song['artists']
@@ -358,19 +368,18 @@ def getAlbumSongs(query: str):
     artist = query.split('::')[1].replace('|', '/')
 
     songs = all_songs_instance.find_songs_by_album(album, artist)
-    songs_array = remove_duplicates(convert_to_json(songs))
 
     print(artist)
 
-    for song in songs_array:
+    for song in songs:
         song['artists'] = song['artists'].split(', ')
         song['image'] = img_path + song['image']
 
     album_obj = {
         "name": album,
-        "count": len(songs_array),
-        "duration": sum(song['length'] for song in songs_array),
-        "image": songs_array[0]['image'],
-        "artist": songs_array[0]['album_artist']
+        "count": len(songs),
+        "duration": sum(song['length'] for song in songs),
+        "image": songs[0]['image'],
+        "artist": songs[0]['album_artist']
     }
-    return {'songs': songs_array, 'info': album_obj}
+    return {'songs': songs, 'info': album_obj}

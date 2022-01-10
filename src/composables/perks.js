@@ -3,6 +3,7 @@ import { watch } from "@vue/runtime-core";
 
 import media from "./mediaNotification.js";
 import state from "./state.js";
+import playAudio from "./playAudio.js";
 
 const current = ref(state.current);
 
@@ -107,13 +108,26 @@ setTimeout(() => {
   });
 }, 1000);
 
-window.addEventListener("keyup", (e) => {
-  e.preventDefault();
+var _key_down_fired = false;
+
+window.addEventListener("keydown", (e) => {
   
-  if (e.ctrlKey && e.code == "KeyF") {
+  if (e.code == "Space" && !_key_down_fired) {
+    e.stopImmediatePropagation();
+    e.preventDefault();
+    playAudio.playPause();
+    _key_down_fired = true;
+
+  } else if (e.ctrlKey && e.code == "KeyF") {
     console.log('Ctrl F')
   }
 });
+
+window.addEventListener("keyup", (e) => {
+  if (e.code == "Space") {
+    _key_down_fired = false;
+  }
+})
 
 export default {
   putCommas,

@@ -137,6 +137,12 @@ export default {
     const current = ref(perks.current);
     const search_query = ref(state.search_query);
 
+    function doNothing(e) {
+      e.preventDefault();
+      e.stopImmediatePropagation();
+      console.log('mwathani')
+    }
+
     const searchSongs = computed(() => {
       const songs = [];
 
@@ -162,6 +168,7 @@ export default {
 
     return {
       searchSongs,
+      doNothing,
       songtitle,
       songTitleWidth,
       minWidth,

@@ -97,14 +97,7 @@ export default {
   height: 14rem;
   margin-top: .5rem;
   padding: 0.5rem;
-  background: rgb(14, 14, 14);
-  background: linear-gradient(
-    326deg,
-    rgb(0, 0, 0) 0%,
-    rgb(10, 10, 10) 13%,
-    rgba(0, 0, 0, 1) 43%,
-    rgba(0, 0, 0, 1) 100%
-  );
+  background: $card-dark;
   display: grid;
   grid-template-rows: 3fr 1fr;
 
@@ -137,17 +130,12 @@ export default {
       width: 100%;
       height: 0.25rem;
       cursor: pointer;
-      background: #1488cc; /* fallback for old browsers */
-      background: -webkit-linear-gradient(
-        to right,
-        #1488cc,
-        #2b32b2
-      ); /* Chrome 10-25, Safari 5.1-6 */
+      background: #1488cc;
       background: linear-gradient(
         to right,
         #1488cc,
         #2b32b2
-      ); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+      );
     }
 
     input::-webkit-slider-thumb {

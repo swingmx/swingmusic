@@ -34,6 +34,9 @@ const loading = ref(false);
 
 const is_playing = ref(false);
 
+const search_tracks = ref([]);
+const search_albums = ref([]);
+const search_artists = ref([]);
 
 export default {
   search_query,
@@ -44,4 +47,7 @@ export default {
   magic_flag,
   loading,
   is_playing,
+  search_tracks,
+  search_albums,
+  search_artists,
 };

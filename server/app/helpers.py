@@ -23,7 +23,6 @@ music_dirs = os.environ.get("music_dirs")
 home_dir = os.path.expanduser('~') + "/"
 app_dir = home_dir + '/.musicx'
 
-
 PORT = os.environ.get("PORT")
 
 
@@ -204,11 +203,14 @@ def get_folders():
 def remove_duplicates(array):
     song_num = 0
 
-    while song_num < len(array):
+    while song_num < len(array) -1:
         for index, song in enumerate(array):
-            if array[song_num]["title"] == song["title"] and array[song_num]["album"] == song["album"] and array[song_num]["artists"] == song["artists"] and index != song_num:
-                array.remove(song)
-        
+            try:
+
+                if array[song_num]["title"] == song["title"] and array[song_num]["album"] == song["album"] and array[song_num]["artists"] == song["artists"] and index != song_num:
+                    array.remove(song)
+            except:
+                print('whe')    
         song_num += 1
 
     return array

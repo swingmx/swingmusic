@@ -1,5 +1,25 @@
 import pymongo
-from bson import ObjectId
+import json
+from bson import ObjectId, json_util
+
+
+def convert_one_to_json(song):
+    json_song = json.dumps(song, default=json_util.default)
+    loaded_song = json.loads(json_song)
+
+    return loaded_song
+
+
+def convert_to_json(array):
+    songs = []
+
+    for song in array:
+        json_song = json.dumps(song, default=json_util.default)
+        loaded_song = json.loads(json_song)
+
+        songs.append(loaded_song)
+
+    return songs
 
 
 class Mongo:
@@ -40,41 +60,58 @@ class AllSongs(Mongo):
             {'filepath': song_obj['filepath']}, {"$set": song_obj}, upsert=True)
 
     def get_all_songs(self):
-        return self.collection.find().limit(25)
-    
+        return convert_to_json(self.collection.find())
+
     def get_song_by_id(self, file_id):
-        return self.collection.find_one({'_id': ObjectId(file_id)})
+        song = self.collection.find_one({'_id': ObjectId(file_id)})
+        return convert_one_to_json(song)
 
     def get_song_by_album(self, name, artist):
-        return self.collection.find_one({'album': name, 'album_artist': artist})
+        song = self.collection.find_one(
+            {'album': name, 'album_artist': artist})
+        return convert_one_to_json(song)
 
     def search_songs_by_album(self, query):
-        return self.collection.find({'album': {'$regex': query, '$options': 'i'}})
+        songs = self.collection.find(
+            {'album': {'$regex': query, '$options': 'i'}})
+        return convert_to_json(songs)
 
     def search_songs_by_artist(self, query):
-        return self.collection.find({'artists': {'$regex': query, '$options': 'i'}})
+        songs = self.collection.find(
+            {'artists': {'$regex': query, '$options': 'i'}})
+        return convert_to_json(songs)
 
     def find_song_by_title(self, query):
         self.collection.create_index([('title', pymongo.TEXT)])
-        return self.collection.find({'title': {'$regex': query, '$options': 'i'}})
+        song = self.collection.find(
+            {'title': {'$regex': query, '$options': 'i'}})
+        return convert_to_json(song)
 
     def find_songs_by_album(self, name, artist):
-        return self.collection.find({'album': name, 'album_artist': artist})
+        songs = self.collection.find({'album': name, 'album_artist': artist})
+        return convert_to_json(songs)
 
     def find_songs_by_folder(self, query):
-        return self.collection.find({'folder': query}).sort('title', pymongo.ASCENDING)
+        songs = self.collection.find({'folder': query}).sort(
+            'title', pymongo.ASCENDING)
+        return convert_to_json(songs)
 
     def find_songs_by_folder_og(self, query):
-        return self.collection.find({'folder': query})
+        songs = self.collection.find({'folder': query})
+        return convert_to_json(songs)
 
     def find_songs_by_artist(self, query):
-        return self.collection.find({'artists': query})
+        songs = self.collection.find({'artists': query})
+        return convert_to_json(songs)
 
     def find_songs_by_album_artist(self, query):
-        return self.collection.find({'album_artist': {'$regex': query, '$options': 'i'}})
+        songs = self.collection.find(
+            {'album_artist': {'$regex': query, '$options': 'i'}})
+        return convert_to_json(songs)
 
     def find_song_by_path(self, path):
-        return self.collection.find_one({'filepath': path})
+        song = self.collection.find_one({'filepath': path})
+        return convert_one_to_json(song)
 
     def remove_song_by_filepath(self, filepath):
         try:

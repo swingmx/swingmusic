@@ -15,6 +15,7 @@
     "sass": "^1.44.0",
     "sass-loader": "^10",
     "vue": "^3.0.0",
+    "vue-debounce": "^3.0.2",
     "vue-router": "^4.0.0-0",
     "webpack": "^5.64.4"
   },
