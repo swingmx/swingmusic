@@ -52,7 +52,7 @@ export default {
   background-image: url(../../assets/icons/folder.svg);
   background-repeat: no-repeat;
   background-position: 1rem;
-  background-size: 10% 100%;
+  background-size: 1.5rem;
   background-color: rgb(22, 36, 85);
   transition: all 0.2s ease;
 

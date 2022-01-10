@@ -11,9 +11,9 @@
         }"
       ></div>
       <div class="tags">
-        <p class="title">{{ next.title }}</p>
+        <p class="title ellip">{{ next.title }}</p>
         <hr />
-        <p class="artist">
+        <p class="artist ellip">
           <span v-for="artist in putCommas(next.artists)" :key="artist">{{
             artist
           }}</span>

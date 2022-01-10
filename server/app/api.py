@@ -272,7 +272,6 @@ def getArtistData(artist: str):
 @cache.cached()
 def getFolderTree(folder: str = None):
     req_dir = folder.replace('|', '/')
-    print(folder)
 
     if folder == "home":
         req_dir = home_dir
@@ -316,7 +315,6 @@ def getFolderTree(folder: str = None):
         except:
             pass
 
-        print(song['image'])
         song['image'] = img_path + song['image']
 
     return {"files": remove_duplicates(songs), "folders": sorted(folders, key=lambda i: i['name'])}

@@ -20,6 +20,8 @@ const playAudio = (path) => {
   })
     .then(() => {
       audio.play();
+      perks.focusCurrent()
+
       state.is_playing.value = true;
 
       audio.ontimeupdate = () => {
@@ -41,7 +43,6 @@ function playPrev() {
 }
 
 function seek(pos) {
-  console.log(pos);
   audio.currentTime = (pos / 1000) * audio.duration;
 }
 
@@ -68,4 +69,5 @@ audio.addEventListener("pause", () => {
 audio.addEventListener("ended", () => {
   playNext();
 });
+
 export default { playAudio, playNext, playPrev, playPause, seek, pos, playing };

@@ -11,62 +11,17 @@
           </tr>
         </thead>
         <tbody>
-          <tr
+          <SongItem
+            :searchSongs="searchSongs"
+            :songTitleWidth="songTitleWidth"
+            :minWidth="minWidth"
             v-for="song in searchSongs"
             :key="song"
+            :song="song"
+            :current="current"
             :class="{ current: current._id == song._id }"
-          >
-            <td
-              :style="{ width: songTitleWidth + 'px' }"
-              class="flex"
-              @click="updateQueue(song), playAudio(song.filepath)"
-            >
-              <div
-                class="album-art rounded image"
-                :style="{
-                  backgroundImage: `url(&quot;${song.image}&quot;)`,
-                }"
-              >
-                <div
-                  class="now-playing-track image"
-                  v-if="current._id == song._id"
-                  :class="{ active: is_playing, not_active: !is_playing }"
-                ></div>
-              </div>
-              <div>
-                <span class="ellip">{{ song.title }}</span>
-              </div>
-            </td>
-            <td :style="{ width: songTitleWidth + 'px' }">
-              <div class="ellip" v-if="song.artists[0] != ''">
-                <span
-                  class="artist"
-                  v-for="artist in putCommas(song.artists)"
-                  :key="artist"
-                  >{{ artist }}</span
-                >
-              </div>
-              <div class="ellip" v-else>
-                <span class="artist">{{ song.album_artist }}</span>
-              </div>
-            </td>
-            <td :style="{ width: songTitleWidth + 'px' }">
-              <router-link
-                class="ellip"
-                :to="{
-                  name: 'AlbumView',
-                  params: { album: song.album, artist: song.album_artist },
-                }"
-                >{{ song.album }}</router-link
-              >
-            </td>
-            <td
-              :style="{ width: songTitleWidth + 'px' }"
-              v-if="songTitleWidth > minWidth"
-            >
-              {{ `${Math.trunc(song.length / 60)} min` }}
-            </td>
-          </tr>
+            @updateQueue="updateQueue"
+          />
         </tbody>
       </table>
     </div>
@@ -84,30 +39,21 @@
 import { computed, ref, toRefs } from "@vue/reactivity";
 import { onMounted, onUnmounted } from "@vue/runtime-core";
 
-import audio from "@/composables/playAudio.js";
+import SongItem from "../SongItem.vue";
 import perks from "@/composables/perks.js";
 import state from "@/composables/state.js";
 
 export default {
   props: ["songs"],
+  components: {
+    SongItem,
+  },
   setup(props) {
     const song_list = toRefs(props).songs;
     const songtitle = ref(null);
     const songTitleWidth = ref(null);
 
     const minWidth = ref(300);
-    const putCommas = perks.putCommas;
-
-    const updateQueue = async (song) => {
-      if (state.queue.value[0]._id.$oid !== song_list.value[0]._id.$oid) {
-        const new_queue = song_list.value;
-        localStorage.setItem("queue", JSON.stringify(new_queue));
-        state.queue.value = new_queue;
-      }
-
-      state.current.value = song;
-      localStorage.setItem("current", JSON.stringify(song));
-    };
 
     const resizeSongTitleWidth = () => {
       try {
@@ -133,21 +79,26 @@ export default {
       });
     });
 
-    const playAudio = audio.playAudio;
     const current = ref(perks.current);
     const search_query = ref(state.search_query);
 
-    function doNothing(e) {
-      e.preventDefault();
-      e.stopImmediatePropagation();
-      console.log('mwathani')
-    }
+    const updateQueue = async (song) => {
+      if (state.queue.value[0]._id.$oid !== song_list.value[0]._id.$oid) {
+        const new_queue = song_list.value;
+        localStorage.setItem("queue", JSON.stringify(new_queue));
+        state.queue.value = new_queue;
+      }
+
+      state.current.value = song;
+      localStorage.setItem("current", JSON.stringify(song));
+    };
 
     const searchSongs = computed(() => {
       const songs = [];
 
       if (search_query.value.length > 2) {
         state.loading.value = true;
+        
         for (let i = 0; i < song_list.value.length; i++) {
           if (
             song_list.value[i].title
@@ -168,16 +119,12 @@ export default {
 
     return {
       searchSongs,
-      doNothing,
+      updateQueue,
       songtitle,
       songTitleWidth,
       minWidth,
-      playAudio,
-      updateQueue,
-      putCommas,
       current,
       search_query,
-      is_playing: state.is_playing,
     };
   },
 };

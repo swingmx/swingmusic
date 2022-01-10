@@ -92,23 +92,35 @@ function focusCurrent() {
   }
 }
 
+function getElem(identifier, type){
+  switch(type){
+    case "class": {
+      return document.getElementsByClassName(identifier)[0]
+    }
+    case "id": {
+      return document.getElementById(identifier)
+    }
+  }
+}
+
+function focusSearchBox() {
+  const elem = getElem('search', 'id')
+
+  elem.focus()
+}
+
 setTimeout(() => {
   watch(current, (new_current) => {
     media.showMediaNotif();
 
-    new Promise((resolve) => {
-      updateNext(new_current);
-      updatePrev(new_current);
-      resolve();
-    }).then(() => {
-      focusCurrent();
-    });
+    updateNext(new_current);
+    updatePrev(new_current);
 
     localStorage.setItem("current", JSON.stringify(new_current));
   });
 }, 1000);
 
-var key_down_fired = false;
+let key_down_fired = false;
 
 window.addEventListener("keydown", (e) => {
   let target = e.target;
@@ -123,7 +135,7 @@ window.addEventListener("keydown", (e) => {
           setTimeout(() => {
             key_down_fired = false;
           }, 1000);
-
+          
           playAudio.playNext();
         }
       }
@@ -134,11 +146,12 @@ window.addEventListener("keydown", (e) => {
         if (!key_down_fired) {
           key_down_fired = true;
 
+          playAudio.playPrev();
+
           setTimeout(() => {
             key_down_fired = false;
           }, 1000);
 
-          playAudio.playPrev();
         }
       }
 
@@ -148,6 +161,7 @@ window.addEventListener("keydown", (e) => {
       {
         if (!key_down_fired) {
           if (target.tagName == "INPUT") return;
+          e.preventDefault();
           key_down_fired = true;
 
           playAudio.playPause();
@@ -159,18 +173,17 @@ window.addEventListener("keydown", (e) => {
     case "f": {
       if (!key_down_fired) {
         if (!ctrlKey) return;
+        e.preventDefault();
+        focusSearchBox()
 
-        console.log("ctrl + f pressed");
         key_down_fired = true;
       }
     }
   }
 });
 
-window.addEventListener("keyup", (e) => {
-  if (e.code == "Space") {
-    key_down_fired = false;
-  }
+window.addEventListener("keyup", () => {
+  key_down_fired = false;
 });
 
 export default {
