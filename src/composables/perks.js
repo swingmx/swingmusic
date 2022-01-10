@@ -108,26 +108,70 @@ setTimeout(() => {
   });
 }, 1000);
 
-var _key_down_fired = false;
+var key_down_fired = false;
 
 window.addEventListener("keydown", (e) => {
-  
-  if (e.code == "Space" && !_key_down_fired) {
-    e.stopImmediatePropagation();
-    e.preventDefault();
-    playAudio.playPause();
-    _key_down_fired = true;
+  let target = e.target;
+  let ctrlKey = e.ctrlKey;
 
-  } else if (e.ctrlKey && e.code == "KeyF") {
-    console.log('Ctrl F')
+  switch (e.key) {
+    case "ArrowRight":
+      {
+        if (!key_down_fired) {
+          key_down_fired = true;
+
+          setTimeout(() => {
+            key_down_fired = false;
+          }, 1000);
+
+          playAudio.playNext();
+        }
+      }
+      break;
+
+    case "ArrowLeft":
+      {
+        if (!key_down_fired) {
+          key_down_fired = true;
+
+          setTimeout(() => {
+            key_down_fired = false;
+          }, 1000);
+
+          playAudio.playPrev();
+        }
+      }
+
+      break;
+
+    case " ":
+      {
+        if (!key_down_fired) {
+          if (target.tagName == "INPUT") return;
+          key_down_fired = true;
+
+          playAudio.playPause();
+        }
+      }
+
+      break;
+
+    case "f": {
+      if (!key_down_fired) {
+        if (!ctrlKey) return;
+
+        console.log("ctrl + f pressed");
+        key_down_fired = true;
+      }
+    }
   }
 });
 
 window.addEventListener("keyup", (e) => {
   if (e.code == "Space") {
-    _key_down_fired = false;
+    key_down_fired = false;
   }
-})
+});
 
 export default {
   putCommas,
