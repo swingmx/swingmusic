@@ -314,8 +314,9 @@ def getFolderTree(folder: str = None):
             song['artists'] = song['artists'].split(', ') or None
         except:
             pass
-
-        song['image'] = img_path + song['image']
+        if song['image'] is not None:
+            print(song['image'])
+            song['image'] = img_path + song['image']
 
     return {"files": remove_duplicates(songs), "folders": sorted(folders, key=lambda i: i['name'])}
 

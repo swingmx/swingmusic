@@ -82,23 +82,16 @@ export default {
     const current = ref(perks.current);
     const search_query = ref(state.search_query);
 
-    const updateQueue = async (song) => {
-      if (state.queue.value[0]._id.$oid !== song_list.value[0]._id.$oid) {
-        const new_queue = song_list.value;
-        localStorage.setItem("queue", JSON.stringify(new_queue));
-        state.queue.value = new_queue;
-      }
-
-      state.current.value = song;
-      localStorage.setItem("current", JSON.stringify(song));
-    };
+    function updateQueue(song){
+      perks.updateQueue(song)
+    }
 
     const searchSongs = computed(() => {
       const songs = [];
 
       if (search_query.value.length > 2) {
         state.loading.value = true;
-        
+
         for (let i = 0; i < song_list.value.length; i++) {
           if (
             song_list.value[i].title
@@ -162,7 +155,7 @@ export default {
   width: 3rem;
   height: 3rem;
   margin-right: 1rem;
-  background-image: url(../../assets/icons/file.svg);
+  background-image: url(../../assets/images/null.webp);
   display: grid;
   place-items: center;
 }

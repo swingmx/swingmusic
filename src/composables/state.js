@@ -12,6 +12,9 @@ const queue = ref([
   },
 ]);
 
+const song_list = ref([])
+const folder_list = ref([])
+
 const current = ref({
   title: "Nothing played yet",
   artists: ["... blah blah blah"],
@@ -41,6 +44,8 @@ const search_artists = ref([]);
 export default {
   search_query,
   queue,
+  song_list,
+  folder_list,
   current,
   prev,
   filters,

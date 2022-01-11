@@ -80,6 +80,19 @@ const readQueue = () => {
   }
 };
 
+const updateQueue = async (song) => {
+  playAudio.playAudio(song.filepath)
+
+  if (state.queue.value[0]._id.$oid !== state.song_list.value[0]._id.$oid) {
+    const new_queue = state.song_list.value;
+    localStorage.setItem("queue", JSON.stringify(new_queue));
+    state.queue.value = new_queue;
+  }
+
+  state.current.value = song;
+  localStorage.setItem("current", JSON.stringify(song));
+};
+
 function focusCurrent() {
   const elem = document.getElementsByClassName("currentInQueue")[0];
 
@@ -92,21 +105,21 @@ function focusCurrent() {
   }
 }
 
-function getElem(identifier, type){
-  switch(type){
+function getElem(identifier, type) {
+  switch (type) {
     case "class": {
-      return document.getElementsByClassName(identifier)[0]
+      return document.getElementsByClassName(identifier)[0];
     }
     case "id": {
-      return document.getElementById(identifier)
+      return document.getElementById(identifier);
     }
   }
 }
 
 function focusSearchBox() {
-  const elem = getElem('search', 'id')
+  const elem = getElem("search", "id");
 
-  elem.focus()
+  elem.focus();
 }
 
 setTimeout(() => {
@@ -135,7 +148,7 @@ window.addEventListener("keydown", (e) => {
           setTimeout(() => {
             key_down_fired = false;
           }, 1000);
-          
+
           playAudio.playNext();
         }
       }
@@ -151,7 +164,6 @@ window.addEventListener("keydown", (e) => {
           setTimeout(() => {
             key_down_fired = false;
           }, 1000);
-
         }
       }
 
@@ -174,7 +186,7 @@ window.addEventListener("keydown", (e) => {
       if (!key_down_fired) {
         if (!ctrlKey) return;
         e.preventDefault();
-        focusSearchBox()
+        focusSearchBox();
 
         key_down_fired = true;
       }
@@ -190,6 +202,7 @@ export default {
   putCommas,
   readQueue,
   focusCurrent,
+  updateQueue,
   current,
   queue,
   next,

@@ -3,7 +3,7 @@
     <td
       :style="{ width: songTitleWidth + 'px' }"
       class="flex"
-      @click="emitUpdate(song), playAudio(song.filepath)"
+      @click="emitUpdate(song)"
     >
       <div
         class="album-art rounded image"
@@ -56,7 +56,6 @@
 <script>
 import perks from "@/composables/perks.js";
 import state from "@/composables/state.js";
-import audio from "@/composables/playAudio.js"
 
 export default {
   props: ["song", "current", "songTitleWidth", "minWidth"],
@@ -69,7 +68,6 @@ export default {
       putCommas: perks.putCommas,
       emitUpdate,
       is_playing: state.is_playing,
-      playAudio: audio.playAudio
     };
   },
 };

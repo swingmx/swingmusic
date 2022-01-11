@@ -1,7 +1,7 @@
 <template>
   <div id="f-view-parent" class="rounded">
     <div class="fixed">
-      <SearchBox :path="path" />
+      <Header :path="path" />
     </div>
     <div id="scrollable" ref="scrollable">
       <FolderList :folders="folders" />
@@ -17,7 +17,7 @@ import { useRoute } from "vue-router";
 
 import SongList from "@/components/FolderView/SongList.vue";
 import FolderList from "@/components/FolderView/FolderList.vue";
-import SearchBox from "@/components/FolderView/SearchBox.vue";
+import Header from "@/components/FolderView/Header.vue";
 
 import getData from "../composables/getFiles.js";
 import { onMounted, watch } from "@vue/runtime-core";
@@ -27,14 +27,14 @@ export default {
   components: {
     SongList,
     FolderList,
-    SearchBox,
+    Header,
   },
   setup() {
     const route = useRoute();
     const path = ref(route.params.path);
 
-    const songs = ref([]);
-    const folders = ref([]);
+    const songs = ref(state.song_list);
+    const folders = ref(state.folder_list);
 
     const scrollable = ref(null);
 
@@ -48,8 +48,8 @@ export default {
         getData(path, last_id).then((data) => {
           scrollable.value.scrollTop = 0;
 
-          songs.value = data.songs;
-          folders.value = data.folders;
+          state.song_list.value = data.songs;
+          state.folder_list.value = data.folders;
 
           state.loading.value = false;
         });
