@@ -1,32 +1,49 @@
-from genericpath import exists
+"""
+This module contains mimi functions for the server.
+"""
+
 import os
-import json
+import threading
+import time
 import requests
-import urllib
 
 from mutagen.mp3 import MP3
 from mutagen.id3 import ID3
 from mutagen.flac import FLAC
 
-from bson import json_util
-
 from io import BytesIO
 from PIL import Image
 
-from app.models import AllSongs
-from app.configs import default_configs
-
-all_songs_instance = AllSongs()
-music_dir = os.environ.get("music_dir")
-music_dirs = os.environ.get("music_dirs")
+from app import instances
+from app import functions
 
 home_dir = os.path.expanduser('~') + "/"
 app_dir = home_dir + '/.musicx'
 
-PORT = os.environ.get("PORT")
+
+def background(f):
+    '''
+    a threading decorator
+    use @background above the function you want to run in the background
+    '''
+    def backgrnd_func(*a, **kw):
+        threading.Thread(target=f, args=a, kwargs=kw).start()
+    return backgrnd_func
+
+@background
+def check_for_new_songs():
+    flag = False
+
+    while flag is False:
+        functions.populate()
+        time.sleep(300)
 
 
-def run_fast_scandir(dir, ext):
+def run_fast_scandir(dir: str, ext: str) -> list:
+    """
+    Scans a directory for files with a specific extension. Returns a list of files and folders in the directory.
+    """
+
     subfolders = []
     files = []
 
@@ -45,7 +62,11 @@ def run_fast_scandir(dir, ext):
     return subfolders, files
 
 
-def extract_thumb(path):
+def extract_thumb(path: str) -> str:
+    """
+    Extracts the thumbnail from an audio file. Returns the path to the thumbnail.
+    """
+
     webp_path = path.split('/')[-1] + '.webp'
     img_path = app_dir + "/images/thumbnails/" + webp_path
 
@@ -88,7 +109,11 @@ def extract_thumb(path):
     return webp_path
 
 
-def getTags(full_path):
+def getTags(full_path: str) -> dict:
+    """
+    Returns a dictionary of tags for a given file.
+    """
+
     if full_path.endswith('.flac'):
         try:
             audio = FLAC(full_path)
@@ -169,120 +194,56 @@ def getTags(full_path):
         }
     }
 
-    all_songs_instance.insert_song(tags)
+    instances.songs_instance.insert_song(tags)
     return tags
 
 
-def convert_one_to_json(song):
-    json_song = json.dumps(song, default=json_util.default)
-    loaded_song = json.loads(json_song)
+def remove_duplicates(array: list) -> list:
+    """
+    Removes duplicates from a list. Returns a list without duplicates.
+    """
 
-    return loaded_song
-
-
-def convert_to_json(array):
-    songs = []
-
-    for song in array:
-        json_song = json.dumps(song, default=json_util.default)
-        loaded_song = json.loads(json_song)
-
-        songs.append(loaded_song)
-
-    return songs
-
-
-def get_folders():
-    folders = []
-
-    for dir in default_configs['dirs']:
-        entry = os.scandir(dir)
-        folders.append(entry)
-
-
-def remove_duplicates(array):
     song_num = 0
 
-    while song_num < len(array) -1:
+    while song_num < len(array) - 1:
         for index, song in enumerate(array):
             try:
 
                 if array[song_num]["title"] == song["title"] and array[song_num]["album"] == song["album"] and array[song_num]["artists"] == song["artists"] and index != song_num:
                     array.remove(song)
             except:
-                print('whe')    
+                print('whe')
         song_num += 1
 
     return array
 
 
-def save_image(url, path):
+def save_image(url: str, path: str) -> None:
+    """
+    Saves an image from a url to a path.
+    """
+
     response = requests.get(url)
     img = Image.open(BytesIO(response.content))
     img.save(path, 'JPEG')
 
 
-def isValidFile(filename):
+def isValidFile(filename: str) -> bool:
+    """
+    Checks if a file is valid. Returns True if it is, False if it isn't.
+    """
+
     if filename.endswith('.flac') or filename.endswith('.mp3'):
         return True
     else:
         return False
 
 
-def isValidAudioFrom(folder):
-    folder_content = os.scandir(folder)
-    files = []
+def create_config_dir() -> None:
+    """
+    Creates the config directory if it doesn't exist.
+    """
 
-    for entry in folder_content:
-        if isValidFile(entry.name) == True:
-            file = {
-                "path": entry.path,
-                "name": entry.name
-            }
-
-            files.append(file)
-
-    return files
-
-
-def getFolderContents(filepath, folder):
-
-    folder_name = urllib.parse.unquote(folder)
-
-    path = filepath
-    name = filepath.split('/')[-1]
-    tags = {}
-
-    if name.endswith('.flac'):
-        image_path = folder_name + '/.thumbnails/' + \
-            name.replace('.flac', '.jpg')
-        audio = FLAC(path)
-
-    if name.endswith('.mp3'):
-        image_path = folder_name + '/.thumbnails/' + \
-            name.replace('.mp3', '.jpg')
-        audio = MP3(path)
-
-    abslt_path = urllib.parse.quote(path.replace(music_dir, ''))
-
-    if os.path.exists(image_path):
-        img_url = 'http://localhost:{}/{}'.format(
-            PORT,
-            urllib.parse.quote(image_path.replace(music_dir, ''))
-        )
-
-    try:
-        audio_url = 'http://localhost:{}/{}'.format(
-            PORT, abslt_path
-        )
-        tags = getTags(audio_url, audio, img_url, folder_name)
-    except:
-        pass
-
-    return tags
-
-
-def create_config_dir():
     home_dir = os.path.expanduser('~')
     config_folder = home_dir + app_dir
 
@@ -291,3 +252,24 @@ def create_config_dir():
     for dir in dirs:
         if not os.path.exists(config_folder + dir):
             os.makedirs(config_folder + dir)
+
+
+def getAllSongs() -> None:
+    """
+    Gets all songs under the ~/ directory.
+    """
+    
+    tracks = []
+    tracks.extend(instances.songs_instance.get_all_songs())
+
+    for track in tracks:
+        try:
+            os.chmod(os.path.join(home_dir, track['filepath']), 0o755)
+        except FileNotFoundError:
+            instances.songs_instance.remove_song_by_filepath(
+                os.path.join(home_dir, track['filepath']))
+        if track['image'] is not None:
+            track['image'] = "http://127.0.0.1:8900/images/thumbnails/" + \
+                track['image']
+
+    return tracks

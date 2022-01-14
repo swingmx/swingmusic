@@ -1,6 +1,6 @@
 <template>
   <div class="folder">
-    <div class="table rounded" ref="songtitle" v-if="searchSongs.length">
+    <div class="table rounded" ref="songtitle" v-if="songs.length">
       <table>
         <thead>
           <tr>
@@ -12,20 +12,18 @@
         </thead>
         <tbody>
           <SongItem
-            :searchSongs="searchSongs"
             :songTitleWidth="songTitleWidth"
             :minWidth="minWidth"
-            v-for="song in searchSongs"
+            v-for="song in songs"
             :key="song"
             :song="song"
             :current="current"
-            :class="{ current: current._id == song._id }"
             @updateQueue="updateQueue"
           />
         </tbody>
       </table>
     </div>
-    <div ref="songtitle" v-else-if="searchSongs.length === 0 && search_query">
+    <div ref="songtitle" v-else-if="songs.length === 0 && search_query">
       <div class="no-results">
         <div class="icon"></div>
         <div class="text">❗ Track not found!</div>
@@ -36,7 +34,7 @@
 </template>
 
 <script>
-import { computed, ref, toRefs } from "@vue/reactivity";
+import { ref } from "@vue/reactivity";
 import { onMounted, onUnmounted } from "@vue/runtime-core";
 
 import SongItem from "../SongItem.vue";
@@ -48,8 +46,7 @@ export default {
   components: {
     SongItem,
   },
-  setup(props) {
-    const song_list = toRefs(props).songs;
+  setup() {
     const songtitle = ref(null);
     const songTitleWidth = ref(null);
 
@@ -86,32 +83,7 @@ export default {
       perks.updateQueue(song)
     }
 
-    const searchSongs = computed(() => {
-      const songs = [];
-
-      if (search_query.value.length > 2) {
-        state.loading.value = true;
-
-        for (let i = 0; i < song_list.value.length; i++) {
-          if (
-            song_list.value[i].title
-              .toLowerCase()
-              .includes(search_query.value.toLowerCase())
-          ) {
-            songs.push(song_list.value[i]);
-          }
-        }
-
-        state.loading.value = false;
-
-        return songs;
-      } else {
-        return song_list.value;
-      }
-    });
-
     return {
-      searchSongs,
       updateQueue,
       songtitle,
       songTitleWidth,

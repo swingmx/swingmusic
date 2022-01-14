@@ -1,7 +1,7 @@
 <template>
   <div class="folder-top flex">
     <div class="fname">
-      <button class="play image">
+      <button class="play image" @click="playThis(first_song)">
         <div class="icon"></div>
         Play
       </button>
@@ -10,25 +10,63 @@
         {{ path.split("/").splice(-1) + "" }}
       </div>
     </div>
+    <div class="search">
+      <input
+        type="text"
+        class="search-input"
+        placeholder="Ctrl + F"
+        v-model="search_query"
+        @keyup.enter="search()"
+      />
+      <div class="search-icon image"></div>
+    </div>
   </div>
 </template>
 
 <script>
+import perks from "@/composables/perks.js";
+
 export default {
-  props: ["path"],
+  props: ["path", "first_song"],
+  setup() {
+    return {
+      playThis: perks.updateQueue,
+    };
+  },
 };
 </script>
 
 <style lang="scss">
 .folder-top {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
   border-bottom: 1px solid $separator;
   width: calc(100% - 0.5rem);
   padding-bottom: $small;
   height: 3rem;
 }
 
+.folder-top .search {
+  width: 50%;
+  display: grid;
+  place-items: end;
+
+  .search-input {
+    max-width: 20rem;
+    width: 100%;
+    border: 1px solid $separator;
+    border-radius: .5rem;
+    padding-left: 1rem;
+    background-color: #46454500;
+    color: #fff;
+    font-size: 1rem;
+    line-height: 2.2rem;
+    outline: none;
+  }
+}
+
 .folder-top .fname {
-  // width: 50%;
+  width: 50%;
   display: flex;
   align-items: center;
 

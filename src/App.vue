@@ -19,8 +19,6 @@
           @collapseSearch="collapseSearch"
         />
       </div>
-
-      <!-- <div class="separator no-border"></div> -->
       <router-view />
     </div>
     <div class="r-sidebar">

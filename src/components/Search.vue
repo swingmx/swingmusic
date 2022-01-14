@@ -176,7 +176,8 @@ export default {
     }
 
     watch(query, (new_query) => {
-      searchMusic(new_query);
+      // search music
+      // searchMusic(new_query);
 
       state.search_query.value = new_query;
       if (new_query !== "") {

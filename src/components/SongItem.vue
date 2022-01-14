@@ -1,5 +1,5 @@
 <template>
-  <tr>
+  <tr :class="{ current: current._id == song._id }">
     <td
       :style="{ width: songTitleWidth + 'px' }"
       class="flex"
@@ -61,7 +61,7 @@ export default {
   props: ["song", "current", "songTitleWidth", "minWidth"],
   setup(props, { emit }) {
     function emitUpdate(song) {
-      emit('updateQueue', song);
+      emit("updateQueue", song);
     }
 
     return {
