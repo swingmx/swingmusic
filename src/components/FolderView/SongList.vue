@@ -39,7 +39,7 @@ import { ref } from "@vue/reactivity";
 import { onMounted, onUnmounted } from "@vue/runtime-core";
 
 import SongItem from "../SongItem.vue";
-import getAlbum from "@/composables/getAlbum.js";
+import album from "@/composables/album.js";
 import perks from "@/composables/perks.js";
 import state from "@/composables/state.js";
 import { useRouter, useRoute } from "vue-router";
@@ -104,7 +104,7 @@ export default {
     function loadAlbum(title, album_artist) {
       state.loading.value = true;
 
-      getAlbum(title, album_artist).then((data) => {
+      album.getAlbumTracks(title, album_artist).then((data) => {
         state.album_song_list.value = data.songs;
         state.album_info.value = data.info;
 
@@ -189,7 +189,7 @@ th {
 th {
   text-transform: uppercase;
   font-weight: normal;
-  display: none;
+  // display: none;
 }
 
 td .artist {

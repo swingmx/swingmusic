@@ -33,8 +33,9 @@ const prev = ref({
 
 const album_song_list = ref([])
 const album_info = ref([])
-
+const album_artists = ref([])
 const filters = ref([]);
+
 const magic_flag = ref(false);
 const loading = ref(false);
 
@@ -59,5 +60,6 @@ export default {
   search_albums,
   search_artists,
   album_song_list,
-  album_info
+  album_info,
+  album_artists
 };

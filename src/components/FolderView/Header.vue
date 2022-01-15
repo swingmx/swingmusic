@@ -5,9 +5,11 @@
         <div class="icon"></div>
         Play
       </button>
-      <div class="ellip text">
+      <div class="text">
         <div class="icon image"></div>
-        {{ path.split("/").splice(-1) + "" }}
+        <div class="ellip">
+          {{ path.split("/").splice(-1) + "" }}
+        </div>
       </div>
     </div>
     <div class="search">
@@ -25,17 +27,17 @@
 
 <script>
 import perks from "@/composables/perks.js";
-import state from "@/composables/state.js"
+import state from "@/composables/state.js";
 
 export default {
   props: ["path", "first_song"],
   setup() {
     function playFolder(song) {
-      perks.updateQueue(song, "folder")
+      perks.updateQueue(song, "folder");
     }
     return {
       playFolder,
-      search_query: state.search_query
+      search_query: state.search_query,
     };
   },
 };
@@ -60,7 +62,7 @@ export default {
     max-width: 20rem;
     width: 100%;
     border: 1px solid $separator;
-    border-radius: .5rem;
+    border-radius: 0.5rem;
     padding-left: 1rem;
     background-color: #46454500;
     color: #fff;
@@ -96,14 +98,18 @@ export default {
   }
 
   .text {
+    position: relative;
     display: flex;
     align-items: center;
 
     border-radius: $small;
     background-color: rgb(24, 22, 22);
     padding: $small;
+    padding-left: 2.25rem;
 
     .icon {
+      position: absolute;
+      left: $small;
       height: 1.5rem;
       width: 1.5rem;
       background-image: url(../../assets/icons/folder.svg);

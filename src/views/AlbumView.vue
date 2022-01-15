@@ -8,7 +8,7 @@
       <SongList :songs="album_songs" />
     </div>
     <div class="separator" id="av-sep"></div>
-    <FeaturedArtists />
+    <FeaturedArtists :artists="artists" />
     <div class="separator" id="av-sep"></div>
     <AlbumBio />
     <div class="separator" id="av-sep"></div>
@@ -27,7 +27,7 @@ import FromTheSameArtist from "../components/AlbumView/FromTheSameArtist.vue";
 import SongList from "../components/FolderView/SongList.vue";
 import FeaturedArtists from "../components/PlaylistView/FeaturedArtists.vue";
 
-import getAlbum from "../composables/getAlbum.js";
+import album from "@/composables/album.js";
 import state from "@/composables/state.js";
 import { onUnmounted } from "@vue/runtime-core";
 
@@ -46,11 +46,18 @@ export default {
 
     onMounted(() => {
       if (!state.album_song_list.value.length) {
-        getAlbum(title, album_artists).then((data) => {
+        album.getAlbumTracks(title, album_artists).then((data) => {
           state.album_song_list.value = data.songs;
           state.album_info.value = data.info;
 
           state.loading.value = false;
+        });
+      }
+
+      if (state.album_artists.value.length == 0) {
+        album.getAlbumArtists(title, album_artists).then((data) => {
+          state.album_artists.value = data;
+          console.log(state.album_artists.value)
         });
       }
     });
@@ -58,11 +65,13 @@ export default {
     onUnmounted(() => {
       state.album_song_list.value = [];
       state.album_info.value = {};
+      state.album_artists.value = [];
     });
 
     return {
       album_songs: state.album_song_list,
       album_info: state.album_info,
+      artists: state.album_artists,
     };
   },
 };

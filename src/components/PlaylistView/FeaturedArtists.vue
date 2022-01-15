@@ -1,10 +1,10 @@
 <template>
   <div class="f-artists">
     <div class="xcontrols">
-      <div class="prev" @click="scrollLeftX"></div>
-      <div class="next" @click="scrollRightX"></div>
+      <div class="prev" @click="scrollLeft"></div>
+      <div class="next" @click="scrollRight"></div>
     </div>
-    <div class="artists" ref="artists_dom" v-on:mouseover="say">
+    <div class="artists" ref="artists_dom" v-on:mouseover="scrollArtists">
       <div class="artist c1">
         <div class="blur"></div>
         <div class="s2"></div>
@@ -12,8 +12,11 @@
       </div>
       <div class="artist" v-for="artist in artists" :key="artist">
         <div>
-          <div class="artist-image image"></div>
-          <p class="artist-name ellipsis">{{ artist }}</p>
+          <div
+            class="artist-image image"
+            :style="{ backgroundImage: `url('${artist.image}')` }"
+          ></div>
+          <p class="artist-name ellipsis">{{ artist.name }}</p>
           <div class="a-circle"></div>
         </div>
       </div>
@@ -24,24 +27,11 @@
 import { ref } from "@vue/reactivity";
 
 export default {
+  props: ["artists"],
   setup() {
-    const artists = [
-      "Michael John Montgomery",
-      "2",
-      "3",
-      "4",
-      "5",
-      "6",
-      "7",
-      "8",
-      "9",
-      "10",
-      "11",
-    ];
-
     const artists_dom = ref(null);
 
-    const scrollLeftX = () => {
+    const scrollLeft = () => {
       const dom = artists_dom.value;
       dom.scrollBy({
         left: -700,
@@ -49,7 +39,7 @@ export default {
       });
     };
 
-    const scrollRightX = () => {
+    const scrollRight = () => {
       const dom = artists_dom.value;
       dom.scrollBy({
         left: 700,
@@ -64,7 +54,7 @@ export default {
       });
     };
 
-    const say = () => {
+    const scrollArtists = () => {
       artists_dom.value.addEventListener("wheel", (e) => {
         e.preventDefault();
         scroll(e);
@@ -72,11 +62,10 @@ export default {
     };
 
     return {
-      artists,
       artists_dom,
-      say,
-      scrollLeftX,
-      scrollRightX,
+      scrollArtists,
+      scrollLeft,
+      scrollRight,
     };
   },
 };
@@ -87,7 +76,7 @@ export default {
   position: relative;
   height: 13em;
   width: calc(100%);
-  background-color: #1f1e1d;
+  background-color: $card-dark;
   padding: $small;
   border-radius: $small;
   user-select: none;
@@ -127,7 +116,7 @@ export default {
 
   .next:hover,
   .prev:hover {
-    background-color: rgb(3, 1, 1);
+    background-color: $blue;
     transition: all 0.5s ease;
   }
 }
@@ -156,7 +145,7 @@ export default {
   width: 9em;
   height: 9em;
   border-radius: $small;
-  background-color: #fd5c63;
+  background-color: #0f0e0e;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -189,11 +178,8 @@ export default {
 
 .f-artists .c1 {
   position: relative;
-  background: rgb(145, 42, 56);
+  background: rgb(16, 25, 51);
   width: 15em;
-  background-image: url(../../assets/images/gradient1.gif);
-  overflow: hidden;
-  margin-left: -0.1rem;
 
   &:hover > .s2 {
     background: rgba(53, 53, 146, 0.8);
@@ -206,21 +192,9 @@ export default {
     position: absolute;
     bottom: -2rem;
     margin-left: 0.5rem;
-    z-index: 1;
     font-size: 2rem;
     font-weight: 700;
     color: #ffffff;
-  }
-
-  .blur {
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0);
-    backdrop-filter: blur(40px);
-    -webkit-backdrop-filter: blur(40px);
-    -moz-backdrop-filter: blur(40px);
-    border-radius: $small;
   }
 
   .s2 {

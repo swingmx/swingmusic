@@ -13,7 +13,7 @@ all_the_f_music = helpers.getAllSongs()
 
 def initialize() -> None:
     helpers.create_config_dir()
-    # helpers.check_for_new_songs()
+    helpers.check_for_new_songs()
 
 initialize()
 
@@ -54,9 +54,8 @@ def search_by_title():
         album['image'] = "image"
 
     for song in ar:
-        a = song["artists"].split(', ')
 
-        for artist in a:
+        for artist in song["artists"]:
             if query.lower() in artist.lower():
 
                 artist_obj = {
@@ -75,30 +74,34 @@ def x():
     return "🎸"
 
 
-@bp.route("/folder/artists")
-def get_folder_artists():
-    dir = request.args.get('dir')
+@bp.route("/album/<album>/<artist>/artists")
+@cache.cached()
+def get_album_artists(album, artist):
+    album = album.replace('|', '/')
+    artist = artist.replace('|', '/')
+    
+    tracks = []
 
-    songs = instances.songs_instance.find_songs_by_folder(dir)
-    without_duplicates = helpers.remove_duplicates(songs)
+    for track in all_the_f_music:
+        if track["album"] == album and track["album_artist"] == artist:
+            tracks.append(track)
 
     artists = []
 
-    for song in without_duplicates:
-        this_artists = song['artists'].split(', ')
+    for track in tracks:
+        print(track['artists'])
 
-        for artist in this_artists:
-
+        for artist in track['artists']:
             if artist not in artists:
                 artists.append(artist)
 
     final_artists = []
-
-    for artist in artists[:15]:
-        artist_obj = instances.artist_instance.find_artists_by_name(artist)
-
-        if artist_obj != []:
-            final_artists.append(artist_obj)
+    for artist in artists:
+        artist_obj = {
+            "name": artist,
+            "image": "http://127.0.0.1:8900/images/artists/" + artist.replace('/', '::') + ".jpg"
+        }
+        final_artists.append(artist_obj)
 
     return {'artists': final_artists}
 
@@ -106,6 +109,7 @@ def get_folder_artists():
 @bp.route("/populate/images")
 def populate_images():
     functions.populate_images()
+    return "Done"
 
 
 @bp.route("/artist/<artist>")
@@ -128,9 +132,6 @@ def getArtistData(artist: str):
         albums_with_count = []
 
         albums = instances.songs_instance.find_songs_by_album_artist(artist)
-
-        for song in songs:
-            song['artists'] = song['artists'].split(', ')
 
         for song in albums:
             if song['album'] not in artist_albums:
@@ -200,12 +201,6 @@ def getFolderTree(folder: str = None):
         if x['folder'] == req_dir:
             songs.append(x)
 
-    for song in songs:
-        try:
-            song['artists'] = song['artists'].split(', ')
-        except:
-            pass
-
     return {"files": helpers.remove_duplicates(songs), "folders": sorted(folders, key=lambda i: i['name'])}
 
 @bp.route('/qwerty')
@@ -215,9 +210,7 @@ def populateArtists():
     artists = []
 
     for song in all_songs:
-        artist = song['artists'].split(', ')
-
-        for a in artist:
+        for a in song['artists']:
             a_obj = {
                 "name": a,
             }
@@ -252,11 +245,11 @@ def getAlbumSongs(query: str):
     album = query.split('::')[0].replace('|', '/')
     artist = query.split('::')[1].replace('|', '/')
 
-    songs = instances.songs_instance.find_songs_by_album(album, artist)
+    songs = []
 
-    for song in songs:
-        song['artists'] = song['artists'].split(', ')
-        song['image'] = "http://127.0.0.1:8900/images/thumbnails/" + song['image']
+    for track in all_the_f_music:
+        if track['album'] == album and track['album_artist'] == artist:
+            songs.append(track)
 
     album_obj = {
         "name": album,

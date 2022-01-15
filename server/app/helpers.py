@@ -268,8 +268,11 @@ def getAllSongs() -> None:
         except FileNotFoundError:
             instances.songs_instance.remove_song_by_filepath(
                 os.path.join(home_dir, track['filepath']))
+        
         if track['image'] is not None:
             track['image'] = "http://127.0.0.1:8900/images/thumbnails/" + \
                 track['image']
+        if track['artists'] is not None:
+            track['artists'] = track['artists'].split(', ')
 
     return tracks

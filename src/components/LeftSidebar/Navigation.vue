@@ -4,7 +4,7 @@
       <div class="nav-button" id="home-button">
         <div class="in">
           <div class="nav-icon image" id="home-icon"></div>
-          <span id="text">Home</span>
+          <span>Home</span>
         </div>
       </div>
     </router-link>
@@ -13,7 +13,7 @@
       <div class="nav-button" id="album-button">
         <div class="in">
           <div class="nav-icon image" id="album-icon"></div>
-          <span id="text">Albums</span>
+          <span>Albums</span>
         </div>
       </div>
     </router-link>
@@ -22,7 +22,7 @@
       <div class="nav-button" id="artists-button">
         <div class="in">
           <div class="nav-icon image" id="artists-icon"></div>
-          <span id="text">Artists</span>
+          <span>Artists</span>
         </div>
       </div>
     </router-link>
@@ -31,7 +31,7 @@
       <div class="nav-button" id="playlists-button">
         <div class="in">
           <div class="nav-icon image" id="playlists-icon"></div>
-          <span id="text">Playlist</span>
+          <span>Playlist</span>
         </div>
       </div>
     </router-link>
@@ -40,7 +40,7 @@
       <div class="nav-button" id="mixes-button">
         <div class="in">
           <div class="nav-icon image" id="mixes-icon"></div>
-          <span id="text">Mixes</span>
+          <span>Mixes</span>
         </div>
       </div>
     </router-link>
@@ -49,7 +49,7 @@
       <div class="nav-button" id="folders-button">
         <div class="in">
           <div class="nav-icon image" id="folders-icon"></div>
-          <span id="text">Folders</span>
+          <span>Folders</span>
         </div>
       </div>
     </router-link>
@@ -58,7 +58,7 @@
       <div class="nav-button" id="folders-button">
         <div class="in">
           <div class="nav-icon image" id="settings-icon"></div>
-          <span id="text">Settings</span>
+          <span>Settings</span>
         </div>
       </div>
     </router-link>
@@ -97,7 +97,6 @@ export default {
     display: flex;
     align-items: flex-start;
     justify-content: flex-start;
-    background-color: transparent;
     height: 100%;
     padding: 0.6rem 0 0.6rem 0;
 
@@ -106,15 +105,27 @@ export default {
     }
 
     .nav-icon {
-      height: 1.5rem;
-      width: 1.5rem;
+      height: 2rem;
+      width: 2rem;
       margin-right: 0.5rem;
-      margin-left: 10px;
+      margin-left: 0.6rem;
+      border-radius: $small;
+      background-color: rgb(26, 24, 24);
     }
 
     .in {
       display: flex;
       align-items: center;
+    }
+
+    #home-icon,
+    #album-icon,
+    #artists-icon,
+    #playlists-icon,
+    #mixes-icon,
+    #folders-icon,
+    #settings-icon {
+      background-size: 1.5rem;
     }
 
     #home-icon {
@@ -123,10 +134,6 @@ export default {
 
     #album-icon {
       background-image: url(../../assets/icons/album.svg);
-    }
-
-    #text {
-      margin-top: 5px;
     }
 
     #artists-icon {

@@ -2,13 +2,14 @@
 This module contains larger functions for the server
 """
 
+import time
 from progress.bar import Bar
 import requests
 import os
 from mutagen.flac import MutagenError
 from app import helpers
 from app import instances
-
+from app import api
 
 def populate():
     '''
@@ -18,6 +19,7 @@ def populate():
     also checks if the album art exists in the image path, if not tries to
     extract it.
     '''
+    print('\nchecking for new tracks')
     files = helpers.run_fast_scandir(helpers.home_dir, [".flac", ".mp3"])[1]
 
     for file in files:
@@ -36,8 +38,8 @@ def populate():
                 helpers.getTags(file)
             except MutagenError:
                 pass
-
-    return {'msg': 'updated everything'}
+    api.all_the_f_music = helpers.getAllSongs()
+    print('\ncheck done')
 
 
 def populate_images():
@@ -54,35 +56,29 @@ def populate_images():
 
     bar = Bar('Processing images', max=len(artists))
     for artist in artists:
-        file_path = helpers.app_dir + '/images/artists/' + artist + '.jpg'
+        file_path = helpers.app_dir + '/images/artists/' + \
+            artist.replace('/', '::') + '.jpg'
 
         if not os.path.exists(file_path):
             url = 'https://api.deezer.com/search/artist?q={}'.format(artist)
-            response = requests.get(url)
+
+            try:
+                response = requests.get(url)
+            except:
+                print('\n sleeping for 5 seconds')
+                time.sleep(5)
+                response = requests.get(url)
+
             data = response.json()
 
             try:
-                image_path = data['data'][0]['picture_xl']
+                img_data = data['data'][0]['picture_xl']
             except:
-                image_path = None
+                img_data = None
 
-            if image_path is not None:
-                try:
-                    helpers.save_image(image_path, file_path)
-                    artist_obj = {
-                        'name': artist
-                    }
-
-                    instances.artist_instance.insert_artist(artist_obj)
-                except:
-                    pass
-        else:
-            pass
+            if img_data is not None:
+                helpers.save_image(img_data, file_path)
 
         bar.next()
 
     bar.finish()
-
-    artists_in_db = instances.artist_instance.get_all_artists()
-
-    return {'sample': artists_in_db[:25]}
