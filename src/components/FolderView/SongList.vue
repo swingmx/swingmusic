@@ -19,6 +19,7 @@
             :song="song"
             :current="current"
             @updateQueue="updateQueue"
+            @loadAlbum="loadAlbum"
           />
         </tbody>
       </table>
@@ -38,8 +39,10 @@ import { ref } from "@vue/reactivity";
 import { onMounted, onUnmounted } from "@vue/runtime-core";
 
 import SongItem from "../SongItem.vue";
+import getAlbum from "@/composables/getAlbum.js";
 import perks from "@/composables/perks.js";
 import state from "@/composables/state.js";
+import { useRouter, useRoute } from "vue-router";
 
 export default {
   props: ["songs"],
@@ -51,6 +54,11 @@ export default {
     const songTitleWidth = ref(null);
 
     const minWidth = ref(300);
+    let routex;
+
+    const current = ref(perks.current);
+    const search_query = ref(state.search_query);
+    const route = useRouter();
 
     const resizeSongTitleWidth = () => {
       try {
@@ -63,6 +71,8 @@ export default {
     };
 
     onMounted(() => {
+      routex = useRoute().name;
+
       resizeSongTitleWidth();
 
       window.addEventListener("resize", () => {
@@ -76,15 +86,42 @@ export default {
       });
     });
 
-    const current = ref(perks.current);
-    const search_query = ref(state.search_query);
+    function updateQueue(song) {
+      let type;
 
-    function updateQueue(song){
-      perks.updateQueue(song)
+      switch (routex) {
+        case "FolderView":
+            type = "folder";
+          break;
+        case "AlbumView":
+            type = "album";
+          break;
+      }
+
+      perks.updateQueue(song, type);
+    }
+
+    function loadAlbum(title, album_artist) {
+      state.loading.value = true;
+
+      getAlbum(title, album_artist).then((data) => {
+        state.album_song_list.value = data.songs;
+        state.album_info.value = data.info;
+
+        route.push({
+          name: "AlbumView",
+          params: {
+            album: title,
+            artist: album_artist,
+          },
+        });
+        state.loading.value = false;
+      });
     }
 
     return {
       updateQueue,
+      loadAlbum,
       songtitle,
       songTitleWidth,
       minWidth,
@@ -107,6 +144,7 @@ export default {
   width: 100%;
   height: 100%;
   overflow-y: auto;
+  background-color: $card-dark;
 
   &::-webkit-scrollbar {
     display: none;

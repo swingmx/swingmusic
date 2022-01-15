@@ -1,6 +1,5 @@
 <template>
   <div class="a-header rounded">
-    <div id="header-blur"></div>
     <div
       class="art rounded"
       :style="{
@@ -17,45 +16,44 @@
         <div class="stats">
           {{ album_info.count }} Tracks • {{ album_info.duration }} • 2021
         </div>
-        <div class="play rounded">
+        <button class="play rounded" @click="playAlbum">
           <div class="icon"></div>
           <div>Play</div>
-        </div>
+        </button>
       </div>
     </div>
-    <div class="most-played">
+    <!-- <div class="most-played">
       <div class="art image rounded"></div>
       <div>
         <div class="title">Girl Of My Dreams</div>
         <div class="artist">Juice Wrld, Suga [BTS]</div>
       </div>
-    </div>
+    </div> -->
   </div>
 </template>
 
 <script>
+import state from "@/composables/state.js"
+import perks from "@/composables/perks.js"
+
 export default {
   props: ["album_info"],
-  setup() {},
+  setup() {
+    function playAlbum() {
+      perks.updateQueue(state.album_song_list.value[0], "album")
+    }
+    return {
+      playAlbum
+    }
+  },
 };
 </script>
 
 <style lang="scss">
-#header-blur {
-  height: 100%;
-  width: 100%;
-  position: absolute;
-  z-index: -1;
-  left: 0;
-  backdrop-filter: blur(40px);
-}
-
 .a-header {
   position: relative;
   height: 14rem;
-  background: #232526;
-  background: -webkit-linear-gradient(to right, #414345, #232526);
-  background: linear-gradient(to right, #050107, #00090e);
+  background: $card-dark;
 
   backdrop-filter: blur(40px);
   overflow: hidden;

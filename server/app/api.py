@@ -13,7 +13,7 @@ all_the_f_music = helpers.getAllSongs()
 
 def initialize() -> None:
     helpers.create_config_dir()
-    helpers.check_for_new_songs()
+    # helpers.check_for_new_songs()
 
 initialize()
 
@@ -208,7 +208,6 @@ def getFolderTree(folder: str = None):
 
     return {"files": helpers.remove_duplicates(songs), "folders": sorted(folders, key=lambda i: i['name'])}
 
-
 @bp.route('/qwerty')
 def populateArtists():
     all_songs = instances.songs_instance.get_all_songs()
@@ -230,7 +229,6 @@ def populateArtists():
 
     return {'songs': artists}
 
-
 @bp.route('/albums')
 def getAlbums():
     s = instances.songs_instance.get_all_songs()
@@ -248,15 +246,13 @@ def getAlbums():
 
     return {'albums': albums}
 
-
 @bp.route('/albums/<query>')
+@cache.cached()
 def getAlbumSongs(query: str):
     album = query.split('::')[0].replace('|', '/')
     artist = query.split('::')[1].replace('|', '/')
 
     songs = instances.songs_instance.find_songs_by_album(album, artist)
-
-    print(artist)
 
     for song in songs:
         song['artists'] = song['artists'].split(', ')
@@ -269,4 +265,5 @@ def getAlbumSongs(query: str):
         "image": songs[0]['image'],
         "artist": songs[0]['album_artist']
     }
-    return {'songs': songs, 'info': album_obj}
+
+    return {'songs': helpers.remove_duplicates(songs), 'info': album_obj}

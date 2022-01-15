@@ -80,11 +80,21 @@ const readQueue = () => {
   }
 };
 
-const updateQueue = async (song) => {
+const updateQueue = async (song, type) => {
   playAudio.playAudio(song.filepath)
+  let list;
 
-  if (state.queue.value[0]._id.$oid !== state.song_list.value[0]._id.$oid) {
-    const new_queue = state.song_list.value;
+  switch (type) {
+    case "folder":
+      list = state.folder_song_list.value;
+      break;
+    case "album":
+      list = state.album_song_list.value;
+      break;
+  }
+  
+  if (state.queue.value[0]._id.$oid !==list[0]._id.$oid) {
+    const new_queue =list;
     localStorage.setItem("queue", JSON.stringify(new_queue));
     state.queue.value = new_queue;
   }

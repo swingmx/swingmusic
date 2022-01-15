@@ -12,7 +12,7 @@ const queue = ref([
   },
 ]);
 
-const song_list = ref([])
+const folder_song_list = ref([])
 const folder_list = ref([])
 
 const current = ref({
@@ -31,6 +31,9 @@ const prev = ref({
   },
 });
 
+const album_song_list = ref([])
+const album_info = ref([])
+
 const filters = ref([]);
 const magic_flag = ref(false);
 const loading = ref(false);
@@ -44,7 +47,7 @@ const search_artists = ref([]);
 export default {
   search_query,
   queue,
-  song_list,
+  folder_song_list,
   folder_list,
   current,
   prev,
@@ -55,4 +58,6 @@ export default {
   search_tracks,
   search_albums,
   search_artists,
+  album_song_list,
+  album_info
 };

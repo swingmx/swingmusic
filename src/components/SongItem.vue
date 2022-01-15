@@ -1,5 +1,5 @@
 <template>
-  <tr :class="{ current: current._id == song._id }">
+  <tr :class="{ current: current._id.$oid == song._id.$oid }">
     <td
       :style="{ width: songTitleWidth + 'px' }"
       class="flex"
@@ -13,7 +13,7 @@
       >
         <div
           class="now-playing-track image"
-          v-if="current._id == song._id"
+          v-if="current._id.$oid == song._id.$oid"
           :class="{ active: is_playing, not_active: !is_playing }"
         ></div>
       </div>
@@ -35,13 +35,10 @@
       </div>
     </td>
     <td :style="{ width: songTitleWidth + 'px' }">
-      <router-link
+      <div
         class="ellip"
-        :to="{
-          name: 'AlbumView',
-          params: { album: song.album, artist: song.album_artist },
-        }"
-        >{{ song.album }}</router-link
+       @click="emitLoadAlbum(song.album, song.album_artist)"
+        >{{ song.album }}</div
       >
     </td>
     <td
@@ -58,16 +55,23 @@ import perks from "@/composables/perks.js";
 import state from "@/composables/state.js";
 
 export default {
-  props: ["song", "current", "songTitleWidth", "minWidth"],
+  props: ["song", "songTitleWidth", "minWidth"],
   setup(props, { emit }) {
     function emitUpdate(song) {
       emit("updateQueue", song);
     }
 
+    function emitLoadAlbum(title, artist){
+      console.log(title, artist)
+      emit("loadAlbum", title, artist)
+    }
+
     return {
       putCommas: perks.putCommas,
       emitUpdate,
+      emitLoadAlbum,
       is_playing: state.is_playing,
+      current: state.current
     };
   },
 };

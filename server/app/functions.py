@@ -20,8 +20,6 @@ def populate():
     '''
     files = helpers.run_fast_scandir(helpers.home_dir, [".flac", ".mp3"])[1]
 
-    bar = Bar('Indexing files', max=len(files))
-
     for file in files:
         file_in_db_obj = instances.songs_instance.find_song_by_path(file)
 
@@ -38,10 +36,6 @@ def populate():
                 helpers.getTags(file)
             except MutagenError:
                 pass
-
-        bar.next()
-
-    bar.finish()
 
     return {'msg': 'updated everything'}
 

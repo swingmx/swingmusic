@@ -4,9 +4,9 @@
       <Header :path="path" :first_song="songs[0]" />
     </div>
     <div id="scrollable" ref="scrollable">
-      <SongList :songs="songs" />
-      <div class="separator" v-if="folders.length && songs.length"></div>
       <FolderList :folders="folders" />
+      <div class="separator" v-if="folders.length && songs.length"></div>
+      <SongList :songs="songs" />
     </div>
   </div>
 </template>
@@ -33,7 +33,7 @@ export default {
     const route = useRoute();
     const path = ref(route.params.path);
 
-    const song_list = ref(state.song_list);
+    const song_list = ref(state.folder_song_list);
     const folders = ref(state.folder_list);
 
     const scrollable = ref(null);
@@ -80,7 +80,7 @@ export default {
         getData(path, last_id).then((data) => {
           scrollable.value.scrollTop = 0;
 
-          state.song_list.value = data.songs;
+          state.folder_song_list.value = data.songs;
           state.folder_list.value = data.folders;
 
           state.loading.value = false;
@@ -92,6 +92,9 @@ export default {
       watch(route, (new_route) => {
         state.search_query.value = "";
         path.value = new_route.params.path;
+
+        if (!path.value) return;
+
         getPathFolders(path.value);
       });
     });

@@ -1,10 +1,10 @@
 <template>
   <div class="al-view rounded">
-    <div class="header">
+    <div>
       <Header :album_info="album_info" />
     </div>
     <div class="separator" id="av-sep"></div>
-    <div>
+    <div class="songs rounded">
       <SongList :songs="album_songs" />
     </div>
     <div class="separator" id="av-sep"></div>
@@ -18,7 +18,7 @@
 
 <script>
 import { useRoute } from "vue-router";
-import { onMounted, ref } from "@vue/runtime-core";
+import { onMounted } from "@vue/runtime-core";
 
 import Header from "../components/AlbumView/Header.vue";
 import AlbumBio from "../components/AlbumView/AlbumBio.vue";
@@ -29,6 +29,7 @@ import FeaturedArtists from "../components/PlaylistView/FeaturedArtists.vue";
 
 import getAlbum from "../composables/getAlbum.js";
 import state from "@/composables/state.js";
+import { onUnmounted } from "@vue/runtime-core";
 
 export default {
   components: {
@@ -40,23 +41,28 @@ export default {
   },
   setup() {
     const route = useRoute();
-    const album_name = route.params.album;
+    const title = route.params.album;
     const album_artists = route.params.artist;
-    const album_songs = ref([]);
-    const album_info = ref({});
 
     onMounted(() => {
-      state.loading.value = true;
-      getAlbum(album_name, album_artists).then((data) => {
-        album_songs.value = data.songs;
-        album_info.value = data.info;
-        state.loading.value = false;
-      });
+      if (!state.album_song_list.value.length) {
+        getAlbum(title, album_artists).then((data) => {
+          state.album_song_list.value = data.songs;
+          state.album_info.value = data.info;
+
+          state.loading.value = false;
+        });
+      }
+    });
+
+    onUnmounted(() => {
+      state.album_song_list.value = [];
+      state.album_info.value = {};
     });
 
     return {
-      album_songs,
-      album_info,
+      album_songs: state.album_song_list,
+      album_info: state.album_info,
     };
   },
 };
@@ -64,8 +70,14 @@ export default {
 
 <style lang="scss">
 .al-view {
-  height: 100%;
+  height: calc(100% - 1rem);
   overflow: auto;
+  margin-top: $small;
+
+  .songs {
+    padding: $small;
+    background-color: $card-dark;
+  }
 
   &::-webkit-scrollbar {
     display: none;

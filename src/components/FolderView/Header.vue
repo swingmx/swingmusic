@@ -1,7 +1,7 @@
 <template>
   <div class="folder-top flex">
     <div class="fname">
-      <button class="play image" @click="playThis(first_song)">
+      <button class="play image" @click="playFolder(first_song)">
         <div class="icon"></div>
         Play
       </button>
@@ -25,12 +25,17 @@
 
 <script>
 import perks from "@/composables/perks.js";
+import state from "@/composables/state.js"
 
 export default {
   props: ["path", "first_song"],
   setup() {
+    function playFolder(song) {
+      perks.updateQueue(song, "folder")
+    }
     return {
-      playThis: perks.updateQueue,
+      playFolder,
+      search_query: state.search_query
     };
   },
 };
