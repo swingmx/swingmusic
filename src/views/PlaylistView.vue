@@ -14,7 +14,7 @@
 
 <script>
 import Header from "@/components/PlaylistView/Header.vue";
-import SongList from "@/components/PlaylistView/SongList.vue";
+import SongList from "@/components/FolderView/SongList.vue";
 import FeaturedArtists from "@/components/PlaylistView/FeaturedArtists.vue";
 
 export default {

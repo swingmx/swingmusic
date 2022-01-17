@@ -3,13 +3,22 @@ This module contains larger functions for the server
 """
 
 import time
-from progress.bar import Bar
-import requests
 import os
+import requests
+import random
+
 from mutagen.flac import MutagenError
+from mutagen.mp3 import MP3
+from mutagen.id3 import ID3
+from mutagen.flac import FLAC
+from progress.bar import Bar
+from PIL import Image
+from io import BytesIO
+
 from app import helpers
 from app import instances
 from app import api
+
 
 def populate():
     '''
@@ -23,21 +32,8 @@ def populate():
     files = helpers.run_fast_scandir(helpers.home_dir, [".flac", ".mp3"])[1]
 
     for file in files:
-        file_in_db_obj = instances.songs_instance.find_song_by_path(file)
+        getTags(file)
 
-        try:
-            image = file_in_db_obj['image']
-
-            if not os.path.exists(os.path.join(helpers.app_dir, 'images', 'thumbnails', image)):
-                helpers.extract_thumb(file)
-        except:
-            image = None
-
-        if image is None:
-            try:
-                helpers.getTags(file)
-            except MutagenError:
-                pass
     api.all_the_f_music = helpers.getAllSongs()
     print('\ncheck done')
 
@@ -82,3 +78,163 @@ def populate_images():
         bar.next()
 
     bar.finish()
+
+
+def extract_thumb(path: str) -> str:
+    """
+    Extracts the thumbnail from an audio file. Returns the path to the thumbnail.
+    """
+
+    def use_defaults() -> str:
+        """
+        Returns a path to a random image in the defaults directory.
+        """
+        path = "http://127.0.0.1:8900/images/defaults/" + \
+            str(random.randint(0, 10)) + '.webp'
+        return path
+
+    webp_path = path.split('/')[-1] + '.webp'
+    img_path = os.path.join(helpers.app_dir, "images", "thumbnails", webp_path)
+
+    if os.path.exists(img_path):
+        return "http://127.0.0.1:8900/images/thumbnails/" + webp_path
+
+    if path.endswith('.flac'):
+        try:
+            audio = FLAC(path)
+            album_art = audio.pictures[0].data
+        except:
+            album_art = None
+    elif path.endswith('.mp3'):
+        try:
+            audio = ID3(path)
+            album_art = audio.getall('APIC')[0].data
+        except:
+            album_art = None
+
+    if album_art is None:
+        return use_defaults()
+    else:
+        img = Image.open(BytesIO(album_art))
+
+        try:
+            small_img = img.resize((150, 150), Image.ANTIALIAS)
+            small_img.save(img_path, format="webp")
+        except OSError:
+            try:
+                png = img.convert('RGB')
+                small_img = png.resize((150, 150), Image.ANTIALIAS)
+                small_img.save(img_path, format="webp")
+            except:
+                return use_defaults()
+
+        final_path = "http://127.0.0.1:8900/images/thumbnails/" + webp_path
+
+        return final_path
+
+
+def getTags(full_path: str) -> dict:
+    """
+    Returns a dictionary of tags for a given file.
+    """
+
+    if full_path.endswith('.flac'):
+        try:
+            audio = FLAC(full_path)
+        except:
+            return
+    elif full_path.endswith('.mp3'):
+        try:
+            audio = MP3(full_path)
+        except:
+            return
+
+    try:
+        artists = audio['artist'][0]
+    except KeyError:
+        try:
+            artists = audio['TPE1'][0]
+        except:
+            artists = 'Unknown'
+    except IndexError:
+        artists = 'Unknown'
+
+    try:
+        album_artist = audio['albumartist'][0]
+    except KeyError:
+        try:
+            album_artist = audio['TPE2'][0]
+        except:
+            album_artist = 'Unknown'
+    except IndexError:
+        album_artist = 'Unknown'
+
+    try:
+        title = audio['title'][0]
+    except KeyError:
+        try:
+            title = audio['TIT2'][0]
+        except:
+            title = full_path.split('/')[-1]
+    except:
+        title = full_path.split('/')[-1]
+
+    try:
+        album = audio['album'][0]
+    except KeyError:
+        try:
+            album = audio['TALB'][0]
+        except:
+            album = "Unknown"
+    except IndexError:
+        album = "Unknown"
+
+    try:
+        genre = audio['genre'][0]
+    except KeyError:
+        try:
+            genre = audio['TCON'][0]
+        except:
+            genre = "Unknown"
+    except IndexError:
+        genre = "Unknown"
+
+    img_path = extract_thumb(full_path)
+
+    tags = {
+        "filepath": full_path.replace(helpers.home_dir, ''),
+        "folder": os.path.dirname(full_path).replace(helpers.home_dir, ""),
+        "title": title,
+        "artists": artists,
+        "album_artist": album_artist,
+        "album": album,
+        "genre": genre,
+        "length": round(audio.info.length),
+        "bitrate": audio.info.bitrate,
+        "image": img_path,
+        "type": {
+            "name": None,
+            "id": None
+        }
+    }
+
+    instances.songs_instance.insert_song(tags)
+    return tags
+
+
+def getAlbumBio(title: str, album_artist: str) -> dict:
+    last_fm_url = 'http://ws.audioscrobbler.com/2.0/?method=album.getinfo&api_key={}&artist={}&album={}&format=json'.format(
+        helpers.last_fm_api_key, album_artist, title)
+
+    response = requests.get(last_fm_url)
+    data = response.json()
+
+    try:
+        bio = data['album']['wiki']['content']
+    except KeyError:
+        bio = None
+
+    if bio is None:
+        return "None"
+
+    return {'data': data}

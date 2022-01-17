@@ -5,7 +5,7 @@
       <div class="next" @click="scrollRight"></div>
     </div>
     <div class="artists" ref="artists_dom" v-on:mouseover="scrollArtists">
-      <div class="artist c1">
+      <div class="artist c1 image">
         <div class="blur"></div>
         <div class="s2"></div>
         <p>Featured Artists</p>
@@ -74,7 +74,7 @@ export default {
 <style lang="scss">
 .f-artists {
   position: relative;
-  height: 13em;
+  height: 15em;
   width: calc(100%);
   background-color: $card-dark;
   padding: $small;
@@ -143,69 +143,69 @@ export default {
   margin-left: $smaller;
   margin-right: $smaller;
   width: 9em;
-  height: 9em;
+  height: 11em;
   border-radius: $small;
   background-color: #0f0e0e;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.5s ease-in-out;
   cursor: pointer;
+  border: solid 1px rgba(165, 151, 151, 0.055);
 
   .artist-image {
     width: 7em;
     height: 7em;
-    margin-left: 0.5em;
     border-radius: 50%;
     margin-bottom: $small;
     background: url(../../assets/images/girl1.jpg);
-    background-size: cover;
+    background-size: 7rem 7rem;
     background-repeat: no-repeat;
     background-position: center;
+    transition: all 0.75s ease-in-out;
+    border: solid 1px rgba(165, 151, 151, 0.055);
+    box-shadow: 0px 0px 80px rgb(0, 0, 0);
+  }
+
+  &:hover {
+    .artist-image {
+      background-position: 50% 20%;
+      border-radius: 20%;
+      background-size: 10rem 10rem;
+    }
   }
 
   .artist-name {
     margin: 0;
     text-align: center;
-    font-size: small;
-    width: 10em;
-  }
-  &:hover {
-    transform: translateY(-0.5em);
-    transition: all 0.5s ease-in-out;
+    font-size: 0.9rem;
+    font-weight: 510;
+    max-width: 7rem;
   }
 }
 
 .f-artists .c1 {
   position: relative;
-  background: rgb(16, 25, 51);
-  width: 15em;
+  background-size: 400px 11rem;
+  background-position: 100%;
 
-  &:hover > .s2 {
-    background: rgba(53, 53, 146, 0.8);
-    transition: all 0.5s ease;
-    width: 12em;
-    height: 12em;
+  background-image: linear-gradient(
+    320deg,
+    hsl(0deg 3% 6%) 13%,
+    hsl(211deg 81% 23%) 50%,
+    hsl(209deg 94% 30%) 87%
+  );
+
+  transition: all 0.75s ease-in-out;
+
+  &:hover {
+    background-position: 10%;
   }
 
   p {
-    position: absolute;
-    bottom: -2rem;
-    margin-left: 0.5rem;
-    font-size: 2rem;
+    margin-left: 1rem;
+    font-size: 1.5rem;
     font-weight: 700;
-    color: #ffffff;
-  }
-
-  .s2 {
-    position: absolute;
-    left: -2em;
-    bottom: -4em;
-    width: 10em;
-    height: 10em;
-    background: rgba(53, 53, 146, 0.445);
-    border-radius: 50%;
-    transition: all 0.5s ease;
+    text-shadow: 0px 0px 80px rgb(0, 0, 0);
   }
 }
 </style>

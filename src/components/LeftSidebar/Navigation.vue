@@ -73,15 +73,20 @@ export default {
 </script>
 
 <style lang="scss">
-.collapsed .nav-button {
-  font-size: smaller;
-  margin-top: 5px;
-  align-items: center;
-  justify-content: center;
+.collapsed {
+  .nav-button {
+    font-size: smaller;
+    margin-top: 5px;
+    align-items: center;
+    justify-content: center;
 
-  .in {
-    width: 100%;
-    flex-direction: column;
+    span {
+      display: none;
+    }
+    .in {
+      width: 100%;
+      flex-direction: column;
+    }
   }
 }
 

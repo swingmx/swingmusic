@@ -10,6 +10,7 @@ const current = ref(state.current);
 const next = ref({
   title: "The next song",
   artists: ["... blah blah blah"],
+  image: "http://127.0.0.1:8900/images/defaults/4.webp",
   _id: {
     $oid: "",
   },

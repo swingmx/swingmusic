@@ -1,7 +1,6 @@
 <template>
   <tr :class="{ current: current._id.$oid == song._id.$oid }">
     <td
-      :style="{ width: songTitleWidth + 'px' }"
       class="flex"
       @click="emitUpdate(song)"
     >
@@ -21,7 +20,7 @@
         <span class="ellip">{{ song.title }}</span>
       </div>
     </td>
-    <td :style="{ width: songTitleWidth + 'px' }">
+    <td>
       <div class="ellip" v-if="song.artists[0] != ''">
         <span
           class="artist"
@@ -34,7 +33,7 @@
         <span class="artist">{{ song.album_artist }}</span>
       </div>
     </td>
-    <td :style="{ width: songTitleWidth + 'px' }">
+    <td>
       <div
         class="ellip"
        @click="emitLoadAlbum(song.album, song.album_artist)"
@@ -42,8 +41,6 @@
       >
     </td>
     <td
-      :style="{ width: songTitleWidth + 'px' }"
-      v-if="songTitleWidth > minWidth"
     >
       {{ `${Math.trunc(song.length / 60)} min` }}
     </td>
@@ -55,7 +52,7 @@ import perks from "@/composables/perks.js";
 import state from "@/composables/state.js";
 
 export default {
-  props: ["song", "songTitleWidth", "minWidth"],
+  props: ["song"],
   setup(props, { emit }) {
     function emitUpdate(song) {
       emit("updateQueue", song);

@@ -115,7 +115,7 @@ class AllSongs(Mongo):
 
     def remove_song_by_filepath(self, filepath):
         try:
-            self.collection.remove({'filepath': filepath})
+            self.collection.delete_one({'filepath': filepath})
             return True
         except:
             return False

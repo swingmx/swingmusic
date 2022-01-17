@@ -5,17 +5,18 @@ from app import functions, instances, helpers, cache
 
 bp = Blueprint('api', __name__, url_prefix='')
 
-all_the_f_music = []
 home_dir = helpers.home_dir
 
-
 all_the_f_music = helpers.getAllSongs()
+
 
 def initialize() -> None:
     helpers.create_config_dir()
     helpers.check_for_new_songs()
 
+
 initialize()
+
 
 @bp.route('/')
 def adutsfsd():
@@ -79,7 +80,7 @@ def x():
 def get_album_artists(album, artist):
     album = album.replace('|', '/')
     artist = artist.replace('|', '/')
-    
+
     tracks = []
 
     for track in all_the_f_music:
@@ -161,7 +162,7 @@ def getArtistData(artist: str):
 
 @bp.route("/f/<folder>")
 @cache.cached()
-def getFolderTree(folder: str = None):
+def getFolderTree(folder: str):
     req_dir = folder.replace('|', '/')
 
     if folder == "home":
@@ -180,20 +181,10 @@ def getFolderTree(folder: str = None):
                 dir = {
                     "name": entry.name,
                     "count": len(files_in_dir),
-                    "path": entry.path.replace(home_dir, "")
+                    "path": entry.path.replace(home_dir, ""),
                 }
 
                 folders.append(dir)
-
-        # if entry.is_file():
-        #     if isValidFile(entry.name) == True:
-        #         file = instances.songs_instance.find_song_by_path(entry.path)
-
-        #         if not file:
-        #             getTags(entry.path)
-
-    # songs_array = instances.songs_instance.find_songs_by_folder(
-    #     req_dir)
 
     songs = []
 
@@ -202,6 +193,7 @@ def getFolderTree(folder: str = None):
             songs.append(x)
 
     return {"files": helpers.remove_duplicates(songs), "folders": sorted(folders, key=lambda i: i['name'])}
+
 
 @bp.route('/qwerty')
 def populateArtists():
@@ -222,6 +214,7 @@ def populateArtists():
 
     return {'songs': artists}
 
+
 @bp.route('/albums')
 def getAlbums():
     s = instances.songs_instance.get_all_songs()
@@ -238,6 +231,7 @@ def getAlbums():
             albums.append(al_obj)
 
     return {'albums': albums}
+
 
 @bp.route('/albums/<query>')
 @cache.cached()
@@ -260,3 +254,8 @@ def getAlbumSongs(query: str):
     }
 
     return {'songs': helpers.remove_duplicates(songs), 'info': album_obj}
+
+
+@bp.route('/album/<title>/<artist>/bio')
+def drop_db(title, artist):
+    return functions.getAlbumBio(title, artist)

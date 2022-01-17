@@ -1,30 +1,27 @@
 <template>
   <div class="folder">
-    <div class="table rounded" ref="songtitle" v-if="songs.length">
+    <div class="table rounded" v-if="songs.length">
       <table>
         <thead>
           <tr>
             <th>Track</th>
             <th>Artist</th>
             <th>Album</th>
-            <th v-if="songTitleWidth > minWidth">Duration</th>
+            <th>Duration</th>
           </tr>
         </thead>
         <tbody>
           <SongItem
-            :songTitleWidth="songTitleWidth"
-            :minWidth="minWidth"
             v-for="song in songs"
             :key="song"
             :song="song"
-            :current="current"
             @updateQueue="updateQueue"
             @loadAlbum="loadAlbum"
           />
         </tbody>
       </table>
     </div>
-    <div ref="songtitle" v-else-if="songs.length === 0 && search_query">
+    <div v-else-if="songs.length === 0 && search_query">
       <div class="no-results">
         <div class="icon"></div>
         <div class="text">❗ Track not found!</div>
@@ -36,7 +33,7 @@
 
 <script>
 import { ref } from "@vue/reactivity";
-import { onMounted, onUnmounted } from "@vue/runtime-core";
+import { onMounted } from "@vue/runtime-core";
 
 import SongItem from "../SongItem.vue";
 import album from "@/composables/album.js";
@@ -50,40 +47,14 @@ export default {
     SongItem,
   },
   setup() {
-    const songtitle = ref(null);
-    const songTitleWidth = ref(null);
-
-    const minWidth = ref(300);
     let routex;
 
     const current = ref(perks.current);
     const search_query = ref(state.search_query);
     const route = useRouter();
 
-    const resizeSongTitleWidth = () => {
-      try {
-        let a = songtitle.value.clientWidth;
-
-        songTitleWidth.value = a > minWidth.value * 4 ? a / 4 : a / 3;
-      } catch (error) {
-        return;
-      }
-    };
-
     onMounted(() => {
       routex = useRoute().name;
-
-      resizeSongTitleWidth();
-
-      window.addEventListener("resize", () => {
-        resizeSongTitleWidth();
-      });
-    });
-
-    onUnmounted(() => {
-      window.removeEventListener("resize", () => {
-        resizeSongTitleWidth();
-      });
     });
 
     function updateQueue(song) {
@@ -91,10 +62,10 @@ export default {
 
       switch (routex) {
         case "FolderView":
-            type = "folder";
+          type = "folder";
           break;
         case "AlbumView":
-            type = "album";
+          type = "album";
           break;
       }
 
@@ -122,9 +93,6 @@ export default {
     return {
       updateQueue,
       loadAlbum,
-      songtitle,
-      songTitleWidth,
-      minWidth,
       current,
       search_query,
     };
@@ -161,49 +129,48 @@ export default {
   }
 }
 
-.folder .table table td .album-art {
-  width: 3rem;
-  height: 3rem;
-  margin-right: 1rem;
-  background-image: url(../../assets/images/null.webp);
-  display: grid;
-  place-items: center;
-}
-
-.folder .table .flex {
-  position: relative;
-  align-items: center;
-}
-
-.folder .table .flex > div > span {
-  position: absolute;
-  bottom: 1.5rem;
-  width: calc(100% - 6rem);
-}
-td,
-th {
-  padding: $small 0 $small $small;
-  text-align: left;
-}
-
-th {
-  text-transform: uppercase;
-  font-weight: normal;
-  // display: none;
-}
-
-td .artist {
-  margin-right: 0.2rem;
-}
-
 .folder .table table {
   border-collapse: collapse;
   text-transform: capitalize;
-  position: relative;
+  width: 100%;
+  table-layout: fixed;
+
+  thead {
+    height: 2rem;
+    text-transform: uppercase;
+
+    th {
+      text-align: left;
+      padding-left: $small;
+    }
+  }
+
 
   tbody tr {
     cursor: pointer;
-    transition: all 0.1s ease;
+
+    .flex {
+      position: relative;
+      padding-left: 4rem;
+      align-items: center;
+
+      .album-art {
+        position: absolute;
+        left: $small;
+        width: 3rem;
+        height: 3rem;
+        margin-right: 1rem;
+        background-image: url(../../assets/images/null.webp);
+        display: grid;
+        place-items: center;
+      }
+    }
+
+    td {
+      height: 4rem;
+      padding: $small;
+
+    }
 
     &:hover {
       & {

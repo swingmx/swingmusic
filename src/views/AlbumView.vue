@@ -57,7 +57,6 @@ export default {
       if (state.album_artists.value.length == 0) {
         album.getAlbumArtists(title, album_artists).then((data) => {
           state.album_artists.value = data;
-          console.log(state.album_artists.value)
         });
       }
     });

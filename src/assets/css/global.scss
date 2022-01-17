@@ -74,18 +74,6 @@ button {
   background-size: cover;
   background-position: center;
   background: rgba(0, 0, 0, 0.575);
-  backdrop-filter: blur(40px);
-  -webkit-backdrop-filter: blur(40px);
-  -moz-backdrop-filter: blur(40px);
-}
-
-#bg-blur {
-  position: absolute;
-  width: 100vw;
-  height: 100vh;
-  background-color: rgba(27, 27, 27, 0.548);
-  background-image: url(../images/dark-bg.jpg);
-  z-index: -1;
 }
 
 .l-sidebar {

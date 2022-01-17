@@ -276,8 +276,8 @@ export default {
       border-radius: 0.5rem;
       margin-right: 0.5rem;
       margin-left: $small;
-      background-color: #ad1717a8;
-      background-image: url(../../assets/images/null.webp);
+      // background-color: #ad1717a8;
+      background-image: url("../../assets/images/null.webp");
     }
   }
 }

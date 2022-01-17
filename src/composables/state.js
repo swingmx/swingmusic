@@ -6,18 +6,20 @@ const queue = ref([
   {
     title: "Nothing played yet",
     artists: ["... blah blah blah"],
+    image: "http://127.0.0.1:8900/images/defaults/5.webp",
     _id: {
       $oid: "",
     },
   },
 ]);
 
-const folder_song_list = ref([])
-const folder_list = ref([])
+const folder_song_list = ref([]);
+const folder_list = ref([]);
 
 const current = ref({
   title: "Nothing played yet",
   artists: ["... blah blah blah"],
+  image: "http://127.0.0.1:8900/images/defaults/1.webp",
   _id: {
     $oid: "",
   },
@@ -31,9 +33,9 @@ const prev = ref({
   },
 });
 
-const album_song_list = ref([])
-const album_info = ref([])
-const album_artists = ref([])
+const album_song_list = ref([]);
+const album_info = ref([]);
+const album_artists = ref([]);
 const filters = ref([]);
 
 const magic_flag = ref(false);
@@ -61,5 +63,5 @@ export default {
   search_artists,
   album_song_list,
   album_info,
-  album_artists
+  album_artists,
 };
