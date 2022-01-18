@@ -65,7 +65,7 @@ export default {
   background-color: #ccc;
   margin: 0 0.5rem 0 0;
   border-radius: 0.5rem;
-  background-image: url(../../assets/images/Jim_Reeves.png);
+  background-image: url(../../assets/images/null.webp);
 }
 
 .r-tracks .tracks .song-item .artist {

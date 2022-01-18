@@ -17,27 +17,27 @@ let showMediaNotif = () => {
         {
           src: current.image,
           sizes: "128x128",
-          type: "image/png",
+          type: "image/webp",
         },
         {
           src: current.image,
           sizes: "192x192",
-          type: "image/png",
+          type: "image/webp",
         },
         {
           src: current.image,
           sizes: "256x256",
-          type: "image/png",
+          type: "image/webp",
         },
         {
           src: current.image,
           sizes: "384x384",
-          type: "image/png",
+          type: "image/webp",
         },
         {
           src: current.image,
           sizes: "512x512",
-          type: "image/png",
+          type: "image/webp",
         },
       ],
     });

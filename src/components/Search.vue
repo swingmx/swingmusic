@@ -475,7 +475,7 @@ export default {
         background-color: rgba(26, 26, 26, 0.452);
         border-radius: 0.5rem;
         margin-bottom: 0.5rem;
-        background-image: url(../assets/images/thriller.jpg);
+        background-image: url("../assets/images/null.webp");
       }
 
       .title {
@@ -516,7 +516,7 @@ export default {
         background-color: rgba(16, 65, 14, 0.356);
         margin-bottom: 0.5rem;
         background-size: 50%;
-        background-image: url(../assets/images/thriller.jpg);
+        background-image: url("../assets/images/null.webp");
         background-size: cover;
       }
 
