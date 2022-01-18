@@ -1,88 +1,71 @@
 <template>
-  <div class="al-bio rounded">
-    <div class="heading">
-      The Very Best Of UB40: ALBUM BIOGRAPHY
-      <div class="tags">
-        <div class="item" v-for="tag in tags" :key="tag">
-          {{ tag }}
-        </div>
-      </div>
+  <div class="al-bio rounded border card-dark">
+    <div class="left rounded border">
+      <div class="rect rounded"></div>
+      <div class="circle"></div>
     </div>
-    <div class="separator"></div>
-    <div class="content">
-      Two years after he prematurely left us, the Juice WRLD story continues
-      with Fighting Demons. The rapper's second posthumous album dropped at
-      midnight, and is the followup to Legends Never Die, which arrived in July
-      2020 and hit No. 1 on the Billboard 200 chart.
-      <br /><br />
-      Featuring the previously-released numbers “Wandered to LA” with Justin
-      Bieber, and “Already Dead,” Fighting Demons is a call to arms, a reminder
-      for addicts to get help and for those struggling with mental health
-      problems to keep up the fight. The rising hip-hop star (real name Jarad
-      Higgins) was just 21 when he died of an accidental overdose of oxycodone
-      and codeine. Following his death on Dec. 9, 2019, his mother, Carmela
-      Wallace, created the Live Free 999 Fund, to help youth struggling with
-      mental health and substance use issues.
-      <br /><br />
-      “Jarad was always searingly honest about his struggles and through his
-      musical genius he articulated what was on his heart and mind vividly
-      through his art. He never gave up and his friends and family never gave up
-      on offering their support to him,” she continued. “We encourage all of you
-      who struggle with addiction and mental health to never give up the fight."
-      Juice's fast rise in the hip-hop space and untimely passing is the focus
-      of Into the Abyss, a Tommy Oliver-directed documentary set to premiere
-      Dec. 16 at 8PM on HBO Max.
-    </div>
+    <div class="bio rounded border" v-html="bio"></div>
   </div>
 </template>
 
 <script>
 export default {
-  setup() {
-    const tags = ["reggea", "ub40", "ali campbell", "astro"];
-    return {
-      tags,
-    };
-  },
+  props: ['bio'],
 };
 </script>
 
 <style lang="scss">
 .al-bio {
-  background-color: #1f1e1d;
   padding: $small;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: $small;
+  min-height: 15rem;
 
-  .heading {
-    margin: 0 0 0 $small;
-    height: 2rem;
+  .left {
     position: relative;
+    height: 100%;
+    width: 100%;
+    margin-right: $small;
+    overflow: hidden;
+    background-image: url("../../assets/images/eggs.jpg");
+    background-position: center;
 
-    .tags {
+    .rect {
+      width: 10rem;
+      height: 10rem;
       position: absolute;
-      right: 0;
-      display: flex;
-      font-weight: normal;
+      background-color: rgb(196, 58, 58);
+      box-shadow: 0px 0px 2rem rgb(0, 0, 0);
+      bottom: -10rem;
+      left: 7rem;
+      transform: rotate(45deg) translate(-1rem, -9rem);
+      z-index: 1;
+      transition: all .5s ease-in-out;
 
-      .item {
-        padding: $small;
-        background-color: rgb(15, 74, 114);
-        margin-left: $small;
-        border-radius: $small;
-      }
-      .item::before {
-        content: "#"
+      &:hover {
+        transition: all .5s ease-in-out;
       }
     }
-  }
 
-  .content {
-    display: inline-block;
+    .circle {
+      width: 7rem;
+      height: 7rem;
+      position: absolute;
+      right: 0;
+      background-color: $blue;
+      border-radius: 50%;
+      transform: translateX(-11rem) translateY(7rem);
+      box-shadow: 0px 0px 2rem rgb(0, 0, 0);
+    }
+  }
+  .bio {
+    padding: $small;
     line-height: 1.5rem;
-    font-size: large;
-    columns: 2;
-    column-rule: 1px solid $separator;
-    font-family: Cambria, Cochin, Georgia, Times, "Times New Roman", serif;
-    user-select: text;
+
+    &::after {
+      content: "...";
+    }
   }
 }
 </style>

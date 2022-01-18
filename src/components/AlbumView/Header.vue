@@ -1,95 +1,142 @@
 <template>
-  <div class="a-header rounded">
-    <div
-      class="art rounded"
-      :style="{
-        backgroundImage: `url(&quot;${album_info.image}&quot;)`,
-      }"
-    ></div>
-    <div class="info">
-      <div class="top">
-        <div class="title">{{ album_info.name }}</div>
-        <div class="artist">{{ album_info.artist }}</div>
-      </div>
-      <div class="separator"></div>
-      <div class="bottom">
-        <div class="stats">
-          {{ album_info.count }} Tracks • {{ album_info.duration }} • 2021
+  <div class="album-h">
+    <div class="a-header rounded card-dark">
+      <div
+        class="art rounded border"
+        :style="{
+          backgroundImage: `url(&quot;${album_info.image}&quot;)`,
+        }"
+      ></div>
+      <div class="info">
+        <div class="top">
+          <div class="title">{{ album_info.name }}</div>
+          <div class="artist">{{ album_info.artist }}</div>
         </div>
-        <button class="play rounded" @click="playAlbum">
-          <div class="icon"></div>
-          <div>Play</div>
-        </button>
+        <div class="separator"></div>
+        <div class="bottom">
+          <div class="stats">
+            {{ album_info.count }} Tracks • {{ album_info.duration }} • 2021
+          </div>
+          <button class="play rounded" @click="playAlbum">
+            <div class="icon"></div>
+            <div>Play</div>
+          </button>
+        </div>
       </div>
     </div>
-    <!-- <div class="most-played">
-      <div class="art image rounded"></div>
-      <div>
-        <div class="title">Girl Of My Dreams</div>
-        <div class="artist">Juice Wrld, Suga [BTS]</div>
-      </div>
-    </div> -->
+    <div class="right rounded card-dark">
+      <div class="circle circular"></div>
+      <div class="rect rounded"></div>
+      <div
+        class="avatar image"
+        :style="{
+          backgroundImage: `url(&quot;${album_info.artist_image}&quot;)`,
+        }"
+      ></div>
+    </div>
   </div>
 </template>
 
 <script>
-import state from "@/composables/state.js"
-import perks from "@/composables/perks.js"
+import state from "@/composables/state.js";
+import perks from "@/composables/perks.js";
 
 export default {
   props: ["album_info"],
   setup() {
     function playAlbum() {
-      perks.updateQueue(state.album_song_list.value[0], "album")
+      perks.updateQueue(state.album_song_list.value[0], "album");
     }
     return {
-      playAlbum
-    }
+      playAlbum,
+    };
   },
 };
 </script>
 
 <style lang="scss">
+.album-h {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: $small;
+  position: relative;
+  overflow: hidden;
+
+  .right {
+    padding: $small;
+    position: relative;
+
+    .avatar {
+      height: 8rem;
+      width: 8rem;
+      border-radius: 50%;
+      background-image: url("../../assets/images/null.webp");
+      position: absolute;
+      left: -4.2rem;
+      top: 3rem;
+      box-shadow: 0px 0px 1.5rem rgb(0, 0, 0);
+
+    }
+
+    .rect {
+      width: 20rem;
+      height: 10rem;
+      position: absolute;
+      right: 0;
+      background-color: rgb(196, 58, 58);
+      transform: rotate(-45deg) translate(20%, -50%);
+      z-index: 1;
+      box-shadow: 0px 0px 2rem rgb(0, 0, 0);
+      transition: all .5s ease-in-out;
+
+      &:hover {
+        transition: all .5s ease-in-out;
+
+        right: 2rem;
+      }
+
+    }
+
+    .circle {
+      width: 7rem;
+      height: 7rem;
+      position: absolute;
+      right: 0;
+      background-color: $blue;
+      border-radius: 50%;
+      transform: translateX(-11rem) translateY(7rem);
+      box-shadow: 0px 0px 2rem rgba(0, 0, 0, 0.164);
+      transition: all .5s ease-in-out;
+
+      &:hover {
+        transition: all .5s ease-in-out;
+
+        right: 1rem;
+      }
+    }
+
+    &:hover {
+      transition: all .5s ease-in-out;
+
+      .circle {
+        border-radius: 0;
+        transform: translateX(-11rem) translateY(7rem) rotate(360deg);
+      }
+
+      .rect {
+        border-radius: 0;
+        transform: translate(20%, -50%) rotate(360deg);
+      }
+    }
+  }
+}
 .a-header {
   position: relative;
   height: 14rem;
-  background: $card-dark;
-
-  backdrop-filter: blur(40px);
   overflow: hidden;
-
   display: flex;
   align-items: center;
   padding: 0 1rem 0 1rem;
-
-  .most-played {
-    position: absolute;
-    display: flex;
-    align-items: center;
-    padding: 0 0 0 $small;
-    background-color: rgb(24, 24, 24);
-    border-radius: 1rem;
-    right: 1rem;
-    bottom: 1rem;
-    width: 25rem;
-    height: 5rem;
-
-    .art {
-      width: 4rem;
-      height: 4rem;
-      background-image: url(../../assets/images/jw.jpeg);
-    }
-
-    .title {
-      margin-left: $small;
-      margin-bottom: $small;
-    }
-
-    .artist {
-      font-size: small;
-      margin-left: $small;
-    }
-  }
 
   .art {
     width: 12rem;
@@ -107,7 +154,7 @@ export default {
 
     .top {
       .title {
-        font-size: 2rem;
+        font-size: 1.5rem;
         font-weight: bold;
         color: white;
       }

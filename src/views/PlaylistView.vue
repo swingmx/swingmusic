@@ -3,7 +3,7 @@
   <div class="p-bg rounded">
     <div class="clip">
       <div class="scrollable">
-        <SongList />
+        <SongList :songs="songs"/>
       </div>
     </div>
     <div class="f-artists-p">
@@ -24,7 +24,9 @@ export default {
     FeaturedArtists,
   },
   setup() {
-    return {};
+    return {
+      songs: [],
+    };
   },
 };
 </script>

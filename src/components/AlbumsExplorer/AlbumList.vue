@@ -164,7 +164,7 @@ export default {
       .album-art {
         height: 9em;
         width: 9em;
-        background-image: url(../../assets/images/girl1.jpg);
+        background-image: url(../../assets/images/null.webp);
       }
 
       .name {

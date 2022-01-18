@@ -81,7 +81,7 @@ export default {
       .image {
         height: 7rem;
         width: 7rem;
-        background-image: url(../../assets/images/girl1.jpg);
+        background-image: url("../../assets/images/null.webp");
         border-radius: 50%;
       }
 
@@ -140,7 +140,7 @@ export default {
         background-color: rgb(177, 116, 2);
 
         .image {
-          background-image: url(../../assets/images/girl2.jpg);
+          background-image: url("../../assets/images/null.webp");
         }
       }
 
@@ -148,7 +148,7 @@ export default {
         background-color: rgb(0, 74, 117);
 
         .image {
-          background-image: url(../../assets/images/girl3.jpg);
+          background-image: url("../../assets/images/null.webp");
         }
       }
 

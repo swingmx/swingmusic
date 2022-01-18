@@ -60,7 +60,7 @@ def populate_images():
 
             try:
                 response = requests.get(url)
-            except:
+            except requests.ConnectionError:
                 print('\n sleeping for 5 seconds')
                 time.sleep(5)
                 response = requests.get(url)
@@ -225,16 +225,19 @@ def getTags(full_path: str) -> dict:
 def getAlbumBio(title: str, album_artist: str) -> dict:
     last_fm_url = 'http://ws.audioscrobbler.com/2.0/?method=album.getinfo&api_key={}&artist={}&album={}&format=json'.format(
         helpers.last_fm_api_key, album_artist, title)
-
-    response = requests.get(last_fm_url)
-    data = response.json()
-
+    
     try:
-        bio = data['album']['wiki']['content']
+        response = requests.get(last_fm_url)
+        data = response.json()
+    except requests.ConnectionError:
+        return "None"
+    
+    try:
+        bio = data['album']['wiki']['summary'].split('<a href="https://www.last.fm/')[0]
     except KeyError:
         bio = None
 
     if bio is None:
         return "None"
 
-    return {'data': data}
+    return bio

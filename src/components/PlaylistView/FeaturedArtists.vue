@@ -1,16 +1,16 @@
 <template>
-  <div class="f-artists">
+  <div class="f-artists border">
     <div class="xcontrols">
-      <div class="prev" @click="scrollLeft"></div>
-      <div class="next" @click="scrollRight"></div>
+      <div class="prev border" @click="scrollLeft"></div>
+      <div class="next border" @click="scrollRight"></div>
     </div>
-    <div class="artists" ref="artists_dom" v-on:mouseover="scrollArtists">
-      <div class="artist c1 image">
+    <div class="artists" ref="artists_dom">
+      <div class="artist border c1 image">
         <div class="blur"></div>
         <div class="s2"></div>
         <p>Featured Artists</p>
       </div>
-      <div class="artist" v-for="artist in artists" :key="artist">
+      <div class="artist border" v-for="artist in artists" :key="artist">
         <div>
           <div
             class="artist-image image"
@@ -47,23 +47,8 @@ export default {
       });
     };
 
-    const scroll = (e) => {
-      artists_dom.value.scrollBy({
-        left: e.deltaY < 0 ? -700 : 700,
-        behavior: "smooth",
-      });
-    };
-
-    const scrollArtists = () => {
-      artists_dom.value.addEventListener("wheel", (e) => {
-        e.preventDefault();
-        scroll(e);
-      });
-    };
-
     return {
       artists_dom,
-      scrollArtists,
       scrollLeft,
       scrollRight,
     };
@@ -145,24 +130,23 @@ export default {
   width: 9em;
   height: 11em;
   border-radius: $small;
-  background-color: #0f0e0e;
+  background-color: #232452;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  border: solid 1px rgba(165, 151, 151, 0.055);
 
   .artist-image {
     width: 7em;
     height: 7em;
     border-radius: 50%;
     margin-bottom: $small;
-    background: url(../../assets/images/girl1.jpg);
+    background: url("../../assets/images/null.webp");
     background-size: 7rem 7rem;
     background-repeat: no-repeat;
     background-position: center;
-    transition: all 0.75s ease-in-out;
-    border: solid 1px rgba(165, 151, 151, 0.055);
+    transition: all 0.5s ease-in-out;
+    border: solid 1px rgba(5, 5, 5, 0.055);
     box-shadow: 0px 0px 80px rgb(0, 0, 0);
   }
 
@@ -190,15 +174,15 @@ export default {
 
   background-image: linear-gradient(
     320deg,
-    hsl(0deg 3% 6%) 13%,
-    hsl(211deg 81% 23%) 50%,
-    hsl(209deg 94% 30%) 87%
+    #b63939 13%,
+    #232452 50%,
+    #232452 100%
   );
 
-  transition: all 0.75s ease-in-out;
+  transition: all 0.5s ease-in-out;
 
   &:hover {
-    background-position: 10%;
+    background-position: 0%;
   }
 
   p {

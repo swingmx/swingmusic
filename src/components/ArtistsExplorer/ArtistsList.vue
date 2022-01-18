@@ -81,7 +81,7 @@ export default {
         height: 9em;
         width: 9em;
         border-radius: 50%;
-        background-image: url(../../assets/images/girl1.jpg);
+        background-image: url(../../assets/images/null.webp);
       }
 
       .name {

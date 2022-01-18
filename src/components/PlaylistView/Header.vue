@@ -70,7 +70,7 @@
 .p-header .banner {
   margin: 0.5rem;
   background-color: $blue;
-  background: url(../../assets/images/girl5.jpg);
+  background: url("../../assets/images/null.webp");
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
@@ -161,7 +161,7 @@
   right: 0.5em;
   bottom: 0em;
   background-color: $red;
-  background-image: url(../../assets/images/girl2.jpg);
+  background-image: url("../../assets/images/null.webp");
 }
 
 .p-header .info .albums .second {
@@ -170,7 +170,7 @@
   right: 4em;
   bottom: -1em !important;
   background-color: $green;
-  background-image: url(../../assets/images/girl1.jpg);
+  background-image: url("../../assets/images/null.webp");
   z-index: 1;
 }
 
@@ -180,7 +180,7 @@
   bottom: -1em;
   right: 9em;
   background-color: $green;
-  background-image: url(../../assets/images/girl3.jpg);
+  background-image: url("../../assets/images/null.webp");
   z-index: 2;
 }
 

@@ -1,5 +1,5 @@
 <template>
-  <div class="right-search" ref="searchComponent">
+  <div class="right-search  border" ref="searchComponent">
     <div class="input">
       <div class="search-icon image"></div>
       <div class="filter">
@@ -424,7 +424,7 @@ export default {
       background-color: rgb(27, 150, 74);
       border-radius: 0.5rem;
       margin: 0 $small 0 $small;
-      background-image: url(../assets/images/girl3.jpg);
+      background-image: url(../assets/images/null.webp);
     }
 
     .tags .artist {

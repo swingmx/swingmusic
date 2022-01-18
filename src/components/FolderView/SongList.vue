@@ -36,10 +36,10 @@ import { ref } from "@vue/reactivity";
 import { onMounted } from "@vue/runtime-core";
 
 import SongItem from "../SongItem.vue";
-import album from "@/composables/album.js";
+import routeLoader from "@/composables/routeLoader.js";
 import perks from "@/composables/perks.js";
 import state from "@/composables/state.js";
-import { useRouter, useRoute } from "vue-router";
+import { useRoute } from "vue-router";
 
 export default {
   props: ["songs"],
@@ -51,7 +51,7 @@ export default {
 
     const current = ref(perks.current);
     const search_query = ref(state.search_query);
-    const route = useRouter();
+    // const route = useRouter();
 
     onMounted(() => {
       routex = useRoute().name;
@@ -73,21 +73,24 @@ export default {
     }
 
     function loadAlbum(title, album_artist) {
-      state.loading.value = true;
+      // console.log(typeof(title), album_artist)
+      routeLoader.toAlbum(title, album_artist);
+      // state.loading.value = true;
 
-      album.getAlbumTracks(title, album_artist).then((data) => {
-        state.album_song_list.value = data.songs;
-        state.album_info.value = data.info;
+      // album.getAlbumTracks(title, album_artist).then((data) => {
+      //   state.album_song_list.value = data.songs;
+      //   state.album_info.value = data.info;
 
-        route.push({
-          name: "AlbumView",
-          params: {
-            album: title,
-            artist: album_artist,
-          },
-        });
-        state.loading.value = false;
-      });
+      //   route.push({
+      //     name: "AlbumView",
+      //     params: {
+      //       album: title,
+      //       artist: album_artist,
+      //     },
+      //   });
+      //   state.loading.value = false;
+      // });
+
     }
 
     return {

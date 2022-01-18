@@ -10,32 +10,29 @@
     <div class="separator" id="av-sep"></div>
     <FeaturedArtists :artists="artists" />
     <div class="separator" id="av-sep"></div>
-    <AlbumBio />
+    <AlbumBio :bio="bio" v-if="bio"/>
     <div class="separator" id="av-sep"></div>
-    <FromTheSameArtist />
   </div>
 </template>
 
 <script>
 import { useRoute } from "vue-router";
 import { onMounted } from "@vue/runtime-core";
+import { onUnmounted } from "@vue/runtime-core";
 
 import Header from "../components/AlbumView/Header.vue";
 import AlbumBio from "../components/AlbumView/AlbumBio.vue";
-import FromTheSameArtist from "../components/AlbumView/FromTheSameArtist.vue";
 
 import SongList from "../components/FolderView/SongList.vue";
 import FeaturedArtists from "../components/PlaylistView/FeaturedArtists.vue";
 
-import album from "@/composables/album.js";
 import state from "@/composables/state.js";
-import { onUnmounted } from "@vue/runtime-core";
+import routeLoader from "@/composables/routeLoader.js"
 
 export default {
   components: {
     Header,
     AlbumBio,
-    FromTheSameArtist,
     SongList,
     FeaturedArtists,
   },
@@ -46,18 +43,7 @@ export default {
 
     onMounted(() => {
       if (!state.album_song_list.value.length) {
-        album.getAlbumTracks(title, album_artists).then((data) => {
-          state.album_song_list.value = data.songs;
-          state.album_info.value = data.info;
-
-          state.loading.value = false;
-        });
-      }
-
-      if (state.album_artists.value.length == 0) {
-        album.getAlbumArtists(title, album_artists).then((data) => {
-          state.album_artists.value = data;
-        });
+        routeLoader.toAlbum(title, album_artists);
       }
     });
 
@@ -65,12 +51,14 @@ export default {
       state.album_song_list.value = [];
       state.album_info.value = {};
       state.album_artists.value = [];
+      state.album_bio.value = "";
     });
 
     return {
       album_songs: state.album_song_list,
       album_info: state.album_info,
       artists: state.album_artists,
+      bio: state.album_bio,
     };
   },
 };

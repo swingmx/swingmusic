@@ -90,8 +90,6 @@ def get_album_artists(album, artist):
     artists = []
 
     for track in tracks:
-        print(track['artists'])
-
         for artist in track['artists']:
             if artist not in artists:
                 artists.append(artist)
@@ -100,7 +98,7 @@ def get_album_artists(album, artist):
     for artist in artists:
         artist_obj = {
             "name": artist,
-            "image": "http://127.0.0.1:8900/images/artists/" + artist.replace('/', '::') + ".jpg"
+            "image": "http://127.0.0.1:8900/images/artists/webp/" + artist.replace('/', '::') + ".webp"
         }
         final_artists.append(artist_obj)
 
@@ -245,17 +243,38 @@ def getAlbumSongs(query: str):
         if track['album'] == album and track['album_artist'] == artist:
             songs.append(track)
 
+    songs = helpers.remove_duplicates(songs)
+
     album_obj = {
         "name": album,
         "count": len(songs),
         "duration": sum(song['length'] for song in songs),
         "image": songs[0]['image'],
-        "artist": songs[0]['album_artist']
+        "artist": songs[0]['album_artist'],
+        "artist_image": "http://127.0.0.1:8900/images/artists/webp/" + songs[0]['album_artist'].replace('/', '::') + ".webp"
     }
 
-    return {'songs': helpers.remove_duplicates(songs), 'info': album_obj}
+    return {'songs': songs, 'info': album_obj}
 
 
 @bp.route('/album/<title>/<artist>/bio')
+@cache.cached()
 def drop_db(title, artist):
-    return functions.getAlbumBio(title, artist)
+    bio = functions.getAlbumBio(title, artist)
+    return {'bio': bio}
+
+
+@bp.route('/convert')
+def convert_images_to_webp():
+    path = os.path.join(home_dir, helpers.app_dir, 'images', 'artists')
+    final_path = os.path.join(
+        home_dir, helpers.app_dir, 'images', 'artists', 'webp')
+
+    for file in os.scandir(path):
+        if file.name.endswith(".jpg"):
+            print(file.name)
+            print(os.path.join(final_path, file.name.replace('.jpg', '.webp')))
+            img = helpers.Image.open(os.path.join(path, file.name)).resize((150, 150), helpers.Image.ANTIALIAS)
+            img.save(os.path.join(final_path, file.name.replace('.jpg', '.webp')), format='webp')
+
+    return "Done"
