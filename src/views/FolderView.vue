@@ -127,7 +127,7 @@ export default {
 }
 
 #scrollable {
-  overflow-y: scroll;
+  overflow-y: auto;
   height: calc(100% - $small);
   padding-right: $small;
 }

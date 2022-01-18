@@ -47,20 +47,20 @@ export default {
     SongItem,
   },
   setup() {
-    let routex;
+    let route;
 
     const current = ref(perks.current);
     const search_query = ref(state.search_query);
-    // const route = useRouter();
 
     onMounted(() => {
-      routex = useRoute().name;
+      route = useRoute().name;
     });
 
     function updateQueue(song) {
       let type;
 
-      switch (routex) {
+      switch (route) {
+        // check which route the play request come from
         case "FolderView":
           type = "folder";
           break;
@@ -73,24 +73,7 @@ export default {
     }
 
     function loadAlbum(title, album_artist) {
-      // console.log(typeof(title), album_artist)
       routeLoader.toAlbum(title, album_artist);
-      // state.loading.value = true;
-
-      // album.getAlbumTracks(title, album_artist).then((data) => {
-      //   state.album_song_list.value = data.songs;
-      //   state.album_info.value = data.info;
-
-      //   route.push({
-      //     name: "AlbumView",
-      //     params: {
-      //       album: title,
-      //       artist: album_artist,
-      //     },
-      //   });
-      //   state.loading.value = false;
-      // });
-
     }
 
     return {

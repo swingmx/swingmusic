@@ -63,7 +63,7 @@ export default {
       collapsed.value = !collapsed.value;
     }
 
-    let up_next = ref(false);
+    let up_next = ref(true);
     let search = ref(false);
 
     const expandQueue = () => {
@@ -98,6 +98,18 @@ export default {
   display: flex;
   align-items: center;
   margin-bottom: 0.5rem;
+
+  #toggle {
+    position: absolute;
+    left: 0.2rem;
+    width: 4rem;
+    height: 100%;
+    background: url(./assets/icons/menu.svg);
+    background-size: 50%;
+    background-repeat: no-repeat;
+    background-position: center;
+    cursor: pointer;
+  }
 }
 .logo {
   height: 2rem;
@@ -110,18 +122,6 @@ export default {
   animation: fadeIn;
   animation-duration: 2s;
   animation-iteration-count: 1;
-}
-
-.l-container #toggle {
-  position: absolute;
-  left: 0.2rem;
-  width: 4rem;
-  height: 100%;
-  background: url(./assets/icons/menu.svg);
-  background-size: 50%;
-  background-repeat: no-repeat;
-  background-position: center;
-  cursor: pointer;
 }
 
 .r-sidebar {

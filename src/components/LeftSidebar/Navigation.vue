@@ -1,5 +1,5 @@
 <template>
-  <div class="side-nav-container" :class="{ collapsed: collapsed }">
+  <div class="side-nav-container border" :class="{ collapsed: collapsed }">
     <router-link :to="{ name: 'Home' }">
       <div class="nav-button" id="home-button">
         <div class="in">
@@ -93,7 +93,6 @@ export default {
 .side-nav-container {
   padding: $small;
   color: #fff;
-  border-top: 1px solid var(--separator);
   margin-bottom: 10px;
   padding-top: 10px;
 
@@ -112,8 +111,7 @@ export default {
     .nav-icon {
       height: 2rem;
       width: 2rem;
-      margin-right: 0.5rem;
-      margin-left: 0.6rem;
+      margin: 0 $small 0 $small;
       border-radius: $small;
       background-color: rgb(26, 24, 24);
     }

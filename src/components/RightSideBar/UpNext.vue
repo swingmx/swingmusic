@@ -1,9 +1,9 @@
 <template>
-  <div class="up-next">
+  <div class="up-next border">
     <p class="heading">
       COMING UP NEXT <span class="more" @click="collapse">SEE ALL</span>
     </p>
-    <div class="main-item h-1" @click="playNext">
+    <div class="main-item h-1 border" @click="playNext">
       <div
         class="album-art image"
         :style="{
@@ -22,39 +22,37 @@
     </div>
     <div>
       <div
-        :class="{ hr: is_expanded, v0x: !is_expanded, v1x: is_expanded }"
-        class="all-items"
+        :class="{ v0: !is_expanded, v1: is_expanded }"
+        class="scrollable border"
       >
-        <div :class="{ v0: !is_expanded, v1: is_expanded }" class="scrollable">
+        <div
+          class="song-item h-1"
+          v-for="song in queue"
+          :key="song"
+          @click="playThis(song)"
+          :class="{
+            currentInQueue: current._id.$oid == song._id.$oid,
+          }"
+        >
           <div
-            class="song-item h-1"
-            v-for="song in queue"
-            :key="song"
-            @click="playThis(song)"
-            :class="{
-              currentInQueue: current._id.$oid == song._id.$oid,
+            class="album-art image"
+            :style="{
+              backgroundImage: `url(&quot;${song.image}&quot;)`,
             }"
           >
             <div
-              class="album-art image"
-              :style="{
-                backgroundImage: `url(&quot;${song.image}&quot;)`,
-              }"
-            >
-              <div
-                class="now-playing-track image"
-                v-if="current._id.$oid == song._id.$oid"
-                :class="{ active: is_playing, not_active: !is_playing }"
-              ></div>
-            </div>
-            <div class="tags">
-              <p class="title ellip">{{ song.title }}</p>
-              <hr />
-              <p class="artist ellip">
-                <span v-for="artist in putCommas(song.artists)" :key="artist">{{
-                  artist
-                }}</span>
-              </p>
+              class="now-playing-track image"
+              v-if="current._id.$oid == song._id.$oid"
+              :class="{ active: is_playing, not_active: !is_playing }"
+            ></div>
+          </div>
+          <div class="tags">
+            <div class="title ellip">{{ song.title }}</div>
+            <hr />
+            <div class="artist ellip">
+              <span v-for="artist in putCommas(song.artists)" :key="artist">{{
+                artist
+              }}</span>
             </div>
           </div>
         </div>
@@ -118,19 +116,10 @@ export default {
 
 <style lang="scss">
 .up-next .v0 {
-  max-height: 0em;
-  overflow: hidden;
+  max-height: 0;
   transition: max-height 0.5s ease;
-}
-
-.up-next .v0x {
-  background-color: transparent !important;
-  transition: all 0.5s ease;
-}
-
-.up-next .v1x {
-  transition: all .5s ease;
-  background-color: rgb(218, 72, 96);
+  visibility: hidden;
+  padding: 0;
 }
 
 .up-next .v1 {
@@ -139,7 +128,11 @@ export default {
   padding: $small;
 
   .currentInQueue {
-    background-color: rgba(0, 125, 241, 0.562);
+    border: 2px solid $pink;
+
+    &:hover {
+      color: #fff;
+    }
   }
 }
 
@@ -152,20 +145,20 @@ export default {
 
 .up-next .heading {
   position: relative;
-  margin: 0.5rem 0 1rem 0rem;
-}
+  margin: 0.5rem 0 1rem 0;
 
-.up-next > p > span {
-  position: absolute;
-  right: 0.5rem;
-  padding: 0.5rem;
-  border-radius: 0.5rem;
-  user-select: none;
-}
+  span {
+    position: absolute;
+    right: 0.5rem;
+    padding: 0.5rem;
+    border-radius: 0.5rem;
+    user-select: none;
 
-.up-next > p > span:hover {
-  background: $blue;
-  cursor: pointer;
+    &:hover {
+      background: $blue;
+      cursor: pointer;
+    }
+  }
 }
 
 .up-next .main-item {
@@ -176,42 +169,36 @@ export default {
   cursor: pointer;
   margin-bottom: 0.5rem;
 
+  .album-art {
+    width: 4.5rem;
+    height: 4.5rem;
+    background-image: url(../../assets/images/null.webp);
+    margin: 0 0.5rem 0 0;
+    border-radius: 0.5rem;
+  }
+
+  .tags {
+    hr {
+      border: none;
+      margin: 0.3rem;
+    }
+    .title {
+      width: 20rem;
+      margin: 0;
+    }
+    .artist {
+      width: 20rem;
+      margin: 0;
+      font-size: small;
+    }
+  }
+
   &:hover {
     background-color: $blue;
   }
 }
 
-.up-next .main-item .album-art {
-  width: 4.5rem;
-  height: 4.5rem;
-  background-image: url(../../assets/images/null.webp);
-  margin: 0 0.5rem 0 0;
-  border-radius: 0.5rem;
-}
-
-.up-next .main-item .tags hr {
-  border: none;
-  margin: 0.3rem;
-}
-
-.up-next .main-item .tags .title {
-  width: 20rem;
-  margin: 0;
-}
-
-.up-next .main-item .tags .artist {
-  width: 20rem;
-  margin: 0;
-  font-size: small;
-}
-
-.up-next .all-items {
-  padding-top: $small;
-  border-radius: 0.5rem;
-  padding: $small;
-}
-
-.up-next .all-items .scrollable {
+.up-next .scrollable {
   overflow-y: auto;
   background-color: $card-dark;
   border-radius: 0.5rem;
@@ -221,42 +208,37 @@ export default {
   }
 }
 
-.up-next .all-items p {
-  margin: 0;
-}
-
-.up-next .all-items .scrollable .song-item {
+.up-next .scrollable .song-item {
   display: flex;
   align-items: center;
   padding: 0.5rem;
   border-radius: 0.5rem;
-}
 
-.up-next .all-items .scrollable .song-item:hover {
-  cursor: pointer;
-  background-color: $blue;
-}
+  &:hover {
+    cursor: pointer;
+    background-color: $blue;
+  }
 
-.up-next .all-items .scrollable .song-item hr {
-  border: none;
-  margin: 0.1rem;
-}
+  hr {
+    border: none;
+    margin: 0.1rem;
+  }
 
-.up-next .all-items .album-art {
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  .album-art {
+    display: flex;
+    align-items: center;
+    justify-content: center;
 
-  width: 3rem;
-  height: 3rem;
-  margin: 0 0.5rem 0 0;
-  border-radius: 0.5rem;
-  background-image: url(../../assets/images/null.webp);
-}
-
-.up-next .all-items .song-item .artist {
-  width: 20rem;
-  font-size: small;
-  color: rgba(255, 255, 255, 0.637);
+    width: 3rem;
+    height: 3rem;
+    margin: 0 0.5rem 0 0;
+    border-radius: 0.5rem;
+    background-image: url(../../assets/images/null.webp);
+  }
+  .artist {
+    width: 20rem;
+    font-size: small;
+    color: rgba(255, 255, 255, 0.637);
+  }
 }
 </style>

@@ -81,9 +81,6 @@ export default {
     height: 100%;
     width: 5em;
     background-color: rgb(5, 74, 131);
-    border-radius: $small;
-    display: flex;
-    align-items: center;
     padding-left: $small;
     margin-right: $small;
 

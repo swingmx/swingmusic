@@ -64,9 +64,13 @@ button {
   color: inherit;
   font-size: 1rem;
   cursor: pointer;
+  display: flex;
+  align-items: center;
+  background-color: $blue;
+  border-radius: $small;
 
   &:hover {
-    background-color: rgb(158, 58, 58) !important;
+    background-color: $pink !important;
   }
 }
 
@@ -231,7 +235,7 @@ button {
   width: 2rem;
   border-radius: 50%;
   background-color: #fff;
-  margin-top: 0rem;
+  margin-top: 0;
   background-size: 60%;
 }
 

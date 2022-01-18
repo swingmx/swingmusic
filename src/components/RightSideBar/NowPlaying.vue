@@ -1,5 +1,5 @@
 <template>
-  <div class="now-playing">
+  <div class="now-playing border">
     <div class="art-tags">
       <div
         class="album-art image"

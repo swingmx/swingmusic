@@ -1,6 +1,6 @@
 <template>
   <div class="album-h">
-    <div class="a-header rounded card-dark">
+    <div class="a-header rounded card-dark border">
       <div
         class="art rounded border"
         :style="{
@@ -12,7 +12,7 @@
           <div class="title">{{ album_info.name }}</div>
           <div class="artist">{{ album_info.artist }}</div>
         </div>
-        <div class="separator"></div>
+        <div class="separator no-border"></div>
         <div class="bottom">
           <div class="stats">
             {{ album_info.count }} Tracks • {{ album_info.duration }} • 2021
@@ -24,7 +24,7 @@
         </div>
       </div>
     </div>
-    <div class="right rounded card-dark">
+    <div class="right rounded card-dark border">
       <div class="circle circular"></div>
       <div class="rect rounded"></div>
       <div
@@ -61,6 +61,7 @@ export default {
   gap: $small;
   position: relative;
   overflow: hidden;
+  height: 15rem;
 
   .right {
     padding: $small;
@@ -132,7 +133,6 @@ export default {
 }
 .a-header {
   position: relative;
-  height: 14rem;
   overflow: hidden;
   display: flex;
   align-items: center;
