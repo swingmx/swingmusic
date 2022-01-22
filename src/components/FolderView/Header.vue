@@ -17,7 +17,7 @@
         type="text"
         class="search-input"
         placeholder="Ctrl + F"
-        v-model="search_query"
+        v-model="query"
         @keyup.enter="search()"
       />
       <div class="search-icon image"></div>
@@ -27,17 +27,25 @@
 
 <script>
 import perks from "@/composables/perks.js";
-import state from "@/composables/state.js";
+import { watch } from '@vue/runtime-core';
+import useDebouncedRef from '@/composables/useDebouncedRef.js';
 
 export default {
   props: ["path", "first_song"],
-  setup() {
+  setup(props, { emit }) {
+    const query = useDebouncedRef("", 400);
+
     function playFolder(song) {
       perks.updateQueue(song, "folder");
     }
+
+    watch(query, () => {
+      emit("search", query.value);
+    });
+
     return {
       playFolder,
-      search_query: state.search_query,
+      query,
     };
   },
 };
@@ -112,7 +120,7 @@ export default {
       background-image: url(../../assets/icons/folder.svg);
       margin-right: $small;
     }
-    
+
     @include phone-only {
       display: none;
     }

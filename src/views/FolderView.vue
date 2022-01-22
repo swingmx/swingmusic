@@ -1,7 +1,7 @@
 <template>
   <div id="f-view-parent" class="rounded">
     <div class="fixed">
-      <Header :path="path" :first_song="songs[0]" />
+      <Header :path="path" :first_song="songs[0]" @search="filterSongs" />
     </div>
     <div id="scrollable" ref="scrollable">
       <FolderList :folders="folders" />
@@ -38,37 +38,23 @@ export default {
 
     const scrollable = ref(null);
 
-    function focusSearch() {
-      console.log("focusSearch");
-    }
-
-    const search_query = ref(state.search_query);
-    const filters = ref(state.filters);
+    const query = ref('');
 
     const songs = computed(() => {
-      const songs = [];
+      const songs_ = [];
 
-      if (!filters.value.includes("🈁")) {
-        return song_list.value;
-      }
-
-      if (search_query.value.length > 2) {
-        state.loading.value = true;
-
+      if (query.value.length > 2) {
         for (let i = 0; i < song_list.value.length; i++) {
           if (
             song_list.value[i].title
               .toLowerCase()
-              .includes(search_query.value.toLowerCase())
+              .includes(query.value.toLowerCase())
           ) {
-            songs.push(song_list.value[i]);
+            songs_.push(song_list.value[i]);
           }
         }
 
-        state.song_list.value = songs;
-        state.loading.value = false;
-
-        return songs;
+        return songs_;
       } else {
         return song_list.value;
       }
@@ -99,8 +85,12 @@ export default {
       });
     });
 
+    function filterSongs(value) {
+      query.value = value;
+    }
+
     return {
-      focusSearch,
+      filterSongs,
       songs,
       folders,
       path,
