@@ -112,6 +112,10 @@ export default {
       background-image: url(../../assets/icons/folder.svg);
       margin-right: $small;
     }
+    
+    @include phone-only {
+      display: none;
+    }
   }
 }
 </style>

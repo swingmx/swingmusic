@@ -4,10 +4,10 @@
       <table>
         <thead>
           <tr>
-            <th>Track</th>
-            <th>Artist</th>
-            <th>Album</th>
-            <th>Duration</th>
+            <th class="track-header">Track</th>
+            <th class="artists-header">Artist</th>
+            <th class="album-header">Album</th>
+            <th class="duration-header">Duration</th>
           </tr>
         </thead>
         <tbody>
@@ -121,56 +121,33 @@ export default {
   width: 100%;
   table-layout: fixed;
 
+  @include phone-only {
+    border-collapse: separate;
+    border-spacing: 0 $small;
+  }
+
   thead {
     height: 2rem;
     text-transform: uppercase;
+
+    @include phone-only {
+      display: none;
+    }
 
     th {
       text-align: left;
       padding-left: $small;
     }
-  }
 
-
-  tbody tr {
-    cursor: pointer;
-
-    .flex {
-      position: relative;
-      padding-left: 4rem;
-      align-items: center;
-
-      .album-art {
-        position: absolute;
-        left: $small;
-        width: 3rem;
-        height: 3rem;
-        margin-right: 1rem;
-        background-image: url(../../assets/images/null.webp);
-        display: grid;
-        place-items: center;
+    th.duration-header {
+      @include tablet-landscape {
+        display: none;
       }
     }
 
-    td {
-      height: 4rem;
-      padding: $small;
-
-    }
-
-    &:hover {
-      & {
-        & > td {
-          background-color: rgb(5, 80, 150);
-        }
-
-        & td:first-child {
-          border-radius: $small 0 0 $small;
-        }
-
-        & td:last-child {
-          border-radius: 0 $small $small 0;
-        }
+    th.album-header {
+      @include tablet-portrait {
+        display: none;
       }
     }
   }

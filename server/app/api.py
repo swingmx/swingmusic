@@ -98,7 +98,7 @@ def get_album_artists(album, artist):
     for artist in artists:
         artist_obj = {
             "name": artist,
-            "image": "http://127.0.0.1:8900/images/artists/webp/" + artist.replace('/', '::') + ".webp"
+            "image": "http://0.0.0.0:8900/images/artists/webp/" + artist.replace('/', '::') + ".webp"
         }
         final_artists.append(artist_obj)
 
@@ -190,6 +190,9 @@ def getFolderTree(folder: str):
         if x['folder'] == req_dir:
             songs.append(x)
 
+    for song in songs:
+        song['image'] = song['image'].replace('127.0.0.1', '0.0.0.0')
+
     return {"files": helpers.remove_duplicates(songs), "folders": sorted(folders, key=lambda i: i['name'])}
 
 
@@ -261,7 +264,7 @@ def getAlbumSongs(query: str):
 @cache.cached()
 def drop_db(title, artist):
     bio = functions.getAlbumBio(title, artist)
-    return {'bio': bio}
+    return {'bio': bio}, 200
 
 
 @bp.route('/convert')
@@ -278,3 +281,7 @@ def convert_images_to_webp():
             img.save(os.path.join(final_path, file.name.replace('.jpg', '.webp')), format='webp')
 
     return "Done"
+
+@bp.route('/test')
+def test_http_status_response():
+    return "OK", 200

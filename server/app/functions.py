@@ -128,10 +128,9 @@ def extract_thumb(path: str) -> str:
             except:
                 return use_defaults()
 
-        final_path = "http://127.0.0.1:8900/images/thumbnails/" + webp_path
+        final_path = "http://0.0.0.0:8900/images/thumbnails/" + webp_path
 
         return final_path
-
 
 def getTags(full_path: str) -> dict:
     """

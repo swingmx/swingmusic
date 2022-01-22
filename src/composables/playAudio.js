@@ -8,7 +8,7 @@ const audio = ref(new Audio()).value;
 const pos = ref(0);
 const playing = ref(state.is_playing);
 
-const url = "http://127.0.0.1:8901/";
+const url = "http://0.0.0.0:8901/";
 
 const playAudio = (path) => {
   const full_path = url + encodeURIComponent(path);

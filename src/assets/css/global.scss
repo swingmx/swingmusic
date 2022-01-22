@@ -136,13 +136,12 @@ button {
   width: 30em;
   position: relative;
   margin-bottom: 0.5em;
-}
 
-@media (max-width: 70em) {
-  .r-sidebar {
+  @include tablet-landscape {
     display: none;
   }
 }
+
 
 .image {
   background-position: center;
@@ -248,3 +247,5 @@ button {
   background-image: url(../../assets/icons/playing.webp);
   transition: all 0.3s ease-in-out;
 }
+
+

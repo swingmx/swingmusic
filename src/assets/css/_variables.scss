@@ -1,11 +1,39 @@
 // colors
 
-$card-dark: #08090C;
+$card-dark: #08090c;
 $red: #df4646;
 $blue: rgb(5, 80, 150);
 $green: rgb(67, 148, 67);
 $separator: #ffffff46;
 $pink: rgb(196, 58, 58);
 // sizes
-$small: .5em;
-$smaller: .25em;
+$small: 0.5em;
+$smaller: 0.25em;
+
+// media query mixins
+
+@mixin phone-only {
+  @media (max-width: 599px) {
+    @content;
+  }
+}
+@mixin tablet-portrait {
+  @media (max-width: 900px) {
+    @content;
+  }
+}
+@mixin tablet-landscape {
+  @media (max-width: 1200px) {
+    @content;
+  }
+}
+@mixin for-desktop-up {
+  @media (min-width: 1200px) {
+    @content;
+  }
+}
+@mixin for-big-desktop-up {
+  @media (min-width: 1800px) {
+    @content;
+  }
+}

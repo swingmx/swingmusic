@@ -130,5 +130,13 @@ export default {
   overflow-y: auto;
   height: calc(100% - $small);
   padding-right: $small;
+
+  @include phone-only {
+    padding-right: 0;
+
+    &::-webkit-scrollbar {
+      display: none;
+    }
+  }
 }
 </style>

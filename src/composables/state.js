@@ -6,7 +6,7 @@ const queue = ref([
   {
     title: "Nothing played yet",
     artists: ["... blah blah blah"],
-    image: "http://127.0.0.1:8900/images/defaults/5.webp",
+    image: "http://0.0.0.0:8900/images/defaults/5.webp",
     _id: {
       $oid: "",
     },
@@ -19,7 +19,7 @@ const folder_list = ref([]);
 const current = ref({
   title: "Nothing played yet",
   artists: ["... blah blah blah"],
-  image: "http://127.0.0.1:8900/images/defaults/1.webp",
+  image: "http://0.0.0.0:8900/images/defaults/1.webp",
   _id: {
     $oid: "",
   },

@@ -1,4 +1,4 @@
-let base_uri = "http://127.0.0.1:9876";
+let base_uri = "http://0.0.0.0:9876";
 
 const getAlbumTracks = async (name, artist) => {
   const res = await fetch(

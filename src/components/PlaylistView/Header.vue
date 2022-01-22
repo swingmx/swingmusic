@@ -1,5 +1,5 @@
 <template>
-  <div class="p-header rounded border">
+  <div class="p-header rounded">
     <div class="info rounded card-dark">
       <div>
         <div class="name">Makaveli Radio</div>
@@ -16,7 +16,7 @@
       </div>
     </div>
     <div class="last-updated">
-      Last updated yesterday |
+      <span class="status">Last updated yesterday |&#160;</span>
       <span class="edit">Edit</span>
     </div>
   </div>
@@ -39,6 +39,18 @@
     color: rgb(255, 255, 255);
     font-size: 0.9rem;
     border-radius: $smaller;
+    box-shadow: 0px 0px 1rem rgba(0, 0, 0, 0.479);
+
+    @include phone-only {
+      // border: solid;
+      bottom: 1rem;
+      right: 1rem;
+      font-size: small;
+
+      .status {
+        display: none;
+      }
+    }
 
     .edit {
       cursor: pointer;
@@ -54,8 +66,13 @@
     padding: $small;
     display: flex;
     flex-direction: row;
-    align-items: end;
+    align-items: flex-end;
     padding-bottom: 3.5rem;
+    box-shadow: 0px 0px 1.5rem rgba(0, 0, 0, 0.658);
+
+    @include phone-only {
+      width: calc(100% - 1rem);
+    }
 
     .name {
       font-size: 1.5rem;
