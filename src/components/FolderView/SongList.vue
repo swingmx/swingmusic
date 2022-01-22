@@ -115,7 +115,7 @@ export default {
   }
 }
 
-.folder .table table {
+table {
   border-collapse: collapse;
   text-transform: capitalize;
   width: 100%;
@@ -143,6 +143,8 @@ export default {
       @include tablet-landscape {
         display: none;
       }
+
+      width: 5rem;
     }
 
     th.album-header {

@@ -10,7 +10,8 @@ async function search(query) {
     state.search_tracks.value = json.songs;
     state.search_albums.value = json.albums;
     state.search_artists.value = json.artists;
-    console.log(state.search);
+
+    console.log(state.search_tracks.value);
 }
 
 export default search;

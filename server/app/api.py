@@ -33,7 +33,12 @@ def search_by_title():
     albums = []
     artists = []
 
-    s = instances.songs_instance.find_song_by_title(query)
+    s = []
+
+    for track in all_the_f_music:
+        if query.lower() in track['title'].lower():
+            s.append(track)
+    
     al = instances.songs_instance.search_songs_by_album(query)
     ar = instances.songs_instance.search_songs_by_artist(query)
 

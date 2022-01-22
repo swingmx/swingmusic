@@ -40,6 +40,7 @@ export default {
     }
 
     watch(query, () => {
+      console.log(query.value);
       emit("search", query.value);
     });
 

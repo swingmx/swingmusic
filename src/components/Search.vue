@@ -1,5 +1,5 @@
 <template>
-  <div class="right-search  border" ref="searchComponent">
+  <div class="right-search border" ref="searchComponent">
     <div class="input">
       <div class="search-icon image"></div>
       <div class="filter">
@@ -48,14 +48,12 @@
       <div class="tracks-results">
         <div class="heading">TRACKS<span class="more">SEE ALL</span></div>
         <div class="items">
-          <div class="result-item" v-for="song in songs" :key="song">
-            <div class="album-art image"></div>
-            <div class="tags">
-              <span class="title">{{ song.title }}</span>
-              <hr />
-              <span class="artist">{{ song.artist }}</span>
-            </div>
-          </div>
+          <table>
+            <thead></thead>
+            <tbody>
+              <SongItem v-for="song in songs" :key="song" :song="song" />
+            </tbody>
+          </table>
         </div>
       </div>
       <!--  -->
@@ -89,11 +87,15 @@ import { ref, toRefs } from "@vue/reactivity";
 import { onMounted, watch } from "@vue/runtime-core";
 import state from "@/composables/state.js";
 import searchMusic from "../composables/searchMusic.js";
-// import useDebounce from "../composed/useDebounce.js";
+import useDebouncedRef from "@/composables/useDebouncedRef";
+import SongItem from "@/components/SongItem.vue";
 
 export default {
   emits: ["expandSearch", "collapseSearch"],
   props: ["search"],
+  components: {
+    SongItem,
+  },
   setup(props, { emit }) {
     const options = [
       {
@@ -121,7 +123,7 @@ export default {
         icon: "🈁",
       },
     ];
-    
+
     const loading = ref(state.loading);
     const searchComponent = ref(null);
     const filters = ref(state.filters);
@@ -132,7 +134,7 @@ export default {
     ];
 
     const artists = ["Michael Jackson waihenya", "Jackson 5"];
-    const query = ref(state.search_query);
+    const query = useDebouncedRef("", 400);
     const magic_flag = ref(state.magic_flag);
     const is_hidden = toRefs(props).search;
 
@@ -176,8 +178,7 @@ export default {
     }
 
     watch(query, (new_query) => {
-      // search music
-      // searchMusic(new_query);
+      searchMusic(new_query);
 
       state.search_query.value = new_query;
       if (new_query !== "") {
@@ -201,7 +202,6 @@ export default {
         }
       });
     });
-
 
     return {
       addFilter,
@@ -403,9 +403,10 @@ export default {
 
 .right-search .tracks-results {
   border-radius: 0.5rem;
-  background: #ca0377;
+  // background: #ca0377;
   margin-left: $small;
   padding: $small;
+  // border: solid;
 
   .items {
     border-radius: $small;

@@ -87,6 +87,10 @@ export default {
     }
   }
 
+  .song-duration {
+    width: 5rem !important;
+  }
+  
   cursor: pointer;
 
   .flex {
