@@ -12,16 +12,18 @@
           {{ filter }}<span class="cancel image"></span>
         </div>
       </div>
-      <input
-        type="search"
-        id="search"
-        @focus="activateMagicFlag"
-        @blur="removeMagicFlag"
-        @keyup.backspace="removeLastFilter"
-        placeholder="find your music"
-        v-model="query"
-      />
-      <div class="loader" v-if="loading"></div>
+      <div class="input-loader border">
+        <input
+          type="search"
+          id="search"
+          @focus="activateMagicFlag"
+          @blur="removeMagicFlag"
+          @keyup.backspace="removeLastFilter"
+          placeholder="find your music"
+          v-model="query"
+        />
+        <div class="loader" v-if="loading"></div>
+      </div>
       <div
         class="suggestions v00"
         :class="{
@@ -45,38 +47,65 @@
       </div>
     </div>
     <div class="scrollable" :class="{ v0: !is_hidden, v1: is_hidden }">
-      <div class="tracks-results">
-        <div class="heading">TRACKS<span class="more">SEE ALL</span></div>
+      <div class="tracks-results border" v-if="songs.tracks">
+        <div class="heading">TRACKS</div>
         <div class="items">
           <table>
-            <thead></thead>
             <tbody>
-              <SongItem v-for="song in songs" :key="song" :song="song" />
+              <SongItem v-for="song in songs.tracks" :key="song" :song="song" />
             </tbody>
           </table>
+          <div class="more" v-if="songs.more">
+            <button>
+              <div class="text">Load All</div>
+            </button>
+          </div>
         </div>
       </div>
       <!--  -->
-      <div class="albums-results">
+      <div class="albums-results border">
         <div class="heading">ALBUMS <span class="more">SEE ALL</span></div>
         <div class="grid">
-          <div class="result-item" v-for="album in albums" :key="album">
-            <div class="album-art image"></div>
-            <div class="title ellip">{{ album }}</div>
+          <div
+            class="result-item border"
+            v-for="album in albums.albums"
+            :key="album"
+          >
+            <div
+              class="album-art image"
+              :style="{
+                backgroundImage: `url('${album.image}')`,
+              }"
+            ></div>
+            <div class="title ellip">{{ album.name }}</div>
+            <div class="artistsx ellipsis">
+              <span v-for="artist in putCommas(album.artists)" :key="artist">{{
+                artist
+              }}</span>
+            </div>
           </div>
         </div>
       </div>
       <div class="separator no-border"></div>
       <!--  -->
-      <div class="artists-results" v-if="artists">
+      <!-- <div class="artists-results border" v-if="artists">
         <div class="heading">ARTISTS <span class="more">SEE ALL</span></div>
         <div class="grid">
-          <div class="result-item" v-for="artist in artists" :key="artist">
-            <div class="image"></div>
-            <div class="title ellip">{{ artist }}</div>
+          <div
+            class="result-item border"
+            v-for="artist in artists.artists"
+            :key="artist"
+          >
+            <div
+              class="image"
+              :style="{
+                backgroundImage: `url(${artist.image})`,
+              }"
+            ></div>
+            <div class="title ellip">{{ artist.name }}</div>
           </div>
         </div>
-      </div>
+      </div> -->
     </div>
   </div>
 </template>
@@ -86,9 +115,10 @@ import { ref, toRefs } from "@vue/reactivity";
 
 import { onMounted, watch } from "@vue/runtime-core";
 import state from "@/composables/state.js";
-import searchMusic from "../composables/searchMusic.js";
+import searchMusic from "@/composables/searchMusic.js";
 import useDebouncedRef from "@/composables/useDebouncedRef";
-import SongItem from "@/components/SongItem.vue";
+import SongItem from "@/components/shared/SongItem.vue";
+import perks from "@/composables/perks.js";
 
 export default {
   emits: ["expandSearch", "collapseSearch"],
@@ -118,34 +148,27 @@ export default {
         title: "📁 Folder",
         icon: "📁",
       },
-      {
-        title: "🈁 This folder",
-        icon: "🈁",
-      },
     ];
 
     const loading = ref(state.loading);
     const searchComponent = ref(null);
-    const filters = ref(state.filters);
-    const albums = [
-      "Smooth Criminal like wtf ... and im serious",
-      "Xscape",
-      "USA for Africa",
-    ];
+    const filters = ref([]);
 
-    const artists = ["Michael Jackson waihenya", "Jackson 5"];
+    const albums = ref([]);
+    const artists = ref([]);
+
     const query = useDebouncedRef("", 400);
     const magic_flag = ref(state.magic_flag);
     const is_hidden = toRefs(props).search;
 
     function addFilter(filter) {
       if (!filters.value.includes(filter)) {
-        state.filters.value.push(filter);
+        filters.value.push(filter);
       }
     }
 
     function removeFilter(filter) {
-      state.filters.value = filters.value.filter((f) => f !== filter);
+      filters.value = filters.value.filter((f) => f !== filter);
     }
 
     let counter = 0;
@@ -155,7 +178,7 @@ export default {
         counter++;
 
         if (counter > 1 || query.value === null) {
-          state.filters.value.pop();
+          filters.value.pop();
         }
       }
     }
@@ -178,29 +201,30 @@ export default {
     }
 
     watch(query, (new_query) => {
-      searchMusic(new_query);
+      searchMusic(new_query).then((res) => {
+        albums.value = res.albums;
+        artists.value = res.artists;
+        state.search_tracks.value = res.tracks;
+        // console.log(albums.value)
+      });
 
       state.search_query.value = new_query;
-      if (new_query !== "") {
+      if (new_query !== "" && new_query.length > 2) {
         counter = 0;
-        if (!filters.value.includes("🈁")) {
-          emit("expandSearch");
-        }
+        emit("expandSearch");
       } else {
         emit("collapseSearch");
       }
     });
 
     onMounted(() => {
-      const dom = document.getElementsByClassName("right-search")[0];
-
-      document.addEventListener("click", (e) => {
-        var isClickedInside = dom.contains(e.target);
-
-        if (!isClickedInside) {
-          emit("collapseSearch");
-        }
-      });
+      // const dom = document.getElementsByClassName("right-search")[0];
+      // document.addEventListener("click", (e) => {
+      //   var isClickedInside = dom.contains(e.target);
+      //   if (!isClickedInside) {
+      //     emit("collapseSearch");
+      //   }
+      // });
     });
 
     return {
@@ -220,6 +244,7 @@ export default {
       searchComponent,
       loading,
       searchMusic,
+      putCommas: perks.putCommas,
     };
   },
 };
@@ -228,14 +253,13 @@ export default {
 <style lang="scss">
 .loader {
   position: absolute;
-  right: 0;
-  width: 2rem;
-  height: 2rem;
-  border: solid #fff;
+  right: 0.65rem;
+  top: 0.65rem;
+  width: 1.5rem;
+  height: 1.5rem;
+  border: dotted $blue;
   border-radius: 50%;
-  border-bottom: solid rgb(255, 174, 0);
-  border-top: solid rgb(255, 174, 0);
-  animation: spin 0.3s linear infinite;
+  animation: spin 0.25s linear infinite;
 
   @keyframes spin {
     0% {
@@ -263,6 +287,7 @@ export default {
   padding: 1rem $small 0 0;
   background-color: $card-dark;
   overflow: hidden;
+  width: auto;
 
   .item {
     position: relative;
@@ -319,7 +344,7 @@ export default {
 
   .v11 {
     opacity: 0;
-    transform: translateY(-3rem);
+    transform: translateY(-4rem);
     transition: all 0.2s ease-in;
   }
 
@@ -373,29 +398,37 @@ export default {
   }
 
   .more:hover {
-    // background: $blue;
-    // border-radius: 0.5rem;
     cursor: pointer;
   }
 }
 
-.right-search input {
-  width: calc(100% - 6rem);
-  border: none;
-  border-radius: 0.5rem;
-  background-color: transparent;
-  color: rgb(255, 255, 255);
-  font-size: 1rem;
-  outline: none;
-  transition: all 0.5s ease;
-}
-.right-search input:focus {
-  transition: all 0.5s ease;
-  color: rgb(255, 255, 255);
-  outline: none;
+.right-search {
+  .input-loader {
+    width: 100%;
+    border-radius: 0.4rem;
+    position: relative;
 
-  &::placeholder {
-    display: none;
+    input {
+      width: calc(100% - 6rem);
+      border: none;
+      line-height: 2.5rem;
+      background-color: transparent;
+      color: rgb(255, 255, 255);
+      font-size: 1rem;
+      outline: none;
+      transition: all 0.5s ease;
+      padding-left: $small;
+
+      &:focus {
+        transition: all 0.5s ease;
+        color: rgb(255, 255, 255);
+        outline: none;
+
+        &::placeholder {
+          display: none;
+        }
+      }
+    }
   }
 }
 
@@ -403,10 +436,20 @@ export default {
 
 .right-search .tracks-results {
   border-radius: 0.5rem;
-  // background: #ca0377;
   margin-left: $small;
   padding: $small;
-  // border: solid;
+
+  .more {
+    display: grid;
+    place-items: center;
+    margin-top: $small;
+
+    button {
+      height: 2.5rem;
+      width: 10rem;
+      display: grid;
+    }
+  }
 
   .items {
     border-radius: $small;
@@ -448,9 +491,10 @@ export default {
 /* albums */
 
 .right-search .albums-results {
+  width: calc(100% - $small);
   border-radius: 0.5rem;
 
-  background: #011327;
+  background: #0f131b44;
 
   margin-left: $small;
   margin-top: $small;
@@ -467,13 +511,13 @@ export default {
       align-items: center;
       padding: $small;
       border-radius: $small;
-      background-color: $card-dark;
+      text-align: left !important;
       margin-bottom: 1rem;
+      width: 9rem;
 
       .album-art {
         height: 7rem;
         width: 7rem;
-        background-color: rgba(26, 26, 26, 0.452);
         border-radius: 0.5rem;
         margin-bottom: 0.5rem;
         background-image: url("../assets/images/null.webp");
@@ -481,9 +525,16 @@ export default {
 
       .title {
         width: 7rem;
-        text-align: center;
         margin-bottom: 0.5rem;
         font-size: 0.9rem;
+      }
+
+      .artistsx {
+        width: 7rem;
+        display: flex;
+        font-size: 0.8rem;
+        text-align: left;
+        color: rgba(40, 116, 216, 0.767);
       }
     }
   }
@@ -492,8 +543,10 @@ export default {
 /* artits */
 
 .right-search .artists-results {
+  width: calc(100% - $small);
+
   border-radius: 0.5rem;
-  background: #381900;
+  background: #1214178c;
   margin: 0 0 0 $small;
 
   .grid {
@@ -514,7 +567,6 @@ export default {
         height: 7rem;
         width: 7rem;
         border-radius: 50%;
-        background-color: rgba(16, 65, 14, 0.356);
         margin-bottom: 0.5rem;
         background-size: 50%;
         background-image: url("../assets/images/null.webp");

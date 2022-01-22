@@ -75,6 +75,7 @@ export default {
     };
 
     const collapseSearch = () => {
+      console.log('hooooo')
       search.value = false;
     };
 
@@ -131,6 +132,7 @@ export default {
 }
 
 .content {
+  width: 100%;
   padding: 0 $small;
   display: grid;
   grid-template-rows: auto 1fr;

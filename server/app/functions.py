@@ -211,10 +211,6 @@ def getTags(full_path: str) -> dict:
         "length": round(audio.info.length),
         "bitrate": audio.info.bitrate,
         "image": img_path,
-        "type": {
-            "name": None,
-            "id": None
-        }
     }
 
     instances.songs_instance.insert_song(tags)
@@ -228,7 +224,7 @@ def getAlbumBio(title: str, album_artist: str) -> dict:
     try:
         response = requests.get(last_fm_url)
         data = response.json()
-    except requests.ConnectionError:
+    except:
         return "None"
     
     try:

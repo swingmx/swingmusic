@@ -56,12 +56,14 @@ import state from "@/composables/state.js";
 
 export default {
   props: ["song"],
+  emits: ['updateQueue', 'loadAlbum'],
   setup(props, { emit }) {
     function emitUpdate(song) {
       emit("updateQueue", song);
     }
 
     function emitLoadAlbum(title, artist) {
+      console.log('hii')
       emit("loadAlbum", title, artist);
     }
 
@@ -90,7 +92,7 @@ export default {
   .song-duration {
     width: 5rem !important;
   }
-  
+
   cursor: pointer;
 
   .flex {

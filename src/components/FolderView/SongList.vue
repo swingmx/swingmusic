@@ -35,7 +35,7 @@
 import { ref } from "@vue/reactivity";
 import { onMounted } from "@vue/runtime-core";
 
-import SongItem from "../SongItem.vue";
+import SongItem from "../shared/SongItem.vue";
 import routeLoader from "@/composables/routeLoader.js";
 import perks from "@/composables/perks.js";
 import state from "@/composables/state.js";

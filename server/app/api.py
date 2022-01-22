@@ -32,35 +32,36 @@ def search_by_title():
 
     albums = []
     artists = []
+    tracks = []
 
-    s = []
+    albums_dicts = []
+    artists_dicts = []
 
     for track in all_the_f_music:
         if query.lower() in track['title'].lower():
-            s.append(track)
-    
-    al = instances.songs_instance.search_songs_by_album(query)
-    ar = instances.songs_instance.search_songs_by_artist(query)
+            tracks.append(track)
 
-    for song in al:
+        if query.lower() in track['album'].lower():
+            albums.append(track)
+
+        if query.lower() in str(track['artists']).lower():
+            artists.append(track)
+
+    for song in albums:
         album_obj = {
             "name": song["album"],
             "artists": song["artists"],
         }
 
-        if album_obj not in albums:
-            albums.append(album_obj)
+        if album_obj not in albums_dicts:
+            albums_dicts.append(album_obj)
 
-    for album in albums:
-        # try:
-        #     image = convert_one_to_json(instances.songs_instance.get_song_by_album(album['name'], album['artists']))['image']
-        # except:
-        #     image: None
-
-        album['image'] = "image"
-
-    for song in ar:
-
+    for album in albums_dicts:
+        for track in albums:
+            if album['name'] == track['album']:
+                album['image'] = track['image']
+    
+    for song in artists:
         for artist in song["artists"]:
             if query.lower() in artist.lower():
 
@@ -68,11 +69,31 @@ def search_by_title():
                     "name": artist,
                 }
 
-                if artist_obj not in artists:
-                    artists.append(artist_obj)
+                if artist_obj not in artists_dicts:
+                    artists_dicts.append(artist_obj)
 
-    return {'songs': helpers.remove_duplicates(s), 'albums': albums, 'artists': artists}
+    tracks = helpers.remove_duplicates(tracks)
 
+    if len(tracks) > 5:
+        more_tracks = True
+    else:
+        more_tracks = False
+
+    if len(artists_dicts) > 5:
+        more_artists = True
+    else:
+        more_artists = False
+
+    if len(albums_dicts) > 5:
+        more_albums = True
+    else:
+        more_albums = False
+
+    return {'data': [
+        {'tracks': tracks[:5], 'more': more_tracks},
+        {'albums': albums_dicts[:10], 'more': more_albums},
+        {'artists': artists_dicts[:10], 'more': more_artists}
+    ]}
 
 @bp.route('/populate')
 def x():
@@ -282,10 +303,13 @@ def convert_images_to_webp():
         if file.name.endswith(".jpg"):
             print(file.name)
             print(os.path.join(final_path, file.name.replace('.jpg', '.webp')))
-            img = helpers.Image.open(os.path.join(path, file.name)).resize((150, 150), helpers.Image.ANTIALIAS)
-            img.save(os.path.join(final_path, file.name.replace('.jpg', '.webp')), format='webp')
+            img = helpers.Image.open(os.path.join(path, file.name)).resize(
+                (150, 150), helpers.Image.ANTIALIAS)
+            img.save(os.path.join(final_path, file.name.replace(
+                '.jpg', '.webp')), format='webp')
 
     return "Done"
+
 
 @bp.route('/test')
 def test_http_status_response():
