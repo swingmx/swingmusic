@@ -24,7 +24,7 @@ export default {
   },
   setup() {
     return {
-      songs: state.folder_song_list,
+      songs: state.queue,
       playlist_info: {
         name: "Dax Radio",
         count: state.folder_song_list.value.length,

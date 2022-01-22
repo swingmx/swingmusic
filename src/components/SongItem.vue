@@ -82,8 +82,7 @@ export default {
     border: solid;
 
     td {
-      background-color: $card-dark;
-      border: 1px solid rgba(255, 255, 255, 0.096);
+      background-color: #14161a;
       border-radius: $small;
     }
   }

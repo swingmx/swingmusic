@@ -58,12 +58,21 @@ export default {
 .album-h {
   display: grid;
   grid-template-columns: 1fr 1fr;
+
+  @include tablet-landscape {
+    grid-template-columns: 1fr;
+  }
+
   gap: $small;
   position: relative;
   overflow: hidden;
   height: 15rem;
 
   .right {
+    @include tablet-landscape {
+      display: none;
+    }
+
     padding: $small;
     position: relative;
 
@@ -76,7 +85,6 @@ export default {
       left: -4.2rem;
       top: 3rem;
       box-shadow: 0px 0px 1.5rem rgb(0, 0, 0);
-
     }
 
     .rect {
@@ -88,14 +96,13 @@ export default {
       transform: rotate(-45deg) translate(20%, -50%);
       z-index: 1;
       box-shadow: 0px 0px 2rem rgb(0, 0, 0);
-      transition: all .5s ease-in-out;
+      transition: all 0.5s ease-in-out;
 
       &:hover {
-        transition: all .5s ease-in-out;
+        transition: all 0.5s ease-in-out;
 
         right: 2rem;
       }
-
     }
 
     .circle {
@@ -107,17 +114,17 @@ export default {
       border-radius: 50%;
       transform: translateX(-11rem) translateY(7rem);
       box-shadow: 0px 0px 2rem rgba(0, 0, 0, 0.164);
-      transition: all .5s ease-in-out;
+      transition: all 0.5s ease-in-out;
 
       &:hover {
-        transition: all .5s ease-in-out;
+        transition: all 0.5s ease-in-out;
 
         right: 1rem;
       }
     }
 
     &:hover {
-      transition: all .5s ease-in-out;
+      transition: all 0.5s ease-in-out;
 
       .circle {
         border-radius: 0;
@@ -139,8 +146,8 @@ export default {
   padding: 0 1rem 0 1rem;
 
   .art {
-    width: 12rem;
-    height: 12rem;
+    width: 14rem;
+    height: 13rem;
     background: no-repeat center/cover;
     margin-right: 1rem;
   }

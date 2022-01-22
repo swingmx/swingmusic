@@ -19,6 +19,15 @@ export default {
   padding: $small;
   display: grid;
   grid-template-columns: 1fr 1fr;
+
+  @include tablet-portrait {
+    grid-template-columns: 1fr;
+  }
+
+  @include tablet-landscape {
+    grid-template-columns: 1fr auto;
+  }
+
   gap: $small;
   min-height: 15rem;
 
@@ -30,6 +39,15 @@ export default {
     overflow: hidden;
     background-image: url("../../assets/images/eggs.jpg");
     background-position: center;
+
+    @include tablet-portrait {
+      display: none;
+    }
+
+    @include tablet-landscape {
+      width: 10rem;
+    }
+
 
     .rect {
       width: 10rem;
