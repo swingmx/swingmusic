@@ -1,8 +1,8 @@
 <template>
   <tr
     class="songlist-item"
-    :class="{ current: current._id.$oid == song._id.$oid }"
   >
+    <!-- :class="{ current: current._id.$oid == song._id.$oid }" -->
     <td class="flex" @click="emitUpdate(song)">
       <div
         class="album-art rounded image"

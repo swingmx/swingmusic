@@ -1,0 +1,118 @@
+.right-search .v0 {
+  max-height: 0em;
+  transition: max-height 0.5s ease;
+}
+
+.right-search .v1 {
+  max-height: 25rem;
+  transition: max-height 0.5s ease;
+}
+
+.right-search {
+  position: relative;
+  border-radius: $small;
+  margin: 0.5rem 0 0 0;
+  padding: 1rem $small 0 0;
+  background-color: #03000eab;
+  overflow: hidden;
+  width: auto;
+
+  .no-res {
+    text-align: center;
+    height: calc(100% - 1rem);
+    display: grid;
+
+    .highlight {
+      padding: $small;
+      background-color: rgb(29, 26, 26);
+    }
+  }
+
+  .heading {
+    margin-left: $small;
+    background-color: rgb(3, 54, 112);
+    width: 6rem;
+    padding: $small;
+    border-radius: $small;
+    margin-bottom: $small;
+  }
+
+  .input {
+    display: flex;
+    align-items: center;
+    position: relative;
+  }
+
+  .search-icon {
+    position: absolute;
+    height: 2.5rem;
+    width: 2.5rem;
+    background-image: url(../../icons/search.svg);
+    background-size: 70%;
+  }
+
+  .v11 {
+    opacity: 0;
+    transform: translateY(-4rem);
+    transition: all 0.2s ease-in;
+  }
+
+  .v00 {
+    opacity: 1;
+    transition: all 0.2s ease-in;
+  }
+
+  .suggestions {
+    display: flex;
+    gap: 0.5rem;
+    margin-left: 1rem;
+    position: absolute;
+    right: 2.5rem;
+
+    .item::before {
+      content: "#";
+      color: grey;
+    }
+  }
+}
+
+.right-search .scrollable {
+  width: 100%;
+  height: 26rem;
+  overflow-y: auto;
+  scroll-behavior: smooth;
+  padding: 0 $small 0 0;
+  margin-bottom: 0.5rem;
+}
+
+.right-search {
+  .input-loader {
+    width: 100%;
+    border-radius: 0.4rem;
+    position: relative;
+
+    input {
+      width: calc(100% - 6rem);
+      border: none;
+      line-height: 2.5rem;
+      background-color: transparent;
+      color: rgb(255, 255, 255);
+      font-size: 1rem;
+      outline: none;
+      transition: all 0.5s ease;
+      padding-left: $small;
+
+      &:focus {
+        transition: all 0.5s ease;
+        color: rgb(255, 255, 255);
+        outline: none;
+
+        &::placeholder {
+          display: none;
+        }
+      }
+    }
+  }
+}
+
+

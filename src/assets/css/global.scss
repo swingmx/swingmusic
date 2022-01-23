@@ -142,7 +142,6 @@ button {
   }
 }
 
-
 .image {
   background-position: center;
   background-repeat: no-repeat;
@@ -248,4 +247,19 @@ button {
   transition: all 0.3s ease-in-out;
 }
 
+.item {
+  position: relative;
+  background-color: rgba(34, 33, 33, 0.637);
+  padding: 0.5rem;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  margin: 0 $small 0 0;
+  display: flex;
+  align-items: center;
+  font-size: 0.9rem;
+  color: rgb(250, 250, 250);
 
+  &:hover {
+    background-color: rgb(170, 50, 50);
+  }
+}

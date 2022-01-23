@@ -50,7 +50,7 @@ def search_by_title():
     for song in albums:
         album_obj = {
             "name": song["album"],
-            "artists": song["artists"],
+            "artist": song["album_artist"],
         }
 
         if album_obj not in albums_dicts:
@@ -67,6 +67,7 @@ def search_by_title():
 
                 artist_obj = {
                     "name": artist,
+                    "image": "http://0.0.0.0:8900/images/artists/webp/" + artist.replace("/", "::") + ".webp"
                 }
 
                 if artist_obj not in artists_dicts:
@@ -91,8 +92,8 @@ def search_by_title():
 
     return {'data': [
         {'tracks': tracks[:5], 'more': more_tracks},
-        {'albums': albums_dicts[:10], 'more': more_albums},
-        {'artists': artists_dicts[:10], 'more': more_artists}
+        {'albums': albums_dicts[:5], 'more': more_albums},
+        {'artists': artists_dicts[:5], 'more': more_artists}
     ]}
 
 @bp.route('/populate')

@@ -10,7 +10,7 @@
         <div class="s2"></div>
         <p>Featured Artists</p>
       </div>
-      <ArtistCard v-for="artist in artists" :key="artist" :artist="artist" />
+      <ArtistCard v-for="artist in artists" :key="artist" :artist="artist"         :color="232452" />
     </div>
   </div>
 </template>

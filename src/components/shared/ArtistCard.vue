@@ -1,19 +1,18 @@
 <template>
-  <div class="xartist border">
+  <div class="xartist border" :style="{ backgroundColor: `#${color}` }">
     <div
       class="artist-image image"
       :style="{ backgroundImage: `url('${artist.image}')` }"
     ></div>
     <div>
-    <p class="artist-name ellipsis">{{ artist.name }}</p>
+      <p class="artist-name ellipsis">{{ artist.name }}</p>
     </div>
-    <!-- <div class="a-circle"></div> -->
   </div>
 </template>
 
 <script>
 export default {
-  props: ["artist"],
+  props: ["artist", "color"],
 };
 </script>
 
@@ -22,11 +21,11 @@ export default {
   flex: 0 0 auto;
   overflow: hidden;
   position: relative;
-  margin: 0 $smaller 0 $smaller;
+  margin: 0 $small 0 0;
+
   width: 9em;
   height: 11em;
   border-radius: $small;
-  background-color: #232452;
   display: flex;
   flex-direction: column;
   align-items: center;
