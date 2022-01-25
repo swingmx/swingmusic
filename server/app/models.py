@@ -1,3 +1,4 @@
+from dataclasses import dataclass
 import pymongo
 import json
 from bson import ObjectId, json_util
@@ -119,3 +120,25 @@ class AllSongs(Mongo):
             return True
         except:
             return False
+
+
+@dataclass
+class Track:
+    id: str
+    title: str
+    artists: str
+    album_artist: str
+    album: str
+    filepath: str
+    folder: str
+    length: int
+    date: int
+    genre: str
+    bitrate: int
+    image: str
+
+    def __post_init__(self):
+        self.artists = self.artists.split(', ')
+        self.image = "http://127.0.0.1:8900/images/thumbnails/" + self.image
+
+

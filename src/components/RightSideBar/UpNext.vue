@@ -31,7 +31,7 @@
           :key="song"
           @click="playThis(song)"
           :class="{
-            currentInQueue: current._id.$oid == song._id.$oid,
+            currentInQueue: current.id == song.id,
           }"
         >
           <div
@@ -42,7 +42,7 @@
           >
             <div
               class="now-playing-track image"
-              v-if="current._id.$oid == song._id.$oid"
+              v-if="current.id == song.id"
               :class="{ active: is_playing, not_active: !is_playing }"
             ></div>
           </div>

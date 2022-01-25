@@ -21,7 +21,7 @@
       </div>
     </div>
     <div class="progress">
-      <div class="duration">{{ fmtMSS(current.length) }}</div>
+      <div class="duration">{{ current.length }}</div>
       <input
         id="progress"
         type="range"

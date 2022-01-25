@@ -11,8 +11,11 @@ all_the_f_music = helpers.getAllSongs()
 
 
 def initialize() -> None:
+    """
+    Runs all the necessary setup functions.
+    """
     helpers.create_config_dir()
-    helpers.check_for_new_songs()
+    # helpers.check_for_new_songs()
 
 
 initialize()
@@ -38,19 +41,19 @@ def search_by_title():
     artists_dicts = []
 
     for track in all_the_f_music:
-        if query.lower() in track['title'].lower():
+        if query.lower() in track.title.lower():
             tracks.append(track)
 
-        if query.lower() in track['album'].lower():
+        if query.lower() in track.album.lower():
             albums.append(track)
 
-        if query.lower() in str(track['artists']).lower():
+        if query.lower() in str(track.artists).lower():
             artists.append(track)
 
     for song in albums:
         album_obj = {
-            "name": song["album"],
-            "artist": song["album_artist"],
+            "name": song.album,
+            "artist": song.album_artist,
         }
 
         if album_obj not in albums_dicts:
@@ -58,11 +61,11 @@ def search_by_title():
 
     for album in albums_dicts:
         for track in albums:
-            if album['name'] == track['album']:
-                album['image'] = track['image']
-    
+            if album['name'] == track.album:
+                album['image'] = track.image
+
     for song in artists:
-        for artist in song["artists"]:
+        for artist in song.artists:
             if query.lower() in artist.lower():
 
                 artist_obj = {
@@ -80,21 +83,22 @@ def search_by_title():
     else:
         more_tracks = False
 
-    if len(artists_dicts) > 5:
+    if len(artists_dicts) > 8:
         more_artists = True
     else:
         more_artists = False
 
-    if len(albums_dicts) > 5:
+    if len(albums_dicts) > 8:
         more_albums = True
     else:
         more_albums = False
 
     return {'data': [
         {'tracks': tracks[:5], 'more': more_tracks},
-        {'albums': albums_dicts[:5], 'more': more_albums},
-        {'artists': artists_dicts[:5], 'more': more_artists}
+        {'albums': albums_dicts[:8], 'more': more_albums},
+        {'artists': artists_dicts[:8], 'more': more_artists}
     ]}
+
 
 @bp.route('/populate')
 def x():
@@ -111,13 +115,13 @@ def get_album_artists(album, artist):
     tracks = []
 
     for track in all_the_f_music:
-        if track["album"] == album and track["album_artist"] == artist:
+        if track.album == album and track.album_artist == artist:
             tracks.append(track)
 
     artists = []
 
     for track in tracks:
-        for artist in track['artists']:
+        for artist in track.artists:
             if artist not in artists:
                 artists.append(artist)
 
@@ -213,34 +217,12 @@ def getFolderTree(folder: str):
 
     songs = []
 
-    for x in all_the_f_music:
-        if x['folder'] == req_dir:
-            songs.append(x)
-
-    for song in songs:
-        song['image'] = song['image'].replace('127.0.0.1', '0.0.0.0')
+    for track in all_the_f_music:
+        if track.folder == req_dir:
+            songs.append(track)
 
     return {"files": helpers.remove_duplicates(songs), "folders": sorted(folders, key=lambda i: i['name'])}
 
-
-@bp.route('/qwerty')
-def populateArtists():
-    all_songs = instances.songs_instance.get_all_songs()
-
-    artists = []
-
-    for song in all_songs:
-        for a in song['artists']:
-            a_obj = {
-                "name": a,
-            }
-
-            if a_obj not in artists:
-                artists.append(a_obj)
-
-            instances.artist_instance.insert_artist(a_obj)
-
-    return {'songs': artists}
 
 
 @bp.route('/albums')
@@ -310,8 +292,3 @@ def convert_images_to_webp():
                 '.jpg', '.webp')), format='webp')
 
     return "Done"
-
-
-@bp.route('/test')
-def test_http_status_response():
-    return "OK", 200

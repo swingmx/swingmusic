@@ -17,6 +17,7 @@ home_dir = os.path.expanduser('~') + '/'
 app_dir = os.path.join(home_dir, '.musicx')
 last_fm_api_key = "762db7a44a9e6fb5585661f5f2bdf23a"
 
+
 def background(f):
     '''
     a threading decorator
@@ -29,6 +30,9 @@ def background(f):
 
 @background
 def check_for_new_songs():
+    """
+    Checks for new songs every 5 minutes.
+    """
     flag = False
 
     while flag is False:
@@ -68,12 +72,12 @@ def remove_duplicates(array: list) -> list:
 
     while song_num < len(array) - 1:
         for index, song in enumerate(array):
-            try:
+            if array[song_num].title == song.title and \
+                    array[song_num].album == song.album and \
+                    array[song_num].artists == song.artists and \
+                    index != song_num:
+                array.remove(song)
 
-                if array[song_num]["title"] == song["title"] and array[song_num]["album"] == song["album"] and array[song_num]["artists"] == song["artists"] and index != song_num:
-                    array.remove(song)
-            except:
-                print('whe')
         song_num += 1
 
     return array
@@ -113,27 +117,29 @@ def create_config_dir() -> None:
 
     for dir in dirs:
         path = os.path.join(config_folder, dir)
-        os.chmod(path, 0o755)
+        
         try:
             os.makedirs(path)
         except FileExistsError:
             pass
 
+        os.chmod(path, 0o755)
 
 def getAllSongs() -> None:
     """
     Gets all songs under the ~/ directory.
     """
 
-    tracks = instances.songs_instance.get_all_songs()
+    tracks = []
 
-    for track in tracks:
+    for track in instances.songs_instance.get_all_songs():
+        track = functions.create_track_class(track)
+
         try:
-            os.chmod(os.path.join(home_dir, track['filepath']), 0o755)
+            os.chmod(os.path.join(home_dir, track.filepath), 0o755)
         except FileNotFoundError:
-            instances.songs_instance.remove_song_by_filepath(track['filepath'])
+            instances.songs_instance.remove_song_by_filepath(track.filepath)
 
-        if track['artists'] is not None:
-            track['artists'] = track['artists'].split(', ')
+        tracks.append(track)
 
     return tracks

@@ -1,6 +1,6 @@
 <template>
   <div class="folder">
-    <div class="table rounded" v-if="songs.length">
+    <div class="table rounded" v-if="props.songs.length">
       <table>
         <thead>
           <tr>
@@ -12,7 +12,7 @@
         </thead>
         <tbody>
           <SongItem
-            v-for="song in songs"
+            v-for="song in props.songs"
             :key="song"
             :song="song"
             @updateQueue="updateQueue"
@@ -21,69 +21,61 @@
         </tbody>
       </table>
     </div>
-    <div v-else-if="songs.length === 0 && search_query">
+    <div v-else-if="props.songs.length === 0 && search_query">
       <div class="no-results">
         <div class="icon"></div>
-        <div class="text">❗ Track not found!</div>
+        <div class="text">No tracks 🎸</div>
       </div>
     </div>
     <div v-else ref="songtitle"></div>
   </div>
 </template>
 
-<script>
+<script setup>
 import { ref } from "@vue/reactivity";
 import { onMounted } from "@vue/runtime-core";
-
+// import { defineProps } from 'vue';
 import SongItem from "../shared/SongItem.vue";
 import routeLoader from "@/composables/routeLoader.js";
 import perks from "@/composables/perks.js";
 import state from "@/composables/state.js";
 import { useRoute } from "vue-router";
 
-export default {
-  props: ["songs"],
-  components: {
-    SongItem,
-  },
-  setup() {
-    let route;
+const props = defineProps({
+  songs: {
+    type: Array,
+    required: true
+  }
+});
 
-    const current = ref(perks.current);
-    const search_query = ref(state.search_query);
 
-    onMounted(() => {
-      route = useRoute().name;
-    });
+let route;
 
-    function updateQueue(song) {
-      let type;
+const search_query = ref(state.search_query);
 
-      switch (route) {
-        // check which route the play request come from
-        case "FolderView":
-          type = "folder";
-          break;
-        case "AlbumView":
-          type = "album";
-          break;
-      }
+onMounted(() => {
+  route = useRoute().name;
+});
 
-      perks.updateQueue(song, type);
-    }
+function updateQueue(song) {
+  let type;
 
-    function loadAlbum(title, album_artist) {
-      routeLoader.toAlbum(title, album_artist);
-    }
+  switch (route) {
+    // check which route the play request come from
+    case "FolderView":
+      type = "folder";
+      break;
+    case "AlbumView":
+      type = "album";
+      break;
+  }
 
-    return {
-      updateQueue,
-      loadAlbum,
-      current,
-      search_query,
-    };
-  },
-};
+  perks.updateQueue(song, type);
+}
+
+function loadAlbum(title, album_artist) {
+  routeLoader.toAlbum(title, album_artist);
+}
 </script>
 
 <style lang="scss">

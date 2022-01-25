@@ -6,6 +6,7 @@ import time
 import os
 import requests
 import random
+import datetime
 
 from mutagen.flac import MutagenError
 from mutagen.mp3 import MP3
@@ -18,6 +19,7 @@ from io import BytesIO
 from app import helpers
 from app import instances
 from app import api
+from app import models
 
 
 def populate():
@@ -53,61 +55,63 @@ def populate_images():
     bar = Bar('Processing images', max=len(artists))
     for artist in artists:
         file_path = helpers.app_dir + '/images/artists/' + \
-            artist.replace('/', '::') + '.jpg'
+            artist.replace('/', '::') + '.webp'
 
         if not os.path.exists(file_path):
-            url = 'https://api.deezer.com/search/artist?q={}'.format(artist)
-
-            try:
+            def try_save_image():
+                url = 'https://api.deezer.com/search/artist?q={}'.format(artist)
                 response = requests.get(url)
-            except requests.ConnectionError:
-                print('\n sleeping for 5 seconds')
+                data = response.json()
+
+                try:
+                    img_path = data['data'][0]['picture_medium']
+                except:
+                    img_path = None
+
+                if img_path is not None:
+                    # save image as webp
+                    img = Image.open(BytesIO(requests.get(img_path).content))
+                    img.save(file_path, format="webp")
+            try:
+               try_save_image()
+            except requests.exceptions.ConnectionError:
                 time.sleep(5)
-                response = requests.get(url)
-
-            data = response.json()
-
-            try:
-                img_data = data['data'][0]['picture_xl']
-            except:
-                img_data = None
-
-            if img_data is not None:
-                helpers.save_image(img_data, file_path)
+                try_save_image()
 
         bar.next()
 
     bar.finish()
 
 
-def extract_thumb(path: str) -> str:
+def extract_thumb(audio_file_path: str = None) -> str:
     """
     Extracts the thumbnail from an audio file. Returns the path to the thumbnail.
     """
+
+    album_art = None
 
     def use_defaults() -> str:
         """
         Returns a path to a random image in the defaults directory.
         """
-        path = "http://127.0.0.1:8900/images/defaults/" + \
-            str(random.randint(0, 10)) + '.webp'
+        path = str(random.randint(0, 10)) + '.webp'
         return path
 
-    webp_path = path.split('/')[-1] + '.webp'
+    webp_path = audio_file_path.split('/')[-1] + '.webp'
     img_path = os.path.join(helpers.app_dir, "images", "thumbnails", webp_path)
 
     if os.path.exists(img_path):
-        return "http://127.0.0.1:8900/images/thumbnails/" + webp_path
+        return webp_path
 
-    if path.endswith('.flac'):
+    if audio_file_path.endswith('.flac'):
         try:
-            audio = FLAC(path)
+            audio = FLAC(audio_file_path)
             album_art = audio.pictures[0].data
         except:
             album_art = None
-    elif path.endswith('.mp3'):
+    elif audio_file_path.endswith('.mp3'):
         try:
-            audio = ID3(path)
+            audio = ID3(audio_file_path)
             album_art = audio.getall('APIC')[0].data
         except:
             album_art = None
@@ -128,9 +132,8 @@ def extract_thumb(path: str) -> str:
             except:
                 return use_defaults()
 
-        final_path = "http://0.0.0.0:8900/images/thumbnails/" + webp_path
+        return webp_path
 
-        return final_path
 
 def getTags(full_path: str) -> dict:
     """
@@ -198,7 +201,22 @@ def getTags(full_path: str) -> dict:
     except IndexError:
         genre = "Unknown"
 
+    try:
+        date = audio['date'][0]
+    except KeyError:
+        try:
+            date = audio['TDRC'][0]
+        except:
+            date = "Unknown"
+    except IndexError:
+        date = "Unknown"
+
     img_path = extract_thumb(full_path)
+
+    length = str(datetime.timedelta(seconds=round(audio.info.length)))
+
+    if length[:2] == "0:":
+        length = length.replace('0:', '')
 
     tags = {
         "filepath": full_path.replace(helpers.home_dir, ''),
@@ -208,8 +226,9 @@ def getTags(full_path: str) -> dict:
         "album_artist": album_artist,
         "album": album,
         "genre": genre,
-        "length": round(audio.info.length),
-        "bitrate": audio.info.bitrate,
+        "length": length,
+        "bitrate": round(int(audio.info.bitrate)/1000),
+        "date": str(date)[:4],
         "image": img_path,
     }
 
@@ -220,15 +239,16 @@ def getTags(full_path: str) -> dict:
 def getAlbumBio(title: str, album_artist: str) -> dict:
     last_fm_url = 'http://ws.audioscrobbler.com/2.0/?method=album.getinfo&api_key={}&artist={}&album={}&format=json'.format(
         helpers.last_fm_api_key, album_artist, title)
-    
+
     try:
         response = requests.get(last_fm_url)
         data = response.json()
     except:
         return "None"
-    
+
     try:
-        bio = data['album']['wiki']['summary'].split('<a href="https://www.last.fm/')[0]
+        bio = data['album']['wiki']['summary'].split(
+            '<a href="https://www.last.fm/')[0]
     except KeyError:
         bio = None
 
@@ -236,3 +256,20 @@ def getAlbumBio(title: str, album_artist: str) -> dict:
         return "None"
 
     return bio
+
+
+def create_track_class(tags):
+    return models.Track(
+        tags['_id']["$oid"],
+        tags['title'],
+        tags['artists'],
+        tags['album_artist'],
+        tags['album'],
+        tags['filepath'],
+        tags['folder'],
+        tags['length'],
+        tags['date'],
+        tags['genre'],
+        tags['bitrate'],
+        tags['image']
+    )

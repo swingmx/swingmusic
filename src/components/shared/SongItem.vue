@@ -1,8 +1,8 @@
 <template>
   <tr
     class="songlist-item"
+    :class="{ current: current.id == song.id }"
   >
-    <!-- :class="{ current: current._id.$oid == song._id.$oid }" -->
     <td class="flex" @click="emitUpdate(song)">
       <div
         class="album-art rounded image"
@@ -12,7 +12,7 @@
       >
         <div
           class="now-playing-track image"
-          v-if="current._id.$oid == song._id.$oid"
+          v-if="current.id == song.id"
           :class="{ active: is_playing, not_active: !is_playing }"
         ></div>
       </div>
@@ -45,7 +45,7 @@
       </div>
     </td>
     <td class="song-duration">
-      {{ `${Math.trunc(song.length / 60)} min` }}
+      {{ song.length }}
     </td>
   </tr>
 </template>
