@@ -1,14 +1,10 @@
 <template>
-  <tr
-    class="songlist-item"
-    :class="{ current: current.id == song.id }"
-  >
+  <tr class="songlist-item" :class="{ current: current.id == song.id }">
+    <td class="index">{{ index }}</td>
     <td class="flex" @click="emitUpdate(song)">
       <div
         class="album-art rounded image"
-        :style="{
-          backgroundImage: `url(&quot;${song.image}&quot;)`,
-        }"
+        :style="{ backgroundImage: `url(&quot;${song.image}&quot;` }"
       >
         <div
           class="now-playing-track image"
@@ -20,9 +16,9 @@
         <span class="ellip">{{ song.title }}</span>
         <div class="separator no-border"></div>
         <div class="artist ellip">
-          <span v-for="artist in putCommas(song.artists)" :key="artist">{{
-            artist
-          }}</span>
+          <span v-for="artist in putCommas(song.artists)" :key="artist">
+            {{ artist }}
+          </span>
         </div>
       </div>
     </td>
@@ -44,9 +40,7 @@
         {{ song.album }}
       </div>
     </td>
-    <td class="song-duration">
-      {{ song.length }}
-    </td>
+    <td class="song-duration">{{ song.length }}</td>
   </tr>
 </template>
 
@@ -55,15 +49,15 @@ import perks from "@/composables/perks.js";
 import state from "@/composables/state.js";
 
 export default {
-  props: ["song"],
-  emits: ['updateQueue', 'loadAlbum'],
+  props: ["song", "index"],
+  emits: ["updateQueue", "loadAlbum"],
   setup(props, { emit }) {
     function emitUpdate(song) {
       emit("updateQueue", song);
     }
 
     function emitLoadAlbum(title, artist) {
-      console.log('hii')
+      console.log("hii");
       emit("loadAlbum", title, artist);
     }
 
@@ -80,8 +74,19 @@ export default {
 
 <style lang="scss">
 .songlist-item {
+  .index {
+    color: grey;
+    font-size: 0.8rem;
+    text-align: center;
+    width: 2rem;
+
+    @include phone-only {
+      display: none;
+    }
+  }
+
   @include phone-only {
-    border: solid;
+    width: 100%;
 
     td {
       background-color: #14161a;
@@ -126,21 +131,37 @@ export default {
     padding: $small;
   }
 
+  td:first-child {
+    border-radius: $small 0 0 $small;
+  }
+
+  td:nth-child(2){
+    border-radius: 0 $small $small 0;
+
+    @include phone-only {
+      border-radius: $small;
+    }
+  }
+
   &:hover {
     & {
       & td {
         background-color: rgb(5, 80, 150);
       }
 
-      & td:first-child {
+      td:first-child {
         border-radius: $small 0 0 $small;
+      }
+
+      td:nth-child(2) {
+        border-radius: 0;
 
         @include phone-only {
           border-radius: $small;
         }
       }
 
-      td:nth-child(2) {
+      td:nth-child(3) {
         @include tablet-portrait {
           border-radius: 0 $small $small 0 !important;
         }
@@ -150,9 +171,10 @@ export default {
         }
       }
 
-      & > td:nth-child(3) {
+      & > td:nth-child(4) {
         @include tablet-landscape {
           border-radius: 0 $small $small 0 !important;
+          // border: solid red !important;
         }
       }
 

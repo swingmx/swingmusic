@@ -37,10 +37,13 @@ export default {
 
   margin-left: $small;
   margin-top: $small;
-  padding:  $small 0;
+  padding: $small 0;
+  overflow-x: hidden;
 
   .grid {
-    display: flex;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(9rem, 1fr));
+
     flex-wrap: wrap;
     padding: 0 0 0 $small;
     gap: $small;

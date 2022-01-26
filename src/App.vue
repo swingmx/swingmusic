@@ -75,7 +75,6 @@ export default {
     };
 
     const collapseSearch = () => {
-      console.log('hooooo')
       search.value = false;
     };
 

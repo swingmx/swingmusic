@@ -122,12 +122,12 @@ def extract_thumb(audio_file_path: str = None) -> str:
         img = Image.open(BytesIO(album_art))
 
         try:
-            small_img = img.resize((150, 150), Image.ANTIALIAS)
+            small_img = img.resize((250, 250), Image.ANTIALIAS)
             small_img.save(img_path, format="webp")
         except OSError:
             try:
                 png = img.convert('RGB')
-                small_img = png.resize((150, 150), Image.ANTIALIAS)
+                small_img = png.resize((250, 250), Image.ANTIALIAS)
                 small_img.save(img_path, format="webp")
             except:
                 return use_defaults()

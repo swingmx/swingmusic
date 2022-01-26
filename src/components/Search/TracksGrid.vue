@@ -4,7 +4,12 @@
     <div class="items">
       <table>
         <tbody>
-          <SongItem v-for="track in tracks" :key="track" :song="track" />
+          <SongItem
+            v-for="(track, index) in props.tracks"
+            :key="track"
+            :song="track"
+            :index="index + 1"
+          />
         </tbody>
       </table>
       <LoadMore v-if="more" @loadMore="loadMore" />
@@ -12,26 +17,26 @@
   </div>
 </template>
 
-<script>
+<script setup>
 import SongItem from "@/components/shared/SongItem.vue";
 import LoadMore from "./LoadMore.vue";
 
-export default {
-  props: ["tracks", "more"],
-  components: {
-    SongItem,
-    LoadMore,
+const props = defineProps({
+  tracks: {
+    type: Object,
+    required: true,
   },
-  setup(props, { emit }) {
-    function loadMore() {
-      emit("loadMore", "tracks");
-    }
+  more: {
+    type: Boolean,
+    required: true,
+  },
+});
 
-    return {
-      loadMore,
-    };
-  },
-};
+const emit = defineEmits(["loadMore"])
+
+function loadMore() {
+  emit("loadMore", "tracks");
+}
 </script>
 
 <style lang="scss">

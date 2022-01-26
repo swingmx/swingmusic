@@ -4,6 +4,7 @@
       <table>
         <thead>
           <tr>
+            <th class="index"></th>
             <th class="track-header">Track</th>
             <th class="artists-header">Artist</th>
             <th class="album-header">Album</th>
@@ -12,9 +13,10 @@
         </thead>
         <tbody>
           <SongItem
-            v-for="song in props.songs"
+            v-for="(song, index) in props.songs"
             :key="song"
             :song="song"
+            :index="index + 1"
             @updateQueue="updateQueue"
             @loadAlbum="loadAlbum"
           />
@@ -34,12 +36,13 @@
 <script setup>
 import { ref } from "@vue/reactivity";
 import { onMounted } from "@vue/runtime-core";
-// import { defineProps } from 'vue';
+import { useRoute } from "vue-router";
+
 import SongItem from "../shared/SongItem.vue";
+
 import routeLoader from "@/composables/routeLoader.js";
 import perks from "@/composables/perks.js";
 import state from "@/composables/state.js";
-import { useRoute } from "vue-router";
 
 const props = defineProps({
   songs: {
@@ -47,7 +50,6 @@ const props = defineProps({
     required: true
   }
 });
-
 
 let route;
 
@@ -143,6 +145,10 @@ table {
       @include tablet-portrait {
         display: none;
       }
+    }
+
+    th.index {
+      width: 2rem;
     }
   }
 }
