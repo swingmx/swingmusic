@@ -1,5 +1,11 @@
 <template>
-  <div class="result-item border">
+  <router-link
+    :to="{
+      name: 'AlbumView',
+      params: { album: album.name, artist: album.artist },
+    }"
+    class="result-item border"
+  >
     <div
       class="album-art image"
       :style="{
@@ -8,7 +14,7 @@
     ></div>
     <div class="title ellip">{{ album.name }}</div>
     <div class="artistsx ellipsis">{{ album.artist }}</div>
-  </div>
+  </router-link>
 </template>
 
 <script>

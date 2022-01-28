@@ -1,17 +1,10 @@
 .b-bar {
   height: 100%;
-  // padding: 0 $small 0 $small;
-
-  .prog {
-    display: grid;
-  }
 
   .grid {
     display: grid;
     height: 100%;
-    // grid-auto-columns: 1fr;
-    // grid-auto-flow: column;
-    grid-template-columns: 1fr 3fr 1fr;
+    grid-template-columns: 1fr 2fr 1fr;
 
     @include phone-only {
       grid-template-columns: 1fr 9.2rem;
@@ -48,39 +41,64 @@
     }
 
     .controlsx {
-      // border: solid 1px;
       width: 100%;
       overflow: hidden;
       display: flex;
       align-items: center;
-      justify-content: flex-end;
+      margin: $small;
+      padding: $small;
 
-      @include phone-only {
-        // width: min-content;
+      .progress-bottom {
+        display: flex;
+        align-items: center;
       }
 
       .controls-bottom {
-      // border: solid 1px;
-
-      width: min-content;
-
-        .shuffle, .fav {
-          @include phone-only {
-            display: none !important;
-          }
-        }
+        width: min-content;
       }
 
       .progress-bottom {
         width: 100%;
 
         .durationx {
-          background-color: #202020;
+          background-color: rgba(0, 72, 131, 0.171);
           padding: $smaller;
-          border-radius: .4rem;
-          margin:  0 $small 0 $small;
+          border-radius: 0.4rem;
+          margin: 0 $small 0 $small;
+          font-size: .8rem;
+          color: rgb(0, 119, 255);
         }
-        // display: none;
+      }
+    }
+
+    .r-group {
+      display: flex;
+      align-items: center;
+      gap: $small;
+
+      & > * {
+        height: 2rem;
+        width: 2rem;
+        background-size: 1.2rem !important;
+        background-position: 45% 50%;
+        cursor: pointer;
+        border-radius: 0.5rem;
+
+        &:hover {
+          background-color: rgb(170, 50, 50);
+        }
+      }
+
+      .heart {
+        background-image: url(../../icons/heart.svg);
+      }
+
+      .add-to {
+        background-image: url(../../icons/plus.svg);
+      }
+
+      .repeat {
+        background-image: url(../../icons/repeat.svg);
       }
     }
 

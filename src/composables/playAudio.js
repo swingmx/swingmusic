@@ -11,6 +11,7 @@ const playing = ref(state.is_playing);
 const url = "http://0.0.0.0:8901/";
 
 const playAudio = (path) => {
+  const elem = document.getElementById('progress')
   const full_path = url + encodeURIComponent(path);
 
   new Promise((resolve, reject) => {
@@ -26,7 +27,8 @@ const playAudio = (path) => {
 
       audio.ontimeupdate = () => {
         pos.value = (audio.currentTime / audio.duration) * 1000;
-        
+        let bg_size = ((audio.currentTime / audio.duration)*100)
+        elem.style.backgroundSize = `${bg_size}% 100%`;
       };
     })
     .catch((err) => console.log(err));

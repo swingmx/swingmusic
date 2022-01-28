@@ -22,29 +22,14 @@
     </div>
     <div class="progress">
       <div class="duration">{{ current.length }}</div>
-      <input
-        id="progress"
-        type="range"
-        :value="pos"
-        min="0"
-        max="1000"
-        @change="seek()"
-      />
+      <Progress />
     </div>
     <div class="controls">
       <div class="shuffle">
         <div class="image"></div>
         <div class="image"></div>
       </div>
-      <div class="nav">
-        <div class="image" id="previous" @click="playPrev"></div>
-        <div
-          class="image play-pause"
-          @click="playPause"
-          :class="{ isPlaying: isPlaying }"
-        ></div>
-        <div class="image" id="next" @click="playNext"></div>
-      </div>
+      <HotKeys />
       <div class="fav">
         <div class="image"></div>
         <div class="image"></div>
@@ -55,8 +40,12 @@
 
 <script>
 import { ref } from "@vue/reactivity";
+
 import perks from "../../composables/perks.js";
 import playAudio from "@/composables/playAudio.js";
+
+import Progress from "../shared/Progress.vue";
+import HotKeys from "../shared/HotKeys.vue";
 
 export default {
   setup() {
@@ -66,16 +55,13 @@ export default {
     function fmtMSS(s) {
       return (s - (s %= 60)) / 60 + (9 < s ? ":" : ":0") + s;
     }
-
     const { playNext } = playAudio;
     const { playPrev } = playAudio;
     const { playPause } = playAudio;
     const isPlaying = playAudio.playing;
-
     const seek = () => {
       playAudio.seek(document.getElementById("progress").value);
     };
-
     return {
       current,
       putCommas,
@@ -88,6 +74,7 @@ export default {
       fmtMSS,
     };
   },
+  components: { Progress, HotKeys },
 };
 </script>
 
@@ -95,13 +82,11 @@ export default {
 .now-playing {
   border-radius: 0.5rem;
   height: 14rem;
-  margin-top: .5rem;
+  margin-top: 0.5rem;
   padding: 0.5rem;
   background: $card-dark;
   display: grid;
   grid-template-rows: 3fr 1fr;
-
-  
 
   .art-tags {
     display: flex;

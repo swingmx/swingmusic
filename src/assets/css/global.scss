@@ -1,3 +1,5 @@
+@import "../css/ProgressBar.scss";
+
 :root {
   --separator: #ffffff46;
   --green: #4ad168;
@@ -104,8 +106,6 @@ button {
 .bottom-bar {
   grid-area: bottom-bar;
   height: 4rem;
-  // margin: 0 $small 0 $small;
-  // display: none;
 }
 
 .collapsed .l-sidebar {
@@ -122,7 +122,7 @@ button {
 }
 
 .rounded {
-  border-radius: 10px;
+  border-radius: $small;
 }
 
 .circular {
@@ -271,101 +271,20 @@ button {
   color: rgb(250, 250, 250);
 
   &:hover {
-    background-color: rgb(170, 50, 50);
+    background-color: $pink;
   }
 }
 
-.progress {
-  display: flex;
-  align-items: center;
-  position: relative;
-
-  .duration {
-    position: absolute;
-    right: 0;
-    top: -1rem;
-    font-size: small;
-  }
-
-  input {
-    -webkit-appearance: none;
-    width: 100%;
-    border: none;
-    outline: none;
-    background: transparent;
-  }
-
-  input:focus {
-    outline: none;
-  }
-
-
-  input::-webkit-slider-runnable-track {
-    width: 100%;
-    height: 0.25rem;
-    cursor: pointer;
-    background: #252829;
-    // background: linear-gradient(to right, #1488cc, #2b32b2);
-  }
-
-  input::-webkit-slider-thumb {
-    -webkit-appearance: none;
-    height: 1rem;
-    width: 1rem;
-    border-radius: 50%;
-    background: #ffffff;
-    cursor: pointer;
-    margin-top: -0.35rem;
-  }
-
-  input:focus::-webkit-slider-runnable-track,
-  input::-moz-range-track {
-    background: #367ebd;
-  }
-
-  input::-moz-range-thumb {
-    height: 1rem;
-    width: 1rem;
-    border-radius: 50%;
-    background: #ffffff;
-    cursor: pointer;
-    margin-top: -0.35rem;
-  }
+input[type="number"] {
+  width: 40px;
+  padding: 4px 5px;
+  border: 1px solid #bbb;
+  border-radius: 3px;
 }
 
 .controls {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-
-  .nav {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    width: 100%;
-
-    & * {
-      height: 3rem;
-      width: 3rem;
-      background-size: 50%;
-      cursor: pointer;
-      border-radius: 0.5rem;
-    }
-
-    #previous {
-      background-image: url(../../assets/icons/previous.svg);
-    }
-
-    .play-pause {
-      background-image: url(../../assets/icons/play.svg);
-    }
-
-    .isPlaying {
-      background-image: url(../../assets/icons/pause.svg);
-    }
-
-    #next {
-      background-image: url(../../assets/icons/next.svg);
-    }
-  }
 
   .shuffle {
     width: 100%;
@@ -378,6 +297,10 @@ button {
       background-size: 70%;
       cursor: pointer;
       border-radius: 0.5rem;
+
+      &:hover {
+        background-color: rgb(170, 50, 50);
+      }
     }
 
     & :first-child {
@@ -401,6 +324,10 @@ button {
       background-size: 70%;
       border-radius: 0.5rem;
       cursor: pointer;
+
+      &:hover {
+        background-color: rgb(170, 50, 50);
+      }
     }
 
     & :first-child {
@@ -410,11 +337,5 @@ button {
     & :last-child {
       background-image: url(../../assets/icons/heart.svg);
     }
-  }
-
-  .fav *:hover,
-  .shuffle *:hover,
-  .nav *:hover {
-    background-color: rgb(5, 80, 150);
   }
 }
