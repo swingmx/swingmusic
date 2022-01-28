@@ -15,7 +15,7 @@ const playAudio = (path) => {
 
   new Promise((resolve, reject) => {
     audio.src = full_path;
-    audio.onloadeddata = resolve;
+    audio.oncanplaythrough = resolve;
     audio.onerror = reject;
   })
     .then(() => {
@@ -26,6 +26,7 @@ const playAudio = (path) => {
 
       audio.ontimeupdate = () => {
         pos.value = (audio.currentTime / audio.duration) * 1000;
+        
       };
     })
     .catch((err) => console.log(err));
@@ -71,3 +72,7 @@ audio.addEventListener("ended", () => {
 });
 
 export default { playAudio, playNext, playPrev, playPause, seek, pos, playing };
+
+
+// TODO
+// Try implementing classes to play audio .ie. Make the seek, playNext, playPrev, etc the methods of a class. etc

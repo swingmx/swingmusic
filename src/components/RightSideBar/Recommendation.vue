@@ -22,10 +22,6 @@ export default {
         title: "Mockingbird",
         artist: "Eminem",
       },
-      {
-        title: "Slim shady",
-        artist: "Eminem",
-      },
     ];
 
     const r_albums = ["Crybaby", "Everybody's Everything", "Castles II"];

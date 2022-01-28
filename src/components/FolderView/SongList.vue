@@ -99,7 +99,7 @@ function loadAlbum(title, album_artist) {
   }
 
   .current * {
-    color: rgb(0, 110, 255);
+    color: $highlight-blue;
   }
 
   .current:hover {

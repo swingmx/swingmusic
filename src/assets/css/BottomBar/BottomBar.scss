@@ -1,0 +1,93 @@
+.b-bar {
+  height: 100%;
+  // padding: 0 $small 0 $small;
+
+  .prog {
+    display: grid;
+  }
+
+  .grid {
+    display: grid;
+    height: 100%;
+    // grid-auto-columns: 1fr;
+    // grid-auto-flow: column;
+    grid-template-columns: 1fr 3fr 1fr;
+
+    @include phone-only {
+      grid-template-columns: 1fr 9.2rem;
+    }
+
+    .info {
+      display: flex;
+      padding-top: $small;
+      margin-left: $small;
+
+      .art {
+        width: 3rem;
+        height: 3rem;
+        border-radius: $smaller;
+        background-image: url("../../images/eggs.jpg");
+      }
+
+      .separator {
+        margin: 2px;
+      }
+
+      .desc {
+        width: calc(100% - 5rem);
+        margin-left: $small;
+        display: flex;
+        align-items: center;
+        margin-top: -$small;
+
+        .artists {
+          font-size: 0.8rem;
+          color: $highlight-blue;
+        }
+      }
+    }
+
+    .controlsx {
+      // border: solid 1px;
+      width: 100%;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+
+      @include phone-only {
+        // width: min-content;
+      }
+
+      .controls-bottom {
+      // border: solid 1px;
+
+      width: min-content;
+
+        .shuffle, .fav {
+          @include phone-only {
+            display: none !important;
+          }
+        }
+      }
+
+      .progress-bottom {
+        width: 100%;
+
+        .durationx {
+          background-color: #202020;
+          padding: $smaller;
+          border-radius: .4rem;
+          margin:  0 $small 0 $small;
+        }
+        // display: none;
+      }
+    }
+
+    .volume-group {
+      @include tablet-portrait {
+        display: none;
+      }
+    }
+  }
+}

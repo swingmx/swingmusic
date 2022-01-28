@@ -28,6 +28,9 @@
       <UpNext v-model:up_next="up_next" @expandQueue="expandQueue" />
       <RecommendedArtist />
     </div>
+    <div class="bottom-bar">
+      <BottomBar />
+    </div>
   </div>
 </template>
 
@@ -35,12 +38,12 @@
 import { ref } from "@vue/reactivity";
 
 import Navigation from "./components/LeftSidebar/Navigation.vue";
-import PinnedStuff from "./components/LeftSidebar/PinnedStuff.vue";
-
+import PinnedStuff from "./components/LeftSidebar/PinnedStuff.vue"
 import Search from "./components/Search.vue";
 import NowPlaying from "./components/RightSideBar/NowPlaying.vue";
 import UpNext from "./components/RightSideBar/UpNext.vue";
 import RecommendedArtist from "./components/RightSideBar/Recommendation.vue";
+import BottomBar from "@/components/BottomBar/BottomBar.vue";
 
 import perks from "@/composables/perks.js";
 
@@ -52,6 +55,7 @@ export default {
     NowPlaying,
     UpNext,
     RecommendedArtist,
+    BottomBar
   },
 
   setup() {

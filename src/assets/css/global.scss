@@ -79,7 +79,11 @@ button {
   grid-template-columns: min-content 4fr min-content;
   grid-template-rows: 4rem 1fr 1fr;
   grid-auto-flow: row;
-  grid-template-areas: "l-sidebar content r-sidebar" "l-sidebar content r-sidebar" "l-sidebar content r-sidebar";
+  grid-template-areas:
+    "l-sidebar content r-sidebar"
+    "l-sidebar content r-sidebar"
+    "l-sidebar content r-sidebar"
+    "bottom-bar bottom-bar bottom-bar";
   width: 100vw;
   height: 100vh;
   background-repeat: no-repeat;
@@ -95,6 +99,13 @@ button {
   margin: 0.5rem 0 0.5rem 0.5rem;
   border-radius: 0.5rem;
   background-color: $card-dark;
+}
+
+.bottom-bar {
+  grid-area: bottom-bar;
+  height: 4rem;
+  // margin: 0 $small 0 $small;
+  // display: none;
 }
 
 .collapsed .l-sidebar {
@@ -261,5 +272,149 @@ button {
 
   &:hover {
     background-color: rgb(170, 50, 50);
+  }
+}
+
+.progress {
+  display: flex;
+  align-items: center;
+  position: relative;
+
+  .duration {
+    position: absolute;
+    right: 0;
+    top: -1rem;
+    font-size: small;
+  }
+
+  input {
+    -webkit-appearance: none;
+    width: 100%;
+    border: none;
+    outline: none;
+    background: transparent;
+  }
+
+  input:focus {
+    outline: none;
+  }
+
+
+  input::-webkit-slider-runnable-track {
+    width: 100%;
+    height: 0.25rem;
+    cursor: pointer;
+    background: #252829;
+    // background: linear-gradient(to right, #1488cc, #2b32b2);
+  }
+
+  input::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    height: 1rem;
+    width: 1rem;
+    border-radius: 50%;
+    background: #ffffff;
+    cursor: pointer;
+    margin-top: -0.35rem;
+  }
+
+  input:focus::-webkit-slider-runnable-track,
+  input::-moz-range-track {
+    background: #367ebd;
+  }
+
+  input::-moz-range-thumb {
+    height: 1rem;
+    width: 1rem;
+    border-radius: 50%;
+    background: #ffffff;
+    cursor: pointer;
+    margin-top: -0.35rem;
+  }
+}
+
+.controls {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+
+  .nav {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    width: 100%;
+
+    & * {
+      height: 3rem;
+      width: 3rem;
+      background-size: 50%;
+      cursor: pointer;
+      border-radius: 0.5rem;
+    }
+
+    #previous {
+      background-image: url(../../assets/icons/previous.svg);
+    }
+
+    .play-pause {
+      background-image: url(../../assets/icons/play.svg);
+    }
+
+    .isPlaying {
+      background-image: url(../../assets/icons/pause.svg);
+    }
+
+    #next {
+      background-image: url(../../assets/icons/next.svg);
+    }
+  }
+
+  .shuffle {
+    width: 100%;
+    display: flex;
+    align-items: center;
+
+    & * {
+      height: 2rem;
+      width: 2rem;
+      background-size: 70%;
+      cursor: pointer;
+      border-radius: 0.5rem;
+    }
+
+    & :first-child {
+      background-image: url(../../assets/icons/repeat.svg);
+    }
+
+    & :last-child {
+      background-image: url(../../assets/icons/shuffle.svg);
+    }
+  }
+
+  .fav {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+
+    & * {
+      height: 2rem;
+      width: 2rem;
+      background-size: 70%;
+      border-radius: 0.5rem;
+      cursor: pointer;
+    }
+
+    & :first-child {
+      background-image: url(../../assets/icons/plus.svg);
+    }
+
+    & :last-child {
+      background-image: url(../../assets/icons/heart.svg);
+    }
+  }
+
+  .fav *:hover,
+  .shuffle *:hover,
+  .nav *:hover {
+    background-color: rgb(5, 80, 150);
   }
 }
