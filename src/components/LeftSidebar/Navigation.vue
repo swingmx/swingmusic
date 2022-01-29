@@ -1,5 +1,5 @@
 <template>
-  <div class="side-nav-container border" :class="{ collapsed: collapsed }">
+  <div class="side-nav-container" :class="{ collapsed: collapsed }">
     <router-link :to="{ name: 'Home' }">
       <div class="nav-button" id="home-button">
         <div class="in">
@@ -75,14 +75,12 @@ export default {
 <style lang="scss">
 .collapsed {
   .nav-button {
-    font-size: smaller;
     margin-top: 5px;
-    align-items: center;
-    justify-content: center;
 
     span {
       display: none;
     }
+
     .in {
       width: 100%;
       flex-direction: column;
@@ -93,8 +91,9 @@ export default {
 .side-nav-container {
   padding: $small;
   color: #fff;
-  margin-bottom: 10px;
+  margin-bottom: 1rem;
   padding-top: 10px;
+  margin-top: 1rem;
 
   .nav-button {
     border-radius: $small;
@@ -105,7 +104,33 @@ export default {
     padding: 0.6rem 0 0.6rem 0;
 
     &:hover {
-      background-color: rgb(5, 80, 150);
+      #home-icon {
+        background-color: rgba(145, 58, 58, 0.555);
+      }
+
+      #album-icon {
+        background-color: rgba(113, 58, 145, 0.555);
+      }
+
+      #artists-icon {
+        background-color: rgba(13, 72, 139, 0.555);
+      }
+
+      #playlists-icon {
+        background-color: rgba(206, 13, 132, 0.555);
+      }
+
+      #mixes-icon {
+        background-color: rgba(0, 85, 81, 0.555);
+      }
+
+      #folders-icon {
+        background-color: rgba(90, 89, 3, 0.596);
+      }
+
+      #settings-icon {
+        background-color: rgba(129, 106, 106, 0.596);
+      }
     }
 
     .nav-icon {
@@ -130,7 +155,7 @@ export default {
     #settings-icon {
       background-size: 1.5rem;
     }
-
+  
     #home-icon {
       background-image: url(../../assets/icons/home.svg);
     }

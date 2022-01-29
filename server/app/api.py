@@ -15,7 +15,7 @@ def initialize() -> None:
     Runs all the necessary setup functions.
     """
     helpers.create_config_dir()
-    # helpers.check_for_new_songs()
+    helpers.check_for_new_songs()
 
 
 initialize()

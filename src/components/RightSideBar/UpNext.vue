@@ -25,37 +25,7 @@
         :class="{ v0: !is_expanded, v1: is_expanded }"
         class="scrollable border"
       >
-        <div
-          class="song-item h-1"
-          v-for="song in queue"
-          :key="song"
-          @click="playThis(song)"
-          :class="{
-            currentInQueue: current.id == song.id,
-          }"
-        >
-          <div
-            class="album-art image"
-            :style="{
-              backgroundImage: `url(&quot;${song.image}&quot;)`,
-            }"
-          >
-            <div
-              class="now-playing-track image"
-              v-if="current.id == song.id"
-              :class="{ active: is_playing, not_active: !is_playing }"
-            ></div>
-          </div>
-          <div class="tags">
-            <div class="title ellip">{{ song.title }}</div>
-            <hr />
-            <div class="artist ellip">
-              <span v-for="artist in putCommas(song.artists)" :key="artist">{{
-                artist
-              }}</span>
-            </div>
-          </div>
-        </div>
+        <TrackItem v-for="song in queue" :key="song" :track="song" />
       </div>
     </div>
   </div>
@@ -65,16 +35,14 @@
 import { ref, toRefs } from "@vue/reactivity";
 import perks from "@/composables/perks.js";
 import audio from "@/composables/playAudio.js";
-import state from "@/composables/state.js";
 import { watch } from "@vue/runtime-core";
+import TrackItem from "../shared/TrackItem.vue";
 
 export default {
   props: ["up_next"],
   setup(props, { emit }) {
     const is_expanded = toRefs(props).up_next;
-
     const queue = ref(perks.queue);
-    const current = ref(perks.current);
     const next = ref(perks.next);
 
     let collapse = () => {
@@ -90,27 +58,18 @@ export default {
     });
 
     const { playNext } = audio;
-    const { playAudio } = audio;
-
-    const playThis = (song) => {
-      playAudio(song.filepath);
-      perks.current.value = song;
-    };
 
     const putCommas = perks.putCommas;
-
     return {
       collapse,
       is_expanded,
-      is_playing: state.is_playing,
       playNext,
-      playThis,
       putCommas,
       queue,
-      current,
       next,
     };
   },
+  components: { TrackItem },
 };
 </script>
 
@@ -205,40 +164,6 @@ export default {
 
   &::-webkit-scrollbar-track {
     background-color: transparent;
-  }
-}
-
-.up-next .scrollable .song-item {
-  display: flex;
-  align-items: center;
-  padding: 0.5rem;
-  border-radius: 0.5rem;
-
-  &:hover {
-    cursor: pointer;
-    background-color: $blue;
-  }
-
-  hr {
-    border: none;
-    margin: 0.1rem;
-  }
-
-  .album-art {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    width: 3rem;
-    height: 3rem;
-    margin: 0 0.5rem 0 0;
-    border-radius: 0.5rem;
-    background-image: url(../../assets/images/null.webp);
-  }
-  .artist {
-    width: 20rem;
-    font-size: small;
-    color: rgba(255, 255, 255, 0.637);
   }
 }
 </style>

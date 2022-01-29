@@ -1,5 +1,7 @@
 <template>
-  <div class="loader" v-if="loading"></div>
+  <div class="loaderx" :class="{ loader: loading, not_loader: !loading }">
+    <div class="content" v-if="!loading">/</div>
+  </div>
 </template>
 
 <script>
@@ -14,12 +16,15 @@ export default {
 </script>
 
 <style lang="scss">
-.loader {
+.loaderx {
   position: absolute;
-  right: 0.65rem;
+  left: 0.65rem;
   top: 0.65rem;
   width: 1.5rem;
   height: 1.5rem;
+}
+
+.loader {
   border: dotted $blue;
   border-radius: 50%;
   animation: spin 0.25s linear infinite;
@@ -32,5 +37,11 @@ export default {
       transform: rotate(360deg);
     }
   }
+}
+
+.not_loader {
+  border: solid 1px;
+  border-radius: 50%;
+  background-image: url("");
 }
 </style>

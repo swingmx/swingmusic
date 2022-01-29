@@ -7,12 +7,16 @@ $green: #439443;
 $separator: #ffffff46;
 $pink: #c43a3a;
 $highlight-blue: #006eff;
+$bbb: #050608; //bottom controls background
+
 // sizes
-$small: 0.5em;
-$smaller: 0.25em;
+$small: 0.5rem;
+$smaller: 0.25rem;
+$medium: 0.75rem;
+$large: 1.5rem;
+$larger: 2rem;
 
 // media query mixins
-
 @mixin phone-only {
   @media (max-width: 599px) {
     @content;

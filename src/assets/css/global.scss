@@ -95,11 +95,9 @@ button {
 }
 
 .l-sidebar {
-  width: 15em;
+  width: 15rem;
   grid-area: l-sidebar;
   padding-top: 0.5rem;
-  margin: 0.5rem 0 0.5rem 0.5rem;
-  border-radius: 0.5rem;
   background-color: $card-dark;
 }
 
@@ -109,7 +107,7 @@ button {
 }
 
 .collapsed .l-sidebar {
-  width: 70px;
+  width: 3rem;
   transition: all 0.3s ease;
 }
 
@@ -141,16 +139,6 @@ button {
 
 .r-sidebar {
   grid-area: r-sidebar;
-  border-radius: 5px;
-  margin-right: 0.5rem;
-  overflow-y: auto;
-  width: 30em;
-  position: relative;
-  margin-bottom: 0.5em;
-
-  @include tablet-landscape {
-    display: none;
-  }
 }
 
 .image {

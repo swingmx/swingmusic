@@ -1,7 +1,7 @@
 <template>
   <div class="right-search border" ref="searchComponent">
     <div class="input">
-      <div class="search-icon image"></div>
+      <Loader />
       <Filters :filters="filters" @removeFilter="removeFilter" />
       <div class="input-loader border">
         <input
@@ -13,7 +13,8 @@
           placeholder="find your music"
           v-model="query"
         />
-        <Loader />
+        <div class="search-icon image"></div>
+        <!--  -->
       </div>
       <div
         class="suggestions v00"

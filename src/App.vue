@@ -12,22 +12,10 @@
       <PinnedStuff :collapsed="collapsed" />
     </div>
     <div class="content">
-      <div class="search-box">
-        <Search
-          v-model:search="search"
-          @expandSearch="expandSearch"
-          @collapseSearch="collapseSearch"
-        />
-      </div>
+      <div class="search-box"></div>
       <router-view />
     </div>
-    <div class="r-sidebar">
-      <div class="m-np">
-        <NowPlaying />
-      </div>
-      <UpNext v-model:up_next="up_next" @expandQueue="expandQueue" />
-      <RecommendedArtist />
-    </div>
+    <RightSideBar />
     <div class="bottom-bar">
       <BottomBar />
     </div>
@@ -38,24 +26,18 @@
 import { ref } from "@vue/reactivity";
 
 import Navigation from "./components/LeftSidebar/Navigation.vue";
-import PinnedStuff from "./components/LeftSidebar/PinnedStuff.vue"
-import Search from "./components/Search.vue";
-import NowPlaying from "./components/RightSideBar/NowPlaying.vue";
-import UpNext from "./components/RightSideBar/UpNext.vue";
-import RecommendedArtist from "./components/RightSideBar/Recommendation.vue";
+import PinnedStuff from "./components/LeftSidebar/PinnedStuff.vue";
 import BottomBar from "@/components/BottomBar/BottomBar.vue";
 
 import perks from "@/composables/perks.js";
+import Main from "./components/RightSideBar/Main.vue";
 
 export default {
   components: {
     Navigation,
     PinnedStuff,
-    Search,
-    NowPlaying,
-    UpNext,
-    RecommendedArtist,
-    BottomBar
+    BottomBar,
+    RightSideBar: Main,
   },
 
   setup() {
@@ -67,29 +49,9 @@ export default {
       collapsed.value = !collapsed.value;
     }
 
-    let up_next = ref(true);
-    let search = ref(false);
-
-    const expandQueue = () => {
-      up_next.value = !up_next.value;
-    };
-
-    const expandSearch = () => {
-      search.value = true;
-    };
-
-    const collapseSearch = () => {
-      search.value = false;
-    };
-
     return {
       toggleNav,
-      expandSearch,
-      collapseSearch,
-      expandQueue,
       collapsed,
-      up_next,
-      search,
     };
   },
 };
@@ -106,10 +68,10 @@ export default {
   #toggle {
     position: absolute;
     left: 0.2rem;
-    width: 4rem;
+    width: 3rem;
     height: 100%;
     background: url(./assets/icons/menu.svg);
-    background-size: 50%;
+    background-size: 2rem;
     background-repeat: no-repeat;
     background-position: center;
     cursor: pointer;
@@ -118,14 +80,11 @@ export default {
 .logo {
   height: 2rem;
   width: 9rem;
-  margin-left: 4rem;
+  margin-left: 3rem;
   background: url(./assets/logo.svg);
   background-size: contain;
   background-repeat: no-repeat;
   background-position: center;
-  animation: fadeIn;
-  animation-duration: 2s;
-  animation-iteration-count: 1;
 }
 
 .r-sidebar {

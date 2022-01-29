@@ -4,11 +4,10 @@
     <div class="items">
       <table>
         <tbody>
-          <SongItem
-            v-for="(track, index) in props.tracks"
+          <TrackItem
+            v-for="track in props.tracks"
             :key="track"
-            :song="track"
-            :index="index + 1"
+            :track="track"
           />
         </tbody>
       </table>
@@ -18,8 +17,8 @@
 </template>
 
 <script setup>
-import SongItem from "@/components/shared/SongItem.vue";
 import LoadMore from "./LoadMore.vue";
+import TrackItem from "../shared/TrackItem.vue";
 
 const props = defineProps({
   tracks: {
