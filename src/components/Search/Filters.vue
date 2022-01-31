@@ -29,8 +29,9 @@ export default {
 <style lang="scss">
 .right-search .filter {
   display: flex;
-  margin-left: 3rem;
+  margin-left: 2rem;
   height: 2rem;
+
 
   .item {
     &:hover {

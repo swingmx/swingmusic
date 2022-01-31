@@ -1,6 +1,6 @@
 <template>
   <div class="loaderx" :class="{ loader: loading, not_loader: !loading }">
-    <div class="content" v-if="!loading">/</div>
+    <div v-if="!loading">😹</div>
   </div>
 </template>
 
@@ -18,15 +18,14 @@ export default {
 <style lang="scss">
 .loaderx {
   position: absolute;
-  left: 0.65rem;
   top: 0.65rem;
   width: 1.5rem;
   height: 1.5rem;
+  border-radius: 50%;
 }
 
 .loader {
   border: dotted $blue;
-  border-radius: 50%;
   animation: spin 0.25s linear infinite;
 
   @keyframes spin {
@@ -40,8 +39,7 @@ export default {
 }
 
 .not_loader {
-  border: solid 1px;
-  border-radius: 50%;
-  background-image: url("");
+  display: grid;
+  place-items: center;
 }
 </style>

@@ -1,21 +1,14 @@
-.right-search .v0 {
-  max-height: 0em;
-  transition: max-height 0.5s ease;
-}
-
-.right-search .v1 {
-  max-height: 25rem;
-  transition: max-height 0.5s ease;
-}
-
 .right-search {
   position: relative;
   border-radius: $small;
-  margin: 0.5rem 0 0 0;
-  padding: 1rem $small 0 0;
   background-color: #03000eab;
+  display: grid;
+  grid-template-rows: min-content 1fr;
   overflow: hidden;
   width: auto;
+  height: 100%;
+  padding: $small $small 0 $small;
+  // margin: $small 0 $small 0;
 
   .no-res {
     text-align: center;
@@ -79,12 +72,11 @@
 }
 
 .right-search .scrollable {
-  width: 100%;
-  height: 26rem;
   overflow-y: auto;
-  scroll-behavior: smooth;
-  padding: 0 $small 0 0;
-  margin-bottom: 0.5rem;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
 }
 
 .right-search {
@@ -94,7 +86,7 @@
     position: relative;
 
     input {
-      width: calc(100% - 6rem);
+      width: calc(100% - 2.5rem);
       border: none;
       line-height: 2.5rem;
       background-color: transparent;
@@ -102,7 +94,7 @@
       font-size: 1rem;
       outline: none;
       transition: all 0.5s ease;
-      padding-left: $small;
+      padding-left: 0.4rem;
 
       &:focus {
         transition: all 0.5s ease;
@@ -116,5 +108,3 @@
     }
   }
 }
-
-

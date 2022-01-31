@@ -1,7 +1,7 @@
 <template>
   <div class="morexx">
     <button @click="loadMore">
-      <div class="text">Load All</div>
+      <div class="text">Load More</div>
     </button>
   </div>
 </template>

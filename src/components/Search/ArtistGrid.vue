@@ -38,8 +38,8 @@ export default {
 .right-search .artists-results {
   border-radius: 0.5rem;
   background: #1214178c;
-  margin: 0 0 0 $small;
   padding: $small 0;
+  margin-bottom: $small;
 
   .grid {
     padding: 0 0 0 $small;

@@ -1,5 +1,5 @@
 <template>
-  <div class="options" v-if="magic_flag">
+  <div class="options border rounded">
     <div class="item info">Filter by:</div>
     <div
       class="item"
@@ -54,6 +54,7 @@ export default {
 <style lang="scss">
 .right-search .options {
   display: flex;
+  margin-bottom: $small;
 
   .item {
     margin: $small;

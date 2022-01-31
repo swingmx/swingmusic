@@ -51,6 +51,10 @@ const playThis = (song) => {
 </script>
 
 <style lang="scss">
+.currentInQueue {
+  border: solid 2px $pink;
+}
+
 .track-item {
   display: flex;
   align-items: center;

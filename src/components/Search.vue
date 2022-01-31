@@ -1,33 +1,35 @@
 <template>
-  <div class="right-search border" ref="searchComponent">
-    <div class="input">
-      <Loader />
-      <Filters :filters="filters" @removeFilter="removeFilter" />
-      <div class="input-loader border">
-        <input
-          type="search"
-          id="search"
-          @focus="activateMagicFlag"
-          @blur="removeMagicFlag"
-          @keyup.backspace="removeLastFilter"
-          placeholder="find your music"
-          v-model="query"
-        />
-        <div class="search-icon image"></div>
-        <!--  -->
+  <div class="right-search" ref="searchComponent">
+    <div>
+      <div class="input">
+        <Loader />
+        <Filters :filters="filters" @removeFilter="removeFilter" />
+        <div class="input-loader border">
+          <input
+            type="text"
+            id="search"
+            @focus="activateMagicFlag"
+            @blur="removeMagicFlag"
+            @keyup.backspace="removeLastFilter"
+            placeholder="find your music"
+            v-model="query"
+          />
+          <div class="search-icon image"></div>
+          <!--  -->
+        </div>
+        <div
+          class="suggestions v00"
+          :class="{
+            v00: !filters.length && !query,
+            v11: filters.length || query,
+          }"
+        >
+          <div class="item">Kenny Rogers</div>
+        </div>
       </div>
-      <div
-        class="suggestions v00"
-        :class="{
-          v00: !filters.length && !query,
-          v11: filters.length || query,
-        }"
-      >
-        <div class="item">Kenny Rogers</div>
-      </div>
+      <div class="separator no-border"></div>
+      <Options :magic_flag="magic_flag" @addFilter="addFilter" />
     </div>
-    <div class="separator no-border"></div>
-    <Options :magic_flag="magic_flag" @addFilter="addFilter" />
     <div class="scrollable" :class="{ v0: !is_hidden, v1: is_hidden }">
       <TracksGrid
         :tracks="tracks.tracks"

@@ -35,7 +35,6 @@ export default {
   border-radius: 0.5rem;
   background: #0f131b44;
 
-  margin-left: $small;
   margin-top: $small;
   padding: $small 0;
   overflow-x: hidden;
