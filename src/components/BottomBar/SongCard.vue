@@ -26,8 +26,9 @@
 <script setup>
 import { ref } from "vue";
 import perks from "../../composables/perks";
+import state from "../../composables/state";
 
-const track = ref(perks.current);
+const track = ref(state.current);
 
 const putCommas = perks.putCommas;
 </script>

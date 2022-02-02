@@ -32,8 +32,8 @@ export default {
   margin-left: 2rem;
   height: 2rem;
 
-
   .item {
+    transition: all 0.2s ease-in-out;
     &:hover {
       width: 4rem;
 

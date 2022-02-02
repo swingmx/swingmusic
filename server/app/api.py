@@ -28,6 +28,8 @@ def adutsfsd():
 
 @bp.route('/search')
 def search_by_title():
+    query:str = ""
+
     if not request.args.get('q'):
         query = "mexican girl"
     else:
@@ -83,20 +85,20 @@ def search_by_title():
     else:
         more_tracks = False
 
-    if len(artists_dicts) > 8:
+    if len(artists_dicts) > 6:
         more_artists = True
     else:
         more_artists = False
 
-    if len(albums_dicts) > 8:
+    if len(albums_dicts) > 6:
         more_albums = True
     else:
         more_albums = False
 
     return {'data': [
         {'tracks': tracks[:5], 'more': more_tracks},
-        {'albums': albums_dicts[:8], 'more': more_albums},
-        {'artists': artists_dicts[:8], 'more': more_artists}
+        {'albums': albums_dicts[:6], 'more': more_albums},
+        {'artists': artists_dicts[:6], 'more': more_artists}
     ]}
 
 

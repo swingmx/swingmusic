@@ -60,6 +60,9 @@ const playThis = (song) => {
   align-items: center;
   padding: 0.5rem;
   border-radius: 0.5rem;
+  position: relative;
+  height: 4rem;
+  padding-left: 4rem;
 
   &:hover {
     cursor: pointer;
@@ -72,6 +75,8 @@ const playThis = (song) => {
   }
 
   .album-art {
+    position: absolute;
+    left: $small;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -83,7 +88,6 @@ const playThis = (song) => {
     background-image: url(../../assets/images/null.webp);
   }
   .artist {
-    width: 20rem;
     font-size: small;
     color: rgba(255, 255, 255, 0.637);
   }

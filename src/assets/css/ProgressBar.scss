@@ -21,18 +21,20 @@ input[type="range"]::-webkit-slider-thumb {
 
 input[type="range"]::-moz-range-thumb {
   -webkit-appearance: none;
-  height: 1rem;
-  width: 1rem;
+  height: 0.8rem;
+  width: 0.8rem;
   border-radius: 50%;
   background: $blue;
+  border: none;
 }
 
 input[type="range"]::-ms-thumb {
   -webkit-appearance: none;
-  height: 1rem;
-  width: 1rem;
+  height: 0.8rem;
+  width: 0.8rem;
   border-radius: 50%;
   background: $blue;
+  border: none;
 }
 
 input[type="range"]::-webkit-slider-thumb:hover {

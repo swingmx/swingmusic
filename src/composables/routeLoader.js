@@ -4,6 +4,7 @@ import album from "./album.js";
 import state from "./state.js";
 
 function toAlbum(title, artist) {
+  state.loading.value = true;
   album
     .getAlbumTracks(title, artist)
     .then((data) => {
@@ -24,15 +25,16 @@ function toAlbum(title, artist) {
         }
       })
     )
-    .then(
+    .then(() => {
       Router.push({
         name: "AlbumView",
         params: {
           album: title,
           artist: artist,
         },
-      })
-    )
+      });
+      state.loading.value = false;
+    })
     .catch((error) => {
       console.log(error);
     });

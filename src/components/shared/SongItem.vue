@@ -14,7 +14,6 @@
       </div>
       <div>
         <span class="ellip">{{ song.title }}</span>
-        <div class="separator no-border"></div>
         <div class="artist ellip">
           <span v-for="artist in putCommas(song.artists)" :key="artist">
             {{ artist }}

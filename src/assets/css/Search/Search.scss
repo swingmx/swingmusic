@@ -8,11 +8,10 @@
   width: auto;
   height: 100%;
   padding: $small $small 0 $small;
-  // margin: $small 0 $small 0;
 
   .no-res {
     text-align: center;
-    height: calc(100% - 1rem);
+    // height: calc(100% - 1rem);
     display: grid;
 
     .highlight {
@@ -44,30 +43,6 @@
     width: 2.5rem;
     background-image: url(../../icons/search.svg);
     background-size: 70%;
-  }
-
-  .v11 {
-    opacity: 0;
-    transform: translateY(-4rem);
-    transition: all 0.2s ease-in;
-  }
-
-  .v00 {
-    opacity: 1;
-    transition: all 0.2s ease-in;
-  }
-
-  .suggestions {
-    display: flex;
-    gap: 0.5rem;
-    margin-left: 1rem;
-    position: absolute;
-    right: 2.5rem;
-
-    .item::before {
-      content: "#";
-      color: grey;
-    }
   }
 }
 

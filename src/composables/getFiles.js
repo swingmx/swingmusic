@@ -1,6 +1,6 @@
 let base_uri = "http://0.0.0.0:9876";
 
-const getData = async (path) => {
+const getTracksAndDirs = async (path) => {
   let url;
 
   const encoded_path = encodeURIComponent(path.replaceAll("/", "|"));
@@ -21,4 +21,4 @@ const getData = async (path) => {
   return { songs, folders };
 };
 
-export default getData;
+export default getTracksAndDirs;

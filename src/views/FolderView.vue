@@ -1,7 +1,7 @@
 <template>
   <div id="f-view-parent" class="rounded">
     <div class="fixed">
-      <Header :path="path" :first_song="songs[0]" @search="filterSongs" />
+      <Header :path="path" :first_song="songs[0]" @search="updateQueryString" />
     </div>
     <div id="scrollable" ref="scrollable">
       <FolderList :folders="folders" />
@@ -19,7 +19,7 @@ import SongList from "@/components/FolderView/SongList.vue";
 import FolderList from "@/components/FolderView/FolderList.vue";
 import Header from "@/components/FolderView/Header.vue";
 
-import getData from "../composables/getFiles.js";
+import getTracksAndDirs from "../composables/getFiles.js";
 import { onMounted, watch } from "@vue/runtime-core";
 import state from "@/composables/state.js";
 
@@ -34,16 +34,16 @@ export default {
     const path = ref(route.params.path);
 
     const song_list = ref(state.folder_song_list);
-    const folders = ref(state.folder_list);
+    const folders_list = ref(state.folder_list);
 
     const scrollable = ref(null);
 
-    const query = ref('');
+    const query = ref("");
 
     const songs = computed(() => {
       const songs_ = [];
 
-      if (query.value.length > 2) {
+      if (query.value.length > 1) {
         for (let i = 0; i < song_list.value.length; i++) {
           if (
             song_list.value[i].title
@@ -60,37 +60,62 @@ export default {
       }
     });
 
+    const folders = computed(() => {
+      const folders_ = [];
+
+      if (query.value.length > 1) {
+        for (let i = 0; i < folders_list.value.length; i++) {
+          if (
+            folders_list.value[i].name
+              .toLowerCase()
+              .includes(query.value.toLowerCase())
+          ) {
+            folders_.push(folders_list.value[i]);
+          }
+        }
+
+        return folders_;
+      } else {
+        return folders_list.value;
+      }
+    });
+
     onMounted(() => {
-      const getPathFolders = (path, last_id) => {
+      const getDirData = (path) => {
         state.loading.value = true;
-        getData(path, last_id).then((data) => {
-          scrollable.value.scrollTop = 0;
+        getTracksAndDirs(path)
+          .then((data) => {
+            scrollable.value.scrollTop = 0;
 
-          state.folder_song_list.value = data.songs;
-          state.folder_list.value = data.folders;
+            state.folder_song_list.value = data.songs;
+            state.folder_list.value = data.folders;
 
-          state.loading.value = false;
-        });
+            state.loading.value = false;
+          })
+          .then(() => {
+            setTimeout(() => {
+              query.value = "";
+            }, 100);
+          });
       };
 
-      getPathFolders(path.value);
+      getDirData(path.value);
 
       watch(route, (new_route) => {
-        state.search_query.value = "";
         path.value = new_route.params.path;
 
         if (!path.value) return;
 
-        getPathFolders(path.value);
+        getDirData(path.value);
       });
     });
 
-    function filterSongs(value) {
+    function updateQueryString(value) {
       query.value = value;
     }
 
     return {
-      filterSongs,
+      updateQueryString,
       songs,
       folders,
       path,

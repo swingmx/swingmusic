@@ -14,7 +14,7 @@
         <tbody>
           <SongItem
             v-for="(song, index) in props.songs"
-            :key="song"
+            :key="song.id"
             :song="song"
             :index="index + 1"
             @updateQueue="updateQueue"
@@ -25,8 +25,7 @@
     </div>
     <div v-else-if="props.songs.length === 0 && search_query">
       <div class="no-results">
-        <div class="icon"></div>
-        <div class="text">No tracks 🎸</div>
+        <div class="text">Nothing down here 😑</div>
       </div>
     </div>
     <div v-else ref="songtitle"></div>
@@ -47,8 +46,8 @@ import state from "@/composables/state.js";
 const props = defineProps({
   songs: {
     type: Array,
-    required: true
-  }
+    required: true,
+  },
 });
 
 let route;
@@ -85,7 +84,15 @@ function loadAlbum(title, album_artist) {
   display: flex;
   align-items: center;
   justify-content: center;
+  flex-direction: column;
   padding: 1rem;
+
+  // .icon {
+  //   height: 10rem;
+  //   width: 15rem;
+  //   border: solid;
+  //   background-image: url("../../assets/images/sokka.webp");
+  // }
 }
 
 .table {
@@ -138,7 +145,7 @@ table {
         display: none;
       }
 
-      width: 5rem;
+      width: 6rem;
     }
 
     th.album-header {

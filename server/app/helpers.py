@@ -5,6 +5,7 @@ This module contains mimi functions for the server.
 import os
 import threading
 import time
+from typing import List
 import requests
 
 from io import BytesIO
@@ -37,10 +38,11 @@ def check_for_new_songs():
 
     while flag is False:
         functions.populate()
+        functions.populate_images()
         time.sleep(300)
 
 
-def run_fast_scandir(dir: str, ext: str) -> list:
+def run_fast_scandir(dir: str, ext: str):
     """
     Scans a directory for files with a specific extension. Returns a list of files and folders in the directory.
     """
@@ -125,7 +127,7 @@ def create_config_dir() -> None:
 
         os.chmod(path, 0o755)
 
-def getAllSongs() -> None:
+def getAllSongs() -> List:
     """
     Gets all songs under the ~/ directory.
     """

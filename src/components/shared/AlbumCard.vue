@@ -32,6 +32,7 @@ export default {
   border-radius: $small;
   text-align: left !important;
   width: 9rem;
+  // border: solid 1px red !important;
 
   .album-art {
     height: 7rem;

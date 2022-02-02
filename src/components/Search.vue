@@ -1,5 +1,5 @@
 <template>
-  <div class="right-search" ref="searchComponent">
+  <div class="right-search border">
     <div>
       <div class="input">
         <Loader />
@@ -8,29 +8,17 @@
           <input
             type="text"
             id="search"
-            @focus="activateMagicFlag"
-            @blur="removeMagicFlag"
             @keyup.backspace="removeLastFilter"
             placeholder="find your music"
             v-model="query"
           />
           <div class="search-icon image"></div>
-          <!--  -->
-        </div>
-        <div
-          class="suggestions v00"
-          :class="{
-            v00: !filters.length && !query,
-            v11: filters.length || query,
-          }"
-        >
-          <div class="item">Kenny Rogers</div>
         </div>
       </div>
       <div class="separator no-border"></div>
-      <Options :magic_flag="magic_flag" @addFilter="addFilter" />
+      <Options @addFilter="addFilter" />
     </div>
-    <div class="scrollable" :class="{ v0: !is_hidden, v1: is_hidden }">
+    <div class="scrollable">
       <TracksGrid
         :tracks="tracks.tracks"
         :more="tracks.more"
@@ -52,22 +40,24 @@
         v-if="
           !artists.artists.length &&
           !tracks.tracks.length &&
-          !albums.albums.length
+          !albums.albums.length && query.length != 0
         "
       >
-        <div class="no-res-icon image"></div>
         <div class="no-res-text">
           No results for <span class="highlight rounded">{{ query }}</span>
         </div>
+      </div>
+      <div v-else-if="query.length == 0" class="no-res">
+        <div class="no-res-text">Find your music 🔍😀</div>
       </div>
     </div>
   </div>
 </template>
 
 <script>
-import { reactive, ref, toRefs } from "@vue/reactivity";
+import { reactive, ref } from "@vue/reactivity";
 
-import { onMounted, watch } from "@vue/runtime-core";
+import { watch } from "@vue/runtime-core";
 import state from "@/composables/state.js";
 import searchMusic from "@/composables/searchMusic.js";
 import useDebouncedRef from "@/composables/useDebouncedRef";
@@ -80,8 +70,6 @@ import Filters from "@/components/Search/Filters.vue";
 import "@/assets/css/Search/Search.scss";
 
 export default {
-  emits: ["expandSearch", "collapseSearch"],
-  props: ["search"],
   components: {
     AlbumGrid,
     ArtistGrid,
@@ -91,9 +79,8 @@ export default {
     Filters,
   },
 
-  setup(props, { emit }) {
+  setup() {
     const loading = ref(state.loading);
-    const searchComponent = ref(null);
     const filters = ref([]);
 
     const tracks = reactive({
@@ -111,9 +98,7 @@ export default {
       more: false,
     });
 
-    const query = useDebouncedRef("", 400);
-    const magic_flag = ref(state.magic_flag);
-    const is_hidden = toRefs(props).search;
+    const query = useDebouncedRef("", 600);
 
     function addFilter(filter) {
       if (!filters.value.includes(filter)) {
@@ -137,24 +122,15 @@ export default {
       }
     }
 
-    function activateMagicFlag() {
-      setTimeout(() => {
-        state.magic_flag.value = true;
-      }, 300);
-    }
-
-    function removeMagicFlag() {
-      setTimeout(() => {
-        if (
-          (!filters.value.length && query.value == null) ||
-          query.value == ""
-        ) {
-          state.magic_flag.value = false;
-        }
-      }, 3000);
-    }
-
     watch(query, (new_query) => {
+      if (query.value == "" || query.value == "  " || query.value.length < 2) {
+        albums.albums = [];
+        artists.artists = [];
+        tracks.tracks = [];
+        
+        return;
+      };
+
       searchMusic(new_query).then((res) => {
         albums.albums = res.albums.albums;
         albums.more = res.albums.more;
@@ -165,43 +141,19 @@ export default {
         tracks.tracks = res.tracks.tracks;
         tracks.more = res.tracks.more;
       });
-
-      state.search_query.value = new_query;
-      if (new_query !== "" && new_query.length > 2) {
-        counter = 0;
-        emit("expandSearch");
-      } else {
-        emit("collapseSearch");
-      }
-    });
-
-    onMounted(() => {
-      const dom = document.getElementsByClassName("right-search")[0];
-
-      document.addEventListener("click", (e) => {
-        var isClickedInside = dom.contains(e.target);
-        if (!isClickedInside) {
-          emit("collapseSearch");
-        }
-      });
     });
 
     return {
       addFilter,
-      activateMagicFlag,
-      removeMagicFlag,
       removeFilter,
       removeLastFilter,
       tracks,
       albums,
       artists,
       query,
-      is_hidden,
-      magic_flag,
       filters,
-      searchComponent,
       loading,
-      searchMusic,
+      
     };
   },
 };

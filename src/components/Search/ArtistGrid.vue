@@ -42,9 +42,10 @@ export default {
   margin-bottom: $small;
 
   .grid {
-    padding: 0 0 0 $small;
+    padding: $small $small 0 $small;
     display: flex;
     flex-wrap: wrap;
+    gap: $small;
   }
 }
 </style>

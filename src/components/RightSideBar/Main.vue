@@ -1,20 +1,16 @@
 <template>
   <div class="r-sidebar">
     <div class="grid">
-      <div class="r-content border rounded">
-        <div class="r-dash" v-if="current_tab == tabs.home">
-          <DashBoard/>
+      <div class="r-content rounded">
+        <div class="r-dash" v-show="current_tab == tabs.home">
+          <DashBoard />
         </div>
-        <div class="r-search" v-if="current_tab == tabs.search">
-          <Search
-            v-model:search="search"
-            @expandSearch="expandSearch"
-            @collapseSearch="collapseSearch"
-          />
+        <div class="r-search" v-show="current_tab == tabs.search">
+          <Search />
         </div>
 
-        <div class="r-queue" v-if="current_tab == tabs.queue">
-          <UpNext v-model:up_next="up_next" @expandQueue="expandQueue" />
+        <div class="r-queue" v-show="current_tab == tabs.queue">
+          <UpNext />
         </div>
       </div>
       <div class="tab-keys card-dark border">
@@ -33,28 +29,13 @@ import Main from "./Home/Main.vue";
 
 const DashBoard = Main;
 
-let up_next = ref(true);
-let search = ref(false);
-
-const expandQueue = () => {
-  up_next.value = !up_next.value;
-};
-
-const expandSearch = () => {
-  search.value = true;
-};
-
-const collapseSearch = () => {
-  search.value = false;
-};
-
 const tabs = {
   home: "home",
   search: "search",
   queue: "queue",
 };
 
-const current_tab = ref(tabs.search);
+const current_tab = ref(tabs.queue);
 
 function changeTab(tab) {
   current_tab.value = tab;
@@ -63,18 +44,30 @@ function changeTab(tab) {
 
 <style lang="scss">
 .r-sidebar {
-  width: 34em;
+  width: 34.5em;
+  margin: $small 0 $small 0;
+  
+  @include phone-only {
+    display: none;
+  }
+
+  // @include tablet-landscape {
+  //   width: 3rem;
+  // }
 
   .grid {
     height: 100%;
-    display: grid;
-    grid-template-areas: "content tabs";
+    display: flex;
+    position: relative;
 
     .r-content {
       grid-area: content;
-      width: 100%;
+      width: 31rem;
       overflow: hidden;
-      margin: $small $small $small 0;
+
+      // @include tablet-landscape {
+      //   display: none;
+      // }
 
       .r-search {
         height: 100%;
@@ -90,10 +83,12 @@ function changeTab(tab) {
     }
 
     .tab-keys {
+      right: 0;
+      height: 100%;
+      position: absolute;
       grid-area: tabs;
-      width: 3rem;
       padding: $small;
-      margin-left: $small;
+      border-radius: $small 0 0 $small;
     }
   }
 }

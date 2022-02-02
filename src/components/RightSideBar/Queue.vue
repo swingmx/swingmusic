@@ -19,8 +19,10 @@
           </p>
         </div>
       </div>
-      <div class="scrollable-r border">
-        <TrackItem v-for="song in queue" :key="song" :track="song" />
+      <div class="scrl border rounded">
+        <div class="scrollable-r">
+          <TrackItem v-for="song in queue" :key="song.id" :track="song" />
+        </div>
       </div>
     </div>
   </div>
@@ -76,8 +78,6 @@ export default {
   overflow: hidden;
   height: 100%;
 
-  
-
   .heading {
     position: relative;
     margin: 0.5rem 0 1rem 0;
@@ -127,13 +127,19 @@ export default {
     width: 100%;
     display: grid;
     grid-template-rows: min-content 1fr;
+    padding-bottom: $small;
+
+    .scrl {
+      overflow: hidden;
+      height: 100%;
+    }
 
     .scrollable-r {
-      margin-bottom: $small;
+      height: 100%;
       padding: $small;
       overflow: auto;
       background-color: $card-dark;
-      border-radius: 0.5rem;
+      scrollbar-color: grey transparent;
 
       &::-webkit-scrollbar-track {
         background-color: transparent;

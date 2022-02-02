@@ -6,7 +6,7 @@
         <tbody>
           <TrackItem
             v-for="track in props.tracks"
-            :key="track"
+            :key="track.id"
             :track="track"
           />
         </tbody>

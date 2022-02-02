@@ -37,9 +37,7 @@ const putCommas = (artists) => {
 };
 
 function updateNext(song_) {
-  const index = state.queue.value.findIndex(
-    (item) => item.id === song_.id
-  );
+  const index = state.queue.value.findIndex((item) => item.id === song_.id);
 
   if (index == queue.value.length - 1) {
     next.value = queue.value[0];
@@ -52,9 +50,7 @@ function updateNext(song_) {
 }
 
 function updatePrev(song) {
-  const index = state.queue.value.findIndex(
-    (item) => item.id === song.id
-  );
+  const index = state.queue.value.findIndex((item) => item.id === song.id);
 
   if (index == 0) {
     prev.value = queue.value[queue.value.length - 1];
@@ -82,7 +78,7 @@ const readQueue = () => {
 };
 
 const updateQueue = async (song, type) => {
-  playAudio.playAudio(song.filepath)
+  playAudio.playAudio(song.filepath);
   let list;
 
   switch (type) {
@@ -93,9 +89,9 @@ const updateQueue = async (song, type) => {
       list = state.album_song_list.value;
       break;
   }
-  
-  if (state.queue.value[0].id !==list[0].id) {
-    const new_queue =list;
+
+  if (state.queue.value[0].id !== list[0].id) {
+    const new_queue = list;
     localStorage.setItem("queue", JSON.stringify(new_queue));
     state.queue.value = new_queue;
   }
@@ -152,6 +148,8 @@ window.addEventListener("keydown", (e) => {
 
   switch (e.key) {
     case "ArrowRight":
+      if (target.tagName == "INPUT") return;
+
       {
         if (!key_down_fired) {
           key_down_fired = true;
@@ -168,6 +166,8 @@ window.addEventListener("keydown", (e) => {
     case "ArrowLeft":
       {
         if (!key_down_fired) {
+          if (target.tagName == "INPUT") return;
+
           key_down_fired = true;
 
           playAudio.playPrev();

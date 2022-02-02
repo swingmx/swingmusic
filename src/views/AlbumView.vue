@@ -10,7 +10,7 @@
     <div class="separator" id="av-sep"></div>
     <FeaturedArtists :artists="artists" />
     <div class="separator" id="av-sep"></div>
-    <AlbumBio :bio="bio" v-if="bio"/>
+    <AlbumBio :bio="bio" v-if="bio" />
     <div class="separator" id="av-sep"></div>
   </div>
 </template>
@@ -19,7 +19,7 @@
 import { useRoute } from "vue-router";
 import { onMounted } from "@vue/runtime-core";
 import { onUnmounted } from "@vue/runtime-core";
-
+import { watch, ref } from "vue";
 import Header from "../components/AlbumView/Header.vue";
 import AlbumBio from "../components/AlbumView/AlbumBio.vue";
 
@@ -27,7 +27,7 @@ import SongList from "../components/FolderView/SongList.vue";
 import FeaturedArtists from "../components/PlaylistView/FeaturedArtists.vue";
 
 import state from "@/composables/state.js";
-import routeLoader from "@/composables/routeLoader.js"
+import routeLoader from "@/composables/routeLoader.js";
 
 export default {
   components: {
@@ -38,13 +38,16 @@ export default {
   },
   setup() {
     const route = useRoute();
-    const title = route.params.album;
-    const album_artists = route.params.artist;
+
+    watch(
+      () => route.params,
+      () => {
+        routeLoader.toAlbum(route.params.album, route.params.artist);
+      }
+    );
 
     onMounted(() => {
-      if (!state.album_song_list.value.length) {
-        routeLoader.toAlbum(title, album_artists);
-      }
+        routeLoader.toAlbum(route.params.album, route.params.artist);
     });
 
     onUnmounted(() => {
@@ -69,7 +72,7 @@ export default {
   height: calc(100% - 1rem);
   overflow: auto;
   margin-top: $small;
-
+  scrollbar-width: none;
   .songs {
     padding: $small;
     background-color: $card-dark;

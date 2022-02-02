@@ -67,7 +67,6 @@ export default {
 
   #toggle {
     position: absolute;
-    left: 0.2rem;
     width: 3rem;
     height: 100%;
     background: url(./assets/icons/menu.svg);

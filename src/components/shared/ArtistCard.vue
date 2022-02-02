@@ -21,7 +21,6 @@ export default {
   flex: 0 0 auto;
   overflow: hidden;
   position: relative;
-  margin: 0 $small 0 0;
 
   width: 9em;
   height: 11em;

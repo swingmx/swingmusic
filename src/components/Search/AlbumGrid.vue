@@ -34,17 +34,15 @@ export default {
 .right-search .albums-results {
   border-radius: 0.5rem;
   background: #0f131b44;
-
   margin-top: $small;
-  padding: $small 0;
+  padding-bottom: $small;
+  padding-top: $small;
   overflow-x: hidden;
 
   .grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(9rem, 1fr));
-
+    display: flex;
     flex-wrap: wrap;
-    padding: 0 0 0 $small;
+    padding: $small $small 0 $small;
     gap: $small;
   }
 }

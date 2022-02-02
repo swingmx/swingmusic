@@ -83,7 +83,7 @@ def populate_images():
     bar.finish()
 
 
-def extract_thumb(audio_file_path: str = None) -> str:
+def extract_thumb(audio_file_path: str) -> str:
     """
     Extracts the thumbnail from an audio file. Returns the path to the thumbnail.
     """

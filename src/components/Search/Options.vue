@@ -1,13 +1,16 @@
 <template>
   <div class="options border rounded">
-    <div class="item info">Filter by:</div>
+    <div class="item info header">Filter by:</div>
     <div
       class="item"
       v-for="option in options"
       :key="option"
       @click="addFilter(option.icon)"
     >
-      {{ option.title }}
+      <div>
+        <span class="icon">{{ option.icon }}</span>
+        <span class="title">&nbsp;&nbsp;{{ option.title }}</span>
+      </div>
     </div>
   </div>
 </template>
@@ -18,23 +21,23 @@ export default {
   setup(props, { emit }) {
     const options = [
       {
-        title: "🎵 Track",
+        title: "Track",
         icon: "🎵",
       },
       {
-        title: "💿 Album",
+        title: "Album",
         icon: "💿",
       },
       {
-        title: "🙄 Artist",
+        title: "Artist",
         icon: "🙄",
       },
       {
-        title: "😍 Playlist",
+        title: "Playlist",
         icon: "😍",
       },
       {
-        title: "📁 Folder",
+        title: "Folder",
         icon: "📁",
       },
     ];
@@ -58,6 +61,38 @@ export default {
 
   .item {
     margin: $small;
+    width: 2.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    transition: all 0.2s ease-in-out;
+    position: relative;
+
+    .title {
+      position: absolute;
+      left: 1.5rem;
+      top: 0.5rem;
+      visibility: hidden;
+    }
+
+    .icon {
+      position: absolute;
+      top: 0.5rem;
+      left: .75rem;
+    }
+
+    &:hover {
+      width: 5.5rem;
+
+      .title {
+        visibility: visible;
+      }
+    }
+  }
+
+  .header {
+    width: 5.5rem;
   }
 }
 </style>

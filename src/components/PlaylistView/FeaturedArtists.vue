@@ -110,6 +110,7 @@ export default {
   align-items: flex-end;
   flex-wrap: nowrap;
   overflow-x: scroll;
+  gap: $small;
 
   &::-webkit-scrollbar {
     display: none;
