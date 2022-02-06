@@ -90,7 +90,7 @@ const updateQueue = async (song, type) => {
       break;
   }
 
-  if (state.queue.value[0].id !== list[0].id) {
+  if (state.queue.value[0].track_id !== list[0].track_id) {
     const new_queue = list;
     localStorage.setItem("queue", JSON.stringify(new_queue));
     state.queue.value = new_queue;

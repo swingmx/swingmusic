@@ -273,8 +273,6 @@ def get_tags(full_path: str) -> dict:
         "folder": os.path.dirname(full_path).replace(helpers.home_dir, ""),
     }
 
-    print(tags['filepath'])
-
     return tags
 
 

@@ -40,6 +40,7 @@ def check_for_new_songs():
         functions.populate()
         functions.populate_images()
         time.sleep(300)
+        
 
 
 def run_fast_scandir(_dir:str, ext: list):
