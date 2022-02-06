@@ -19,6 +19,10 @@ export default {
   setup() {
     const songs = [
       {
+        title: "Imagine",
+        artist: "John Lennon",
+      },
+      {
         title: "Mockingbird",
         artist: "Eminem",
       },

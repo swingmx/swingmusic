@@ -16,7 +16,7 @@ from app import functions
 
 home_dir = os.path.expanduser('~') + '/'
 app_dir = os.path.join(home_dir, '.musicx')
-last_fm_api_key = "762db7a44a9e6fb5585661f5f2bdf23a"
+LAST_FM_API_KEY = "762db7a44a9e6fb5585661f5f2bdf23a"
 
 
 def background(f):
@@ -42,7 +42,7 @@ def check_for_new_songs():
         time.sleep(300)
 
 
-def run_fast_scandir(dir: str, ext: str):
+def run_fast_scandir(_dir:str, ext: list):
     """
     Scans a directory for files with a specific extension. Returns a list of files and folders in the directory.
     """
@@ -50,15 +50,15 @@ def run_fast_scandir(dir: str, ext: str):
     subfolders = []
     files = []
 
-    for f in os.scandir(dir):
+    for f in os.scandir(_dir):
         if f.is_dir() and not f.name.startswith('.'):
             subfolders.append(f.path)
         if f.is_file():
             if os.path.splitext(f.name)[1].lower() in ext:
                 files.append(f.path)
 
-    for dir in list(subfolders):
-        sf, f = run_fast_scandir(dir, ext)
+    for _dir in list(subfolders):
+        sf, f = run_fast_scandir(_dir, ext)
         subfolders.extend(sf)
         files.extend(f)
 
@@ -111,14 +111,14 @@ def create_config_dir() -> None:
     Creates the config directory if it doesn't exist.
     """
 
-    home_dir = os.path.expanduser('~')
-    config_folder = os.path.join(home_dir, app_dir)
+    _home_dir = os.path.expanduser('~')
+    config_folder = os.path.join(_home_dir, app_dir)
 
     dirs = ["", "images", "images/defaults",
             "images/artists", "images/thumbnails"]
 
-    for dir in dirs:
-        path = os.path.join(config_folder, dir)
+    for _dir in dirs:
+        path = os.path.join(config_folder, _dir)
         
         try:
             os.makedirs(path)

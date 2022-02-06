@@ -3,10 +3,10 @@ let base_uri = "http://0.0.0.0:9876";
 const getAlbumTracks = async (name, artist) => {
   const res = await fetch(
     base_uri +
-      "/albums/" +
-      encodeURIComponent(name.replaceAll("/", "|")) +
-      "::" +
-      encodeURIComponent(artist.replaceAll("/", "|"))
+      "/album/" +
+      encodeURIComponent(name) + "/" +
+      encodeURIComponent(artist) +
+      "/tracks"
   );
 
   if (!res.ok) {
@@ -38,14 +38,14 @@ const getAlbumArtists = async (name, artist) => {
   return data.artists;
 };
 
-const getAlbumBio = async(name, artist) => {
+const getAlbumBio = async (name, artist) => {
   const res = await fetch(
-    base_uri + 
-    "/album/" +
-    encodeURIComponent(name.replaceAll("/", "|")) +
-    "/" +
-    encodeURIComponent(artist.replaceAll("/", "|")) +
-    "/bio"
+    base_uri +
+      "/album/" +
+      encodeURIComponent(name.replaceAll("/", "|")) +
+      "/" +
+      encodeURIComponent(artist.replaceAll("/", "|")) +
+      "/bio"
   );
 
   if (!res.ok) {
@@ -60,5 +60,5 @@ const getAlbumBio = async(name, artist) => {
 export default {
   getAlbumTracks,
   getAlbumArtists,
-  getAlbumBio
+  getAlbumBio,
 };

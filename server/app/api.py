@@ -15,7 +15,7 @@ def initialize() -> None:
     Runs all the necessary setup functions.
     """
     helpers.create_config_dir()
-    helpers.check_for_new_songs()
+    # helpers.check_for_new_songs()
 
 
 initialize()
@@ -28,12 +28,10 @@ def adutsfsd():
 
 @bp.route('/search')
 def search_by_title():
-    query:str = ""
-
     if not request.args.get('q'):
-        query = "mexican girl"
+        query:str = "mexican girl"
     else:
-        query = request.args.get('q')
+        query:str = str(request.args.get('q'))
 
     albums = []
     artists = []
@@ -209,13 +207,13 @@ def getFolderTree(folder: str):
                 entry.path, [".flac", ".mp3"])[1]
 
             if len(files_in_dir) != 0:
-                dir = {
+                _dir = {
                     "name": entry.name,
                     "count": len(files_in_dir),
                     "path": entry.path.replace(home_dir, ""),
                 }
 
-                folders.append(dir)
+                folders.append(_dir)
 
     songs = []
 
@@ -245,22 +243,19 @@ def getAlbums():
     return {'albums': albums}
 
 
-@bp.route('/albums/<query>')
+@bp.route('/album/<title>/<artist>/tracks')
 @cache.cached()
-def getAlbumSongs(query: str):
-    album = query.split('::')[0].replace('|', '/')
-    artist = query.split('::')[1].replace('|', '/')
-
+def get_album_tracks(title:str, artist:str):
     songs = []
 
     for track in all_the_f_music:
-        if track.album == album and track.album_artist == artist:
+        if track.album_artist == artist and track.album == title:
             songs.append(track)
 
     songs = helpers.remove_duplicates(songs)
 
     album_obj = {
-        "name": album,
+        "name": title,
         "count": len(songs),
         "duration": "56 Minutes",
         "image": songs[0].image,

@@ -14,7 +14,7 @@
         <tbody>
           <SongItem
             v-for="(song, index) in props.songs"
-            :key="song.id"
+            :key="song"
             :song="song"
             :index="index + 1"
             @updateQueue="updateQueue"
@@ -46,8 +46,8 @@ import state from "@/composables/state.js";
 const props = defineProps({
   songs: {
     type: Array,
-    required: true,
-  },
+    required: true
+  }
 });
 
 let route;

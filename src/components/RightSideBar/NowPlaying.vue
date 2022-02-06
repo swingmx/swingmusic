@@ -1,8 +1,9 @@
 <template>
   <div class="now-playing border">
     <div class="art-tags">
+      <div class="duration">{{ current.length }}</div>
       <div
-        class="album-art image"
+        class="album-art image border"
         :style="{
           backgroundImage: `url(&quot;${current.image}&quot;)`,
         }"
@@ -21,8 +22,9 @@
       </div>
     </div>
     <div class="progress">
-      <div class="duration">{{ current.length }}</div>
-      <Progress />
+      <div class="prog">
+        <Progress />
+      </div>
     </div>
     <div class="controls">
       <div class="shuffle">
@@ -81,8 +83,7 @@ export default {
 <style lang="scss">
 .now-playing {
   border-radius: 0.5rem;
-  height: 14rem;
-  margin-top: 0.5rem;
+  height: 15rem;
   padding: 0.5rem;
   background: $card-dark;
   display: grid;
@@ -91,6 +92,14 @@ export default {
   .art-tags {
     display: flex;
     align-items: center;
+    position: relative;
+
+    .duration {
+      position: absolute;
+      bottom: $small;
+      right: 0;
+      font-size: .9rem;
+    }
 
     hr {
       border: none;
@@ -106,16 +115,15 @@ export default {
     #artist {
       font-size: small;
       width: 22rem;
-      color: rgba(255, 255, 255, 0.712);
+      color: $highlight-blue;
     }
 
     .album-art {
-      width: 6rem;
-      height: 6rem;
+      width: 7rem;
+      height: 7rem;
       border-radius: 0.5rem;
       margin-right: 0.5rem;
       margin-left: $small;
-      // background-color: #ad1717a8;
       background-image: url("../../assets/images/null.webp");
     }
   }

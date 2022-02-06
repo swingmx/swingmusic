@@ -19,11 +19,9 @@
           </p>
         </div>
       </div>
-      <div class="scrl border rounded">
-        <div class="scrollable-r">
+        <div class="scrollable-r border rounded">
           <TrackItem v-for="song in queue" :key="song.id" :track="song" />
         </div>
-      </div>
     </div>
   </div>
 </template>
@@ -122,17 +120,10 @@ export default {
 
   .r-grid {
     position: relative;
-    height: calc(100% - 2rem);
-    overflow: hidden;
-    width: 100%;
+    height: 100%;
     display: grid;
-    grid-template-rows: min-content 1fr;
-    padding-bottom: $small;
-
-    .scrl {
-      overflow: hidden;
-      height: 100%;
-    }
+    grid-template-rows: min-content;
+    padding-bottom: 2.5rem;
 
     .scrollable-r {
       height: 100%;
