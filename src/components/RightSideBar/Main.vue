@@ -1,7 +1,7 @@
 <template>
   <div class="r-sidebar">
     <div class="grid">
-      <div class="r-content rounded">
+      <div class="r-content">
         <div class="r-dash" v-show="current_tab == tabs.home">
           <DashBoard />
         </div>
@@ -63,7 +63,6 @@ function changeTab(tab) {
     .r-content {
       grid-area: content;
       width: 31rem;
-      overflow: hidden;
 
       // @include tablet-landscape {
       //   display: none;

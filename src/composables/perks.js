@@ -1,9 +1,9 @@
 import { ref } from "@vue/reactivity";
 import { watch } from "@vue/runtime-core";
-
 import media from "./mediaNotification.js";
-import state from "./state.js";
 import playAudio from "./playAudio.js";
+import state from "./state.js";
+
 
 const current = ref(state.current);
 
@@ -50,7 +50,7 @@ function updateNext(song_) {
 }
 
 function updatePrev(song) {
-  const index = state.queue.value.findIndex((item) => item.id === song.id);
+  const index = state.queue.value.findIndex((item) => item.id === song.track_id);
 
   if (index == 0) {
     prev.value = queue.value[queue.value.length - 1];

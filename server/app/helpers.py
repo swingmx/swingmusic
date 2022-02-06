@@ -127,11 +127,11 @@ def create_config_dir() -> None:
 
         os.chmod(path, 0o755)
 
-def getAllSongs() -> List:
+def get_all_songs() -> List:
     """
     Gets all songs under the ~/ directory.
     """
-
+    print("Getting all songs...")
     tracks = []
 
     for track in instances.songs_instance.get_all_songs():
@@ -140,6 +140,7 @@ def getAllSongs() -> List:
         try:
             os.chmod(os.path.join(home_dir, track.filepath), 0o755)
         except FileNotFoundError:
+            print("❌")
             instances.songs_instance.remove_song_by_filepath(track.filepath)
 
         tracks.append(track)

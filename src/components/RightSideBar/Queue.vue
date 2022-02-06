@@ -20,16 +20,16 @@
         </div>
       </div>
         <div class="scrollable-r border rounded">
-          <TrackItem v-for="song in queue" :key="song.id" :track="song" />
+          <TrackItem v-for="song in queue" :key="song.track_id" :track="song" />
         </div>
     </div>
   </div>
 </template>
 
 <script>
-import { ref, toRefs } from "@vue/reactivity";
 import perks from "@/composables/perks.js";
 import audio from "@/composables/playAudio.js";
+import { ref, toRefs } from "@vue/reactivity";
 import { watch } from "@vue/runtime-core";
 import TrackItem from "../shared/TrackItem.vue";
 
@@ -120,10 +120,9 @@ export default {
 
   .r-grid {
     position: relative;
-    height: 100%;
+    height: calc(100% - 2rem);
     display: grid;
     grid-template-rows: min-content;
-    padding-bottom: 2.5rem;
 
     .scrollable-r {
       height: 100%;

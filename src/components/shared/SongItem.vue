@@ -1,5 +1,5 @@
 <template>
-  <tr class="songlist-item" :class="{ current: current.id == song.id }">
+  <tr class="songlist-item" :class="{ current: current.track_id == song.track_id }">
     <td class="index">{{ index }}</td>
     <td class="flex" @click="emitUpdate(song)">
       <div
@@ -8,7 +8,7 @@
       >
         <div
           class="now-playing-track image"
-          v-if="current.id == song.id"
+          v-if="current.track_id == song.track_id"
           :class="{ active: is_playing, not_active: !is_playing }"
         ></div>
       </div>

@@ -3,7 +3,7 @@
     class="track-item h-1"
     @click="playThis(props.track)"
     :class="{
-      currentInQueue: current.id == props.track.id,
+      currentInQueue: current.track_id == props.track.track_id,
     }"
   >
     <div
@@ -14,7 +14,7 @@
     >
       <div
         class="now-playing-track image"
-        v-if="current.id == props.track.id"
+        v-if="current.track_id == props.track.track_id"
         :class="{ active: is_playing, not_active: !is_playing }"
       ></div>
     </div>

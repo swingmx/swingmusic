@@ -108,13 +108,13 @@ export default {
 
     #title {
       margin: 0;
-      width: 22rem;
+      width: 20rem;
       color: #fff;
     }
 
     #artist {
       font-size: small;
-      width: 22rem;
+      width: 20rem;
       color: $highlight-blue;
     }
 
