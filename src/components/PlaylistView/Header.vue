@@ -26,7 +26,7 @@
 .p-header {
   display: grid;
   grid-template-columns: 1fr;
-  height: 15rem;
+  height: 14rem;
   background-image: url("../../assets/images/eggs.jpg");
   position: relative;
 

@@ -145,6 +145,9 @@ def get_albumartists(album, artist):
 
 @bp.route("/populate/images")
 def populate_images():
+    """
+    Populates the artist images.
+    """
     functions.populate_images()
     return "Done"
 

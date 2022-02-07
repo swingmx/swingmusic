@@ -11,7 +11,6 @@ const playing = ref(state.is_playing);
 const url = "http://0.0.0.0:8901/";
 
 const playAudio = (path) => {
-  console.log(path)
   const elem = document.getElementById('progress')
   const full_path = url + encodeURIComponent(path);
 
@@ -42,7 +41,7 @@ function playNext() {
 }
 
 function playPrev() {
-  playAudio(perks.prev.value.filepath);
+  playAudio(state.prev.value.filepath);
   perks.current.value = perks.prev.value;
 }
 

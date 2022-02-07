@@ -20,12 +20,14 @@ LAST_FM_API_KEY = "762db7a44a9e6fb5585661f5f2bdf23a"
 
 
 def background(f):
-    '''
+    """
     a threading decorator
     use @background above the function you want to run in the background
-    '''
+    """
+
     def background_func(*a, **kw):
         threading.Thread(target=f, args=a, kwargs=kw).start()
+
     return background_func
 
 
@@ -40,10 +42,9 @@ def check_for_new_songs():
         functions.populate()
         functions.populate_images()
         time.sleep(300)
-        
 
 
-def run_fast_scandir(_dir:str, ext: list):
+def run_fast_scandir(_dir: str, ext: list):
     """
     Scans a directory for files with a specific extension. Returns a list of files and folders in the directory.
     """
@@ -96,7 +97,7 @@ def save_image(url: str, path: str) -> None:
     img.save(path, 'JPEG')
 
 
-def isValidFile(filename: str) -> bool:
+def is_valid_file(filename: str) -> bool:
     """
     Checks if a file is valid. Returns True if it is, False if it isn't.
     """
@@ -120,13 +121,14 @@ def create_config_dir() -> None:
 
     for _dir in dirs:
         path = os.path.join(config_folder, _dir)
-        
+
         try:
             os.makedirs(path)
         except FileExistsError:
             pass
 
         os.chmod(path, 0o755)
+
 
 def get_all_songs() -> List:
     """

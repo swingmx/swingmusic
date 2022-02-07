@@ -74,8 +74,8 @@ function updateQueue(song) {
   perks.updateQueue(song, type);
 }
 
-function loadAlbum(title, album_artist) {
-  routeLoader.toAlbum(title, album_artist);
+function loadAlbum(title, albumartist) {
+  routeLoader.toAlbum(title, albumartist);
 }
 </script>
 

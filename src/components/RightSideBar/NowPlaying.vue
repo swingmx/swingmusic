@@ -1,23 +1,29 @@
 <template>
-  <div class="now-playing border">
+  <div class="now-playing border shadow-lg">
     <div class="art-tags">
       <div class="duration">{{ current.length }}</div>
       <div
-        class="album-art image border"
         :style="{
           backgroundImage: `url(&quot;${current.image}&quot;)`,
         }"
+        class="album-art image border"
       ></div>
-      <div>
+      <div class="t-a">
         <p id="title" class="ellipsis">{{ current.title }}</p>
-        <hr />
-        <div id="artist" class="ellip" v-if="current.artists[0] != ''">
+        <div class="separator no-border"></div>
+        <div v-if="current.artists[0] != ''" id="artist" class="ellip">
           <span v-for="artist in putCommas(current.artists)" :key="artist">{{
             artist
           }}</span>
         </div>
-        <div id="artist" v-else>
-          <span>{{ current.album_artist }}</span>
+        <div v-else id="artist">
+          <span>{{ current.albumartist }}</span>
+        </div>
+        <div id="type">
+          <span v-if="current.bitrate > 330"
+            >FLAC • {{ current.bitrate }} Kbps</span
+          >
+          <span v-else>MP3 | {{ current.bitrate }} Kbps</span>
         </div>
       </div>
     </div>
@@ -26,37 +32,35 @@
         <Progress />
       </div>
     </div>
-    <div class="controls">
-      <div class="shuffle">
-        <div class="image"></div>
-        <div class="image"></div>
-      </div>
-      <HotKeys />
-      <div class="fav">
-        <div class="image"></div>
-        <div class="image"></div>
+    <div class="c-wrapper border rounded">
+      <div class="controls">
+        <div class="shuffle">
+          <div class="image"></div>
+          <div class="image"></div>
+        </div>
+        <HotKeys />
+        <div class="fav">
+          <div class="image"></div>
+          <div class="image"></div>
+        </div>
       </div>
     </div>
   </div>
 </template>
 
 <script>
-import { ref } from "@vue/reactivity";
-
-import perks from "../../composables/perks.js";
 import playAudio from "@/composables/playAudio.js";
-
-import Progress from "../shared/Progress.vue";
+import { ref } from "@vue/reactivity";
+import perks from "../../composables/perks.js";
 import HotKeys from "../shared/HotKeys.vue";
+import Progress from "../shared/Progress.vue";
 
 export default {
   setup() {
     const current = ref(perks.current);
     const putCommas = perks.putCommas;
     const pos = playAudio.pos;
-    function fmtMSS(s) {
-      return (s - (s %= 60)) / 60 + (9 < s ? ":" : ":0") + s;
-    }
+
     const { playNext } = playAudio;
     const { playPrev } = playAudio;
     const { playPause } = playAudio;
@@ -73,7 +77,6 @@ export default {
       pos,
       seek,
       isPlaying,
-      fmtMSS,
     };
   },
   components: { Progress, HotKeys },
@@ -83,39 +86,56 @@ export default {
 <style lang="scss">
 .now-playing {
   border-radius: 0.5rem;
-  height: 15rem;
+  height: 13.5rem;
   padding: 0.5rem;
   background: $card-dark;
   display: grid;
   grid-template-rows: 3fr 1fr;
+
+  .progress {
+    display: flex;
+
+    .prog {
+      width: 100%;
+      display: grid;
+      align-items: center;
+    }
+  }
 
   .art-tags {
     display: flex;
     align-items: center;
     position: relative;
 
+    .t-a {
+      #title {
+        margin: 0;
+        width: 20rem;
+        color: #fff;
+      }
+
+      #artist {
+        font-size: 0.8rem;
+        width: 20rem;
+        color: $highlight-blue;
+      }
+    }
+
     .duration {
       position: absolute;
       bottom: $small;
       right: 0;
-      font-size: .9rem;
+      font-size: 0.9rem;
     }
 
-    hr {
-      border: none;
-      margin: 0.3rem;
-    }
-
-    #title {
-      margin: 0;
-      width: 20rem;
-      color: #fff;
-    }
-
-    #artist {
-      font-size: small;
-      width: 20rem;
-      color: $highlight-blue;
+    #type {
+      font-size: $medium;
+      color: $red;
+      padding: $smaller;
+      border-radius: $smaller;
+      position: absolute;
+      bottom: 0.1rem;
+      border: solid 1px $red;
     }
 
     .album-art {
@@ -123,9 +143,16 @@ export default {
       height: 7rem;
       border-radius: 0.5rem;
       margin-right: 0.5rem;
-      margin-left: $small;
       background-image: url("../../assets/images/null.webp");
     }
+  }
+
+  .c-wrapper {
+    background-color: $bbb;
+    height: 3.5rem;
+    padding: 0 $small;
+    display: grid;
+    align-items: center;
   }
 }
 </style>

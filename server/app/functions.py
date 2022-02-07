@@ -54,7 +54,7 @@ def populate():
 
 def fetch_image_path(artist: str) -> str or None:
     """
-    Returns a direct link to an artist artist
+    Returns a direct link to an artist image.
     """
 
     try:
@@ -66,7 +66,7 @@ def fetch_image_path(artist: str) -> str or None:
     except requests.exceptions.ConnectionError:
         time.sleep(5)
         return None
-    except IndexError:
+    except (IndexError, KeyError):
         return None
 
 

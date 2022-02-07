@@ -16,7 +16,7 @@
           }}</span>
         </div>
         <div class="artists" v-else>
-          <span>{{ track.album_artist }}</span>
+          <span>{{ track.albumartist }}</span>
         </div>
       </div>
     </div>

@@ -66,7 +66,7 @@ export default {
   gap: $small;
   position: relative;
   overflow: hidden;
-  height: 15rem;
+  height: 14rem;
 
   .right {
     @include tablet-landscape {

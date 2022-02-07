@@ -37,7 +37,7 @@ const putCommas = (artists) => {
 };
 
 function updateNext(song_) {
-  const index = state.queue.value.findIndex((item) => item.id === song_.id);
+  const index = state.queue.value.findIndex((item) => item.track_id === song_.track_id);
 
   if (index == queue.value.length - 1) {
     next.value = queue.value[0];
@@ -50,7 +50,7 @@ function updateNext(song_) {
 }
 
 function updatePrev(song) {
-  const index = state.queue.value.findIndex((item) => item.id === song.track_id);
+  const index = state.queue.value.findIndex((item) => item.track_id === song.track_id);
 
   if (index == 0) {
     prev.value = queue.value[queue.value.length - 1];
@@ -131,6 +131,7 @@ function focusSearchBox() {
 
 setTimeout(() => {
   watch(current, (new_current) => {
+
     media.showMediaNotif();
 
     updateNext(new_current);

@@ -69,10 +69,8 @@ export default {
     position: absolute;
     width: 3rem;
     height: 100%;
-    background: url(./assets/icons/menu.svg);
     background-size: 2rem;
-    background-repeat: no-repeat;
-    background-position: center;
+    background: url(./assets/icons/menu.svg) no-repeat center;
     cursor: pointer;
   }
 }
@@ -80,10 +78,8 @@ export default {
   height: 2rem;
   width: 9rem;
   margin-left: 3rem;
-  background: url(./assets/logo.svg);
   background-size: contain;
-  background-repeat: no-repeat;
-  background-position: center;
+  background: url(./assets/logo.svg) no-repeat center;
 }
 
 .r-sidebar {

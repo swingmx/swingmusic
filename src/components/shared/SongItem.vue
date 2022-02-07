@@ -31,11 +31,11 @@
         >
       </div>
       <div class="ellip" v-else>
-        <span class="artist">{{ song.album_artist }}</span>
+        <span class="artist">{{ song.albumartist }}</span>
       </div>
     </td>
     <td class="song-album">
-      <div class="ellip" @click="emitLoadAlbum(song.album, song.album_artist)">
+      <div class="ellip" @click="emitLoadAlbum(song.album, song.albumartist)">
         {{ song.album }}
       </div>
     </td>
@@ -94,6 +94,7 @@ export default {
   }
 
   .song-duration {
+    font-size: .8rem;
     width: 5rem !important;
   }
 
@@ -143,6 +144,9 @@ export default {
   }
 
   &:hover {
+    * {
+      color: #fff;
+    }
     & {
       & td {
         background-color: rgb(5, 80, 150);
@@ -173,7 +177,6 @@ export default {
       & > td:nth-child(4) {
         @include tablet-landscape {
           border-radius: 0 $small $small 0 !important;
-          // border: solid red !important;
         }
       }
 

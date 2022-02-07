@@ -154,6 +154,18 @@ button {
   white-space: nowrap;
 }
 
+.shadow-sm {
+  box-shadow: 0rem 0rem .5rem rgb(0, 0, 0);
+}
+
+.shadow-md {
+  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.075);
+}
+
+.shadow-lg {
+  box-shadow: 0 1rem 2rem rgba(0, 0, 0, 0.175);
+}
+
 /* scrollbars */
 
 /* width */
