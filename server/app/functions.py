@@ -52,8 +52,27 @@ def populate():
     )
 
 
+def fetch_image_path(artist: str) -> str or None:
+    """
+    Returns a direct link to an artist artist
+    """
+
+    try:
+        url = f"https://api.deezer.com/search/artist?q={artist}"
+        response = requests.get(url)
+        data = response.json()
+
+        return data["data"][0]["picture_medium"]
+    except requests.exceptions.ConnectionError:
+        time.sleep(5)
+        return None
+    except IndexError:
+        return None
+
+
 def populate_images():
     """populates the artists images"""
+
     all_songs = instances.songs_instance.get_all_songs()
 
     artists = []
@@ -72,27 +91,11 @@ def populate_images():
         )
 
         if not os.path.exists(file_path):
+            img_path = fetch_image_path(artist)
 
-            def try_save_image():
-                url = "https://api.deezer.com/search/artist?q={}".format(artist)
-                response = requests.get(url)
-                data = response.json()
-
-                try:
-                    img_path = data["data"][0]["picture_medium"]
-                except:
-                    img_path = None
-
-                if img_path is not None:
-                    # save image as webp
-                    img = Image.open(BytesIO(requests.get(img_path).content))
-                    img.save(file_path, format="webp")
-
-            try:
-                try_save_image()
-            except requests.exceptions.ConnectionError:
-                time.sleep(5)
-                try_save_image()
+            if img_path is not None:
+                img = Image.open(BytesIO(requests.get(img_path).content))
+                img.save(file_path, format="webp")
 
         _bar.next()
 
@@ -266,7 +269,7 @@ def get_tags(full_path: str) -> dict:
         "date": parse_date_tag(audio)[:4],
         "tracknumber": parse_track_number(audio),
         "discnumber": parse_disk_number(audio),
-        "length": audio.info.length,
+        "length": round(audio.info.length),
         "bitrate": round(int(audio.info.bitrate) / 1000),
         "filepath": full_path.replace(helpers.home_dir, ""),
         "image": extract_thumb(full_path),
@@ -318,6 +321,6 @@ def create_track_class(tags):
         tags["genre"],
         tags["bitrate"],
         tags["image"],
-        tags['tracknumber'],
-        tags['discnumber'],
+        tags["tracknumber"],
+        tags["discnumber"],
     )
