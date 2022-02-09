@@ -35,7 +35,9 @@ const tabs = {
   queue: "queue",
 };
 
-const current_tab = ref(tabs.queue);
+const default_tab = tabs.home;
+
+const current_tab = ref(default_tab);
 
 function changeTab(tab) {
   current_tab.value = tab;

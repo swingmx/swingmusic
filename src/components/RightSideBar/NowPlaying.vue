@@ -1,27 +1,27 @@
 <template>
   <div class="now-playing border shadow-lg">
     <div class="art-tags">
-      <div class="duration">{{ current.length }}</div>
+      <div class="duration">{{ formatSeconds(current.length) }}</div>
       <div
-        :style="{
+          :style="{
           backgroundImage: `url(&quot;${current.image}&quot;)`,
         }"
-        class="album-art image border"
+          class="album-art image border"
       ></div>
       <div class="t-a">
         <p id="title" class="ellipsis">{{ current.title }}</p>
         <div class="separator no-border"></div>
-        <div v-if="current.artists[0] != ''" id="artist" class="ellip">
+        <div v-if="current.artists[0] !== ''" id="artist" class="ellip">
           <span v-for="artist in putCommas(current.artists)" :key="artist">{{
-            artist
-          }}</span>
+              artist
+            }}</span>
         </div>
         <div v-else id="artist">
           <span>{{ current.albumartist }}</span>
         </div>
         <div id="type">
           <span v-if="current.bitrate > 330"
-            >FLAC • {{ current.bitrate }} Kbps</span
+          >FLAC • {{ current.bitrate }} Kbps</span
           >
           <span v-else>MP3 | {{ current.bitrate }} Kbps</span>
         </div>
@@ -29,7 +29,7 @@
     </div>
     <div class="progress">
       <div class="prog">
-        <Progress />
+        <Progress/>
       </div>
     </div>
     <div class="c-wrapper border rounded">
@@ -38,7 +38,7 @@
           <div class="image"></div>
           <div class="image"></div>
         </div>
-        <HotKeys />
+        <HotKeys/>
         <div class="fav">
           <div class="image"></div>
           <div class="image"></div>
@@ -50,7 +50,7 @@
 
 <script>
 import playAudio from "@/composables/playAudio.js";
-import { ref } from "@vue/reactivity";
+import {ref} from "@vue/reactivity";
 import perks from "../../composables/perks.js";
 import HotKeys from "../shared/HotKeys.vue";
 import Progress from "../shared/Progress.vue";
@@ -61,13 +61,15 @@ export default {
     const putCommas = perks.putCommas;
     const pos = playAudio.pos;
 
-    const { playNext } = playAudio;
-    const { playPrev } = playAudio;
-    const { playPause } = playAudio;
+    const {playNext} = playAudio;
+    const {playPrev} = playAudio;
+    const {playPause} = playAudio;
     const isPlaying = playAudio.playing;
+
     const seek = () => {
       playAudio.seek(document.getElementById("progress").value);
     };
+
     return {
       current,
       putCommas,
@@ -77,9 +79,10 @@ export default {
       pos,
       seek,
       isPlaying,
+      formatSeconds: perks.formatSeconds,
     };
   },
-  components: { Progress, HotKeys },
+  components: {Progress, HotKeys},
 };
 </script>
 

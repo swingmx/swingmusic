@@ -2,10 +2,10 @@
   <div class="album-h">
     <div class="a-header rounded card-dark border">
       <div
-        class="art rounded border"
-        :style="{
+          :style="{
           backgroundImage: `url(&quot;${album_info.image}&quot;)`,
         }"
+          class="art rounded border"
       ></div>
       <div class="info">
         <div class="top">
@@ -28,10 +28,10 @@
       <div class="circle circular"></div>
       <div class="rect rounded"></div>
       <div
-        class="avatar image"
-        :style="{
+          :style="{
           backgroundImage: `url(&quot;${album_info.artist_image}&quot;)`,
         }"
+          class="avatar image"
       ></div>
     </div>
   </div>
@@ -47,6 +47,7 @@ export default {
     function playAlbum() {
       perks.updateQueue(state.album_song_list.value[0], "album");
     }
+
     return {
       playAlbum,
     };
@@ -138,6 +139,7 @@ export default {
     }
   }
 }
+
 .a-header {
   position: relative;
   overflow: hidden;
@@ -181,6 +183,7 @@ export default {
       .stats {
         font-weight: bold;
       }
+
       .play {
         height: 2.5rem;
         width: 6rem;

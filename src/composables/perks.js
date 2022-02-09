@@ -4,7 +4,6 @@ import media from "./mediaNotification.js";
 import playAudio from "./playAudio.js";
 import state from "./state.js";
 
-
 const current = ref(state.current);
 
 const next = ref({
@@ -37,7 +36,9 @@ const putCommas = (artists) => {
 };
 
 function updateNext(song_) {
-  const index = state.queue.value.findIndex((item) => item.track_id === song_.track_id);
+  const index = state.queue.value.findIndex(
+    (item) => item.track_id === song_.track_id
+  );
 
   if (index == queue.value.length - 1) {
     next.value = queue.value[0];
@@ -50,7 +51,9 @@ function updateNext(song_) {
 }
 
 function updatePrev(song) {
-  const index = state.queue.value.findIndex((item) => item.track_id === song.track_id);
+  const index = state.queue.value.findIndex(
+    (item) => item.track_id === song.track_id
+  );
 
   if (index == 0) {
     prev.value = queue.value[queue.value.length - 1];
@@ -131,7 +134,6 @@ function focusSearchBox() {
 
 setTimeout(() => {
   watch(current, (new_current) => {
-
     media.showMediaNotif();
 
     updateNext(new_current);
@@ -210,11 +212,30 @@ window.addEventListener("keyup", () => {
   key_down_fired = false;
 });
 
+function formatSeconds(seconds) {
+  const date = new Date(seconds * 1000);
+
+  const hh = date.getUTCHours();
+  const mm = date.getUTCMinutes();
+  const ss = date.getUTCSeconds();
+
+  const _hh = hh < 10 ? `0${hh}` : hh;
+  const _mm = mm < 10 ? `0${mm}` : mm;
+  const _ss = ss < 10 ? `0${ss}` : ss;
+
+  if (hh > 0) {
+    return `${_hh}:${_mm}:${_ss}`;
+  } else {
+    return `${_mm}:${_ss}`;
+  }
+}
+
 export default {
   putCommas,
   readQueue,
   focusCurrent,
   updateQueue,
+  formatSeconds,
   current,
   queue,
   next,

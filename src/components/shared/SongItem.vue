@@ -39,7 +39,7 @@
         {{ song.album }}
       </div>
     </td>
-    <td class="song-duration">{{ song.length }}</td>
+    <td class="song-duration">{{ formatSeconds(song.length) }}</td>
   </tr>
 </template>
 
@@ -66,6 +66,7 @@ export default {
       emitLoadAlbum,
       is_playing: state.is_playing,
       current: state.current,
+      formatSeconds: perks.formatSeconds,
     };
   },
 };

@@ -2,46 +2,46 @@
   <div class="right-search border">
     <div>
       <div class="input">
-        <Loader />
-        <Filters :filters="filters" @removeFilter="removeFilter" />
+        <Loader/>
+        <Filters :filters="filters" @removeFilter="removeFilter"/>
         <div class="input-loader border">
           <input
-            type="text"
-            id="search"
-            @keyup.backspace="removeLastFilter"
-            placeholder="find your music"
-            v-model="query"
+              id="search"
+              v-model="query"
+              placeholder="find your music"
+              type="text"
+              @keyup.backspace="removeLastFilter"
           />
           <div class="search-icon image"></div>
         </div>
       </div>
       <div class="separator no-border"></div>
-      <Options @addFilter="addFilter" />
+      <Options @addFilter="addFilter"/>
     </div>
     <div class="scrollable">
       <TracksGrid
-        :tracks="tracks.tracks"
-        :more="tracks.more"
-        v-if="tracks.tracks.length"
+          v-if="tracks.tracks.length"
+          :more="tracks.more"
+          :tracks="tracks.tracks"
       />
       <AlbumGrid
-        v-if="albums.albums.length"
-        :albums="albums.albums"
-        :more="albums.more"
+          v-if="albums.albums.length"
+          :albums="albums.albums"
+          :more="albums.more"
       />
       <div class="separator no-border"></div>
       <ArtistGrid
-        v-if="artists.artists.length"
-        :artists="artists.artists"
-        :more="artists.more"
+          v-if="artists.artists.length"
+          :artists="artists.artists"
+          :more="artists.more"
       />
       <div
-        class="no-res"
-        v-if="
+          v-if="
           !artists.artists.length &&
           !tracks.tracks.length &&
           !albums.albums.length && query.length != 0
         "
+          class="no-res"
       >
         <div class="no-res-text">
           No results for <span class="highlight rounded">{{ query }}</span>
@@ -55,9 +55,9 @@
 </template>
 
 <script>
-import { reactive, ref } from "@vue/reactivity";
+import {reactive, ref} from "@vue/reactivity";
 
-import { watch } from "@vue/runtime-core";
+import {watch} from "@vue/runtime-core";
 import state from "@/composables/state.js";
 import searchMusic from "@/composables/searchMusic.js";
 import useDebouncedRef from "@/composables/useDebouncedRef";
@@ -127,9 +127,10 @@ export default {
         albums.albums = [];
         artists.artists = [];
         tracks.tracks = [];
-        
+
         return;
-      };
+      }
+      ;
 
       searchMusic(new_query).then((res) => {
         albums.albums = res.albums.albums;
@@ -153,7 +154,7 @@ export default {
       query,
       filters,
       loading,
-      
+
     };
   },
 };
