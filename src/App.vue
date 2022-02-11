@@ -11,7 +11,7 @@
       <Navigation :collapsed="collapsed" />
       <!-- <PinnedStuff :collapsed="collapsed" /> -->
       <div class="l-album-art">
-        <AlbumArt />
+        <AlbumArt :collapsed="collapsed" />
       </div>
     </div>
     <div class="content">
