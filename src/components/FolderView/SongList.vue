@@ -33,7 +33,6 @@
 </template>
 
 <script setup>
-import { ref } from "@vue/reactivity";
 import { onMounted } from "@vue/runtime-core";
 import { useRoute } from "vue-router";
 
@@ -46,13 +45,13 @@ import state from "@/composables/state.js";
 const props = defineProps({
   songs: {
     type: Array,
-    required: true
-  }
+    required: true,
+  },
 });
 
 let route;
 
-const search_query = ref(state.search_query);
+const search_query = state.search_query;
 
 onMounted(() => {
   route = useRoute().name;
@@ -86,13 +85,6 @@ function loadAlbum(title, albumartist) {
   justify-content: center;
   flex-direction: column;
   padding: 1rem;
-
-  // .icon {
-  //   height: 10rem;
-  //   width: 15rem;
-  //   border: solid;
-  //   background-image: url("../../assets/images/sokka.webp");
-  // }
 }
 
 .table {

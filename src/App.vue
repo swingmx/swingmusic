@@ -20,7 +20,7 @@
     </div>
     <RightSideBar />
     <div class="bottom-bar">
-      <BottomBar />
+      <BottomBar :collapsed="collapsed"/>
     </div>
   </div>
 </template>

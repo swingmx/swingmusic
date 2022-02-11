@@ -1,6 +1,7 @@
 <template>
   <div class="info">
     <div
+      v-if="props.collapsed"
       class="image art"
       :style="{
         backgroundImage: `url(&quot;${track.image}&quot;)`,
@@ -24,11 +25,15 @@
 </template>
 
 <script setup>
-import { ref } from "vue";
 import perks from "../../composables/perks";
 import state from "../../composables/state";
 
-const track = ref(state.current);
-
+const track = state.current;
+const props = defineProps({
+  collapsed: {
+    type: Boolean,
+    default: false,
+  },
+});
 const putCommas = perks.putCommas;
 </script>

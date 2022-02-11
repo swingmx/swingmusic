@@ -1,6 +1,10 @@
 <template>
-  <div class="side-nav-container" :class="{ collapsed: collapsed }">
-    <router-link v-for="menu in menus" :key="menu.name" :to="{ name: menu.route_name, params: {path: 'home'} }" >
+  <div class="side-nav-container" :class="{ collapsed: props.collapsed }">
+    <router-link
+      v-for="menu in menus"
+      :key="menu.name"
+      :to="{ name: menu.route_name, params: { path: 'home' } }"
+    >
       <div class="nav-button" id="home-button">
         <div class="in">
           <div class="nav-icon image" :id="`${menu.name}-icon`"></div>
@@ -42,7 +46,12 @@ const menus = [
   },
 ];
 
-const collapsed = ref(false);
+const props = defineProps({
+  collapsed: {
+    type: Boolean,
+    default: false,
+  },
+});
 </script>
 
 <style lang="scss">
