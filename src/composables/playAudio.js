@@ -5,13 +5,18 @@ import media from "./mediaNotification.js";
 import state from "./state.js";
 
 const audio = ref(new Audio()).value;
+
 const pos = ref(0);
+const current_time = ref(0);
+
 const playing = ref(state.is_playing);
 
 const url = "http://0.0.0.0:8901/";
 
 const playAudio = (path) => {
-  const elem = document.getElementById('progress')
+  const elem = document.getElementsByClassName('progress-bar')[0];
+  const bottom_elem = document.getElementsByClassName('progress-bar')[1];
+
   const full_path = url + encodeURIComponent(path);
 
   new Promise((resolve, reject) => {
@@ -26,9 +31,12 @@ const playAudio = (path) => {
       state.is_playing.value = true;
 
       audio.ontimeupdate = () => {
+        current_time.value = audio.currentTime;
         pos.value = (audio.currentTime / audio.duration) * 1000;
         let bg_size = ((audio.currentTime / audio.duration)*100)
+
         elem.style.backgroundSize = `${bg_size}% 100%`;
+        bottom_elem.style.backgroundSize = `${bg_size}% 100%`;
       };
     })
     .catch((err) => console.log(err));
@@ -45,8 +53,8 @@ function playPrev() {
   perks.current.value = perks.prev.value;
 }
 
-function seek(pos) {
-  audio.currentTime = (pos / 1000) * audio.duration;
+function seek(position) {
+  audio.currentTime = (position / 1000) * audio.duration;
 }
 
 function playPause() {
@@ -73,7 +81,7 @@ audio.addEventListener("ended", () => {
   playNext();
 });
 
-export default { playAudio, playNext, playPrev, playPause, seek, pos, playing };
+export default { playAudio, playNext, playPrev, playPause, seek, pos, playing, current_time };
 
 
 // TODO

@@ -53,9 +53,9 @@ function changeTab(tab) {
     display: none;
   }
 
-  // @include tablet-landscape {
-  //   width: 3rem;
-  // }
+  @include tablet-landscape {
+    width: 3rem;
+  }
 
   .grid {
     height: 100%;
@@ -66,9 +66,9 @@ function changeTab(tab) {
       grid-area: content;
       width: 31rem;
 
-      // @include tablet-landscape {
-      //   display: none;
-      // }
+      @include tablet-landscape {
+        display: none;
+      }
 
       .r-search {
         height: 100%;

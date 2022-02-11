@@ -59,7 +59,6 @@ export default {
   setup() {
     const current = ref(perks.current);
     const putCommas = perks.putCommas;
-    const pos = playAudio.pos;
 
     const {playNext} = playAudio;
     const {playPrev} = playAudio;
@@ -76,7 +75,6 @@ export default {
       playNext,
       playPrev,
       playPause,
-      pos,
       seek,
       isPlaying,
       formatSeconds: perks.formatSeconds,

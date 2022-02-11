@@ -7,9 +7,9 @@
           <HotKeys />
         </div>
         <div class="progress progress-bottom">
-          <span class="durationx">0:45</span>
+          <span class="durationx">{{formatSeconds(current_pos)}}</span>
           <Progress />
-          <span class="durationx">{{ state.current.value.length }}</span>
+          <span class="durationx">{{ formatSeconds(state.current.value.length) }}</span>
         </div>
         <div class="r-group">
           <div class="heart image"></div>
@@ -24,9 +24,15 @@
 </template>
 
 <script setup>
+import { ref } from 'vue';
 import "../../assets/css/BottomBar/BottomBar.scss";
 import SongCard from "./SongCard.vue";
 import Progress from "../shared/Progress.vue";
 import HotKeys from "../shared/HotKeys.vue";
 import state from "../../composables/state";
+import perks from "../../composables/perks";
+import playAudio from "../../composables/playAudio";
+
+const current_pos = ref(playAudio.current_time);
+const formatSeconds = perks.formatSeconds;
 </script>

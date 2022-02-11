@@ -9,7 +9,10 @@
         ></router-link>
       </div>
       <Navigation :collapsed="collapsed" />
-      <PinnedStuff :collapsed="collapsed" />
+      <!-- <PinnedStuff :collapsed="collapsed" /> -->
+      <div class="l-album-art">
+        <AlbumArt />
+      </div>
     </div>
     <div class="content">
       <div class="search-box"></div>
@@ -31,6 +34,7 @@ import BottomBar from "@/components/BottomBar/BottomBar.vue";
 
 import perks from "@/composables/perks.js";
 import Main from "./components/RightSideBar/Main.vue";
+import AlbumArt from "./components/LeftSidebar/AlbumArt.vue";
 
 export default {
   components: {
@@ -38,10 +42,11 @@ export default {
     PinnedStuff,
     BottomBar,
     RightSideBar: Main,
+    AlbumArt,
   },
 
   setup() {
-    const collapsed = ref(true);
+    const collapsed = ref(false);
 
     perks.readQueue();
 
@@ -58,6 +63,15 @@ export default {
 </script>
 
 <style lang="scss">
+.l-sidebar {
+  position: relative;
+
+  .l-album-art {
+    position: absolute;
+    bottom: 0;
+  }
+}
+
 #logo-container {
   position: relative;
   height: 3.6rem;
@@ -69,8 +83,8 @@ export default {
     position: absolute;
     width: 3rem;
     height: 100%;
-    background-size: 2rem;
     background: url(./assets/icons/menu.svg) no-repeat center;
+    background-size: 2rem;
     cursor: pointer;
   }
 }
@@ -78,8 +92,8 @@ export default {
   height: 2rem;
   width: 9rem;
   margin-left: 3rem;
-  background-size: contain;
   background: url(./assets/logo.svg) no-repeat center;
+  background-size: contain;
 }
 
 .r-sidebar {

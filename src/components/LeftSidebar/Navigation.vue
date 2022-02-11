@@ -1,75 +1,48 @@
 <template>
   <div class="side-nav-container" :class="{ collapsed: collapsed }">
-    <router-link :to="{ name: 'Home' }">
+    <router-link v-for="menu in menus" :key="menu.name" :to="{ name: menu.route_name, params: {path: 'home'} }" >
       <div class="nav-button" id="home-button">
         <div class="in">
-          <div class="nav-icon image" id="home-icon"></div>
-          <span>Home</span>
+          <div class="nav-icon image" :id="`${menu.name}-icon`"></div>
+          <span>{{ menu.name }}</span>
         </div>
       </div>
     </router-link>
     <hr />
-    <router-link :to="{ name: 'AlbumsExplorer' }">
-      <div class="nav-button" id="album-button">
-        <div class="in">
-          <div class="nav-icon image" id="album-icon"></div>
-          <span>Albums</span>
-        </div>
-      </div>
-    </router-link>
-    <hr />
-    <router-link :to="{ name: 'ArtistsExplorer' }">
-      <div class="nav-button" id="artists-button">
-        <div class="in">
-          <div class="nav-icon image" id="artists-icon"></div>
-          <span>Artists</span>
-        </div>
-      </div>
-    </router-link>
-    <hr />
-    <router-link :to="{ name: 'PlaylistView' }">
-      <div class="nav-button" id="playlists-button">
-        <div class="in">
-          <div class="nav-icon image" id="playlists-icon"></div>
-          <span>Playlist</span>
-        </div>
-      </div>
-    </router-link>
-    <hr />
-    <router-link :to="{ name: 'Home' }">
-      <div class="nav-button" id="mixes-button">
-        <div class="in">
-          <div class="nav-icon image" id="mixes-icon"></div>
-          <span>Mixes</span>
-        </div>
-      </div>
-    </router-link>
-    <hr />
-    <router-link :to="{ name: 'FolderView', params: { path: 'home' } }">
-      <div class="nav-button" id="folders-button">
-        <div class="in">
-          <div class="nav-icon image" id="folders-icon"></div>
-          <span>Folders</span>
-        </div>
-      </div>
-    </router-link>
-    <hr />
-    <router-link :to="{ name: 'FolderView', params: { path: 'home' } }">
-      <div class="nav-button" id="folders-button">
-        <div class="in">
-          <div class="nav-icon image" id="settings-icon"></div>
-          <span>Settings</span>
-        </div>
-      </div>
-    </router-link>
   </div>
 </template>
 
-<script>
-export default {
-  props: ["collapsed"],
-  setup() {},
-};
+<script setup>
+import { ref } from "vue";
+
+const menus = [
+  {
+    name: "home",
+    route_name: "Home",
+  },
+  {
+    name: "albums",
+    route_name: "AlbumsView",
+  },
+  {
+    name: "artists",
+    route_name: "ArtistsView",
+  },
+  {
+    name: "playlists",
+    route_name: "PlaylistView",
+  },
+  {
+    name: "folders",
+    route_name: "FolderView",
+  },
+  {
+    name: "settings",
+    route_name: "SettingsView",
+  },
+];
+
+const collapsed = ref(false);
 </script>
 
 <style lang="scss">
@@ -94,6 +67,7 @@ export default {
   margin-bottom: 1rem;
   padding-top: 10px;
   margin-top: 1rem;
+  text-transform: capitalize;
 
   .nav-button {
     border-radius: $small;
@@ -108,7 +82,7 @@ export default {
         background-color: rgba(145, 58, 58, 0.555);
       }
 
-      #album-icon {
+      #albums-icon {
         background-color: rgba(113, 58, 145, 0.555);
       }
 
@@ -147,7 +121,7 @@ export default {
     }
 
     #home-icon,
-    #album-icon,
+    #albums-icon,
     #artists-icon,
     #playlists-icon,
     #mixes-icon,
@@ -155,12 +129,12 @@ export default {
     #settings-icon {
       background-size: 1.5rem;
     }
-  
+
     #home-icon {
       background-image: url(../../assets/icons/home.svg);
     }
 
-    #album-icon {
+    #albums-icon {
       background-image: url(../../assets/icons/album.svg);
     }
 

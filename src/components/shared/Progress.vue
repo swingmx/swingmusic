@@ -1,5 +1,6 @@
 <template>
   <input
+    class="progress-bar"
     id="progress"
     type="range"
     :value="pos"

@@ -7,6 +7,7 @@ import AlbumsExplorer from "../views/AlbumsExplorer.vue";
 import AlbumView from "../views/AlbumView.vue";
 
 import ArtistsExplorer from "../views/ArtistsExplorer.vue";
+import SettingsView from "../views/SettingsView.vue";
 
 const routes = [
   {
@@ -30,7 +31,7 @@ const routes = [
   },
   {
     path: "/albums",
-    name: "AlbumsExplorer",
+    name: "AlbumsView",
     component: AlbumsExplorer,
   },
   {
@@ -40,9 +41,14 @@ const routes = [
   },
   {
     path: "/artists",
-    name: "ArtistsExplorer",
+    name: "ArtistsView",
     component: ArtistsExplorer,
-  }
+  },
+  {
+    path: "/settings",
+    name: "SettingsView",
+    component: SettingsView,
+  },
 ];
 
 const router = createRouter({

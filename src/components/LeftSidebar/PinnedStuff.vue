@@ -1,6 +1,6 @@
 <template>
   <div
-    class="side-nav-container rounded"
+    class="side-nav-container rounded hidden"
     :class="{ hidden: collapsed }"
     id="pinned-container"
   >
