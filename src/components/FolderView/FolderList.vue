@@ -23,8 +23,7 @@ const props = defineProps({
 
 <style lang="scss">
 .f-container {
-  padding: $small 0 $smaller 0;
-  overflow: hidden;
+  padding: 0 0 0 0;
 }
 
 .no_f {

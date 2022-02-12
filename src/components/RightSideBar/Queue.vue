@@ -1,5 +1,5 @@
 <template>
-  <div class="up-next border">
+  <div class="up-next">
     <p class="heading">COMING UP NEXT</p>
     <div class="r-grid">
       <div class="main-item h-1 border" @click="playNext">
@@ -129,10 +129,6 @@ export default {
       overflow: auto;
       background-color: $card-dark;
       scrollbar-color: grey transparent;
-
-      &::-webkit-scrollbar-track {
-        background-color: transparent;
-      }
     }
   }
 }

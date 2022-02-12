@@ -146,16 +146,20 @@ export default {
   display: flex;
   align-items: center;
   padding: 0 1rem 0 1rem;
+  position: relative;
+  padding-left: 14rem;
 
   .art {
-    width: 14rem;
+    position: absolute;
+    left: $small;
+    width: 13rem;
     height: 13rem;
     background: no-repeat center/cover;
     margin-right: 1rem;
   }
 
   .info {
-    width: calc(100% - 13rem);
+    width: 100%;
     height: calc(100% - 1rem);
     display: flex;
     flex-direction: column;

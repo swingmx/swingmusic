@@ -71,8 +71,9 @@ export default {
 .al-view {
   height: calc(100% - 1rem);
   overflow: auto;
-  margin-top: $small;
+  margin: $smaller $small;
   scrollbar-width: none;
+
   .songs {
     padding: $small;
     background-color: $card-dark;

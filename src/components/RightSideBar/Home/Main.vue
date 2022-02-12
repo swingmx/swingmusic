@@ -1,5 +1,5 @@
 <template>
-  <div class="r-home border">
+  <div class="r-home">
    <NowPlaying />
    <Recommendations />
   </div>

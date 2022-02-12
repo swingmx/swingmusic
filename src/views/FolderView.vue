@@ -1,5 +1,5 @@
 <template>
-  <div id="f-view-parent" class="rounded">
+  <div id="f-view-parent" class="card-dark">
     <div class="fixed">
       <Header :path="path" :first_song="songs[0]" @search="updateQueryString" />
     </div>
@@ -128,10 +128,9 @@ export default {
 <style lang="scss">
 #f-view-parent {
   position: relative;
-  background-color: $card-dark;
   padding: 4rem $small 0 $small;
   overflow: hidden;
-  margin: $smaller;
+  margin: 0;
 }
 
 #f-view-parent .fixed {

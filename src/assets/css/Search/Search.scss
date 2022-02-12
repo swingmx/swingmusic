@@ -1,6 +1,6 @@
 .right-search {
   position: relative;
-  background-color: #03000eab;
+  background-color: $card-dark;
   display: grid;
   grid-template-rows: min-content 1fr;
   overflow: hidden;
@@ -10,7 +10,6 @@
 
   .no-res {
     text-align: center;
-    // height: calc(100% - 1rem);
     display: grid;
 
     .highlight {

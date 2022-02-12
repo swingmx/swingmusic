@@ -3,7 +3,7 @@
     <Header :playlist_info="playlist_info" />
     <div class="separator no-border"></div>
 
-    <div class="songlist rounded border">
+    <div class="songlist rounded">
       <SongList :songs="songs" />
     </div>
     <div class="separator no-border"></div>
@@ -40,9 +40,10 @@ export default {
 
 <style lang="scss">
 .playlist-view {
-  height: calc(100% - $small);
-  margin: $smaller $smaller 0 $smaller;
+  height: calc(100% - 0rem);
+  margin: 0 $small;
   overflow: auto;
+  padding-bottom: $small;
 
   &::-webkit-scrollbar {
     display: none;

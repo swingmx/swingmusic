@@ -87,6 +87,8 @@ const props = defineProps({
     padding: 0.6rem 0 0.6rem 0;
 
     &:hover {
+      background-color: rgba(73, 73, 73, 0.13);
+
       #home-icon {
         background-color: rgba(145, 58, 58, 0.555);
       }

@@ -1,5 +1,5 @@
 <template>
-  <div class="right-search border">
+  <div class="right-search">
     <div>
       <div class="input">
         <Loader/>

@@ -1,7 +1,7 @@
 <template>
   <div class="r-sidebar">
     <div class="grid">
-      <div class="r-content">
+      <div class="r-content border">
         <div class="r-dash" v-show="current_tab == tabs.home">
           <DashBoard />
         </div>
@@ -13,7 +13,7 @@
           <UpNext />
         </div>
       </div>
-      <div class="tab-keys card-dark">
+      <div class="tab-keys card-dark border">
         <Tabs :current_tab="current_tab" :tabs="tabs" @changeTab="changeTab" />
       </div>
     </div>

@@ -29,6 +29,7 @@
   height: 14rem;
   background-image: url("../../assets/images/eggs.jpg");
   position: relative;
+  margin-top: $small;
 
   .last-updated {
     position: absolute;
