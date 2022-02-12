@@ -66,7 +66,6 @@ const playThis = (song) => {
 
   &:hover {
     cursor: pointer;
-    background-color: $blue;
   }
 
   hr {

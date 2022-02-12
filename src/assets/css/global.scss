@@ -16,6 +16,7 @@ body {
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica,
     Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
   font-size: 1rem;
+  overflow: hidden;
 }
 
 .heading {
@@ -39,7 +40,7 @@ a {
 }
 
 .border {
-  border: solid 1px rgba(39, 38, 38, 0.329);
+  border: solid 1px #27262654;
 }
 
 .separator {
@@ -88,9 +89,6 @@ button {
     "bottom-bar bottom-bar bottom-bar";
   width: 100vw;
   height: 100vh;
-  background-repeat: no-repeat;
-  background-size: cover;
-  background-position: center;
   background: rgba(0, 0, 0, 0.575);
 }
 
@@ -133,8 +131,9 @@ button {
 
 .content {
   grid-area: content;
-  border-radius: 0.25rem;
   overflow: hidden;
+  padding: 0;
+  border-left: solid 1px #27262654;
 }
 
 .r-sidebar {

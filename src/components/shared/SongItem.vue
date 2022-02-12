@@ -150,7 +150,7 @@ export default {
     }
     & {
       & td {
-        background-color: rgb(5, 80, 150);
+        background-color: #3131313b;
       }
 
       td:first-child {

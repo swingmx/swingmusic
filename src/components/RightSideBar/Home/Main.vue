@@ -1,5 +1,5 @@
 <template>
-  <div class="r-home rounded border">
+  <div class="r-home border">
    <NowPlaying />
    <Recommendations />
   </div>
@@ -10,7 +10,7 @@
   height: 100%;
   width: 31rem;
   background-color: $card-dark;
-  padding: $small;
+  padding: $smaller $small;
 }
 </style>
 

@@ -153,7 +153,7 @@ export default {
       }
 
       &:hover {
-        background-color: rgb(87, 74, 74);
+        background-color: #574a4a;
 
         .play {
           transition: 0.5s all ease;

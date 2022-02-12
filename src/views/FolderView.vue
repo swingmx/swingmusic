@@ -131,7 +131,7 @@ export default {
   background-color: $card-dark;
   padding: 4rem $small 0 $small;
   overflow: hidden;
-  margin: $small 0 $small 0;
+  margin: $smaller;
 }
 
 #f-view-parent .fixed {

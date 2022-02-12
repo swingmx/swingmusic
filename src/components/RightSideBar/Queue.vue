@@ -71,7 +71,6 @@ export default {
 <style lang="scss">
 .up-next {
   background-color: $card-dark;
-  border-radius: 0.5rem;
   padding: $small;
   overflow: hidden;
   height: 100%;

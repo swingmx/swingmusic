@@ -13,7 +13,7 @@
           <UpNext />
         </div>
       </div>
-      <div class="tab-keys card-dark border">
+      <div class="tab-keys card-dark">
         <Tabs :current_tab="current_tab" :tabs="tabs" @changeTab="changeTab" />
       </div>
     </div>
@@ -26,6 +26,7 @@ import Search from "../Search.vue";
 import UpNext from "./Queue.vue";
 import Tabs from "./Tabs.vue";
 import Main from "./Home/Main.vue";
+import perks from "../../composables/perks";
 
 const DashBoard = Main;
 
@@ -40,22 +41,29 @@ const default_tab = tabs.home;
 const current_tab = ref(default_tab);
 
 function changeTab(tab) {
-  current_tab.value = tab;
+  new Promise((resolve) => {
+    current_tab.value = tab;
+    resolve();
+    setTimeout(() => {}, 300);
+  }).then(() => {
+    if (tab === tabs.queue) {
+      perks.focusCurrent();
+    }
+  });
 }
 </script>
 
 <style lang="scss">
 .r-sidebar {
-  width: 34.5em;
-  margin: $small 0 $small 0;
-  
-  @include phone-only {
-    display: none;
-  }
+  width: 34em;
 
-  @include tablet-landscape {
-    width: 3rem;
-  }
+  // @include phone-only {
+  //   display: none;
+  // }
+
+  // @include tablet-landscape {
+  //   width: 3rem;
+  // }
 
   .grid {
     height: 100%;
@@ -66,9 +74,9 @@ function changeTab(tab) {
       grid-area: content;
       width: 31rem;
 
-      @include tablet-landscape {
-        display: none;
-      }
+      // @include tablet-landscape {
+      //   display: none;
+      // }
 
       .r-search {
         height: 100%;
@@ -84,12 +92,14 @@ function changeTab(tab) {
     }
 
     .tab-keys {
+      width: 3rem;
       right: 0;
       height: 100%;
       position: absolute;
       grid-area: tabs;
-      padding: $small;
-      border-radius: $small 0 0 $small;
+      // padding: $small 0;
+      border-radius: 0;
+      overflow: hidden;
     }
   }
 }

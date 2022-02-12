@@ -1,5 +1,5 @@
 <template>
-  <div class="playlist-view rounded">
+  <div class="playlist-view">
     <Header :playlist_info="playlist_info" />
     <div class="separator no-border"></div>
 
@@ -40,8 +40,8 @@ export default {
 
 <style lang="scss">
 .playlist-view {
-  height: calc(100% - 1rem);
-  margin-top: $small;
+  height: calc(100% - $small);
+  margin: $smaller $smaller 0 $smaller;
   overflow: auto;
 
   &::-webkit-scrollbar {
