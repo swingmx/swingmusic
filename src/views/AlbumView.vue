@@ -42,12 +42,15 @@ export default {
     watch(
       () => route.params,
       () => {
-        routeLoader.toAlbum(route.params.album, route.params.artist);
+        if (route.name == "AlbumView") {
+          routeLoader.toAlbum(route.params.album, route.params.artist);
+        }
       }
     );
 
     onMounted(() => {
-        routeLoader.toAlbum(route.params.album, route.params.artist);
+      console.log("mounted");
+      routeLoader.toAlbum(route.params.album, route.params.artist);
     });
 
     onUnmounted(() => {

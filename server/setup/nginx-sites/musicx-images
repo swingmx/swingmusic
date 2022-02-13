@@ -1,0 +1,3 @@
+server { listen 8900;
+
+ location /images/ { root /home/cwilvx/.musicx/; autoindex on; sendfile on;  } }

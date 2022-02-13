@@ -56,7 +56,6 @@ export default {
     }
 
     function emitLoadAlbum(title, artist) {
-      console.log("hii");
       emit("loadAlbum", title, artist);
     }
 

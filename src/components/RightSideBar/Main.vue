@@ -57,13 +57,13 @@ function changeTab(tab) {
 .r-sidebar {
   width: 34em;
 
-  // @include phone-only {
-  //   display: none;
-  // }
+  @include phone-only {
+    display: none;
+  }
 
-  // @include tablet-landscape {
-  //   width: 3rem;
-  // }
+  @include tablet-landscape {
+    width: 3rem;
+  }
 
   .grid {
     height: 100%;
@@ -74,9 +74,9 @@ function changeTab(tab) {
       grid-area: content;
       width: 31rem;
 
-      // @include tablet-landscape {
-      //   display: none;
-      // }
+      @include tablet-landscape {
+        display: none;
+      }
 
       .r-search {
         height: 100%;
