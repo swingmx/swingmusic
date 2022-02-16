@@ -16,7 +16,7 @@ def initialize() -> None:
     Runs all the necessary setup functions.
     """
     helpers.create_config_dir()
-    helpers.check_for_new_songs()
+    helpers.reindex_tracks()
     helpers.start_watchdog()
 
 
@@ -197,7 +197,7 @@ def get_artist_data(artist: str):
 
 
 @bp.route("/f/<folder>")
-@cache.cached()
+# @cache.cached(30)
 def get_folder_tree(folder: str):
     """
     Returns a list of all the folders and tracks in the given folder.
@@ -291,7 +291,10 @@ def send_track_file(track_id):
     """
     Returns an audio file that matches the passed id to the client.
     """
+    try:
+        filepath = instances.songs_instance.get_song_by_id(track_id)['filepath']
+        return send_file(filepath, mimetype="audio/mp3")
+    except FileNotFoundError:
+        return "File not found", 404
 
-    filepath = instances.songs_instance.get_song_by_id(track_id)['filepath']
 
-    return send_file(filepath, mimetype="audio/mp3")

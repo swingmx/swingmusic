@@ -42,7 +42,7 @@ def populate():
             instances.songs_instance.insert_song(tags)
 
     api.all_the_f_music = helpers.get_all_songs()
-    
+
     print("\n check done")
     end = time.time()
 

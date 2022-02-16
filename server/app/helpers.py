@@ -34,7 +34,7 @@ def background(func):
 
 
 @background
-def check_for_new_songs():
+def reindex_tracks():
     """
     Checks for new songs every 5 minutes.
     """
@@ -48,6 +48,9 @@ def check_for_new_songs():
 
 @background
 def start_watchdog():
+    """
+    Starts the file watcher.
+    """
     watchdoge.watch.run()
 
 
