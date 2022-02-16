@@ -53,7 +53,8 @@ class Artists(Mongo):
         """
         Inserts an artist into the database.
         """
-        self.collection.update_one(artist_obj, {"$set": artist_obj}, upsert=True)
+        self.collection.update_one(artist_obj, {"$set": artist_obj}, upsert=True).upserted_id
+
 
     def get_all_artists(self) -> list:
         """
@@ -90,9 +91,9 @@ class AllSongs(Mongo):
         """
         Inserts a new track object into the database.
         """
-        self.collection.update_one(
+        return self.collection.update_one(
             {"filepath": song_obj["filepath"]}, {"$set": song_obj}, upsert=True
-        )
+        ).upserted_id
 
     def get_all_songs(self) -> list:
         """
@@ -173,7 +174,7 @@ class AllSongs(Mongo):
         )
         return convert_to_json(songs)
 
-    def find_song_by_path(self, path: str) -> dict:
+    def get_song_by_path(self, path: str) -> dict:
         """
         Returns a single track matching the filepath in the query params.
         """
@@ -190,6 +191,15 @@ class AllSongs(Mongo):
         except:
             return False
 
+    def remove_song_by_id(self, id:str):
+        """
+        Removes a single track from the database. Returns a boolean indicating success or failure of the operation.
+        """
+        try:
+            self.collection.delete_one({"_id": ObjectId(id)})
+            return True
+        except:
+            return False
 
 @dataclass
 class Track:
