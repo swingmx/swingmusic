@@ -17,7 +17,8 @@ def create_app():
     app.config.from_mapping(config)
     cache.init_app(app)
 
-    from . import api
-    app.register_blueprint(api.bp, url_prefix='/')
+    with app.app_context():
+        from . import api
+        app.register_blueprint(api.bp, url_prefix='/')
 
-    return app
+        return app

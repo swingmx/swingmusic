@@ -32,6 +32,7 @@ def populate():
     """
     start = time.time()
     print("\nchecking for new tracks")
+
     files = helpers.run_fast_scandir(helpers.home_dir, [".flac", ".mp3"])[1]
 
     for file in files:
@@ -41,6 +42,7 @@ def populate():
             instances.songs_instance.insert_song(tags)
 
     api.all_the_f_music = helpers.get_all_songs()
+    
     print("\n check done")
     end = time.time()
 
@@ -251,18 +253,18 @@ def parse_disk_number(audio):
     return disk_number
 
 
-def get_tags(full_path: str) -> dict:
+def get_tags(fullpath: str) -> dict:
     """
     Returns a dictionary of tags for a given file.
     """
     try:
-        audio = mutagen.File(full_path, easy=True)
+        audio = mutagen.File(fullpath, easy=True)
     except MutagenError:
         return None
 
     tags = {
         "artists": parse_artist_tag(audio),
-        "title": parse_title_tag(audio, full_path),
+        "title": parse_title_tag(audio, fullpath),
         "albumartist": parse_album_artist_tag(audio),
         "album": parse_album_tag(audio),
         "genre": parse_genre_tag(audio),
@@ -271,9 +273,9 @@ def get_tags(full_path: str) -> dict:
         "discnumber": parse_disk_number(audio),
         "length": round(audio.info.length),
         "bitrate": round(int(audio.info.bitrate) / 1000),
-        "filepath": full_path.replace(helpers.home_dir, ""),
-        "image": extract_thumb(full_path),
-        "folder": os.path.dirname(full_path).replace(helpers.home_dir, ""),
+        "filepath": fullpath,
+        "image": extract_thumb(fullpath),
+        "folder": os.path.dirname(fullpath).replace(helpers.home_dir, ""),
     }
 
     return tags
@@ -314,7 +316,6 @@ def create_track_class(tags):
         tags["artists"],
         tags["albumartist"],
         tags["album"],
-        tags["filepath"],
         tags["folder"],
         tags["length"],
         tags["date"],

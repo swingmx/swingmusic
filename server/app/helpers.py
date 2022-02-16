@@ -9,24 +9,26 @@ from typing import List
 import requests
 
 from io import BytesIO
+
 from PIL import Image
 
 from app import instances
 from app import functions
+from app import watchdoge
 
 home_dir = os.path.expanduser('~') + '/'
 app_dir = os.path.join(home_dir, '.musicx')
 LAST_FM_API_KEY = "762db7a44a9e6fb5585661f5f2bdf23a"
 
 
-def background(f):
+def background(func):
     """
     a threading decorator
     use @background above the function you want to run in the background
     """
 
     def background_func(*a, **kw):
-        threading.Thread(target=f, args=a, kwargs=kw).start()
+        threading.Thread(target=func, args=a, kwargs=kw).start()
 
     return background_func
 
@@ -42,6 +44,11 @@ def check_for_new_songs():
         functions.populate()
         functions.populate_images()
         time.sleep(300)
+
+
+@background
+def start_watchdog():
+    watchdoge.watch.run()
 
 
 def run_fast_scandir(_dir: str, ext: list):
@@ -89,7 +96,7 @@ def remove_duplicates(array: list) -> list:
 
 def save_image(url: str, path: str) -> None:
     """
-    Saves an image from a url to a path.
+    Saves an image from an url to a path.
     """
 
     response = requests.get(url)
@@ -138,14 +145,11 @@ def get_all_songs() -> List:
     tracks = []
 
     for track in instances.songs_instance.get_all_songs():
-        track = functions.create_track_class(track)
-
         try:
-            os.chmod(os.path.join(home_dir, track.filepath), 0o755)
+            os.chmod(os.path.join(track["filepath"]), 0o755)
         except FileNotFoundError:
-            print("❌")
-            instances.songs_instance.remove_song_by_filepath(track.filepath)
+            instances.songs_instance.remove_song_by_filepath(track['filepath'])
 
-        tracks.append(track)
+        tracks.append(functions.create_track_class(track))
 
     return tracks

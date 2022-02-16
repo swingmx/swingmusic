@@ -202,7 +202,6 @@ class Track:
     artists: str
     albumartist: str
     album: str
-    filepath: str
     folder: str
     length: int
     date: int

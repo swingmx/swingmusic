@@ -1,7 +1,7 @@
 import os
 import urllib
 from typing import List
-from flask import Blueprint, request
+from flask import Blueprint, request, send_file
 from app import functions, instances, helpers, cache
 
 bp = Blueprint("api", __name__, url_prefix="")
@@ -17,6 +17,7 @@ def initialize() -> None:
     """
     helpers.create_config_dir()
     helpers.check_for_new_songs()
+    helpers.start_watchdog()
 
 
 initialize()
@@ -85,8 +86,8 @@ def search_by_title():
                 artist_obj = {
                     "name": artist,
                     "image": "http://0.0.0.0:8900/images/artists/"
-                    + artist.replace("/", "::")
-                    + ".webp",
+                             + artist.replace("/", "::")
+                             + ".webp",
                 }
 
                 if artist_obj not in artists_dicts:
@@ -135,8 +136,8 @@ def get_albumartists(album, artist):
         artist_obj = {
             "name": artist,
             "image": "http://0.0.0.0:8900/images/artists/"
-            + artist.replace("/", "::")
-            + ".webp",
+                     + artist.replace("/", "::")
+                     + ".webp",
         }
         final_artists.append(artist_obj)
 
@@ -270,8 +271,8 @@ def get_album_tracks(title: str, artist: str):
         "image": songs[0].image,
         "artist": songs[0].albumartist,
         "artist_image": "http://127.0.0.1:8900/images/artists/"
-        + songs[0].albumartist.replace("/", "::")
-        + ".webp",
+                        + songs[0].albumartist.replace("/", "::")
+                        + ".webp",
     }
 
     return {"songs": songs, "info": album_obj}
@@ -283,3 +284,14 @@ def get_album_bio(title, artist):
     """Returns the album bio for the given album."""
     bio = functions.get_album_bio(title, artist)
     return {"bio": bio}, 200
+
+
+@bp.route("/file/<track_id>")
+def send_track_file(track_id):
+    """
+    Returns an audio file that matches the passed id to the client.
+    """
+
+    filepath = instances.songs_instance.get_song_by_id(track_id)['filepath']
+
+    return send_file(filepath, mimetype="audio/mp3")
