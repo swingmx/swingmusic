@@ -54,7 +54,7 @@ export default {
       height: 10rem;
       position: absolute;
       background-color: rgb(196, 58, 58);
-      box-shadow: 0px 0px 2rem rgb(0, 0, 0);
+      box-shadow: 0 0 2rem rgb(0, 0, 0);
       bottom: -10rem;
       left: 7rem;
       transform: rotate(45deg) translate(-1rem, -9rem);
@@ -74,7 +74,7 @@ export default {
       background-color: $blue;
       border-radius: 50%;
       transform: translateX(-11rem) translateY(7rem);
-      box-shadow: 0px 0px 2rem rgb(0, 0, 0);
+      box-shadow: 0 0 2rem rgb(0, 0, 0);
     }
   }
   .bio {

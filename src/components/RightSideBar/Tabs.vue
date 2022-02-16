@@ -1,17 +1,17 @@
 <template>
   <div class="r-tabs">
     <div v-for="tab in props.tabs"
-    @click="changeTab(tab)"
-    :key="tab"
-      class="image t-item"
-      :class="{ active_tab: props.current_tab == tab }, `${tab}`"
+         @click="changeTab(tab)"
+         :key="tab"
+         class="image t-item"
+         :class="{ active_tab: props.current_tab === tab }, `${tab}`"
     ></div>
     <div>
     </div>
   </div>
 </template>
 
-<script setup>import { onMounted } from 'vue';
+<script setup>
 
 const props = defineProps({
   current_tab: String,
@@ -21,7 +21,7 @@ const props = defineProps({
 const emit = defineEmits(['changeTab'])
 
 function changeTab(tab) {
-  if (tab == props.current_tab) return;
+  if (tab === props.current_tab) return;
 
   emit('changeTab', tab)
 }
@@ -41,8 +41,7 @@ function changeTab(tab) {
     width: 100%;
     height: 2.45rem;
     background-size: 1.5rem;
-    border-radius: 0;
-      border-radius: $small 0 0 $small;
+    border-radius: $small 0 0 $small;
 
     &:hover {
       background-color: rgba(128, 128, 128, 0.281);

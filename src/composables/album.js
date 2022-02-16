@@ -10,13 +10,11 @@ const getAlbumTracks = async (name, artist) => {
   );
 
   if (!res.ok) {
-    const message = `An error has occured: ${res.status}`;
+    const message = `An error has occurred: ${res.status}`;
     throw new Error(message);
   }
 
-  const data = await res.json();
-
-  return data;
+  return await res.json();
 };
 
 const getAlbumArtists = async (name, artist) => {
@@ -30,7 +28,7 @@ const getAlbumArtists = async (name, artist) => {
   );
 
   if (!res.ok) {
-    const message = `An error has occured: ${res.status}`;
+    const message = `An error has occurred: ${res.status}`;
     throw new Error(message);
   }
 
@@ -49,7 +47,7 @@ const getAlbumBio = async (name, artist) => {
   );
 
   if (!res.ok) {
-    const message = `An error has occured: ${res.status}`;
+    const message = `An error has occurred: ${res.status}`;
     throw new Error(message);
   }
 

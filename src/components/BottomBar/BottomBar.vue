@@ -26,7 +26,6 @@
 </template>
 
 <script setup>
-import { ref } from "vue";
 import "../../assets/css/BottomBar/BottomBar.scss";
 import SongCard from "./SongCard.vue";
 import Progress from "../shared/Progress.vue";

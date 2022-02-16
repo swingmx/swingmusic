@@ -85,7 +85,7 @@ export default {
       position: absolute;
       left: -4.2rem;
       top: 3rem;
-      box-shadow: 0px 0px 1.5rem rgb(0, 0, 0);
+      box-shadow: 0 0 1.5rem rgb(0, 0, 0);
     }
 
     .rect {
@@ -96,7 +96,7 @@ export default {
       background-color: rgb(196, 58, 58);
       transform: rotate(-45deg) translate(20%, -50%);
       z-index: 1;
-      box-shadow: 0px 0px 2rem rgb(0, 0, 0);
+      box-shadow: 0 0 2rem rgb(0, 0, 0);
       transition: all 0.5s ease-in-out;
 
       &:hover {
@@ -114,7 +114,7 @@ export default {
       background-color: $blue;
       border-radius: 50%;
       transform: translateX(-11rem) translateY(7rem);
-      box-shadow: 0px 0px 2rem rgba(0, 0, 0, 0.164);
+      box-shadow: 0 0 2rem rgba(0, 0, 0, 0.164);
       transition: all 0.5s ease-in-out;
 
       &:hover {
@@ -145,9 +145,7 @@ export default {
   overflow: hidden;
   display: flex;
   align-items: center;
-  padding: 0 1rem 0 1rem;
-  position: relative;
-  padding-left: 14rem;
+  padding: 0 1rem 0 14rem;
 
   .art {
     position: absolute;

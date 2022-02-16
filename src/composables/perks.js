@@ -40,10 +40,10 @@ function updateNext(song_) {
     (item) => item.track_id === song_.track_id
   );
 
-  if (index == queue.value.length - 1) {
+  if (index === queue.value.length - 1) {
     next.value = queue.value[0];
     state.prev.value = queue.value[queue.value.length - 2];
-  } else if (index == 0) {
+  } else if (index === 0) {
     next.value = queue.value[1];
   } else {
     next.value = queue.value[index + 1];
@@ -55,9 +55,9 @@ function updatePrev(song) {
     (item) => item.track_id === song.track_id
   );
 
-  if (index == 0) {
+  if (index === 0) {
     prev.value = queue.value[queue.value.length - 1];
-  } else if (index == queue.value.length - 1) {
+  } else if (index === queue.value.length - 1) {
     prev.value = queue.value[index - 1];
   } else {
     prev.value = queue.value[index - 1];
@@ -81,7 +81,7 @@ const readQueue = () => {
 };
 
 const updateQueue = async (song, type) => {
-  playAudio.playAudio(song.filepath);
+  playAudio.playAudio(song.track_id);
   let list;
 
   switch (type) {
@@ -151,7 +151,7 @@ window.addEventListener("keydown", (e) => {
 
   switch (e.key) {
     case "ArrowRight":
-      if (target.tagName == "INPUT") return;
+      if (target.tagName === "INPUT") return;
 
       {
         if (!key_down_fired) {
@@ -169,7 +169,7 @@ window.addEventListener("keydown", (e) => {
     case "ArrowLeft":
       {
         if (!key_down_fired) {
-          if (target.tagName == "INPUT") return;
+          if (target.tagName === "INPUT") return;
 
           key_down_fired = true;
 
@@ -186,7 +186,7 @@ window.addEventListener("keydown", (e) => {
     case " ":
       {
         if (!key_down_fired) {
-          if (target.tagName == "INPUT") return;
+          if (target.tagName === "INPUT") return;
           e.preventDefault();
           key_down_fired = true;
 

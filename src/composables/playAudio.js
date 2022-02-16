@@ -1,4 +1,4 @@
-import { ref } from "@vue/reactivity";
+import {ref} from "@vue/reactivity";
 
 import perks from "./perks";
 import media from "./mediaNotification.js";
@@ -11,77 +11,77 @@ const current_time = ref(0);
 
 const playing = ref(state.is_playing);
 
-const url = "http://0.0.0.0:8901/";
+const url = "http://0.0.0.0:9876/file/";
 
-const playAudio = (path) => {
-  const elem = document.getElementsByClassName('progress-bar')[0];
-  const bottom_elem = document.getElementsByClassName('progress-bar')[1];
+const playAudio = (track_id) => {
+    const elem = document.getElementsByClassName('progress-bar')[0];
+    const bottom_elem = document.getElementsByClassName('progress-bar')[1];
 
-  const full_path = url + encodeURIComponent(path);
+    const full_path = url + encodeURIComponent(track_id);
 
-  new Promise((resolve, reject) => {
-    audio.src = full_path;
-    audio.oncanplaythrough = resolve;
-    audio.onerror = reject;
-  })
-    .then(() => {
-      audio.play();
-      perks.focusCurrent()
-
-      state.is_playing.value = true;
-
-      audio.ontimeupdate = () => {
-        current_time.value = audio.currentTime;
-        pos.value = (audio.currentTime / audio.duration) * 1000;
-        let bg_size = ((audio.currentTime / audio.duration)*100)
-
-        elem.style.backgroundSize = `${bg_size}% 100%`;
-        bottom_elem.style.backgroundSize = `${bg_size}% 100%`;
-      };
+    new Promise((resolve, reject) => {
+        audio.src = full_path;
+        audio.oncanplaythrough = resolve;
+        audio.onerror = reject;
     })
-    .catch((err) => console.log(err));
+        .then(() => {
+            audio.play().then(() => {
+                    perks.focusCurrent()
+                    state.is_playing.value = true;
+                }
+            );
+            audio.ontimeupdate = () => {
+                current_time.value = audio.currentTime;
+                pos.value = (audio.currentTime / audio.duration) * 1000;
+                let bg_size = ((audio.currentTime / audio.duration) * 100)
+
+                elem.style.backgroundSize = `${bg_size}% 100%`;
+                bottom_elem.style.backgroundSize = `${bg_size}% 100%`;
+            };
+        })
+        .catch((err) => console.log(err));
 };
 
 function playNext() {
-  playAudio(perks.next.value.filepath);
-  perks.current.value = perks.next.value;
-  media.showMediaNotif();
+    playAudio(perks.next.value.track_id);
+    perks.current.value = perks.next.value;
+    media.showMediaNotif();
 }
 
 function playPrev() {
-  playAudio(state.prev.value.filepath);
-  perks.current.value = perks.prev.value;
+    playAudio(state.prev.value.track_id);
+    perks.current.value = perks.prev.value;
 }
 
 function seek(position) {
-  audio.currentTime = (position / 1000) * audio.duration;
+    audio.currentTime = (position / 1000) * audio.duration;
 }
 
 function playPause() {
-  if (audio.src === "") {
-    playAudio(perks.current.value.filepath);
-  }
+    if (audio.src === "") {
+        playAudio(perks.current.value.filepath);
+    }
 
-  if (audio.paused) {
-    audio.play();
-  } else {
-    audio.pause();
-  }
+    if (audio.paused) {
+        audio.play();
+    } else {
+        audio.pause();
+    }
 }
 
 audio.addEventListener("play", () => {
-  state.is_playing.value = true;
+    state.is_playing.value = true;
 });
 
 audio.addEventListener("pause", () => {
-  state.is_playing.value = false;
+    state.is_playing.value = false;
 });
 
 audio.addEventListener("ended", () => {
-  playNext();
+    playNext();
 });
 
-export default { playAudio, playNext, playPrev, playPause, seek, pos, playing, current_time };
+export default {playAudio, playNext, playPrev, playPause, seek, pos, playing, current_time};
 
 
 // TODO

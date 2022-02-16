@@ -40,7 +40,7 @@
     color: rgb(255, 255, 255);
     font-size: 0.9rem;
     border-radius: $smaller;
-    box-shadow: 0px 0px 1rem rgba(0, 0, 0, 0.479);
+    box-shadow: 0 0 1rem rgba(0, 0, 0, 0.479);
 
     @include phone-only {
       // border: solid;
@@ -64,12 +64,11 @@
     height: 10rem;
     bottom: $small;
     left: $small;
-    padding: $small;
     display: flex;
     flex-direction: row;
     align-items: flex-end;
-    padding-bottom: 3.5rem;
-    box-shadow: 0px 0px 1.5rem rgba(0, 0, 0, 0.658);
+    padding: $small $small 3.5rem;
+    box-shadow: 0 0 1.5rem rgba(0, 0, 0, 0.658);
 
     @include phone-only {
       width: calc(100% - 1rem);

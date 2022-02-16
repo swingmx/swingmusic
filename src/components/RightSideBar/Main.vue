@@ -2,14 +2,14 @@
   <div class="r-sidebar">
     <div class="grid">
       <div class="r-content border">
-        <div class="r-dash" v-show="current_tab == tabs.home">
+        <div class="r-dash" v-show="current_tab === tabs.home">
           <DashBoard />
         </div>
-        <div class="r-search" v-show="current_tab == tabs.search">
+        <div class="r-search" v-show="current_tab === tabs.search">
           <Search />
         </div>
 
-        <div class="r-queue" v-show="current_tab == tabs.queue">
+        <div class="r-queue" v-show="current_tab === tabs.queue">
           <UpNext />
         </div>
       </div>

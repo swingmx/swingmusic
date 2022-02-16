@@ -3,7 +3,7 @@
     class="track-item h-1"
     @click="playThis(props.track)"
     :class="{
-      currentInQueue: current.track_id == props.track.track_id,
+      currentInQueue: current.track_id === props.track.track_id,
     }"
   >
     <div
@@ -14,7 +14,7 @@
     >
       <div
         class="now-playing-track image"
-        v-if="current.track_id == props.track.track_id"
+        v-if="current.track_id === props.track.track_id"
         :class="{ active: is_playing, not_active: !is_playing }"
       ></div>
     </div>
@@ -44,7 +44,7 @@ const putCommas = perks.putCommas;
 const is_playing = ref(playAudio.playing);
 
 const playThis = (song) => {
-  playAudio.playAudio(song.filepath);
+  playAudio.playAudio(song.track_id);
   perks.current.value = song;
 };
 
@@ -58,11 +58,10 @@ const playThis = (song) => {
 .track-item {
   display: flex;
   align-items: center;
-  padding: 0.5rem;
   border-radius: 0.5rem;
   position: relative;
   height: 4rem;
-  padding-left: 4rem;
+  padding: 0.5rem 0.5rem 0.5rem 4rem;
 
   &:hover {
     cursor: pointer;

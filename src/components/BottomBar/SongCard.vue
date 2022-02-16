@@ -11,7 +11,7 @@
       <div>
         <div class="title ellip">{{ track.title }}</div>
         <div class="separator no-border"></div>
-        <div class="artists ellip" v-if="track.artists[0] != ''">
+        <div class="artists ellip" v-if="track.artists[0] !== ''">
           <span v-for="artist in putCommas(track.artists)" :key="artist">{{
             artist
           }}</span>

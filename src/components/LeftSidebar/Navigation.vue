@@ -17,7 +17,6 @@
 </template>
 
 <script setup>
-import { ref } from "vue";
 
 const menus = [
   {
@@ -71,10 +70,9 @@ const props = defineProps({
 }
 
 .side-nav-container {
-  padding: $small;
   color: #fff;
   margin-bottom: 1rem;
-  padding-top: 10px;
+  padding: 10px $small $small;
   margin-top: 1rem;
   text-transform: capitalize;
 

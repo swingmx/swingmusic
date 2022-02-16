@@ -3,11 +3,9 @@ input[type="range"] {
   margin-right: 15px;
   width: calc(100% - 2px);
   height: 0.3rem;
-  background: rgb(59, 57, 57);
   border-radius: 5px;
-  background-image: linear-gradient($blue, $blue);
-  background-size: 0% 100%;
-  background-repeat: no-repeat;
+  background-size: 0 100%;
+  background: rgb(59, 57, 57) linear-gradient($blue, $blue) no-repeat;
 }
 
 /* Input Thumb */

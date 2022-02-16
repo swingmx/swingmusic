@@ -36,13 +36,14 @@ export default {
     height: 7em;
     border-radius: 50%;
     margin-bottom: $small;
-    background: url("../../assets/images/null.webp");
     background-size: 7rem 7rem;
+    background: url("../../assets/images/null.webp");
+    background-size: 100% 100%;
     background-repeat: no-repeat;
-    background-position: center;
+    background-position: top;
     transition: all 0.5s ease-in-out;
     border: solid 1px rgba(5, 5, 5, 0.055);
-    box-shadow: 0px 0px 80px rgb(0, 0, 0);
+    box-shadow: 0 0 80px rgb(0, 0, 0);
   }
 
   &:hover {

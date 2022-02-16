@@ -1,5 +1,5 @@
 <template>
-  <tr class="songlist-item" :class="{ current: current.track_id == song.track_id }">
+  <tr class="songlist-item" :class="{ current: current.track_id === song.track_id }">
     <td class="index">{{ index }}</td>
     <td class="flex" @click="emitUpdate(song)">
       <div
@@ -8,7 +8,7 @@
       >
         <div
           class="now-playing-track image"
-          v-if="current.track_id == song.track_id"
+          v-if="current.track_id === song.track_id"
           :class="{ active: is_playing, not_active: !is_playing }"
         ></div>
       </div>
@@ -22,7 +22,7 @@
       </div>
     </td>
     <td class="song-artists">
-      <div class="ellip" v-if="song.artists[0] != ''">
+      <div class="ellip" v-if="song.artists[0] !== ''">
         <span
           class="artist"
           v-for="artist in putCommas(song.artists)"

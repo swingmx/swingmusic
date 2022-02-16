@@ -16,9 +16,8 @@
       <input
         type="text"
         class="search-input"
-        placeholder="Ctrl + F"
+        placeholder="/"
         v-model="query"
-        @keyup.enter="search()"
       />
       <div class="search-icon image"></div>
     </div>
@@ -109,8 +108,7 @@ export default {
 
     border-radius: $small;
     background-color: rgb(24, 22, 22);
-    padding: $small;
-    padding-left: 2.25rem;
+    padding: $small $small $small 2.25rem;
 
     .icon {
       position: absolute;

@@ -39,7 +39,7 @@
           v-if="
           !artists.artists.length &&
           !tracks.tracks.length &&
-          !albums.albums.length && query.length != 0
+          !albums.albums.length && query.length !== 0
         "
           class="no-res"
       >
@@ -47,7 +47,7 @@
           No results for <span class="highlight rounded">{{ query }}</span>
         </div>
       </div>
-      <div v-else-if="query.length == 0" class="no-res">
+      <div v-else-if="query.length === 0" class="no-res">
         <div class="no-res-text">Find your music 🔍😀</div>
       </div>
     </div>
@@ -123,14 +123,14 @@ export default {
     }
 
     watch(query, (new_query) => {
-      if (query.value == "" || query.value == "  " || query.value.length < 2) {
+      if (query.value === "" || query.value === "  " || query.value.length < 2) {
         albums.albums = [];
         artists.artists = [];
         tracks.tracks = [];
 
         return;
       }
-      ;
+
 
       searchMusic(new_query).then((res) => {
         albums.albums = res.albums.albums;

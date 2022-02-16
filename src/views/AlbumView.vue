@@ -19,7 +19,7 @@
 import { useRoute } from "vue-router";
 import { onMounted } from "@vue/runtime-core";
 import { onUnmounted } from "@vue/runtime-core";
-import { watch, ref } from "vue";
+import { watch } from "vue";
 import Header from "../components/AlbumView/Header.vue";
 import AlbumBio from "../components/AlbumView/AlbumBio.vue";
 
@@ -42,7 +42,7 @@ export default {
     watch(
       () => route.params,
       () => {
-        if (route.name == "AlbumView") {
+        if (route.name === "AlbumView") {
           routeLoader.toAlbum(route.params.album, route.params.artist);
         }
       }

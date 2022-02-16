@@ -132,14 +132,14 @@ export default {
   transition: all 0.5s ease-in-out;
 
   &:hover {
-    background-position: 0%;
+    background-position: 0;
   }
 
   p {
     margin-left: 1rem;
     font-size: 1.5rem;
     font-weight: 700;
-    text-shadow: 0px 0px 80px rgb(0, 0, 0);
+    text-shadow: 0 0 80px rgb(0, 0, 0);
   }
 }
 </style>

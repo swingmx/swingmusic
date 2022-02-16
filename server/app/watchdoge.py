@@ -58,7 +58,5 @@ class Handler(PatternMatchingEventHandler):
         print(event.dest_path)
 
 
-# if __name__ == '__main__':
 watch = OnMyWatch()
-# watch.run()
 
