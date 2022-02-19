@@ -6,7 +6,7 @@
   overflow: hidden;
   width: auto;
   height: 100%;
-  padding: $small $small 0 $small;
+  padding: $small $small 0 0;
 
   .no-res {
     text-align: center;
@@ -32,20 +32,12 @@
     align-items: center;
     position: relative;
   }
-
-  .search-icon {
-    position: absolute;
-    top: 0;
-    right: 0;
-    height: 2.5rem;
-    width: 2.5rem;
-    background-image: url(../../icons/search.svg);
-    background-size: 70%;
-  }
+  
 }
 
 .right-search .scrollable {
   overflow-y: auto;
+  scrollbar-width: none;
 
   &::-webkit-scrollbar {
     display: none;
@@ -57,6 +49,12 @@
     width: 100%;
     border-radius: 0.4rem;
     position: relative;
+    
+    ._loader {
+      position: absolute;
+      top: 0;
+      right: 2rem;
+    }
 
     input {
       width: calc(100% - 2.5rem);
@@ -67,7 +65,7 @@
       font-size: 1rem;
       outline: none;
       transition: all 0.5s ease;
-      padding-left: 0.4rem;
+      padding-left: .75rem;
 
       &:focus {
         transition: all 0.5s ease;

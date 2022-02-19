@@ -16,7 +16,7 @@
       <input
         type="text"
         class="search-input"
-        placeholder="/"
+        placeholder="Search this folder"
         v-model="query"
       />
       <div class="search-icon image"></div>

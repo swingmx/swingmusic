@@ -44,6 +44,7 @@ export default {
   margin: 0 $small;
   overflow: auto;
   padding-bottom: $small;
+  scrollbar-width: none;
 
   &::-webkit-scrollbar {
     display: none;

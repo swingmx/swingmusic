@@ -1,26 +1,26 @@
 <template>
   <div id="f-view-parent" class="border rounded card-dark">
     <div class="fixed">
-      <Header :path="path" :first_song="songs[0]" @search="updateQueryString"/>
+      <Header :path="path" :first_song="songs[0]" @search="updateQueryString" />
     </div>
     <div id="scrollable" ref="scrollable">
-      <FolderList :folders="folders"/>
+      <FolderList :folders="folders" />
       <div class="separator" v-if="folders.length && songs.length"></div>
-      <SongList :songs="songs"/>
+      <SongList :songs="songs" />
     </div>
   </div>
 </template>
 
 <script>
-import {computed, ref} from "@vue/reactivity";
-import {useRoute} from "vue-router";
+import { computed, ref } from "@vue/reactivity";
+import { useRoute } from "vue-router";
 
 import SongList from "@/components/FolderView/SongList.vue";
 import FolderList from "@/components/FolderView/FolderList.vue";
 import Header from "@/components/FolderView/Header.vue";
 
 import getTracksAndDirs from "../composables/getFiles.js";
-import {onMounted, watch} from "@vue/runtime-core";
+import { onMounted, watch } from "@vue/runtime-core";
 import state from "@/composables/state.js";
 
 export default {
@@ -46,9 +46,9 @@ export default {
       if (query.value.length > 1) {
         for (let i = 0; i < song_list.value.length; i++) {
           if (
-              song_list.value[i].title
-                  .toLowerCase()
-                  .includes(query.value.toLowerCase())
+            song_list.value[i].title
+              .toLowerCase()
+              .includes(query.value.toLowerCase())
           ) {
             songs_.push(song_list.value[i]);
           }
@@ -66,9 +66,9 @@ export default {
       if (query.value.length > 1) {
         for (let i = 0; i < folders_list.value.length; i++) {
           if (
-              folders_list.value[i].name
-                  .toLowerCase()
-                  .includes(query.value.toLowerCase())
+            folders_list.value[i].name
+              .toLowerCase()
+              .includes(query.value.toLowerCase())
           ) {
             folders_.push(folders_list.value[i]);
           }
@@ -84,19 +84,19 @@ export default {
       const getDirData = (path) => {
         state.loading.value = true;
         getTracksAndDirs(path)
-            .then((data) => {
-              scrollable.value.scrollTop = 0;
+          .then((data) => {
+            scrollable.value.scrollTop = 0;
 
-              state.folder_song_list.value = data.songs;
-              state.folder_list.value = data.folders;
+            state.folder_song_list.value = data.songs;
+            state.folder_list.value = data.folders;
 
-              state.loading.value = false;
-            })
-            .then(() => {
-              setTimeout(() => {
-                query.value = "";
-              }, 100);
-            });
+            state.loading.value = false;
+          })
+          .then(() => {
+            setTimeout(() => {
+              query.value = "";
+            }, 100);
+          });
       };
 
       getDirData(path.value);
@@ -144,6 +144,7 @@ export default {
   overflow-y: auto;
   height: calc(100% - $small);
   padding-right: $small;
+  scrollbar-color: grey transparent;
 
   @include phone-only {
     padding-right: 0;

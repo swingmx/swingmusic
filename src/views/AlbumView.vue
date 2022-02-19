@@ -9,9 +9,11 @@
     </div>
     <div class="separator" id="av-sep"></div>
     <FeaturedArtists :artists="artists" />
-    <div class="separator" id="av-sep"></div>
-    <AlbumBio :bio="bio" v-if="bio" />
-    <div class="separator" id="av-sep"></div>
+    <div v-if="bio">
+      <div class="separator" id="av-sep"></div>
+      <AlbumBio :bio="bio" v-if="bio" />
+    </div>
+    <!-- <div class="separator" id="av-sep"></div> -->
   </div>
 </template>
 
@@ -74,12 +76,13 @@ export default {
 .al-view {
   height: calc(100% - 1rem);
   overflow: auto;
-  margin: $smaller $small;
+  margin: $small $small;
   scrollbar-width: none;
 
   .songs {
     padding: $small;
     background-color: $card-dark;
+    min-height: calc(100% - 30rem);
   }
 
   &::-webkit-scrollbar {

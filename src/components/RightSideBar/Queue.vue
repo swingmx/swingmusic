@@ -1,22 +1,24 @@
 <template>
   <div class="up-next">
-    <p class="heading">COMING UP NEXT</p>
     <div class="r-grid">
-      <div class="main-item h-1 border" @click="playNext">
-        <div
-          class="album-art image"
-          :style="{
-            backgroundImage: `url(&quot;${next.image}&quot;)`,
-          }"
-        ></div>
-        <div class="tags">
-          <p class="title ellip">{{ next.title }}</p>
-          <hr />
-          <p class="artist ellip">
-            <span v-for="artist in putCommas(next.artists)" :key="artist">{{
-              artist
-            }}</span>
-          </p>
+      <div class="main-item  border" >
+        <p class="heading">COMING UP NEXT</p>
+        <div class="itemx" @click="playNext">
+          <div
+            class="album-art image"
+            :style="{
+              backgroundImage: `url(&quot;${next.image}&quot;)`,
+            }"
+          ></div>
+          <div class="tags">
+            <p class="title ellip">{{ next.title }}</p>
+            <hr />
+            <p class="artist ellip">
+              <span v-for="artist in putCommas(next.artists)" :key="artist">{{
+                artist
+              }}</span>
+            </p>
+          </div>
         </div>
       </div>
       <div class="scrollable-r border rounded">
@@ -29,8 +31,7 @@
 <script>
 import perks from "@/composables/perks.js";
 import audio from "@/composables/playAudio.js";
-import { ref, toRefs } from "@vue/reactivity";
-import { watch } from "@vue/runtime-core";
+import { ref } from "@vue/reactivity";
 import TrackItem from "../shared/TrackItem.vue";
 
 export default {
@@ -41,6 +42,7 @@ export default {
     const { playNext } = audio;
 
     const putCommas = perks.putCommas;
+
     return {
       playNext,
       putCommas,
@@ -55,7 +57,7 @@ export default {
 <style lang="scss">
 .up-next {
   background-color: $card-dark;
-  padding: $small;
+  padding: $small $small $small 0;
   overflow: hidden;
   height: 100%;
 
@@ -65,12 +67,21 @@ export default {
   }
 
   .main-item {
-    display: flex;
-    align-items: center;
-    padding: 0.5rem;
     border-radius: 0.5rem;
-    cursor: pointer;
+    padding: 0.5rem;
     margin-bottom: 0.5rem;
+
+    .itemx {
+      display: flex;
+      align-items: center;
+      padding: 0.5rem;
+      cursor: pointer;
+      border-radius: 0.5rem;
+
+      &:hover {
+        background-color: $blue;
+      }
+    }
 
     .album-art {
       width: 4.5rem;
@@ -95,15 +106,11 @@ export default {
         font-size: small;
       }
     }
-
-    &:hover {
-      background-color: $blue;
-    }
   }
 
   .r-grid {
     position: relative;
-    height: calc(100% - 2rem);
+    height: calc(100% - 2.5rem);
     display: grid;
     grid-template-rows: min-content;
 

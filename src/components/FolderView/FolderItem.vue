@@ -2,7 +2,7 @@
   <router-link
     :to="{ name: 'FolderView', params: { path: props.folder.path } }"
   >
-    <div class="f-item border-sm rounded">
+    <div class="f-item">
       <div class="icon image"></div>
       <div class="info">
         <div class="f-item-text ellip">{{ props.folder.name }}</div>
@@ -30,6 +30,7 @@ const props = defineProps({
   position: relative;
   background-color: #ffffff09;
   transition: all 0.2s ease;
+  border-radius: .75rem;
 
   @include phone-only {
     height: 4rem;
@@ -63,7 +64,7 @@ const props = defineProps({
       #021b79,
       #0575e6
     ); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
-    background-size: 105% 105%;  
+    background-size: 105% 105%;
     background-position-x: -$small;
 
     .f-item-count {

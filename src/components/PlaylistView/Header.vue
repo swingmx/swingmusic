@@ -1,6 +1,6 @@
 <template>
   <div class="p-header rounded">
-    <div class="info rounded card-dark">
+    <div class="info card-dark">
       <div>
         <div class="name">Makaveli Radio</div>
         <div class="metrics rounded border">45 Tracks • 3 Hours 4 Minutes</div>
@@ -43,7 +43,6 @@
     box-shadow: 0 0 1rem rgba(0, 0, 0, 0.479);
 
     @include phone-only {
-      // border: solid;
       bottom: 1rem;
       right: 1rem;
       font-size: small;
@@ -67,8 +66,9 @@
     display: flex;
     flex-direction: row;
     align-items: flex-end;
-    padding: $small $small 3.5rem;
+    padding: 1rem 1rem 4rem 1rem;
     box-shadow: 0 0 1.5rem rgba(0, 0, 0, 0.658);
+    border-radius: .5rem;
 
     @include phone-only {
       width: calc(100% - 1rem);
@@ -89,13 +89,12 @@
       color: rgb(0, 60, 255);
       padding: $small;
       width: fit-content;
-      border-radius: $smaller;
     }
 
     .buttons {
       position: absolute;
-      bottom: $small;
-      left: $small;
+      bottom:1rem;
+      left:1rem;
       display: flex;
       gap: $small;
 

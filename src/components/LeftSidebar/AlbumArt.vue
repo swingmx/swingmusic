@@ -1,7 +1,7 @@
 <template>
   <div class="l_" v-if="!props.collapsed">
     <div
-      class="l-image image border rounded"
+      class="l-image image rounded"
       :style="{
         backgroundImage: `url(&quot;${current.image}&quot;)`,
       }"
@@ -28,6 +28,7 @@ const props = defineProps({
   .l-image {
     height: 14rem;
     width: 14rem;
+    border-radius: .5rem;
   }
 }
 </style>

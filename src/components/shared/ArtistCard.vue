@@ -1,5 +1,5 @@
 <template>
-  <div class="xartist border" :style="{ backgroundColor: `#${color}` }">
+  <div class="xartist" :style="{ backgroundColor: `#${color}` }">
     <div
       class="artist-image image"
       :style="{ backgroundImage: `url('${artist.image}')` }"
@@ -24,7 +24,7 @@ export default {
 
   width: 9em;
   height: 11em;
-  border-radius: $small;
+  border-radius: 1rem;
   display: flex;
   flex-direction: column;
   align-items: center;

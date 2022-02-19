@@ -62,6 +62,8 @@ export default {
   height: 100%;
   background-image: url("../../assets/images/abg.webp");
   background-position: 0% 60%;
+  background-repeat: no-repeat;
+  background-size: cover;
 
   .info {
     width: 100%;

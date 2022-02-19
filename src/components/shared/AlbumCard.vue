@@ -4,7 +4,7 @@
       name: 'AlbumView',
       params: { album: album.name, artist: album.artist },
     }"
-    class="result-item border"
+    class="result-item"
   >
     <div
       class="album-art image"
@@ -29,29 +29,32 @@ export default {
   flex-direction: column;
   align-items: center;
   padding: $small;
-  border-radius: $small;
+  border-radius: .75rem;
   text-align: left !important;
-  width: 9rem;
+  background-color: #726c7227;
+
+  &:hover {
+    background-color: #1b3688cb;
+  }
 
   .album-art {
-    height: 7rem;
-    width: 7rem;
-    border-radius: 0.5rem;
+    height: 7.5rem;
+    width: 7.5rem;
+    border-radius: .5rem;
     margin-bottom: 0.5rem;
   }
 
   .title {
     width: 7rem;
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.25rem;
     font-size: 0.9rem;
   }
 
   .artistsx {
     width: 7rem;
-    display: flex;
     font-size: 0.8rem;
     text-align: left;
-    color: rgba(40, 116, 216, 0.767);
+    color: #ffffffbd;
   }
 }
 </style>

@@ -41,6 +41,6 @@ function loadMore() {
 <style lang="scss">
 .right-search .tracks-results {
   border-radius: 0.5rem;
-  padding: $small;
+  padding: 1rem $small;
 }
 </style>

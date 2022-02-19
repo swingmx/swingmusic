@@ -40,7 +40,8 @@ export default {
   overflow-x: hidden;
 
   .grid {
-    display: flex;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(8rem, 1fr));
     flex-wrap: wrap;
     padding: $small $small 0 $small;
     gap: $small;

@@ -1,20 +1,17 @@
 <template>
   <div class="r-home">
-   <NowPlaying />
    <Recommendations />
   </div>
 </template>
 
 <style lang="scss">
 .r-home {
-  height: 100%;
-  width: 31rem;
+  height: calc(100% - 1rem);
   background-color: $card-dark;
-  padding: $smaller $small;
+  padding: 0 $small $small 0;
 }
 </style>
 
 <script setup>
-import NowPlaying from '../NowPlaying.vue';
 import Recommendations from '../Recommendation.vue';
 </script>

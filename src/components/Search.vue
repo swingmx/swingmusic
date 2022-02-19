@@ -2,7 +2,6 @@
   <div class="right-search">
     <div>
       <div class="input">
-        <Loader/>
         <Filters :filters="filters" @removeFilter="removeFilter"/>
         <div class="input-loader border">
           <input
@@ -12,7 +11,9 @@
               type="text"
               @keyup.backspace="removeLastFilter"
           />
-          <div class="search-icon image"></div>
+          <div class="_loader">
+            <Loader/>
+          </div>
         </div>
       </div>
       <div class="separator no-border"></div>

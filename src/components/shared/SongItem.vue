@@ -3,7 +3,7 @@
     <td class="index">{{ index }}</td>
     <td class="flex" @click="emitUpdate(song)">
       <div
-        class="album-art rounded image"
+        class="album-art image"
         :style="{ backgroundImage: `url(&quot;${song.image}&quot;` }"
       >
         <div
@@ -113,6 +113,7 @@ export default {
       margin-right: 1rem;
       display: grid;
       place-items: center;
+      border-radius: .5rem;
     }
 
     .artist {
