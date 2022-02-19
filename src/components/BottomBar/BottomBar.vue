@@ -2,7 +2,7 @@
   <div class="b-bar border card-dark">
     <div class="grid">
       <SongCard :collapsed="props.collapsed" />
-      <div class="controlsx border rounded">
+      <div class="controlsx rounded">
         <div class="controls controls-bottom">
           <HotKeys />
         </div>

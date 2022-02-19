@@ -47,7 +47,9 @@ function changeTab(tab) {
     setTimeout(() => {}, 300);
   }).then(() => {
     if (tab === tabs.queue) {
-      perks.focusCurrent();
+      setTimeout(() => {
+        perks.focusCurrent();
+      }, 300);
     }
   });
 }

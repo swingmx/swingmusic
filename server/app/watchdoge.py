@@ -35,12 +35,11 @@ def add_track(filepath: str) -> None:
     Processes the audio tags for a given file ands add them to the music dict.
     """
     tags = functions.get_tags(filepath)
+    print(tags)
 
     if tags is not None:
-        print("🔵: tags okay")
-        track_id = instances.songs_instance.insert_song(tags)
-        track = instances.songs_instance.get_song_by_id(track_id)
-        print(track_id)
+        instances.songs_instance.insert_song(tags)
+        track = instances.songs_instance.get_song_by_path(tags["filepath"])
 
         track_obj = functions.create_track_class(track)
         api.all_the_f_music.append(track_obj)
@@ -55,7 +54,6 @@ def remove_track(filepath: str) -> None:
 
     for track in api.all_the_f_music:
         if track.track_id == track_id:
-            pprint(track)
             api.all_the_f_music.remove(track)
 
 
@@ -90,8 +88,19 @@ class Handler(PatternMatchingEventHandler):
         Fired when a move event occurs on a supported file.
         """
         print("🔘 moved -->")
-        remove_track(event.src_path)
-        add_track(event.dest_path)
+        tr = "share/Trash"
+
+        if tr in event.dest_path:
+            print("trash ++")
+            remove_track(event.src_path)
+        
+        elif tr in event.src_path:
+            add_track(event.dest_path)
+
+        elif tr not in event.dest_path and tr not in event.src_path:
+            add_track(event.dest_path)
+            remove_track(event.src_path)
+
 
     def on_closed(self, event):
         """

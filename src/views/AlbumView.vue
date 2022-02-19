@@ -4,7 +4,7 @@
       <Header :album_info="album_info" />
     </div>
     <div class="separator" id="av-sep"></div>
-    <div class="songs rounded border">
+    <div class="songs rounded">
       <SongList :songs="album_songs" />
     </div>
     <div class="separator" id="av-sep"></div>

@@ -2,7 +2,7 @@
   <router-link
     :to="{ name: 'FolderView', params: { path: props.folder.path } }"
   >
-    <div class="f-item border rounded">
+    <div class="f-item border-sm rounded">
       <div class="icon image"></div>
       <div class="info">
         <div class="f-item-text ellip">{{ props.folder.name }}</div>

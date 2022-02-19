@@ -32,7 +32,7 @@
         <Progress/>
       </div>
     </div>
-    <div class="c-wrapper border rounded">
+    <div class="c-wrapper rounded">
       <div class="controls">
         <div class="shuffle">
           <div class="image"></div>
@@ -89,7 +89,7 @@ export default {
   border-radius: 0.5rem;
   height: 13.5rem;
   padding: 0.5rem;
-  background: $card-dark;
+  // background: rgba(255, 255, 255, 0.055);
   display: grid;
   grid-template-rows: 3fr 1fr;
 

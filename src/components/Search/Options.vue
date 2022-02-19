@@ -30,11 +30,11 @@ export default {
       },
       {
         title: "Artist",
-        icon: "🙄",
+        icon: "👤",
       },
       {
         title: "Playlist",
-        icon: "😍",
+        icon: "🎧",
       },
       {
         title: "Folder",

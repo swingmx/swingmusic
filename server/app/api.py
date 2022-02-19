@@ -197,7 +197,7 @@ def get_artist_data(artist: str):
 
 
 @bp.route("/f/<folder>")
-# @cache.cached(30)
+@cache.cached()
 def get_folder_tree(folder: str):
     """
     Returns a list of all the folders and tracks in the given folder.

@@ -1,8 +1,8 @@
 <template>
   <div class="f-artists border">
     <div class="xcontrols">
-      <div class="prev border" @click="scrollLeft"></div>
-      <div class="next border" @click="scrollRight"></div>
+      <div class="prev" @click="scrollLeft"></div>
+      <div class="next" @click="scrollRight"></div>
     </div>
     <div class="artists" ref="artists_dom">
       <div class="xartist border c1 image">
@@ -91,7 +91,7 @@ export default {
     border-radius: $small;
     cursor: pointer;
     transition: all 0.5s ease;
-    background-color: rgb(79, 80, 80);
+    background-color: rgb(51, 51, 51);
   }
 
   .next:hover,

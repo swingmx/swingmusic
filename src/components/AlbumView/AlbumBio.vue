@@ -4,7 +4,7 @@
       <div class="rect rounded"></div>
       <div class="circle"></div>
     </div>
-    <div class="bio rounded border" v-html="bio"></div>
+    <div class="bio rounded" v-html="bio"></div>
   </div>
 </template>
 

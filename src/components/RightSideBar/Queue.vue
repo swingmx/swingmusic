@@ -19,9 +19,9 @@
           </p>
         </div>
       </div>
-        <div class="scrollable-r border rounded">
-          <TrackItem v-for="song in queue" :key="song.track_id" :track="song" />
-        </div>
+      <div class="scrollable-r border rounded">
+        <TrackItem v-for="song in queue" :key="song.track_id" :track="song" />
+      </div>
     </div>
   </div>
 </template>
@@ -34,30 +34,14 @@ import { watch } from "@vue/runtime-core";
 import TrackItem from "../shared/TrackItem.vue";
 
 export default {
-  props: ["up_next"],
-  setup(props, { emit }) {
-    const is_expanded = toRefs(props).up_next;
+  setup() {
     const queue = ref(perks.queue);
     const next = ref(perks.next);
-
-    let collapse = () => {
-      emit("expandQueue");
-    };
-
-    watch(is_expanded, (newVal) => {
-      if (newVal) {
-        setTimeout(() => {
-          perks.focusCurrent();
-        }, 1000);
-      }
-    });
 
     const { playNext } = audio;
 
     const putCommas = perks.putCommas;
     return {
-      collapse,
-      is_expanded,
       playNext,
       putCommas,
       queue,
