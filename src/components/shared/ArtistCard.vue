@@ -1,7 +1,7 @@
 <template>
   <div class="xartist" :style="{ backgroundColor: `#${color}` }">
     <div
-      class="artist-image image"
+      class="artist-image image border-sm"
       :style="{ backgroundImage: `url('${artist.image}')` }"
     ></div>
     <div>
@@ -30,19 +30,17 @@ export default {
   align-items: center;
   justify-content: center;
   cursor: pointer;
+  background-color: transparent;
 
   .artist-image {
     width: 7em;
     height: 7em;
-    border: solid;
     border-radius: 60%;
     margin-bottom: $small;
     background-size: 7rem 7rem;
     background-position: center;
     background-repeat: no-repeat;
     transition: all 0.5s ease-in-out;
-    border: solid 1px rgba(5, 5, 5, 0.055);
-    box-shadow: 0 0 80px rgb(0, 0, 0);
   }
 
   &:hover {

@@ -18,12 +18,12 @@
   }
 
   .heading {
-    margin-left: $small;
-    background-color: rgb(3, 54, 112);
-    width: 6rem;
-    padding: $small;
+    padding: $medium;
     border-radius: $small;
     margin-bottom: $small;
+    text-align: center !important;
+    font-size: 1;
+    color: #fff;
   }
 
   .input {
@@ -31,7 +31,6 @@
     align-items: center;
     position: relative;
   }
-  
 }
 
 .right-search .scrollable {
@@ -48,7 +47,7 @@
     width: 100%;
     border-radius: 0.4rem;
     position: relative;
-    
+
     ._loader {
       position: absolute;
       top: 0;
@@ -64,7 +63,7 @@
       font-size: 1rem;
       outline: none;
       transition: all 0.5s ease;
-      padding-left: .75rem;
+      padding-left: 0.75rem;
 
       &:focus {
         transition: all 0.5s ease;

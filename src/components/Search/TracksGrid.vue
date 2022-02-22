@@ -1,6 +1,6 @@
 <template>
-  <div class="tracks-results border" v-if="tracks">
-    <div class="heading">🎵 TRACKS</div>
+  <div class="tracks-results" v-if="tracks">
+    <div class="heading">TRACKS</div>
     <div class="items">
       <table>
         <tbody>
@@ -31,7 +31,7 @@ const props = defineProps({
   },
 });
 
-const emit = defineEmits(["loadMore"])
+const emit = defineEmits(["loadMore"]);
 
 function loadMore() {
   emit("loadMore", "tracks");
@@ -39,8 +39,21 @@ function loadMore() {
 </script>
 
 <style lang="scss">
+$theme: rgb(86, 86, 87);
+
 .right-search .tracks-results {
   border-radius: 0.5rem;
-  padding: 1rem $small;
+  padding: $small;
+  border: 2px solid $theme;
+
+  .heading {
+    background-color: $theme;
+    color: #fff;
+  }
+
+  .morexx > button {
+    background-color: $theme !important;
+    color: #fff;
+  }
 }
 </style>

@@ -31,10 +31,11 @@ export default {
   padding: $small;
   border-radius: .75rem;
   text-align: left !important;
+  border: solid 2px transparent;
 
-  &:hover {
-    background-color: #1b3688cb;
-  }
+  // &:hover {
+  //   background-color: #1b3688cb;
+  // }
 
   .album-art {
     height: 7.5rem;

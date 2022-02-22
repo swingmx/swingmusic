@@ -1,6 +1,6 @@
 <template>
-  <div class="albums-results border">
-    <div class="heading">💿 ALBUMS</div>
+  <div class="albums-results">
+    <div class="heading">ALBUMS</div>
     <div class="grid">
       <AlbumCard v-for="album in albums" :key="album" :album="album" />
     </div>
@@ -31,19 +31,34 @@ export default {
 </script>
 
 <style lang="scss">
+$theme: #353333;
+
 .right-search .albums-results {
   border-radius: 0.5rem;
   background: #0f131b44;
   margin-top: $small;
-  padding-bottom: $small;
-  padding-top: $small;
+  padding: $small;
   overflow-x: hidden;
+  border: solid 2px $theme;
+
+  .result-item:hover {
+    border: solid 2px $theme;
+  }
+
+  .heading {
+    background-color: $theme;
+    color: #fff;
+  }
+
+  .morexx > button {
+    background-color: $theme !important;
+    color: #fff;
+  }
 
   .grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(8rem, 1fr));
     flex-wrap: wrap;
-    padding: $small $small 0 $small;
     gap: $small;
   }
 }

@@ -22,7 +22,7 @@
 
 <script setup>
 import { ref } from "vue";
-import Search from "../Search.vue";
+import Search from "./Search.vue";
 import UpNext from "./Queue.vue";
 import Tabs from "./Tabs.vue";
 import Main from "./Home/Main.vue";
@@ -63,9 +63,9 @@ function changeTab(tab) {
     display: none;
   }
 
-  @include tablet-landscape {
-    width: 3rem;
-  }
+  // @include tablet-landscape {
+  //   width: 3rem;
+  // }
 
   .grid {
     height: 100%;
@@ -77,9 +77,9 @@ function changeTab(tab) {
       width: 29rem;
 
 
-      @include tablet-landscape {
-        display: none;
-      }
+      // @include tablet-landscape {
+      //   display: none;
+      // }
 
       .r-search {
         height: 100%;
