@@ -122,7 +122,6 @@ export default {
   padding: $small;
   margin-top: $small;
   overflow: hidden;
-  background-color: $card-dark;
 
   .all-albums {
     height: calc(100% - 4rem);

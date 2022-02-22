@@ -1,5 +1,5 @@
 <template>
-  <div id="f-view-parent" class="border rounded card-dark">
+  <div id="f-view-parent" class="border rounded">
     <div class="fixed">
       <Header :path="path" :first_song="songs[0]" @search="updateQueryString" />
     </div>
@@ -131,6 +131,11 @@ export default {
   padding: 4rem $small 0 $small;
   overflow: hidden;
   margin: $small;
+
+  .h {
+    font-size: 2rem;
+    font-weight: bold;
+  }
 }
 
 #f-view-parent .fixed {

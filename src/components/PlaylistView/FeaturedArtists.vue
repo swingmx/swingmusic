@@ -56,7 +56,6 @@ export default {
   position: relative;
   height: 15em;
   width: calc(100%);
-  background-color: $card-dark;
   padding: $small;
   border-radius: $small;
   user-select: none;

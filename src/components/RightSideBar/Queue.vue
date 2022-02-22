@@ -56,7 +56,6 @@ export default {
 
 <style lang="scss">
 .up-next {
-  background-color: $card-dark;
   padding: $small $small $small 0;
   overflow: hidden;
   height: 100%;
@@ -118,7 +117,7 @@ export default {
       height: 100%;
       padding: $small;
       overflow: auto;
-      background-color: $card-dark;
+      // background-color: $card-dark;
       scrollbar-color: grey transparent;
     }
   }

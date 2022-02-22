@@ -31,7 +31,6 @@ export default {
   padding: $small;
   border-radius: .75rem;
   text-align: left !important;
-  background-color: #726c7227;
 
   &:hover {
     background-color: #1b3688cb;
@@ -48,6 +47,7 @@ export default {
     width: 7rem;
     margin-bottom: 0.25rem;
     font-size: 0.9rem;
+    font-weight: bold;
   }
 
   .artistsx {

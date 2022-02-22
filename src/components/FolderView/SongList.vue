@@ -91,7 +91,6 @@ function loadAlbum(title, albumartist) {
   width: 100%;
   height: 100%;
   overflow-y: auto;
-  background-color: $card-dark;
 
   &::-webkit-scrollbar {
     display: none;

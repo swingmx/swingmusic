@@ -1,6 +1,6 @@
 <template>
   <div class="album-h">
-    <div class="a-header rounded card-dark">
+    <div class="a-header rounded">
       <div class="info">
         <div class="top">
           <div class="h">Album</div>

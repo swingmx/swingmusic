@@ -11,7 +11,7 @@
 
 body {
   margin: 0;
-  background: #0d0e0e;
+  background-color: $card-dark;
   color: #fff;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica,
     Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
@@ -58,7 +58,7 @@ a {
 }
 
 .card-dark {
-  background-color: $card-dark;
+  background-color: #fff;
 }
 
 .hidden {
@@ -93,14 +93,13 @@ button {
     "bottom-bar bottom-bar bottom-bar";
   width: 100vw;
   height: 100vh;
-  background: rgba(0, 0, 0, 0.575);
 }
 
 .l-sidebar {
   width: 15rem;
   grid-area: l-sidebar;
   padding-top: 0.5rem;
-  background-color: $card-dark;
+  // background-color: $card-dark;
 }
 
 .bottom-bar {

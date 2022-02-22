@@ -81,7 +81,6 @@ export default {
 
   .songs {
     padding: $small;
-    background-color: $card-dark;
     min-height: calc(100% - 30rem);
   }
 

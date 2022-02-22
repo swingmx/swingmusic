@@ -13,7 +13,7 @@
           <UpNext />
         </div>
       </div>
-      <div class="tab-keys card-dark border">
+      <div class="tab-keys border">
         <Tabs :current_tab="current_tab" :tabs="tabs" @changeTab="changeTab" />
       </div>
     </div>

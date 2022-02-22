@@ -38,7 +38,6 @@ export default {
 <style lang="scss">
 .r-tracks {
   margin-top: 0.5rem;
-  background-color: $card-dark;
   padding: 0.5rem;
 }
 

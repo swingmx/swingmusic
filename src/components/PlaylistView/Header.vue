@@ -1,6 +1,6 @@
 <template>
   <div class="p-header rounded">
-    <div class="info card-dark">
+    <div class="info">
       <div>
         <div class="name">Makaveli Radio</div>
         <div class="metrics rounded border">45 Tracks • 3 Hours 4 Minutes</div>

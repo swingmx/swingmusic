@@ -50,7 +50,6 @@ export default {
     display: none;
   }
   .songlist {
-    background-color: $card-dark;
     padding: $small;
     min-height: 100%;
   }

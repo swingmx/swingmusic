@@ -55,7 +55,6 @@ export default {
 .top-albums {
   height: 14rem;
   border-radius: $small;
-  background-color: $card-dark;
   padding: $small;
 
   .heading {

@@ -14,7 +14,7 @@
         <AlbumArt :collapsed="collapsed" />
       </div>
     </div>
-    <div class="content card-dark">
+    <div class="content">
       <div class="search-box"></div>
       <router-view />
     </div>

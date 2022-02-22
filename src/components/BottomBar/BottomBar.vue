@@ -1,5 +1,5 @@
 <template>
-  <div class="b-bar border card-dark">
+  <div class="b-bar border">
     <div class="grid">
       <SongCard :collapsed="props.collapsed" />
       <div class="controlsx rounded">

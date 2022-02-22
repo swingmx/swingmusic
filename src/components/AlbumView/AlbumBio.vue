@@ -1,5 +1,5 @@
 <template>
-  <div class="al-bio rounded border card-dark">
+  <div class="al-bio rounded border">
     <div class="left rounded border">
       <div class="rect rounded"></div>
       <div class="circle"></div>
