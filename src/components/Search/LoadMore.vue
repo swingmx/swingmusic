@@ -1,6 +1,6 @@
 <template>
   <div class="morexx">
-    <button @click="loadMore">
+    <button @click="loadMore" class="theme">
       <div class="text">Load More</div>
     </button>
   </div>

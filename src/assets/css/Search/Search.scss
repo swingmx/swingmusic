@@ -10,6 +10,11 @@
   .no-res {
     text-align: center;
     display: grid;
+    height: calc(100% - $small);
+    place-items: center;
+    font-size: 2rem;
+    transition: all 0.3s ease;
+    line-height: 4rem !important;
 
     .highlight {
       padding: $small;

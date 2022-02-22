@@ -1,6 +1,6 @@
 <template>
   <div class="artists-results">
-    <div class="heading">ARTISTS</div>
+    <div class="heading theme">ARTISTS</div>
     <div class="grid">
       <ArtistCard v-for="artist in artists" :key="artist" :artist="artist" />
     </div>
@@ -31,7 +31,7 @@ export default {
 </script>
 
 <style lang="scss">
-$theme: #585858cc;
+$theme: #464545fd;
 
 .right-search .artists-results {
   border-radius: 0.5rem;
@@ -44,13 +44,13 @@ $theme: #585858cc;
     border: solid 2px $theme;
   }
 
-  .heading {
-    background-color: $theme;
-    color: #fff;
-  }
-
-  .morexx > button {
-    background-color: $theme !important;
+  .theme {
+    background-image: linear-gradient(
+      45deg,
+      #141414 0%,
+      #464545fd 50%,
+      #111111 100%
+    );
     color: #fff;
   }
 

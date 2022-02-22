@@ -1,6 +1,6 @@
 <template>
   <div class="tracks-results" v-if="tracks">
-    <div class="heading">TRACKS</div>
+    <div class="heading theme">TRACKS</div>
     <div class="items">
       <table>
         <tbody>
@@ -39,20 +39,20 @@ function loadMore() {
 </script>
 
 <style lang="scss">
-$theme: rgb(86, 86, 87);
+$theme: #0056f5;
 
 .right-search .tracks-results {
   border-radius: 0.5rem;
   padding: $small;
   border: 2px solid $theme;
 
-  .heading {
-    background-color: $theme;
-    color: #fff;
-  }
-
-  .morexx > button {
-    background-color: $theme !important;
+  .theme {
+    background-image: linear-gradient(
+      45deg,
+      #21216b 20%,
+      $theme 50%,
+      #16266b 100%
+    );
     color: #fff;
   }
 }

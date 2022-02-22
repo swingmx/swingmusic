@@ -30,7 +30,7 @@
           :albums="albums.albums"
           :more="albums.more"
       />
-      <div class="separator no-border"></div>
+      <div class="separator no-border" v-if="albums.albums.length"></div>
       <ArtistGrid
           v-if="artists.artists.length"
           :artists="artists.artists"
@@ -42,14 +42,14 @@
           !tracks.tracks.length &&
           !albums.albums.length && query.length !== 0
         "
-          class="no-res"
+          class="no-res border rounded"
       >
         <div class="no-res-text">
           No results for <span class="highlight rounded">{{ query }}</span>
         </div>
       </div>
-      <div v-else-if="query.length === 0" class="no-res">
-        <div class="no-res-text">Find your music 🔍😀</div>
+      <div v-else-if="query.length === 0" class="no-res border rounded">
+        <div class="no-res-text">👻 Find your music</div>
       </div>
     </div>
   </div>

@@ -1,6 +1,6 @@
 <template>
   <div class="albums-results">
-    <div class="heading">ALBUMS</div>
+    <div class="heading theme">ALBUMS</div>
     <div class="grid">
       <AlbumCard v-for="album in albums" :key="album" :album="album" />
     </div>
@@ -31,7 +31,7 @@ export default {
 </script>
 
 <style lang="scss">
-$theme: #353333;
+$theme: #6405d1;
 
 .right-search .albums-results {
   border-radius: 0.5rem;
@@ -45,13 +45,13 @@ $theme: #353333;
     border: solid 2px $theme;
   }
 
-  .heading {
-    background-color: $theme;
-    color: #fff;
-  }
-
-  .morexx > button {
-    background-color: $theme !important;
+  .theme {
+    background-image: linear-gradient(
+      45deg,
+      #380079 20%,
+      #6405d1 50%,
+      #1b0342 100%
+    );
     color: #fff;
   }
 
