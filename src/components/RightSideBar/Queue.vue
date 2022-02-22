@@ -22,7 +22,7 @@
         </div>
       </div>
       <div class="scrollable-r border rounded">
-        <TrackItem v-for="song in queue" :key="song.track_id" :track="song" />
+        <TrackItem v-for="song in queue" :key="song.trackid" :track="song" />
       </div>
     </div>
   </div>

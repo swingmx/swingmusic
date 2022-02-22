@@ -3,7 +3,7 @@
     class="track-item h-1"
     @click="playThis(props.track)"
     :class="{
-      currentInQueue: current.track_id === props.track.track_id,
+      currentInQueue: current.trackid === props.track.trackid,
     }"
   >
     <div
@@ -14,7 +14,7 @@
     >
       <div
         class="now-playing-track image"
-        v-if="current.track_id === props.track.track_id"
+        v-if="current.trackid === props.track.trackid"
         :class="{ active: is_playing, not_active: !is_playing }"
       ></div>
     </div>
@@ -44,7 +44,7 @@ const putCommas = perks.putCommas;
 const is_playing = ref(playAudio.playing);
 
 const playThis = (song) => {
-  playAudio.playAudio(song.track_id);
+  playAudio.playAudio(song.trackid);
   perks.current.value = song;
 };
 

@@ -49,11 +49,11 @@ def remove_track(filepath: str) -> None:
     """
     Removes a track from the music dict.
     """
-    track_id = instances.songs_instance.get_song_by_path(filepath)["_id"]["$oid"]
-    instances.songs_instance.remove_song_by_id(track_id)
+    trackid = instances.songs_instance.get_song_by_path(filepath)["_id"]["$oid"]
+    instances.songs_instance.remove_song_by_id(trackid)
 
     for track in api.all_the_f_music:
-        if track.track_id == track_id:
+        if track.trackid == trackid:
             api.all_the_f_music.remove(track)
 
 

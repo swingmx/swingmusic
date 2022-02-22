@@ -37,7 +37,7 @@ const putCommas = (artists) => {
 
 function updateNext(song_) {
   const index = state.queue.value.findIndex(
-    (item) => item.track_id === song_.track_id
+    (item) => item.trackid === song_.trackid
   );
 
   if (index === queue.value.length - 1) {
@@ -52,7 +52,7 @@ function updateNext(song_) {
 
 function updatePrev(song) {
   const index = state.queue.value.findIndex(
-    (item) => item.track_id === song.track_id
+    (item) => item.trackid === song.trackid
   );
 
   if (index === 0) {
@@ -81,7 +81,7 @@ const readQueue = () => {
 };
 
 const updateQueue = async (song, type) => {
-  playAudio.playAudio(song.track_id);
+  playAudio.playAudio(song.trackid);
   let list;
 
   switch (type) {
@@ -93,7 +93,7 @@ const updateQueue = async (song, type) => {
       break;
   }
 
-  if (state.queue.value[0].track_id !== list[0].track_id) {
+  if (state.queue.value[0].trackid !== list[0].trackid) {
     const new_queue = list;
     localStorage.setItem("queue", JSON.stringify(new_queue));
     state.queue.value = new_queue;

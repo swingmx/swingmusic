@@ -286,13 +286,13 @@ def get_album_bio(title, artist):
     return {"bio": bio}, 200
 
 
-@bp.route("/file/<track_id>")
-def send_track_file(track_id):
+@bp.route("/file/<trackid>")
+def send_track_file(trackid):
     """
     Returns an audio file that matches the passed id to the client.
     """
     try:
-        filepath = instances.songs_instance.get_song_by_id(track_id)['filepath']
+        filepath = instances.songs_instance.get_song_by_id(trackid)['filepath']
         return send_file(filepath, mimetype="audio/mp3")
     except FileNotFoundError:
         return "File not found", 404

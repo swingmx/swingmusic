@@ -13,11 +13,11 @@ const playing = ref(state.is_playing);
 
 const url = "http://0.0.0.0:9876/file/";
 
-const playAudio = (track_id) => {
+const playAudio = (trackid) => {
     const elem = document.getElementsByClassName('progress-bar')[0];
     const bottom_elem = document.getElementsByClassName('progress-bar')[1];
 
-    const full_path = url + encodeURIComponent(track_id);
+    const full_path = url + encodeURIComponent(trackid);
 
     new Promise((resolve, reject) => {
         audio.src = full_path;
@@ -43,13 +43,13 @@ const playAudio = (track_id) => {
 };
 
 function playNext() {
-    playAudio(perks.next.value.track_id);
+    playAudio(perks.next.value.trackid);
     perks.current.value = perks.next.value;
     media.showMediaNotif();
 }
 
 function playPrev() {
-    playAudio(state.prev.value.track_id);
+    playAudio(state.prev.value.trackid);
     perks.current.value = perks.prev.value;
 }
 
@@ -59,7 +59,7 @@ function seek(position) {
 
 function playPause() {
     if (audio.src === "") {
-        playAudio(perks.current.value.filepath);
+        playAudio(perks.current.value.trackid);
     }
 
     if (audio.paused) {

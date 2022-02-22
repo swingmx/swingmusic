@@ -207,7 +207,7 @@ class Track:
     Track class
     """
 
-    track_id: str
+    trackid: str
     title: str
     artists: str
     albumartist: str
