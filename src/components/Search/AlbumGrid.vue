@@ -31,7 +31,6 @@ export default {
 </script>
 
 <style lang="scss">
-$theme: #6405d1;
 
 .right-search .albums-results {
   border-radius: 0.5rem;
@@ -43,16 +42,6 @@ $theme: #6405d1;
 
   .result-item:hover {
     border: solid 2px $theme;
-  }
-
-  .theme {
-    background-image: linear-gradient(
-      45deg,
-      #380079 20%,
-      #6405d1 50%,
-      #1b0342 100%
-    );
-    color: #fff;
   }
 
   .grid {

@@ -31,7 +31,6 @@ export default {
 </script>
 
 <style lang="scss">
-$theme: #464545fd;
 
 .right-search .artists-results {
   border-radius: 0.5rem;
@@ -44,15 +43,7 @@ $theme: #464545fd;
     border: solid 2px $theme;
   }
 
-  .theme {
-    background-image: linear-gradient(
-      45deg,
-      #141414 0%,
-      #464545fd 50%,
-      #111111 100%
-    );
-    color: #fff;
-  }
+  
 
   .grid {
     display: flex;

@@ -45,6 +45,16 @@
   &::-webkit-scrollbar {
     display: none;
   }
+
+  .theme {
+    background-image: linear-gradient(
+      45deg,
+      #141414 0%,
+      #464545fd 50%,
+      #111111 100%
+    );
+    color: #fff;
+  }
 }
 
 .right-search {

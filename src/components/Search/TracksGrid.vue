@@ -39,21 +39,9 @@ function loadMore() {
 </script>
 
 <style lang="scss">
-$theme: #0056f5;
-
 .right-search .tracks-results {
   border-radius: 0.5rem;
   padding: $small;
   border: 2px solid $theme;
-
-  .theme {
-    background-image: linear-gradient(
-      45deg,
-      #21216b 20%,
-      $theme 50%,
-      #16266b 100%
-    );
-    color: #fff;
-  }
 }
 </style>
