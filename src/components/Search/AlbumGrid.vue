@@ -1,6 +1,6 @@
 <template>
   <div class="albums-results">
-    <div class="heading theme">ALBUMS</div>
+    <div class="heading">Albums</div>
     <div class="grid">
       <AlbumCard v-for="album in albums" :key="album" :album="album" />
     </div>
@@ -39,16 +39,17 @@ export default {
   padding: $small;
   overflow-x: hidden;
   border: solid 2px $theme;
+  
 
   .result-item:hover {
-    border: solid 2px $theme;
+    background-color: $gray3;
   }
 
   .grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(8rem, 1fr));
     flex-wrap: wrap;
-    gap: $small;
+    gap: 1rem;
   }
 }
 </style>

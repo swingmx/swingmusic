@@ -1,5 +1,5 @@
 <template>
-  <div class="p-header rounded">
+  <div class="p-header">
     <div class="info">
       <div>
         <div class="name">Makaveli Radio</div>
@@ -30,6 +30,7 @@
   background-image: url("../../assets/images/eggs.jpg");
   position: relative;
   margin-top: $small;
+    border-radius: .75rem;
 
   .last-updated {
     position: absolute;
@@ -68,7 +69,8 @@
     align-items: flex-end;
     padding: 1rem 1rem 4rem 1rem;
     box-shadow: 0 0 1.5rem rgba(0, 0, 0, 0.658);
-    border-radius: .5rem;
+    border-radius: .75rem;
+    background-color: $black;
 
     @include phone-only {
       width: calc(100% - 1rem);
@@ -77,6 +79,7 @@
     .name {
       font-size: 1.5rem;
       font-weight: bold;
+      color: $white;
 
       &::before {
         content: "😎 ";
@@ -85,10 +88,8 @@
 
     .metrics {
       margin-top: $small;
-      background-color: rgba(47, 55, 129, 0.233);
-      color: rgb(0, 60, 255);
+      color: $blue;
       padding: $small;
-      width: fit-content;
     }
 
     .buttons {

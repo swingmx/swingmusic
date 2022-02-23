@@ -5,7 +5,7 @@
       <div class="next" @click="scrollRight"></div>
     </div>
     <div class="artists" ref="artists_dom">
-      <div class="xartist border c1 image">
+      <div class="xartist c1 image">
         <div class="blur"></div>
         <div class="s2"></div>
         <p>Featured Artists</p>
@@ -121,7 +121,7 @@ export default {
   position: relative;
   background-size: 400px 11rem;
   background-position: 100%;
-
+  width: 8.25rem;
   background-image: linear-gradient(
     320deg,
     #b63939 13%,

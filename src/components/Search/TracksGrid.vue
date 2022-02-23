@@ -1,6 +1,6 @@
 <template>
   <div class="tracks-results" v-if="tracks">
-    <div class="heading theme">TRACKS</div>
+    <div class="heading">Tracks</div>
     <div class="items">
       <table>
         <tbody>

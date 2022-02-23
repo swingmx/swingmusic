@@ -22,15 +22,15 @@ export default {
   overflow: hidden;
   position: relative;
 
-  width: 9em;
+  min-width: 8.25em;
   height: 11em;
-  border-radius: 1rem;
+  border-radius: .75rem;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  background-color: transparent;
+
 
   .artist-image {
     width: 7em;
@@ -41,6 +41,7 @@ export default {
     background-position: center;
     background-repeat: no-repeat;
     transition: all 0.5s ease-in-out;
+    transition-delay: .25s;
   }
 
   &:hover {

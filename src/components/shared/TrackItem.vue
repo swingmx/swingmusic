@@ -47,7 +47,6 @@ const playThis = (song) => {
   playAudio.playAudio(song.trackid);
   perks.current.value = song;
 };
-
 </script>
 
 <style lang="scss">
@@ -65,6 +64,7 @@ const playThis = (song) => {
 
   &:hover {
     cursor: pointer;
+    background-color: $gray5 !important;
   }
 
   hr {

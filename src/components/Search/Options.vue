@@ -68,6 +68,7 @@ export default {
     overflow: hidden;
     transition: all 0.2s ease-in-out;
     position: relative;
+    background-color: $gray4;
 
     .title {
       position: absolute;

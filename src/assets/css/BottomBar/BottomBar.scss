@@ -35,7 +35,7 @@
 
         .artists {
           font-size: 0.8rem;
-          color: $highlight-blue;
+          color: $red;
         }
       }
     }
@@ -47,7 +47,7 @@
       align-items: center;
       margin: $small;
       padding: $small;
-      background-color: $bbb;
+      background-color: $gray5;
 
       .progress-bottom {
         display: flex;

@@ -1,11 +1,7 @@
 // colors
 
-$card-dark: #040406;
-$red: #df4646;
-$blue: #055096;
-$green: #439443;
+$card-dark: #000000;
 $separator: #ffffff2f;
-$pink: #c43a3a;
 $highlight-blue: #006eff;
 $bbb: #161616; //bottom controls background
 $theme: #464545fd;
@@ -16,6 +12,28 @@ $smaller: 0.25rem;
 $medium: 0.75rem;
 $large: 1.5rem;
 $larger: 2rem;
+
+// apple human design guideline colors
+$black: #000000;
+$white: #ffffffde;
+
+$gray: #1c1c1e;
+$gray1: rgb(142, 142, 147);
+$gray2: rgb(99, 99, 102);
+$gray3: rgb(72, 72, 74);
+$gray4: rgb(58, 58, 60);
+$gray5: rgb(44, 44, 46);
+
+$red: rgb(255, 69, 58);
+$blue: rgb(10, 132, 255);
+$green: rgb(48, 209, 88);
+$yellow: rgb(255, 214, 10);
+$orange: rgb(255, 159, 10);
+$pink: rgb(255, 55, 95);
+$purple: rgb(191, 90, 242);
+$brown: rgb(172, 142, 104);
+$indigo: rgb(94, 92, 230);
+$teal: rgb(64, 200, 224);
 
 // media query mixins
 @mixin phone-only {

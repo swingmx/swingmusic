@@ -28,7 +28,7 @@ const props = defineProps({
   display: flex;
   align-items: center;
   position: relative;
-  background-color: #ffffff09;
+  background-color: $gray;
   transition: all 0.2s ease;
   border-radius: .75rem;
 
@@ -58,12 +58,12 @@ const props = defineProps({
   }
 
   &:hover {
-    background: #0575e6; /* fallback for old browsers */
+    background: #0575e6;
     background: linear-gradient(
       to top right,
       #021b79,
       #0575e6
-    ); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+    );
     background-size: 105% 105%;
     background-position-x: -$small;
 

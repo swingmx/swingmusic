@@ -1,6 +1,6 @@
 <template>
   <div class="artists-results">
-    <div class="heading theme">ARTISTS</div>
+    <div class="heading">Artists</div>
     <div class="grid">
       <ArtistCard v-for="artist in artists" :key="artist" :artist="artist" />
     </div>
@@ -31,23 +31,26 @@ export default {
 </script>
 
 <style lang="scss">
-
 .right-search .artists-results {
   border-radius: 0.5rem;
-  background: #1214178c;
   padding: $small;
   margin-bottom: $small;
   border: solid 2px $theme;
 
-  .xartist:hover {
-    border: solid 2px $theme;
+
+  .xartist {
+    background: linear-gradient(
+      to bottom,
+      $gray2 20%,
+      $gray4 50%,
+      $gray 80%
+    );
   }
 
-  
-
   .grid {
-    display: flex;
-    flex-wrap: wrap;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: .75rem;
   }
 }
 </style>

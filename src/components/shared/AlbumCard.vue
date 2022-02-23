@@ -4,7 +4,7 @@
       name: 'AlbumView',
       params: { album: album.name, artist: album.artist },
     }"
-    class="result-item"
+    class="result-item shadow-sm"
   >
     <div
       class="album-art image"
@@ -29,18 +29,17 @@ export default {
   flex-direction: column;
   align-items: center;
   padding: $small;
-  border-radius: .75rem;
+  border-radius: 0.75rem;
   text-align: left !important;
   border: solid 2px transparent;
-
-  // &:hover {
-  //   background-color: #1b3688cb;
-  // }
+  background-color: $gray;
+  color: #ffffffde !important;
+  transition: all 0.5s ease;
 
   .album-art {
     height: 7.5rem;
     width: 7.5rem;
-    border-radius: .5rem;
+    border-radius: 0.5rem;
     margin-bottom: 0.5rem;
   }
 

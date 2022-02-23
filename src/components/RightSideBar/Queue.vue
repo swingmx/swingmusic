@@ -109,7 +109,7 @@ export default {
 
   .r-grid {
     position: relative;
-    height: calc(100% - 2.5rem);
+    height: 100%;
     display: grid;
     grid-template-rows: min-content;
 
