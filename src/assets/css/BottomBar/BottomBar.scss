@@ -1,5 +1,6 @@
 .b-bar {
   height: 100%;
+  border-top: solid 1px $gray;
 
   .grid {
     display: grid;
@@ -62,12 +63,12 @@
         width: 100%;
 
         .durationx {
-          background-color: #97979725;
-          // border: solid 1px rgba(255, 255, 255, 0.253);
+          background-color: $black;
           padding: $smaller;
-          border-radius: 0.75rem;
+          border-radius: 0.5rem;
           margin: 0 $small 0 $small;
           font-size: 0.8rem;
+          min-width: 2.5rem;
         }
       }
     }

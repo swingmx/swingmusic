@@ -15,7 +15,7 @@
     <div class="search">
       <input
         type="text"
-        class="search-input"
+        class="search-input border"
         placeholder="Search this folder"
         v-model="query"
       />
@@ -68,11 +68,10 @@ export default {
   .search-input {
     max-width: 20rem;
     width: 100%;
-    border: 1px solid $separator;
     border-radius: 0.5rem;
     padding-left: 1rem;
-    background-color: #46454500;
-    color: #fff;
+    background-color: transparent;
+    color: $white;
     font-size: 1rem;
     line-height: 2.2rem;
     outline: none;

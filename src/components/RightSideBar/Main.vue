@@ -13,7 +13,7 @@
           <UpNext />
         </div>
       </div>
-      <div class="tab-keys border">
+      <div class="tab-keys">
         <Tabs :current_tab="current_tab" :tabs="tabs" @changeTab="changeTab" />
       </div>
     </div>
@@ -100,9 +100,9 @@ function changeTab(tab) {
       height: 100%;
       position: absolute;
       grid-area: tabs;
-      // padding: $small 0;
       border-radius: 0;
       overflow: hidden;
+      border-left: solid 1px $gray;
     }
   }
 }

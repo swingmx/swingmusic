@@ -11,7 +11,7 @@
         <div class="separator no-border"></div>
         <div class="bottom">
           <div class="stats">
-            {{ album_info.count }} Tracks • {{ album_info.duration }} • 2021
+            {{ album_info.count }} Tracks • {{ album_info.duration }} • {{album_info.date}}
           </div>
           <div class="play rounded" @click="playAlbum">
             <div class="icon"></div>
@@ -58,7 +58,7 @@ export default {
   overflow: hidden;
   display: flex;
   align-items: center;
-  padding: 1rem;
+  padding: $small;
   height: 100%;
   background-image: url("../../assets/images/abg.webp");
   background-position: 0% 60%;
@@ -74,7 +74,7 @@ export default {
 
     .top {
       .h {
-        color: rgba(255, 255, 255, 0.795);
+        color: #ffffffcb;
       }
       .title {
         font-size: 2rem;
@@ -94,9 +94,16 @@ export default {
     }
 
     .bottom {
+      position: relative;
+
       .stats {
+        background-color: #1f1f1f8e;
+        padding: $small;
+        border-radius: $small;
+        position: absolute;
+        right: 0;
+        bottom: 0;
         font-weight: bold;
-        display: none;
       }
 
       .play {
@@ -106,7 +113,6 @@ export default {
         align-items: center;
         background: $highlight-blue;
         padding: $small;
-        margin: $small 0;
         cursor: pointer;
 
         .icon {

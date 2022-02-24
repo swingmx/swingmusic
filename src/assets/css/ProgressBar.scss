@@ -5,7 +5,7 @@ input[type="range"] {
   height: 0.3rem;
   border-radius: 5px;
   background-size: 0 100%;
-  background: rgb(59, 57, 57) linear-gradient($blue, $blue) no-repeat;
+  background: $black linear-gradient($blue, $blue) no-repeat;
 }
 
 /* Input Thumb */

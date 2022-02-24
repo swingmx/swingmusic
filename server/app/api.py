@@ -269,6 +269,7 @@ def get_album_tracks(title: str, artist: str):
         "count": len(songs),
         "duration": "56 Minutes",
         "image": songs[0].image,
+        "date": songs[0].date,
         "artist": songs[0].albumartist,
         "artist_image": "http://127.0.0.1:8900/images/artists/"
                         + songs[0].albumartist.replace("/", "::")
