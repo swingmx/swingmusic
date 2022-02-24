@@ -1,5 +1,5 @@
 <template>
-  <tr class="songlist-item" :class="{ current: current.trackid === song.trackid }">
+  <tr class="songlist-item" :class="{ current: current.trackid === song.trackid }" @dblclick="emitUpdate(song)">
     <td class="index">{{ index }}</td>
     <td class="flex" @click="emitUpdate(song)">
       <div

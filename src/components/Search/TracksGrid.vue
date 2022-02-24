@@ -42,6 +42,6 @@ function loadMore() {
 .right-search .tracks-results {
   border-radius: 0.5rem;
   padding: $small;
-  border: 2px solid $theme;
+  border: 1px solid $gray;
 }
 </style>

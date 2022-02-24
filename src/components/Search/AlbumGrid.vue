@@ -31,15 +31,13 @@ export default {
 </script>
 
 <style lang="scss">
-
 .right-search .albums-results {
   border-radius: 0.5rem;
   background: #0f131b44;
   margin-top: $small;
   padding: $small;
   overflow-x: hidden;
-  border: solid 2px $theme;
-  
+  border: solid 1px $gray;
 
   .result-item:hover {
     background-color: $gray3;
@@ -49,7 +47,7 @@ export default {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(8rem, 1fr));
     flex-wrap: wrap;
-    gap: 1rem;
+    gap: 0.75rem;
   }
 }
 </style>

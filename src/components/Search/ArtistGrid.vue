@@ -35,8 +35,8 @@ export default {
   border-radius: 0.5rem;
   padding: $small;
   margin-bottom: $small;
-  border: solid 2px $theme;
-
+  border: solid 1px $gray;
+  background-color: #150d167c;
 
   .xartist {
     background: linear-gradient(

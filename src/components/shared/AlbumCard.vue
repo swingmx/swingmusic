@@ -6,12 +6,15 @@
     }"
     class="result-item shadow-sm"
   >
-    <div
-      class="album-art image"
-      :style="{
-        backgroundImage: `url(&quot;${album.image}&quot;)`,
-      }"
-    ></div>
+    <div class="_idk">
+      <div
+        class="album-art image"
+        :style="{
+          backgroundImage: `url(&quot;${album.image}&quot;)`,
+        }"
+      ></div>
+      <div class="play shadow-lg image"></div>
+    </div>
     <div class="title ellip">{{ album.name }}</div>
     <div class="artistsx ellipsis">{{ album.artist }}</div>
   </router-link>
@@ -36,11 +39,35 @@ export default {
   color: #ffffffde !important;
   transition: all 0.5s ease;
 
-  .album-art {
-    height: 7.5rem;
-    width: 7.5rem;
-    border-radius: 0.5rem;
-    margin-bottom: 0.5rem;
+  ._idk {
+    position: relative;
+
+    &:hover {
+      .play {
+        visibility: visible;
+      }
+    }
+
+    .play {
+      width: 3rem;
+      height: 3rem;
+      background-color: $gray;
+      border-radius: 1rem;
+      position: absolute;
+      left: 2rem;
+      bottom: 2.5rem;
+      background-image: url("../../assets/icons/play.svg");
+      background-size: 2rem;
+      background-position: 60% 50%;
+      visibility: hidden;
+    }
+
+    .album-art {
+      height: 7.5rem;
+      width: 7.5rem;
+      border-radius: 0.5rem;
+      margin-bottom: 0.5rem;
+    }
   }
 
   .title {

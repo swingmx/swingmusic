@@ -2,7 +2,7 @@
   <div class="p-header">
     <div class="info">
       <div>
-        <div class="name">Makaveli Radio</div>
+        <div class="title">Makaveli Radio</div>
         <div class="metrics rounded border">45 Tracks • 3 Hours 4 Minutes</div>
       </div>
       <div class="buttons">
@@ -76,14 +76,10 @@
       width: calc(100% - 1rem);
     }
 
-    .name {
+    .title {
       font-size: 1.5rem;
       font-weight: bold;
       color: $white;
-
-      &::before {
-        content: "😎 ";
-      }
     }
 
     .metrics {

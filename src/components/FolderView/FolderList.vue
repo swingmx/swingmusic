@@ -33,7 +33,7 @@ const props = defineProps({
 #f-items {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(13rem, 1fr));
-  gap: $small;
+  gap: $medium;
 }
 
 .f-container p {
