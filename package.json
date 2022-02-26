@@ -9,6 +9,7 @@
     "lint": "eslint --ext .js,.vue --ignore-path .gitignore --fix src"
   },
   "dependencies": {
+    "axios": "^0.26.0",
     "mitt": "^3.0.0",
     "register-service-worker": "^1.7.1",
     "sass": "^1.49.0",

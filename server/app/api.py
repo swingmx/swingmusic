@@ -1,4 +1,5 @@
 import os
+from pprint import pprint
 import urllib
 from typing import List
 from flask import Blueprint, request, send_file
@@ -54,6 +55,13 @@ def get_artists(artist: str) -> List:
     ]
 
 
+search_results = {
+    "tracks": [],
+    "albums": [],
+    "artists": [],
+}
+
+
 @bp.route("/search")
 def search_by_title():
     """
@@ -64,6 +72,7 @@ def search_by_title():
     albums = get_search_albums(query)
     albums_dicts = []
     artists_dicts = []
+    search_results.clear()
 
     for song in albums:
         album_obj = {
@@ -86,14 +95,18 @@ def search_by_title():
                 artist_obj = {
                     "name": artist,
                     "image": "http://0.0.0.0:8900/images/artists/"
-                             + artist.replace("/", "::")
-                             + ".webp",
+                    + artist.replace("/", "::")
+                    + ".webp",
                 }
 
                 if artist_obj not in artists_dicts:
                     artists_dicts.append(artist_obj)
 
     tracks = helpers.remove_duplicates(get_tracks(query))
+
+    search_results["tracks"] = tracks
+    search_results["albums"] = albums_dicts
+    search_results["artists"] = artists_dicts
 
     return {
         "data": [
@@ -102,6 +115,33 @@ def search_by_title():
             {"artists": artists_dicts[:6], "more": len(artists_dicts) > 6},
         ]
     }
+
+
+@bp.route("/search/loadmore")
+def search_load_more():
+    """
+    Returns more songs, albums or artists from a search query.
+    """
+    type = request.args.get("type")
+    start = int(request.args.get("start"))
+
+    if type == "tracks":
+        return {
+            "tracks": search_results["tracks"][start : start + 5],
+            "more": len(search_results["tracks"]) > start + 5,
+        }
+
+    elif type == "albums":
+        return {
+            "albums": search_results["albums"][start : start + 6],
+            "more": len(search_results["albums"]) > start + 6,
+        }
+
+    elif type == "artists":
+        return {
+            "artists": search_results["artists"][start : start + 6],
+            "more": len(search_results["artists"]) > start + 6,
+        }
 
 
 @bp.route("/populate")
@@ -136,8 +176,8 @@ def get_albumartists(album, artist):
         artist_obj = {
             "name": artist,
             "image": "http://0.0.0.0:8900/images/artists/"
-                     + artist.replace("/", "::")
-                     + ".webp",
+            + artist.replace("/", "::")
+            + ".webp",
         }
         final_artists.append(artist_obj)
 
@@ -272,8 +312,8 @@ def get_album_tracks(title: str, artist: str):
         "date": songs[0].date,
         "artist": songs[0].albumartist,
         "artist_image": "http://127.0.0.1:8900/images/artists/"
-                        + songs[0].albumartist.replace("/", "::")
-                        + ".webp",
+        + songs[0].albumartist.replace("/", "::")
+        + ".webp",
     }
 
     return {"songs": songs, "info": album_obj}
@@ -293,9 +333,7 @@ def send_track_file(trackid):
     Returns an audio file that matches the passed id to the client.
     """
     try:
-        filepath = instances.songs_instance.get_song_by_id(trackid)['filepath']
+        filepath = instances.songs_instance.get_song_by_id(trackid)["filepath"]
         return send_file(filepath, mimetype="audio/mp3")
     except FileNotFoundError:
         return "File not found", 404
-
-

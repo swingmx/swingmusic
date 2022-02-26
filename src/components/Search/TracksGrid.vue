@@ -20,6 +20,8 @@
 import LoadMore from "./LoadMore.vue";
 import TrackItem from "../shared/TrackItem.vue";
 
+let counter = 0;
+
 const props = defineProps({
   tracks: {
     type: Object,
@@ -34,7 +36,8 @@ const props = defineProps({
 const emit = defineEmits(["loadMore"]);
 
 function loadMore() {
-  emit("loadMore", "tracks");
+  counter += 5;
+  emit("loadMore", counter);
 }
 </script>
 

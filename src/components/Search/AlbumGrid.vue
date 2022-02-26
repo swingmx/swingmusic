@@ -19,8 +19,11 @@ export default {
     LoadMore,
   },
   setup(props, { emit }) {
+    let counter = 0;
+
     function loadMore() {
-      emit("loadMore");
+      counter += 6;
+      emit("loadMore", counter);
     }
 
     return {

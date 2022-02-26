@@ -2,47 +2,51 @@
   <div class="right-search">
     <div>
       <div class="input">
-        <Filters :filters="filters" @removeFilter="removeFilter"/>
+        <Filters :filters="filters" @removeFilter="removeFilter" />
         <div class="input-loader border">
           <input
-              id="search"
-              v-model="query"
-              placeholder="find your music"
-              type="text"
-              @keyup.backspace="removeLastFilter"
+            id="search"
+            v-model="query"
+            placeholder="find your music"
+            type="text"
+            @keyup.backspace="removeLastFilter"
           />
           <div class="_loader">
-            <Loader/>
+            <Loader />
           </div>
         </div>
       </div>
       <div class="separator no-border"></div>
-      <Options @addFilter="addFilter"/>
+      <Options @addFilter="addFilter" />
     </div>
-    <div class="scrollable">
+    <div class="scrollable" ref="search_thing">
       <TracksGrid
-          v-if="tracks.tracks.length"
-          :more="tracks.more"
-          :tracks="tracks.tracks"
+        v-if="tracks.tracks.length"
+        :more="tracks.more"
+        :tracks="tracks.tracks"
+        @loadMore="loadMoreTracks"
       />
       <AlbumGrid
-          v-if="albums.albums.length"
-          :albums="albums.albums"
-          :more="albums.more"
+        v-if="albums.albums.length"
+        :albums="albums.albums"
+        :more="albums.more"
+        @loadMore="loadMoreAlbums"
       />
       <div class="separator no-border" v-if="albums.albums.length"></div>
       <ArtistGrid
-          v-if="artists.artists.length"
-          :artists="artists.artists"
-          :more="artists.more"
+        v-if="artists.artists.length"
+        :artists="artists.artists"
+        :more="artists.more"
+        @loadMore="loadMoreArtists"
       />
       <div
-          v-if="
+        v-if="
           !artists.artists.length &&
           !tracks.tracks.length &&
-          !albums.albums.length && query.length !== 0
+          !albums.albums.length &&
+          query.length !== 0
         "
-          class="no-res border rounded"
+        class="no-res border rounded"
       >
         <div class="no-res-text">
           No results for <span class="highlight rounded">{{ query }}</span>
@@ -56,9 +60,9 @@
 </template>
 
 <script>
-import {reactive, ref} from "@vue/reactivity";
+import { reactive, ref } from "@vue/reactivity";
 
-import {watch} from "@vue/runtime-core";
+import { watch } from "@vue/runtime-core";
 import state from "@/composables/state.js";
 import searchMusic from "@/composables/searchMusic.js";
 import useDebouncedRef from "@/composables/useDebouncedRef";
@@ -69,6 +73,7 @@ import Loader from "@/components/Search/Loader.vue";
 import Options from "@/components/Search/Options.vue";
 import Filters from "@/components/Search/Filters.vue";
 import "@/assets/css/Search/Search.scss";
+import loadMore from "../../composables/loadmore";
 
 export default {
   components: {
@@ -81,6 +86,7 @@ export default {
   },
 
   setup() {
+    const search_thing = ref(null);
     const loading = ref(state.loading);
     const filters = ref([]);
 
@@ -123,15 +129,49 @@ export default {
       }
     }
 
+    function scrollSearchThing() {
+      search_thing.value.scroll({
+        top: search_thing.value.scrollTop + 330,
+        left: 0,
+        behavior: "smooth",
+      });
+    }
+
+    function loadMoreTracks(start) {
+      // scrollSearchThing();
+      loadMore.loadMoreTracks(start).then((response) => {
+        tracks.tracks = [...tracks.tracks, ...response.tracks];
+        tracks.more = response.more;
+      });
+    }
+
+    function loadMoreAlbums(start) {
+      loadMore.loadMoreAlbums(start).then((response) => {
+        albums.albums = [...albums.albums, ...response.albums];
+        albums.more = response.more;
+      });
+    }
+
+    function loadMoreArtists(start) {
+      scrollSearchThing();
+      loadMore.loadMoreArtists(start).then((response) => {
+        artists.artists = [...artists.artists, ...response.artists];
+        artists.more = response.more;
+      });
+    }
+
     watch(query, (new_query) => {
-      if (query.value === "" || query.value === "  " || query.value.length < 2) {
+      if (
+        query.value === "" ||
+        query.value === "  " ||
+        query.value.length < 2
+      ) {
         albums.albums = [];
         artists.artists = [];
         tracks.tracks = [];
 
         return;
       }
-
 
       searchMusic(new_query).then((res) => {
         albums.albums = res.albums.albums;
@@ -149,13 +189,16 @@ export default {
       addFilter,
       removeFilter,
       removeLastFilter,
+      loadMoreTracks,
+      loadMoreAlbums,
+      loadMoreArtists,
       tracks,
       albums,
       artists,
       query,
       filters,
       loading,
-
+      search_thing,
     };
   },
 };

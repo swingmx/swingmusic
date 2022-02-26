@@ -10,8 +10,9 @@
         </div>
         <div class="separator no-border"></div>
         <div class="bottom">
-          <div class="stats">
-            {{ album_info.count }} Tracks • {{ album_info.duration }} • {{album_info.date}}
+          <div class="stats shadow-sm">
+            {{ album_info.count }} Tracks • {{ album_info.duration }} •
+            {{ album_info.date }}
           </div>
           <div class="play rounded" @click="playAlbum">
             <div class="icon"></div>
@@ -60,7 +61,14 @@ export default {
   align-items: center;
   padding: $small;
   height: 100%;
-  background-image: url("../../assets/images/abg.webp");
+  background-image: linear-gradient(
+    56deg,
+    $gray 0%,
+    $gray4 25%,
+    $gray1 50%,
+    $gray1 75%,
+    $gray 100%
+  );
   background-position: 0% 60%;
   background-repeat: no-repeat;
   background-size: cover;
@@ -97,7 +105,7 @@ export default {
       position: relative;
 
       .stats {
-        background-color: #1f1f1f8e;
+        background-color: $gray;
         padding: $small;
         border-radius: $small;
         position: absolute;

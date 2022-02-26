@@ -1,7 +1,7 @@
 <template>
   <div class="up-next">
     <div class="r-grid">
-      <div class="main-item  border" >
+      <div class="main-item border">
         <p class="heading">COMING UP NEXT</p>
         <div class="itemx" @click="playNext">
           <div
@@ -78,7 +78,7 @@ export default {
       border-radius: 0.5rem;
 
       &:hover {
-        background-color: $blue;
+        background-color: $gray;
       }
     }
 
