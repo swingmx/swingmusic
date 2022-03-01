@@ -69,7 +69,7 @@ import useDebouncedRef from "@/composables/useDebouncedRef";
 import AlbumGrid from "@/components/Search/AlbumGrid.vue";
 import ArtistGrid from "@/components/Search/ArtistGrid.vue";
 import TracksGrid from "@/components/Search/TracksGrid.vue";
-import Loader from "@/components/Search/Loader.vue";
+import Loader from "@/components/shared/Loader.vue";
 import Options from "@/components/Search/Options.vue";
 import Filters from "@/components/Search/Filters.vue";
 import "@/assets/css/Search/Search.scss";
@@ -138,7 +138,7 @@ export default {
     }
 
     function loadMoreTracks(start) {
-      // scrollSearchThing();
+      scrollSearchThing();
       loadMore.loadMoreTracks(start).then((response) => {
         tracks.tracks = [...tracks.tracks, ...response.tracks];
         tracks.more = response.more;

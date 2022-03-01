@@ -4,15 +4,10 @@
   </div>
 </template>
 
-<script>
+<script setup>
 import state from "@/composables/state.js";
-export default {
-  setup() {
-    return {
-      loading: state.loading,
-    };
-  },
-};
+
+const loading = state.loading
 </script>
 
 <style lang="scss">

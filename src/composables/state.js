@@ -1,4 +1,5 @@
 import { ref } from "@vue/reactivity";
+import { reactive } from "vue";
 
 const search_query = ref("");
 
@@ -33,10 +34,12 @@ const prev = ref({
   },
 });
 
-const album_song_list = ref([]);
-const album_info = ref([]);
-const album_artists = ref([]);
-const album_bio = ref("");
+const album = reactive({
+  tracklist: [],
+  info: {},
+  artists: [],
+  bio: "",
+});
 
 const filters = ref([]);
 
@@ -45,9 +48,9 @@ const loading = ref(false);
 
 const is_playing = ref(false);
 
-const search_tracks = ref([]);
-const search_albums = ref([]);
-const search_artists = ref([]);
+const settings = reactive({
+  uri: "http://0.0.0.0:9876",
+})
 
 export default {
   search_query,
@@ -60,11 +63,6 @@ export default {
   magic_flag,
   loading,
   is_playing,
-  search_tracks,
-  search_albums,
-  search_artists,
-  album_song_list,
-  album_info,
-  album_artists,
-  album_bio,
+  album,
+  settings,
 };

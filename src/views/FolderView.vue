@@ -101,13 +101,16 @@ export default {
 
       getDirData(path.value);
 
-      watch(route, (new_route) => {
-        path.value = new_route.params.path;
+      watch(
+        () => route.params,
+        () => {
+          path.value = route.params.path;
 
-        if (!path.value) return;
+          if (!path.value) return;
 
-        getDirData(path.value);
-      });
+          getDirData(path.value);
+        }
+      );
     });
 
     function updateQueryString(value) {

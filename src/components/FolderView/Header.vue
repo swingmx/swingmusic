@@ -13,6 +13,9 @@
       </div>
     </div>
     <div class="search">
+      <div class="loaderr">
+        <Loader />
+      </div>
       <input
         type="text"
         class="search-input border"
@@ -26,11 +29,13 @@
 
 <script>
 import perks from "@/composables/perks.js";
-import { watch } from '@vue/runtime-core';
-import useDebouncedRef from '@/composables/useDebouncedRef.js';
+import { watch } from "@vue/runtime-core";
+import useDebouncedRef from "@/composables/useDebouncedRef.js";
+import Loader from "../shared/Loader.vue";
 
 export default {
   props: ["path", "first_song"],
+  components: { Loader },
   setup(props, { emit }) {
     const query = useDebouncedRef("", 400);
 
@@ -63,7 +68,12 @@ export default {
 .folder-top .search {
   width: 50%;
   display: grid;
+  grid-template-columns: 1fr 1fr;
   place-items: end;
+
+  .loaderr {
+    width: 2rem;
+  }
 
   .search-input {
     max-width: 20rem;

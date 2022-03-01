@@ -1,9 +1,11 @@
+from crypt import methods
 import os
 from pprint import pprint
 import urllib
 from typing import List
 from flask import Blueprint, request, send_file
-from app import functions, instances, helpers, cache
+
+from app import functions, instances, helpers, cache, models
 
 bp = Blueprint("api", __name__, url_prefix="")
 
@@ -30,21 +32,21 @@ def say_hi():
     return "^ _ ^"
 
 
-def get_tracks(query: str) -> List:
+def get_tracks(query: str) -> List[models.Track]:
     """
     Gets all songs with a given title.
     """
     return [track for track in all_the_f_music if query.lower() in track.title.lower()]
 
 
-def get_search_albums(query: str) -> List:
+def get_search_albums(query: str) -> List[models.Track]:
     """
     Gets all songs with a given album.
     """
     return [track for track in all_the_f_music if query.lower() in track.album.lower()]
 
 
-def get_artists(artist: str) -> List:
+def get_artists(artist: str) -> List[models.Track]:
     """
     Gets all songs with a given artist.
     """
@@ -151,12 +153,13 @@ def find_tracks():
     return "🎸"
 
 
-@bp.route("/album/<album>/<artist>/artists")
-@cache.cached()
-def get_albumartists(album, artist):
+@bp.route("/album/artists", methods=["POST"])
+def get_albumartists():
     """Returns a list of artists featured in a given album."""
-    album = album.replace("|", "/")
-    artist = artist.replace("|", "/")
+    data = request.get_json()
+
+    album = data["album"]
+    artist = data["artist"]
 
     tracks = []
 
@@ -292,20 +295,24 @@ def get_albums():
     return {"albums": albums}
 
 
-@bp.route("/album/<title>/<artist>/tracks")
-@cache.cached()
-def get_album_tracks(title: str, artist: str):
+@bp.route("/album/tracks", methods=["POST"])
+def get_album_tracks():
     """Returns all the tracks in the given album."""
+    data = request.get_json()
+
+    album = data["album"]
+    artist = data["artist"]
+
     songs = []
 
     for track in all_the_f_music:
-        if track.albumartist == artist and track.album == title:
+        if track.albumartist == artist and track.album == album:
             songs.append(track)
 
     songs = helpers.remove_duplicates(songs)
 
     album_obj = {
-        "name": title,
+        "name": album,
         "count": len(songs),
         "duration": "56 Minutes",
         "image": songs[0].image,

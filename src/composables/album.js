@@ -1,44 +1,45 @@
-let base_uri = "http://0.0.0.0:9876";
+import axios from "axios";
+import state from "./state";
 
-const getAlbumTracks = async (name, artist) => {
-  const res = await fetch(
-    base_uri +
-      "/album/" +
-      encodeURIComponent(name) + "/" +
-      encodeURIComponent(artist) +
-      "/tracks"
-  );
+const getAlbumTracks = async (album, artist) => {
+  let data = {};
 
-  if (!res.ok) {
-    const message = `An error has occurred: ${res.status}`;
-    throw new Error(message);
-  }
+  await axios
+    .post(state.settings.uri + "/album/tracks", {
+      album: album,
+      artist: artist,
+    })
+    .then((res) => {
+      data = res.data;
+    })
+    .catch((err) => {
+      console.error(err);
+    });
 
-  return await res.json();
+  return data;
 };
 
-const getAlbumArtists = async (name, artist) => {
-  const res = await fetch(
-    base_uri +
-      "/album/" +
-      encodeURIComponent(name.replaceAll("/", "|")) +
-      "/" +
-      encodeURIComponent(artist.replaceAll("/", "|")) +
-      "/artists"
-  );
+const getAlbumArtists = async (album, artist) => {
+  let artists = [];
 
-  if (!res.ok) {
-    const message = `An error has occurred: ${res.status}`;
-    throw new Error(message);
-  }
+  await axios
+    .post(state.settings.uri + "/album/artists", {
+      album: album,
+      artist: artist,
+    })
+    .then((res) => {
+      artists = res.data.artists;
+    })
+    .catch((err) => {
+      console.error(err);
+    });
 
-  const data = await res.json();
-  return data.artists;
+  return artists;
 };
 
 const getAlbumBio = async (name, artist) => {
   const res = await fetch(
-    base_uri +
+    state.settings.uri +
       "/album/" +
       encodeURIComponent(name.replaceAll("/", "|")) +
       "/" +

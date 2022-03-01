@@ -1,18 +1,22 @@
 <template>
   <div class="album-h">
     <div class="a-header rounded">
+      <div
+        class="image art shadow-lg"
+        :style="{ backgroundImage: `url(&quot;${encodeURI(props.album_info.image)}&quot;)` }"
+      ></div>
       <div class="info">
         <div class="top">
           <div class="h">Album</div>
           <div class="separator no-border"></div>
-          <div class="title">{{ album_info.name }}</div>
-          <div class="artist">{{ album_info.artist }}</div>
+          <div class="title">{{ props.album_info.name }}</div>
+          <div class="artist">{{ props.album_info.artist }}</div>
         </div>
         <div class="separator no-border"></div>
         <div class="bottom">
           <div class="stats shadow-sm">
-            {{ album_info.count }} Tracks • {{ album_info.duration }} •
-            {{ album_info.date }}
+            {{ props.album_info.count }} Tracks • {{ props.album_info.duration }} •
+            {{ props.album_info.date }}
           </div>
           <div class="play rounded" @click="playAlbum">
             <div class="icon"></div>
@@ -24,22 +28,20 @@
   </div>
 </template>
 
-<script>
+<script setup>
 import state from "@/composables/state.js";
 import perks from "@/composables/perks.js";
 
-export default {
-  props: ["album_info"],
-  setup() {
-    function playAlbum() {
-      perks.updateQueue(state.album_song_list.value[0], "album");
-    }
-
-    return {
-      playAlbum,
-    };
+const props = defineProps({
+  album_info: {
+    type: Object,
+    default: () => ({}),
   },
-};
+});
+
+function playAlbum() {
+  perks.updateQueue(state.album.tracklist[0], "album");
+}
 </script>
 
 <style lang="scss">
@@ -59,7 +61,7 @@ export default {
   overflow: hidden;
   display: flex;
   align-items: center;
-  padding: $small;
+  padding: 1rem;
   height: 100%;
   background-image: linear-gradient(
     56deg,
@@ -73,12 +75,20 @@ export default {
   background-repeat: no-repeat;
   background-size: cover;
 
+  .art {
+    position: absolute;
+    width: 12rem;
+    height: 12rem;
+    left: 1rem;
+  }
+
   .info {
     width: 100%;
     height: calc(100%);
     display: flex;
     flex-direction: column;
     justify-content: flex-end;
+    margin-left: 13rem;
 
     .top {
       .h {
@@ -88,6 +98,7 @@ export default {
         font-size: 2rem;
         font-weight: 1000;
         color: white;
+        text-transform: capitalize;
       }
 
       .artist {

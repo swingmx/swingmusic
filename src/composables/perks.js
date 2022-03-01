@@ -89,7 +89,7 @@ const updateQueue = async (song, type) => {
       list = state.folder_song_list.value;
       break;
     case "album":
-      list = state.album_song_list.value;
+      list = state.album.tracklist;
       break;
   }
 

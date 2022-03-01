@@ -5,24 +5,25 @@ import state from "./state.js";
 
 async function toAlbum(title, artist) {
   console.log("routing to album");
+
   state.loading.value = true;
   await album
     .getAlbumTracks(title, artist)
     .then((data) => {
-      state.album_song_list.value = data.songs;
-      state.album_info.value = data.info;
+      state.album.tracklist = data.songs;
+      state.album.info = data.info;
     })
     .then(
       await album.getAlbumArtists(title, artist).then((data) => {
-        state.album_artists.value = data;
+        state.album.artists = data;
       })
     )
     .then(
       album.getAlbumBio(title, artist).then((data) => {
         if (data === "None") {
-          state.album_bio.value = null;
+          state.album.bio = null;
         } else {
-          state.album_bio.value = data;
+          state.album.bio = data;
         }
       })
     )

@@ -1,6 +1,6 @@
 .b-bar {
   height: 100%;
-  border-top: solid 1px $gray;
+  background-color: $gray;
 
   .grid {
     display: grid;
@@ -36,7 +36,7 @@
 
         .artists {
           font-size: 0.8rem;
-          color: $red;
+          color: $white;
         }
       }
     }
@@ -48,7 +48,6 @@
       align-items: center;
       margin: $small;
       padding: $small;
-      background-color: $gray5;
 
       .progress-bottom {
         display: flex;

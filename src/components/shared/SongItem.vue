@@ -1,10 +1,15 @@
 <template>
-  <tr class="songlist-item" :class="{ current: current.trackid === song.trackid }" @dblclick="emitUpdate(song)">
+  <tr
+    class="songlist-item"
+    :class="{ current: current.trackid === song.trackid }"
+    @dblclick="emitUpdate(song)"
+  >
     <td class="index">{{ index }}</td>
-    <td class="flex" @click="emitUpdate(song)">
+    <td class="flex">
       <div
         class="album-art image"
         :style="{ backgroundImage: `url(&quot;${song.image}&quot;` }"
+        @click="emitUpdate(song)"
       >
         <div
           class="now-playing-track image"
@@ -12,8 +17,8 @@
           :class="{ active: is_playing, not_active: !is_playing }"
         ></div>
       </div>
-      <div>
-        <span class="ellip">{{ song.title }}</span>
+      <div @click="emitUpdate(song)">
+        <span class="ellip title">{{ song.title }}</span>
         <div class="artist ellip">
           <span v-for="artist in putCommas(song.artists)" :key="artist">
             {{ artist }}
@@ -35,7 +40,10 @@
       </div>
     </td>
     <td class="song-album">
-      <div class="ellip" @click="emitLoadAlbum(song.album, song.albumartist)">
+      <div
+        class="album ellip"
+        @click="emitLoadAlbum(song.album, song.albumartist)"
+      >
         {{ song.album }}
       </div>
     </td>
@@ -94,11 +102,9 @@ export default {
   }
 
   .song-duration {
-    font-size: .8rem;
+    font-size: 0.8rem;
     width: 5rem !important;
   }
-
-  cursor: pointer;
 
   .flex {
     position: relative;
@@ -113,13 +119,19 @@ export default {
       margin-right: 1rem;
       display: grid;
       place-items: center;
-      border-radius: .5rem;
+      border-radius: 0.5rem;
+      cursor: pointer;
+    }
+
+    .title {
+      cursor: pointer;
     }
 
     .artist {
       display: none;
       font-size: 0.8rem;
       color: rgba(255, 255, 255, 0.719);
+      cursor: pointer;
 
       @include phone-only {
         display: unset;
@@ -136,7 +148,7 @@ export default {
     border-radius: $small 0 0 $small;
   }
 
-  td:nth-child(2){
+  td:nth-child(2) {
     border-radius: 0 $small $small 0;
 
     @include phone-only {
@@ -194,12 +206,21 @@ export default {
   }
 
   .song-album {
+    .album {
+      cursor: pointer;
+      width: max-content;
+    }
+
     @include tablet-portrait {
       display: none;
     }
   }
 
   .song-artists {
+    .artist {
+      cursor: pointer;
+    }
+
     @include phone-only {
       display: none;
     }

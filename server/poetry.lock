@@ -37,6 +37,17 @@ optional = false
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*"
 
 [[package]]
+name = "colorgram.py"
+version = "1.2.0"
+description = "A Python module for extracting colors from images. Get a palette of any picture!"
+category = "main"
+optional = false
+python-versions = "*"
+
+[package.dependencies]
+pillow = ">=3.3.1"
+
+[[package]]
 name = "flask"
 version = "2.0.2"
 description = "A simple framework for building complex web applications."
@@ -234,7 +245,7 @@ watchdog = ["watchdog"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8"
-content-hash = "43a8f1b3d32df323e4836559445b061c5ef7540471f75ffb3365b683e953f760"
+content-hash = "c5fb66888aa3ddc0828c3c7794409039ada460ab96b3f824fd76caa85e27fbfb"
 
 [metadata.files]
 certifi = [
@@ -252,6 +263,10 @@ click = [
 colorama = [
     {file = "colorama-0.4.4-py2.py3-none-any.whl", hash = "sha256:9f47eda37229f68eee03b24b9748937c7dc3868f906e8ba69fbcbdd3bc5dc3e2"},
     {file = "colorama-0.4.4.tar.gz", hash = "sha256:5941b2b48a20143d2267e95b1c2a7603ce057ee39fd88e7329b0c292aa16869b"},
+]
+"colorgram.py" = [
+    {file = "colorgram.py-1.2.0-py2.py3-none-any.whl", hash = "sha256:e990769fa6df7261a450c7d5bef3a1a062f09ba1214bff67b4d6f02970a1a27b"},
+    {file = "colorgram.py-1.2.0.tar.gz", hash = "sha256:e77766a5f9de7207bdef8f1c22a702cbf09630eae3bc46a450b9d9f12a7bfdbf"},
 ]
 flask = [
     {file = "Flask-2.0.2-py3-none-any.whl", hash = "sha256:cb90f62f1d8e4dc4621f52106613488b5ba826b2e1e10a33eac92f723093ab6a"},
