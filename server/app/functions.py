@@ -112,31 +112,66 @@ def use_defaults() -> str:
     return path
 
 
+def save_track_colors(img, filepath) -> None:
+    """Saves the track colors to the database"""
+
+    track_colors = helpers.extract_colors(img)
+
+    tc_dict = {
+        "filepath": filepath,
+        "colors": track_colors,
+    }
+
+    instances.track_color_instance.insert_track_color(tc_dict)
+
+
+def return_album_art(filepath):
+    """
+    Returns the album art for a given audio file.
+    """
+
+    if filepath.endswith(".flac"):
+        try:
+            audio = FLAC(filepath)
+            return audio.pictures[0].data
+        except:
+            return None
+    elif filepath.endswith(".mp3"):
+        try:
+            audio = ID3(filepath)
+            return audio.getall("APIC")[0].data
+        except:
+            return None
+
+
+def save_t_colors():
+    tracks = instances.songs_instance.get_all_songs()
+    _bar = Bar("Processing image colors", max=len(tracks))
+
+    for track in tracks:
+        filepath = track["filepath"]
+        album_art = return_album_art(filepath)
+
+        if album_art is not None:
+            img = Image.open(BytesIO(album_art))
+            save_track_colors(img, filepath)
+
+        _bar.next()
+
+    _bar.finish()
+
+
 def extract_thumb(audio_file_path: str) -> str:
     """
     Extracts the thumbnail from an audio file. Returns the path to the thumbnail.
     """
-
-    album_art = None
-
     webp_path = audio_file_path.split("/")[-1] + ".webp"
     img_path = os.path.join(helpers.app_dir, "images", "thumbnails", webp_path)
 
     if os.path.exists(img_path):
         return webp_path
 
-    if audio_file_path.endswith(".flac"):
-        try:
-            audio = FLAC(audio_file_path)
-            album_art = audio.pictures[0].data
-        except:
-            album_art = None
-    elif audio_file_path.endswith(".mp3"):
-        try:
-            audio = ID3(audio_file_path)
-            album_art = audio.getall("APIC")[0].data
-        except:
-            album_art = None
+    album_art = return_album_art(audio_file_path)
 
     if album_art is not None:
         img = Image.open(BytesIO(album_art))
@@ -306,22 +341,5 @@ def get_album_bio(title: str, albumartist: str):
     return bio
 
 
-def create_track_class(tags):
-    """
-    Creates a Track class from a dictionary of tags.
-    """
-    return models.Track(
-        tags["_id"]["$oid"],
-        tags["title"],
-        tags["artists"],
-        tags["albumartist"],
-        tags["album"],
-        tags["folder"],
-        tags["length"],
-        tags["date"],
-        tags["genre"],
-        tags["bitrate"],
-        tags["image"],
-        tags["tracknumber"],
-        tags["discnumber"],
-    )
+def get_all_albums():
+    albums = []
