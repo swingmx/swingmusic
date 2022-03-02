@@ -45,6 +45,8 @@ def reindex_tracks():
     while flag is False:
         functions.populate()
         functions.populate_images()
+        # functions.save_t_colors()
+
         time.sleep(300)
 
 
@@ -153,17 +155,21 @@ def get_all_songs() -> List[models.Track]:
 
     for track in instances.songs_instance.get_all_songs():
         try:
-            os.chmod(os.path.join(track["filepath"]), 0o755)
+            os.chmod(track["filepath"], 0o755)
         except FileNotFoundError:
             instances.songs_instance.remove_song_by_filepath(track["filepath"])
 
-        tracks.append(functions.create_track_class(track))
+        tracks.append(models.Track(track))
 
     return tracks
 
 
 def extract_colors(image) -> list:
-    colors = sorted(colorgram.extract(image, 2), key=lambda c: c.hsl.h)
+    """Extracts 2 of the most dominant colors from an image."""
+    try:
+        colors = sorted(colorgram.extract(image, 2), key=lambda c: c.hsl.h)
+    except OSError:
+        return []
 
     formatted_colors = []
 

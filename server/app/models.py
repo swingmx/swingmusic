@@ -53,8 +53,9 @@ class Artists(Mongo):
         """
         Inserts an artist into the database.
         """
-        self.collection.update_one(artist_obj, {"$set": artist_obj}, upsert=True).upserted_id
-
+        self.collection.update_one(
+            artist_obj, {"$set": artist_obj}, upsert=True
+        ).upserted_id
 
     def get_all_artists(self) -> list:
         """
@@ -191,7 +192,7 @@ class AllSongs(Mongo):
         except:
             return False
 
-    def remove_song_by_id(self, id:str):
+    def remove_song_by_id(self, id: str):
         """
         Removes a single track from the database. Returns a boolean indicating success or failure of the operation.
         """
@@ -200,6 +201,34 @@ class AllSongs(Mongo):
             return True
         except:
             return False
+
+
+class TrackColors(Mongo):
+    """
+    The class for all track-related database operations.
+    """
+
+    def __init__(self):
+        super(TrackColors, self).__init__("TRACK_COLORS")
+        self.collection = self.db["TRACK_COLORS"]
+
+    def insert_track_color(self, track_color: dict) -> None:
+        """
+        Inserts a new track object into the database.
+        """
+        return self.collection.update_one(
+            {"filepath": track_color["filepath"]},
+            {"$set": track_color},
+            upsert=True,
+        ).upserted_id
+
+    def get_track_color_by_track(self, filepath: str) -> dict:
+        """
+        Returns a track color object by its filepath.
+        """
+        track_color = self.collection.find_one({"filepath": filepath})
+        return convert_one_to_json(track_color)
+
 
 @dataclass
 class Track:
@@ -213,6 +242,7 @@ class Track:
     albumartist: str
     album: str
     folder: str
+    filepath: str
     length: int
     date: int
     genre: str
@@ -221,6 +251,18 @@ class Track:
     tracknumber: int
     discnumber: int
 
-    def __post_init__(self):
-        self.artists = self.artists.split(", ")
-        self.image = "http://127.0.0.1:8900/images/thumbnails/" + self.image
+    def __init__(self, tags):
+        self.trackid = tags["_id"]["$oid"]
+        self.title = tags["title"]
+        self.artists = tags["artists"].split(", ")
+        self.albumartist = tags["albumartist"]
+        self.album = tags["album"]
+        self.folder = tags["folder"]
+        self.filepath = tags["filepath"]
+        self.length = tags["length"]
+        self.date = tags["date"]
+        self.genre = tags["genre"]
+        self.bitrate = tags["bitrate"]
+        self.image = "http://127.0.0.1:8900/images/thumbnails/" + tags["image"]
+        self.tracknumber = tags["tracknumber"]
+        self.discnumber = tags["discnumber"]

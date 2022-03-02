@@ -255,6 +255,7 @@ def get_folder_tree(folder: str):
     dir_content = os.scandir(os.path.join(home_dir, req_dir))
 
     folders = []
+    files = []
 
     for entry in dir_content:
         if entry.is_dir() and not entry.name.startswith("."):
@@ -269,11 +270,22 @@ def get_folder_tree(folder: str):
 
                 folders.append(_dir)
 
+        if entry.is_file():
+            if entry.name.endswith(".flac") or entry.name.endswith(".mp3"):
+                files.append(entry)
+
+    files.sort(key=lambda x: os.path.getmtime(x.path))
+
     songs = []
 
-    for track in all_the_f_music:
-        if track.folder == req_dir:
-            songs.append(track)
+    for entry in files:
+        for track in all_the_f_music:
+            if track.filepath == entry.path:
+                songs.append(track)
+
+    # for track in all_the_f_music:
+    #     if track.filepath == req_dir:
+    #         songs.append(track)
 
     return {
         "files": helpers.remove_duplicates(songs),
@@ -348,7 +360,7 @@ def send_track_file(trackid):
         return "File not found", 404
 
 
-@bp.route('/sample')
+@bp.route("/sample")
 def get_sample_track():
     """
     Returns a sample track object.
