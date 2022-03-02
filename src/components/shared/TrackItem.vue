@@ -51,7 +51,7 @@ const playThis = (song) => {
 
 <style lang="scss">
 .currentInQueue {
-  border: solid 2px $pink;
+  background-color: $gray3;
 }
 
 .track-item {
@@ -82,7 +82,6 @@ const playThis = (song) => {
     width: 3rem;
     height: 3rem;
     margin: 0 0.5rem 0 0;
-    border-radius: 0.5rem;
     background-image: url(../../assets/images/null.webp);
   }
   .artist {

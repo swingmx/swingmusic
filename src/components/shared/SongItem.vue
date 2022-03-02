@@ -119,7 +119,6 @@ export default {
       margin-right: 1rem;
       display: grid;
       place-items: center;
-      border-radius: 0.5rem;
       cursor: pointer;
     }
 

@@ -15,7 +15,7 @@
         <div class="separator no-border"></div>
         <div class="bottom">
           <div class="stats shadow-sm">
-            {{ props.album_info.count }} Tracks • {{ props.album_info.duration }} •
+            {{ props.album_info.count }} Tracks • {{ perks.formatSeconds(props.album_info.duration, "long") }} •
             {{ props.album_info.date }}
           </div>
           <div class="play rounded" @click="playAlbum">
