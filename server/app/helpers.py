@@ -172,3 +172,16 @@ def extract_colors(image) -> list:
         formatted_colors.append(color)
 
     return formatted_colors
+
+
+def get_album_duration(album: List[models.Track]) -> int:
+    """
+    Gets the duration of an album.
+    """
+
+    album_duration = 0
+
+    for track in album:
+        album_duration += track.length
+
+    return album_duration
