@@ -89,8 +89,9 @@ def search_by_title():
         for track in albums:
             if album["name"] == track.album:
                 album["image"] = track.image
+    artist_tracks = get_artists(query)
 
-    for song in get_artists(query):
+    for song in artist_tracks:
         for artist in song.artists:
             if query.lower() in artist.lower():
 
@@ -105,6 +106,7 @@ def search_by_title():
                     artists_dicts.append(artist_obj)
 
     tracks = helpers.remove_duplicates(get_tracks(query))
+    tracks = [*tracks, *artist_tracks]
 
     search_results["tracks"] = tracks
     search_results["albums"] = albums_dicts
@@ -314,7 +316,7 @@ def get_album_tracks():
     album_obj = {
         "name": album,
         "count": len(songs),
-        "duration": "56 Minutes",
+        "duration": helpers.get_album_duration(songs),
         "image": songs[0].image,
         "date": songs[0].date,
         "artist": songs[0].albumartist,
@@ -344,3 +346,12 @@ def send_track_file(trackid):
         return send_file(filepath, mimetype="audio/mp3")
     except FileNotFoundError:
         return "File not found", 404
+
+
+@bp.route('/sample')
+def get_sample_track():
+    """
+    Returns a sample track object.
+    """
+
+    return instances.songs_instance.get_song_by_album("Legends Never Die", "Juice WRLD")
