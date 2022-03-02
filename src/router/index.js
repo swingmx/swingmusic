@@ -49,6 +49,11 @@ const routes = [
     name: "SettingsView",
     component: SettingsView,
   },
+  {
+    path: "/:pathMatch(.*)",
+    // alias: "*",
+    component: () => import("../views/NotFound.vue"),
+  }
 ];
 
 const router = createRouter({
