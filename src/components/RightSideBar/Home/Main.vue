@@ -7,7 +7,7 @@
 <style lang="scss">
 .r-home {
   height: calc(100% - 1rem);
-  padding: 0 $small $small 0;
+  // padding: 0 $small $small 0;
 }
 </style>
 

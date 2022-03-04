@@ -3,19 +3,18 @@
   <div class="l-container" :class="{ collapsed: collapsed }">
     <div class="l-sidebar">
       <div id="logo-container">
-        <div id="toggle" @click="toggleNav"></div>
+        <!-- <div id="toggle" @click="toggleNav"></div> -->
         <router-link :to="{ name: 'Home' }" v-if="!collapsed"
           ><div class="logo"></div
         ></router-link>
       </div>
       <Navigation :collapsed="collapsed" />
-      <!-- <PinnedStuff :collapsed="collapsed" /> -->
       <div class="l-album-art">
         <AlbumArt :collapsed="collapsed" />
       </div>
     </div>
+    <NavBar />
     <div class="content">
-      <div class="search-box"></div>
       <router-view />
     </div>
     <RightSideBar />
@@ -35,6 +34,7 @@ import BottomBar from "@/components/BottomBar/BottomBar.vue";
 import perks from "@/composables/perks.js";
 import Main from "./components/RightSideBar/Main.vue";
 import AlbumArt from "./components/LeftSidebar/AlbumArt.vue";
+import NavBar from "./components/nav/NavBar.vue";
 
 export default {
   components: {
@@ -43,6 +43,7 @@ export default {
     BottomBar,
     RightSideBar: Main,
     AlbumArt,
+    NavBar
   },
 
   setup() {
@@ -89,11 +90,10 @@ export default {
   }
 }
 .logo {
-  height: 2rem;
-  width: 9rem;
-  margin-left: 3rem;
-  background: url(./assets/logo.svg) no-repeat center;
-  background-size: contain;
+  height: 4.5rem;
+  width: 15rem;
+  background: url(./assets/icons/logo.svg) no-repeat 1rem;
+  background-size:9rem;
 }
 
 .r-sidebar {
@@ -106,6 +106,6 @@ export default {
   width: 100%;
   padding: 0 $small;
   display: grid;
-  grid-template-rows: auto 1fr;
+  grid-template-rows: 1fr;
 }
 </style>

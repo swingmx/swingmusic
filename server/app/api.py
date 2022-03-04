@@ -283,10 +283,6 @@ def get_folder_tree(folder: str):
             if track.filepath == entry.path:
                 songs.append(track)
 
-    # for track in all_the_f_music:
-    #     if track.filepath == req_dir:
-    #         songs.append(track)
-
     return {
         "files": helpers.remove_duplicates(songs),
         "folders": sorted(folders, key=lambda i: i["name"]),

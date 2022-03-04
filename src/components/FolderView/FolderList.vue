@@ -22,9 +22,6 @@ const props = defineProps({
 </script>
 
 <style lang="scss">
-.f-container {
-  padding: 0 0 0 0;
-}
 
 .no_f {
   display: none;
@@ -34,12 +31,5 @@ const props = defineProps({
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(13rem, 1fr));
   gap: $medium;
-}
-
-.f-container p {
-  text-transform: uppercase;
-  font-weight: normal;
-  color: rgba(255, 255, 255, 0.438);
-  margin-bottom: 1rem;
 }
 </style>

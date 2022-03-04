@@ -43,8 +43,9 @@ def reindex_tracks():
     flag = False
 
     while flag is False:
-        functions.populate()
-        functions.populate_images()
+        # functions.populate()
+        functions.get_all_albums()
+        # functions.populate_images()
         # functions.save_t_colors()
 
         time.sleep(300)
@@ -188,6 +189,23 @@ def get_album_duration(album: List[models.Track]) -> int:
     album_duration = 0
 
     for track in album:
-        album_duration += track.length
+        try:
+            album_duration += track.length
+        except AttributeError:
+            album_duration += track["length"]
 
     return album_duration
+
+
+def get_album_image(album: list) -> str:
+    """
+    Gets the image of an album.
+    """
+
+    for track in album:
+        img = functions.extract_thumb(track["filepath"])
+
+        if img is not None:
+            return img
+
+    return functions.use_defaults()

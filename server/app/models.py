@@ -4,7 +4,7 @@ import pymongo
 from bson import ObjectId, json_util
 
 
-def convert_one_to_json(song):
+def convert_one(song):
     """
     Converts a single mongodb cursor to a json object.
     """
@@ -14,7 +14,7 @@ def convert_one_to_json(song):
     return loaded_song
 
 
-def convert_to_json(array):
+def convert_many(array):
     """
     Converts a list of mongodb cursors to a list of json objects.
     """
@@ -100,35 +100,35 @@ class AllSongs(Mongo):
         """
         Returns all tracks in the database.
         """
-        return convert_to_json(self.collection.find())
+        return convert_many(self.collection.find())
 
     def get_song_by_id(self, file_id: str) -> dict:
         """
         Returns a track object by its mongodb id.
         """
         song = self.collection.find_one({"_id": ObjectId(file_id)})
-        return convert_one_to_json(song)
+        return convert_one(song)
 
     def get_song_by_album(self, name: str, artist: str) -> dict:
         """
         Returns a single track matching the album in the query params.
         """
         song = self.collection.find_one({"album": name, "albumartist": artist})
-        return convert_one_to_json(song)
+        return convert_one(song)
 
     def search_songs_by_album(self, query: str) -> list:
         """
         Returns all the songs matching the albums in the query params (using regex).
         """
         songs = self.collection.find({"album": {"$regex": query, "$options": "i"}})
-        return convert_to_json(songs)
+        return convert_many(songs)
 
     def search_songs_by_artist(self, query: str) -> list:
         """
         Returns all the songs matching the artists in the query params.
         """
         songs = self.collection.find({"artists": {"$regex": query, "$options": "i"}})
-        return convert_to_json(songs)
+        return convert_many(songs)
 
     def find_song_by_title(self, query: str) -> list:
         """
@@ -136,35 +136,35 @@ class AllSongs(Mongo):
         """
         self.collection.create_index([("title", pymongo.TEXT)])
         song = self.collection.find({"title": {"$regex": query, "$options": "i"}})
-        return convert_to_json(song)
+        return convert_many(song)
 
     def find_songs_by_album(self, name: str, artist: str) -> list:
         """
         Returns all the tracks exactly matching the album in the query params.
         """
         songs = self.collection.find({"album": name, "albumartist": artist})
-        return convert_to_json(songs)
+        return convert_many(songs)
 
     def find_songs_by_folder(self, query: str) -> list:
         """
         Returns a sorted list of all the tracks exactly matching the folder in the query params
         """
         songs = self.collection.find({"folder": query}).sort("title", pymongo.ASCENDING)
-        return convert_to_json(songs)
+        return convert_many(songs)
 
     def find_songs_by_folder_og(self, query: str) -> list:
         """
         Returns an unsorted list of all the tracks exactly matching the folder in the query params
         """
         songs = self.collection.find({"folder": query})
-        return convert_to_json(songs)
+        return convert_many(songs)
 
     def find_songs_by_artist(self, query: str) -> list:
         """
         Returns a list of all the tracks exactly matching the artists in the query params.
         """
         songs = self.collection.find({"artists": query})
-        return convert_to_json(songs)
+        return convert_many(songs)
 
     def find_songs_by_albumartist(self, query: str):
         """
@@ -173,14 +173,14 @@ class AllSongs(Mongo):
         songs = self.collection.find(
             {"albumartist": {"$regex": query, "$options": "i"}}
         )
-        return convert_to_json(songs)
+        return convert_many(songs)
 
     def get_song_by_path(self, path: str) -> dict:
         """
         Returns a single track matching the filepath in the query params.
         """
         song = self.collection.find_one({"filepath": path})
-        return convert_one_to_json(song)
+        return convert_one(song)
 
     def remove_song_by_filepath(self, filepath: str):
         """
@@ -227,7 +227,7 @@ class TrackColors(Mongo):
         Returns a track color object by its filepath.
         """
         track_color = self.collection.find_one({"filepath": filepath})
-        return convert_one_to_json(track_color)
+        return convert_one(track_color)
 
 
 @dataclass
@@ -266,3 +266,67 @@ class Track:
         self.image = "http://127.0.0.1:8900/images/thumbnails/" + tags["image"]
         self.tracknumber = tags["tracknumber"]
         self.discnumber = tags["discnumber"]
+
+
+class Albums(Mongo):
+    """
+    The class for all album-related database operations.
+    """
+
+    def __init__(self):
+        super(Albums, self).__init__("ALBUMS")
+        self.collection = self.db["ALBUMS"]
+
+    def insert_album(self, album: dict) -> None:
+        """
+        Inserts a new album object into the database.
+        """
+        return self.collection.update_one(
+            {"album": album["album"], "artist": album["artist"]},
+            {"$set": album},
+            upsert=True,
+        ).upserted_id
+
+    def get_album_by_id(self, id: str) -> dict:
+        """
+        Returns a single album matching the id in the query params.
+        """
+        album = self.collection.find_one({"_id": ObjectId(id)})
+        return convert_one(album)
+
+    def get_album_by_name(self, name: str) -> dict:
+        """
+        Returns a single album matching the name in the query params.
+        """
+        album = self.collection.find_one({"album": name})
+        return convert_one(album)
+
+    def get_album_by_artist(self, name: str) -> dict:
+        """
+        Returns a single album matching the artist in the query params.
+        """
+        album = self.collection.find_one({"albumartist": name})
+        return convert_one(album)
+
+
+@dataclass
+class Album:
+    """
+    Album class
+    """
+
+    albumid: str
+    album: str
+    artist: str
+    albumartist: str
+    year: int
+    image: str
+    tracks: list
+
+    def __init__(self, tags):
+        self.albumid = tags["_id"]["$oid"]
+        self.album = tags["album"]
+        self.artist = tags["artist"]
+        self.albumartist = tags["albumartist"]
+        self.year = tags["year"]
+        self.image = ""

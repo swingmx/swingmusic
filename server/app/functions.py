@@ -185,11 +185,11 @@ def extract_thumb(audio_file_path: str) -> str:
                 small_img = png.resize((250, 250), Image.ANTIALIAS)
                 small_img.save(img_path, format="webp")
             except:
-                return use_defaults()
+                return None
 
         return webp_path
     else:
-        return use_defaults()
+        return None
 
 
 def parse_artist_tag(audio):
@@ -309,7 +309,6 @@ def get_tags(fullpath: str) -> dict:
         "length": round(audio.info.length),
         "bitrate": round(int(audio.info.bitrate) / 1000),
         "filepath": fullpath,
-        "image": extract_thumb(fullpath),
         "folder": os.path.dirname(fullpath).replace(helpers.home_dir, ""),
     }
 
@@ -342,4 +341,43 @@ def get_album_bio(title: str, albumartist: str):
 
 
 def get_all_albums():
-    albums = []
+    print("processing albums started ...")
+
+    all_tracks = instances.songs_instance.get_all_songs()
+    album_dicts = []
+
+    for track in all_tracks:
+        album_dict = {
+            "album": track["album"],
+            "artist": track["albumartist"],
+        }
+
+        if album_dict not in album_dicts:
+            album_dicts.append(album_dict)
+
+    for album in album_dicts:
+        album_tracks = [
+            track
+            for track in all_tracks
+            if track["album"] == album["album"]
+            and track["albumartist"] == album["artist"]
+        ]
+
+        album["count"] = len(album_tracks)
+        album["duration"] = helpers.get_album_duration(album_tracks)
+        album["date"] = album_tracks[0]["date"]
+        album["artistimage"] = (
+            "http://127.0.0.1:8900/images/artists/"
+            + album_tracks[0]["albumartist"].replace("/", "::")
+            + ".webp"
+        )
+
+        if len(album_tracks) == 1:
+            album["image"] = extract_thumb(album_tracks[0]["filepath"])
+
+        if len(album_tracks) > 1:
+            album["image"] = helpers.get_album_image(album_tracks)
+
+        instances.album_instance.insert_album(album)
+
+    print("done processing albums")
