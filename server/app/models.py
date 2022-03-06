@@ -237,6 +237,7 @@ class Track:
     """
 
     trackid: str
+    albumid: str
     title: str
     artists: str
     albumartist: str
@@ -244,7 +245,6 @@ class Track:
     folder: str
     filepath: str
     length: int
-    date: int
     genre: str
     bitrate: int
     image: str
@@ -260,7 +260,6 @@ class Track:
         self.folder = tags["folder"]
         self.filepath = tags["filepath"]
         self.length = tags["length"]
-        self.date = tags["date"]
         self.genre = tags["genre"]
         self.bitrate = tags["bitrate"]
         self.image = "http://127.0.0.1:8900/images/thumbnails/" + tags["image"]
@@ -287,6 +286,13 @@ class Albums(Mongo):
             upsert=True,
         ).upserted_id
 
+    def get_all_albums(self) -> list:
+        """
+        Returns all the albums in the database.
+        """
+        albums = self.collection.find()
+        return convert_many(albums)
+
     def get_album_by_id(self, id: str) -> dict:
         """
         Returns a single album matching the id in the query params.
@@ -294,11 +300,11 @@ class Albums(Mongo):
         album = self.collection.find_one({"_id": ObjectId(id)})
         return convert_one(album)
 
-    def get_album_by_name(self, name: str) -> dict:
+    def get_album_by_name(self, name: str, artist: str) -> dict:
         """
         Returns a single album matching the name in the query params.
         """
-        album = self.collection.find_one({"album": name})
+        album = self.collection.find_one({"album": name, "artist": artist})
         return convert_one(album)
 
     def get_album_by_artist(self, name: str) -> dict:
@@ -318,15 +324,18 @@ class Album:
     albumid: str
     album: str
     artist: str
-    albumartist: str
-    year: int
+    count: int
+    duration: int
+    date: int
+    artistimage: str
     image: str
-    tracks: list
 
     def __init__(self, tags):
         self.albumid = tags["_id"]["$oid"]
         self.album = tags["album"]
         self.artist = tags["artist"]
-        self.albumartist = tags["albumartist"]
-        self.year = tags["year"]
-        self.image = ""
+        self.count = tags["count"]
+        self.duration = tags["duration"]
+        self.date = tags["date"]
+        self.artistimage = tags["artistimage"]
+        self.image = tags["image"]

@@ -3,7 +3,6 @@
   <div class="l-container" :class="{ collapsed: collapsed }">
     <div class="l-sidebar">
       <div id="logo-container">
-        <!-- <div id="toggle" @click="toggleNav"></div> -->
         <router-link :to="{ name: 'Home' }" v-if="!collapsed"
           ><div class="logo"></div
         ></router-link>
@@ -18,49 +17,28 @@
       <router-view />
     </div>
     <RightSideBar />
+    <Tabs />
     <div class="bottom-bar">
-      <BottomBar :collapsed="collapsed"/>
+      <BottomBar :collapsed="collapsed" />
     </div>
   </div>
 </template>
 
-<script>
-import { ref } from "@vue/reactivity";
-
+<script setup>
+import { ref } from "vue";
 import Navigation from "./components/LeftSidebar/Navigation.vue";
-import PinnedStuff from "./components/LeftSidebar/PinnedStuff.vue";
 import BottomBar from "@/components/BottomBar/BottomBar.vue";
 
 import perks from "@/composables/perks.js";
+
 import Main from "./components/RightSideBar/Main.vue";
 import AlbumArt from "./components/LeftSidebar/AlbumArt.vue";
 import NavBar from "./components/nav/NavBar.vue";
+import Tabs from "./components/RightSideBar/Tabs.vue";
 
-export default {
-  components: {
-    Navigation,
-    PinnedStuff,
-    BottomBar,
-    RightSideBar: Main,
-    AlbumArt,
-    NavBar
-  },
-
-  setup() {
-    const collapsed = ref(false);
-
-    perks.readQueue();
-
-    function toggleNav() {
-      collapsed.value = !collapsed.value;
-    }
-
-    return {
-      toggleNav,
-      collapsed,
-    };
-  },
-};
+const RightSideBar = Main;
+perks.readQueue();
+const collapsed = ref(false);
 </script>
 
 <style lang="scss">
@@ -93,7 +71,7 @@ export default {
   height: 4.5rem;
   width: 15rem;
   background: url(./assets/icons/logo.svg) no-repeat 1rem;
-  background-size:9rem;
+  background-size: 9rem;
 }
 
 .r-sidebar {

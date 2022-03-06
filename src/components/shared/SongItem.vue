@@ -207,7 +207,7 @@ export default {
   .song-album {
     .album {
       cursor: pointer;
-      width: max-content;
+      max-width: max-content;
     }
 
     @include tablet-portrait {

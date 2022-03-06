@@ -11,7 +11,8 @@ bp = Blueprint("api", __name__, url_prefix="")
 
 home_dir = helpers.home_dir
 
-all_the_f_music = helpers.get_all_songs()
+all_the_f_albums = helpers.create_all_albums()
+all_the_f_music = helpers.create_all_tracks()
 
 
 def initialize() -> None:

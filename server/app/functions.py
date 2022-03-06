@@ -20,6 +20,7 @@ from app import helpers
 from app import instances
 from app import api
 from app import models
+import urllib
 
 
 def populate():
@@ -41,7 +42,7 @@ def populate():
         if tags is not None:
             instances.songs_instance.insert_song(tags)
 
-    api.all_the_f_music = helpers.get_all_songs()
+    api.all_the_f_music = helpers.create_all_tracks()
 
     print("\n check done")
     end = time.time()
@@ -165,7 +166,7 @@ def extract_thumb(audio_file_path: str) -> str:
     """
     Extracts the thumbnail from an audio file. Returns the path to the thumbnail.
     """
-    webp_path = audio_file_path.split("/")[-1] + ".webp"
+    webp_path = urllib.parse.quote_plus(audio_file_path.split("/")[-1] + ".webp")
     img_path = os.path.join(helpers.app_dir, "images", "thumbnails", webp_path)
 
     if os.path.exists(img_path):
@@ -366,17 +367,11 @@ def get_all_albums():
         album["count"] = len(album_tracks)
         album["duration"] = helpers.get_album_duration(album_tracks)
         album["date"] = album_tracks[0]["date"]
-        album["artistimage"] = (
-            "http://127.0.0.1:8900/images/artists/"
-            + album_tracks[0]["albumartist"].replace("/", "::")
-            + ".webp"
+        album["artistimage"] = urllib.parse.quote_plus(
+            album_tracks[0]["albumartist"] + ".webp"
         )
 
-        if len(album_tracks) == 1:
-            album["image"] = extract_thumb(album_tracks[0]["filepath"])
-
-        if len(album_tracks) > 1:
-            album["image"] = helpers.get_album_image(album_tracks)
+        album["image"] = helpers.get_album_image(album_tracks)
 
         instances.album_instance.insert_album(album)
 

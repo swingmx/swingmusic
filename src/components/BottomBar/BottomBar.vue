@@ -1,7 +1,6 @@
 <template>
-  <div class="b-bar">
-    <div class="grid">
-      <SongCard :collapsed="props.collapsed" />
+  <div class="b-bar ">
+    <div class="grid rounded">
       <div class="controlsx rounded">
         <div class="controls controls-bottom">
           <HotKeys />
@@ -27,7 +26,6 @@
 
 <script setup>
 import "../../assets/css/BottomBar/BottomBar.scss";
-import SongCard from "./SongCard.vue";
 import Progress from "../shared/Progress.vue";
 import HotKeys from "../shared/HotKeys.vue";
 import state from "../../composables/state";
@@ -37,10 +35,4 @@ import playAudio from "../../composables/playAudio";
 const current_pos = playAudio.current_time
 const formatSeconds = perks.formatSeconds;
 
-const props = defineProps({
-  collapsed: {
-    type: Boolean,
-    default: false,
-  },
-});
 </script>

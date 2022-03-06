@@ -1,11 +1,12 @@
 .b-bar {
   height: 100%;
-  background-color: $gray;
+  padding: $small;
 
   .grid {
+    background-color: $gray;
     display: grid;
     height: 100%;
-    grid-template-columns: 1fr 2fr 1fr;
+    padding-right: $small;
 
     @include phone-only {
       grid-template-columns: 1fr 9.2rem;
@@ -45,7 +46,6 @@
       overflow: hidden;
       display: flex;
       align-items: center;
-      margin: $small;
       padding: $small;
 
       .progress-bottom {

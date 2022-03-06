@@ -2,70 +2,45 @@
   <div class="r-sidebar">
     <div class="grid">
       <div class="r-content">
-        <div class="r-dash" v-show="current_tab === tabs.home">
+        <div class="r-dash" v-show="tabs.current === tabs.tabs.home">
           <DashBoard />
         </div>
-        <div class="r-search" v-show="current_tab === tabs.search">
+        <div class="r-search" v-show="tabs.current === tabs.tabs.search">
           <Search />
         </div>
 
-        <div class="r-queue" v-show="current_tab === tabs.queue">
+        <div class="r-queue" v-show="tabs.current === tabs.tabs.queue">
           <UpNext />
         </div>
-      </div>
-      <div class="tab-keys">
-        <Tabs :current_tab="current_tab" :tabs="tabs" @changeTab="changeTab" />
       </div>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref } from "vue";
 import Search from "./Search.vue";
 import UpNext from "./Queue.vue";
-import Tabs from "./Tabs.vue";
 import Main from "./Home/Main.vue";
-import perks from "../../composables/perks";
+import useTabStore from "../../stores/tabs";
 
 const DashBoard = Main;
-
-const tabs = {
-  home: "home",
-  search: "search",
-  queue: "queue",
-};
-
-const default_tab = tabs.home;
-
-const current_tab = ref(default_tab);
-
-function changeTab(tab) {
-  new Promise((resolve) => {
-    current_tab.value = tab;
-    resolve();
-    setTimeout(() => {}, 300);
-  }).then(() => {
-    if (tab === tabs.queue) {
-      setTimeout(() => {
-        perks.focusCurrent();
-      }, 300);
-    }
-  });
-}
+const tabs = useTabStore();
 </script>
 
 <style lang="scss">
 .r-sidebar {
-  width: 32em;
+  width: 29em;
+  background-color: rgba(4, 12, 34, 0.103);
+  padding: 0 0 0 $small;
+  border-left: 1px solid $gray;
 
   @include phone-only {
     display: none;
   }
 
-  // @include tablet-landscape {
-  //   width: 3rem;
-  // }
+  @include tablet-landscape {
+    display: none;
+  }
 
   .grid {
     height: 100%;
@@ -75,7 +50,6 @@ function changeTab(tab) {
     .r-content {
       grid-area: content;
       width: 29rem;
-
 
       // @include tablet-landscape {
       //   display: none;
@@ -95,6 +69,7 @@ function changeTab(tab) {
     }
 
     .tab-keys {
+      display: none;
       width: 3rem;
       right: 0;
       height: 100%;

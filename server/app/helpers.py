@@ -146,7 +146,7 @@ def create_config_dir() -> None:
         os.chmod(path, 0o755)
 
 
-def get_all_songs() -> List[models.Track]:
+def create_all_tracks() -> List[models.Track]:
     """
     Gets all songs under the ~/ directory.
     """
@@ -160,9 +160,24 @@ def get_all_songs() -> List[models.Track]:
         except FileNotFoundError:
             instances.songs_instance.remove_song_by_filepath(track["filepath"])
 
+        album = instances.album_instance.get_album_by_name(track['album', track['albumartist']])
+
+        if album is None:
+            track['albumid'] = album['albumid']
+            track['image'] = album['image']
         tracks.append(models.Track(track))
 
     return tracks
+
+
+def create_all_albums() -> List[models.Album]:
+    """Creates album objects for all albums"""
+    albums: list[models.Album] = []
+
+    for album in instances.album_instance.get_all_albums():
+        albums.append(models.Album(album))
+
+    return albums
 
 
 def extract_colors(image) -> list:

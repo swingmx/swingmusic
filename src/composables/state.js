@@ -50,7 +50,15 @@ const is_playing = ref(false);
 
 const settings = reactive({
   uri: "http://0.0.0.0:9876",
-})
+});
+
+const tablist = {
+  home: "home",
+  search: "search",
+  queue: "queue",
+};
+
+const current_tab = ref(tablist.home);
 
 export default {
   search_query,
@@ -65,4 +73,6 @@ export default {
   is_playing,
   album,
   settings,
+  current_tab,
+  tablist
 };

@@ -1,6 +1,6 @@
 <template>
   <div class="album-h">
-    <div class="a-header rounded">
+    <div class="a-header">
       <div
         class="image art shadow-lg"
         :style="{ backgroundImage: `url(&quot;${encodeURI(props.album_info.image)}&quot;)` }"
@@ -64,16 +64,14 @@ function playAlbum() {
   padding: 1rem;
   height: 100%;
   background-image: linear-gradient(
-    56deg,
-    $gray 0%,
-    $gray4 25%,
-    $gray1 50%,
-    $gray1 75%,
-    $gray 100%
+    to bottom,
+    $gray3 0%,
+    $gray3 25%,
+    $gray3 35%,
+    $gray4 50%,
+    $gray 75%,
+    $black 100%
   );
-  background-position: 0% 60%;
-  background-repeat: no-repeat;
-  background-size: cover;
 
   .art {
     position: absolute;

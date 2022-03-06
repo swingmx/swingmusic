@@ -87,12 +87,16 @@ button {
   grid-template-rows: 3rem 1fr 1fr;
   grid-auto-flow: row;
   grid-template-areas:
-    "l-sidebar nav nav"
+    "l-sidebar nav r-sidebar"
     "l-sidebar content r-sidebar"
     "l-sidebar content r-sidebar"
-    "bottom-bar bottom-bar bottom-bar";
+    "l-sidebar bottom-bar tabs";
   width: 100vw;
   height: 100vh;
+}
+
+.tabs {
+  grid-area: tabs;
 }
 
 .topnav {
@@ -103,6 +107,7 @@ button {
   width: 15rem;
   grid-area: l-sidebar;
   padding-top: 0.5rem;
+  border-right: solid 1px $gray;
 }
 
 .bottom-bar {
@@ -139,7 +144,7 @@ button {
   grid-area: content;
   overflow: hidden;
   padding: 0;
-  border-left: solid 1px $gray;
+  max-width: 1504px;
 
   .nav {
     border: solid;
