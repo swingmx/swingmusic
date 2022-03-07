@@ -26,6 +26,8 @@
         :tracks="tracks.tracks"
         @loadMore="loadMoreTracks"
       />
+      <div class="separator no-border"></div>
+
       <AlbumGrid
         v-if="albums.albums.length"
         :albums="albums.albums"

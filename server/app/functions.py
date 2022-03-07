@@ -1,5 +1,5 @@
 """
-This module contains larger functions for the server
+This module contains functions for the server
 """
 
 import time
@@ -7,6 +7,7 @@ import os
 from io import BytesIO
 import random
 import datetime
+from typing import List
 import mutagen
 import urllib
 
@@ -19,7 +20,31 @@ from PIL import Image
 
 from app import helpers
 from app import instances
-from app import api, settings
+from app import api, settings, watchdoge, models, trackslib
+from app import albumslib
+
+
+def reindex_tracks():
+    """
+    Checks for new songs every 5 minutes.
+    """
+    flag = False
+
+    while flag is False:
+        populate()
+        get_all_albums()
+        populate_images()
+        # functions.save_t_colors()
+
+        time.sleep(300)
+
+
+@helpers.background
+def start_watchdog():
+    """
+    Starts the file watcher.
+    """
+    watchdoge.watch.run()
 
 
 def populate():
@@ -41,7 +66,7 @@ def populate():
         if tags is not None:
             instances.songs_instance.insert_song(tags)
 
-    api.all_the_f_music = helpers.create_all_tracks()
+    albumslib.create_all_albums()
 
     print("\n check done")
     end = time.time()
@@ -340,11 +365,12 @@ def get_album_bio(title: str, albumartist: str):
     return bio
 
 
-def get_all_albums():
+def get_all_albums() -> List[models.Album]:
     print("processing albums started ...")
 
     all_tracks = instances.songs_instance.get_all_songs()
     album_dicts = []
+    albums = []
 
     for track in all_tracks:
         album_dict = {
@@ -364,14 +390,14 @@ def get_all_albums():
         ]
 
         album["count"] = len(album_tracks)
-        album["duration"] = helpers.get_album_duration(album_tracks)
+        album["duration"] = albumslib.get_album_duration(album_tracks)
         album["date"] = album_tracks[0]["date"]
         album["artistimage"] = urllib.parse.quote_plus(
             album_tracks[0]["albumartist"] + ".webp"
         )
 
-        album["image"] = helpers.get_album_image(album_tracks)
+        album["image"] = albumslib.get_album_image(album_tracks)
 
-        instances.album_instance.insert_album(album)
+        albums.append(album)
 
-    print("done processing albums")
+    return [models.Album(album) for album in albums]

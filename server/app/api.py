@@ -1,30 +1,29 @@
-from crypt import methods
 import os
-from pprint import pprint
 import urllib
 from typing import List
 from flask import Blueprint, request, send_file
 
-from app import functions, instances, helpers, cache, models
+from app import functions, instances, helpers, cache, models, prep
+from app import albumslib, searchlib
+from app import trackslib
 
 bp = Blueprint("api", __name__, url_prefix="")
 
 home_dir = helpers.home_dir
+all_the_f_music = albumslib.create_all_albums()
 
 
+@helpers.background
 def initialize() -> None:
     """
     Runs all the necessary setup functions.
     """
-    helpers.create_config_dir()
-    helpers.reindex_tracks()
-    helpers.start_watchdog()
+    prep.create_config_dir()
+    functions.reindex_tracks()
+    functions.start_watchdog()
 
 
 initialize()
-
-all_the_f_albums = helpers.create_all_albums()
-all_the_f_music = helpers.create_all_tracks()
 
 
 @bp.route("/")
@@ -33,32 +32,7 @@ def say_hi():
     return "^ _ ^"
 
 
-def get_tracks(query: str) -> List[models.Track]:
-    """
-    Gets all songs with a given title.
-    """
-    return [track for track in all_the_f_music if query.lower() in track.title.lower()]
-
-
-def get_search_albums(query: str) -> List[models.Track]:
-    """
-    Gets all songs with a given album.
-    """
-    return [track for track in all_the_f_music if query.lower() in track.album.lower()]
-
-
-def get_artists(artist: str) -> List[models.Track]:
-    """
-    Gets all songs with a given artist.
-    """
-    return [
-        track
-        for track in all_the_f_music
-        if artist.lower() in str(track.artists).lower()
-    ]
-
-
-search_results = {
+SEARCH_RESULTS = {
     "tracks": [],
     "albums": [],
     "artists": [],
@@ -66,31 +40,16 @@ search_results = {
 
 
 @bp.route("/search")
-def search_by_title():
+def search():
     """
     Returns a list of songs, albums and artists that match the search query.
     """
     query = request.args.get("q") or "Mexican girl"
 
-    albums = get_search_albums(query)
-    albums_dicts = []
+    albums = searchlib.get_search_albums(query)
     artists_dicts = []
-    search_results.clear()
 
-    for song in albums:
-        album_obj = {
-            "name": song.album,
-            "artist": song.albumartist,
-        }
-
-        if album_obj not in albums_dicts:
-            albums_dicts.append(album_obj)
-
-    for album in albums_dicts:
-        for track in albums:
-            if album["name"] == track.album:
-                album["image"] = track.image
-    artist_tracks = get_artists(query)
+    artist_tracks = searchlib.get_artists(query)
 
     for song in artist_tracks:
         for artist in song.artists:
@@ -106,17 +65,18 @@ def search_by_title():
                 if artist_obj not in artists_dicts:
                     artists_dicts.append(artist_obj)
 
-    tracks = helpers.remove_duplicates(get_tracks(query))
-    tracks = [*tracks, *artist_tracks]
+    _tracks = searchlib.get_tracks(query)
+    tracks = [*_tracks, *artist_tracks]
 
-    search_results["tracks"] = tracks
-    search_results["albums"] = albums_dicts
-    search_results["artists"] = artists_dicts
+    SEARCH_RESULTS.clear()
+    SEARCH_RESULTS["tracks"] = tracks
+    SEARCH_RESULTS["albums"] = albums
+    SEARCH_RESULTS["artists"] = artists_dicts
 
     return {
         "data": [
             {"tracks": tracks[:5], "more": len(tracks) > 5},
-            {"albums": albums_dicts[:6], "more": len(albums_dicts) > 6},
+            {"albums": albums[:6], "more": len(albums) > 6},
             {"artists": artists_dicts[:6], "more": len(artists_dicts) > 6},
         ]
     }
@@ -132,20 +92,20 @@ def search_load_more():
 
     if type == "tracks":
         return {
-            "tracks": search_results["tracks"][start : start + 5],
-            "more": len(search_results["tracks"]) > start + 5,
+            "tracks": SEARCH_RESULTS["tracks"][start : start + 5],
+            "more": len(SEARCH_RESULTS["tracks"]) > start + 5,
         }
 
     elif type == "albums":
         return {
-            "albums": search_results["albums"][start : start + 6],
-            "more": len(search_results["albums"]) > start + 6,
+            "albums": SEARCH_RESULTS["albums"][start : start + 6],
+            "more": len(SEARCH_RESULTS["albums"]) > start + 6,
         }
 
     elif type == "artists":
         return {
-            "artists": search_results["artists"][start : start + 6],
-            "more": len(search_results["artists"]) > start + 6,
+            "artists": SEARCH_RESULTS["artists"][start : start + 6],
+            "more": len(SEARCH_RESULTS["artists"]) > start + 6,
         }
 
 
@@ -314,27 +274,10 @@ def get_album_tracks():
     album = data["album"]
     artist = data["artist"]
 
-    songs = []
+    songs = trackslib.get_album_tracks(album, artist)
+    album = albumslib.find_album(album, artist)
 
-    for track in all_the_f_music:
-        if track.albumartist == artist and track.album == album:
-            songs.append(track)
-
-    songs = helpers.remove_duplicates(songs)
-
-    album_obj = {
-        "name": album,
-        "count": len(songs),
-        "duration": helpers.get_album_duration(songs),
-        "image": songs[0].image,
-        "date": songs[0].date,
-        "artist": songs[0].albumartist,
-        "artist_image": "http://127.0.0.1:8900/images/artists/"
-        + songs[0].albumartist.replace("/", "::")
-        + ".webp",
-    }
-
-    return {"songs": songs, "info": album_obj}
+    return {"songs": songs, "info": album}
 
 
 @bp.route("/album/<title>/<artist>/bio")

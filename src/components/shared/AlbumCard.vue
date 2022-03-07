@@ -2,7 +2,7 @@
   <router-link
     :to="{
       name: 'AlbumView',
-      params: { album: album.name, artist: album.artist },
+      params: { album: album.album, artist: album.artist },
     }"
     class="result-item shadow-sm"
   >

@@ -3,13 +3,13 @@
     <div class="a-header">
       <div
         class="image art shadow-lg"
-        :style="{ backgroundImage: `url(&quot;${encodeURI(props.album_info.image)}&quot;)` }"
+        :style="{ backgroundImage: `url(&quot;${props.album_info.image}&quot;)` }"
       ></div>
       <div class="info">
         <div class="top">
           <div class="h">Album</div>
           <div class="separator no-border"></div>
-          <div class="title">{{ props.album_info.name }}</div>
+          <div class="title">{{ props.album_info.album }}</div>
           <div class="artist">{{ props.album_info.artist }}</div>
         </div>
         <div class="separator no-border"></div>

@@ -34,28 +34,6 @@ def background(func):
     return background_func
 
 
-@background
-def reindex_tracks():
-    """
-    Checks for new songs every 5 minutes.
-    """
-    flag = False
-
-    while flag is False:
-        functions.populate()
-        functions.get_all_albums()
-        # functions.populate_images()
-        # functions.save_t_colors()
-
-        time.sleep(300)
-
-
-@background
-def start_watchdog():
-    """
-    Starts the file watcher.
-    """
-    watchdoge.watch.run()
 
 
 def run_fast_scandir(_dir: str, ext: list):

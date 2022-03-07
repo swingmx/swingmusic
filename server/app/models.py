@@ -237,7 +237,6 @@ class Track:
     """
 
     trackid: str
-    albumid: str
     title: str
     artists: str
     albumartist: str
@@ -253,7 +252,6 @@ class Track:
 
     def __init__(self, tags):
         self.trackid = tags["_id"]["$oid"]
-        self.albumid = tags["albumid"]
         self.title = tags["title"]
         self.artists = tags["artists"].split(", ")
         self.albumartist = tags["albumartist"]
@@ -263,7 +261,7 @@ class Track:
         self.length = tags["length"]
         self.genre = tags["genre"]
         self.bitrate = tags["bitrate"]
-        self.image = "http://127.0.0.1:8900/images/thumbnails/" + tags["image"]
+        self.image = tags["image"]
         self.tracknumber = tags["tracknumber"]
         self.discnumber = tags["discnumber"]
 
@@ -322,7 +320,6 @@ class Album:
     Album class
     """
 
-    albumid: str
     album: str
     artist: str
     count: int
@@ -332,11 +329,10 @@ class Album:
     image: str
 
     def __init__(self, tags):
-        self.albumid = tags["_id"]["$oid"]
         self.album = tags["album"]
         self.artist = tags["artist"]
         self.count = tags["count"]
         self.duration = tags["duration"]
         self.date = tags["date"]
-        self.artistimage = tags["artistimage"]
-        self.image = tags["image"]
+        self.artistimage = "http://127.0.0.1:8900/images/artists/" + tags["artistimage"]
+        self.image = "http://127.0.0.1:8900/images/thumbnails/" + tags["image"]
