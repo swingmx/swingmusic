@@ -59,7 +59,7 @@ const tabs = useTabStore()
   }
 
   .home {
-    background-image: url("../../assets/icons/dashboard.svg");
+    background-image: url("../../assets/icons/home.svg");
   }
 }
 </style>

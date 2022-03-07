@@ -16,11 +16,10 @@ from PIL import Image
 from app import instances
 from app import functions
 from app import watchdoge
-from app import models
+from app import models, settings
 
 home_dir = os.path.expanduser("~") + "/"
 app_dir = os.path.join(home_dir, ".musicx")
-LAST_FM_API_KEY = "762db7a44a9e6fb5585661f5f2bdf23a"
 
 
 def background(func):
@@ -43,7 +42,7 @@ def reindex_tracks():
     flag = False
 
     while flag is False:
-        # functions.populate()
+        functions.populate()
         functions.get_all_albums()
         # functions.populate_images()
         # functions.save_t_colors()
@@ -104,14 +103,14 @@ def remove_duplicates(tracklist: List[models.Track]) -> List[models.Track]:
     return tracklist
 
 
-def save_image(url: str, path: str) -> None:
-    """
-    Saves an image from an url to a path.
-    """
+# def save_image(url: str, path: str) -> None:
+#     """
+#     Saves an image from an url to a path.
+#     """
 
-    response = requests.get(url)
-    img = Image.open(BytesIO(response.content))
-    img.save(path, "JPEG")
+#     response = requests.get(url)
+#     img = Image.open(BytesIO(response.content))
+#     img.save(path, "JPEG")
 
 
 def is_valid_file(filename: str) -> bool:
@@ -125,62 +124,7 @@ def is_valid_file(filename: str) -> bool:
         return False
 
 
-def create_config_dir() -> None:
-    """
-    Creates the config directory if it doesn't exist.
-    """
-
-    _home_dir = os.path.expanduser("~")
-    config_folder = os.path.join(_home_dir, app_dir)
-
-    dirs = ["", "images", "images/defaults", "images/artists", "images/thumbnails"]
-
-    for _dir in dirs:
-        path = os.path.join(config_folder, _dir)
-
-        try:
-            os.makedirs(path)
-        except FileExistsError:
-            pass
-
-        os.chmod(path, 0o755)
-
-
-def create_all_tracks() -> List[models.Track]:
-    """
-    Gets all songs under the ~/ directory.
-    """
-    print("Getting all songs...")
-
-    tracks: list[models.Track] = []
-
-    for track in instances.songs_instance.get_all_songs():
-        try:
-            os.chmod(track["filepath"], 0o755)
-        except FileNotFoundError:
-            instances.songs_instance.remove_song_by_filepath(track["filepath"])
-
-        album = instances.album_instance.get_album_by_name(track['album', track['albumartist']])
-
-        if album is None:
-            track['albumid'] = album['albumid']
-            track['image'] = album['image']
-        tracks.append(models.Track(track))
-
-    return tracks
-
-
-def create_all_albums() -> List[models.Album]:
-    """Creates album objects for all albums"""
-    albums: list[models.Album] = []
-
-    for album in instances.album_instance.get_all_albums():
-        albums.append(models.Album(album))
-
-    return albums
-
-
-def extract_colors(image) -> list:
+def extract_image_colors(image) -> list:
     """Extracts 2 of the most dominant colors from an image."""
     try:
         colors = sorted(colorgram.extract(image, 2), key=lambda c: c.hsl.h)
@@ -194,33 +138,3 @@ def extract_colors(image) -> list:
         formatted_colors.append(color)
 
     return formatted_colors
-
-
-def get_album_duration(album: List[models.Track]) -> int:
-    """
-    Gets the duration of an album.
-    """
-
-    album_duration = 0
-
-    for track in album:
-        try:
-            album_duration += track.length
-        except AttributeError:
-            album_duration += track["length"]
-
-    return album_duration
-
-
-def get_album_image(album: list) -> str:
-    """
-    Gets the image of an album.
-    """
-
-    for track in album:
-        img = functions.extract_thumb(track["filepath"])
-
-        if img is not None:
-            return img
-
-    return functions.use_defaults()

@@ -11,9 +11,6 @@ bp = Blueprint("api", __name__, url_prefix="")
 
 home_dir = helpers.home_dir
 
-all_the_f_albums = helpers.create_all_albums()
-all_the_f_music = helpers.create_all_tracks()
-
 
 def initialize() -> None:
     """
@@ -25,6 +22,9 @@ def initialize() -> None:
 
 
 initialize()
+
+all_the_f_albums = helpers.create_all_albums()
+all_the_f_music = helpers.create_all_tracks()
 
 
 @bp.route("/")

@@ -253,6 +253,7 @@ class Track:
 
     def __init__(self, tags):
         self.trackid = tags["_id"]["$oid"]
+        self.albumid = tags["albumid"]
         self.title = tags["title"]
         self.artists = tags["artists"].split(", ")
         self.albumartist = tags["albumartist"]

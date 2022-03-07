@@ -1,12 +1,12 @@
 <template>
   <div class="nav">
-    <div class="image" id="previous" @click="playPrev"></div>
+    <div class="image ctrl-btn" id="previous" @click="playPrev"></div>
     <div
-      class="image play-pause"
+      class="image ctrl-btn play-pause"
       @click="playPause"
       :class="{ isPlaying: isPlaying }"
     ></div>
-    <div class="image" id="next" @click="playNext"></div>
+    <div class="image ctrl-btn" id="next" @click="playNext"></div>
   </div>
 </template>
 
@@ -27,24 +27,12 @@ const isPlaying = playAudio.playing;
   width: 100%;
   gap: $small;
 
-  & * {
-    height: 2rem;
-    width: 2rem;
-    background-size: 1.2rem !important;
-    cursor: pointer;
-    border-radius: 0.5rem;
-
-    &:hover {
-      background-color: $pink;
-    }
-  }
-
   #previous {
     background-image: url(../../assets/icons/previous.svg);
   }
 
   .play-pause {
-    background-image: url(../../assets/icons/play.svg);
+    background-image: url(../../assets/icons/play.svg) !important;
   }
 
   .isPlaying {

@@ -1,5 +1,5 @@
 <template>
-  <div class="b-bar ">
+  <div class="b-bar">
     <div class="grid rounded">
       <div class="controlsx rounded">
         <div class="controls controls-bottom">
@@ -13,9 +13,9 @@
           }}</span>
         </div>
         <div class="r-group">
-          <div class="heart image"></div>
-          <div class="add-to image"></div>
-          <div class="repeat image"></div>
+          <div id="heart" class="image ctrl-btn"></div>
+          <div id="add-to" class="image ctrl-btn"></div>
+          <div id="repeat" class="image ctrl-btn"></div>
         </div>
         <div class="controls controls-bottom"></div>
       </div>
@@ -32,7 +32,6 @@ import state from "../../composables/state";
 import perks from "../../composables/perks";
 import playAudio from "../../composables/playAudio";
 
-const current_pos = playAudio.current_time
+const current_pos = playAudio.current_time;
 const formatSeconds = perks.formatSeconds;
-
 </script>

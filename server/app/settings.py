@@ -1,0 +1,2 @@
+CONFIG_FOLDER = "alice"
+LAST_FM_API_KEY = "762db7a44a9e6fb5585661f5f2bdf23a"

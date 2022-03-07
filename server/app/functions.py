@@ -8,6 +8,7 @@ from io import BytesIO
 import random
 import datetime
 import mutagen
+import urllib
 
 import requests
 from mutagen.flac import MutagenError
@@ -18,9 +19,7 @@ from PIL import Image
 
 from app import helpers
 from app import instances
-from app import api
-from app import models
-import urllib
+from app import api, settings
 
 
 def populate():
@@ -166,11 +165,11 @@ def extract_thumb(audio_file_path: str) -> str:
     """
     Extracts the thumbnail from an audio file. Returns the path to the thumbnail.
     """
-    webp_path = urllib.parse.quote_plus(audio_file_path.split("/")[-1] + ".webp")
+    webp_path = audio_file_path.split("/")[-1] + ".webp"
     img_path = os.path.join(helpers.app_dir, "images", "thumbnails", webp_path)
 
     if os.path.exists(img_path):
-        return webp_path
+        return urllib.parse.quote(webp_path)
 
     album_art = return_album_art(audio_file_path)
 
@@ -188,7 +187,7 @@ def extract_thumb(audio_file_path: str) -> str:
             except:
                 return None
 
-        return webp_path
+        return urllib.parse.quote(webp_path)
     else:
         return None
 
@@ -321,7 +320,7 @@ def get_album_bio(title: str, albumartist: str):
     Returns the album bio for a given album.
     """
     last_fm_url = "http://ws.audioscrobbler.com/2.0/?method=album.getinfo&api_key={}&artist={}&album={}&format=json".format(
-        helpers.LAST_FM_API_KEY, albumartist, title
+        settings.LAST_FM_API_KEY, albumartist, title
     )
 
     try:

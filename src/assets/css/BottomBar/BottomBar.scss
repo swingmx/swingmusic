@@ -8,6 +8,18 @@
     height: 100%;
     padding-right: $small;
 
+    .ctrl-btn {
+      height: 2rem;
+      width: 2rem;
+      background-size: 1.5rem !important;
+      cursor: pointer;
+      border-radius: 0.5rem;
+
+      &:hover {
+        background-color: $red;
+      }
+    }
+
     @include phone-only {
       grid-template-columns: 1fr 9.2rem;
     }
@@ -76,28 +88,15 @@
       align-items: center;
       gap: $small;
 
-      & > * {
-        height: 2rem;
-        width: 2rem;
-        background-size: 1.2rem !important;
-        background-position: 45% 50%;
-        cursor: pointer;
-        border-radius: 0.5rem;
-
-        &:hover {
-          background-color: rgb(170, 50, 50);
-        }
-      }
-
-      .heart {
+      #heart {
         background-image: url(../../icons/heart.svg);
       }
 
-      .add-to {
+      #add-to {
         background-image: url(../../icons/plus.svg);
       }
 
-      .repeat {
+      #repeat {
         background-image: url(../../icons/repeat.svg);
       }
     }
