@@ -1,11 +1,11 @@
 <template>
   <div class="topnav rounded">
     <div class="left">
-      <div class="btn">
+      <!-- <div class="btn">
         <PlayBtn />
-      </div>
+      </div> -->
       <div class="info">
-        <div class="title">The Queen of Soul</div>
+        <div class="title">Album</div>
       </div>
     </div>
     <div class="center"></div>
@@ -15,6 +15,7 @@
 
 <script setup>
 import PlayBtn from '../shared/PlayBtn.vue';
+
 </script>
 
 <style lang="scss">

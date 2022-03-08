@@ -124,7 +124,7 @@ export default {
       left: $small;
       height: 1.5rem;
       width: 1.5rem;
-      background-image: url(../../assets/icons/folder.svg);
+      background-image: url(../../assets/icons/folder.fill.svg);
       margin-right: $small;
     }
 

@@ -15,7 +15,7 @@
       ></div>
       <div class="play shadow-lg image"></div>
     </div>
-    <div class="title ellip">{{ album.name }}</div>
+    <div class="title ellip">{{ album.album }}</div>
     <div class="artistsx ellipsis">{{ album.artist }}</div>
   </router-link>
 </template>

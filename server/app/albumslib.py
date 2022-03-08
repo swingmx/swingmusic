@@ -51,14 +51,19 @@ def find_album(albumtitle, artist):
             return album
 
 
-def search_albums_by_name(query):
+def search_albums_by_name(query: str) -> List[models.Album]:
     """
     Searches albums by album name.
     """
-    albums: List[models.Album] = []
+    title_albums: List[models.Album] = []
+    artist_albums: List[models.Album] = []
 
     for album in ALBUMS:
-        if query in album.album:
-            albums.append(album)
+        if query.lower() in album.album.lower():
+            title_albums.append(album)
 
-    return albums
+    for album in ALBUMS:
+        if query.lower() in album.artist.lower():
+            artist_albums.append(album)
+
+    return [*title_albums, *artist_albums]
