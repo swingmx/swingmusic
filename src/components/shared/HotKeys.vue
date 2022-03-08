@@ -32,7 +32,7 @@ const isPlaying = playAudio.playing;
   }
 
   .play-pause {
-    background-image: url(../../assets/icons/play.svg) !important;
+    background-image: url(../../assets/icons/play.svg);
   }
 
   .isPlaying {

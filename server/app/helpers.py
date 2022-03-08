@@ -116,3 +116,14 @@ def extract_image_colors(image) -> list:
         formatted_colors.append(color)
 
     return formatted_colors
+
+def check_artist_image(image: str) -> str:
+    """
+    Checks if the artist image is valid.
+    """
+    img_name = image.replace("/", "::")+ ".webp"
+
+    if not os.path.exists(os.path.join(app_dir, "images", "artists", img_name)):
+        return "http://0.0.0.0:8900/images/artists/0.webp"
+    else:
+        return "http://0.0.0.0:8900/images/artists/" + img_name,

@@ -57,9 +57,7 @@ def search():
 
                 artist_obj = {
                     "name": artist,
-                    "image": "http://0.0.0.0:8900/images/artists/"
-                    + artist.replace("/", "::")
-                    + ".webp",
+                    "image": helpers.check_artist_image(artist),
                 }
 
                 if artist_obj not in artists_dicts:
@@ -141,9 +139,7 @@ def get_albumartists():
     for artist in artists:
         artist_obj = {
             "name": artist,
-            "image": "http://0.0.0.0:8900/images/artists/"
-            + artist.replace("/", "::")
-            + ".webp",
+            "image": helpers.check_artist_image(artist),
         }
         final_artists.append(artist_obj)
 

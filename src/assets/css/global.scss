@@ -97,6 +97,10 @@ button {
 
 .tabs {
   grid-area: tabs;
+
+  @include tablet-landscape {
+    display: none;
+  }
 }
 
 .topnav {
