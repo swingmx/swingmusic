@@ -1,5 +1,5 @@
 import { defineStore } from "pinia";
-import { ref } from "vue";
+import perks from "../composables/perks";
 
 const tablist = {
   home: "home",
@@ -14,8 +14,21 @@ export default defineStore("tabs", {
   }),
   actions: {
     changeTab(tab) {
+      if (tab === this.tabs.queue) {
+        setTimeout(() => {
+          perks.focusCurrent();
+        }, 500);
+      }
       this.current = tab;
-      console.log(this.current);
+    },
+    switchToQueue() {
+      this.changeTab(tablist.queue);
+    },
+    switchToSearch() {
+      this.changeTab(tablist.search);
+    },
+    switchToHome() {
+      this.changeTab(tablist.home);
     },
   },
 });

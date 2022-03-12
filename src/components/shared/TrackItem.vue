@@ -7,7 +7,7 @@
     }"
   >
     <div
-      class="album-art image"
+      class="album-art image rounded"
       :style="{
         backgroundImage: `url(&quot;${props.track.image}&quot;)`,
       }"

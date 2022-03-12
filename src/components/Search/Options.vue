@@ -5,7 +5,7 @@
       class="item"
       v-for="option in options"
       :key="option"
-      @click="addFilter(option.icon)"
+      @click="search.addFilter(option.icon)"
     >
       <div>
         <span class="icon">{{ option.icon }}</span>
@@ -15,43 +15,33 @@
   </div>
 </template>
 
-<script>
-export default {
-  props: ["magic_flag"],
-  setup(props, { emit }) {
-    const options = [
-      {
-        title: "Track",
-        icon: "🎵",
-      },
-      {
-        title: "Album",
-        icon: "💿",
-      },
-      {
-        title: "Artist",
-        icon: "👤",
-      },
-      {
-        title: "Playlist",
-        icon: "🎧",
-      },
-      {
-        title: "Folder",
-        icon: "📁",
-      },
-    ];
+<script setup>
+import useSearchStore from "../../stores/gsearch";
 
-    function addFilter(value) {
-      emit("addFilter", value);
-    }
+const search = useSearchStore();
 
-    return {
-      options,
-      addFilter,
-    };
+const options = [
+  {
+    title: "Track",
+    icon: "🎵",
   },
-};
+  {
+    title: "Album",
+    icon: "💿",
+  },
+  {
+    title: "Artist",
+    icon: "👤",
+  },
+  {
+    title: "Playlist",
+    icon: "🎧",
+  },
+  {
+    title: "Folder",
+    icon: "📁",
+  },
+];
 </script>
 
 <style lang="scss">
@@ -80,7 +70,7 @@ export default {
     .icon {
       position: absolute;
       top: 0.5rem;
-      left: .75rem;
+      left: 0.75rem;
     }
 
     &:hover {

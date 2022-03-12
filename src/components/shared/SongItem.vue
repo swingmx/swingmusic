@@ -7,7 +7,7 @@
     <td class="index">{{ index }}</td>
     <td class="flex">
       <div
-        class="album-art image"
+        class="album-art image rounded"
         :style="{ backgroundImage: `url(&quot;${song.image}&quot;` }"
         @click="emitUpdate(song)"
       >

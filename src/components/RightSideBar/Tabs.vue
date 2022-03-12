@@ -5,9 +5,11 @@
         v-for="tab in tabs.tabs"
         @click="tabs.changeTab(tab)"
         :key="tab"
-        class="image t-item"
-        :class="({ active_tab: tabs.current === tab }, `${tab}`)"
-      ></div>
+        class="container"
+        :class="{ active_tab: tabs.current === tab }"
+      >
+        <div class="image t-item" :class="`${tab}`"></div>
+      </div>
     </div>
   </div>
 </template>
@@ -15,7 +17,7 @@
 <script setup>
 import useTabStore from "../../stores/tabs";
 
-const tabs = useTabStore()
+const tabs = useTabStore();
 </script>
 
 <style lang="scss">
@@ -38,16 +40,25 @@ const tabs = useTabStore()
     height: 2.25rem;
     background-size: 1.5rem;
     border-radius: $small;
-    background-color: $gray4;
+    transition: all 0.25s;
+    width: 4rem;
 
     &:hover {
-      background-color: rgba(128, 128, 128, 0.281);
+      background-color: $gray3;
     }
   }
 
   .active_tab {
-    border: solid;
-    background-color: rgba(17, 123, 223, 0.192);
+    border-radius: $small;
+    display: flex;
+    justify-content: center;
+    width: 4rem;
+
+    .t-item {
+      background-color: transparent;
+    }
+
+    background-image: linear-gradient(to right, $blue, $red) !important;
   }
 
   .search {

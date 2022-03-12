@@ -27,9 +27,10 @@ export default {
 </script>
 
 <style lang="scss">
-.right-search .filter {
+.gsearch-input .filter {
   display: flex;
-  height: 2rem;
+  // height: 2rem;
+  // border: solid;
 
   .item {
     transition: all 0.2s ease-in-out;

@@ -1,24 +1,7 @@
 <template>
   <div class="right-search">
-    <div>
-      <div class="input">
-        <Filters :filters="filters" @removeFilter="removeFilter" />
-        <div class="input-loader border">
-          <input
-            id="search"
-            v-model="query"
-            placeholder="find your music"
-            type="text"
-            @keyup.backspace="removeLastFilter"
-          />
-          <div class="_loader">
-            <Loader />
-          </div>
-        </div>
-      </div>
-      <div class="separator no-border"></div>
-      <Options @addFilter="addFilter" />
-    </div>
+    <Options />
+    <!-- </div> -->
     <div class="scrollable" ref="search_thing">
       <TracksGrid
         v-if="tracks.tracks.length"
@@ -26,7 +9,7 @@
         :tracks="tracks.tracks"
         @loadMore="loadMoreTracks"
       />
-      <div class="separator no-border"></div>
+      <div class="separator no-border" v-if="tracks.tracks.length"></div>
 
       <AlbumGrid
         v-if="albums.albums.length"
@@ -42,166 +25,118 @@
         @loadMore="loadMoreArtists"
       />
       <div
-        v-if="
+        v-if="search.query.trim().length === 0"
+        class="no-res border rounded"
+      >
+        <div class="no-res-text">👻 Find your music</div>
+      </div>
+      <div
+        v-else-if="
           !artists.artists.length &&
           !tracks.tracks.length &&
-          !albums.albums.length &&
-          query.length !== 0
+          !albums.albums.length
         "
         class="no-res border rounded"
       >
         <div class="no-res-text">
-          No results for <span class="highlight rounded">{{ query }}</span>
+          No results for
+          <span class="highlight rounded">{{ search.query }}</span>
         </div>
-      </div>
-      <div v-else-if="query.length === 0" class="no-res border rounded">
-        <div class="no-res-text">👻 Find your music</div>
       </div>
     </div>
   </div>
 </template>
 
-<script>
+<script setup>
 import { reactive, ref } from "@vue/reactivity";
 
-import { watch } from "@vue/runtime-core";
 import state from "@/composables/state.js";
 import searchMusic from "@/composables/searchMusic.js";
 import useDebouncedRef from "@/composables/useDebouncedRef";
 import AlbumGrid from "@/components/Search/AlbumGrid.vue";
 import ArtistGrid from "@/components/Search/ArtistGrid.vue";
 import TracksGrid from "@/components/Search/TracksGrid.vue";
-import Loader from "@/components/shared/Loader.vue";
 import Options from "@/components/Search/Options.vue";
-import Filters from "@/components/Search/Filters.vue";
-import "@/assets/css/Search/Search.scss";
 import loadMore from "../../composables/loadmore";
+import useSearchStore from "../../stores/gsearch";
+import useTabStore from "../../stores/tabs";
 
-export default {
-  components: {
-    AlbumGrid,
-    ArtistGrid,
-    TracksGrid,
-    Loader,
-    Options,
-    Filters,
-  },
+import "@/assets/css/Search/Search.scss";
 
-  setup() {
-    const search_thing = ref(null);
-    const loading = ref(state.loading);
-    const filters = ref([]);
+const search = useSearchStore();
+const tabs = useTabStore();
 
-    const tracks = reactive({
-      tracks: [],
-      more: false,
-    });
+const search_thing = ref(null);
 
-    let albums = reactive({
-      albums: [],
-      more: false,
-    });
+const tracks = reactive({
+  tracks: [],
+  more: false,
+});
 
-    const artists = reactive({
-      artists: [],
-      more: false,
-    });
+let albums = reactive({
+  albums: [],
+  more: false,
+});
 
-    const query = useDebouncedRef("", 600);
+const artists = reactive({
+  artists: [],
+  more: false,
+});
 
-    function addFilter(filter) {
-      if (!filters.value.includes(filter)) {
-        filters.value.push(filter);
-      }
+const query = useDebouncedRef("", 600);
+
+function scrollSearchThing() {
+  search_thing.value.scroll({
+    top: search_thing.value.scrollTop + 330,
+    left: 0,
+    behavior: "smooth",
+  });
+}
+
+function loadMoreTracks(start) {
+  scrollSearchThing();
+  loadMore.loadMoreTracks(start).then((response) => {
+    tracks.tracks = [...tracks.tracks, ...response.tracks];
+    tracks.more = response.more;
+  });
+}
+
+function loadMoreAlbums(start) {
+  loadMore.loadMoreAlbums(start).then((response) => {
+    albums.albums = [...albums.albums, ...response.albums];
+    albums.more = response.more;
+  });
+}
+
+function loadMoreArtists(start) {
+  scrollSearchThing();
+  loadMore.loadMoreArtists(start).then((response) => {
+    artists.artists = [...artists.artists, ...response.artists];
+    artists.more = response.more;
+  });
+}
+
+search.$subscribe((mutation, state) => {
+  if (state.query.trim() == "") {
+    tracks.tracks = [];
+    albums.albums = [];
+    artists.artists = [];
+    return;
+  }
+
+  searchMusic(state.query).then((res) => {
+    if (tabs.current !== tabs.tabs.search) {
+      tabs.switchToSearch();
     }
 
-    function removeFilter(filter) {
-      filters.value = filters.value.filter((f) => f !== filter);
-    }
+    albums.albums = res.albums.albums;
+    albums.more = res.albums.more;
 
-    let counter = 0;
+    artists.artists = res.artists.artists;
+    artists.more = res.artists.more;
 
-    function removeLastFilter() {
-      if (query.value === "" || query.value === null) {
-        counter++;
-
-        if (counter > 1 || query.value === null) {
-          filters.value.pop();
-        }
-      }
-    }
-
-    function scrollSearchThing() {
-      search_thing.value.scroll({
-        top: search_thing.value.scrollTop + 330,
-        left: 0,
-        behavior: "smooth",
-      });
-    }
-
-    function loadMoreTracks(start) {
-      scrollSearchThing();
-      loadMore.loadMoreTracks(start).then((response) => {
-        tracks.tracks = [...tracks.tracks, ...response.tracks];
-        tracks.more = response.more;
-      });
-    }
-
-    function loadMoreAlbums(start) {
-      loadMore.loadMoreAlbums(start).then((response) => {
-        albums.albums = [...albums.albums, ...response.albums];
-        albums.more = response.more;
-      });
-    }
-
-    function loadMoreArtists(start) {
-      scrollSearchThing();
-      loadMore.loadMoreArtists(start).then((response) => {
-        artists.artists = [...artists.artists, ...response.artists];
-        artists.more = response.more;
-      });
-    }
-
-    watch(query, (new_query) => {
-      if (
-        query.value === "" ||
-        query.value === "  " ||
-        query.value.length < 2
-      ) {
-        albums.albums = [];
-        artists.artists = [];
-        tracks.tracks = [];
-
-        return;
-      }
-
-      searchMusic(new_query).then((res) => {
-        albums.albums = res.albums.albums;
-        albums.more = res.albums.more;
-
-        artists.artists = res.artists.artists;
-        artists.more = res.artists.more;
-
-        tracks.tracks = res.tracks.tracks;
-        tracks.more = res.tracks.more;
-      });
-    });
-
-    return {
-      addFilter,
-      removeFilter,
-      removeLastFilter,
-      loadMoreTracks,
-      loadMoreAlbums,
-      loadMoreArtists,
-      tracks,
-      albums,
-      artists,
-      query,
-      filters,
-      loading,
-      search_thing,
-    };
-  },
-};
+    tracks.tracks = res.tracks.tracks;
+    tracks.more = res.tracks.more;
+  });
+});
 </script>

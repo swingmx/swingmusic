@@ -37,7 +37,7 @@ export default {
 
 <style lang="scss">
 .r-tracks {
-  margin-top: 0.5rem;
+  margin: 0.5rem 0.5rem 0.5rem 0;
   padding: 0.5rem;
 }
 

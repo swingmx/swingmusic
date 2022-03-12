@@ -16,6 +16,7 @@
     <div class="content">
       <router-view />
     </div>
+    <SearchInput />
     <RightSideBar />
     <Tabs />
     <div class="bottom-bar">
@@ -35,10 +36,24 @@ import Main from "./components/RightSideBar/Main.vue";
 import AlbumArt from "./components/LeftSidebar/AlbumArt.vue";
 import NavBar from "./components/nav/NavBar.vue";
 import Tabs from "./components/RightSideBar/Tabs.vue";
+import SearchInput from "./components/RightSideBar/SearchInput.vue";
+import useContextStore from "./stores/context.js";
+
+const context_store = useContextStore();
 
 const RightSideBar = Main;
 perks.readQueue();
 const collapsed = ref(false);
+
+const app_dom = document.getElementById("app");
+
+app_dom.addEventListener("click", (e) => {
+  const context_menu = perks.getElem("context-menu-visible", "class");
+  console.log(e.target.offsetParent);
+  if (e.target.offsetParent != context_menu) {
+    context_store.hideContextMenu();
+  }
+});
 </script>
 
 <style lang="scss">

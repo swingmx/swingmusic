@@ -1,9 +1,12 @@
 <template>
-  <div class="album-h">
+  <div class="album-h" @contextmenu="hideShowContext">
+    <ContextMenu />
     <div class="a-header">
       <div
         class="image art shadow-lg"
-        :style="{ backgroundImage: `url(&quot;${props.album_info.image}&quot;)` }"
+        :style="{
+          backgroundImage: `url(&quot;${props.album_info.image}&quot;)`,
+        }"
       ></div>
       <div class="info">
         <div class="top">
@@ -15,7 +18,8 @@
         <div class="separator no-border"></div>
         <div class="bottom">
           <div class="stats shadow-sm">
-            {{ props.album_info.count }} Tracks • {{ perks.formatSeconds(props.album_info.duration, "long") }} •
+            {{ props.album_info.count }} Tracks •
+            {{ perks.formatSeconds(props.album_info.duration, "long") }} •
             {{ props.album_info.date }}
           </div>
           <div class="play rounded" @click="playAlbum">
@@ -31,6 +35,11 @@
 <script setup>
 import state from "@/composables/state.js";
 import perks from "@/composables/perks.js";
+import ContextMenu from "../contextMenu.vue";
+import { reactive, ref } from "vue";
+import useContextStore from "@/stores/context.js";
+
+const contextStore = useContextStore();
 
 const props = defineProps({
   album_info: {
@@ -38,6 +47,15 @@ const props = defineProps({
     default: () => ({}),
   },
 });
+
+const hideShowContext = (e) => {
+  e.preventDefault();
+  e.stopPropagation();
+
+  contextStore.showContextMenu(e);
+};
+
+const context_hide = ref(true);
 
 function playAlbum() {
   perks.updateQueue(state.album.tracklist[0], "album");
@@ -52,13 +70,11 @@ function playAlbum() {
 
   gap: $small;
   position: relative;
-  overflow: hidden;
   height: 14rem;
 }
 
 .a-header {
   position: relative;
-  overflow: hidden;
   display: flex;
   align-items: center;
   padding: 1rem;

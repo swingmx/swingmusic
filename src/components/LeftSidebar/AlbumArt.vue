@@ -34,5 +34,14 @@ const props = defineProps({
     height: 13rem;
     width: 13rem;
   }
+
+  .artists {
+    font-size: 0.85rem;
+    color: rgba(255, 255, 255, 0.808);
+
+    &:hover {
+      text-decoration: underline 1px !important;
+    }
+  }
 }
 </style>

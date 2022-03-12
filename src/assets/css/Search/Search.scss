@@ -46,39 +46,3 @@
     display: none;
   }
 }
-
-.right-search {
-  .input-loader {
-    width: 100%;
-    border-radius: 0.4rem;
-    position: relative;
-
-    ._loader {
-      position: absolute;
-      top: 0;
-      right: 2rem;
-    }
-
-    input {
-      width: calc(100% - 2.5rem);
-      border: none;
-      line-height: 2.5rem;
-      background-color: transparent;
-      color: rgb(255, 255, 255);
-      font-size: 1rem;
-      outline: none;
-      transition: all 0.5s ease;
-      padding-left: 0.75rem;
-
-      &:focus {
-        transition: all 0.5s ease;
-        color: rgb(255, 255, 255);
-        outline: none;
-
-        &::placeholder {
-          display: none;
-        }
-      }
-    }
-  }
-}

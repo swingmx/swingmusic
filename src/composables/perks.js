@@ -212,6 +212,8 @@ window.addEventListener("keyup", () => {
   key_down_fired = false;
 });
 
+
+
 function formatSeconds(seconds) {
   // check if there are arguments
 
@@ -258,6 +260,7 @@ export default {
   focusCurrent,
   updateQueue,
   formatSeconds,
+  getElem,
   current,
   queue,
   next,
