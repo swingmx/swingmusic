@@ -1,5 +1,5 @@
 import { defineStore } from "pinia";
-import normalizeContextMenu from "../composables/normalizeContextMenu";
+import normalize from "../composables/normalizeContextMenu";
 
 export default defineStore("context-menu", {
   state: () => ({
@@ -10,9 +10,10 @@ export default defineStore("context-menu", {
   actions: {
     showContextMenu(e) {
       this.visible = true;
-      const { normalX, normalY } = normalizeContextMenu(e.clientX, e.clientY);
-      this.x = normalX;
-      this.y = normalY;
+      const yo = normalize(e.clientX, e.clientY);
+      this.x = yo.normalizedX;
+      this.y = yo.normalizedY;
+      console.log(yo);
     },
     hideContextMenu() {
       this.visible = false;

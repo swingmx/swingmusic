@@ -1,8 +1,8 @@
 <template>
+    <!-- v-show="context.visible" -->
   <div
     class="context-menu rounded"
     :class="{ 'context-menu-visible': context.visible }"
-    v-show="context.visible"
     :style="{
       left: context.x + 'px',
       top: context.y + 'px',
@@ -84,6 +84,10 @@ const options = [
   flex-direction: column;
   justify-content: center;
   align-items: center;
+//   transform: scale(0);
+  transform-origin: top left;
+
+  display: none;
 
   .context-item {
     width: 100%;
@@ -116,7 +120,8 @@ const options = [
   }
 }
 
-// .visible {
-//     display: unset;
-// }
+.context-menu-visible {
+    transform: scale(1);
+    transition: transform .2s ease-in-out;
+}
 </style>

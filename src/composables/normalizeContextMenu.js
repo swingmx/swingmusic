@@ -1,34 +1,37 @@
 import perks from "./perks";
 
-export default function normalizeContextMenu(x, y) {
-  const app_dom = perks.getElem("app", "id");
-  const context_menu = perks.getElem("context-menu-visible", "class");
+export default (mouseX, mouseY) => {
+  const scope = perks.getElem("app", "id");
+  const contextMenu = perks.getElem("context-menu", "class");
+  // ? compute what is the mouse position relative to the container element (scope)
+  let { left: scopeOffsetX, top: scopeOffsetY } = scope.getBoundingClientRect();
 
-  const { left: scopeOffsetX, top: scopeOffsetY } =
-    app_dom.getBoundingClientRect();
+  scopeOffsetX = scopeOffsetX < 0 ? 0 : scopeOffsetX;
+  scopeOffsetY = scopeOffsetY < 0 ? 0 : scopeOffsetY;
 
-  const scopeX = x - scopeOffsetX;
-  const scopeY = y - scopeOffsetY;
+  const scopeX = mouseX - scopeOffsetX;
+  const scopeY = mouseY - scopeOffsetY;
 
-  const outOfBoundsX = scopeX + context_menu.clientHeight > app_dom.clientWidth;
-  const outOfBoundsY =
-    scopeY + context_menu.clientHeight > app_dom.clientHeight;
+  // ? check if the element will go out of bounds
+  const outOfBoundsOnX = scopeX + contextMenu.clientWidth > scope.clientWidth;
 
-  let normalizedX = x;
-  let normalizedY = y;
+  const outOfBoundsOnY = scopeY + contextMenu.clientHeight > scope.clientHeight;
 
-  if (outOfBoundsX) {
-    normalizedX =
-      scopeOffsetX + app_dom.clientWidth - context_menu.clientHeight;
+  let normalizedX = mouseX;
+  let normalizedY = mouseY;
+
+//   console.log(mouseX, mouseY);
+  // ? normalize on X
+  if (outOfBoundsOnX) {
+    normalizedX = scopeOffsetX + scope.clientWidth - contextMenu.clientWidth;
   }
 
-  if (outOfBoundsY) {
-    normalizedY =
-      scopeOffsetY + app_dom.clientHeight - context_menu.clientHeight;
+  // ? normalize on Y
+  if (outOfBoundsOnY) {
+    normalizedY = scopeOffsetY + scope.clientHeight - contextMenu.clientHeight;
   }
 
-  return {
-    normalizedX,
-    normalizedY,
-  };
-}
+  console.log(normalizedX, normalizedY);
+
+  return { normalizedX, normalizedY };
+};

@@ -48,6 +48,10 @@ function removeLastFilter() {
   padding: 0 $small;
   display: flex;
 
+  @include tablet-landscape {
+    display: none;
+  }
+
   .input-loader {
     width: 100%;
     border-radius: 0.4rem;

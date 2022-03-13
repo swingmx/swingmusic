@@ -1,27 +1,23 @@
 <template>
   <div class="folder">
     <div class="table rounded" v-if="props.songs.length">
-      <table>
-        <thead>
-          <tr>
-            <th class="index"></th>
-            <th class="track-header">Track</th>
-            <th class="artists-header">Artist</th>
-            <th class="album-header">Album</th>
-            <th class="duration-header">Duration</th>
-          </tr>
-        </thead>
-        <tbody>
-          <SongItem
-            v-for="(song, index) in props.songs"
-            :key="song"
-            :song="song"
-            :index="index + 1"
-            @updateQueue="updateQueue"
-            @loadAlbum="loadAlbum"
-          />
-        </tbody>
-      </table>
+      <div class="thead">
+        <div class="index"></div>
+        <div class="track-header">Track</div>
+        <div class="artists-header">Artist</div>
+        <div class="album-header">Album</div>
+        <div class="duration-header">Duration</div>
+      </div>
+      <div>
+        <SongItem
+          v-for="(song, index) in props.songs"
+          :key="song"
+          :song="song"
+          :index="index + 1"
+          @updateQueue="updateQueue"
+          @loadAlbum="loadAlbum"
+        />
+      </div>
     </div>
     <div v-else-if="props.songs.length === 0 && search_query">
       <div class="no-results">
@@ -92,46 +88,29 @@ function loadAlbum(title, albumartist) {
   height: 100%;
   overflow-y: auto;
 
-  &::-webkit-scrollbar {
-    display: none;
-  }
-
-  .current * {
-    color: $highlight-blue;
-  }
-
-  .current:hover {
-    * {
-      color: rgb(255, 255, 255);
-    }
-  }
-}
-
-table {
-  border-collapse: collapse;
-  text-transform: capitalize;
-  width: 100%;
-  table-layout: fixed;
-
-  @include phone-only {
-    border-collapse: separate;
-    border-spacing: 0 $small;
-  }
-
-  thead {
-    height: 2rem;
+  .thead {
+    display: grid;
+    grid-template-columns: 1.5rem 1.5fr 1fr 1.5fr 0.25fr;
+    height: 2.5rem;
+    align-items: center;
     text-transform: uppercase;
+    font-weight: bold;
+    color: $gray1;
+    gap: $small;
+
+    @include tablet-landscape {
+      grid-template-columns: 1.5rem 1.5fr 1fr 1.5fr;
+    }
+
+    @include tablet-portrait {
+      grid-template-columns: 1.5rem 1.5fr 1fr;
+    }
 
     @include phone-only {
       display: none;
     }
 
-    th {
-      text-align: left;
-      padding-left: $small;
-    }
-
-    th.duration-header {
+    .duration-header {
       @include tablet-landscape {
         display: none;
       }
@@ -139,14 +118,24 @@ table {
       width: 6rem;
     }
 
-    th.album-header {
+    .album-header {
       @include tablet-portrait {
         display: none;
       }
     }
 
-    th.index {
-      width: 2rem;
+    &::-webkit-scrollbar {
+      display: none;
+    }
+
+    .current * {
+      color: $highlight-blue;
+    }
+
+    .current:hover {
+      * {
+        color: rgb(255, 255, 255);
+      }
     }
   }
 }

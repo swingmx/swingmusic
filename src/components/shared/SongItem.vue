@@ -1,11 +1,11 @@
 <template>
-  <tr
-    class="songlist-item"
+  <div
+    class="songlist-item rounded"
     :class="{ current: current.trackid === song.trackid }"
     @dblclick="emitUpdate(song)"
   >
-    <td class="index">{{ index }}</td>
-    <td class="flex">
+    <div class="index">{{ index }}</div>
+    <div class="flex">
       <div
         class="album-art image rounded"
         :style="{ backgroundImage: `url(&quot;${song.image}&quot;` }"
@@ -25,8 +25,8 @@
           </span>
         </div>
       </div>
-    </td>
-    <td class="song-artists">
+    </div>
+    <div class="song-artists">
       <div class="ellip" v-if="song.artists[0] !== ''">
         <span
           class="artist"
@@ -38,22 +38,24 @@
       <div class="ellip" v-else>
         <span class="artist">{{ song.albumartist }}</span>
       </div>
-    </td>
-    <td class="song-album">
+    </div>
+    <div class="song-album">
       <div
         class="album ellip"
         @click="emitLoadAlbum(song.album, song.albumartist)"
       >
         {{ song.album }}
       </div>
-    </td>
-    <td class="song-duration">{{ formatSeconds(song.length) }}</td>
-  </tr>
+    </div>
+    <div class="song-duration">{{ formatSeconds(song.length) }}</div>
+    <ContextMenu />
+  </div>
 </template>
 
 <script>
 import perks from "@/composables/perks.js";
 import state from "@/composables/state.js";
+import ContextMenu from "../contextMenu.vue";
 
 export default {
   props: ["song", "index"],
@@ -62,11 +64,9 @@ export default {
     function emitUpdate(song) {
       emit("updateQueue", song);
     }
-
     function emitLoadAlbum(title, artist) {
       emit("loadAlbum", title, artist);
     }
-
     return {
       putCommas: perks.putCommas,
       emitUpdate,
@@ -76,11 +76,58 @@ export default {
       formatSeconds: perks.formatSeconds,
     };
   },
+  components: { ContextMenu },
 };
 </script>
 
 <style lang="scss">
 .songlist-item {
+  display: grid;
+  align-items: center;
+  grid-template-columns: 1.5rem 1.5fr 1fr 1.5fr 0.25fr;
+  height: 3.75rem;
+  text-align: left;
+  gap: $small;
+
+  @include tablet-landscape {
+    grid-template-columns: 1.5rem 1.5fr 1fr 1.5fr;
+  }
+
+  @include tablet-portrait {
+    grid-template-columns: 1.5rem 1.5fr 1fr;
+  }
+
+  &:hover {
+    background-color: $gray;
+  }
+
+  .song-duration {
+    @include tablet-landscape {
+      display: none;
+    }
+  }
+
+  .song-album {
+    .album {
+      cursor: pointer;
+      max-width: max-content;
+    }
+
+    @include tablet-portrait {
+      display: none;
+    }
+  }
+
+  .song-artists {
+    .artist {
+      cursor: pointer;
+    }
+
+    @include phone-only {
+      display: none;
+    }
+  }
+
   .index {
     color: grey;
     font-size: 0.8rem;
@@ -92,17 +139,8 @@ export default {
     }
   }
 
-  @include phone-only {
-    width: 100%;
-
-    td {
-      background-color: #14161a;
-      border-radius: $small;
-    }
-  }
-
   .song-duration {
-    font-size: 0.8rem;
+    font-size: 0.9rem;
     width: 5rem !important;
   }
 
@@ -152,76 +190,6 @@ export default {
 
     @include phone-only {
       border-radius: $small;
-    }
-  }
-
-  &:hover {
-    * {
-      color: #fff;
-    }
-    & {
-      & td {
-        background-color: #3131313b;
-      }
-
-      td:first-child {
-        border-radius: $small 0 0 $small;
-      }
-
-      td:nth-child(2) {
-        border-radius: 0;
-
-        @include phone-only {
-          border-radius: $small;
-        }
-      }
-
-      td:nth-child(3) {
-        @include tablet-portrait {
-          border-radius: 0 $small $small 0 !important;
-        }
-
-        @include tablet-landscape {
-          border-radius: 0;
-        }
-      }
-
-      & > td:nth-child(4) {
-        @include tablet-landscape {
-          border-radius: 0 $small $small 0 !important;
-        }
-      }
-
-      & td:last-child {
-        border-radius: 0 $small $small 0;
-      }
-    }
-  }
-
-  .song-duration {
-    @include tablet-landscape {
-      display: none;
-    }
-  }
-
-  .song-album {
-    .album {
-      cursor: pointer;
-      max-width: max-content;
-    }
-
-    @include tablet-portrait {
-      display: none;
-    }
-  }
-
-  .song-artists {
-    .artist {
-      cursor: pointer;
-    }
-
-    @include phone-only {
-      display: none;
     }
   }
 }
