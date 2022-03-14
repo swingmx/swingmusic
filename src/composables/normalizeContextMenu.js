@@ -20,18 +20,17 @@ export default (mouseX, mouseY) => {
   let normalizedX = mouseX;
   let normalizedY = mouseY;
 
-//   console.log(mouseX, mouseY);
   // ? normalize on X
   if (outOfBoundsOnX) {
     normalizedX = scopeOffsetX + scope.clientWidth - contextMenu.clientWidth;
+    normalizedX -= 10
   }
 
   // ? normalize on Y
   if (outOfBoundsOnY) {
     normalizedY = scopeOffsetY + scope.clientHeight - contextMenu.clientHeight;
+    normalizedY -= 10
   }
-
-  console.log(normalizedX, normalizedY);
 
   return { normalizedX, normalizedY };
 };
