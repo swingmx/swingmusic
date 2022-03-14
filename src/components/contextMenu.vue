@@ -1,5 +1,5 @@
 <template>
-    <!-- v-show="context.visible" -->
+  <!-- v-show="context.visible" -->
   <div
     class="context-menu rounded"
     :class="{ 'context-menu-visible': context.visible }"
@@ -8,9 +8,15 @@
       top: context.y + 'px',
     }"
   >
-    <div class="context-item" v-for="option in options" :key="option.label">
+    <div
+      class="context-item"
+      v-for="option in context.options"
+      :key="option.label"
+      :class="[{ critical: option.critical }, option.type]"
+      @click="option.action"
+    >
       <div class="icon image" :class="option.icon"></div>
-      <div class="label ellip" @click="option.action">{{ option.label }}</div>
+      <div class="label ellip">{{ option.label }}</div>
     </div>
   </div>
 </template>
@@ -19,55 +25,6 @@
 import useContextStore from "@/stores/context.js";
 
 const context = useContextStore();
-
-// const props = defineProps({
-//   context: {
-//     type: Object,
-//     required: true,
-//   },
-// });
-
-const options = [
-  {
-    label: "Item 1 and another one of my long stories",
-    icon: "folder",
-    action: () => {
-      console.log("Item 1 clicked");
-    },
-  },
-  {
-    label: "Item 2",
-    icon: "folder",
-
-    action: () => {
-      console.log("Item 2 clicked");
-    },
-  },
-  {
-    label: "Item 3",
-    icon: "folder",
-    action: () => {
-      console.log("Item 3 clicked");
-    },
-  },
-  {
-    label: "Item 4",
-    icon: "folder",
-
-    action: () => {
-      console.log("Item 4 clicked");
-    },
-  },
-  {
-    label: "Item 5",
-    icon: "folder",
-
-    action: () => {
-      console.log("Item 5 clicked");
-    },
-  },
-];
-
 </script>
 
 <style lang="scss">
@@ -75,7 +32,7 @@ const options = [
   position: fixed;
   top: 0;
   left: 0;
-  width: 14rem;
+  width: 10rem;
   height: min-content;
   padding: $small;
   background: $gray;
@@ -84,21 +41,19 @@ const options = [
   flex-direction: column;
   justify-content: center;
   align-items: center;
-//   transform: scale(0);
+  transform: scale(0);
   transform-origin: top left;
-
-  display: none;
+  font-size: 0.875rem;
 
   .context-item {
     width: 100%;
-    height: 3rem;
+    height: 2.25rem;
     display: flex;
     justify-content: flex-start;
     align-items: center;
-    cursor: pointer;
+    cursor: default;
     padding: 0 $small;
     border-radius: $small;
-    transition: background 0.2s ease-in-out;
 
     .icon {
       height: 1.25rem;
@@ -107,21 +62,51 @@ const options = [
     }
 
     .label {
-      width: 10rem;
+      width: 9rem;
     }
 
     .folder {
       background-image: url("../assets/icons/folder.svg");
     }
 
+    .artist {
+      background-image: url("../assets/icons/artist.svg");
+    }
+
+    .album {
+      background-image: url("../assets/icons/album.svg");
+    }
+
+    .delete {
+      background-image: url("../assets/icons/delete.svg");
+    }
+
+    .plus {
+      background-image: url("../assets/icons/plus.svg");
+    }
+
+    .add_to_queue {
+      background-image: url("../assets/icons/add_to_queue.svg");
+    }
+
     &:hover {
       background: #234ece;
+    }
+  }
+
+  .separator {
+    height: 1px;
+  }
+
+  .critical {
+    &:hover {
+      background-color: $red;
     }
   }
 }
 
 .context-menu-visible {
-    transform: scale(1);
-    transition: transform .2s ease-in-out;
+  transform: scale(1);
+  transition: transform 0.2s ease-in-out;
 }
 </style>
