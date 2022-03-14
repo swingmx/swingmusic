@@ -1,6 +1,5 @@
 <template>
   <div class="album-h" @contextmenu="hideShowContext" id="album-h">
-    <!-- <ContextMenu /> -->
     <div class="a-header">
       <div
         class="image art shadow-lg"
@@ -35,11 +34,6 @@
 <script setup>
 import state from "@/composables/state.js";
 import perks from "@/composables/perks.js";
-// import ContextMenu from "../contextMenu.vue";
-// import { reactive, ref } from "vue";
-// import useContextStore from "@/stores/context.js";
-
-// const contextStore = useContextStore();
 
 const props = defineProps({
   album_info: {
@@ -47,15 +41,6 @@ const props = defineProps({
     default: () => ({}),
   },
 });
-
-// const hideShowContext = (e) => {
-//   e.preventDefault();
-//   e.stopPropagation();
-
-//   contextStore.showContextMenu(e);
-// };
-
-// const context_hide = ref(true);
 
 function playAlbum() {
   perks.updateQueue(state.album.tracklist[0], "album");
@@ -144,7 +129,7 @@ function playAlbum() {
         width: 6rem;
         display: flex;
         align-items: center;
-        background: $highlight-blue;
+        background: $blue;
         padding: $small;
         cursor: pointer;
 
