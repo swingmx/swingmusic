@@ -32,7 +32,6 @@ const tabs = useTabStore();
   width: 29em;
   background-color: rgba(4, 12, 34, 0.103);
   padding: 0 0 0 $small;
-  border-left: 1px solid $gray;
 
   @include phone-only {
     display: none;

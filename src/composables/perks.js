@@ -2,7 +2,7 @@ import { ref } from "@vue/reactivity";
 import { watch } from "@vue/runtime-core";
 import media from "./mediaNotification.js";
 import playAudio from "./playAudio.js";
-import state from "./state.js";
+import state from "./state";
 
 const current = ref(state.current);
 

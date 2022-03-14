@@ -11,7 +11,8 @@
 
 body {
   margin: 0;
-  background-color: $card-dark;
+  background-color: #171c28;
+  
   color: #fff;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica,
     Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
@@ -97,15 +98,18 @@ button {
 
 .tabs {
   grid-area: tabs;
+  border-left: solid 1px $gray3;
 
   @include tablet-landscape {
     display: none;
   }
 }
 
+
+
 .gsearch-input {
   grid-area: search-input;
-  border-left: solid 1px $gray;
+  border-left: solid 1px $gray3;
 }
 
 .topnav {
@@ -116,7 +120,7 @@ button {
   width: 15rem;
   grid-area: l-sidebar;
   padding-top: 0.5rem;
-  border-right: solid 1px $gray;
+  border-right: solid 1px $gray3;
 }
 
 .bottom-bar {
@@ -156,7 +160,6 @@ button {
   max-width: 1504px;
 
   .nav {
-    border: solid;
     margin: $small;
     width: calc(100% - 1rem);
   }
@@ -164,6 +167,7 @@ button {
 
 .r-sidebar {
   grid-area: r-sidebar;
+  border-left: solid 1px $gray3;
 }
 
 .image {

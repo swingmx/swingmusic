@@ -1,7 +1,7 @@
 import Router from "@/router";
 
 import album from "./album.js";
-import state from "./state.js";
+import state from "./state";
 
 async function toAlbum(title, artist) {
   console.log("routing to album");

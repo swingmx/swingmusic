@@ -27,7 +27,7 @@ const props = defineProps({
 <style lang="scss">
 .l_ {
   padding: $small;
-  background-color: #e24a01;
+  background-color: $primary;
   margin: $small;
 
   .l-image {

@@ -32,7 +32,7 @@
 </template>
 
 <script setup>
-import state from "@/composables/state.js";
+import state from "@/composables/state";
 import perks from "@/composables/perks.js";
 
 const props = defineProps({

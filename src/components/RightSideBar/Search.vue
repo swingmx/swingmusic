@@ -50,7 +50,7 @@
 <script setup>
 import { reactive, ref } from "@vue/reactivity";
 
-import state from "@/composables/state.js";
+import state from "@/composables/state";
 import searchMusic from "@/composables/searchMusic.js";
 import useDebouncedRef from "@/composables/useDebouncedRef";
 import AlbumGrid from "@/components/Search/AlbumGrid.vue";

@@ -1,7 +1,7 @@
 <template>
   <!-- v-show="context.visible" -->
   <div
-    class="context-menu rounded"
+    class="context-menu rounded shadow-lg"
     :class="{ 'context-menu-visible': context.visible }"
     :style="{
       left: context.x + 'px',
@@ -35,7 +35,7 @@ const context = useContextStore();
   width: 10rem;
   height: min-content;
   padding: $small;
-  background: $gray;
+  background: $gray3;
   z-index: 100000 !important;
   display: flex;
   flex-direction: column;
@@ -54,6 +54,7 @@ const context = useContextStore();
     cursor: default;
     padding: 0 $small;
     border-radius: $small;
+    color: rgb(255, 255, 255);
 
     .icon {
       height: 1.25rem;

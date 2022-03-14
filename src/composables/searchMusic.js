@@ -1,4 +1,4 @@
-import state from "./state.js";
+import state from "./state";
 
 const base_url = `${state.settings.uri}/search?q=`;
 

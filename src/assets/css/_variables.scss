@@ -35,6 +35,11 @@ $brown: rgb(172, 142, 104);
 $indigo: rgb(94, 92, 230);
 $teal: rgb(64, 200, 224);
 
+// 60 30 10
+$primary: $blue;
+$accent: $indigo;
+$cta: $red;
+
 // media query mixins
 @mixin phone-only {
   @media (max-width: 599px) {

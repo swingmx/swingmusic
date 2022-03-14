@@ -5,7 +5,7 @@
 </template>
 
 <script setup>
-import state from "@/composables/state.js";
+import state from "@/composables/state";
 
 const loading = state.loading
 </script>

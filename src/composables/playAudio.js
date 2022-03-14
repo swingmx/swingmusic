@@ -2,7 +2,7 @@ import {ref} from "@vue/reactivity";
 
 import perks from "./perks";
 import media from "./mediaNotification.js";
-import state from "./state.js";
+import state from "./state";
 
 const audio = ref(new Audio()).value;
 

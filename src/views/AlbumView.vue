@@ -26,7 +26,7 @@ import AlbumBio from "../components/AlbumView/AlbumBio.vue";
 import SongList from "../components/FolderView/SongList.vue";
 import FeaturedArtists from "../components/PlaylistView/FeaturedArtists.vue";
 
-import state from "@/composables/state.js";
+import state from "@/composables/state";
 import routeLoader from "@/composables/routeLoader.js";
 
 const route = useRoute();

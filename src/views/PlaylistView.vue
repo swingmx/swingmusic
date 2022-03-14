@@ -15,7 +15,7 @@
 import Header from "@/components/PlaylistView/Header.vue";
 import SongList from "@/components/FolderView/SongList.vue";
 import FeaturedArtists from "@/components/PlaylistView/FeaturedArtists.vue";
-import state from "@/composables/state.js";
+import state from "@/composables/state";
 export default {
   components: {
     Header,

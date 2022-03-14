@@ -60,17 +60,18 @@
   </div>
 </template>
 
-<script setup>
-import perks from "@/composables/perks.js";
-import state from "@/composables/state.js";
+<script setup lang="ts">
+import perks from "../../composables/perks.js";
+import state from "../../composables/state";
 import useContextStore from "../../stores/context.js";
 import { ref } from "vue";
 import trackContext from "../../composables/track_context";
+import { Track } from "../../interfaces.js";
 
 const contextStore = useContextStore();
 const context_on = ref(false);
 
-const showContextMenu = (e) => {
+const showContextMenu = (e: Event) => {
   e.preventDefault();
   e.stopPropagation();
 
@@ -84,23 +85,21 @@ const showContextMenu = (e) => {
   });
 };
 
-const props = defineProps({
-  song: {
-    type: Object,
-    default: () => ({}),
-  },
-  index: {
-    type: Number,
-    default: () => 0,
-  },
-});
+const props = defineProps<{
+  song: Track;
+  index: Number;
+}>();
 
-const emit = defineEmits(["updateQeuue", "loadAlbum"]);
+const emit = defineEmits<{
+  (e: "updateQueue", song: Track): void;
+  (e: "loadAlbum", album: string, artist: string): void;
+}>();
 
-function emitUpdate(song) {
-  emit("updateQueue", song);
+function emitUpdate(track: Track) {
+  emit("updateQueue", track);
 }
-function emitLoadAlbum(title, artist) {
+
+function emitLoadAlbum(title: string, artist: string) {
   emit("loadAlbum", title, artist);
 }
 

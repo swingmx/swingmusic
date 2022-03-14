@@ -23,10 +23,9 @@ const tabs = useTabStore();
 <style lang="scss">
 .tabs {
   padding: $small;
-  border-left: 1px solid $gray;
 
   .cont {
-    background-color: $gray;
+    background-color: $gray3;
     display: flex;
     gap: $small;
     height: 100%;
@@ -44,7 +43,7 @@ const tabs = useTabStore();
     width: 4rem;
 
     &:hover {
-      background-color: $gray3;
+      background-color: $gray5;
     }
   }
 
@@ -53,12 +52,12 @@ const tabs = useTabStore();
     display: flex;
     justify-content: center;
     width: 4rem;
+    background-color: $accent;
 
     .t-item {
       background-color: transparent;
     }
 
-    background-image: linear-gradient(to right, $blue, $red) !important;
   }
 
   .search {

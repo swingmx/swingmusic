@@ -36,7 +36,7 @@ import SongItem from "../shared/SongItem.vue";
 
 import routeLoader from "@/composables/routeLoader.js";
 import perks from "@/composables/perks.js";
-import state from "@/composables/state.js";
+import state from "@/composables/state";
 
 const props = defineProps({
   songs: {

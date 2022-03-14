@@ -21,7 +21,7 @@ import Header from "@/components/FolderView/Header.vue";
 
 import getTracksAndDirs from "../composables/getFiles.js";
 import { onMounted, watch } from "@vue/runtime-core";
-import state from "@/composables/state.js";
+import state from "@/composables/state";
 
 export default {
   components: {
