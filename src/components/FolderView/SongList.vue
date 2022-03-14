@@ -88,6 +88,16 @@ function loadAlbum(title, albumartist) {
   height: 100%;
   overflow-y: auto;
 
+  .current {
+    color: $red;
+  }
+
+  .current:hover {
+    * {
+      color: rgb(255, 255, 255);
+    }
+  }
+
   .thead {
     display: grid;
     grid-template-columns: 1.5rem 1.5fr 1fr 1.5fr 0.25fr;
@@ -126,16 +136,6 @@ function loadAlbum(title, albumartist) {
 
     &::-webkit-scrollbar {
       display: none;
-    }
-
-    .current * {
-      color: $highlight-blue;
-    }
-
-    .current:hover {
-      * {
-        color: rgb(255, 255, 255);
-      }
     }
   }
 }

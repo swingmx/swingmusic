@@ -1,5 +1,5 @@
 <template>
-  <div id="bg-blur"></div>
+  <ContextMenu />
   <div class="l-container" :class="{ collapsed: collapsed }">
     <div class="l-sidebar">
       <div id="logo-container">
@@ -38,6 +38,7 @@ import NavBar from "./components/nav/NavBar.vue";
 import Tabs from "./components/RightSideBar/Tabs.vue";
 import SearchInput from "./components/RightSideBar/SearchInput.vue";
 import useContextStore from "./stores/context.js";
+import ContextMenu from "./components/contextMenu.vue";
 
 const context_store = useContextStore();
 
@@ -48,9 +49,7 @@ const collapsed = ref(false);
 const app_dom = document.getElementById("app");
 
 app_dom.addEventListener("click", (e) => {
-  const context_menu = perks.getElem("context-menu-visible", "class");
-  console.log(e.target.offsetParent);
-  if (e.target.offsetParent != context_menu) {
+  if (context_store.visible) {
     context_store.hideContextMenu();
   }
 });

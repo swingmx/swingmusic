@@ -96,7 +96,7 @@ export default {
   .play {
     height: 100%;
     width: 5em;
-    background-color: rgb(5, 74, 131);
+    background-color: $blue;
     padding-left: $small;
     margin-right: $small;
 
