@@ -1,3 +1,4 @@
+import { Track } from './../interfaces';
 import Router from "../router";
 
 interface Option {
@@ -14,7 +15,7 @@ interface Option {
  * @return {Array<Option>} a list of context menu items.
  */
 
-export default (track: any): Array<Option> => {
+export default (track: Track): Array<Option> => {
   const option1: Option = {
     label: "Add to Playlist",
     action: () => console.log("Add to Playlist"),
@@ -62,18 +63,18 @@ export default (track: any): Array<Option> => {
     critical: true,
   };
 
-  const sep: Option = {
+  const separator: Option = {
     type: "separator",
   };
 
   const options: Option[] = [
     option1,
     option2,
-    sep,
+    separator,
     option3,
     option4,
     option5,
-    sep,
+    separator,
     option6,
   ];
 
