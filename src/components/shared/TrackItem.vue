@@ -5,6 +5,7 @@
     :class="{
       currentInQueue: current.trackid === props.track.trackid,
     }"
+    @contextmenu="showContextMenu"
   >
     <div
       class="album-art image rounded"
@@ -34,9 +35,20 @@
 import { ref } from "vue";
 import perks from "../../composables/perks";
 import playAudio from "../../composables/playAudio";
+import useContextStore from "@/stores/context.js";
+import trackContext from "../../composables/track_context";
 
+const contextStore = useContextStore();
+
+const showContextMenu = (e) => {
+  e.preventDefault();
+  e.stopPropagation();
+
+  contextStore.showContextMenu(e, trackContext(props.track));
+};
 const props = defineProps({
   track: Object,
+  default: () => ({}),
 });
 
 const current = ref(perks.current);
@@ -55,6 +67,7 @@ const playThis = (song) => {
 }
 
 .track-item {
+  width: 26.55rem;
   display: flex;
   align-items: center;
   border-radius: 0.5rem;

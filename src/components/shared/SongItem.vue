@@ -1,86 +1,119 @@
 <template>
   <div
     class="songlist-item rounded"
-    :class="{ current: current.trackid === song.trackid }"
-    @dblclick="emitUpdate(song)"
+    :class="[
+      { current: current.trackid === props.song.trackid },
+      { 'context-on': context_on },
+    ]"
+    @dblclick="emitUpdate(props.song)"
+    @contextmenu="showContextMenu"
   >
-    <div class="index">{{ index }}</div>
+    <div class="index">{{ props.index }}</div>
     <div class="flex">
       <div
         class="album-art image rounded"
-        :style="{ backgroundImage: `url(&quot;${song.image}&quot;` }"
-        @click="emitUpdate(song)"
+        :style="{ backgroundImage: `url(&quot;${props.song.image}&quot;` }"
+        @click="emitUpdate(props.song)"
       >
         <div
           class="now-playing-track image"
-          v-if="current.trackid === song.trackid"
+          v-if="current.trackid === props.song.trackid"
           :class="{ active: is_playing, not_active: !is_playing }"
         ></div>
       </div>
-      <div @click="emitUpdate(song)">
-        <span class="ellip title">{{ song.title }}</span>
+      <div @click="emitUpdate(props.song)">
+        <span class="ellip title">{{ props.song.title }}</span>
         <div class="artist ellip">
-          <span v-for="artist in putCommas(song.artists)" :key="artist">
+          <span
+            v-for="artist in perks.putCommas(props.song.artists)"
+            :key="artist"
+          >
             {{ artist }}
           </span>
         </div>
       </div>
     </div>
     <div class="song-artists">
-      <div class="ellip" v-if="song.artists[0] !== ''">
+      <div class="ellip" v-if="props.song.artists[0] !== ''">
         <span
           class="artist"
-          v-for="artist in putCommas(song.artists)"
+          v-for="artist in perks.putCommas(props.song.artists)"
           :key="artist"
           >{{ artist }}</span
         >
       </div>
       <div class="ellip" v-else>
-        <span class="artist">{{ song.albumartist }}</span>
+        <span class="artist">{{ props.song.albumartist }}</span>
       </div>
     </div>
     <div class="song-album">
       <div
         class="album ellip"
-        @click="emitLoadAlbum(song.album, song.albumartist)"
+        @click="emitLoadAlbum(props.song.album, props.song.albumartist)"
       >
-        {{ song.album }}
+        {{ props.song.album }}
       </div>
     </div>
-    <div class="song-duration">{{ formatSeconds(song.length) }}</div>
-    <ContextMenu />
+    <div class="song-duration">
+      {{ perks.formatSeconds(props.song.length) }}
+    </div>
   </div>
 </template>
 
-<script>
+<script setup>
 import perks from "@/composables/perks.js";
 import state from "@/composables/state.js";
-import ContextMenu from "../contextMenu.vue";
+import useContextStore from "../../stores/context.js";
+import { ref } from "vue";
+import trackContext from "../../composables/track_context";
 
-export default {
-  props: ["song", "index"],
-  emits: ["updateQueue", "loadAlbum"],
-  setup(props, { emit }) {
-    function emitUpdate(song) {
-      emit("updateQueue", song);
+const contextStore = useContextStore();
+const context_on = ref(false);
+
+const showContextMenu = (e) => {
+  e.preventDefault();
+  e.stopPropagation();
+
+  contextStore.showContextMenu(e, trackContext(props.song));
+  context_on.value = true;
+
+  contextStore.$subscribe((mutation, state) => {
+    if (!state.visible) {
+      context_on.value = false;
     }
-    function emitLoadAlbum(title, artist) {
-      emit("loadAlbum", title, artist);
-    }
-    return {
-      putCommas: perks.putCommas,
-      emitUpdate,
-      emitLoadAlbum,
-      is_playing: state.is_playing,
-      current: state.current,
-      formatSeconds: perks.formatSeconds,
-    };
-  },
-  components: { ContextMenu },
+  });
 };
+
+const props = defineProps({
+  song: {
+    type: Object,
+    default: () => ({}),
+  },
+  index: {
+    type: Number,
+    default: () => 0,
+  },
+});
+
+const emit = defineEmits(["updateQeuue", "loadAlbum"]);
+
+function emitUpdate(song) {
+  emit("updateQueue", song);
+}
+function emitLoadAlbum(title, artist) {
+  emit("loadAlbum", title, artist);
+}
+
+const is_playing = state.is_playing;
+const current = state.current;
 </script>
 
 <style lang="scss">
+.context-on {
+  background-color: $gray4;
+  color: $white !important;
+}
+
 .songlist-item {
   display: grid;
   align-items: center;
@@ -89,6 +122,14 @@ export default {
   text-align: left;
   gap: $small;
 
+  .context {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 45px;
+    width: 45px;
+    background-color: red;
+  }
   @include tablet-landscape {
     grid-template-columns: 1.5rem 1.5fr 1fr 1.5fr;
   }
@@ -98,7 +139,7 @@ export default {
   }
 
   &:hover {
-    background-color: $gray;
+    background-color: $gray4;
   }
 
   .song-duration {
