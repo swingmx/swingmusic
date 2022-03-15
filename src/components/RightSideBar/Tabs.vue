@@ -25,7 +25,7 @@ const tabs = useTabStore();
   padding: $small;
 
   .cont {
-    background-color: $gray3;
+    background-color: $primary;
     display: flex;
     gap: $small;
     height: 100%;

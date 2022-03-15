@@ -1,5 +1,5 @@
 <template>
-  <div id="f-view-parent" class="border rounded">
+  <div id="f-view-parent" class="rounded">
     <div class="fixed">
       <Header :path="path" :first_song="songs[0]" @search="updateQueryString" />
     </div>

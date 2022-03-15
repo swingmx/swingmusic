@@ -108,10 +108,7 @@ const current = state.current;
 </script>
 
 <style lang="scss">
-.context-on {
-  background-color: $gray4;
-  color: $white !important;
-}
+// 
 
 .songlist-item {
   display: grid;

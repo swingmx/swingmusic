@@ -1,11 +1,12 @@
 <template>
   <div class="gsearch-input">
     <Filters :filters="search.filters" @removeFilter="removeFilter" />
-    <div class="input-loader border">
+    <div class="input-loader">
       <input
         id="search"
+        class="rounded"
         v-model="search.query"
-        placeholder="Aretha Franklin"
+        placeholder="Search"
         type="text"
         @keyup.backspace="removeLastFilter"
       />
@@ -44,8 +45,7 @@ function removeLastFilter() {
 
 <style lang="scss">
 .gsearch-input {
-  margin-top: $small;
-  padding: 0 $small;
+  padding: $small;
   display: flex;
 
   @include tablet-landscape {
@@ -59,7 +59,7 @@ function removeLastFilter() {
 
     ._loader {
       position: absolute;
-      top: -0.25rem;
+      top: -0.15rem;
       right: 2rem;
     }
 
@@ -68,7 +68,8 @@ function removeLastFilter() {
       align-items: center;
       width: 100%;
       border: none;
-      line-height: 2rem;
+      border: solid 1px $primary;
+      line-height: 2.25rem;
       background-color: transparent;
       color: rgb(255, 255, 255);
       font-size: 1rem;

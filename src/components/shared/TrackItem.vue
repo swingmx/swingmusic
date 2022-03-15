@@ -2,9 +2,12 @@
   <div
     class="track-item h-1"
     @click="playThis(props.track)"
-    :class="{
-      currentInQueue: current.trackid === props.track.trackid,
-    }"
+    :class="[
+      {
+        currentInQueue: current.trackid === props.track.trackid,
+      },
+      { 'context-on': context_on },
+    ]"
     @contextmenu="showContextMenu"
   >
     <div
@@ -39,12 +42,20 @@ import useContextStore from "@/stores/context.js";
 import trackContext from "../../composables/track_context";
 
 const contextStore = useContextStore();
+const context_on = ref(false);
 
 const showContextMenu = (e) => {
   e.preventDefault();
   e.stopPropagation();
 
   contextStore.showContextMenu(e, trackContext(props.track));
+  context_on.value = true;
+
+  contextStore.$subscribe((mutation, state) => {
+    if (!state.visible) {
+      context_on.value = false;
+    }
+  });
 };
 const props = defineProps({
   track: Object,
@@ -66,6 +77,11 @@ const playThis = (song) => {
   background-color: $gray3;
 }
 
+.context-on {
+  background-color: $gray4;
+  color: $white !important;
+}
+
 .track-item {
   width: 26.55rem;
   display: flex;
@@ -77,7 +93,7 @@ const playThis = (song) => {
 
   &:hover {
     cursor: pointer;
-    background-color: $gray5 !important;
+    background-color: $gray4 !important;
   }
 
   hr {

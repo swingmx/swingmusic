@@ -48,6 +48,8 @@ const options = [
 .right-search .options {
   display: flex;
   margin-bottom: $small;
+    border: solid 1px $gray3;
+  // background: $gray3;
 
   .item {
     margin: $small;
@@ -58,7 +60,7 @@ const options = [
     overflow: hidden;
     transition: all 0.2s ease-in-out;
     position: relative;
-    background-color: $gray4;
+    background-color: $gray3;
 
     .title {
       position: absolute;
@@ -75,6 +77,7 @@ const options = [
 
     &:hover {
       width: 5.5rem;
+      background-color: $gray5;
 
       .title {
         visibility: visible;

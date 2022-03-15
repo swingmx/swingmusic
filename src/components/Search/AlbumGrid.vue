@@ -36,14 +36,13 @@ export default {
 <style lang="scss">
 .right-search .albums-results {
   border-radius: 0.5rem;
-  background: #0f131b44;
   margin-top: $small;
   padding: $small;
   overflow-x: hidden;
-  border: solid 1px $gray;
+  border: solid 1px $gray3;
 
   .result-item:hover {
-    background-color: $gray3;
+    background-color: $gray4;
   }
 
   .grid {

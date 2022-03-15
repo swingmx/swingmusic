@@ -33,11 +33,11 @@ export default {
     display: grid;
     transition: all 0.5s ease;
     color: rgba(255, 255, 255, 0.87) !important;
-    background-color: transparent;
-    border: solid 1px $gray;
+    background-color: $accent;
+    // border: solid 1px $gray;
 
     &:hover {
-      background-color: $gray !important;
+      background-color: $blue !important;
       width: 50%;
     }
   }

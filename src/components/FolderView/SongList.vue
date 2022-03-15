@@ -8,7 +8,7 @@
         <div class="album-header">Album</div>
         <div class="duration-header">Duration</div>
       </div>
-      <div>
+      <div class="songlist">
         <SongItem
           v-for="(song, index) in props.songs"
           :key="song"
@@ -136,6 +136,13 @@ function loadAlbum(title, albumartist) {
 
     &::-webkit-scrollbar {
       display: none;
+    }
+  }
+
+  .songlist {
+    .context-on {
+      background-color: $gray4;
+      color: $white !important;
     }
   }
 }

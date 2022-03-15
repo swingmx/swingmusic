@@ -18,7 +18,7 @@
       </div>
       <input
         type="text"
-        class="search-input border"
+        class="search-input"
         placeholder="Search this folder"
         v-model="query"
       />
@@ -85,6 +85,7 @@ export default {
     font-size: 1rem;
     line-height: 2.2rem;
     outline: none;
+    border: 1px solid $gray3;
   }
 }
 

@@ -29,11 +29,12 @@ export default {
 <style lang="scss">
 .gsearch-input .filter {
   display: flex;
-  // height: 2rem;
-  // border: solid;
 
   .item {
     transition: all 0.2s ease-in-out;
+    background-color: $gray3;
+    height: 2.5rem;
+
     &:hover {
       width: 4rem;
 

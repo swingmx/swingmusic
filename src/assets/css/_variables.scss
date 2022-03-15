@@ -36,9 +36,12 @@ $indigo: rgb(94, 92, 230);
 $teal: rgb(64, 200, 224);
 
 // 60 30 10
-$primary: $blue;
+$primary: $gray4;
 $accent: $indigo;
-$cta: $red;
+$cta: $blue;
+$danger: $red;
+$track-hover: $gray4;
+$context: $gray4;
 
 // media query mixins
 @mixin phone-only {

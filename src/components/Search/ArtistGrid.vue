@@ -38,22 +38,16 @@ export default {
   border-radius: 0.5rem;
   padding: $small;
   margin-bottom: $small;
-  border: solid 1px $gray;
-  background-color: #150d167c;
+  border: solid 1px $gray3;
 
   .xartist {
-    background: linear-gradient(
-      to bottom,
-      $gray2 20%,
-      $gray4 50%,
-      $gray 80%
-    );
+    background-color: $gray;
   }
 
   .grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: .75rem;
+    gap: 0.75rem;
   }
 }
 </style>

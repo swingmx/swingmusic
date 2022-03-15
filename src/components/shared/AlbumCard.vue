@@ -4,7 +4,7 @@
       name: 'AlbumView',
       params: { album: album.album, artist: album.artist },
     }"
-    class="result-item shadow-sm"
+    class="result-item"
   >
     <div class="_idk">
       <div
@@ -34,10 +34,10 @@ export default {
   padding: $small;
   border-radius: 0.75rem;
   text-align: left !important;
-  border: solid 2px transparent;
   background-color: $gray;
   color: #ffffffde !important;
   transition: all 0.5s ease;
+  // border: solid 1px $gray3;
 
   ._idk {
     position: relative;

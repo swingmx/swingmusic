@@ -28,7 +28,7 @@ const props = defineProps({
   display: flex;
   align-items: center;
   position: relative;
-  background-color: $gray;
+  background-color: $gray4;
   transition: all 0.2s ease;
   border-radius: .75rem;
 

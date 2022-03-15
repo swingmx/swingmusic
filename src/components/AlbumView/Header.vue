@@ -1,8 +1,8 @@
 <template>
-  <div class="album-h" @contextmenu="hideShowContext" id="album-h">
-    <div class="a-header">
+  <div class="album-h">
+    <div class="a-header rounded">
       <div
-        class="image art shadow-lg"
+        class="image art shadow-lg rounded"
         :style="{
           backgroundImage: `url(&quot;${props.album_info.image}&quot;)`,
         }"
@@ -49,12 +49,6 @@ function playAlbum() {
 
 <style lang="scss">
 .album-h {
-  @include tablet-landscape {
-    grid-template-columns: 1fr;
-  }
-
-  gap: $small;
-  position: relative;
   height: 14rem;
 }
 
@@ -64,6 +58,7 @@ function playAlbum() {
   align-items: center;
   padding: 1rem;
   height: 100%;
+  background-color: $gray4;
   background-image: linear-gradient(
     to bottom,
     $gray3 0%,
