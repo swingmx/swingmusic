@@ -17,20 +17,27 @@ export default (mouseX, mouseY) => {
 
   const outOfBoundsOnY = scopeY + contextMenu.clientHeight > scope.clientHeight;
 
-  let normalizedX = mouseX;
-  let normalizedY = mouseY;
+  let normalX = mouseX;
+  let normalY = mouseY;
+  let normalizedX = false;
+  let normalizedY = false;
 
+  if (window.innerWidth - normalX < 375) {
+    normalizedX = true;
+  }
   // ? normalize on X
   if (outOfBoundsOnX) {
-    normalizedX = scopeOffsetX + scope.clientWidth - contextMenu.clientWidth;
-    normalizedX -= 10
+    normalX = scopeOffsetX + scope.clientWidth - contextMenu.clientWidth;
+    normalX -= 10;
   }
 
   // ? normalize on Y
   if (outOfBoundsOnY) {
-    normalizedY = scopeOffsetY + scope.clientHeight - contextMenu.clientHeight;
-    normalizedY -= 10
+    normalY = scopeOffsetY + scope.clientHeight - contextMenu.clientHeight;
+    normalY -= 10;
+
+    normalizedY = true;
   }
 
-  return { normalizedX, normalizedY };
+  return { normalX, normalY, normalizedX, normalizedY };
 };

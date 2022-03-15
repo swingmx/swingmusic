@@ -1,26 +1,24 @@
 <template>
   <div class="topnav rounded">
     <div class="left">
-      <!-- <div class="btn">
+      <div class="btn">
         <PlayBtn />
-      </div> -->
+      </div>
       <div class="info">
-        <div class="title">Album</div>
+        <div class="title">beerbongs & bentleys</div>
       </div>
     </div>
-    <div class="center"></div>
+    <div class="center rounded"></div>
     <div class="right"></div>
   </div>
 </template>
 
 <script setup>
-import PlayBtn from '../shared/PlayBtn.vue';
-
+import PlayBtn from "../shared/PlayBtn.vue";
 </script>
 
 <style lang="scss">
 .topnav {
-  background-color: $gray3;
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   padding: 0 $small;
@@ -28,7 +26,6 @@ import PlayBtn from '../shared/PlayBtn.vue';
 
   .left {
     display: flex;
-    // border: solid 1px $gray;
     align-items: center;
     gap: $small;
 
@@ -37,6 +34,16 @@ import PlayBtn from '../shared/PlayBtn.vue';
         font-size: 1.5rem;
         font-weight: bold;
       }
+    }
+  }
+
+  .center {
+    display: grid;
+
+    .songcard {
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
   }
 }

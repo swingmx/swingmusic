@@ -1,0 +1,47 @@
+import { defineStore } from "pinia";
+import normalize from "../composables/normalizeContextMenu";
+import { Option } from "../interfaces";
+
+export default defineStore("context-menu", {
+  state: () => ({
+    visible: false,
+    options: Array<Option>(),
+    x: 500,
+    y: 500,
+    normalizedX: false,
+    normalizedY: false,
+  }),
+  actions: {
+    showContextMenu(e: any, context_options: Option[]) {
+      if (this.visible) {
+        this.visible = false;
+        return;
+      }
+
+      this.options = context_options;
+      const yo = normalize(e.clientX, e.clientY);
+
+      this.x = yo.normalX;
+      this.y = yo.normalY;
+
+      this.normalizedX = yo.normalizedX;
+      this.normalizedY = yo.normalizedY;
+
+      this.visible = true;
+    },
+    hideContextMenu() {
+      this.visible = false;
+    },
+    hasManyChildren() {
+      let result = false;
+
+      this.options.forEach((option: Option) => {
+        if (option.children && option.children.length > 7) {
+          result = true;
+        }
+      });
+
+      return result;
+    },
+  },
+});

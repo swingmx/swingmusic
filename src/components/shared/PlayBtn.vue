@@ -8,7 +8,7 @@
 .play-btn {
   width: 2rem;
   height: 2rem;
-  background-color: $red;
+  background-color: $accent;
   background-image: url("../../assets/icons/play.svg");
   background-size: 1.25rem;
   background-position: 60%;

@@ -63,9 +63,9 @@
 <script setup lang="ts">
 import perks from "../../composables/perks.js";
 import state from "../../composables/state";
-import useContextStore from "../../stores/context.js";
+import useContextStore from "../../stores/context";
 import { ref } from "vue";
-import trackContext from "../../composables/track_context";
+import trackContext from "../../contexts/track_context";
 import { Track } from "../../interfaces.js";
 
 const contextStore = useContextStore();
@@ -108,8 +108,6 @@ const current = state.current;
 </script>
 
 <style lang="scss">
-// 
-
 .songlist-item {
   display: grid;
   align-items: center;

@@ -29,4 +29,13 @@ interface Artist {
   image: string;
 }
 
-export { Track, AlbumInfo, Artist };
+interface Option {
+  type?: string;
+  label?: string;
+  action?: Function;
+  children?: Option[] | false;
+  icon?: string;
+  critical?: Boolean;
+}
+
+export { Track, AlbumInfo, Artist, Option };

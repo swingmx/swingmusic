@@ -6,18 +6,14 @@
   </div>
 </template>
 
-<script>
-export default {
-  setup(props, { emit }) {
-    function loadMore() {
-      emit("loadMore");
-    }
+<script setup lang="ts">
+const emit = defineEmits<{
+  (e: "loadMore"): void;
+}>();
 
-    return {
-      loadMore,
-    };
-  },
-};
+function loadMore() {
+  emit("loadMore");
+}
 </script>
 
 <style lang="scss">

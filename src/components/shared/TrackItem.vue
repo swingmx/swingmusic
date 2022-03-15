@@ -38,8 +38,8 @@
 import { ref } from "vue";
 import perks from "../../composables/perks";
 import playAudio from "../../composables/playAudio";
-import useContextStore from "@/stores/context.js";
-import trackContext from "../../composables/track_context";
+import useContextStore from "@/stores/context";
+import trackContext from "../../contexts/track_context";
 
 const contextStore = useContextStore();
 const context_on = ref(false);

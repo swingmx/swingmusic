@@ -37,7 +37,7 @@ import AlbumArt from "./components/LeftSidebar/AlbumArt.vue";
 import NavBar from "./components/nav/NavBar.vue";
 import Tabs from "./components/RightSideBar/Tabs.vue";
 import SearchInput from "./components/RightSideBar/SearchInput.vue";
-import useContextStore from "./stores/context.js";
+import useContextStore from "./stores/context";
 import ContextMenu from "./components/contextMenu.vue";
 
 const context_store = useContextStore();

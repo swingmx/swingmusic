@@ -1,21 +1,29 @@
-import { Track } from './../interfaces';
+import { Track } from "../interfaces";
 import Router from "../router";
-
-interface Option {
-  type?: string;
-  label?: string;
-  action?: Function;
-  icon?: string;
-  critical?: Boolean;
-}
+import { Option } from "../interfaces";
 
 /**
  * Returns a list of context menu items for a track.
  * @param  {any} track a track object.
- * @return {Array<Option>} a list of context menu items.
+ * @return {Array<Option>()} a list of context menu items.
  */
 
 export default (track: Track): Array<Option> => {
+  const single_artist = track.artists.length === 1;
+
+  const children = () => {
+    if (single_artist) {
+      return false;
+    }
+
+    return track.artists.map((artist) => {
+      return <Option>{
+        label: artist,
+        action: () => console.log("artist"),
+      };
+    });
+  };
+
   const option1: Option = {
     label: "Add to Playlist",
     action: () => console.log("Add to Playlist"),
@@ -40,8 +48,19 @@ export default (track: Track): Array<Option> => {
   };
 
   const option4: Option = {
-    label: "Go to Artist",
-    action: () => console.log("Go to Artist"),
+    label: single_artist ? "Go to Artist" : "Go to Artists",
+    icon: "artist",
+    action: () => {
+      if (single_artist) {
+        console.log("Go to Artist");
+      }
+    },
+    children: children(),
+  };
+
+  const option7: Option = {
+    label: "Go to Album Artist",
+    action: () => console.log("Go to Album Artist"),
     icon: "artist",
   };
 
@@ -73,6 +92,7 @@ export default (track: Track): Array<Option> => {
     separator,
     option3,
     option4,
+    option7,
     option5,
     separator,
     option6,
