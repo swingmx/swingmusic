@@ -1,4 +1,4 @@
-<template>
+<!-- <template>
   <div class="b-bar">
     <div class="grid rounded">
       <div class="controlsx rounded">
@@ -34,4 +34,4 @@ import playAudio from "../../composables/playAudio";
 
 const current_pos = playAudio.current_time;
 const formatSeconds = perks.formatSeconds;
-</script>
+</script> -->

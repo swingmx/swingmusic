@@ -334,5 +334,5 @@ class Album:
         self.count = tags["count"]
         self.duration = tags["duration"]
         self.date = tags["date"]
-        self.artistimage = "http://127.0.0.1:8900/images/artists/" + tags["artistimage"]
-        self.image = "http://127.0.0.1:8900/images/thumbnails/" + tags["image"]
+        self.artistimage = "http://0.0.0.0:8900/images/artists/" + tags["artistimage"]
+        self.image = "http://0.0.0.0:8900/images/thumbnails/" + tags["image"]

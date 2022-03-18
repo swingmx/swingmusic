@@ -1,7 +1,7 @@
 <template>
   <div class="l_ rounded" v-if="!props.collapsed">
     <div class="headin">Now Playing</div>
-    <div class="menu image rounded"></div>
+    <div class="button menu image rounded"></div>
     <div class="separator no-border"></div>
     <div>
       <div class="art">
@@ -24,8 +24,8 @@
 import { ref } from "vue";
 import state from "../../composables/state";
 import SongCard from "./SongCard.vue";
-import HotKeys from "../shared/HotKeys.vue";
-import Progress from "../shared/Progress.vue";
+import HotKeys from "./NP/HotKeys.vue";
+import Progress from "./NP/Progress.vue";
 
 const current = ref(state.current);
 const props = defineProps({
@@ -51,19 +51,22 @@ const props = defineProps({
     font-size: 0.9rem;
   }
 
-  .menu {
+  .button {
     height: 2rem;
     width: 2rem;
-    right: $small;
-    top: $small;
     position: absolute;
-    background-image: url("../../assets/icons/right-arrow.svg");
     background-size: 1.5rem;
-    transform: rotate(90deg);
+    top: $small;
 
     &:hover {
       background-color: $gray2;
     }
+  }
+
+  .menu {
+    right: $small;
+    background-image: url("../../assets/icons/right-arrow.svg");
+    transform: rotate(90deg);
   }
 
   br {

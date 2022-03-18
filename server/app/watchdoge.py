@@ -7,6 +7,7 @@ from watchdog.events import PatternMatchingEventHandler
 
 from app import instances, functions
 from app import api, models
+from app import albumslib
 
 
 class OnMyWatch:
@@ -35,14 +36,18 @@ def add_track(filepath: str) -> None:
     Processes the audio tags for a given file ands add them to the music dict.
     """
     tags = functions.get_tags(filepath)
-    print(tags)
 
     if tags is not None:
         instances.songs_instance.insert_song(tags)
-        track_obj = instances.songs_instance.get_song_by_path(tags["filepath"])
+        track = instances.songs_instance.get_song_by_path(tags["filepath"])
 
-        track = models.Track(track_obj)
-        api.TRACKS.extend(track)
+        api.DB_TRACKS.append(track)
+        album = albumslib.create_album(track)
+        api.ALBUMS.append(album)
+
+        track["image"] = album.image
+        api.TRACKS.append(models.Track(track))
+
 
 
 def remove_track(filepath: str) -> None:

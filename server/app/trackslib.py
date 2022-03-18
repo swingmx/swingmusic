@@ -12,17 +12,13 @@ def create_all_tracks() -> List[models.Track]:
     print("Getting all songs...")
     tracks: list[models.Track] = []
 
-    for track in instances.songs_instance.get_all_songs():
-        # print(track)
-        # print(albumslib.ALBUMS)
+    for track in api.DB_TRACKS:
         try:
             os.chmod(track["filepath"], 0o755)
         except FileNotFoundError:
             instances.songs_instance.remove_song_by_filepath(track["filepath"])
 
         album = albumslib.find_album(track["album"], track["albumartist"])
-        # print(album)
-        # print(track["album"], track["albumartist"])
 
         track["image"] = album.image
 

@@ -100,11 +100,9 @@ def fetch_image_path(artist: str) -> str or None:
 def populate_images():
     """populates the artists images"""
 
-    all_songs = instances.songs_instance.get_all_songs()
-
     artists = []
 
-    for song in all_songs:
+    for song in api.DB_TRACKS:
         this_artists = song["artists"].split(", ")
 
         for artist in this_artists:
@@ -170,10 +168,9 @@ def return_album_art(filepath):
 
 
 def save_t_colors():
-    tracks = instances.songs_instance.get_all_songs()
-    _bar = Bar("Processing image colors", max=len(tracks))
+    _bar = Bar("Processing image colors", max=len(api.DB_TRACKS))
 
-    for track in tracks:
+    for track in api.DB_TRACKS:
         filepath = track["filepath"]
         album_art = return_album_art(filepath)
 
@@ -366,38 +363,14 @@ def get_album_bio(title: str, albumartist: str):
 
 
 def get_all_albums() -> List[models.Album]:
+    """
+    Returns a list of album objects for all albums in the database.
+    """
     print("processing albums started ...")
 
-    all_tracks = instances.songs_instance.get_all_songs()
-    album_dicts = []
-    albums = []
+    albums: List[models.Album] = []
 
-    for track in all_tracks:
-        album_dict = {
-            "album": track["album"],
-            "artist": track["albumartist"],
-        }
+    for track in api.DB_TRACKS:
+        albums.append(albumslib.create_album(track))
 
-        if album_dict not in album_dicts:
-            album_dicts.append(album_dict)
-
-    for album in album_dicts:
-        album_tracks = [
-            track
-            for track in all_tracks
-            if track["album"] == album["album"]
-            and track["albumartist"] == album["artist"]
-        ]
-
-        album["count"] = len(album_tracks)
-        album["duration"] = albumslib.get_album_duration(album_tracks)
-        album["date"] = album_tracks[0]["date"]
-        album["artistimage"] = urllib.parse.quote_plus(
-            album_tracks[0]["albumartist"] + ".webp"
-        )
-
-        album["image"] = albumslib.get_album_image(album_tracks)
-
-        albums.append(album)
-
-    return [models.Album(album) for album in albums]
+    return albums

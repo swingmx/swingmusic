@@ -1,3 +1,4 @@
+import urllib
 from typing import List
 from app import models, functions, helpers
 from app import trackslib, api
@@ -42,6 +43,37 @@ def get_album_image(album: list) -> str:
             return img
 
     return functions.use_defaults()
+
+
+def get_album_tracks(album: str, artist: str) -> List:
+    return [
+        track
+        for track in api.DB_TRACKS
+        if track["album"] == album and track["albumartist"] == artist
+    ]
+
+
+def create_album(track) -> models.Album:
+    """
+    Generates and returns an album object from a track object.
+    """
+    album = {
+        "album": track["album"],
+        "artist": track["albumartist"],
+    }
+
+    album_tracks = get_album_tracks(album["album"], album["artist"])
+
+    album["count"] = len(album_tracks)
+    album["duration"] = get_album_duration(album_tracks)
+    album["date"] = album_tracks[0]["date"]
+    album["artistimage"] = urllib.parse.quote_plus(
+        album_tracks[0]["albumartist"] + ".webp"
+    )
+
+    album["image"] = get_album_image(album_tracks)
+
+    return models.Album(album)
 
 
 def find_album(albumtitle, artist):

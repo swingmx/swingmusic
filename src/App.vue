@@ -9,7 +9,7 @@
       </div>
       <Navigation :collapsed="collapsed" />
       <div class="l-album-art">
-        <AlbumArt :collapsed="collapsed" />
+        <nowPlaying :collapsed="collapsed" />
       </div>
     </div>
     <NavBar />
@@ -30,7 +30,7 @@ import BottomBar from "@/components/BottomBar/BottomBar.vue";
 import perks from "@/composables/perks.js";
 
 import Main from "./components/RightSideBar/Main.vue";
-import AlbumArt from "./components/LeftSidebar/AlbumArt.vue";
+import nowPlaying from "./components/LeftSidebar/nowPlaying.vue";
 import NavBar from "./components/nav/NavBar.vue";
 import Tabs from "./components/RightSideBar/Tabs.vue";
 import SearchInput from "./components/RightSideBar/SearchInput.vue";

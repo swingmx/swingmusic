@@ -12,7 +12,7 @@
 
 <script setup>
 import { ref } from "vue";
-import playAudio from "../../composables/playAudio";
+import playAudio from "../../../composables/playAudio";
 const pos = ref(playAudio.pos);
 
 const seek = () => {

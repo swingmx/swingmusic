@@ -12,7 +12,6 @@
         </div>
       </div>
     </router-link>
-    <hr />
   </div>
 </template>
 
@@ -39,9 +38,12 @@ const menus = [
     route_name: "FolderView",
   },
   {
+    name: "tags",
+  },
+  {
     name: "settings",
     route_name: "SettingsView",
-  },
+  }
 ];
 
 const props = defineProps({
@@ -85,34 +87,6 @@ const props = defineProps({
 
     &:hover {
       background-color: $gray;
-
-      #home-icon {
-        background-color: rgba(145, 58, 58, 0.555);
-      }
-
-      #albums-icon {
-        background-color: rgba(113, 58, 145, 0.555);
-      }
-
-      #artists-icon {
-        background-color: rgba(13, 72, 139, 0.555);
-      }
-
-      #playlists-icon {
-        background-color: rgba(206, 13, 132, 0.555);
-      }
-
-      #mixes-icon {
-        background-color: rgba(0, 85, 81, 0.555);
-      }
-
-      #folders-icon {
-        background-color: rgba(90, 89, 3, 0.596);
-      }
-
-      #settings-icon {
-        background-color: rgba(129, 106, 106, 0.596);
-      }
     }
 
     .nav-icon {
@@ -126,16 +100,10 @@ const props = defineProps({
     .in {
       display: flex;
       align-items: center;
-    }
 
-    #home-icon,
-    #albums-icon,
-    #artists-icon,
-    #playlists-icon,
-    #mixes-icon,
-    #folders-icon,
-    #settings-icon {
-      background-size: 1.5rem;
+      & > * {
+        background-size: 1.5rem;
+      }
     }
 
     #home-icon {
@@ -164,10 +132,10 @@ const props = defineProps({
     #settings-icon {
       background-image: url(../../assets/icons/settings.svg);
     }
+    #tags-icon {
+      background-image: url(../../assets/icons/tag.svg);
+    }
   }
 }
 
-.side-nav-container hr {
-  display: none;
-}
 </style>

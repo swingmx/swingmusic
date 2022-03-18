@@ -11,7 +11,7 @@
 </template>
 
 <script setup>
-import playAudio from "../../composables/playAudio";
+import playAudio from '../../../composables/playAudio';
 
 const playPause = playAudio.playPause;
 const playNext = playAudio.playNext;
@@ -43,19 +43,19 @@ const isPlaying = playAudio.playing;
     }
 
   #previous {
-    background-image: url(../../assets/icons/previous.svg);
+    background-image: url(../../../assets/icons/previous.svg);
   }
 
   .play-pause {
-    background-image: url(../../assets/icons/play.svg);
+    background-image: url(../../../assets/icons/play.svg);
   }
 
   .isPlaying {
-    background-image: url(../../assets/icons/pause.svg);
+    background-image: url(../../../assets/icons/pause.svg);
   }
 
   #next {
-    background-image: url(../../assets/icons/next.svg);
+    background-image: url(../../../assets/icons/next.svg);
   }
 }
 </style>

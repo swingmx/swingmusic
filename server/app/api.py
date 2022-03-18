@@ -10,10 +10,12 @@ from app import trackslib
 bp = Blueprint("api", __name__, url_prefix="")
 functions.start_watchdog()
 
+DB_TRACKS = instances.songs_instance.get_all_songs()
 ALBUMS: List[models.Album] = []
 TRACKS: List[models.Track] = []
 
 home_dir = helpers.home_dir
+
 
 @helpers.background
 def initialize() -> None:
@@ -201,7 +203,7 @@ def get_artist_data(artist: str):
 
 
 @bp.route("/f/<folder>")
-@cache.cached()
+# @cache.cached()
 def get_folder_tree(folder: str):
     """
     Returns a list of all the folders and tracks in the given folder.
@@ -251,11 +253,9 @@ def get_folder_tree(folder: str):
 @bp.route("/albums")
 def get_albums():
     """returns all the albums"""
-    s = instances.songs_instance.get_all_songs()
-
     albums = []
 
-    for song in s:
+    for song in DB_TRACKS:
         al_obj = {"name": song["album"], "artist": song["artists"]}
 
         if al_obj not in albums:

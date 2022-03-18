@@ -117,7 +117,7 @@ export default {
     align-items: center;
 
     border-radius: $small;
-    background-color: rgb(24, 22, 22);
+    background-color: $primary;
     padding: $small $small $small 2.25rem;
 
     .icon {
