@@ -8,19 +8,21 @@ from app import albumslib, searchlib
 from app import trackslib
 
 bp = Blueprint("api", __name__, url_prefix="")
+functions.start_watchdog()
+
+ALBUMS: List[models.Album] = []
+TRACKS: List[models.Track] = []
 
 home_dir = helpers.home_dir
-all_the_f_music = albumslib.create_all_albums()
-
 
 @helpers.background
 def initialize() -> None:
     """
     Runs all the necessary setup functions.
     """
+    albumslib.create_everything()
     prep.create_config_dir()
     functions.reindex_tracks()
-    functions.start_watchdog()
 
 
 initialize()
@@ -124,7 +126,7 @@ def get_albumartists():
 
     tracks = []
 
-    for track in all_the_f_music:
+    for track in TRACKS:
         if track.album == album and track.albumartist == artist:
             tracks.append(track)
 
@@ -236,7 +238,7 @@ def get_folder_tree(folder: str):
     songs = []
 
     for entry in files:
-        for track in all_the_f_music:
+        for track in TRACKS:
             if track.filepath == entry.path:
                 songs.append(track)
 

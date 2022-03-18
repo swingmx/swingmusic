@@ -1,21 +1,20 @@
 from typing import List
-from app import models, functions
-from app import trackslib
-
-ALBUMS: List[models.Album] = []
+from app import models, functions, helpers
+from app import trackslib, api
 
 
-def create_all_albums() -> List[models.Track]:
+@helpers.background
+def create_everything() -> List[models.Track]:
     """
     Creates album objects for all albums and returns
     a list of track objects
     """
     albums: list[models.Album] = functions.get_all_albums()
 
-    ALBUMS.clear()
-    ALBUMS.extend(albums)
+    api.ALBUMS.clear()
+    api.ALBUMS.extend(albums)
     trackslib.create_all_tracks()
-    return trackslib.TRACKS
+
 
 
 def get_album_duration(album: list) -> int:
@@ -46,7 +45,7 @@ def get_album_image(album: list) -> str:
 
 
 def find_album(albumtitle, artist):
-    for album in ALBUMS:
+    for album in api.ALBUMS:
         if album.album == albumtitle and album.artist == artist:
             return album
 
@@ -58,11 +57,11 @@ def search_albums_by_name(query: str) -> List[models.Album]:
     title_albums: List[models.Album] = []
     artist_albums: List[models.Album] = []
 
-    for album in ALBUMS:
+    for album in api.ALBUMS:
         if query.lower() in album.album.lower():
             title_albums.append(album)
 
-    for album in ALBUMS:
+    for album in api.ALBUMS:
         if query.lower() in album.artist.lower():
             artist_albums.append(album)
 

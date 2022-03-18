@@ -6,7 +6,7 @@ from watchdog.observers import Observer
 from watchdog.events import PatternMatchingEventHandler
 
 from app import instances, functions
-from app import api
+from app import api, models
 
 
 class OnMyWatch:
@@ -39,10 +39,10 @@ def add_track(filepath: str) -> None:
 
     if tags is not None:
         instances.songs_instance.insert_song(tags)
-        track = instances.songs_instance.get_song_by_path(tags["filepath"])
+        track_obj = instances.songs_instance.get_song_by_path(tags["filepath"])
 
-        track_obj = functions.create_track_class(track)
-        api.all_the_f_music.append(track_obj)
+        track = models.Track(track_obj)
+        api.TRACKS.extend(track)
 
 
 def remove_track(filepath: str) -> None:
@@ -52,16 +52,16 @@ def remove_track(filepath: str) -> None:
     trackid = instances.songs_instance.get_song_by_path(filepath)["_id"]["$oid"]
     instances.songs_instance.remove_song_by_id(trackid)
 
-    for track in api.all_the_f_music:
+    for track in api.TRACKS:
         if track.trackid == trackid:
-            api.all_the_f_music.remove(track)
+            api.TRACKS.remove(track)
 
 
 class Handler(PatternMatchingEventHandler):
     files_to_process = []
 
     def __init__(self):
-        print("💠 started watchdog")
+        print("💠 started watchdog 💠")
         PatternMatchingEventHandler.__init__(
             self,
             patterns=["*.flac", "*.mp3"],
@@ -93,14 +93,13 @@ class Handler(PatternMatchingEventHandler):
         if tr in event.dest_path:
             print("trash ++")
             remove_track(event.src_path)
-        
+
         elif tr in event.src_path:
             add_track(event.dest_path)
 
         elif tr not in event.dest_path and tr not in event.src_path:
             add_track(event.dest_path)
             remove_track(event.src_path)
-
 
     def on_closed(self, event):
         """

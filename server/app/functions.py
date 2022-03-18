@@ -66,7 +66,7 @@ def populate():
         if tags is not None:
             instances.songs_instance.insert_song(tags)
 
-    albumslib.create_all_albums()
+    albumslib.create_everything()
 
     print("\n check done")
     end = time.time()

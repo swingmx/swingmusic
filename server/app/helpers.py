@@ -4,19 +4,10 @@ This module contains mimi functions for the server.
 
 import os
 import threading
-import time
 from typing import List
-import requests
 import colorgram
 
-from io import BytesIO
-
-from PIL import Image
-
-from app import instances
-from app import functions
-from app import watchdoge
-from app import models, settings
+from app import models
 
 home_dir = os.path.expanduser("~") + "/"
 app_dir = os.path.join(home_dir, ".musicx")
@@ -32,8 +23,6 @@ def background(func):
         threading.Thread(target=func, args=a, kwargs=kw).start()
 
     return background_func
-
-
 
 
 def run_fast_scandir(_dir: str, ext: list):
@@ -117,13 +106,14 @@ def extract_image_colors(image) -> list:
 
     return formatted_colors
 
+
 def check_artist_image(image: str) -> str:
     """
     Checks if the artist image is valid.
     """
-    img_name = image.replace("/", "::")+ ".webp"
+    img_name = image.replace("/", "::") + ".webp"
 
     if not os.path.exists(os.path.join(app_dir, "images", "artists", img_name)):
         return "http://0.0.0.0:8900/images/artists/0.webp"
     else:
-        return "http://0.0.0.0:8900/images/artists/" + img_name,
+        return ("http://0.0.0.0:8900/images/artists/" + img_name,)
