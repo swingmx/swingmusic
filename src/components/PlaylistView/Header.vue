@@ -37,7 +37,7 @@
     bottom: $small;
     right: $small;
     padding: 0.5rem;
-    background-color: rgba(0, 0, 0, 0.699);
+    background-color: $body;
     color: rgb(255, 255, 255);
     font-size: 0.9rem;
     border-radius: $smaller;
@@ -70,7 +70,7 @@
     padding: 1rem 1rem 4rem 1rem;
     box-shadow: 0 0 1.5rem rgba(0, 0, 0, 0.658);
     border-radius: .75rem;
-    background-color: $black;
+    background-color: $body;
 
     @include phone-only {
       width: calc(100% - 1rem);

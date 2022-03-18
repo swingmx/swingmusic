@@ -110,7 +110,7 @@ function playAlbum() {
       position: relative;
 
       .stats {
-        background-color: $gray;
+        background-color: $red;
         padding: $small;
         border-radius: $small;
         position: absolute;

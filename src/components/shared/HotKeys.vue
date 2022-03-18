@@ -1,5 +1,5 @@
 <template>
-  <div class="nav">
+  <div class="hotkeys">
     <div class="image ctrl-btn" id="previous" @click="playPrev"></div>
     <div
       class="image ctrl-btn play-pause"
@@ -21,11 +21,26 @@ const isPlaying = playAudio.playing;
 </script>
 
 <style lang="scss">
-.nav {
+.hotkeys {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   width: 100%;
   gap: $small;
+  height: 3rem;
+  align-items: center;
+  place-content: flex-end;
+
+  .ctrl-btn {
+      height: 2.5rem;
+        width: 100%;
+      background-size: 1.5rem !important;
+      cursor: pointer;
+      border-radius: 0.5rem;
+
+      &:hover {
+        background-color: $red;
+      }
+    }
 
   #previous {
     background-image: url(../../assets/icons/previous.svg);

@@ -19,9 +19,6 @@
     <SearchInput />
     <RightSideBar />
     <Tabs />
-    <div class="bottom-bar">
-      <BottomBar :collapsed="collapsed" />
-    </div>
   </div>
 </template>
 

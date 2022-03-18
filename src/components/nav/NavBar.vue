@@ -5,7 +5,7 @@
         <PlayBtn />
       </div>
       <div class="info">
-        <div class="title">beerbongs & bentleys</div>
+        <div class="title">Alice</div>
       </div>
     </div>
     <div class="center rounded"></div>

@@ -8,17 +8,7 @@
     height: 100%;
     padding-right: $small;
 
-    .ctrl-btn {
-      height: 2rem;
-      width: 2rem;
-      background-size: 1.5rem !important;
-      cursor: pointer;
-      border-radius: 0.5rem;
-
-      &:hover {
-        background-color: $red;
-      }
-    }
+    
 
     @include phone-only {
       grid-template-columns: 1fr 9.2rem;

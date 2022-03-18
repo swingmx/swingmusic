@@ -1,27 +1,32 @@
 <template>
-  <div class="f-artists border">
-    <div class="xcontrols">
-      <div class="prev" @click="scrollLeft"></div>
-      <div class="next" @click="scrollRight"></div>
-    </div>
-    <div class="artists" ref="artists_dom">
-      <div class="xartist c1 image">
-        <div class="blur"></div>
-        <div class="s2"></div>
-        <p>Featured Artists</p>
+  <div class="f-artists">
+    <div class="header">
+      <div class="headin">Featured Artists</div>
+      <div class="xcontrols">
+        <div class="prev" @click="scrollLeft"></div>
+        <div class="next" @click="scrollRight"></div>
       </div>
-      <ArtistCard v-for="artist in artists" :key="artist" :artist="artist"         :color="232452" />
+    </div>
+    <div class="separator no-border"></div>
+    <div class="artists" ref="artists_dom">
+      <ArtistCard
+        v-for="artist in artists"
+        :key="artist"
+        :artist="artist"
+        :color="232452"
+      />
     </div>
   </div>
 </template>
 <script>
 import { ref } from "@vue/reactivity";
 import ArtistCard from "@/components/shared/ArtistCard.vue";
+import { computed, reactive } from "vue";
 
 export default {
   props: ["artists"],
   components: {
-    ArtistCard
+    ArtistCard,
   },
   setup() {
     const artists_dom = ref(null);
@@ -53,12 +58,26 @@ export default {
 
 <style lang="scss">
 .f-artists {
-  position: relative;
-  height: 15em;
+  height: 15.5em;
   width: calc(100%);
   padding: $small;
   border-radius: $small;
   user-select: none;
+  background: linear-gradient(58deg, $gray 0%, rgba(5, 0, 7, 0.5) 100%);
+  position: relative;
+
+  .header {
+    display: flex;
+    height: 2.5rem;
+    align-items: center;
+    position: relative;
+
+    .headin {
+      font-size: 1.5rem;
+      font-weight: 900;
+      display: flex;
+    }
+  }
 }
 
 .f-artists .xcontrols {
@@ -66,8 +85,8 @@ export default {
   width: 5rem;
   height: 2rem;
   position: absolute;
-  top: 0.5rem;
-  right: 0.5rem;
+  top: 0;
+  right: 0;
   display: flex;
   justify-content: space-between;
 
@@ -100,11 +119,7 @@ export default {
   }
 }
 
-.f-artists .artists {
-  position: absolute;
-  bottom: 1em;
-  width: calc(100% - 1em);
-  height: 13em;
+.f-artists > .artists {
   display: flex;
   align-items: flex-end;
   flex-wrap: nowrap;
@@ -114,32 +129,6 @@ export default {
 
   &::-webkit-scrollbar {
     display: none;
-  }
-}
-
-.f-artists .c1 {
-  position: relative;
-  background-size: 400px 11rem;
-  background-position: 100%;
-  width: 8.25rem;
-  background-image: linear-gradient(
-    320deg,
-    #b63939 13%,
-    #232452 50%,
-    #232452 100%
-  );
-
-  transition: all 0.5s ease-in-out;
-
-  &:hover {
-    background-position: 0;
-  }
-
-  p {
-    margin-left: 1rem;
-    font-size: 1.5rem;
-    font-weight: 700;
-    text-shadow: 0 0 80px rgb(0, 0, 0);
   }
 }
 </style>
