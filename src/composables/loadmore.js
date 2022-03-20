@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const url = "http://10.5.8.182:9876/search/loadmore";
+const url = "http://127.0.0.1:9876/search/loadmore";
 
 async function loadMoreTracks(start) {
   const response = await axios.get(url, {

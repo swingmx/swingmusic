@@ -25,11 +25,7 @@
       <div class="label ellip">{{ option.label }}</div>
       <div class="more image" v-if="option.children"></div>
       <div class="children rounded shadow-sm" v-if="option.children">
-        <div
-          class="context-item"
-          v-for="child in option.children"
-          :key="child"
-        >
+        <div class="context-item" v-for="child in option.children" :key="child">
           <div class="label ellip" @click="child.action()">
             {{ child.label }}
           </div>
@@ -46,8 +42,6 @@ const context = useContextStore();
 </script>
 
 <style lang="scss">
-
-
 .context-menu {
   position: fixed;
   top: 0;
@@ -133,6 +127,10 @@ const context = useContextStore();
 
     .add_to_queue {
       background-image: url("../assets/icons/add_to_queue.svg");
+    }
+
+    .heart {
+      background-image: url("../assets/icons/heart.svg");
     }
 
     &:hover {

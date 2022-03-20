@@ -11,7 +11,7 @@ const current_time = ref(0);
 
 const playing = ref(state.is_playing);
 
-const url = "http://10.5.8.182:9876//file/";
+const url = "http://127.0.0.1:9876//file/";
 
 const playAudio = (trackid) => {
     const elem = document.getElementById('progress');

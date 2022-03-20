@@ -8,7 +8,7 @@ const queue = ref(
   Array<i.Track>({
     title: "Nothing played yet",
     artists: ["... blah blah blah"],
-    image: "http://10.5.8.182:8900/images/thumbnails/4.webp",
+    image: "http://127.0.0.1:8900/images/thumbnails/4.webp",
     trackid: "",
   })
 );
@@ -19,14 +19,14 @@ const folder_list = ref([]);
 const current = ref(<i.Track>{
   title: "Nothing played yet",
   artists: ["... blah blah blah"],
-  image: "http://10.5.8.182:8900/images/thumbnails/4.webp",
+  image: "http://127.0.0.1:8900/images/thumbnails/4.webp",
   trackid: "",
 });
 
 const prev = ref(<i.Track>{
   title: "Nothing played yet",
   artists: ["... blah blah blah"],
-  image: "http://10.5.8.182:8900/images/thumbnails/4.webp",
+  image: "http://127.0.0.1:8900/images/thumbnails/4.webp",
   trackid: "",
 });
 
@@ -40,7 +40,7 @@ const album = reactive({
 const loading = ref(false);
 const is_playing = ref(false);
 const settings = reactive({
-  uri: "http://10.5.8.182:9876",
+  uri: "http://127.0.0.1:9876",
 });
 
 export default {

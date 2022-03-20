@@ -57,6 +57,8 @@ const props = defineProps({
     position: absolute;
     background-size: 1.5rem;
     top: $small;
+    cursor: pointer;
+    transition: all 200ms;
 
     &:hover {
       background-color: $gray2;
@@ -67,6 +69,10 @@ const props = defineProps({
     right: $small;
     background-image: url("../../assets/icons/right-arrow.svg");
     transform: rotate(90deg);
+
+    &:hover {
+      transform: rotate(0deg);
+    }
   }
 
   br {
