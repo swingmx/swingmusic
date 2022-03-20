@@ -82,6 +82,12 @@ export default (track: Track): Array<Option> => {
     critical: true,
   };
 
+  const addToFav:Option = {
+    label: "I love this",
+    action: () => console.log("I love this"),
+    icon: "heart",
+  }
+
   const separator: Option = {
     type: "separator",
   };
@@ -89,6 +95,7 @@ export default (track: Track): Array<Option> => {
   const options: Option[] = [
     option1,
     option2,
+    addToFav,
     separator,
     option3,
     option4,
