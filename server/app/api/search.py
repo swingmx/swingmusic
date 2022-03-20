@@ -1,6 +1,6 @@
 from flask import Blueprint, request
 
-from app import searchlib
+from app.lib import searchlib
 from app import helpers
 
 search_bp = Blueprint("search", __name__, url_prefix="/")

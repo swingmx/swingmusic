@@ -7,10 +7,9 @@ import threading
 from typing import List
 import colorgram
 
-from app import models
+from app import models, settings
 
-home_dir = os.path.expanduser("~") + "/"
-app_dir = os.path.join(home_dir, ".musicx")
+app_dir = settings.APP_DIR
 
 
 def background(func):
@@ -114,6 +113,6 @@ def check_artist_image(image: str) -> str:
     img_name = image.replace("/", "::") + ".webp"
 
     if not os.path.exists(os.path.join(app_dir, "images", "artists", img_name)):
-        return "http://10.5.8.182:8900/images/artists/0.webp"
+        return settings.DEFAULT_ARTIST_IMG
     else:
-        return ("http://10.5.8.182:8900/images/artists/" + img_name,)
+        return (settings.IMG_ARTIST_URI + img_name,)

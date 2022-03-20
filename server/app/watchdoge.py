@@ -6,8 +6,8 @@ from watchdog.observers import Observer
 from watchdog.events import PatternMatchingEventHandler
 
 from app import instances, functions
-from app import models
-from app import albumslib
+from app import db
+from app.lib import albumslib
 from app import api
 
 
@@ -47,7 +47,7 @@ def add_track(filepath: str) -> None:
         api.ALBUMS.append(album)
 
         track["image"] = album.image
-        api.TRACKS.append(models.Track(track))
+        api.TRACKS.append(db.Track(track))
 
 
 def remove_track(filepath: str) -> None:

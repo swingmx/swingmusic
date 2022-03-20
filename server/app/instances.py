@@ -1,7 +1,7 @@
-from app.models import AllSongs, Artists, TrackColors, Albums, Playlists
+from app.db import artists, albums, trackcolors, tracks, playlists
 
-songs_instance = AllSongs()
-artist_instance = Artists()
-track_color_instance = TrackColors()
-album_instance = Albums()
-playlist_instance = Playlists()
+songs_instance = tracks.AllSongs()
+artist_instance = artists.Artists()
+track_color_instance = trackcolors.TrackColors()
+album_instance = albums.Albums()
+playlist_instance = playlists.Playlists()

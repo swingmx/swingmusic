@@ -1,35 +1,36 @@
 from flask import Blueprint, request
-from app import instances
+from app import instances, api
+from app.lib import playlistlib
 
 playlist_bp = Blueprint("playlist", __name__, url_prefix="/")
+
+
+@playlist_bp.route("/playlists", methods=["GET"])
+def get_all_playlists():
+    playlists = []
+    for playlist in api.PLAYLISTS:
+        del playlist.tracks
+        playlists.append(playlist)
+
+    return playlists
 
 
 @playlist_bp.route("/playlist/new")
 def create_playlist():
     data = request.get_json()
 
-    playlist = {
-        "name": data["name"],
-        "description": data["description"],
-    }
+    playlist = {"name": data["name"], "description": data["description"], "tracks": []}
 
     instances.playlist_instance.insert_playlist(playlist)
     return 200
 
-@playlist_bp.route("/playlist/<playlist_id>")
-def get_playlist(playlist_id):
-    pass
 
-@playlist_bp.route("/playlist/tracks/get", methods=["POST"])
-def add_tracks_to_playlist():
-    pass
+@playlist_bp.route("/playlist/<playlist_id>/add", methods=["POST"])
+def add_track_to_playlist(playlist_id):
+    data = request.get_json()
 
-@playlist_bp.route("/playlist/tracks/remove", methods=["POST"])
-def remove_single_track():
-    pass
+    pid = data["playlist"]
+    trackid = data["track"]
 
-
-@playlist_bp.route("/playlist/<playlist_id>/update/desc", methods=["POST"])
-def update_playlist():
-    pass
-
+    playlistlib.add_track(pid, trackid)
+    return 200

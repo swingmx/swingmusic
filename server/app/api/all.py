@@ -3,9 +3,7 @@ import urllib
 from typing import List
 from flask import request, send_file
 
-from app import functions, instances, helpers, cache, models, prep
-from app import albumslib, searchlib
-from app import trackslib
+from app import functions, instances, helpers, cache, db, prep
 from app import api
 
 

@@ -20,8 +20,8 @@ from PIL import Image
 
 from app import helpers
 from app import instances
-from app import settings, watchdoge, models, trackslib
-from app import albumslib
+from app import settings, watchdoge, models
+from app.lib import albumslib
 from app import api
 
 
@@ -59,7 +59,7 @@ def populate():
     start = time.time()
     print("\nchecking for new tracks")
 
-    files = helpers.run_fast_scandir(helpers.home_dir, [".flac", ".mp3"])[1]
+    files = helpers.run_fast_scandir(settings.HOME_DIR, [".flac", ".mp3"])[1]
 
     for file in files:
         tags = get_tags(file)
@@ -189,7 +189,7 @@ def extract_thumb(audio_file_path: str) -> str:
     Extracts the thumbnail from an audio file. Returns the path to the thumbnail.
     """
     webp_path = audio_file_path.split("/")[-1] + ".webp"
-    img_path = os.path.join(helpers.app_dir, "images", "thumbnails", webp_path)
+    img_path = os.path.join(settings.THUMBS_PATH, webp_path)
 
     if os.path.exists(img_path):
         return urllib.parse.quote(webp_path)
@@ -332,7 +332,7 @@ def get_tags(fullpath: str) -> dict:
         "length": round(audio.info.length),
         "bitrate": round(int(audio.info.bitrate) / 1000),
         "filepath": fullpath,
-        "folder": os.path.dirname(fullpath).replace(helpers.home_dir, ""),
+        "folder": os.path.dirname(fullpath).replace(settings.HOME_DIR, ""),
     }
 
     return tags
@@ -377,3 +377,4 @@ def get_all_albums() -> List[models.Album]:
             albums.append(xx)
 
     return albums
+

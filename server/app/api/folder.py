@@ -2,13 +2,13 @@ import os
 from flask import Blueprint
 
 from app import api
+from app import settings
 
 folder_bp = Blueprint("folder", __name__, url_prefix="/")
 from app import helpers
 
 
 @folder_bp.route("/f/<folder>")
-# @cache.cached()
 def get_folder_tree(folder: str):
     """
     Returns a list of all the folders and tracks in the given folder.
@@ -16,9 +16,9 @@ def get_folder_tree(folder: str):
     req_dir = folder.replace("|", "/")
 
     if folder == "home":
-        req_dir = helpers.home_dir
+        req_dir = settings.HOME_DIR
 
-    dir_content = os.scandir(os.path.join(helpers.home_dir, req_dir))
+    dir_content = os.scandir(os.path.join(settings.HOME_DIR, req_dir))
 
     folders = []
     files = []
@@ -31,7 +31,7 @@ def get_folder_tree(folder: str):
                 _dir = {
                     "name": entry.name,
                     "count": len(files_in_dir),
-                    "path": entry.path.replace(helpers.home_dir, ""),
+                    "path": entry.path.replace(settings.HOME_DIR, ""),
                 }
 
                 folders.append(_dir)

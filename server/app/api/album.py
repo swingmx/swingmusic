@@ -1,8 +1,8 @@
 from flask import Blueprint, request
 from app import api
 from app import helpers, cache
-from app import albumslib, functions, trackslib
-
+from app import functions
+from app.lib import albumslib, trackslib
 album_bp = Blueprint("album", __name__, url_prefix="")
 
 
