@@ -1,4 +1,4 @@
-let base_uri = "http://0.0.0.0:9876";
+let base_uri = "http://10.5.8.182:9876/";
 
 const getTracksAndDirs = async (path) => {
     let url;

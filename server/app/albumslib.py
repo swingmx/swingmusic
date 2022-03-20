@@ -1,7 +1,8 @@
 import urllib
 from typing import List
 from app import models, functions, helpers
-from app import trackslib, api
+from app import trackslib
+from app import api
 
 
 @helpers.background

@@ -20,8 +20,9 @@ from PIL import Image
 
 from app import helpers
 from app import instances
-from app import api, settings, watchdoge, models, trackslib
+from app import settings, watchdoge, models, trackslib
 from app import albumslib
+from app import api
 
 
 def reindex_tracks():
@@ -371,6 +372,8 @@ def get_all_albums() -> List[models.Album]:
     albums: List[models.Album] = []
 
     for track in api.DB_TRACKS:
-        albums.append(albumslib.create_album(track))
+        xx = albumslib.create_album(track)
+        if xx not in albums:
+            albums.append(xx)
 
     return albums

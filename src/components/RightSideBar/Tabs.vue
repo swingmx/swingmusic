@@ -23,7 +23,7 @@ const tabs = useTabStore();
 <style lang="scss">
 .tabs {
   padding: $small;
-  height: 4rem;
+  height: 4.25rem;
 
   .cont {
     background-color: $primary;

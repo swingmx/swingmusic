@@ -314,6 +314,47 @@ class Albums(Mongo):
         return convert_one(album)
 
 
+class Playlists(Mongo):
+    """
+    The class for all playlist-related database operations.
+    """
+
+    def __init__(self):
+        super(Playlists, self).__init__("PLAYLISTS")
+        self.collection = self.db["PLAYLISTS"]
+
+    def insert_playlist(self, playlist: dict) -> None:
+        """
+        Inserts a new playlist object into the database.
+        """
+        return self.collection.update_one(
+            {"name": playlist["name"]},
+            {"$set": playlist},
+            upsert=True,
+        ).upserted_id
+
+    def get_all_playlists(self) -> list:
+        """
+        Returns all the playlists in the database.
+        """
+        playlists = self.collection.find()
+        return convert_many(playlists)
+
+    def get_playlist_by_id(self, id: str) -> dict:
+        """
+        Returns a single playlist matching the id in the query params.
+        """
+        playlist = self.collection.find_one({"_id": ObjectId(id)})
+        return convert_one(playlist)
+
+    def get_playlist_by_name(self, name: str) -> dict:
+        """
+        Returns a single playlist matching the name in the query params.
+        """
+        playlist = self.collection.find_one({"name": name})
+        return convert_one(playlist)
+
+
 @dataclass
 class Album:
     """
@@ -334,5 +375,7 @@ class Album:
         self.count = tags["count"]
         self.duration = tags["duration"]
         self.date = tags["date"]
-        self.artistimage = "http://0.0.0.0:8900/images/artists/" + tags["artistimage"]
-        self.image = "http://0.0.0.0:8900/images/thumbnails/" + tags["image"]
+        self.artistimage = "http://10.5.8.182:8900/images/artists/" + tags["artistimage"]
+        self.image = "http://10.5.8.182:8900/images/thumbnails/" + tags["image"]
+
+

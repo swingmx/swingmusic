@@ -3,12 +3,10 @@ from flask_cors import CORS
 
 from flask_caching import Cache
 
-config = {
-    "CACHE_TYPE": "SimpleCache",
-    "CACHE_DEFAULT_TIMEOUT": 300
-}
+config = {"CACHE_TYPE": "SimpleCache", "CACHE_DEFAULT_TIMEOUT": 300}
 
-cache = Cache(config = config)
+cache = Cache(config=config)
+
 
 def create_app():
     app = Flask(__name__)
@@ -18,7 +16,13 @@ def create_app():
     cache.init_app(app)
 
     with app.app_context():
-        from . import api
-        app.register_blueprint(api.bp, url_prefix='/')
+        from app.api import artist, track, search, folder, album
+
+        app.register_blueprint(album.album_bp, url_prefix="/")
+        app.register_blueprint(artist.artist_bp, url_prefix="/")
+        app.register_blueprint(track.track_bp, url_prefix="/")
+        app.register_blueprint(search.search_bp, url_prefix="/")
+        app.register_blueprint(folder.folder_bp, url_prefix="/")
+
 
         return app

@@ -6,8 +6,9 @@ from watchdog.observers import Observer
 from watchdog.events import PatternMatchingEventHandler
 
 from app import instances, functions
-from app import api, models
+from app import models
 from app import albumslib
+from app import api
 
 
 class OnMyWatch:
@@ -47,7 +48,6 @@ def add_track(filepath: str) -> None:
 
         track["image"] = album.image
         api.TRACKS.append(models.Track(track))
-
 
 
 def remove_track(filepath: str) -> None:

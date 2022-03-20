@@ -1,5 +1,6 @@
 from typing import List
-from app import models, api, albumslib, helpers
+from app import models, albumslib, helpers
+from app import api
 
 
 def get_tracks(query: str) -> List[models.Track]:

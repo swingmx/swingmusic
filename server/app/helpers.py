@@ -114,6 +114,6 @@ def check_artist_image(image: str) -> str:
     img_name = image.replace("/", "::") + ".webp"
 
     if not os.path.exists(os.path.join(app_dir, "images", "artists", img_name)):
-        return "http://0.0.0.0:8900/images/artists/0.webp"
+        return "http://10.5.8.182:8900/images/artists/0.webp"
     else:
-        return ("http://0.0.0.0:8900/images/artists/" + img_name,)
+        return ("http://10.5.8.182:8900/images/artists/" + img_name,)

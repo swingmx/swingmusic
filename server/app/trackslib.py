@@ -2,8 +2,9 @@ import os
 from trace import Trace
 from typing import List
 from app import models, instances
-from app import albumslib, api
+from app import albumslib
 from app.helpers import remove_duplicates
+from app import api
 
 def create_all_tracks() -> List[models.Track]:
     """
@@ -29,7 +30,7 @@ def create_all_tracks() -> List[models.Track]:
 
 
 def get_album_tracks(albumname, artist):
-    """Returns all tracks matching an album"""
+    """Returns api tracks matching an album"""
     _tracks: List[models.Track] = []
 
     for track in api.TRACKS:
