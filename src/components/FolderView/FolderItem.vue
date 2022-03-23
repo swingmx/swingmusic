@@ -7,7 +7,7 @@
       <div class="info">
         <div class="f-item-text ellip">{{ props.folder.name }}</div>
         <div class="separator no-border"></div>
-        <div class="f-item-count">{{ props.folder.count }} tracks</div>
+        <div class="f-item-count">{{ props.folder.trackcount }} tracks</div>
       </div>
     </div>
   </router-link>
@@ -30,7 +30,7 @@ const props = defineProps({
   position: relative;
   background-color: $gray4;
   transition: all 0.2s ease;
-  border-radius: .75rem;
+  border-radius: 0.75rem;
 
   @include phone-only {
     height: 4rem;
@@ -59,11 +59,7 @@ const props = defineProps({
 
   &:hover {
     background: #0575e6;
-    background: linear-gradient(
-      to top right,
-      #021b79,
-      #0575e6
-    );
+    background: linear-gradient(to top right, #021b79, #0575e6);
     background-size: 105% 105%;
     background-position-x: -$small;
 

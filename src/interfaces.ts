@@ -14,6 +14,13 @@ interface Track {
   discnumber?: number;
 }
 
+interface Folder {
+  name: string;
+  path: string;
+  trackscount: number;
+  subdircount: number;
+}
+
 interface AlbumInfo {
   album: string;
   artist: string;
@@ -38,4 +45,4 @@ interface Option {
   critical?: Boolean;
 }
 
-export { Track, AlbumInfo, Artist, Option };
+export { Track, Folder, AlbumInfo, Artist, Option };

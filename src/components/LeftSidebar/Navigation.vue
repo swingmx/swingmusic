@@ -3,7 +3,7 @@
     <router-link
       v-for="menu in menus"
       :key="menu.name"
-      :to="{ name: menu.route_name, params: { path: 'home' } }"
+      :to="{ name: menu.route_name, params: menu.params }"
     >
       <div class="nav-button" id="home-button">
         <div class="in">
@@ -36,6 +36,7 @@ const menus = [
   {
     name: "folders",
     route_name: "FolderView",
+    params: { path: "$home" },
   },
   {
     name: "tags",
@@ -43,7 +44,7 @@ const menus = [
   {
     name: "settings",
     route_name: "SettingsView",
-  }
+  },
 ];
 
 const props = defineProps({
@@ -137,5 +138,4 @@ const props = defineProps({
     }
   }
 }
-
 </style>

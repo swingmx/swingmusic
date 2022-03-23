@@ -19,7 +19,7 @@ import SongList from "@/components/FolderView/SongList.vue";
 import FolderList from "@/components/FolderView/FolderList.vue";
 import Header from "@/components/FolderView/Header.vue";
 
-import getTracksAndDirs from "../composables/getFiles.js";
+import getTracksAndDirs from "../composables/getFilesAndFolders";
 import { onMounted, watch } from "@vue/runtime-core";
 import state from "@/composables/state";
 
@@ -87,8 +87,9 @@ export default {
           .then((data) => {
             scrollable.value.scrollTop = 0;
 
-            state.folder_song_list.value = data.songs;
+            state.folder_song_list.value = data.tracks;
             state.folder_list.value = data.folders;
+            console.log(data);
 
             state.loading.value = false;
           })
