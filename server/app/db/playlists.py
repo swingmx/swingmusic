@@ -1,3 +1,7 @@
+"""
+This file contains the Playlists class for interacting with the playlist documents in MongoDB.
+"""
+
 from app import db, models
 from bson import ObjectId
 

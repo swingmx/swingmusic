@@ -1,3 +1,7 @@
+"""
+Contains all the models for objects generation and typing.
+"""
+
 from dataclasses import dataclass
 from typing import List
 from app import api
@@ -60,9 +64,7 @@ class Album:
         self.count = tags["count"]
         self.duration = tags["duration"]
         self.date = tags["date"]
-        self.artistimage = (
-           settings.IMG_ARTIST_URI + tags["artistimage"]
-        )
+        self.artistimage = settings.IMG_ARTIST_URI + tags["artistimage"]
         self.image = settings.IMG_THUMB_URI + tags["image"]
 
 
@@ -86,11 +88,14 @@ def create_playlist_tracks(playlist_tracks: List) -> List[Track]:
 
 @dataclass
 class Playlist:
+    """Creates playlist objects"""
+
     playlistid: str
     name: str
     description: str
     image: str
     tracks: List[Track]
+    """A list of track objects in the playlist"""
 
     def __init__(self, data):
         self.playlistid = data["_id"]["$oid"]
@@ -98,3 +103,16 @@ class Playlist:
         self.description = data["description"]
         self.image = ""
         self.tracks = create_playlist_tracks(data["tracks"])
+
+
+@dataclass
+class Folder:
+    name: str
+    path: str
+    trackcount: int
+    """The number of tracks in the folder"""
+
+    def __init__(self, data) -> None:
+        self.name = data["name"]
+        self.path = data["path"]
+        self.trackcount = data["trackcount"]

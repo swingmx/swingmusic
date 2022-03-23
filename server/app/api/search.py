@@ -1,3 +1,7 @@
+"""
+Contains all the search routes.
+"""
+
 from flask import Blueprint, request
 
 from app.lib import searchlib

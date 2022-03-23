@@ -1,3 +1,8 @@
+"""
+Contains all the artist(s) routes.
+"""
+
+
 from flask import Blueprint
 import urllib
 

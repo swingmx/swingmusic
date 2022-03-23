@@ -1,7 +1,11 @@
+"""
+Contains default configs
+"""
+
 import os
 
 # paths
-CONFIG_FOLDER = "alice"
+CONFIG_FOLDER = ".alice"
 HOME_DIR = os.path.expanduser("~") + "/"
 APP_DIR = os.path.join(HOME_DIR, CONFIG_FOLDER)
 THUMBS_PATH = os.path.join(APP_DIR, "images", "thumbnails")

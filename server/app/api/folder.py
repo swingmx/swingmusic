@@ -1,55 +1,41 @@
+"""
+Contains all the folder routes.
+"""
+
+import datetime
 import os
-from flask import Blueprint
+from flask import Blueprint, request
 
 from app import api
 from app import settings
+from app.lib import folderslib
 
 folder_bp = Blueprint("folder", __name__, url_prefix="/")
 from app import helpers
+import time
 
 
-@folder_bp.route("/f/<folder>")
-def get_folder_tree(folder: str):
+@folder_bp.route("/folder", methods=["POST"])
+def get_folder_tree():
     """
     Returns a list of all the folders and tracks in the given folder.
     """
-    req_dir = folder.replace("|", "/")
+    data = request.get_json()
+    req_dir = data["folder"]
 
-    if folder == "home":
+    if req_dir == "$home":
         req_dir = settings.HOME_DIR
 
-    dir_content = os.scandir(os.path.join(settings.HOME_DIR, req_dir))
-
-    folders = []
-    files = []
-
-    for entry in dir_content:
-        if entry.is_dir() and not entry.name.startswith("."):
-            files_in_dir = helpers.run_fast_scandir(entry.path, [".flac", ".mp3"])[1]
-
-            if len(files_in_dir) != 0:
-                _dir = {
-                    "name": entry.name,
-                    "count": len(files_in_dir),
-                    "path": entry.path.replace(settings.HOME_DIR, ""),
-                }
-
-                folders.append(_dir)
-
-        if entry.is_file():
-            if entry.name.endswith(".flac") or entry.name.endswith(".mp3"):
-                files.append(entry)
-
-    files.sort(key=lambda x: os.path.getmtime(x.path))
-
+    folders = folderslib.get_subdirs(req_dir)
     songs = []
 
-    for entry in files:
-        for track in api.TRACKS:
-            if track.filepath == entry.path:
-                songs.append(track)
+    for track in api.TRACKS:
+        if track.folder + "/" == req_dir:
+            songs.append(track)
+
+    final_tracks = helpers.remove_duplicates(songs)
 
     return {
-        "files": helpers.remove_duplicates(songs),
-        "folders": sorted(folders, key=lambda i: i["name"]),
+        "tracks": final_tracks,
+        "folders": sorted(folders, key=lambda i: i.name),
     }

@@ -1,3 +1,7 @@
+"""
+This library contains all the functions related to albums.
+"""
+
 import urllib
 from typing import List
 from app import models, functions, helpers
@@ -5,7 +9,6 @@ from app.lib import trackslib
 from app import api
 
 
-@helpers.background
 def create_everything() -> List[models.Track]:
     """
     Creates album objects for all albums and returns
@@ -16,7 +19,6 @@ def create_everything() -> List[models.Track]:
     api.ALBUMS.clear()
     api.ALBUMS.extend(albums)
     trackslib.create_all_tracks()
-
 
 
 def get_album_duration(album: list) -> int:

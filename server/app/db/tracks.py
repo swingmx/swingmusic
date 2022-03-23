@@ -1,3 +1,7 @@
+"""
+This file contains the AllSongs class for interacting with track documents in MongoDB.
+"""
+
 from app import db
 from bson import ObjectId
 

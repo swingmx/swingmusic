@@ -2,10 +2,12 @@
 This module contains mimi functions for the server.
 """
 
+import datetime
 import os
+import random
 import threading
 from typing import List
-import colorgram
+import colorgram, time
 
 from app import models, settings
 
@@ -24,7 +26,7 @@ def background(func):
     return background_func
 
 
-def run_fast_scandir(_dir: str, ext: list):
+def run_fast_scandir(__dir: str, ext: list, full=False):
     """
     Scans a directory for files with a specific extension. Returns a list of files and folders in the directory.
     """
@@ -32,17 +34,18 @@ def run_fast_scandir(_dir: str, ext: list):
     subfolders = []
     files = []
 
-    for f in os.scandir(_dir):
+    for f in os.scandir(__dir):
         if f.is_dir() and not f.name.startswith("."):
             subfolders.append(f.path)
         if f.is_file():
             if os.path.splitext(f.name)[1].lower() in ext:
                 files.append(f.path)
 
-    for _dir in list(subfolders):
-        sf, f = run_fast_scandir(_dir, ext)
-        subfolders.extend(sf)
-        files.extend(f)
+    if full or len(files) == 0:
+        for _dir in list(subfolders):
+            sf, f = run_fast_scandir(_dir, ext, full=True)
+            subfolders.extend(sf)
+            files.extend(f)
 
     return subfolders, files
 
@@ -106,6 +109,14 @@ def extract_image_colors(image) -> list:
     return formatted_colors
 
 
+def use_memoji():
+    """
+    Returns a path to a random memoji image.
+    """
+    path = str(random.randint(0, 20)) + ".svg"
+    return settings.IMG_ARTIST_URI + "defaults/" + path
+
+
 def check_artist_image(image: str) -> str:
     """
     Checks if the artist image is valid.
@@ -113,6 +124,18 @@ def check_artist_image(image: str) -> str:
     img_name = image.replace("/", "::") + ".webp"
 
     if not os.path.exists(os.path.join(app_dir, "images", "artists", img_name)):
-        return settings.DEFAULT_ARTIST_IMG
+        return use_memoji()
     else:
         return (settings.IMG_ARTIST_URI + img_name,)
+
+
+class Timer:
+    begin: int = 0
+    end: int = 0
+
+    def start(self):
+        self.begin = time.time()
+
+    def stop(self):
+        self.end = time.time()
+        print(str(datetime.timedelta(seconds=round(self.end - self.begin))))

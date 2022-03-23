@@ -9,6 +9,9 @@ cache = Cache(config=config)
 
 
 def create_app():
+    """
+    Creates the Flask instance, registers modules and registers all the API blueprints.
+    """
     app = Flask(__name__)
     CORS(app)
 

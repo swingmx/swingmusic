@@ -1,3 +1,7 @@
+"""
+All the MongoDB instances are created here.
+"""
+
 from app.db import artists, albums, trackcolors, tracks, playlists
 
 songs_instance = tracks.AllSongs()

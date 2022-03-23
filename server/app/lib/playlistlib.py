@@ -1,3 +1,7 @@
+"""
+This library contains all the functions related to playlists.
+"""
+
 from app import api, instances, models
 from app.lib import trackslib
 
@@ -12,8 +16,6 @@ def add_track(playlistid: str, trackid: str):
             playlist.tracks.append(track)
 
             instances.playlist_instance.add_track_to_playlist(playlistid, track)
-
-
 
 
 def create_all_playlists():

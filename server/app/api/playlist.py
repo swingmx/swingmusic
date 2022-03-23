@@ -1,3 +1,7 @@
+"""
+Contains all the playlist routes.
+"""
+
 from flask import Blueprint, request
 from app import instances, api
 from app.lib import playlistlib

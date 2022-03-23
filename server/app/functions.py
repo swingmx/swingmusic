@@ -8,6 +8,7 @@ from io import BytesIO
 import random
 import datetime
 from typing import List
+from flask import request
 import mutagen
 import urllib
 
@@ -17,14 +18,17 @@ from mutagen.id3 import ID3
 from mutagen.flac import FLAC
 from progress.bar import Bar
 from PIL import Image
+# from pprint import pprint
 
 from app import helpers
 from app import instances
-from app import settings, watchdoge, models
+from app import settings, models
 from app.lib import albumslib
 from app import api
+from app.lib import watchdoge
 
 
+@helpers.background
 def reindex_tracks():
     """
     Checks for new songs every 5 minutes.
@@ -33,9 +37,7 @@ def reindex_tracks():
 
     while flag is False:
         populate()
-        get_all_albums()
         populate_images()
-        # functions.save_t_colors()
 
         time.sleep(300)
 
@@ -57,19 +59,22 @@ def populate():
     extract it.
     """
     start = time.time()
-    print("\nchecking for new tracks")
 
-    files = helpers.run_fast_scandir(settings.HOME_DIR, [".flac", ".mp3"])[1]
+    s, files = helpers.run_fast_scandir(settings.HOME_DIR, [".flac", ".mp3"], full=True)
+    # pprint(s)
 
+    _bar = Bar("Processing files", max=len(files))
     for file in files:
         tags = get_tags(file)
 
         if tags is not None:
             instances.songs_instance.insert_song(tags)
 
+        _bar.next()
+    _bar.finish()
+
     albumslib.create_everything()
 
-    print("\n check done")
     end = time.time()
 
     print(
@@ -120,8 +125,11 @@ def populate_images():
             img_path = fetch_image_path(artist)
 
             if img_path is not None:
-                img = Image.open(BytesIO(requests.get(img_path).content))
-                img.save(file_path, format="webp")
+                try:
+                    img = Image.open(BytesIO(requests.get(img_path).content))
+                    img.save(file_path, format="webp")
+                except requests.exceptions.ConnectionError:
+                    time.sleep(5)
 
         _bar.next()
 
@@ -332,7 +340,7 @@ def get_tags(fullpath: str) -> dict:
         "length": round(audio.info.length),
         "bitrate": round(int(audio.info.bitrate) / 1000),
         "filepath": fullpath,
-        "folder": os.path.dirname(fullpath).replace(settings.HOME_DIR, ""),
+        "folder": os.path.dirname(fullpath),
     }
 
     return tags
@@ -371,10 +379,14 @@ def get_all_albums() -> List[models.Album]:
 
     albums: List[models.Album] = []
 
+    _bar = Bar("Creating albums", max=len(api.DB_TRACKS))
     for track in api.DB_TRACKS:
         xx = albumslib.create_album(track)
         if xx not in albums:
             albums.append(xx)
 
-    return albums
+        _bar.next()
 
+    _bar.finish()
+
+    return albums

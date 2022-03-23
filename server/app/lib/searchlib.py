@@ -1,3 +1,7 @@
+"""
+This library contains all the functions related to the search functionality.
+"""
+
 from typing import List
 from app import models, helpers
 from app.lib import albumslib
