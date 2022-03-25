@@ -19,13 +19,14 @@ def create_app():
     cache.init_app(app)
 
     with app.app_context():
-        from app.api import artist, track, search, folder, album
+        from app.api import artist, track, search, folder, album, playlist
 
         app.register_blueprint(album.album_bp, url_prefix="/")
         app.register_blueprint(artist.artist_bp, url_prefix="/")
         app.register_blueprint(track.track_bp, url_prefix="/")
         app.register_blueprint(search.search_bp, url_prefix="/")
         app.register_blueprint(folder.folder_bp, url_prefix="/")
+        app.register_blueprint(playlist.playlist_bp, url_prefix="/")
 
 
         return app

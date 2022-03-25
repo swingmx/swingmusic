@@ -40,9 +40,16 @@ interface Option {
   type?: string;
   label?: string;
   action?: Function;
-  children?: Option[] | false;
+  children?: Option[] |Promise<Option[]>| false;
   icon?: string;
   critical?: Boolean;
 }
 
-export { Track, Folder, AlbumInfo, Artist, Option };
+interface Playlist {
+  playlistid: string;
+  name: string;
+  description?: string;
+  image?: string;
+}
+
+export { Track, Folder, AlbumInfo, Artist, Option, Playlist };

@@ -43,7 +43,7 @@ export default {
     const songs = computed(() => {
       const songs_ = [];
 
-      if (query.value.length > 1) {
+      if (query.value.length) {
         for (let i = 0; i < song_list.value.length; i++) {
           if (
             song_list.value[i].title
@@ -63,7 +63,7 @@ export default {
     const folders = computed(() => {
       const folders_ = [];
 
-      if (query.value.length > 1) {
+      if (query.value.length) {
         for (let i = 0; i < folders_list.value.length; i++) {
           if (
             folders_list.value[i].name
@@ -110,6 +110,7 @@ export default {
           if (!path.value) return;
 
           getDirData(path.value);
+          console.log(path.value);
         }
       );
     });

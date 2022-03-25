@@ -30,7 +30,7 @@ def get_folder_tree():
     songs = []
 
     for track in api.TRACKS:
-        if track.folder + "/" == req_dir:
+        if track.folder == req_dir:
             songs.append(track)
 
     final_tracks = helpers.remove_duplicates(songs)

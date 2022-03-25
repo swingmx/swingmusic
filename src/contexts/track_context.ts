@@ -1,17 +1,19 @@
 import { Track } from "../interfaces";
 import Router from "../router";
 import { Option } from "../interfaces";
+import { getAllPlaylists } from "../composables/playlists";
 
 /**
  * Returns a list of context menu items for a track.
  * @param  {any} track a track object.
+ * @param {any} modalStore a pinia store.
  * @return {Array<Option>()} a list of context menu items.
  */
 
-export default (track: Track): Array<Option> => {
+export default (track: Track, modalStore: any) => {
   const single_artist = track.artists.length === 1;
 
-  const children = () => {
+  const goToArtist = () => {
     if (single_artist) {
       return false;
     }
@@ -24,19 +26,42 @@ export default (track: Track): Array<Option> => {
     });
   };
 
-  const option1: Option = {
+  async function addToPlaylist() {
+    const p = await getAllPlaylists();
+
+    const playlists = p.map((playlist) => {
+      return <Option>{
+        label: playlist.name,
+        action: () => {
+          console.log("playlist");
+        },
+      };
+    });
+
+    const new_playlist = <Option>{
+      label: "New playlist",
+      action: () => {
+        modalStore.showModal(modalStore.options.newPlaylist);
+      },
+    };
+
+    console.log([new_playlist, ...playlists]);
+    return [new_playlist, ...playlists];
+  }
+
+  const add_to_playlist: Option = {
     label: "Add to Playlist",
-    action: () => console.log("Add to Playlist"),
+    children: addToPlaylist(),
     icon: "plus",
   };
 
-  const option2: Option = {
+  const add_to_q: Option = {
     label: "Add to Queue",
     action: () => console.log("Add to Queue"),
     icon: "add_to_queue",
   };
 
-  const option3: Option = {
+  const go_to_folder: Option = {
     label: "Go to Folder",
     action: () => {
       Router.push({
@@ -47,7 +72,7 @@ export default (track: Track): Array<Option> => {
     icon: "folder",
   };
 
-  const option4: Option = {
+  const go_to_artist: Option = {
     label: single_artist ? "Go to Artist" : "Go to Artists",
     icon: "artist",
     action: () => {
@@ -55,16 +80,16 @@ export default (track: Track): Array<Option> => {
         console.log("Go to Artist");
       }
     },
-    children: children(),
+    children: goToArtist(),
   };
 
-  const option7: Option = {
+  const go_to_alb_artist: Option = {
     label: "Go to Album Artist",
     action: () => console.log("Go to Album Artist"),
     icon: "artist",
   };
 
-  const option5: Option = {
+  const go_to_album: Option = {
     label: "Go to Album",
     action: () => {
       Router.push({
@@ -75,34 +100,34 @@ export default (track: Track): Array<Option> => {
     icon: "album",
   };
 
-  const option6: Option = {
+  const del_track: Option = {
     label: "Delete Track",
     action: () => console.log("Delete Track"),
     icon: "delete",
     critical: true,
   };
 
-  const addToFav:Option = {
+  const add_to_fav: Option = {
     label: "I love this",
     action: () => console.log("I love this"),
     icon: "heart",
-  }
+  };
 
   const separator: Option = {
     type: "separator",
   };
 
   const options: Option[] = [
-    option1,
-    option2,
-    addToFav,
+    add_to_playlist,
+    add_to_q,
+    add_to_fav,
     separator,
-    option3,
-    option4,
-    option7,
-    option5,
+    go_to_folder,
+    go_to_artist,
+    go_to_alb_artist,
+    go_to_album,
     separator,
-    option6,
+    del_track,
   ];
 
   return options;

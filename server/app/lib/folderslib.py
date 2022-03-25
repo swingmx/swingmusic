@@ -29,11 +29,11 @@ def create_folder(foldername: str) -> models.Folder:
     return models.Folder(folder)
 
 
-def create_all_folders(foldernames: List[str]) -> List[models.Folder]:
+def create_all_folders() -> List[models.Folder]:
     folders_: List[models.Folder] = []
-    _bar = Bar("Creating folders", max=len(foldernames))
+    _bar = Bar("Creating folders", max=len(api.VALID_FOLDERS))
 
-    for foldername in foldernames:
+    for foldername in api.VALID_FOLDERS:
         folder = create_folder(foldername)
         folders_.append(folder)
         _bar.next()
@@ -61,11 +61,17 @@ def get_subdirs(foldername: str) -> List[models.Folder]:
 
 @helpers.background
 def run_scandir():
+    """
+    Initiates the creation of all folder objects for each folder with a track in it.
+
+    Runs in a background thread after every 5 minutes.
+    It calls the 
+    """
     flag = False
 
     while flag is False:
         get_valid_folders()
-        folders_ = create_all_folders(api.VALID_FOLDERS)
+        folders_ = create_all_folders()
         """Create all the folder objects before clearing api.FOLDERS"""
 
         api.FOLDERS.clear()

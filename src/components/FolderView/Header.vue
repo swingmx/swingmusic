@@ -8,7 +8,7 @@
       <div class="text">
         <div class="icon image"></div>
         <div class="ellip">
-          {{ path.split("/").splice(-1) + "" }}
+          {{ path.split("/").splice(-2).join("") }}
         </div>
       </div>
     </div>

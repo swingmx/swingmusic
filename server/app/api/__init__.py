@@ -10,6 +10,7 @@ from app import models, instances
 from app import functions, helpers, prep
 from app.lib import albumslib
 from app.lib import folderslib
+from app.lib import playlistlib
 
 
 DB_TRACKS = instances.songs_instance.get_all_songs()
@@ -20,6 +21,7 @@ TRACKS: List[models.Track] = []
 PLAYLISTS: List[models.Playlist] = []
 FOLDERS: List[models.Folder] = []
 
+
 @helpers.background
 def initialize() -> None:
     """
@@ -29,8 +31,8 @@ def initialize() -> None:
     prep.create_config_dir()
     albumslib.create_everything()
     folderslib.run_scandir()
+    playlistlib.create_all_playlists()
     functions.reindex_tracks()
 
 
 initialize()
-

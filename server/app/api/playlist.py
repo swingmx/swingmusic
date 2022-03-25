@@ -11,22 +11,24 @@ playlist_bp = Blueprint("playlist", __name__, url_prefix="/")
 
 @playlist_bp.route("/playlists", methods=["GET"])
 def get_all_playlists():
+    print(api.PLAYLISTS)
     playlists = []
+
     for playlist in api.PLAYLISTS:
-        del playlist.tracks
+        playlist.tracks = []
         playlists.append(playlist)
 
-    return playlists
+    return {"data": playlists}
 
 
-@playlist_bp.route("/playlist/new")
+@playlist_bp.route("/playlist/new", methods=["POST"])
 def create_playlist():
     data = request.get_json()
 
-    playlist = {"name": data["name"], "description": data["description"], "tracks": []}
+    playlist = {"name": data["name"], "description": [], "tracks": []}
 
     instances.playlist_instance.insert_playlist(playlist)
-    return 200
+    return {"msg": "success"}
 
 
 @playlist_bp.route("/playlist/<playlist_id>/add", methods=["POST"])

@@ -26,6 +26,7 @@ from app import settings, models
 from app.lib import albumslib
 from app import api
 from app.lib import watchdoge
+from app.lib import folderslib
 
 
 @helpers.background
@@ -61,7 +62,6 @@ def populate():
     start = time.time()
 
     s, files = helpers.run_fast_scandir(settings.HOME_DIR, [".flac", ".mp3"], full=True)
-    # pprint(s)
 
     _bar = Bar("Processing files", max=len(files))
     for file in files:
@@ -74,7 +74,8 @@ def populate():
     _bar.finish()
 
     albumslib.create_everything()
-
+    folderslib.run_scandir()
+    
     end = time.time()
 
     print(
@@ -340,7 +341,7 @@ def get_tags(fullpath: str) -> dict:
         "length": round(audio.info.length),
         "bitrate": round(int(audio.info.bitrate) / 1000),
         "filepath": fullpath,
-        "folder": os.path.dirname(fullpath),
+        "folder": os.path.dirname(fullpath) + "/",
     }
 
     return tags

@@ -1,5 +1,7 @@
 <template>
   <ContextMenu />
+  <Modal />
+  <Notification />
   <div class="l-container" :class="{ collapsed: collapsed }">
     <div class="l-sidebar">
       <div id="logo-container">
@@ -25,7 +27,6 @@
 <script setup>
 import { ref } from "vue";
 import Navigation from "./components/LeftSidebar/Navigation.vue";
-import BottomBar from "@/components/BottomBar/BottomBar.vue";
 
 import perks from "@/composables/perks.js";
 
@@ -36,6 +37,8 @@ import Tabs from "./components/RightSideBar/Tabs.vue";
 import SearchInput from "./components/RightSideBar/SearchInput.vue";
 import useContextStore from "./stores/context";
 import ContextMenu from "./components/contextMenu.vue";
+import Modal from "./components/modal.vue";
+import Notification from "./components/Notification.vue";
 
 const context_store = useContextStore();
 
