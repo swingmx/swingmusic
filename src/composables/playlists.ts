@@ -1,6 +1,6 @@
 import axios from "axios";
 import { Playlist } from "../interfaces";
-import { Notification } from "../stores/notification";
+import { Notification, NotificationType } from "../stores/notification";
 import state from "./state";
 
 /**
@@ -12,12 +12,13 @@ async function createNewPlaylist(playlist_name: string) {
     .post(state.settings.uri + "/playlist/new", {
       name: playlist_name,
     })
-    .then((res) => {
-      console.log(res.data);
-      new Notification("Playlist created!");
+    .then(() => {
+      new Notification("✅ Playlist created successfullly!");
     })
     .catch((err) => {
-      console.error(err);
+      if (err.response.status == 409) {
+        new Notification("❌ Playlist already exists!", NotificationType.Error);
+      }
     });
 }
 
