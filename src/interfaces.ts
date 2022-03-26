@@ -40,7 +40,7 @@ interface Option {
   type?: string;
   label?: string;
   action?: Function;
-  children?: Option[] |Promise<Option[]>| false;
+  children?: Option[] | false;
   icon?: string;
   critical?: Boolean;
 }

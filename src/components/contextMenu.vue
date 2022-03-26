@@ -6,7 +6,10 @@
       { 'context-menu-visible': context.visible },
       { 'context-normalizedX': context.normalizedX },
       {
-        'context-normalizedY': context.normalizedY && context.hasManyChildren(),
+        'context-normalizedY': context.normalizedY,
+      },
+      {
+        'context-many-kids': context.hasManyChildren(),
       },
     ]"
     :style="{
@@ -25,8 +28,13 @@
       <div class="label ellip">{{ option.label }}</div>
       <div class="more image" v-if="option.children"></div>
       <div class="children rounded shadow-sm" v-if="option.children">
-        <div class="context-item" v-for="child in option.children" :key="child">
-          <div class="label ellip" @click="child.action()">
+        <div
+          class="context-item"
+          v-for="child in option.children"
+          :key="child"
+          @click="child.action()"
+        >
+          <div class="label ellip">
             {{ child.label }}
           </div>
         </div>
@@ -53,21 +61,16 @@ const context = useContextStore();
 
   padding: $small;
   background: $gray3;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
   transform-origin: top left;
   font-size: 0.875rem;
 
   .context-item {
     width: 100%;
-    height: 2.25rem;
     display: flex;
     justify-content: flex-start;
     align-items: center;
     cursor: default;
-    padding: 0 $small;
+    padding: $small;
     border-radius: $small;
     color: rgb(255, 255, 255);
     position: relative;
@@ -84,13 +87,10 @@ const context = useContextStore();
       position: absolute;
       right: -13rem;
       width: 13rem;
+      max-height: 21.25rem;
 
-      padding: $small;
+      padding: $small !important;
       background: $gray3;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
       transform: scale(0);
       transform-origin: left;
     }
@@ -145,6 +145,7 @@ const context = useContextStore();
 
   .separator {
     height: 1px;
+    padding: 0;
   }
 
   .critical {
@@ -174,6 +175,14 @@ const context = useContextStore();
   .context-item > .children {
     bottom: -0.5rem;
     transform-origin: bottom right;
+  }
+}
+
+.context-many-kids {
+  .context-item > .children {
+    top: -0.5rem;
+    overflow-y: auto;
+    scrollbar-width: none;
   }
 }
 </style>
