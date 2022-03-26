@@ -14,7 +14,12 @@
 </template>
 
 <script setup lang="ts">
+import { onMounted } from "vue";
 import { createNewPlaylist } from "../../composables/playlists";
+
+onMounted(() => {
+  document.getElementById("modal-playlist-name-input").focus();
+});
 
 const emit = defineEmits<{
   (e: "title", title: string): void;
