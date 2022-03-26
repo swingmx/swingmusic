@@ -1,15 +1,20 @@
 <template>
-  <div class="new-notification rounded" v-if="store.visible">
-    <div>{{ store.text }}</div>
+  <div
+    class="new-notif rounded"
+    :class="{ 'notif-error': notif.type == NotificationType.Error }"
+    v-if="notif.visible"
+  >
+    <div>{{ notif.text }}</div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { useNotificationStore } from "../stores/notification";
-const store = useNotificationStore();
+import { useNotificationStore, NotificationType } from "../stores/notification";
+
+const notif = useNotificationStore();
 </script>
 <style lang="scss">
-.new-notification {
+.new-notif {
   position: fixed;
   z-index: 2000;
   width: 25rem;
@@ -25,5 +30,9 @@ const store = useNotificationStore();
     font-weight: bold;
     text-decoration: underline;
   }
+}
+
+.notif-error {
+  background-color: $red;
 }
 </style>
