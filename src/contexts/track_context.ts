@@ -1,4 +1,4 @@
-import { Track } from "../interfaces";
+import { Playlist, Track } from "../interfaces";
 import Router from "../router";
 import { Option } from "../interfaces";
 import { getAllPlaylists } from "../composables/playlists";
@@ -10,8 +10,21 @@ import { getAllPlaylists } from "../composables/playlists";
  * @return {Array<Option>()} a list of context menu items.
  */
 
-export default (track: Track, modalStore: any) => {
+export default async (track: Track, modalStore: any): Promise<Option[]> => {
   const single_artist = track.artists.length === 1;
+
+  let playlists = <Option[]>[];
+
+  const p = await getAllPlaylists();
+
+  playlists = p.map((playlist: Playlist) => {
+    return <Option>{
+      label: playlist.name,
+      action: () => {
+        console.log(playlist.name);
+      },
+    };
+  });
 
   const goToArtist = () => {
     if (single_artist) {
@@ -26,18 +39,7 @@ export default (track: Track, modalStore: any) => {
     });
   };
 
-  async function addToPlaylist() {
-    const p = await getAllPlaylists();
-
-    const playlists = p.map((playlist) => {
-      return <Option>{
-        label: playlist.name,
-        action: () => {
-          console.log("playlist");
-        },
-      };
-    });
-
+  function addToPlaylist() {
     const new_playlist = <Option>{
       label: "New playlist",
       action: () => {
