@@ -12,13 +12,16 @@ export default defineStore("context-menu", {
     normalizedY: false,
   }),
   actions: {
-    showContextMenu(e: any, context_options: Option[]) {
+    showContextMenu(e: any, context_options: Promise<Option[]>) {
       if (this.visible) {
         this.visible = false;
         return;
       }
 
-      this.options = context_options;
+      context_options.then((options) => {
+        this.options = options;
+      });
+
       const yo = normalize(e.clientX, e.clientY);
 
       this.x = yo.normalX;
@@ -36,7 +39,7 @@ export default defineStore("context-menu", {
       let result = false;
 
       this.options.forEach((option: Option) => {
-        if (option.children && option.children.length > 7) {
+        if (option.children && option.children.length > 9) {
           result = true;
         }
       });
