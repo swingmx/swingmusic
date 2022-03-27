@@ -21,7 +21,7 @@ def get_albums():
     """returns all the albums"""
     albums = []
 
-    for song in api.DB_TRACKS:
+    for song in api.PRE_TRACKS:
         al_obj = {"name": song["album"], "artist": song["artists"]}
 
         if al_obj not in albums:

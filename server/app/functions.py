@@ -18,6 +18,7 @@ from mutagen.id3 import ID3
 from mutagen.flac import FLAC
 from progress.bar import Bar
 from PIL import Image
+
 # from pprint import pprint
 
 from app import helpers
@@ -64,8 +65,12 @@ def populate():
     s, files = helpers.run_fast_scandir(settings.HOME_DIR, [".flac", ".mp3"], full=True)
 
     _bar = Bar("Processing files", max=len(files))
+
     for file in files:
         tags = get_tags(file)
+
+        if tags not in api.PRE_TRACKS:
+            api.PRE_TRACKS.append(tags)
 
         if tags is not None:
             instances.songs_instance.insert_song(tags)
@@ -75,7 +80,7 @@ def populate():
 
     albumslib.create_everything()
     folderslib.run_scandir()
-    
+
     end = time.time()
 
     print(
@@ -109,7 +114,7 @@ def populate_images():
 
     artists = []
 
-    for song in api.DB_TRACKS:
+    for song in api.PRE_TRACKS:
         this_artists = song["artists"].split(", ")
 
         for artist in this_artists:
@@ -178,9 +183,9 @@ def return_album_art(filepath):
 
 
 def save_t_colors():
-    _bar = Bar("Processing image colors", max=len(api.DB_TRACKS))
+    _bar = Bar("Processing image colors", max=len(api.PRE_TRACKS))
 
-    for track in api.DB_TRACKS:
+    for track in api.PRE_TRACKS:
         filepath = track["filepath"]
         album_art = return_album_art(filepath)
 
@@ -376,12 +381,10 @@ def get_all_albums() -> List[models.Album]:
     """
     Returns a list of album objects for all albums in the database.
     """
-    print("processing albums started ...")
-
     albums: List[models.Album] = []
 
-    _bar = Bar("Creating albums", max=len(api.DB_TRACKS))
-    for track in api.DB_TRACKS:
+    _bar = Bar("Creating albums", max=len(api.PRE_TRACKS))
+    for track in api.PRE_TRACKS:
         xx = albumslib.create_album(track)
         if xx not in albums:
             albums.append(xx)

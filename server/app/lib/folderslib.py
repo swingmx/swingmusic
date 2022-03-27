@@ -17,7 +17,6 @@ def get_folder_track_count(foldername: str) -> int:
     return len(track_list)
 
 
-
 def create_folder(foldername: str) -> models.Folder:
     """Create a single Folder object"""
     folder = {
@@ -55,7 +54,6 @@ def get_subdirs(foldername: str) -> List[models.Folder]:
         if str1 != "":
             subdirs.add(foldername + str1)
 
-
     return [create_folder(dir) for dir in subdirs]
 
 
@@ -65,16 +63,11 @@ def run_scandir():
     Initiates the creation of all folder objects for each folder with a track in it.
 
     Runs in a background thread after every 5 minutes.
-    It calls the 
+    It calls the
     """
-    flag = False
+    get_valid_folders()
+    folders_ = create_all_folders()
+    """Create all the folder objects before clearing api.FOLDERS"""
 
-    while flag is False:
-        get_valid_folders()
-        folders_ = create_all_folders()
-        """Create all the folder objects before clearing api.FOLDERS"""
-
-        api.FOLDERS.clear()
-        api.FOLDERS.extend(folders_)
-
-        time.sleep(300)
+    api.FOLDERS.clear()
+    api.FOLDERS.extend(folders_)

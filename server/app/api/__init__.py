@@ -13,7 +13,7 @@ from app.lib import folderslib
 from app.lib import playlistlib
 
 
-DB_TRACKS = instances.songs_instance.get_all_songs()
+PRE_TRACKS = instances.songs_instance.get_all_songs()
 VALID_FOLDERS: Set[str] = set()
 
 ALBUMS: List[models.Album] = []

@@ -51,7 +51,7 @@ def get_album_image(album: list) -> str:
 def get_album_tracks(album: str, artist: str) -> List:
     return [
         track
-        for track in api.DB_TRACKS
+        for track in api.PRE_TRACKS
         if track["album"] == album and track["albumartist"] == artist
     ]
 

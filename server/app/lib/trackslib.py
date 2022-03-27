@@ -7,7 +7,7 @@ from typing import List
 from app import models, instances
 from app.lib import albumslib
 from app.helpers import remove_duplicates
-from app import api, helpers
+from app import api
 from progress.bar import Bar
 
 
@@ -17,10 +17,9 @@ def create_all_tracks() -> List[models.Track]:
     """
     tracks: list[models.Track] = []
 
-    timer = helpers.Timer()
-
-    _bar = Bar("Creating tracks", max=len(api.DB_TRACKS))
-    for track in api.DB_TRACKS:
+    _bar = Bar("Creating tracks", max=len(api.PRE_TRACKS))
+    
+    for track in api.PRE_TRACKS:
         try:
             os.chmod(track["filepath"], 0o755)
         except FileNotFoundError:
@@ -33,10 +32,10 @@ def create_all_tracks() -> List[models.Track]:
         tracks.append(models.Track(track))
         _bar.next()
 
+    _bar.finish()
+
     api.TRACKS.clear()
     api.TRACKS.extend(tracks)
-    _bar.finish()
-    print(f"Created all songs in {timer.stop()}")
 
 
 def get_album_tracks(albumname, artist):
@@ -53,5 +52,5 @@ def get_album_tracks(albumname, artist):
 def get_track_by_id(trackid: str) -> models.Track:
     """Returns api track matching an id"""
     for track in api.TRACKS:
-        if track.id == trackid:
+        if track.trackid == trackid:
             return track
