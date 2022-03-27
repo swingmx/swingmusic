@@ -12,6 +12,7 @@ from app import instances, functions
 from app import models
 from app.lib import albumslib
 from app import api
+from app.lib import folderslib
 
 
 class OnMyWatch:
@@ -42,19 +43,26 @@ class OnMyWatch:
 def add_track(filepath: str) -> None:
     """
     Processes the audio tags for a given file ands add them to the music dict.
+
+    Then creates a folder object for the added track and adds it to api.FOLDERS
     """
     tags = functions.get_tags(filepath)
 
     if tags is not None:
         instances.songs_instance.insert_song(tags)
-        track = instances.songs_instance.get_song_by_path(tags["filepath"])
+        tags = instances.songs_instance.get_song_by_path(tags["filepath"])
 
-        api.DB_TRACKS.append(track)
-        album = albumslib.create_album(track)
+        api.PRE_TRACKS.append(tags)
+        album = albumslib.create_album(tags)
         api.ALBUMS.append(album)
 
-        track["image"] = album.image
-        api.TRACKS.append(models.Track(track))
+        tags["image"] = album.image
+        api.TRACKS.append(models.Track(tags))
+
+        folder = folderslib.create_folder(tags["folder"])
+
+        if folder not in api.FOLDERS:
+            api.FOLDERS.append(folder)
 
 
 def remove_track(filepath: str) -> None:
