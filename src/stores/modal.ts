@@ -1,5 +1,5 @@
 import { defineStore } from "pinia";
-
+import { Track } from "../interfaces";
 enum ModalOptions {
   newPlaylist = "newPlaylist",
   editPlaylist = "editPlaylist",
@@ -10,11 +10,17 @@ export default defineStore("newModal", {
     title: "",
     options: ModalOptions,
     component: "",
+    props: {},
     visible: false,
   }),
   actions: {
     showModal(modalOption: string) {
       this.component = modalOption;
+      this.visible = true;
+    },
+    showNewPlaylistModal(track: Track) {
+      this.component = ModalOptions.newPlaylist;
+      this.props.track = track;
       this.visible = true;
     },
     hideModal() {

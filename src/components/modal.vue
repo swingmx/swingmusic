@@ -6,6 +6,7 @@
       <div class="cancel image" @click="modal.hideModal"></div>
       <NewPlaylist
         v-if="modal.component == modal.options.newPlaylist"
+        :track="modal.props.track"
         @hideModal="hideModal"
         @title="title"
       />
@@ -38,7 +39,7 @@ function hideModal() {
 <style lang="scss">
 .new-playlist-modal {
   position: fixed;
-  z-index: 2000;
+  z-index: 20;
   height: 100vh;
   width: 100vw;
   display: grid;
