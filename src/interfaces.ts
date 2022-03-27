@@ -1,3 +1,5 @@
+import { NotifType } from "./stores/enums";
+
 interface Track {
   trackid: string;
   title: string;
@@ -52,4 +54,9 @@ interface Playlist {
   image?: string;
 }
 
-export { Track, Folder, AlbumInfo, Artist, Option, Playlist };
+interface Notif {
+  text: string;
+  type: NotifType;
+}
+
+export { Track, Folder, AlbumInfo, Artist, Option, Playlist, Notif };

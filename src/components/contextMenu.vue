@@ -32,6 +32,7 @@
           class="context-item"
           v-for="child in option.children"
           :key="child"
+          :class="[{ critical: child.critical }, child.type]"
           @click="child.action()"
         >
           <div class="label ellip">
@@ -56,11 +57,11 @@ const context = useContextStore();
   left: 0;
   width: 12rem;
   height: min-content;
-  z-index: 100000 !important;
+  z-index: 10;
   transform: scale(0);
 
   padding: $small;
-  background: $gray3;
+  background: $context;
   transform-origin: top left;
   font-size: 0.875rem;
 
@@ -74,6 +75,7 @@ const context = useContextStore();
     border-radius: $small;
     color: rgb(255, 255, 255);
     position: relative;
+    text-transform: capitalize;
 
     .more {
       height: 1.5rem;
@@ -90,7 +92,7 @@ const context = useContextStore();
       max-height: 21.25rem;
 
       padding: $small !important;
-      background: $gray3;
+      background-color: $context;
       transform: scale(0);
       transform-origin: left;
     }
@@ -173,7 +175,6 @@ const context = useContextStore();
 
 .context-normalizedY {
   .context-item > .children {
-    bottom: -0.5rem;
     transform-origin: bottom right;
   }
 }

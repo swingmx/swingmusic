@@ -65,7 +65,6 @@ import perks from "../../composables/perks.js";
 import state from "../../composables/state";
 import useContextStore from "../../stores/context";
 import useModalStore from "../../stores/modal";
-import usePlaylistStore from "../../stores/playlists";
 
 import { ref } from "vue";
 import trackContext from "../../contexts/track_context";
@@ -73,7 +72,6 @@ import { Track } from "../../interfaces.js";
 
 const contextStore = useContextStore();
 const modalStore = useModalStore();
-const playlistStore = usePlaylistStore();
 
 const context_on = ref(false);
 

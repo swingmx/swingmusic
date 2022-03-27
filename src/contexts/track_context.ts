@@ -1,7 +1,7 @@
 import { Playlist, Track } from "../interfaces";
 import Router from "../router";
 import { Option } from "../interfaces";
-import { getAllPlaylists } from "../composables/playlists";
+import { getAllPlaylists, addTrackToPlaylist } from "../composables/playlists";
 
 /**
  * Returns a list of context menu items for a track.
@@ -11,17 +11,20 @@ import { getAllPlaylists } from "../composables/playlists";
  */
 
 export default async (track: Track, modalStore: any): Promise<Option[]> => {
+  const separator: Option = {
+    type: "separator",
+  };
+
   const single_artist = track.artists.length === 1;
 
   let playlists = <Option[]>[];
-
   const p = await getAllPlaylists();
 
   playlists = p.map((playlist: Playlist) => {
     return <Option>{
       label: playlist.name,
       action: () => {
-        console.log(playlist.name);
+        addTrackToPlaylist(playlist, track);
       },
     };
   });
@@ -43,12 +46,11 @@ export default async (track: Track, modalStore: any): Promise<Option[]> => {
     const new_playlist = <Option>{
       label: "New playlist",
       action: () => {
-        modalStore.showModal(modalStore.options.newPlaylist);
+        modalStore.showNewPlaylistModal(track);
       },
     };
 
-    console.log([new_playlist, ...playlists]);
-    return [new_playlist, ...playlists];
+    return [new_playlist, separator, ...playlists];
   }
 
   const add_to_playlist: Option = {
@@ -113,10 +115,6 @@ export default async (track: Track, modalStore: any): Promise<Option[]> => {
     label: "I love this",
     action: () => console.log("I love this"),
     icon: "heart",
-  };
-
-  const separator: Option = {
-    type: "separator",
   };
 
   const options: Option[] = [

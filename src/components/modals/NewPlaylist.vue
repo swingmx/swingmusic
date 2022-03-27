@@ -16,6 +16,12 @@
 <script setup lang="ts">
 import { onMounted } from "vue";
 import { createNewPlaylist } from "../../composables/playlists";
+import { Track } from "../../interfaces";
+import { Notification, NotifType } from "../../stores/notification";
+
+const props = defineProps<{
+  track: Track;
+}>();
 
 onMounted(() => {
   document.getElementById("modal-playlist-name-input").focus();
@@ -33,7 +39,16 @@ function create(e: Event) {
   const name = (e.target as HTMLFormElement).elements["name"].value;
 
   if (name.trim()) {
-    createNewPlaylist(name).then(() => emit("hideModal"));
+    createNewPlaylist(name, props.track).then((status: boolean) => {
+      if (status) {
+        emit("hideModal");
+      }
+    });
+  } else {
+    new Notification(
+      "A Playlist name can not be empty",
+      NotifType.Error
+    );
   }
 }
 </script>

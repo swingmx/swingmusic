@@ -1,30 +1,47 @@
 <template>
-  <div
-    class="new-notif rounded"
-    :class="{ 'notif-error': notif.type == NotificationType.Error }"
-    v-if="notif.visible"
-  >
-    <div>{{ notif.text }}</div>
+  <div class="toasts" v-if="notifStore.notifs">
+    <div
+      class="new-notif rounded"
+      :class="[
+        { 'notif-error': notif.type == NotifType.Error },
+        {
+          'notif-info': notif.type == NotifType.Info,
+        },
+      ]"
+      v-for="notif in notifStore.notifs"
+    >
+      <div>{{ notif.text }}</div>
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { useNotificationStore, NotificationType } from "../stores/notification";
+import { useNotifStore, NotifType } from "../stores/notification";
 
-const notif = useNotificationStore();
+const notifStore = useNotifStore();
 </script>
 <style lang="scss">
-.new-notif {
+.toasts {
   position: fixed;
-  z-index: 2000;
-  width: 25rem;
   bottom: 2rem;
-  padding: $small;
   left: 50%;
   translate: -50%;
-  background-color: rgb(5, 62, 168);
+  z-index: 100;
+  display: flex;
+  flex-direction: column-reverse;
+  gap: $small;
+}
+
+.new-notif {
+  width: 20rem;
+  height: 3.5rem;
+  bottom: 2rem;
+  padding: $small;
+  background-color: $green;
   display: grid;
   place-items: center;
+  align-items: center;
+  box-shadow: 0px 0px 2rem rgb(0, 0, 0);
 
   .link {
     font-weight: bold;
@@ -34,5 +51,9 @@ const notif = useNotificationStore();
 
 .notif-error {
   background-color: $red;
+}
+
+.notif-info {
+  background-color: $gray2;
 }
 </style>

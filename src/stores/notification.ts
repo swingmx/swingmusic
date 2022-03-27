@@ -1,34 +1,29 @@
 import { defineStore } from "pinia";
+import { Notif } from "../interfaces";
+import { NotifType } from "./enums";
 
-enum NotificationType {
-  Success,
-  Error,
-}
-
-const useNotificationStore = defineStore("notification", {
+const useNotifStore = defineStore("notification", {
   state: () => ({
-    text: "",
-    type: NotificationType.Success,
-    visible: false,
+    notifs: <Notif[]>[],
   }),
   actions: {
-    showNotification(new_text: string, new_type?: NotificationType) {
-      console.log(arguments);
-      this.text = new_text;
-      this.type = new_type;
-      this.visible = true;
+    showNotification(new_text: string, new_type?: NotifType) {
+      this.notifs.push(<Notif>{
+        text: new_text,
+        type: new_type,
+      });
 
       setTimeout(() => {
-        this.visible = false;
-      }, 2000);
+        this.notifs.shift();
+      }, 3000);
     },
   },
 });
 
 class Notification {
-  constructor(text: string, type?: NotificationType) {
-    useNotificationStore().showNotification(text, type);
+  constructor(text: string, type?: NotifType) {
+    useNotifStore().showNotification(text, type);
   }
 }
 
-export { useNotificationStore, Notification, NotificationType };
+export { useNotifStore, Notification, NotifType };

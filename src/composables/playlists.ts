@@ -1,25 +1,40 @@
 import axios from "axios";
-import { Playlist } from "../interfaces";
-import { Notification, NotificationType } from "../stores/notification";
+import { Playlist, Track } from "../interfaces";
+import { Notification, NotifType } from "../stores/notification";
 import state from "./state";
 
 /**
  * Creates a new playlist on the server.
  * @param playlist_name The name of the playlist to create.
  */
-async function createNewPlaylist(playlist_name: string) {
+async function createNewPlaylist(playlist_name: string, track?: Track) {
+  let status = false;
+
   await axios
     .post(state.settings.uri + "/playlist/new", {
       name: playlist_name,
     })
-    .then(() => {
+    .then((res) => {
       new Notification("✅ Playlist created successfullly!");
+
+      if (track) {
+        setTimeout(() => {
+          addTrackToPlaylist(res.data.playlist, track);
+        }, 1000);
+      }
+
+      status = true;
     })
     .catch((err) => {
       if (err.response.status == 409) {
-        new Notification("❌ Playlist already exists!", NotificationType.Error);
+        new Notification(
+          "That playlist already exists ... you might want to try another name!",
+          NotifType.Error
+        );
       }
     });
+
+  return status;
 }
 
 /**
@@ -43,4 +58,20 @@ async function getAllPlaylists(): Promise<Playlist[]> {
   return playlists;
 }
 
-export { createNewPlaylist, getAllPlaylists };
+async function addTrackToPlaylist(playlist: Playlist, track: Track) {
+  const uri = `${state.settings.uri}/playlist/${playlist.playlistid}/add`;
+  console.log(track.trackid, playlist.playlistid);
+
+  await axios
+    .post(uri, { track: track.trackid })
+    .then(() => {
+      new Notification(track.title + " added to " + playlist.name);
+    })
+    .catch((error) => {
+      if (error.response.status == 409) {
+        new Notification("Track already exists in playlist", NotifType.Info);
+      }
+    });
+}
+
+export { createNewPlaylist, getAllPlaylists, addTrackToPlaylist };
