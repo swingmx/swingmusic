@@ -2,8 +2,10 @@
   <div class="p-header">
     <div class="info">
       <div>
-        <div class="title">Makaveli Radio</div>
-        <div class="metrics rounded border">45 Tracks • 3 Hours 4 Minutes</div>
+        <div class="title">{{ props.info.name }}</div>
+        <div class="metrics rounded border">
+          {{ props.info.count }} Tracks • {{ props.info.duration }}
+        </div>
       </div>
       <div class="buttons">
         <button class="play">
@@ -16,11 +18,22 @@
       </div>
     </div>
     <div class="last-updated">
-      <span class="status">Last updated yesterday |&#160;</span>
+      <span class="status">Last updated {{props.info.lastUpdated}} |&#160;</span>
       <span class="edit">Edit</span>
     </div>
   </div>
 </template>
+
+<script setup lang="ts">
+const props = defineProps<{
+  info: {
+    name: string;
+    count: number;
+    duration: string;
+    lastUpdated: string;
+  };
+}>();
+</script>
 
 <style lang="scss">
 .p-header {
@@ -30,7 +43,7 @@
   background-image: url("../../assets/images/eggs.jpg");
   position: relative;
   margin-top: $small;
-    border-radius: .75rem;
+  border-radius: 0.75rem;
 
   .last-updated {
     position: absolute;
@@ -69,7 +82,7 @@
     align-items: flex-end;
     padding: 1rem 1rem 4rem 1rem;
     box-shadow: 0 0 1.5rem rgba(0, 0, 0, 0.658);
-    border-radius: .75rem;
+    border-radius: 0.75rem;
     background-color: $body;
 
     @include phone-only {
@@ -90,8 +103,8 @@
 
     .buttons {
       position: absolute;
-      bottom:1rem;
-      left:1rem;
+      bottom: 1rem;
+      left: 1rem;
       display: flex;
       gap: $small;
 

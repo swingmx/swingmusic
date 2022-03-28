@@ -31,7 +31,7 @@ const menus = [
   },
   {
     name: "playlists",
-    route_name: "PlaylistView",
+    route_name: "Playlists",
   },
   {
     name: "folders",

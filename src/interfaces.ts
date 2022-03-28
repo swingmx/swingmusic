@@ -52,6 +52,7 @@ interface Playlist {
   name: string;
   description?: string;
   image?: string;
+  tracks?: Track[];
 }
 
 interface Notif {

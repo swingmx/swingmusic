@@ -25,6 +25,13 @@ def add_track(playlistid: str, trackid: str):
                 raise TrackExistsInPlaylist("Track already in playlist.")
 
 
+def get_playlist_tracks(pid: str):
+    for p in api.PLAYLISTS:
+        if p.playlistid == pid:
+            return p.tracks
+
+
+
 def create_all_playlists():
     """
     Gets all playlists from the database.

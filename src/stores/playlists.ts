@@ -7,8 +7,10 @@ export default defineStore("playlists", {
     playlists: <Playlist[]>[],
   }),
   actions: {
-    fetchAll() {
-      
+    async fetchAll() {
+      const playlists = await getAllPlaylists();
+
+      this.playlists = playlists;
     },
   },
 });

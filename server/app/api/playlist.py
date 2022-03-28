@@ -50,7 +50,7 @@ def create_playlist():
 
 
 @playlist_bp.route("/playlist/<playlist_id>/add", methods=["POST"])
-def add_track_to_playlist(playlist_id):
+def add_track_to_playlist(playlist_id: str):
     data = request.get_json()
 
     trackid = data["track"]
@@ -61,3 +61,16 @@ def add_track_to_playlist(playlist_id):
         return {"error": str(e)}, 409
 
     return {"msg": "I think It's done"}, 200
+
+
+@playlist_bp.route("/playlist/<playlist_id>")
+def get_single_p_info(playlist_id: str):
+    for p in api.PLAYLISTS:
+        if p.playlistid == playlist_id:
+            return {"data": p}
+
+
+# @playlist_bp.route("/playlist/<playlist_id>/info")
+# def get_playlist_track(playlist_id: str):
+#     tracks = playlistlib.get_playlist_tracks(playlist_id)
+#     return {"data": tracks}

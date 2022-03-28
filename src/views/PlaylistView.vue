@@ -1,40 +1,29 @@
 <template>
   <div class="playlist-view">
-    <Header :playlist_info="playlist_info" />
+    <Header :info="info" />
     <div class="separator no-border"></div>
 
     <div class="songlist rounded">
-      <SongList :songs="songs" />
+      <SongList :songs="playlist.tracks" />
     </div>
     <div class="separator no-border"></div>
     <FeaturedArtists />
   </div>
 </template>
 
-<script>
-import Header from "@/components/PlaylistView/Header.vue";
-import SongList from "@/components/FolderView/SongList.vue";
-import FeaturedArtists from "@/components/PlaylistView/FeaturedArtists.vue";
-import state from "@/composables/state";
-export default {
-  components: {
-    Header,
-    SongList,
-    FeaturedArtists,
-  },
-  setup() {
-    return {
-      songs: state.queue,
-      playlist_info: {
-        name: "Dax Radio",
-        count: state.folder_song_list.value.length,
-        duration: "0:00",
-        image: "../../assets/images/null.webp",
-        artist: "",
-        artist_image: "",
-      },
-    };
-  },
+<script setup lang="ts">
+import Header from "../components/PlaylistView/Header.vue";
+import SongList from "../components/FolderView/SongList.vue";
+import FeaturedArtists from "../components/PlaylistView/FeaturedArtists.vue";
+import usePTrackStore from "../stores/p.ptracks";
+
+const playlist = usePTrackStore().playlist;
+
+const info = {
+  name: playlist.name,
+  count: playlist.tracks.length,
+  duration: "3 hours, 4 minutes",
+  lastUpdated: "yesterday",
 };
 </script>
 

@@ -74,4 +74,40 @@ async function addTrackToPlaylist(playlist: Playlist, track: Track) {
     });
 }
 
-export { createNewPlaylist, getAllPlaylists, addTrackToPlaylist };
+async function getPTracks(playlistid: string) {
+  const uri = state.settings.uri + "/playlist/" + playlistid;
+
+  let tracks: Track[] = [];
+
+  await axios
+    .get(uri)
+    .then((res) => {
+      tracks = res.data.data;
+    })
+    .catch((err) => {
+      new Notification("Something funny happened!", NotifType.Error);
+      throw new Error(err);
+    });
+
+  return tracks;
+}
+
+async function getPlaylist(pid: string) {
+  const uri = state.settings.uri + "/playlist/" + pid;
+
+  let playlist: Playlist;
+
+  await axios
+    .get(uri)
+    .then((res) => {
+      playlist = res.data.data;
+    })
+    .catch((err) => {
+      new Notification("Something funny happened!", NotifType.Error);
+      throw new Error(err);
+    });
+
+  return playlist;
+}
+
+export { createNewPlaylist, getAllPlaylists, addTrackToPlaylist, getPTracks, getPlaylist };

@@ -5,7 +5,7 @@
         <PlayBtn />
       </div>
       <div class="info">
-        <div class="title">Legends never die</div>
+        <div class="title">Playlists</div>
       </div>
     </div>
     <div class="center rounded"></div>

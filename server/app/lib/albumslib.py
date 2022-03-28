@@ -49,11 +49,13 @@ def get_album_image(album: list) -> str:
 
 
 def get_album_tracks(album: str, artist: str) -> List:
-    return [
-        track
-        for track in api.PRE_TRACKS
-        if track["album"] == album and track["albumartist"] == artist
-    ]
+    tracks = []
+
+    for track in api.PRE_TRACKS:
+        if track["album"] == album and track["albumartist"] == artist:
+            tracks.append(track)
+
+    return tracks
 
 
 def create_album(track) -> models.Album:
@@ -70,6 +72,7 @@ def create_album(track) -> models.Album:
     album["count"] = len(album_tracks)
     album["duration"] = get_album_duration(album_tracks)
     album["date"] = album_tracks[0]["date"]
+
     album["artistimage"] = urllib.parse.quote_plus(
         album_tracks[0]["albumartist"] + ".webp"
     )

@@ -2,12 +2,16 @@ import { createRouter, createWebHistory } from "vue-router";
 import Home from "../views/Home.vue";
 import FolderView from "../views/FolderView.vue";
 import PlaylistView from "../views/PlaylistView.vue";
+import Playlists from "../views/Playlists.vue";
 
 import AlbumsExplorer from "../views/AlbumsExplorer.vue";
 import AlbumView from "../views/AlbumView.vue";
 
 import ArtistsExplorer from "../views/ArtistsExplorer.vue";
 import SettingsView from "../views/SettingsView.vue";
+
+import usePStore from "../stores/playlists";
+import usePTrackStore from "../stores/p.ptracks";
 
 const routes = [
   {
@@ -25,9 +29,20 @@ const routes = [
     redirect: "/folder/home",
   },
   {
-    path: "/playlist",
+    path: "/playlists",
+    name: "Playlists",
+    component: Playlists,
+    beforeEnter: async () => {
+      await usePStore().fetchAll();
+    },
+  },
+  {
+    path: "/playlist/:pid",
     name: "PlaylistView",
     component: PlaylistView,
+    beforeEnter: async (to) => {
+      await usePTrackStore().fetchAll(to.params.pid);
+    },
   },
   {
     path: "/albums",
@@ -53,7 +68,7 @@ const routes = [
     path: "/:pathMatch(.*)",
     // alias: "*",
     component: () => import("../views/NotFound.vue"),
-  }
+  },
 ];
 
 const router = createRouter({
