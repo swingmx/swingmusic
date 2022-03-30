@@ -8,13 +8,16 @@
         <div class="title">Playlists</div>
       </div>
     </div>
-    <div class="center rounded"></div>
+    <div class="center rounded">
+      <Loader />
+    </div>
     <div class="right"></div>
   </div>
 </template>
 
 <script setup>
 import PlayBtn from "../shared/PlayBtn.vue";
+import Loader from "../shared/Loader.vue";
 </script>
 
 <style lang="scss">
@@ -39,12 +42,7 @@ import PlayBtn from "../shared/PlayBtn.vue";
 
   .center {
     display: grid;
-
-    .songcard {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
+    place-items: center;
   }
 }
 </style>
