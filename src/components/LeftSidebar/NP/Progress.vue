@@ -2,7 +2,7 @@
   <input
     id="progress"
     type="range"
-    :value="pos"
+    :value="props.pos"
     min="0"
     max="100"
     step="0.1"
@@ -10,12 +10,14 @@
   />
 </template>
 
-<script setup>
-import { ref } from "vue";
-import playAudio from "../../../composables/playAudio";
-const pos = ref(playAudio.pos);
-
+<script setup lang="ts">
 const seek = () => {
-  playAudio.seek(document.getElementById("progress").value);
+  const value = Number(document.getElementById("progress").value);
+  props.seek(value);
 };
+
+const props = defineProps<{
+  pos: number;
+  seek: (time: number) => void;
+}>();
 </script>

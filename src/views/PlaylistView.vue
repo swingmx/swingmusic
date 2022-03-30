@@ -22,6 +22,7 @@ const playlist = usePTrackStore().playlist;
 const info = {
   name: playlist.name,
   count: playlist.tracks.length,
+  desc: playlist.description,
   duration: "3 hours, 4 minutes",
   lastUpdated: "yesterday",
 };

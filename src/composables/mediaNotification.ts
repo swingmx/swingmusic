@@ -1,41 +1,44 @@
+import { Track } from "../interfaces.js";
 import perks from "./perks.js";
-import playAudio from "./playAudio.js";
 
-let showMediaNotif = () => {
-  let current = perks.current.value;
-
+export default (
+  track: Track,
+  playPause: () => void,
+  playNext: () => void,
+  playPrev: () => void
+) => {
   if ("mediaSession" in navigator) {
     navigator.mediaSession.metadata = new window.MediaMetadata({
-      title: current.title,
-      artist: current.artists,
+      title: track.title,
+      artist: track.artists.join(", "),
       artwork: [
         {
-          src: current.image,
+          src: track.image,
           sizes: "96x96",
           type: "image/jpeg",
         },
         {
-          src: current.image,
+          src: track.image,
           sizes: "128x128",
           type: "image/webp",
         },
         {
-          src: current.image,
+          src: track.image,
           sizes: "192x192",
           type: "image/webp",
         },
         {
-          src: current.image,
+          src: track.image,
           sizes: "256x256",
           type: "image/webp",
         },
         {
-          src: current.image,
+          src: track.image,
           sizes: "384x384",
           type: "image/webp",
         },
         {
-          src: current.image,
+          src: track.image,
           sizes: "512x512",
           type: "image/webp",
         },
@@ -43,22 +46,16 @@ let showMediaNotif = () => {
     });
 
     navigator.mediaSession.setActionHandler("play", function () {
-      playAudio.playPause();
+      playPause();
     });
     navigator.mediaSession.setActionHandler("pause", function () {
-      playAudio.playPause();
+      playPause();
     });
-    navigator.mediaSession.setActionHandler("seekbackward", function () {});
-    navigator.mediaSession.setActionHandler("seekforward", function () {});
     navigator.mediaSession.setActionHandler("previoustrack", function () {
-      playAudio.playPrev();
+      playPrev();
     });
     navigator.mediaSession.setActionHandler("nexttrack", function () {
-      playAudio.playNext();
+      playNext();
     });
   }
-};
-
-export default {
-  showMediaNotif,
 };

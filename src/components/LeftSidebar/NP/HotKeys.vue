@@ -1,23 +1,22 @@
 <template>
   <div class="hotkeys">
-    <div class="image ctrl-btn" id="previous" @click="playPrev"></div>
+    <div class="image ctrl-btn" id="previous" @click="props.prev"></div>
     <div
       class="image ctrl-btn play-pause"
       @click="playPause"
-      :class="{ isPlaying: isPlaying }"
+      :class="{ isPlaying: props.playing }"
     ></div>
-    <div class="image ctrl-btn" id="next" @click="playNext"></div>
+    <div class="image ctrl-btn" id="next" @click="props.next"></div>
   </div>
 </template>
 
-<script setup>
-import playAudio from '../../../composables/playAudio';
-
-const playPause = playAudio.playPause;
-const playNext = playAudio.playNext;
-const playPrev = playAudio.playPrev;
-
-const isPlaying = playAudio.playing;
+<script setup lang="ts">
+const props = defineProps<{
+  playing: boolean;
+  playPause: () => void;
+  next: () => void;
+  prev: () => void;
+}>();
 </script>
 
 <style lang="scss">
@@ -31,16 +30,16 @@ const isPlaying = playAudio.playing;
   place-content: flex-end;
 
   .ctrl-btn {
-      height: 2.5rem;
-        width: 100%;
-      background-size: 1.5rem !important;
-      cursor: pointer;
-      border-radius: 0.5rem;
+    height: 2.5rem;
+    width: 100%;
+    background-size: 1.5rem !important;
+    cursor: pointer;
+    border-radius: 0.5rem;
 
-      &:hover {
-        background-color: $red;
-      }
+    &:hover {
+      background-color: $red;
     }
+  }
 
   #previous {
     background-image: url(../../../assets/icons/previous.svg);

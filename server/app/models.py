@@ -3,6 +3,7 @@ Contains all the models for objects generation and typing.
 """
 
 from dataclasses import dataclass
+from datetime import date
 from typing import List
 from app import api
 from app import settings
@@ -95,6 +96,8 @@ class Playlist:
     description: str
     image: str
     tracks: List[Track]
+    count: int
+    lastUpdated: int
     """A list of track objects in the playlist"""
 
     def __init__(self, data):
@@ -103,6 +106,9 @@ class Playlist:
         self.description = data["description"]
         self.image = ""
         self.tracks = create_playlist_tracks(data["tracks"])
+        self.count = len(data["tracks"])
+        self.lastUpdated = data["lastUpdated"]
+
 
 
 @dataclass

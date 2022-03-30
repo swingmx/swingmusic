@@ -1,26 +1,3 @@
-import { ref } from "@vue/reactivity";
-import { watch } from "@vue/runtime-core";
-import media from "./mediaNotification.js";
-import playAudio from "./playAudio.js";
-import state from "./state";
-
-const current = ref(state.current);
-
-const next = ref({
-  title: "The next song",
-  artists: ["... blah blah blah"],
-  image: "http://127.0.0.1:8900/images/defaults/4.webp",
-  _id: {
-    $oid: "",
-  },
-});
-
-const prev = ref(state.prev);
-
-const queue = ref(state.queue);
-
-const search = ref("");
-
 const putCommas = (artists) => {
   let result = [];
 
@@ -33,74 +10,6 @@ const putCommas = (artists) => {
   });
 
   return result;
-};
-
-function updateNext(song_) {
-  const index = state.queue.value.findIndex(
-    (item) => item.trackid === song_.trackid
-  );
-
-  if (index === queue.value.length - 1) {
-    next.value = queue.value[0];
-    state.prev.value = queue.value[queue.value.length - 2];
-  } else if (index === 0) {
-    next.value = queue.value[1];
-  } else {
-    next.value = queue.value[index + 1];
-  }
-}
-
-function updatePrev(song) {
-  const index = state.queue.value.findIndex(
-    (item) => item.trackid === song.trackid
-  );
-
-  if (index === 0) {
-    prev.value = queue.value[queue.value.length - 1];
-  } else if (index === queue.value.length - 1) {
-    prev.value = queue.value[index - 1];
-  } else {
-    prev.value = queue.value[index - 1];
-  }
-}
-
-const readQueue = () => {
-  const prev_queue = JSON.parse(localStorage.getItem("queue"));
-  const last_played = JSON.parse(localStorage.getItem("current"));
-
-  if (last_played) {
-    state.current.value = last_played;
-  }
-
-  if (prev_queue) {
-    state.queue.value = prev_queue;
-
-    updateNext(state.current.value);
-    updatePrev(state.current.value);
-  }
-};
-
-const updateQueue = async (song, type) => {
-  playAudio.playAudio(song.trackid);
-  let list;
-
-  switch (type) {
-    case "folder":
-      list = state.folder_song_list.value;
-      break;
-    case "album":
-      list = state.album.tracklist;
-      break;
-  }
-
-  if (state.queue.value[0].trackid !== list[0].trackid) {
-    const new_queue = list;
-    localStorage.setItem("queue", JSON.stringify(new_queue));
-    state.queue.value = new_queue;
-  }
-
-  state.current.value = song;
-  localStorage.setItem("current", JSON.stringify(song));
 };
 
 function focusCurrent() {
@@ -132,17 +41,6 @@ function focusSearchBox() {
   elem.focus();
 }
 
-setTimeout(() => {
-  watch(current, (new_current) => {
-    media.showMediaNotif();
-
-    updateNext(new_current);
-    updatePrev(new_current);
-
-    localStorage.setItem("current", JSON.stringify(new_current));
-  });
-}, 1000);
-
 let key_down_fired = false;
 
 window.addEventListener("keydown", (e) => {
@@ -161,7 +59,7 @@ window.addEventListener("keydown", (e) => {
             key_down_fired = false;
           }, 1000);
 
-          playAudio.playNext();
+          // playAudio.playNext();
         }
       }
       break;
@@ -173,7 +71,7 @@ window.addEventListener("keydown", (e) => {
 
           key_down_fired = true;
 
-          playAudio.playPrev();
+          // playAudio.playPrev();
 
           setTimeout(() => {
             key_down_fired = false;
@@ -190,7 +88,7 @@ window.addEventListener("keydown", (e) => {
           e.preventDefault();
           key_down_fired = true;
 
-          playAudio.playPause();
+          // playAudio.playPause();
         }
       }
 
@@ -211,8 +109,6 @@ window.addEventListener("keydown", (e) => {
 window.addEventListener("keyup", () => {
   key_down_fired = false;
 });
-
-
 
 function formatSeconds(seconds) {
   // check if there are arguments
@@ -256,14 +152,7 @@ function formatSeconds(seconds) {
 
 export default {
   putCommas,
-  readQueue,
   focusCurrent,
-  updateQueue,
   formatSeconds,
   getElem,
-  current,
-  queue,
-  next,
-  prev,
-  search,
 };

@@ -39,11 +39,15 @@ import useContextStore from "./stores/context";
 import ContextMenu from "./components/contextMenu.vue";
 import Modal from "./components/modal.vue";
 import Notification from "./components/Notification.vue";
+import useQStore from "./stores/queue";
 
 const context_store = useContextStore();
+const queue = useQStore();
+
+queue.readQueueFromLocalStorage();
 
 const RightSideBar = Main;
-perks.readQueue();
+
 const collapsed = ref(false);
 
 const app_dom = document.getElementById("app");

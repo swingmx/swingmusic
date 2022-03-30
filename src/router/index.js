@@ -12,6 +12,7 @@ import SettingsView from "../views/SettingsView.vue";
 
 import usePStore from "../stores/playlists";
 import usePTrackStore from "../stores/p.ptracks";
+import useFStore from "../stores/folder";
 
 const routes = [
   {
@@ -23,6 +24,10 @@ const routes = [
     path: "/folder/:path",
     name: "FolderView",
     component: FolderView,
+    beforeEnter: async (to) => {
+      console.log("beforeEnter")
+      await useFStore().fetchAll(to.params.path);
+    },
   },
   {
     path: "/folder/",

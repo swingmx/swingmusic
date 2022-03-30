@@ -21,7 +21,7 @@ class AllSongs(db.Mongo):
     # def drop_db(self):
     #     self.collection.drop()
 
-    def insert_song(self, song_obj: dict) -> None:
+    def insert_song(self, song_obj: dict) -> str:
         """
         Inserts a new track object into the database.
         """

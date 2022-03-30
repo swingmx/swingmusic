@@ -1,8 +1,8 @@
 import { defineStore } from "pinia";
 import { Track } from "../interfaces";
 enum ModalOptions {
-  newPlaylist = "newPlaylist",
-  editPlaylist = "editPlaylist",
+  newPlaylist,
+  editPlaylist,
 }
 
 export default defineStore("newModal", {

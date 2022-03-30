@@ -2,6 +2,7 @@
 This library contains all the functions related to albums.
 """
 
+from pprint import pprint
 import urllib
 from typing import List
 from app import models, functions, helpers
@@ -52,9 +53,12 @@ def get_album_tracks(album: str, artist: str) -> List:
     tracks = []
 
     for track in api.PRE_TRACKS:
-        if track["album"] == album and track["albumartist"] == artist:
-            tracks.append(track)
-
+        try:
+            if track["album"] == album and track["albumartist"] == artist:
+                tracks.append(track)
+        except TypeError:
+            pprint(track, indent=4)
+            print(album, artist)
     return tracks
 
 

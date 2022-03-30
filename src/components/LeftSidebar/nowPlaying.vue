@@ -1,5 +1,5 @@
 <template>
-  <div class="l_ rounded" v-if="!props.collapsed">
+  <div class="l_ rounded">
     <div class="headin">Now Playing</div>
     <div class="button menu image rounded"></div>
     <div class="separator no-border"></div>
@@ -8,32 +8,30 @@
         <div
           class="l-image image rounded"
           :style="{
-            backgroundImage: `url(&quot;${current.image}&quot;)`,
+            backgroundImage: `url(&quot;${queue.current.image}&quot;)`,
           }"
         ></div>
       </div>
       <div class="separator no-border"></div>
-      <SongCard />
-      <Progress />
-      <HotKeys />
+      <SongCard :track="queue.current" />
+      <Progress :seek="queue.seek" :pos="queue.current_time" />
+      <HotKeys
+        :playing="queue.playing"
+        :playPause="queue.playPause"
+        :next="queue.playNext"
+        :prev="queue.playPrev"
+      />
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref } from "vue";
-import state from "../../composables/state";
 import SongCard from "./SongCard.vue";
 import HotKeys from "./NP/HotKeys.vue";
 import Progress from "./NP/Progress.vue";
+import useQStore from "../../stores/queue";
 
-const current = ref(state.current);
-const props = defineProps({
-  collapsed: {
-    type: Boolean,
-    default: false,
-  },
-});
+const queue = useQStore();
 </script>
 <style lang="scss">
 .l_ {

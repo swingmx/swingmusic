@@ -4,7 +4,7 @@
     @click="playThis(props.track)"
     :class="[
       {
-        currentInQueue: current.trackid === props.track.trackid,
+        currentInQueue: props.isCurrent,
       },
       { 'context-on': context_on },
     ]"
@@ -18,8 +18,8 @@
     >
       <div
         class="now-playing-track image"
-        v-if="current.trackid === props.track.trackid"
-        :class="{ active: is_playing, not_active: !is_playing }"
+        v-if="props.isCurrent"
+        :class="{ active: props.isPlaying, not_active: !props.isPlaying }"
       ></div>
     </div>
     <div class="tags">
@@ -34,21 +34,31 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ref } from "vue";
 import perks from "../../composables/perks";
-import playAudio from "../../composables/playAudio";
-import useContextStore from "@/stores/context";
 import trackContext from "../../contexts/track_context";
+import { Track } from "../../interfaces";
+
+import useContextStore from "../../stores/context";
+import useModalStore from "../../stores/modal";
 
 const contextStore = useContextStore();
+const modalStore = useModalStore();
+
+const props = defineProps<{
+  track: Track;
+  isCurrent: boolean;
+  isPlaying: boolean;
+}>();
+
 const context_on = ref(false);
 
-const showContextMenu = (e) => {
+const showContextMenu = (e: Event) => {
   e.preventDefault();
   e.stopPropagation();
 
-  contextStore.showContextMenu(e, trackContext(props.track));
+  contextStore.showContextMenu(e, trackContext(props.track, modalStore));
   context_on.value = true;
 
   contextStore.$subscribe((mutation, state) => {
@@ -57,18 +67,16 @@ const showContextMenu = (e) => {
     }
   });
 };
-const props = defineProps({
-  track: Object,
-  default: () => ({}),
-});
+
+const emit = defineEmits<{
+  (e: "PlayThis", track: Track): void;
+}>();
 
 const current = ref(perks.current);
 const putCommas = perks.putCommas;
-const is_playing = ref(playAudio.playing);
 
-const playThis = (song) => {
-  playAudio.playAudio(song.trackid);
-  perks.current.value = song;
+const playThis = (track: Track) => {
+  emit("PlayThis", track);
 };
 </script>
 

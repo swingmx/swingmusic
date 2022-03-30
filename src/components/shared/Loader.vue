@@ -12,10 +12,8 @@ const loading = state.loading
 
 <style lang="scss">
 .loaderx {
-  position: absolute;
-  top: 0.65rem;
   width: 1.5rem;
-  height: 1.5rem;
+  height:1.5rem;
   border-radius: 50%;
 }
 

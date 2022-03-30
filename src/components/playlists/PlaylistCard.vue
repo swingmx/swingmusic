@@ -28,7 +28,7 @@ const props = defineProps<{
 
   .image {
     min-width: 100%;
-    height: 8.5rem;
+    height: 10rem;
     background-image: url("../../assets/images/eggs.jpg");
   }
 

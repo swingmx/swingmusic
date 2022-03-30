@@ -79,10 +79,7 @@ const showContextMenu = (e: Event) => {
   e.preventDefault();
   e.stopPropagation();
 
-  contextStore.showContextMenu(
-    e,
-    trackContext(props.song, modalStore)
-  );
+  contextStore.showContextMenu(e, trackContext(props.song, modalStore));
   context_on.value = true;
 
   contextStore.$subscribe((mutation, state) => {

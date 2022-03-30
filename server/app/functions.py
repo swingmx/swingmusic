@@ -69,11 +69,12 @@ def populate():
     for file in files:
         tags = get_tags(file)
 
-        if tags not in api.PRE_TRACKS:
-            api.PRE_TRACKS.append(tags)
-
         if tags is not None:
-            instances.songs_instance.insert_song(tags)
+            upsert_id = instances.songs_instance.insert_song(tags)
+
+            if upsert_id is not None:
+                tags["_id"] = {"$oid": upsert_id}
+                api.PRE_TRACKS.append(tags)
 
         _bar.next()
     _bar.finish()

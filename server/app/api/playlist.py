@@ -30,7 +30,14 @@ def get_all_playlists():
 @playlist_bp.route("/playlist/new", methods=["POST"])
 def create_playlist():
     data = request.get_json()
-    playlist = {"name": data["name"], "description": [], "tracks": []}
+
+    playlist = {
+        "name": data["name"],
+        "description": [],
+        "tracks": [],
+        "count": 0,
+        "lastUpdated": 0,
+    }
 
     try:
         p_in_db = instances.playlist_instance.get_playlist_by_name(playlist["name"])
