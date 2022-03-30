@@ -1,35 +1,33 @@
 <template>
   <div class="p-header">
-    <div class="info">
-      <div>
-        <div class="title">{{ props.info.name }}</div>
-        <div class="metrics rounded border">
-          {{ props.info.count }} Tracks • {{ props.info.duration }}
-        </div>
+    <div class="carddd circular">
+      <div class="type">❤ Playlist</div>
+      <div class="title ellip">{{ props.info.name }}</div>
+      <div class="desc">
+        {{ props.info.desc[0] }}
       </div>
-      <div class="buttons">
-        <button class="play">
-          <div class="icon"></div>
-          Play
-        </button>
-        <button class="menu">
-          <div class="icon"></div>
-        </button>
+      <div class="duration rounded">4 Tracks • 3 Hours</div>
+      <div class="btns">
+        <PlayBtnRect />
       </div>
     </div>
     <div class="last-updated">
-      <span class="status">Last updated {{props.info.lastUpdated}} |&#160;</span>
+      <span class="status"
+        >Last updated {{ props.info.lastUpdated }} |&#160;</span
+      >
       <span class="edit">Edit</span>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
+import PlayBtnRect from "../shared/PlayBtnRect.vue";
 const props = defineProps<{
   info: {
     name: string;
     count: number;
     duration: string;
+    desc: string;
     lastUpdated: string;
   };
 }>();
@@ -44,6 +42,7 @@ const props = defineProps<{
   position: relative;
   margin-top: $small;
   border-radius: 0.75rem;
+  color: $white;
 
   .last-updated {
     position: absolute;
@@ -71,66 +70,45 @@ const props = defineProps<{
     }
   }
 
-  .info {
+  .carddd {
     position: absolute;
-    width: 25rem;
-    height: 10rem;
     bottom: $small;
     left: $small;
-    display: flex;
-    flex-direction: row;
-    align-items: flex-end;
-    padding: 1rem 1rem 4rem 1rem;
-    box-shadow: 0 0 1.5rem rgba(0, 0, 0, 0.658);
-    border-radius: 0.75rem;
-    background-color: $body;
+    width: 25rem;
+    padding: 1rem;
+    background-color: rgba(5, 4, 4, 0.829);
 
-    @include phone-only {
-      width: calc(100% - 1rem);
+    .type {
+      color: rgba(255, 255, 255, 0.692);
     }
 
     .title {
-      font-size: 1.5rem;
-      font-weight: bold;
-      color: $white;
+      font-size: 2.5rem;
+      font-weight: 900;
     }
 
-    .metrics {
-      margin-top: $small;
-      color: $blue;
-      padding: $small;
+    .desc {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: initial;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
     }
 
-    .buttons {
+    .duration {
       position: absolute;
+      right: 1rem;
       bottom: 1rem;
-      left: 1rem;
-      display: flex;
-      gap: $small;
+      font-size: 0.8rem;
+      color: $white;
+      padding: $smaller;
+      border: solid 1px $gray1;
+      user-select: none;
+    }
 
-      .play {
-        width: 5rem;
-        height: 2.5rem;
-        padding: 0.25rem $small;
-
-        .icon {
-          width: 1.5rem;
-          height: 1.5rem;
-          background-image: url("../../assets/icons/play.svg");
-          background-size: 1.5rem;
-          background-position: center;
-          margin-right: 0.25rem;
-        }
-      }
-
-      .menu {
-        width: 2.5rem;
-        height: 2.5rem;
-        background-image: url("../../assets/icons/options.svg");
-        background-size: 2rem;
-        background-repeat: no-repeat;
-        background-position: center;
-      }
+    .btns {
+      margin-top: $small;
     }
   }
 }
