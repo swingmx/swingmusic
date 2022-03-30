@@ -3,18 +3,18 @@
     <div class="r-grid">
       <div class="main-item border">
         <p class="heading">COMING UP NEXT</p>
-        <div class="itemx" @click="playNext">
+        <div class="itemx" @click="queue.playNext">
           <div
             class="album-art image"
             :style="{
-              backgroundImage: `url(&quot;${next.image}&quot;)`,
+              backgroundImage: `url(&quot;${queue.next.image}&quot;)`,
             }"
           ></div>
           <div class="tags">
-            <p class="title ellip">{{ next.title }}</p>
+            <p class="title ellip">{{ queue.next.title }}</p>
             <hr />
             <p class="artist ellip">
-              <span v-for="artist in putCommas(next.artists)" :key="artist">{{
+              <span v-for="artist in putCommas(queue.next.artists)" :key="artist">{{
                 artist
               }}</span>
             </p>
@@ -22,36 +22,32 @@
         </div>
       </div>
       <div class="scrollable-r border rounded">
-        <TrackItem v-for="song in queue" :key="song.trackid" :track="song" />
+        <TrackItem
+          v-for="t in queue.tracks"
+          :key="t.trackid"
+          :track="t"
+          @playThis="playThis"
+          :isCurrent="t.trackid === queue.current.trackid"
+          :isPlaying="queue.playing"
+        />
       </div>
     </div>
   </div>
 </template>
 
-<script>
-import perks from "@/composables/perks.js";
-import audio from "@/composables/playAudio.js";
+<script setup lang="ts">
+import perks from "../../composables/perks.js";
 import { ref } from "@vue/reactivity";
 import TrackItem from "../shared/TrackItem.vue";
+import useQStore from "../../stores/queue";
+import { Track } from "../../interfaces.js";
+const queue = useQStore();
 
-export default {
-  setup() {
-    const queue = ref(perks.queue);
-    const next = ref(perks.next);
+const putCommas = perks.putCommas;
 
-    const { playNext } = audio;
-
-    const putCommas = perks.putCommas;
-
-    return {
-      playNext,
-      putCommas,
-      queue,
-      next,
-    };
-  },
-  components: { TrackItem },
-};
+function playThis(track: Track) {
+  queue.play(track);
+}
 </script>
 
 <style lang="scss">

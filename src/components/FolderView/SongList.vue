@@ -1,6 +1,6 @@
 <template>
   <div class="folder">
-    <div class="table rounded" v-if="props.songs.length">
+    <div class="table rounded" v-if="props.tracks.length">
       <div class="thead">
         <div class="index"></div>
         <div class="track-header">Track</div>
@@ -10,8 +10,8 @@
       </div>
       <div class="songlist">
         <SongItem
-          v-for="(song, index) in props.songs"
-          :key="song"
+          v-for="(song, index) in props.tracks"
+          :key="song.trackid"
           :song="song"
           :index="index + 1"
           @updateQueue="updateQueue"
@@ -19,7 +19,7 @@
         />
       </div>
     </div>
-    <div v-else-if="props.songs.length === 0 && search_query">
+    <div v-else-if="props.tracks.length === 0 && search_query">
       <div class="no-results">
         <div class="text">Nothing down here 😑</div>
       </div>
@@ -28,45 +28,39 @@
   </div>
 </template>
 
-<script setup>
-import { onMounted } from "@vue/runtime-core";
+<script setup lang="ts">
 import { useRoute } from "vue-router";
 
 import SongItem from "../shared/SongItem.vue";
 
-import routeLoader from "@/composables/routeLoader.js";
-import perks from "@/composables/perks.js";
-import state from "@/composables/state";
+import routeLoader from "../../composables/routeLoader.js";
+import state from "../../composables/state";
+import useQStore from "../../stores/queue";
+import { Track } from "../../interfaces";
 
-const props = defineProps({
-  songs: {
-    type: Array,
-    required: true,
-  },
-});
+const queue = useQStore();
 
-let route;
+const props = defineProps<{
+  tracks: Track[];
+  path?: string;
+}>();
 
+let route = useRoute().name;
+console.log(route);
 const search_query = state.search_query;
 
-onMounted(() => {
-  route = useRoute().name;
-});
-
-function updateQueue(song) {
-  let type;
-
+function updateQueue(song: Track) {
+  
   switch (route) {
     // check which route the play request come from
     case "FolderView":
-      type = "folder";
+      queue.playFromFolder(props.path, props.tracks, song);
       break;
     case "AlbumView":
-      type = "album";
       break;
   }
 
-  perks.updateQueue(song, type);
+  // perks.updateQueue(song, type);
 }
 
 function loadAlbum(title, albumartist) {
