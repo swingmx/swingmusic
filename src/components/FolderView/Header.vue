@@ -12,18 +12,6 @@
         </div>
       </div>
     </div>
-    <div class="search">
-      <div class="loaderr">
-        <Loader />
-      </div>
-      <input
-        type="text"
-        class="search-input"
-        placeholder="Search this folder"
-        v-model="query"
-      />
-      <div class="search-icon image"></div>
-    </div>
   </div>
 </template>
 
@@ -57,40 +45,14 @@ export default {
 
 <style lang="scss">
 .folder-top {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
   border-bottom: 1px solid $separator;
   width: calc(100% - 0.5rem);
   padding-bottom: $small;
   height: 3rem;
 }
 
-.folder-top .search {
-  width: 50%;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  place-items: end;
-
-  .loaderr {
-    width: 2rem;
-  }
-
-  .search-input {
-    max-width: 20rem;
-    width: 100%;
-    border-radius: 0.5rem;
-    padding-left: 1rem;
-    background-color: transparent;
-    color: $white;
-    font-size: 1rem;
-    line-height: 2.2rem;
-    outline: none;
-    border: 1px solid $gray3;
-  }
-}
-
 .folder-top .fname {
-  width: 50%;
+  width: 100%;
   display: flex;
   align-items: center;
 

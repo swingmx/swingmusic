@@ -1,133 +1,44 @@
 <template>
   <div id="f-view-parent" class="rounded">
     <div class="fixed">
-      <Header :path="path" :first_song="songs[0]" @search="updateQueryString" />
+      <Header :path="FStore.path" :first_song="FStore.tracks[0]" />
     </div>
     <div id="scrollable" ref="scrollable">
-      <FolderList :folders="folders" />
-      <div class="separator" v-if="folders.length && songs.length"></div>
-      <SongList :songs="songs" />
+      <FolderList :folders="FStore.dirs" />
+      <div
+        class="separator"
+        v-if="FStore.dirs.length && FStore.tracks.length"
+      ></div>
+      <SongList :tracks="FStore.tracks" :path="FStore.path" />
     </div>
   </div>
 </template>
 
-<script>
-import { computed, ref } from "@vue/reactivity";
-import { useRoute } from "vue-router";
+<script setup>
+import { ref } from "@vue/reactivity";
+import { onBeforeRouteUpdate } from "vue-router";
 
 import SongList from "@/components/FolderView/SongList.vue";
 import FolderList from "@/components/FolderView/FolderList.vue";
 import Header from "@/components/FolderView/Header.vue";
 
-import getTracksAndDirs from "../composables/getFilesAndFolders";
-import { onMounted, watch } from "@vue/runtime-core";
-import state from "@/composables/state";
+import useFStore from "../stores/folder";
+import state from "../composables/state";
 
-export default {
-  components: {
-    SongList,
-    FolderList,
-    Header,
-  },
-  setup() {
-    const route = useRoute();
-    const path = ref(route.params.path);
+const FStore = useFStore();
 
-    const song_list = ref(state.folder_song_list);
-    const folders_list = ref(state.folder_list);
+const scrollable = ref(null);
 
-    const scrollable = ref(null);
-
-    const query = ref("");
-
-    const songs = computed(() => {
-      const songs_ = [];
-
-      if (query.value.length) {
-        for (let i = 0; i < song_list.value.length; i++) {
-          if (
-            song_list.value[i].title
-              .toLowerCase()
-              .includes(query.value.toLowerCase())
-          ) {
-            songs_.push(song_list.value[i]);
-          }
-        }
-
-        return songs_;
-      } else {
-        return song_list.value;
-      }
+onBeforeRouteUpdate((to) => {
+  state.loading.value = true;
+  FStore.fetchAll(to.params.path)
+    .then(() => {
+      scrollable.value.scrollTop = 0;
+    })
+    .then(() => {
+      state.loading.value = false;
     });
-
-    const folders = computed(() => {
-      const folders_ = [];
-
-      if (query.value.length) {
-        for (let i = 0; i < folders_list.value.length; i++) {
-          if (
-            folders_list.value[i].name
-              .toLowerCase()
-              .includes(query.value.toLowerCase())
-          ) {
-            folders_.push(folders_list.value[i]);
-          }
-        }
-
-        return folders_;
-      } else {
-        return folders_list.value;
-      }
-    });
-
-    onMounted(() => {
-      const getDirData = (path) => {
-        state.loading.value = true;
-        getTracksAndDirs(path)
-          .then((data) => {
-            scrollable.value.scrollTop = 0;
-
-            state.folder_song_list.value = data.tracks;
-            state.folder_list.value = data.folders;
-            console.log(data);
-
-            state.loading.value = false;
-          })
-          .then(() => {
-            setTimeout(() => {
-              query.value = "";
-            }, 100);
-          });
-      };
-
-      getDirData(path.value);
-
-      watch(
-        () => route.params,
-        () => {
-          path.value = route.params.path;
-
-          if (!path.value) return;
-
-          getDirData(path.value);
-          console.log(path.value);
-        }
-      );
-    });
-
-    function updateQueryString(value) {
-      query.value = value;
-    }
-
-    return {
-      updateQueryString,
-      songs,
-      folders,
-      path,
-      scrollable,
-    };
-  },
-};
+});
 </script>
 
 <style lang="scss">
