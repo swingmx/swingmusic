@@ -1,10 +1,7 @@
 <template>
   <div
     class="songlist-item rounded"
-    :class="[
-      { current: current.trackid === props.song.trackid },
-      { 'context-on': context_on },
-    ]"
+    :class="[{ current: props.isCurrent }, { 'context-on': context_on }]"
     @dblclick="emitUpdate(props.song)"
     @contextmenu="showContextMenu"
   >
@@ -17,8 +14,8 @@
       >
         <div
           class="now-playing-track image"
-          v-if="current.trackid === props.song.trackid"
-          :class="{ active: is_playing, not_active: !is_playing }"
+          v-if="props.isPlaying && props.isCurrent"
+          :class="{ active: isPlaying, not_active: !isPlaying }"
         ></div>
       </div>
       <div @click="emitUpdate(props.song)">
@@ -46,14 +43,20 @@
         <span class="artist">{{ props.song.albumartist }}</span>
       </div>
     </div>
-    <div class="song-album">
-      <div
-        class="album ellip"
-        @click="emitLoadAlbum(props.song.album, props.song.albumartist)"
-      >
+    <router-link
+      class="song-album"
+      :to="{
+        name: 'AlbumView',
+        params: {
+          album: props.song.album,
+          artist: props.song.albumartist,
+        },
+      }"
+    >
+      <div class="album ellip">
         {{ props.song.album }}
       </div>
-    </div>
+    </router-link>
     <div class="song-duration">
       {{ perks.formatSeconds(props.song.length) }}
     </div>
@@ -62,7 +65,6 @@
 
 <script setup lang="ts">
 import perks from "../../composables/perks.js";
-import state from "../../composables/state";
 import useContextStore from "../../stores/context";
 import useModalStore from "../../stores/modal";
 
@@ -72,7 +74,6 @@ import { Track } from "../../interfaces.js";
 
 const contextStore = useContextStore();
 const modalStore = useModalStore();
-
 const context_on = ref(false);
 
 const showContextMenu = (e: Event) => {
@@ -92,23 +93,17 @@ const showContextMenu = (e: Event) => {
 const props = defineProps<{
   song: Track;
   index: Number;
+  isPlaying: Boolean;
+  isCurrent: Boolean;
 }>();
 
 const emit = defineEmits<{
   (e: "updateQueue", song: Track): void;
-  (e: "loadAlbum", album: string, artist: string): void;
 }>();
 
 function emitUpdate(track: Track) {
   emit("updateQueue", track);
 }
-
-function emitLoadAlbum(title: string, artist: string) {
-  emit("loadAlbum", title, artist);
-}
-
-const is_playing = state.is_playing;
-const current = state.current;
 </script>
 
 <style lang="scss">

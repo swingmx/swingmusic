@@ -1,47 +1,39 @@
 <template>
   <div class="al-view rounded">
     <div>
-      <Header :album_info="state.album.info" />
+      <Header :album_info="album.info" />
     </div>
     <div class="separator" id="av-sep"></div>
     <div class="songs rounded">
-      <SongList :songs="state.album.tracklist" />
+      <SongList :tracks="album.tracks" />
     </div>
     <div class="separator" id="av-sep"></div>
-    <FeaturedArtists :artists="state.album.artists" />
-    <div v-if="state.album.bio">
+    <FeaturedArtists :artists="album.artists" />
+    <div v-if="album.bio">
       <div class="separator" id="av-sep"></div>
-      <AlbumBio :bio="state.album.bio" v-if="state.album.bio" />
+      <AlbumBio :bio="album.bio" />
     </div>
   </div>
 </template>
 
-<script setup>
-import { useRoute } from "vue-router";
-import { onMounted } from "@vue/runtime-core";
-import { watch } from "vue";
+<script setup lang="ts">
 import Header from "../components/AlbumView/Header.vue";
 import AlbumBio from "../components/AlbumView/AlbumBio.vue";
 
 import SongList from "../components/FolderView/SongList.vue";
 import FeaturedArtists from "../components/PlaylistView/FeaturedArtists.vue";
 
-import state from "@/composables/state";
-import routeLoader from "@/composables/routeLoader.js";
+import useAStore from "../stores/album";
+import { onBeforeRouteUpdate } from "vue-router";
 
-const route = useRoute();
+const album = useAStore();
 
-onMounted(() => {
-  routeLoader.toAlbum(route.params.album, route.params.artist);
-
-  watch(
-    () => route.params,
-    () => {
-      if (route.name === "AlbumView") {
-        routeLoader.toAlbum(route.params.album, route.params.artist);
-      }
-    }
+onBeforeRouteUpdate(async (to) => {
+  await album.fetchTracksAndArtists(
+    to.params.album.toString(),
+    to.params.artist.toString()
   );
+  album.fetchBio(to.params.album.toString(), to.params.artist.toString());
 });
 </script>
 

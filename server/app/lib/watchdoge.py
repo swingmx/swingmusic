@@ -60,19 +60,24 @@ def add_track(filepath: str) -> None:
         api.TRACKS.append(models.Track(tags))
 
         folder = folderslib.create_folder(tags["folder"])
+        print(f"💙💙 {tags['folder']}")
+        print(folder)
 
         if folder not in api.FOLDERS:
             api.FOLDERS.append(folder)
+            print(f"added folder {folder.path}")
 
 
 def remove_track(filepath: str) -> None:
     """
     Removes a track from the music dict.
     """
-    print(filepath)
+    fpath = filepath.split("/")[-1]
+
     try:
         trackid = instances.songs_instance.get_song_by_path(filepath)["_id"]["$oid"]
     except TypeError:
+        print(f"💙 Watchdog Error: Error removing track {filepath} TypeError")
         return
 
     instances.songs_instance.remove_song_by_id(trackid)
@@ -80,6 +85,10 @@ def remove_track(filepath: str) -> None:
     for track in api.TRACKS:
         if track.trackid == trackid:
             api.TRACKS.remove(track)
+
+    for folder in api.FOLDERS:
+        if folder.path == filepath.replace(fpath, ""):
+            api.FOLDERS.remove(folder)
 
 
 class Handler(PatternMatchingEventHandler):

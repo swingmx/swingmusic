@@ -2,6 +2,20 @@
   <div class="info">
     <div class="desc">
       <div>
+        <div class="art">
+          <div
+            class="l-image image rounded"
+            :style="{
+              backgroundImage: `url(&quot;${track.image}&quot;)`,
+            }"
+          ></div>
+        </div>
+        <div id="bitrate">
+          <span v-if="track.bitrate > 330"
+            >FLAC • {{ track.bitrate }}</span
+          >
+          <span v-else>MP3 | {{ track.bitrate }}</span>
+        </div>
         <div class="title ellip">{{ props.track.title }}</div>
         <div class="separator no-border"></div>
         <div class="artists ellip" v-if="props.track.artists[0] !== ''">

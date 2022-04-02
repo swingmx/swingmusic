@@ -13,6 +13,8 @@ import SettingsView from "../views/SettingsView.vue";
 import usePStore from "../stores/playlists";
 import usePTrackStore from "../stores/p.ptracks";
 import useFStore from "../stores/folder";
+import useAStore from "../stores/album";
+import state from "../composables/state";
 
 const routes = [
   {
@@ -25,8 +27,9 @@ const routes = [
     name: "FolderView",
     component: FolderView,
     beforeEnter: async (to) => {
-      console.log("beforeEnter")
+      state.loading.value = true;
       await useFStore().fetchAll(to.params.path);
+      state.loading.value = false;
     },
   },
   {
@@ -38,7 +41,9 @@ const routes = [
     name: "Playlists",
     component: Playlists,
     beforeEnter: async () => {
+      state.loading.value = true;
       await usePStore().fetchAll();
+      state.loading.value = false;
     },
   },
   {
@@ -46,7 +51,9 @@ const routes = [
     name: "PlaylistView",
     component: PlaylistView,
     beforeEnter: async (to) => {
+      state.loading.value = true;
       await usePTrackStore().fetchAll(to.params.pid);
+      state.loading.value = false;
     },
   },
   {
@@ -58,6 +65,15 @@ const routes = [
     path: "/albums/:album/:artist",
     name: "AlbumView",
     component: AlbumView,
+    beforeEnter: async (to) => {
+      state.loading.value = true;
+      await useAStore().fetchTracksAndArtists(
+        to.params.album,
+        to.params.artist
+      );
+      state.loading.value = false;
+      useAStore().fetchBio(to.params.album, to.params.artist);
+    },
   },
   {
     path: "/artists",

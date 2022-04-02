@@ -58,12 +58,13 @@ export default {
 
 <style lang="scss">
 .f-artists {
-  height: 15.5em;
+  height: 14.5em;
   width: calc(100%);
   padding: $small;
+  padding-bottom: 0;
   border-radius: $small;
   user-select: none;
-  background: linear-gradient(58deg, $gray 0%, rgba(5, 0, 7, 0.5) 100%);
+  background: linear-gradient(0deg, transparent, $black);
   position: relative;
 
   .header {
@@ -75,7 +76,8 @@ export default {
     .headin {
       font-size: 1.5rem;
       font-weight: 900;
-      display: flex;
+      // border: solid;
+      margin-left: $small;
     }
   }
 }

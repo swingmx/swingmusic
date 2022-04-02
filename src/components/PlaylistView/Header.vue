@@ -1,12 +1,12 @@
 <template>
   <div class="p-header">
-    <div class="carddd circular">
+    <div class="carddd">
       <div class="type">❤ Playlist</div>
       <div class="title ellip">{{ props.info.name }}</div>
       <div class="desc">
         {{ props.info.desc[0] }}
       </div>
-      <div class="duration rounded">4 Tracks • 3 Hours</div>
+      <div class="duration">4 Tracks • 3 Hours</div>
       <div class="btns">
         <PlayBtnRect />
       </div>
@@ -77,6 +77,7 @@ const props = defineProps<{
     width: 25rem;
     padding: 1rem;
     background-color: rgba(5, 4, 4, 0.829);
+    border-radius: .75rem;
 
     .type {
       color: rgba(255, 255, 255, 0.692);
@@ -85,6 +86,7 @@ const props = defineProps<{
     .title {
       font-size: 2.5rem;
       font-weight: 900;
+      text-transform: capitalize;
     }
 
     .desc {
@@ -105,6 +107,7 @@ const props = defineProps<{
       padding: $smaller;
       border: solid 1px $gray1;
       user-select: none;
+      border-radius: $smaller;
     }
 
     .btns {

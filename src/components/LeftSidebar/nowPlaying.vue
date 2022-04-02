@@ -4,15 +4,6 @@
     <div class="button menu image rounded"></div>
     <div class="separator no-border"></div>
     <div>
-      <div class="art">
-        <div
-          class="l-image image rounded"
-          :style="{
-            backgroundImage: `url(&quot;${queue.current.image}&quot;)`,
-          }"
-        ></div>
-      </div>
-      <div class="separator no-border"></div>
       <SongCard :track="queue.current" />
       <Progress :seek="queue.seek" :pos="queue.current_time" />
       <HotKeys
@@ -81,11 +72,24 @@ const queue = useQStore();
     width: 100%;
     display: grid;
     place-items: center;
+    margin-bottom: $small;
 
     .l-image {
       height: 12rem;
       width: 12rem;
     }
+  }
+
+  #bitrate {
+    position: absolute;
+    font-size: 0.75rem;
+    width: max-content;
+    padding: 0.2rem;
+    top: 13.25rem;
+    left: 1.5rem;
+    background-color: $black;
+    border-radius: $smaller;
+    box-shadow: 0rem 0rem 1rem rgba(0, 0, 0, 0.438);
   }
 
   .title {

@@ -21,6 +21,7 @@ def get_all_playlists():
     playlists = []
 
     for pl in ppp:
+        pl.count = len(pl.tracks)
         pl.tracks = []
         playlists.append(pl)
 
@@ -33,7 +34,7 @@ def create_playlist():
 
     playlist = {
         "name": data["name"],
-        "description": [],
+        "description": "",
         "tracks": [],
         "count": 0,
         "lastUpdated": 0,
@@ -74,6 +75,7 @@ def add_track_to_playlist(playlist_id: str):
 def get_single_p_info(playlist_id: str):
     for p in api.PLAYLISTS:
         if p.playlistid == playlist_id:
+            p.count = len(p.tracks)
             return {"data": p}
 
 

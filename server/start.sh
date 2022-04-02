@@ -1,4 +1,7 @@
-/home/cwilvx/.cache/pypoetry/virtualenvs/musicx_server-jsG71GtA-py3.8/bin/python manage.py
+
+ppath=$(poetry run which python)
+
+$ppath manage.py
 
 
 #python manage.py

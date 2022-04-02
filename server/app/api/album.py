@@ -7,6 +7,7 @@ from app import api
 from app import helpers, cache
 from app import functions
 from app.lib import albumslib, trackslib
+
 album_bp = Blueprint("album", __name__, url_prefix="")
 
 
@@ -44,12 +45,18 @@ def get_album_tracks():
     return {"songs": songs, "info": album}
 
 
-@album_bp.route("/album/<title>/<artist>/bio")
-@cache.cached()
-def get_album_bio(title, artist):
+@album_bp.route("/album/bio", methods=["POST"])
+def get_album_bio():
     """Returns the album bio for the given album."""
-    bio = functions.get_album_bio(title, artist)
-    return {"bio": bio}, 200
+    data = request.get_json()
+    print(data)
+
+    bio = functions.get_album_bio(data["album"], data["albumartist"])
+
+    if bio is not None:
+        return {"bio": bio}
+    else:
+        return {"bio": "No bio found."}, 404
 
 
 @album_bp.route("/album/artists", methods=["POST"])

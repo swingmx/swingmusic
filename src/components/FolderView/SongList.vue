@@ -15,7 +15,8 @@
           :song="song"
           :index="index + 1"
           @updateQueue="updateQueue"
-          @loadAlbum="loadAlbum"
+          :isPlaying="queue.playing"
+          :isCurrent="queue.current.trackid == song.trackid"
         />
       </div>
     </div>
@@ -33,7 +34,6 @@ import { useRoute } from "vue-router";
 
 import SongItem from "../shared/SongItem.vue";
 
-import routeLoader from "../../composables/routeLoader.js";
 import state from "../../composables/state";
 import useQStore from "../../stores/queue";
 import { Track } from "../../interfaces";
@@ -43,28 +43,29 @@ const queue = useQStore();
 const props = defineProps<{
   tracks: Track[];
   path?: string;
+  pname?: string;
+  playlistid?: string;
 }>();
 
 let route = useRoute().name;
-console.log(route);
 const search_query = state.search_query;
 
-function updateQueue(song: Track) {
-  
+function updateQueue(track: Track) {
   switch (route) {
     // check which route the play request come from
     case "FolderView":
-      queue.playFromFolder(props.path, props.tracks, song);
+      queue.playFromFolder(props.path, props.tracks);
+      queue.play(track);
       break;
     case "AlbumView":
+      queue.playFromAlbum(track.album, track.albumartist, props.tracks);
+      queue.play(track);
+      break;
+    case "PlaylistView":
+      queue.playFromPlaylist(props.pname, props.playlistid, props.tracks);
+      queue.play(track);
       break;
   }
-
-  // perks.updateQueue(song, type);
-}
-
-function loadAlbum(title, albumartist) {
-  routeLoader.toAlbum(title, albumartist);
 }
 </script>
 

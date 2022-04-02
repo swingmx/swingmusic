@@ -14,9 +14,11 @@
             <p class="title ellip">{{ queue.next.title }}</p>
             <hr />
             <p class="artist ellip">
-              <span v-for="artist in putCommas(queue.next.artists)" :key="artist">{{
-                artist
-              }}</span>
+              <span
+                v-for="artist in putCommas(queue.next.artists)"
+                :key="artist"
+                >{{ artist }}</span
+              >
             </p>
           </div>
         </div>
@@ -37,10 +39,11 @@
 
 <script setup lang="ts">
 import perks from "../../composables/perks.js";
-import { ref } from "@vue/reactivity";
 import TrackItem from "../shared/TrackItem.vue";
 import useQStore from "../../stores/queue";
 import { Track } from "../../interfaces.js";
+import { onBeforeMount } from "vue";
+
 const queue = useQStore();
 
 const putCommas = perks.putCommas;

@@ -8,6 +8,8 @@
             v-for="track in props.tracks"
             :key="track.trackid"
             :track="track"
+            :isPlaying="queue.playing"
+            :isCurrent="queue.current.trackid == track.trackid"
           />
         </tbody>
       </table>
@@ -19,9 +21,10 @@
 <script setup>
 import LoadMore from "./LoadMore.vue";
 import TrackItem from "../shared/TrackItem.vue";
+import useQStore from "../../stores/queue";
 
 let counter = 0;
-
+const queue = useQStore();
 const props = defineProps({
   tracks: {
     type: Object,

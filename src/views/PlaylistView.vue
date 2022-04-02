@@ -4,7 +4,11 @@
     <div class="separator no-border"></div>
 
     <div class="songlist rounded">
-      <SongList :songs="playlist.tracks" />
+      <SongList
+        :tracks="playlist.tracks"
+        :pname="info.name"
+        :playlistid="playlist.playlistid"
+      />
     </div>
     <div class="separator no-border"></div>
     <FeaturedArtists />
@@ -41,7 +45,7 @@ const info = {
   }
   .songlist {
     padding: $small;
-    min-height: 100%;
+    min-height: calc(100% - 30rem);
   }
 }
 </style>

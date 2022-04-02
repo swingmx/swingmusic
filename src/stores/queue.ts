@@ -64,17 +64,18 @@ export default defineStore("Queue", {
     progressElem: HTMLElement,
     audio: new Audio(),
     current: <Track>{},
-    playing: false,
-    current_time: 0,
     next: <Track>{},
     prev: <Track>{},
+    playing: false,
+    current_time: 0,
     from: <fromFolder>{} || <fromAlbum>{} || <fromPlaylist>{},
-    tracks: <Track[]>[],
+    tracks: <Track[]>[defaultTrack],
   }),
   actions: {
     play(track: Track) {
       const uri = state.settings.uri + "/file/" + track.trackid;
       const elem = document.getElementById("progress");
+      this.updateCurrent(track);
 
       new Promise((resolve, reject) => {
         this.audio.src = uri;
@@ -82,8 +83,8 @@ export default defineStore("Queue", {
         this.audio.onerror = reject;
       })
         .then(() => {
-          this.updateCurrent(track);
           this.audio.play().then(() => {
+
             this.playing = true;
             notif(track, this.playPause, this.playNext, this.playPrev);
 
@@ -172,49 +173,37 @@ export default defineStore("Queue", {
         this.prev = this.tracks[index - 1];
       }
     },
-    setNewQueue(current: Track, tracklist: Track[]) {
-      this.play(current);
-
+    setNewQueue(tracklist: Track[]) {
       if (this.tracks !== tracklist) {
         this.tracks = tracklist;
         addQToLocalStorage(this.from, this.tracks);
       }
     },
-    playFromFolder(fpath: string, tracks: Track[], current: Track) {
+    playFromFolder(fpath: string, tracks: Track[]) {
+      this.setNewQueue(tracks);
+
       this.from = <fromFolder>{
         type: FromOptions.folder,
         path: fpath,
       };
-
-      this.setNewQueue(current, tracks);
     },
-    playFromAlbum(
-      aname: string,
-      albumartist: string,
-      tracks: Track[],
-      current: Track
-    ) {
+    playFromAlbum(aname: string, albumartist: string, tracks: Track[]) {
+      this.setNewQueue(tracks);
+
       this.from = <fromAlbum>{
         type: FromOptions.album,
         name: aname,
         albumartist: albumartist,
       };
-
-      this.setNewQueue(current, tracks);
     },
-    playFromPlaylist(
-      pname: string,
-      pid: string,
-      tracks: Track[],
-      current: Track
-    ) {
+    playFromPlaylist(pname: string, pid: string, tracks: Track[]) {
+      this.setNewQueue(tracks);
+
       this.from = <fromPlaylist>{
         type: FromOptions.playlist,
         name: pname,
         playlistid: pid,
       };
-
-      this.setNewQueue(current, tracks);
     },
   },
 });

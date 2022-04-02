@@ -147,7 +147,7 @@ def use_defaults() -> str:
     """
     Returns a path to a random image in the defaults directory.
     """
-    path = str(random.randint(0, 10)) + ".webp"
+    path = "defaults/" + str(random.randint(0, 20)) + ".webp"
     return path
 
 
@@ -266,14 +266,14 @@ def parse_album_artist_tag(audio):
     return albumartist
 
 
-def parse_album_tag(audio):
+def parse_album_tag(audio, full_path: str):
     """
     Parses the album tag from an audio file.
     """
     try:
         album = audio["album"][0]
     except (KeyError, IndexError):
-        album = "Unknown"
+        album = full_path.split("/")[-1]
 
     return album
 
@@ -339,7 +339,7 @@ def get_tags(fullpath: str) -> dict:
         "artists": parse_artist_tag(audio),
         "title": parse_title_tag(audio, fullpath),
         "albumartist": parse_album_artist_tag(audio),
-        "album": parse_album_tag(audio),
+        "album": parse_album_tag(audio, fullpath),
         "genre": parse_genre_tag(audio),
         "date": parse_date_tag(audio)[:4],
         "tracknumber": parse_track_number(audio),
@@ -365,15 +365,12 @@ def get_album_bio(title: str, albumartist: str):
         response = requests.get(last_fm_url)
         data = response.json()
     except:
-        return "None"
+        return None
 
     try:
         bio = data["album"]["wiki"]["summary"].split('<a href="https://www.last.fm/')[0]
     except KeyError:
         bio = None
-
-    if bio is None:
-        return "None"
 
     return bio
 

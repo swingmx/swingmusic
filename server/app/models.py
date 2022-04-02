@@ -69,6 +69,16 @@ class Album:
         self.image = settings.IMG_THUMB_URI + tags["image"]
 
 
+def get_p_track(ptrack):
+    for track in api.TRACKS:
+        if (
+            track.title == ptrack["title"]
+            and track.artists == ptrack["artists"]
+            and ptrack["album"] == track.album
+        ):
+            return track
+
+
 def create_playlist_tracks(playlist_tracks: List) -> List[Track]:
     """
     Creates a list of model.Track objects from a list of playlist track dicts.
@@ -76,13 +86,9 @@ def create_playlist_tracks(playlist_tracks: List) -> List[Track]:
     tracks: List[Track] = []
 
     for t in playlist_tracks:
-        for track in api.TRACKS:
-            if (
-                track.title == t["title"]
-                and track.artists == t["artists"]
-                and track.album == t["album"]
-            ):
-                tracks.append(track)
+        track = get_p_track(t)
+        if track is not None:
+            tracks.append(track)
 
     return tracks
 
@@ -96,8 +102,8 @@ class Playlist:
     description: str
     image: str
     tracks: List[Track]
-    count: int
     lastUpdated: int
+    count: int = 0
     """A list of track objects in the playlist"""
 
     def __init__(self, data):
@@ -106,9 +112,7 @@ class Playlist:
         self.description = data["description"]
         self.image = ""
         self.tracks = create_playlist_tracks(data["tracks"])
-        self.count = len(data["tracks"])
         self.lastUpdated = data["lastUpdated"]
-
 
 
 @dataclass
