@@ -20,9 +20,10 @@ def send_track_file(trackid):
             for file in api.PRE_TRACKS
             if file["_id"]["$oid"] == trackid
         ][0]
-        return send_file(filepath, mimetype="audio/mp3")
-    except FileNotFoundError:
+    except (FileNotFoundError, IndexError):
         return "File not found", 404
+
+    return send_file(filepath, mimetype="audio/mp3")
 
 
 @track_bp.route("/sample")

@@ -8,7 +8,6 @@ from io import BytesIO
 import random
 import datetime
 from typing import List
-from flask import request
 import mutagen
 import urllib
 
@@ -24,10 +23,8 @@ from PIL import Image
 from app import helpers
 from app import instances
 from app import settings, models
-from app.lib import albumslib
 from app import api
-from app.lib import watchdoge
-from app.lib import folderslib
+from app.lib import watchdoge, folderslib, playlistlib, albumslib
 
 
 @helpers.background
@@ -73,7 +70,7 @@ def populate():
             upsert_id = instances.songs_instance.insert_song(tags)
 
             if upsert_id is not None:
-                tags["_id"] = {"$oid": upsert_id}
+                tags["_id"] = {"$oid": str(upsert_id)}
                 api.PRE_TRACKS.append(tags)
 
         _bar.next()
@@ -81,6 +78,7 @@ def populate():
 
     albumslib.create_everything()
     folderslib.run_scandir()
+    playlistlib.create_all_playlists()
 
     end = time.time()
 
@@ -199,11 +197,10 @@ def save_t_colors():
     _bar.finish()
 
 
-def extract_thumb(audio_file_path: str) -> str:
+def extract_thumb(audio_file_path: str, webp_path: str) -> str:
     """
     Extracts the thumbnail from an audio file. Returns the path to the thumbnail.
     """
-    webp_path = audio_file_path.split("/")[-1] + ".webp"
     img_path = os.path.join(settings.THUMBS_PATH, webp_path)
 
     if os.path.exists(img_path):
@@ -221,7 +218,7 @@ def extract_thumb(audio_file_path: str) -> str:
             try:
                 png = img.convert("RGB")
                 small_img = png.resize((250, 250), Image.ANTIALIAS)
-                small_img.save(img_path, format="webp")
+                small_img.save(webp_path, format="webp")
             except:
                 return None
 
@@ -379,6 +376,7 @@ def get_all_albums() -> List[models.Album]:
     """
     Returns a list of album objects for all albums in the database.
     """
+
     albums: List[models.Album] = []
 
     _bar = Bar("Creating albums", max=len(api.PRE_TRACKS))

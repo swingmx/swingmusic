@@ -19,3 +19,16 @@ IMG_THUMB_URI = IMG_BASE_URI + "thumbnails/"
 DEFAULT_ARTIST_IMG = IMG_ARTIST_URI + "0.webp"
 
 LAST_FM_API_KEY = "762db7a44a9e6fb5585661f5f2bdf23a"
+
+P_COLORS = [
+    "rgb(4, 40, 196)",
+    "rgb(196, 4, 68)",
+    "rgb(4, 99, 59)",
+    "rgb(161, 87, 1)",
+    "rgb(1, 161, 22)",
+    "rgb(116, 1, 161)",
+    "rgb(0, 0, 0)",
+    "rgb(95, 95, 95)",
+    "rgb(141, 132, 2)",
+    "rgb(141, 11, 2)",
+]

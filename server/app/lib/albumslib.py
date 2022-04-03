@@ -5,7 +5,7 @@ This library contains all the functions related to albums.
 from pprint import pprint
 import urllib
 from typing import List
-from app import models, functions, helpers
+from app import models, functions
 from app.lib import trackslib
 from app import api
 
@@ -19,7 +19,11 @@ def create_everything() -> List[models.Track]:
 
     api.ALBUMS.clear()
     api.ALBUMS.extend(albums)
-    trackslib.create_all_tracks()
+
+    tracks = trackslib.create_all_tracks()
+
+    api.TRACKS.clear()
+    api.TRACKS.extend(tracks)
 
 
 def get_album_duration(album: list) -> int:
@@ -41,7 +45,8 @@ def get_album_image(album: list) -> str:
     """
 
     for track in album:
-        img = functions.extract_thumb(track["filepath"])
+        img_p = track["album"] + track["albumartist"] + ".webp"
+        img = functions.extract_thumb(track["filepath"], webp_path=img_p)
 
         if img is not None:
             return img

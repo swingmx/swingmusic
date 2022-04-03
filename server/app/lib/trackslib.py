@@ -18,12 +18,13 @@ def create_all_tracks() -> List[models.Track]:
     tracks: list[models.Track] = []
 
     _bar = Bar("Creating tracks", max=len(api.PRE_TRACKS))
-    
+
     for track in api.PRE_TRACKS:
         try:
             os.chmod(track["filepath"], 0o755)
         except FileNotFoundError:
             instances.songs_instance.remove_song_by_filepath(track["filepath"])
+            api.PRE_TRACKS.remove(track)
 
         album = albumslib.find_album(track["album"], track["albumartist"])
 
@@ -34,8 +35,7 @@ def create_all_tracks() -> List[models.Track]:
 
     _bar.finish()
 
-    api.TRACKS.clear()
-    api.TRACKS.extend(tracks)
+    return tracks
 
 
 def get_album_tracks(albumname, artist):
@@ -54,4 +54,3 @@ def get_track_by_id(trackid: str) -> models.Track:
     for track in api.TRACKS:
         if track.trackid == trackid:
             return track
-

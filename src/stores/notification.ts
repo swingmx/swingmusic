@@ -1,6 +1,6 @@
 import { defineStore } from "pinia";
 import { Notif } from "../interfaces";
-import { NotifType } from "./enums";
+import { NotifType } from "../composables/enums";
 
 const useNotifStore = defineStore("notification", {
   state: () => ({
