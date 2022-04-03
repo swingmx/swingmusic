@@ -1,7 +1,6 @@
 """
 Contains default configs
 """
-
 import os
 
 # paths
