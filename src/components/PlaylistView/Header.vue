@@ -9,13 +9,9 @@
         <div class="duration">4 Tracks • 3 Hours</div>
         <div class="desc">
           {{ props.info.desc[0] }}
-          Juice is a drink made from the extraction or pressing of the natural
-          liquid contained in fruit and vegetables. It can also refer to liquids
-          that are flavored with concentrate or other biological food sources,
-          such as meat or seafood, such as clam juice
         </div>
         <div class="title ellip">{{ props.info.name }}</div>
-        <div class="type">❤ Playlist</div>
+        <div class="type">Playlist</div>
       </div>
     </div>
     <div class="last-updated">
