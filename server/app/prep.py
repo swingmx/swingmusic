@@ -4,6 +4,7 @@ Contains the functions to prepare the server for use.
 
 
 import os
+
 from app import settings
 
 

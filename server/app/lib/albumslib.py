@@ -2,12 +2,12 @@
 This library contains all the functions related to albums.
 """
 
-from pprint import pprint
 import urllib
+from pprint import pprint
 from typing import List
-from app import models, functions
+
+from app import api, functions, models
 from app.lib import trackslib
-from app import api
 
 
 def create_everything() -> List[models.Track]:

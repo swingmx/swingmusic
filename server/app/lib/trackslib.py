@@ -4,10 +4,10 @@ This library contains all the functions related to tracks.
 
 import os
 from typing import List
-from app import models, instances
-from app.lib import albumslib
+
+from app import api, instances, models
 from app.helpers import remove_duplicates
-from app import api
+from app.lib import albumslib
 from progress.bar import Bar
 
 

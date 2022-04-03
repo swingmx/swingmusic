@@ -2,29 +2,25 @@
 This module contains functions for the server
 """
 
-import time
-import os
-from io import BytesIO
-import random
 import datetime
-from typing import List
-import mutagen
+import os
+import random
+import time
 import urllib
+from io import BytesIO
+from typing import List
 
+import mutagen
 import requests
-from mutagen.flac import MutagenError
+from app import api, helpers, instances, models, settings
+from app.lib import albumslib, folderslib, playlistlib, watchdoge
+from mutagen.flac import FLAC, MutagenError
 from mutagen.id3 import ID3
-from mutagen.flac import FLAC
-from progress.bar import Bar
 from PIL import Image
+from progress.bar import Bar
 
 # from pprint import pprint
 
-from app import helpers
-from app import instances
-from app import settings, models
-from app import api
-from app.lib import watchdoge, folderslib, playlistlib, albumslib
 
 
 @helpers.background
