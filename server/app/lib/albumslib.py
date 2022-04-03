@@ -1,12 +1,13 @@
 """
 This library contains all the functions related to albums.
 """
-
 import urllib
 from pprint import pprint
 from typing import List
 
-from app import api, functions, models
+from app import api
+from app import functions
+from app import models
 from app.lib import trackslib
 
 
