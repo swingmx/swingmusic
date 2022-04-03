@@ -4,47 +4,38 @@
       <div
         class="image art shadow-lg rounded"
         :style="{
-          backgroundImage: `url(&quot;${props.album_info.image}&quot;)`,
+          backgroundImage: `url(&quot;${props.album.image}&quot;)`,
         }"
       ></div>
       <div class="info">
         <div class="top">
           <div class="h">Album</div>
           <div class="separator no-border"></div>
-          <div class="title">{{ props.album_info.album }}</div>
-          <div class="artist">{{ props.album_info.artist }}</div>
+          <div class="title">{{ props.album.album }}</div>
+          <div class="artist">{{ props.album.artist }}</div>
         </div>
         <div class="separator no-border"></div>
         <div class="bottom">
           <div class="stats shadow-sm">
-            {{ props.album_info.count }} Tracks •
-            {{ perks.formatSeconds(props.album_info.duration, "long") }} •
-            {{ props.album_info.date }}
+            {{ props.album.count }} Tracks •
+            {{ perks.formatSeconds(props.album.duration, "long") }} •
+            {{ props.album.date }}
           </div>
-          <div class="play rounded" @click="playAlbum">
-            <div class="icon"></div>
-            <div>Play</div>
-          </div>
+          <PlayBtnRect :source="playSources.album" />
         </div>
       </div>
     </div>
   </div>
 </template>
 
-<script setup>
-import state from "@/composables/state";
-import perks from "@/composables/perks.js";
-
-const props = defineProps({
-  album_info: {
-    type: Object,
-    default: () => ({}),
-  },
-});
-
-function playAlbum() {
-  perks.updateQueue(state.album.tracklist[0], "album");
-}
+<script setup lang="ts">
+import perks from "../../composables/perks.js";
+import { AlbumInfo } from "../../interfaces.js";
+import PlayBtnRect from "../shared/PlayBtnRect.vue";
+import { playSources } from "../../composables/enums";
+const props = defineProps<{
+  album: AlbumInfo;
+}>();
 </script>
 
 <style lang="scss">

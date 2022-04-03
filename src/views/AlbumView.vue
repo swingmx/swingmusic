@@ -1,7 +1,7 @@
 <template>
   <div class="al-view rounded">
     <div>
-      <Header :album_info="album.info" />
+      <Header :album="album.info" />
     </div>
     <div class="separator" id="av-sep"></div>
     <div class="songs rounded">

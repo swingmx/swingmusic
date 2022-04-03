@@ -15,21 +15,26 @@ def add_track(playlistid: str, trackid: str):
     """
     for playlist in api.PLAYLISTS:
         if playlist.playlistid == playlistid:
-            track = trackslib.get_track_by_id(trackid)
+            tt = trackslib.get_track_by_id(trackid)
 
-            if track not in playlist.tracks:
-                playlist.tracks.append(track)
+            track = {
+                "title": tt.title,
+                "artists": tt.artists,
+                "album": tt.album,
+            }
+
+            try:
+                playlist.add_track(track)
                 instances.playlist_instance.add_track_to_playlist(playlistid, track)
                 return
-            else:
-                raise TrackExistsInPlaylist("Track already in playlist.")
+            except TrackExistsInPlaylist as e:
+                return {"error": str(e)}, 409
 
 
 def get_playlist_tracks(pid: str):
     for p in api.PLAYLISTS:
         if p.playlistid == pid:
             return p.tracks
-
 
 
 def create_all_playlists():

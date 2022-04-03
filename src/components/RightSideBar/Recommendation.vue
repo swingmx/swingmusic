@@ -1,6 +1,6 @@
 <template>
   <div class="r-tracks rounded border">
-    <p class="heading">SIMILAR TRACKS</p>
+    <div class="heading">Similar Tracks</div>
     <div class="tracks">
       <div class="song-item" v-for="song in songs" :key="song">
         <div class="album-art image"></div>
@@ -37,8 +37,13 @@ export default {
 
 <style lang="scss">
 .r-tracks {
-  margin: 0.5rem 0.5rem 0.5rem 0;
+  margin: 0.5rem 0 0.5rem 0;
   padding: 0.5rem;
+
+  .heading {
+    font-size: 1.25rem;
+    margin-bottom: 0.5rem !important;
+  }
 }
 
 .r-tracks .tracks .song-item {

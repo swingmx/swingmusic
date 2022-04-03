@@ -1,14 +1,14 @@
 <template>
   <div class="p-header">
     <div class="carddd">
-      <div class="art image"></div>
+      <div class="art image shadow-sm"></div>
       <div class="info">
         <div class="btns">
           <PlayBtnRect :source="playSources.playlist" />
         </div>
-        <div class="duration">4 Tracks • 3 Hours</div>
+        <div class="duration">{{props.info.count}} Tracks • 3 Hours</div>
         <div class="desc">
-          {{ props.info.desc[0] }}
+          {{ props.info.description }}
         </div>
         <div class="title ellip">{{ props.info.name }}</div>
         <div class="type">Playlist</div>
@@ -25,16 +25,11 @@
 
 <script setup lang="ts">
 import { playSources } from "../../composables/enums";
+import { Playlist } from "../../interfaces";
 
 import PlayBtnRect from "../shared/PlayBtnRect.vue";
 const props = defineProps<{
-  info: {
-    name: string;
-    count: number;
-    duration: string;
-    desc: string;
-    lastUpdated: string;
-  };
+  info: Playlist;
 }>();
 </script>
 
@@ -43,9 +38,7 @@ const props = defineProps<{
   display: grid;
   grid-template-columns: 1fr;
   height: 14rem;
-  // background-image: url("../../assets/images/eggs.jpg");
-
-  background-image: linear-gradient(23deg, $black 40%, rgb(141, 11, 2), $black);
+  background-image: linear-gradient(37deg, $black 4%, $accent, $black);
   position: relative;
   margin-top: $small;
   border-radius: 0.75rem;

@@ -10,3 +10,10 @@ export enum NotifType {
   Info,
   Error,
 }
+
+export enum FromOptions {
+  playlist = "playlist",
+  folder = "folder",
+  album = "album",
+  search = "search",
+}

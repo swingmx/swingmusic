@@ -95,12 +95,16 @@ async function getPTracks(playlistid: string) {
 async function getPlaylist(pid: string) {
   const uri = state.settings.uri + "/playlist/" + pid;
 
-  let playlist: Playlist;
+  let playlist = {
+    info: {},
+    tracks: <Track[]>[],
+  };
 
   await axios
     .get(uri)
     .then((res) => {
-      playlist = res.data.data;
+      playlist.info = res.data.info;
+      playlist.tracks = res.data.tracks;
     })
     .catch((err) => {
       new Notification("Something funny happened!", NotifType.Error);
@@ -110,4 +114,10 @@ async function getPlaylist(pid: string) {
   return playlist;
 }
 
-export { createNewPlaylist, getAllPlaylists, addTrackToPlaylist, getPTracks, getPlaylist };
+export {
+  createNewPlaylist,
+  getAllPlaylists,
+  addTrackToPlaylist,
+  getPTracks,
+  getPlaylist,
+};

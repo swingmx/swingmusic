@@ -35,11 +35,11 @@ function play() {
       break;
     case playSources.playlist:
       queue.playFromPlaylist(
-        playlist.playlist.name,
-        playlist.playlist.playlistid,
-        playlist.playlist.tracks
+        playlist.info.name,
+        playlist.info.playlistid,
+        playlist.tracks
       );
-      queue.play(playlist.playlist.tracks[0]);
+      queue.play(playlist.tracks[0]);
       break;
   }
 }
@@ -53,11 +53,7 @@ function play() {
   height: 2.5rem;
   padding-left: 0.75rem;
   cursor: pointer;
-  background: linear-gradient(
-    34deg,
-    rgba(255, 166, 0, 0.644) 30%,
-    rgb(214, 188, 38)
-  );
+  background: linear-gradient(34deg, $accent, $red);
   user-select: none;
   transition: all 0.5s ease;
 

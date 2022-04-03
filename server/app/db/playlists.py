@@ -9,7 +9,6 @@ convert_many = db.convert_many
 convert_one = db.convert_one
 
 
-
 class Playlists(db.Mongo):
     """
     The class for all playlist-related database operations.
@@ -43,20 +42,15 @@ class Playlists(db.Mongo):
         playlist = self.collection.find_one({"_id": ObjectId(id)})
         return convert_one(playlist)
 
-    def add_track_to_playlist(self, playlistid: str, track: models.Track):
+    def add_track_to_playlist(self, playlistid: str, track: dict) -> None:
         """
         Adds a track to a playlist.
         """
-        track = {
-            "title": track.title,
-            "artists": track.artists,
-            "album": track.album,
-        }
 
         return self.collection.update_one(
             {"_id": ObjectId(playlistid)},
-            {"$push": {"tracks": track}},
-        ).modified_count
+            {"$push": {"pre_tracks": track}},
+        )
 
     def get_playlist_by_name(self, name: str) -> dict:
         """

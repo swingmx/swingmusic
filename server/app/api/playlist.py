@@ -8,6 +8,7 @@ from app import instances, api
 from app.lib import playlistlib
 from app import models
 from app import exceptions
+from app import serializer
 
 playlist_bp = Blueprint("playlist", __name__, url_prefix="/")
 
@@ -17,15 +18,7 @@ TrackExistsInPlaylist = exceptions.TrackExistsInPlaylist
 
 @playlist_bp.route("/playlists", methods=["GET"])
 def get_all_playlists():
-    ppp = deepcopy(api.PLAYLISTS)
-    playlists = []
-
-    for pl in ppp:
-        pl.count = len(pl.tracks)
-        pl.tracks = []
-        playlists.append(pl)
-
-    return {"data": playlists}
+    return {"data": [serializer.Playlist(p) for p in api.PLAYLISTS]}
 
 
 @playlist_bp.route("/playlist/new", methods=["POST"])
@@ -35,16 +28,16 @@ def create_playlist():
     playlist = {
         "name": data["name"],
         "description": "",
-        "tracks": [],
-        "count": 0,
+        "pre_tracks": [],
         "lastUpdated": 0,
+        "image": "",
     }
 
     try:
-        p_in_db = instances.playlist_instance.get_playlist_by_name(playlist["name"])
+        for pl in api.PLAYLISTS:
+            if pl.name == playlist["name"]:
+                raise PlaylistExists("Playlist already exists.")
 
-        if p_in_db:
-            raise PlaylistExists("Playlist already exists.")
     except PlaylistExists as e:
         return {"error": str(e)}, 409
 
@@ -71,12 +64,15 @@ def add_track_to_playlist(playlist_id: str):
     return {"msg": "I think It's done"}, 200
 
 
-@playlist_bp.route("/playlist/<playlist_id>")
-def get_single_p_info(playlist_id: str):
+@playlist_bp.route("/playlist/<playlistid>")
+def get_single_p_info(playlistid: str):
     for p in api.PLAYLISTS:
-        if p.playlistid == playlist_id:
-            p.count = len(p.tracks)
-            return {"data": p}
+        if p.playlistid == playlistid:
+            print(p)
+            tracks = p.get_tracks()
+            return {"info": serializer.Playlist(p), "tracks": tracks}
+
+    return {"info": {}, "tracks": []}
 
 
 # @playlist_bp.route("/playlist/<playlist_id>/info")

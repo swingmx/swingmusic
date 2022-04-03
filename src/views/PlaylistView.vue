@@ -1,13 +1,13 @@
 <template>
   <div class="playlist-view">
-    <Header :info="info" />
+    <Header :info="playlist.info" />
     <div class="separator no-border"></div>
 
     <div class="songlist rounded">
       <SongList
         :tracks="playlist.tracks"
-        :pname="info.name"
-        :playlistid="playlist.playlistid"
+        :pname="playlist.info.name"
+        :playlistid="playlist.info.playlistid"
       />
     </div>
     <div class="separator no-border"></div>
@@ -21,15 +21,7 @@ import SongList from "../components/FolderView/SongList.vue";
 import FeaturedArtists from "../components/PlaylistView/FeaturedArtists.vue";
 import usePTrackStore from "../stores/p.ptracks";
 
-const playlist = usePTrackStore().playlist;
-
-const info = {
-  name: playlist.name,
-  count: playlist.tracks.length,
-  desc: playlist.description,
-  duration: "3 hours, 4 minutes",
-  lastUpdated: "yesterday",
-};
+const playlist = usePTrackStore();
 </script>
 
 <style lang="scss">

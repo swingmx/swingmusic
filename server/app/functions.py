@@ -81,7 +81,6 @@ def populate():
 
     albumslib.create_everything()
     folderslib.run_scandir()
-    playlistlib.create_all_playlists()
 
     end = time.time()
 
