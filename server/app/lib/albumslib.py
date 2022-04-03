@@ -45,7 +45,8 @@ def get_album_image(album: list) -> str:
     """
 
     for track in album:
-        img_p = (track["album"] + track["albumartist"] + ".webp").replace("/", "::")
+        img_p = (track["album"] + track["albumartist"] +
+                 ".webp").replace("/", "::")
         img = functions.extract_thumb(track["filepath"], webp_path=img_p)
 
         if img is not None:
