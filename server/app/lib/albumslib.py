@@ -46,7 +46,8 @@ def get_album_image(album: list) -> str:
     """
 
     for track in album:
-        img_p = (track["album"] + track["albumartist"] + ".webp").replace("/", "::")
+        img_p = (track["album"] + track["albumartist"] + ".webp").replace(
+            "/", "::")
         img = functions.extract_thumb(track["filepath"], webp_path=img_p)
 
         if img is not None:
@@ -84,8 +85,7 @@ def create_album(track) -> models.Album:
     album["date"] = album_tracks[0]["date"]
 
     album["artistimage"] = urllib.parse.quote_plus(
-        album_tracks[0]["albumartist"] + ".webp"
-    )
+        album_tracks[0]["albumartist"] + ".webp")
 
     album["image"] = get_album_image(album_tracks)
 
