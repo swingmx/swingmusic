@@ -26,8 +26,15 @@ def create_config_dir() -> None:
         path = os.path.join(config_folder, _dir)
 
         try:
+            os.path.exists(path)
+        except FileNotFoundError:
             os.makedirs(path)
-        except FileExistsError:
-            pass
+            os.chmod(path, 0o755)
 
-        os.chmod(path, 0o755)
+        if _dir == dirs[3]:
+            default_thumbnails_path = "../setup/default-images/thumbnails"
+
+            try:
+                os.path.exists(os.path.join(path, "defaults"))
+            except FileNotFoundError:
+                pass

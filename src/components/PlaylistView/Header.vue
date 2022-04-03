@@ -1,14 +1,21 @@
 <template>
   <div class="p-header">
     <div class="carddd">
-      <div class="type">❤ Playlist</div>
-      <div class="title ellip">{{ props.info.name }}</div>
-      <div class="desc">
-        {{ props.info.desc[0] }}
-      </div>
-      <div class="duration">4 Tracks • 3 Hours</div>
-      <div class="btns">
-        <PlayBtnRect />
+      <div class="art image"></div>
+      <div class="info">
+        <div class="btns">
+          <PlayBtnRect :source="playSources.playlist" />
+        </div>
+        <div class="duration">4 Tracks • 3 Hours</div>
+        <div class="desc">
+          {{ props.info.desc[0] }}
+          Juice is a drink made from the extraction or pressing of the natural
+          liquid contained in fruit and vegetables. It can also refer to liquids
+          that are flavored with concentrate or other biological food sources,
+          such as meat or seafood, such as clam juice
+        </div>
+        <div class="title ellip">{{ props.info.name }}</div>
+        <div class="type">❤ Playlist</div>
       </div>
     </div>
     <div class="last-updated">
@@ -21,6 +28,8 @@
 </template>
 
 <script setup lang="ts">
+import { playSources } from "../../composables/enums";
+
 import PlayBtnRect from "../shared/PlayBtnRect.vue";
 const props = defineProps<{
   info: {
@@ -38,7 +47,9 @@ const props = defineProps<{
   display: grid;
   grid-template-columns: 1fr;
   height: 14rem;
-  background-image: url("../../assets/images/eggs.jpg");
+  // background-image: url("../../assets/images/eggs.jpg");
+
+  background-image: linear-gradient(23deg, $black 40%, rgb(141, 11, 2), $black);
   position: relative;
   margin-top: $small;
   border-radius: 0.75rem;
@@ -46,8 +57,8 @@ const props = defineProps<{
 
   .last-updated {
     position: absolute;
-    bottom: $small;
-    right: $small;
+    bottom: 1rem;
+    right: 1rem;
     padding: 0.5rem;
     background-color: $body;
     color: rgb(255, 255, 255);
@@ -71,13 +82,22 @@ const props = defineProps<{
   }
 
   .carddd {
-    position: absolute;
-    bottom: $small;
-    left: $small;
-    width: 25rem;
+    width: 100%;
     padding: 1rem;
-    background-color: rgba(5, 4, 4, 0.829);
-    border-radius: .75rem;
+    display: grid;
+    grid-template-columns: 13rem 1fr;
+
+    .art {
+      width: 12rem;
+      height: 12rem;
+      background-color: red;
+      background-image: url("../../assets/images/eggs.jpg");
+    }
+
+    .info {
+      display: flex;
+      flex-direction: column-reverse;
+    }
 
     .type {
       color: rgba(255, 255, 255, 0.692);
@@ -99,15 +119,11 @@ const props = defineProps<{
     }
 
     .duration {
-      position: absolute;
-      right: 1rem;
-      bottom: 1rem;
       font-size: 0.8rem;
       color: $white;
       padding: $smaller;
-      border: solid 1px $gray1;
-      user-select: none;
-      border-radius: $smaller;
+      padding-left: 0;
+      font-weight: 900;
     }
 
     .btns {

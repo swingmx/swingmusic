@@ -12,7 +12,6 @@ from app.lib import folderslib
 
 folder_bp = Blueprint("folder", __name__, url_prefix="/")
 from app import helpers
-import time
 
 
 @folder_bp.route("/folder", methods=["POST"])
