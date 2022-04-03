@@ -6,7 +6,7 @@ import os
 
 # paths
 CONFIG_FOLDER = ".alice"
-HOME_DIR = os.path.expanduser("~") + "/"
+HOME_DIR = os.path.expanduser("~")
 APP_DIR = os.path.join(HOME_DIR, CONFIG_FOLDER)
 THUMBS_PATH = os.path.join(APP_DIR, "images", "thumbnails")
 

@@ -13,7 +13,7 @@
         v-for="artist in artists"
         :key="artist"
         :artist="artist"
-        :color="232452"
+        :color="ffffff00"
       />
     </div>
   </div>
@@ -66,6 +66,7 @@ export default {
   user-select: none;
   background: linear-gradient(0deg, transparent, $black);
   position: relative;
+  background-color: #ffffff00;
 
   .header {
     display: flex;

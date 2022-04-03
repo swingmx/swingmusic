@@ -347,7 +347,7 @@ def get_tags(fullpath: str) -> dict:
         "length": round(audio.info.length),
         "bitrate": round(int(audio.info.bitrate) / 1000),
         "filepath": fullpath,
-        "folder": os.path.dirname(fullpath) + "/",
+        "folder": os.path.dirname(fullpath),
     }
 
     return tags

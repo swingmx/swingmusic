@@ -1,46 +1,24 @@
 <template>
   <div class="folder-top flex">
     <div class="fname">
-      <button class="play image" @click="playFolder(first_song)">
+      <button class="play image">
         <div class="icon"></div>
         Play
       </button>
       <div class="text">
         <div class="icon image"></div>
         <div class="ellip">
-          {{ path.split("/").splice(-2).join("") }}
+          {{ folder.path.split("/").splice(-1).join("") }}
         </div>
       </div>
     </div>
   </div>
 </template>
 
-<script>
-import perks from "@/composables/perks.js";
-import { watch } from "@vue/runtime-core";
-import useDebouncedRef from "@/composables/useDebouncedRef.js";
-import Loader from "../shared/Loader.vue";
+<script setup lang="ts">
+import useFStore from "../../stores/folder";
 
-export default {
-  props: ["path", "first_song"],
-  components: { Loader },
-  setup(props, { emit }) {
-    const query = useDebouncedRef("", 400);
-
-    function playFolder(song) {
-      perks.updateQueue(song, "folder");
-    }
-
-    watch(query, () => {
-      emit("search", query.value);
-    });
-
-    return {
-      playFolder,
-      query,
-    };
-  },
-};
+const folder = useFStore();
 </script>
 
 <style lang="scss">

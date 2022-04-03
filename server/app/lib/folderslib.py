@@ -21,7 +21,7 @@ def create_folder(foldername: str) -> models.Folder:
     """Create a single Folder object"""
     folder = {
         "name": foldername.split("/")[-1],
-        "path": foldername + "/",
+        "path": foldername,
         "trackcount": get_folder_track_count(foldername),
     }
 
@@ -48,11 +48,16 @@ def get_subdirs(foldername: str) -> List[models.Folder]:
     subdirs = set()
 
     for folder in api.VALID_FOLDERS:
-        str0 = folder.replace(foldername, "")
-        str1 = str0.split("/")[0]
+        if foldername in folder:
+            str0 = folder.replace(foldername, "")
 
-        if str1 != "":
-            subdirs.add(foldername + str1)
+            try:
+                str1 = str0.split("/")[1]
+            except IndexError:
+                str1 = None
+
+            if str1 is not None:
+                subdirs.add(foldername + "/" + str1)
 
     return [create_folder(dir) for dir in subdirs]
 

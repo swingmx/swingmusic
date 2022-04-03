@@ -14,6 +14,7 @@ export default defineStore("FolderDirs&Tracks", {
       const { tracks, folders } = await fetchThem(path);
 
       this.path = path;
+      console.log(path)
       this.dirs = folders;
       this.tracks = tracks;
     },
