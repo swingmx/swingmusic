@@ -1,13 +1,15 @@
 """
 Contains all the folder routes.
 """
-
 import datetime
 import os
 
-from app import api, helpers, settings
+from app import api
+from app import helpers
+from app import settings
 from app.lib import folderslib
-from flask import Blueprint, request
+from flask import Blueprint
+from flask import request
 
 folder_bp = Blueprint("folder", __name__, url_prefix="/")
 
