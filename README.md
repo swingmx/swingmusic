@@ -78,6 +78,7 @@ Then install the client dependencies and start the client development server.
 yarn install
 yarn dev
 ```
+
 The development server will be started on <http://127.0.0.1:3000>.
 
 That's pretty all there is to the client. Now we need to set up the actual desktop agent.
@@ -94,10 +95,13 @@ Open a new terminal/tab and navigate to the `alice/server` directory and install
 cd ./server
 poetry install
 ```
+
 Then start the server.
+
 ```bash
 ./start.sh
 ```
+
 The server will be started on <http://127.0.0.1:9876>.
 
 Congratulations! You have successfully set up a development Alice instance. You should expect a lot of bugs. Please open an issue or open a pull request if you can help. We really appreciate your contribution.
