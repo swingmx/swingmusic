@@ -1,10 +1,11 @@
 """
 Contains all the models for objects generation and typing.
 """
-
-from dataclasses import dataclass, field
+from dataclasses import dataclass
+from dataclasses import field
 from datetime import date
 from typing import List
+
 from app import api
 from app import settings
 from app.exceptions import TrackExistsInPlaylist
@@ -72,11 +73,9 @@ class Album:
 
 def get_p_track(ptrack):
     for track in api.TRACKS:
-        if (
-            track.title == ptrack["title"]
-            and track.artists == ptrack["artists"]
-            and ptrack["album"] == track.album
-        ):
+        if (track.title == ptrack["title"]
+                and track.artists == ptrack["artists"]
+                and ptrack["album"] == track.album):
             return track
 
 

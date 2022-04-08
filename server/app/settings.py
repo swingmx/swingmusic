@@ -9,13 +9,11 @@ HOME_DIR = os.path.expanduser("~")
 APP_DIR = os.path.join(HOME_DIR, CONFIG_FOLDER)
 THUMBS_PATH = os.path.join(APP_DIR, "images", "thumbnails")
 
-
 # URL
 IMG_BASE_URI = "http://127.0.0.1:8900/images/"
 IMG_ARTIST_URI = IMG_BASE_URI + "artists/"
 IMG_THUMB_URI = IMG_BASE_URI + "thumbnails/"
 IMG_PLAYLIST_URI = IMG_BASE_URI + "playlists/"
-
 
 # defaults
 DEFAULT_ARTIST_IMG = IMG_ARTIST_URI + "0.webp"
