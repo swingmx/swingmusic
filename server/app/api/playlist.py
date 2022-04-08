@@ -2,6 +2,7 @@
 Contains all the playlist routes.
 """
 
+from datetime import datetime
 from flask import Blueprint, request
 from app import instances, api
 from app.lib import playlistlib
@@ -17,7 +18,14 @@ TrackExistsInPlaylist = exceptions.TrackExistsInPlaylist
 
 @playlist_bp.route("/playlists", methods=["GET"])
 def get_all_playlists():
-    return {"data": [serializer.Playlist(p) for p in api.PLAYLISTS]}
+    playlists = [
+        serializer.Playlist(p, construct_last_updated=False) for p in api.PLAYLISTS
+    ]
+    playlists.sort(
+        key=lambda p: datetime.strptime(p.lastUpdated, "%Y-%m-%d %H:%M:%S"),
+        reverse=True,
+    )
+    return {"data": playlists}
 
 
 @playlist_bp.route("/playlist/new", methods=["POST"])
@@ -28,7 +36,7 @@ def create_playlist():
         "name": data["name"],
         "description": "",
         "pre_tracks": [],
-        "lastUpdated": 0,
+        "lastUpdated": data["lastUpdated"],
         "image": "",
     }
 
@@ -68,7 +76,10 @@ def get_single_p_info(playlistid: str):
     for p in api.PLAYLISTS:
         if p.playlistid == playlistid:
             tracks = p.get_tracks()
-            return {"info": serializer.Playlist(p), "tracks": tracks}
+            return {
+                "info": serializer.Playlist(p),
+                "tracks": tracks,
+            }
 
     return {"info": {}, "tracks": []}
 
@@ -81,9 +92,6 @@ def update_playlist(playlistid: str):
         image = request.files["image"]
 
     data = request.form
-
-    print(type(image))
-    print(image.content_type)
 
     playlist = {
         "name": str(data.get("name")).strip(),

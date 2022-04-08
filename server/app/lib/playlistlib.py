@@ -1,8 +1,7 @@
 """
 This library contains all the functions related to playlists.
 """
-import base64
-import io
+
 import os
 import random
 import string
@@ -53,6 +52,7 @@ def create_all_playlists():
     _bar = Bar("Creating playlists", max=len(playlists))
     for playlist in playlists:
         api.PLAYLISTS.append(models.Playlist(playlist))
+
         _bar.next()
     _bar.finish()
 
