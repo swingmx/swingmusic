@@ -30,15 +30,8 @@
       style="display: none"
       @change="handleUpload"
     />
-    <div
-      id="upload"
-      class="rounded"
-      @click="selectFiles"
-      @dragenter="dragEnter"
-      @dragover="dragOver"
-      @drop="drop"
-    >
-      <div>Click or Drag an image here</div>
+    <div id="upload" class="rounded" @click="selectFiles">
+      <div>Click to upload image</div>
       <div
         id="update-pl-img-preview"
         class="image"
@@ -56,6 +49,7 @@ import { onMounted, ref } from "vue";
 import { Playlist } from "../../interfaces";
 import { updatePlaylist } from "../../composables/playlists";
 import usePStore from "../../stores/p.ptracks";
+import { getCurrentDate } from "../../composables/perks";
 
 const pStore = usePStore();
 
@@ -74,8 +68,6 @@ const emit = defineEmits<{
 
 emit("title", "Update Playlist");
 
-let image: File;
-
 function selectFiles() {
   const input = document.getElementById(
     "update-pl-image-upload"
@@ -83,26 +75,7 @@ function selectFiles() {
   input.click();
 }
 
-function dragEnter(e: Event) {
-  e.stopPropagation();
-  e.preventDefault();
-}
-
-function dragOver(e: Event) {
-  e.stopPropagation();
-  e.preventDefault();
-}
-
-function drop(e: any) {
-  e.stopImmediatePropagation();
-  e.stopPropagation();
-  e.preventDefault();
-
-  const dt = e.dataTransfer;
-  const files = dt.files;
-
-  handleFile(files[0]);
-}
+let image: File;
 
 function handleUpload() {
   const input = document.getElementById(
@@ -113,7 +86,7 @@ function handleUpload() {
 }
 
 function handleFile(file: File) {
-  if (!file.type.startsWith("image/")) {
+  if (!file || !file.type.startsWith("image/")) {
     return;
   }
 
@@ -128,10 +101,9 @@ function update_playlist(e: Event) {
   e.preventDefault();
   const form = e.target as HTMLFormElement;
   const formData = new FormData(form);
-  formData.append("image", image);
-  formData.append("lastUpdated", new Date().toString());
 
-  console.log(formData.get("name") == "");
+  formData.append("image", image);
+  formData.append("lastUpdated", getCurrentDate());
 
   if (formData.get("name").toString().trim() !== "") {
     updatePlaylist(props.playlist.playlistid, formData, pStore).then(() => {
@@ -169,7 +141,6 @@ function update_playlist(e: Event) {
   input[type="submit"] {
     margin: $small 0;
     background-color: $accent;
-    color: #fff;
     width: 7rem;
     padding: 0.75rem;
     font-size: 1rem;
