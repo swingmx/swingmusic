@@ -61,7 +61,8 @@ def populate():
     """
     start = time.time()
 
-    s, files = helpers.run_fast_scandir(settings.HOME_DIR, [".flac", ".mp3"], full=True)
+    s, files = helpers.run_fast_scandir(settings.HOME_DIR, [".flac", ".mp3"],
+                                        full=True)
 
     _bar = Bar("Processing files", max=len(files))
 
@@ -84,11 +85,8 @@ def populate():
     end = time.time()
 
     print(
-        str(datetime.timedelta(seconds=round(end - start)))
-        + " elapsed for "
-        + str(len(files))
-        + " files"
-    )
+        str(datetime.timedelta(seconds=round(end - start))) + " elapsed for " +
+        str(len(files)) + " files")
 
 
 def fetch_image_path(artist: str) -> str or None:
@@ -123,9 +121,8 @@ def populate_images():
 
     _bar = Bar("Processing images", max=len(artists))
     for artist in artists:
-        file_path = (
-            helpers.app_dir + "/images/artists/" + artist.replace("/", "::") + ".webp"
-        )
+        file_path = (helpers.app_dir + "/images/artists/" +
+                     artist.replace("/", "::") + ".webp")
 
         if not os.path.exists(file_path):
             img_path = fetch_image_path(artist)
@@ -356,8 +353,7 @@ def get_album_bio(title: str, albumartist: str):
     Returns the album bio for a given album.
     """
     last_fm_url = "http://ws.audioscrobbler.com/2.0/?method=album.getinfo&api_key={}&artist={}&album={}&format=json".format(
-        settings.LAST_FM_API_KEY, albumartist, title
-    )
+        settings.LAST_FM_API_KEY, albumartist, title)
 
     try:
         response = requests.get(last_fm_url)
@@ -366,7 +362,8 @@ def get_album_bio(title: str, albumartist: str):
         return None
 
     try:
-        bio = data["album"]["wiki"]["summary"].split('<a href="https://www.last.fm/')[0]
+        bio = data["album"]["wiki"]["summary"].split(
+            '<a href="https://www.last.fm/')[0]
     except KeyError:
         bio = None
 
