@@ -1,13 +1,16 @@
 """
 Contains all the playlist routes.
 """
-from copy import deepcopy
-from typing import List
-from flask import Blueprint, request
-from app import instances, api
-from app.lib import playlistlib
-from app import models
+from datetime import datetime
+
+from app import api
 from app import exceptions
+from app import instances
+from app import models
+from app import serializer
+from app.lib import playlistlib
+from flask import Blueprint
+from flask import request
 
 playlist_bp = Blueprint("playlist", __name__, url_prefix="/")
 
@@ -17,14 +20,14 @@ TrackExistsInPlaylist = exceptions.TrackExistsInPlaylist
 
 @playlist_bp.route("/playlists", methods=["GET"])
 def get_all_playlists():
-    ppp = deepcopy(api.PLAYLISTS)
-    playlists = []
-
-    for pl in ppp:
-        pl.count = len(pl.tracks)
-        pl.tracks = []
-        playlists.append(pl)
-
+    playlists = [
+        serializer.Playlist(p, construct_last_updated=False)
+        for p in api.PLAYLISTS
+    ]
+    playlists.sort(
+        key=lambda p: datetime.strptime(p.lastUpdated, "%Y-%m-%d %H:%M:%S"),
+        reverse=True,
+    )
     return {"data": playlists}
 
 
@@ -35,16 +38,16 @@ def create_playlist():
     playlist = {
         "name": data["name"],
         "description": "",
-        "tracks": [],
-        "count": 0,
-        "lastUpdated": 0,
+        "pre_tracks": [],
+        "lastUpdated": data["lastUpdated"],
+        "image": "",
     }
 
     try:
-        p_in_db = instances.playlist_instance.get_playlist_by_name(playlist["name"])
+        for pl in api.PLAYLISTS:
+            if pl.name == playlist["name"]:
+                raise PlaylistExists("Playlist already exists.")
 
-        if p_in_db:
-            raise PlaylistExists("Playlist already exists.")
     except PlaylistExists as e:
         return {"error": str(e)}, 409
 
@@ -71,12 +74,48 @@ def add_track_to_playlist(playlist_id: str):
     return {"msg": "I think It's done"}, 200
 
 
-@playlist_bp.route("/playlist/<playlist_id>")
-def get_single_p_info(playlist_id: str):
+@playlist_bp.route("/playlist/<playlistid>")
+def get_single_p_info(playlistid: str):
     for p in api.PLAYLISTS:
-        if p.playlistid == playlist_id:
-            p.count = len(p.tracks)
-            return {"data": p}
+        if p.playlistid == playlistid:
+            tracks = p.get_tracks()
+            return {
+                "info": serializer.Playlist(p),
+                "tracks": tracks,
+            }
+
+    return {"info": {}, "tracks": []}
+
+
+@playlist_bp.route("/playlist/<playlistid>/update", methods=["PUT"])
+def update_playlist(playlistid: str):
+    image = None
+
+    if "image" in request.files:
+        image = request.files["image"]
+
+    data = request.form
+
+    playlist = {
+        "name": str(data.get("name")).strip(),
+        "description": str(data.get("description").strip()),
+        "lastUpdated": str(data.get("lastUpdated")),
+        "image": None,
+    }
+
+    if image:
+        playlist["image"] = playlistlib.save_p_image(image, playlistid)
+
+    for p in api.PLAYLISTS:
+        if p.playlistid == playlistid:
+            p.update_playlist(playlist)
+            instances.playlist_instance.update_playlist(playlistid, playlist)
+
+            return {
+                "data": serializer.Playlist(p),
+            }
+
+    return {"msg": "Something shady happened"}, 500
 
 
 # @playlist_bp.route("/playlist/<playlist_id>/info")

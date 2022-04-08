@@ -1,31 +1,8 @@
 import { defineStore } from "pinia";
 import state from "../composables/state";
-import { Track } from "../interfaces";
+import { Track, fromFolder, fromAlbum, fromPlaylist } from "../interfaces";
 import notif from "../composables/mediaNotification";
-
-enum FromOptions {
-  playlist = "Playlist",
-  folder = "Folder",
-  album = "Album",
-  search = "Search",
-}
-
-interface fromFolder {
-  type: FromOptions.folder;
-  path: string;
-}
-
-interface fromAlbum {
-  type: FromOptions.album;
-  name: string;
-  albumartist: string;
-}
-
-interface fromPlaylist {
-  type: FromOptions.playlist;
-  name: string;
-  playlistid: string;
-}
+import { FromOptions } from "../composables/enums";
 
 function addQToLocalStorage(
   from: fromFolder | fromAlbum | fromPlaylist,
@@ -84,7 +61,6 @@ export default defineStore("Queue", {
       })
         .then(() => {
           this.audio.play().then(() => {
-
             this.playing = true;
             notif(track, this.playPause, this.playNext, this.playPrev);
 
@@ -108,6 +84,7 @@ export default defineStore("Queue", {
         this.play(this.current);
       } else if (this.audio.paused) {
         this.audio.play();
+        this.playing = true;
       } else {
         this.audio.pause();
         this.playing = false;
@@ -131,6 +108,7 @@ export default defineStore("Queue", {
     },
     readQueueFromLocalStorage() {
       const queue = localStorage.getItem("queue");
+
       if (queue) {
         const parsed = JSON.parse(queue);
         this.from = parsed.from;
@@ -180,30 +158,30 @@ export default defineStore("Queue", {
       }
     },
     playFromFolder(fpath: string, tracks: Track[]) {
-      this.setNewQueue(tracks);
-
       this.from = <fromFolder>{
         type: FromOptions.folder,
         path: fpath,
+        name: fpath.split("/").splice(-1).join(""),
       };
+      this.setNewQueue(tracks);
     },
     playFromAlbum(aname: string, albumartist: string, tracks: Track[]) {
-      this.setNewQueue(tracks);
-
       this.from = <fromAlbum>{
         type: FromOptions.album,
         name: aname,
         albumartist: albumartist,
       };
+
+      this.setNewQueue(tracks);
     },
     playFromPlaylist(pname: string, pid: string, tracks: Track[]) {
-      this.setNewQueue(tracks);
-
       this.from = <fromPlaylist>{
         type: FromOptions.playlist,
         name: pname,
         playlistid: pid,
       };
+
+      this.setNewQueue(tracks);
     },
   },
 });

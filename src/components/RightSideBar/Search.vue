@@ -170,7 +170,6 @@ search.$subscribe((mutation, state) => {
     padding: $medium;
     border-radius: $small;
     margin-bottom: $small;
-    text-align: center !important;
     font-size: 2rem;
     color: $white;
   }

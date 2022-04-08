@@ -1,104 +1,89 @@
 <template>
   <div class="album-h">
     <div class="a-header rounded">
-      <div
-        class="image art shadow-lg rounded"
-        :style="{
-          backgroundImage: `url(&quot;${props.album_info.image}&quot;)`,
-        }"
-      ></div>
+      <div class="art">
+        <div
+          class="image shadow-lg"
+          :style="{
+            backgroundImage: `url(&quot;${props.album.image}&quot;)`,
+          }"
+        ></div>
+      </div>
       <div class="info">
         <div class="top">
           <div class="h">Album</div>
-          <div class="separator no-border"></div>
-          <div class="title">{{ props.album_info.album }}</div>
-          <div class="artist">{{ props.album_info.artist }}</div>
+          <div class="title ellip">{{ props.album.album }}</div>
         </div>
-        <div class="separator no-border"></div>
         <div class="bottom">
-          <div class="stats shadow-sm">
-            {{ props.album_info.count }} Tracks •
-            {{ perks.formatSeconds(props.album_info.duration, "long") }} •
-            {{ props.album_info.date }}
+          <div class="stats">
+            {{ props.album.count }} Tracks •
+            {{ perks.formatSeconds(props.album.duration, "long") }} •
+            {{ props.album.date }} • {{ props.album.artist }}
           </div>
-          <div class="play rounded" @click="playAlbum">
-            <div class="icon"></div>
-            <div>Play</div>
-          </div>
+          <PlayBtnRect :source="playSources.album" />
         </div>
       </div>
     </div>
   </div>
 </template>
 
-<script setup>
-import state from "@/composables/state";
-import perks from "@/composables/perks.js";
-
-const props = defineProps({
-  album_info: {
-    type: Object,
-    default: () => ({}),
-  },
-});
-
-function playAlbum() {
-  perks.updateQueue(state.album.tracklist[0], "album");
-}
+<script setup lang="ts">
+import perks from "../../composables/perks.js";
+import { AlbumInfo } from "../../interfaces.js";
+import PlayBtnRect from "../shared/PlayBtnRect.vue";
+import { playSources } from "../../composables/enums";
+const props = defineProps<{
+  album: AlbumInfo;
+}>();
 </script>
 
 <style lang="scss">
 .album-h {
-  height: 14rem;
+  height: 16rem;
 }
 
 .a-header {
-  position: relative;
-  display: flex;
-  align-items: center;
+  display: grid;
+  grid-template-columns: 13rem 1fr;
   padding: 1rem;
   height: 100%;
   background-color: $gray4;
-  background-image: linear-gradient(
-    to bottom,
-    $gray3 0%,
-    $gray3 25%,
-    $gray3 35%,
-    $gray4 50%,
-    $gray 75%,
-    $black 100%
-  );
+  background-image: linear-gradient(37deg, $black 20%, $gray5, $black 90%);
 
   .art {
-    position: absolute;
-    width: 12rem;
-    height: 12rem;
+    width: 100%;
+    height: 100%;
     left: 1rem;
+    display: flex;
+    align-items: flex-end;
+
+    .image {
+      width: 12rem;
+      height: 12rem;
+    }
   }
 
   .info {
     width: 100%;
-    height: calc(100%);
     display: flex;
     flex-direction: column;
     justify-content: flex-end;
-    margin-left: 13rem;
 
     .top {
       .h {
         color: #ffffffcb;
       }
+
       .title {
-        font-size: 2rem;
+        font-size: 2.5rem;
         font-weight: 1000;
         color: white;
         text-transform: capitalize;
       }
 
       .artist {
-        margin-top: $small;
-        font-size: 1.5rem;
-        color: #fffffff1;
+        font-size: 1.15rem;
+        color: #ffffffe0;
       }
     }
 
@@ -107,16 +92,13 @@ function playAlbum() {
     }
 
     .bottom {
-      position: relative;
+      margin-top: $smaller;
 
       .stats {
-        background-color: $red;
-        padding: $small;
         border-radius: $small;
-        position: absolute;
-        right: 0;
-        bottom: 0;
         font-weight: bold;
+        font-size: 0.8rem;
+        margin-bottom: 0.75rem;
       }
 
       .play {

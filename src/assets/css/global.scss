@@ -38,11 +38,7 @@ a {
 }
 
 .border {
-  border: solid 1px $gray;
-}
-
-.border-sm {
-  border: solid 1px #27262654;
+  border: solid 1px $gray3;
 }
 
 .separator {
@@ -63,21 +59,6 @@ a {
   display: none;
 }
 
-button {
-  border: none;
-  outline: none;
-  color: inherit;
-  font-size: 1rem;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  background-color: $blue;
-  border-radius: $small;
-
-  &:hover {
-    background-color: $red !important;
-  }
-}
 
 .l-container {
   display: grid;

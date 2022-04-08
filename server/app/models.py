@@ -1,12 +1,14 @@
 """
 Contains all the models for objects generation and typing.
 """
-
 from dataclasses import dataclass
+from dataclasses import field
 from datetime import date
 from typing import List
+
 from app import api
 from app import settings
+from app.exceptions import TrackExistsInPlaylist
 
 
 @dataclass
@@ -71,11 +73,9 @@ class Album:
 
 def get_p_track(ptrack):
     for track in api.TRACKS:
-        if (
-            track.title == ptrack["title"]
-            and track.artists == ptrack["artists"]
-            and ptrack["album"] == track.album
-        ):
+        if (track.title == ptrack["title"]
+                and track.artists == ptrack["artists"]
+                and ptrack["album"] == track.album):
             return track
 
 
@@ -99,10 +99,11 @@ class Playlist:
 
     playlistid: str
     name: str
-    description: str
-    image: str
     tracks: List[Track]
+    _pre_tracks: list = field(init=False, repr=False)
     lastUpdated: int
+    image: str
+    description: str = ""
     count: int = 0
     """A list of track objects in the playlist"""
 
@@ -110,9 +111,44 @@ class Playlist:
         self.playlistid = data["_id"]["$oid"]
         self.name = data["name"]
         self.description = data["description"]
-        self.image = ""
-        self.tracks = create_playlist_tracks(data["tracks"])
+        self.image = self.create_img_link(data["image"])
+        self._pre_tracks = data["pre_tracks"]
+        self.tracks = []
         self.lastUpdated = data["lastUpdated"]
+        self.count = len(self._pre_tracks)
+
+    def get_tracks(self) -> List[Track]:
+        """
+        Generates and returns Track objects from pre_tracks
+        """
+        return create_playlist_tracks(self._pre_tracks)
+
+    def create_img_link(self, image: str):
+        if image:
+            return settings.IMG_PLAYLIST_URI + image
+
+        return settings.IMG_PLAYLIST_URI + ""
+
+    def update_count(self):
+        self.count = len(self._pre_tracks)
+
+    def add_track(self, track):
+        if track not in self._pre_tracks:
+            self._pre_tracks.append(track)
+            self.update_count()
+        else:
+            raise TrackExistsInPlaylist("Track already exists in playlist")
+
+    def update_desc(self, desc):
+        self.description = desc
+
+    def update_playlist(self, data: dict):
+        self.name = data["name"]
+        self.description = data["description"]
+        self.lastUpdated = data["lastUpdated"]
+
+        if data["image"]:
+            self.image = self.create_img_link(data["image"])
 
 
 @dataclass

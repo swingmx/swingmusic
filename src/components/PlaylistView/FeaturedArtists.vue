@@ -13,7 +13,7 @@
         v-for="artist in artists"
         :key="artist"
         :artist="artist"
-        :color="ffffff00"
+        :color="'ffffff00'"
       />
     </div>
   </div>

@@ -1,4 +1,5 @@
-import { NotifType } from "./stores/enums";
+import { FromOptions } from "./composables/enums";
+import { NotifType } from "./composables/enums";
 
 interface Track {
   trackid: string;
@@ -51,10 +52,11 @@ interface Playlist {
   playlistid: string;
   name: string;
   description?: string;
-  image?: string;
+  image?: string | FormData;
   tracks?: Track[];
   count?: number;
-  lastUpdated?: number;
+  lastUpdated?: string;
+  color?: string;
 }
 
 interface Notif {
@@ -62,4 +64,31 @@ interface Notif {
   type: NotifType;
 }
 
-export { Track, Folder, AlbumInfo, Artist, Option, Playlist, Notif };
+interface fromFolder {
+  type: FromOptions;
+  path: string;
+  name: string;
+}
+interface fromAlbum {
+  type: FromOptions;
+  name: string;
+  albumartist: string;
+}
+interface fromPlaylist {
+  type: FromOptions;
+  name: string;
+  playlistid: string;
+}
+
+export {
+  Track,
+  Folder,
+  AlbumInfo,
+  Artist,
+  Option,
+  Playlist,
+  Notif,
+  fromFolder,
+  fromAlbum,
+  fromPlaylist,
+};

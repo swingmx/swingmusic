@@ -1,13 +1,12 @@
 """
 This file contains the Playlists class for interacting with the playlist documents in MongoDB.
 """
-
-from app import db, models
+from app import db
+from app import models
 from bson import ObjectId
 
 convert_many = db.convert_many
 convert_one = db.convert_one
-
 
 
 class Playlists(db.Mongo):
@@ -24,8 +23,12 @@ class Playlists(db.Mongo):
         Inserts a new playlist object into the database.
         """
         return self.collection.update_one(
-            {"name": playlist["name"]},
-            {"$set": playlist},
+            {
+                "name": playlist["name"]
+            },
+            {
+                "$set": playlist
+            },
             upsert=True,
         ).upserted_id
 
@@ -43,20 +46,17 @@ class Playlists(db.Mongo):
         playlist = self.collection.find_one({"_id": ObjectId(id)})
         return convert_one(playlist)
 
-    def add_track_to_playlist(self, playlistid: str, track: models.Track):
+    def add_track_to_playlist(self, playlistid: str, track: dict) -> None:
         """
         Adds a track to a playlist.
         """
-        track = {
-            "title": track.title,
-            "artists": track.artists,
-            "album": track.album,
-        }
 
         return self.collection.update_one(
             {"_id": ObjectId(playlistid)},
-            {"$push": {"tracks": track}},
-        ).modified_count
+            {"$push": {
+                "pre_tracks": track
+            }},
+        )
 
     def get_playlist_by_name(self, name: str) -> dict:
         """
@@ -64,3 +64,12 @@ class Playlists(db.Mongo):
         """
         playlist = self.collection.find_one({"name": name})
         return convert_one(playlist)
+
+    def update_playlist(self, playlistid: str, playlist: dict) -> None:
+        """
+        Updates a playlist.
+        """
+        return self.collection.update_one(
+            {"_id": ObjectId(playlistid)},
+            {"$set": playlist},
+        )

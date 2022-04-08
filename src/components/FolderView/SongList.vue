@@ -25,7 +25,6 @@
         <div class="text">Nothing down here 😑</div>
       </div>
     </div>
-    <div v-else ref="songtitle"></div>
   </div>
 </template>
 
@@ -84,6 +83,9 @@ function updateQueue(track: Track) {
   overflow-y: auto;
 
   .current {
+    a {
+      color: inherit;
+    }
     color: $red;
   }
 

@@ -2,7 +2,7 @@ import axios from "axios";
 import { Playlist, Track } from "../interfaces";
 import { Notification, NotifType } from "../stores/notification";
 import state from "./state";
-
+import { getCurrentDate } from "../composables/perks";
 /**
  * Creates a new playlist on the server.
  * @param playlist_name The name of the playlist to create.
@@ -13,6 +13,7 @@ async function createNewPlaylist(playlist_name: string, track?: Track) {
   await axios
     .post(state.settings.uri + "/playlist/new", {
       name: playlist_name,
+      lastUpdated: getCurrentDate(),
     })
     .then((res) => {
       new Notification("✅ Playlist created successfullly!");
@@ -60,7 +61,6 @@ async function getAllPlaylists(): Promise<Playlist[]> {
 
 async function addTrackToPlaylist(playlist: Playlist, track: Track) {
   const uri = `${state.settings.uri}/playlist/${playlist.playlistid}/add`;
-  console.log(track.trackid, playlist.playlistid);
 
   await axios
     .post(uri, { track: track.trackid })
@@ -95,12 +95,16 @@ async function getPTracks(playlistid: string) {
 async function getPlaylist(pid: string) {
   const uri = state.settings.uri + "/playlist/" + pid;
 
-  let playlist: Playlist;
+  let playlist = {
+    info: {},
+    tracks: <Track[]>[],
+  };
 
   await axios
     .get(uri)
     .then((res) => {
-      playlist = res.data.data;
+      playlist.info = res.data.info;
+      playlist.tracks = res.data.tracks;
     })
     .catch((err) => {
       new Notification("Something funny happened!", NotifType.Error);
@@ -110,4 +114,30 @@ async function getPlaylist(pid: string) {
   return playlist;
 }
 
-export { createNewPlaylist, getAllPlaylists, addTrackToPlaylist, getPTracks, getPlaylist };
+async function updatePlaylist(pid: string, playlist: FormData, pStore: any) {
+  const uri = state.settings.uri + "/playlist/" + pid + "/update";
+
+  await axios
+    .put(uri, playlist, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    })
+    .then((res) => {
+      pStore.updatePInfo(res.data.data);
+      new Notification("Playlist updated!");
+    })
+    .catch((err) => {
+      new Notification("Something funny happened!", NotifType.Error);
+      throw new Error(err);
+    });
+}
+
+export {
+  createNewPlaylist,
+  getAllPlaylists,
+  addTrackToPlaylist,
+  getPTracks,
+  getPlaylist,
+  updatePlaylist,
+};

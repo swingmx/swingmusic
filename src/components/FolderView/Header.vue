@@ -1,11 +1,8 @@
 <template>
   <div class="folder-top flex">
     <div class="fname">
-      <button class="play image">
-        <div class="icon"></div>
-        Play
-      </button>
-      <div class="text">
+      <PlayBtnRect />
+      <div class="ftext">
         <div class="icon image"></div>
         <div class="ellip">
           {{ folder.path.split("/").splice(-1).join("") }}
@@ -17,6 +14,7 @@
 
 <script setup lang="ts">
 import useFStore from "../../stores/folder";
+import PlayBtnRect from "../shared/PlayBtnRect.vue";
 
 const folder = useFStore();
 </script>
@@ -32,30 +30,14 @@ const folder = useFStore();
 .folder-top .fname {
   width: 100%;
   display: flex;
+  gap: $small;
   align-items: center;
 
-  .play {
-    height: 100%;
-    width: 5em;
-    background-color: $blue;
-    padding-left: $small;
-    margin-right: $small;
-
-    .icon {
-      height: 1.5rem;
-      width: 1.5rem;
-      background-image: url(../../assets/icons/play.svg);
-      background-size: 1.5rem;
-      background-position: 10%;
-      margin-right: $small;
-    }
-  }
-
-  .text {
+  .ftext {
     position: relative;
     display: flex;
     align-items: center;
-
+    height: 2.5rem;
     border-radius: $small;
     background-color: $primary;
     padding: $small $small $small 2.25rem;

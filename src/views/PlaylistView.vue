@@ -1,14 +1,26 @@
 <template>
   <div class="playlist-view">
-    <Header :info="info" />
+    <Header :info="playlist.info" />
     <div class="separator no-border"></div>
 
     <div class="songlist rounded">
-      <SongList
-        :tracks="playlist.tracks"
-        :pname="info.name"
-        :playlistid="playlist.playlistid"
-      />
+      <div v-if="playlist.tracks.length">
+        <SongList
+          :tracks="playlist.tracks"
+          :pname="playlist.info.name"
+          :playlistid="playlist.info.playlistid"
+        />
+      </div>
+      <div v-else-if="playlist.tracks.length === 0 && playlist.info.count > 0">
+        <div class="no-results">
+          <div class="text">We can't find your music 🦋</div>
+        </div>
+      </div>
+      <div v-else-if="playlist.tracks.length === 0 && playlist.info.count == 0">
+        <div class="no-results">
+          <div class="text">Nothing here</div>
+        </div>
+      </div>
     </div>
     <div class="separator no-border"></div>
     <FeaturedArtists />
@@ -21,15 +33,7 @@ import SongList from "../components/FolderView/SongList.vue";
 import FeaturedArtists from "../components/PlaylistView/FeaturedArtists.vue";
 import usePTrackStore from "../stores/p.ptracks";
 
-const playlist = usePTrackStore().playlist;
-
-const info = {
-  name: playlist.name,
-  count: playlist.tracks.length,
-  desc: playlist.description,
-  duration: "3 hours, 4 minutes",
-  lastUpdated: "yesterday",
-};
+const playlist = usePTrackStore();
 </script>
 
 <style lang="scss">

@@ -12,6 +12,7 @@
         'context-many-kids': context.hasManyChildren(),
       },
     ]"
+    id="context-menu"
     :style="{
       left: context.x + 'px',
       top: context.y + 'px',
@@ -56,7 +57,6 @@ const context = useContextStore();
   top: 0;
   left: 0;
   width: 12rem;
-  height: min-content;
   z-index: 10;
   transform: scale(0);
 
@@ -89,6 +89,7 @@ const context = useContextStore();
       position: absolute;
       right: -13rem;
       width: 13rem;
+      top: -0.5rem;
       max-height: 21.25rem;
 
       padding: $small !important;
