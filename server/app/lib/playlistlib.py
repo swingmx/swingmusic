@@ -36,8 +36,7 @@ def add_track(playlistid: str, trackid: str):
 
             try:
                 playlist.add_track(track)
-                instances.playlist_instance.add_track_to_playlist(
-                    playlistid, track)
+                instances.playlist_instance.add_track_to_playlist(playlistid, track)
                 return
             except TrackExistsInPlaylist as e:
                 return {"error": str(e)}, 409
@@ -69,8 +68,7 @@ def save_p_image(file: datastructures.FileStorage, pid: str):
     """
     img = Image.open(file)
 
-    random_str = "".join(
-        random.choices(string.ascii_letters + string.digits, k=5))
+    random_str = "".join(random.choices(string.ascii_letters + string.digits, k=5))
 
     img_path = pid + str(random_str) + ".webp"
     full_path = os.path.join(settings.APP_DIR, "images", "playlists", img_path)
