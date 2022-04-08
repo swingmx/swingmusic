@@ -4,12 +4,18 @@
     :playlist="props.playlist"
     class="p-card rounded"
   >
+    <div class="drop">
+      <Option :color="'#48484a'" />
+    </div>
     <div
-      class="image rounded"
+      class="image p-image rounded shadow-sm"
       :style="{
         backgroundImage: `url(${props.playlist.image})`,
       }"
     ></div>
+    <div class="pbtn">
+      <PlayBtn />
+    </div>
     <div class="bottom">
       <div class="name ellip">{{ props.playlist.name }}</div>
       <div class="count">
@@ -25,33 +31,59 @@
 
 <script setup lang="ts">
 import { Playlist } from "../../interfaces";
+import PlayBtn from "../shared/PlayBtn.vue";
+import Option from "../shared/Option.vue";
 
 const props = defineProps<{
   playlist: Playlist;
 }>();
+
 </script>
 
 <style lang="scss">
 .p-card {
   width: 100%;
-  padding: $small;
+  padding: 0.75rem;
   transition: all 0.2s ease;
+  background-image: linear-gradient(37deg, #000000e8, $gray);
+  position: relative;
 
-  &:hover {
-    background-color: $accent;
-    .bottom > .count {
-      color: $white;
-    }
-  }
-
-  .image {
+  .p-image {
     min-width: 100%;
-    height: 11rem;
+    height: 10rem;
     transition: all 0.2s ease;
   }
 
+  .drop {
+    position: absolute;
+    bottom: 4rem;
+    right: 1.25rem;
+    opacity: 0;
+    transition: all 0.25s ease-in-out;
+
+    .drop-btn {
+      background-color: $gray3;
+    }
+  }
+
+  .pbtn {
+    position: absolute;
+    bottom: 4.5rem;
+    left: 1.25rem;
+    transition: all 0.25s ease-in-out;
+    z-index: 10;
+  }
+
+  &:hover {
+    .drop {
+      transition-delay: .75s;
+      opacity: 1;
+      transform: translate(0, -.5rem);
+    }
+  }
+
   .bottom {
-    margin-top: $small;
+    margin-top: 1rem;
 
     .name {
       text-transform: capitalize;

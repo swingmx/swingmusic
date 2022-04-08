@@ -55,7 +55,7 @@ function play() {
   cursor: pointer;
   background: linear-gradient(34deg, $accent, $red);
   user-select: none;
-  transition: all 0.5s ease;
+  transition: all 0.5s ease-in-out;
 
   .icon {
     height: 2rem;
