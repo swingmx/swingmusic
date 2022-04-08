@@ -17,21 +17,21 @@ function focusCurrent() {
 
   if (elem) {
     elem.scrollIntoView({
-      behavior : "smooth",
-      block : "center",
-      inline : "center",
+      behavior: "smooth",
+      block: "center",
+      inline: "center",
     });
   }
 }
 
 function getElem(identifier, type) {
   switch (type) {
-  case "class": {
-    return document.getElementsByClassName(identifier)[0];
-  }
-  case "id": {
-    return document.getElementById(identifier);
-  }
+    case "class": {
+      return document.getElementsByClassName(identifier)[0];
+    }
+    case "id": {
+      return document.getElementById(identifier);
+    }
   }
 }
 
@@ -48,63 +48,67 @@ window.addEventListener("keydown", (e) => {
   let ctrlKey = e.ctrlKey;
 
   switch (e.key) {
-  case "ArrowRight":
-    if (target.tagName === "INPUT")
-      return;
+    case "ArrowRight":
+      if (target.tagName === "INPUT") return;
 
-    {
+      {
+        if (!key_down_fired) {
+          key_down_fired = true;
+
+          setTimeout(() => {
+            key_down_fired = false;
+          }, 1000);
+
+          // playAudio.playNext();
+        }
+      }
+      break;
+
+    case "ArrowLeft":
+      {
+        if (!key_down_fired) {
+          if (target.tagName === "INPUT") return;
+
+          key_down_fired = true;
+
+          // playAudio.playPrev();
+
+          setTimeout(() => {
+            key_down_fired = false;
+          }, 1000);
+        }
+      }
+
+      break;
+
+    case " ":
+      {
+        if (!key_down_fired) {
+          if (target.tagName === "INPUT") return;
+          e.preventDefault();
+          key_down_fired = true;
+
+          // playAudio.playPause();
+        }
+      }
+
+      break;
+
+    case "f": {
       if (!key_down_fired) {
+        if (!ctrlKey) return;
+        e.preventDefault();
+        focusSearchBox();
+
         key_down_fired = true;
-
-        setTimeout(() => { key_down_fired = false; }, 1000);
-
-        // playAudio.playNext();
       }
     }
-    break;
-
-  case "ArrowLeft": {
-    if (!key_down_fired) {
-      if (target.tagName === "INPUT")
-        return;
-
-      key_down_fired = true;
-
-      // playAudio.playPrev();
-
-      setTimeout(() => { key_down_fired = false; }, 1000);
-    }
-  }
-
-  break;
-
-  case " ": {
-    if (!key_down_fired) {
-      if (target.tagName === "INPUT")
-        return;
-      e.preventDefault();
-      key_down_fired = true;
-
-      // playAudio.playPause();
-    }
-  }
-
-  break;
-
-  case "f": {
-    if (!key_down_fired) {
-      if (!ctrlKey)
-        return;
-      e.preventDefault();
-      focusSearchBox();
-
-      key_down_fired = true;
-    }
-  }
   }
 });
 
-window.addEventListener("keyup", () => { key_down_fired = false; });
+window.addEventListener("keyup", () => {
+  key_down_fired = false;
+});
 
 function formatSeconds(seconds) {
   // check if there are arguments
@@ -165,5 +169,5 @@ export default {
   focusCurrent,
   formatSeconds,
   getElem,
-  getCurrentDate
+  getCurrentDate,
 };
