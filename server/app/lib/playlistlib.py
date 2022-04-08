@@ -1,8 +1,15 @@
 """
 This library contains all the functions related to playlists.
 """
+import base64
+import io
+import os
+import random
+import string
+from PIL import Image, ImageSequence
 from progress.bar import Bar
-from app import api, instances, models, exceptions, helpers
+from werkzeug import datastructures
+from app import api, instances, models, exceptions, settings
 
 from app.lib import trackslib
 
@@ -48,3 +55,28 @@ def create_all_playlists():
         api.PLAYLISTS.append(models.Playlist(playlist))
         _bar.next()
     _bar.finish()
+
+
+def save_p_image(file: datastructures.FileStorage, pid: str):
+    """
+    Saves the image of a playlist to the database.
+    """
+    img = Image.open(file)
+
+    random_str = "".join(random.choices(string.ascii_letters + string.digits, k=5))
+
+    img_path = pid + str(random_str) + ".webp"
+    full_path = os.path.join(settings.APP_DIR, "images", "playlists", img_path)
+
+    if file.content_type == "image/gif":
+        frames = []
+
+        for frame in ImageSequence.Iterator(img):
+            frames.append(frame.copy())
+
+        frames[0].save(full_path, save_all=True, append_images=frames[1:])
+        return img_path
+
+    img.save(full_path, "webp")
+
+    return img_path

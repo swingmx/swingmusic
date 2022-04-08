@@ -58,3 +58,12 @@ class Playlists(db.Mongo):
         """
         playlist = self.collection.find_one({"name": name})
         return convert_one(playlist)
+
+    def update_playlist(self, playlistid: str, playlist: dict) -> None:
+        """
+        Updates a playlist.
+        """
+        return self.collection.update_one(
+            {"_id": ObjectId(playlistid)},
+            {"$set": playlist},
+        )

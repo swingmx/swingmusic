@@ -1,8 +1,7 @@
 """
 Contains all the playlist routes.
 """
-from copy import deepcopy
-from typing import List
+
 from flask import Blueprint, request
 from app import instances, api
 from app.lib import playlistlib
@@ -68,11 +67,44 @@ def add_track_to_playlist(playlist_id: str):
 def get_single_p_info(playlistid: str):
     for p in api.PLAYLISTS:
         if p.playlistid == playlistid:
-            print(p)
             tracks = p.get_tracks()
             return {"info": serializer.Playlist(p), "tracks": tracks}
 
     return {"info": {}, "tracks": []}
+
+
+@playlist_bp.route("/playlist/<playlistid>/update", methods=["PUT"])
+def update_playlist(playlistid: str):
+    image = None
+
+    if "image" in request.files:
+        image = request.files["image"]
+
+    data = request.form
+
+    print(type(image))
+    print(image.content_type)
+
+    playlist = {
+        "name": str(data.get("name")).strip(),
+        "description": str(data.get("description").strip()),
+        "lastUpdated": str(data.get("lastUpdated")),
+        "image": None,
+    }
+
+    if image:
+        playlist["image"] = playlistlib.save_p_image(image, playlistid)
+
+    for p in api.PLAYLISTS:
+        if p.playlistid == playlistid:
+            p.update_playlist(playlist)
+            instances.playlist_instance.update_playlist(playlistid, playlist)
+
+            return {
+                "data": serializer.Playlist(p),
+            }
+
+    return {"msg": "Something shady happened"}, 500
 
 
 # @playlist_bp.route("/playlist/<playlist_id>/info")
