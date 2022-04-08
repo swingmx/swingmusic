@@ -4,11 +4,23 @@
     <div class="separator no-border"></div>
 
     <div class="songlist rounded">
-      <SongList
-        :tracks="playlist.tracks"
-        :pname="playlist.info.name"
-        :playlistid="playlist.info.playlistid"
-      />
+      <div v-if="playlist.tracks.length">
+        <SongList
+          :tracks="playlist.tracks"
+          :pname="playlist.info.name"
+          :playlistid="playlist.info.playlistid"
+        />
+      </div>
+      <div v-else-if="playlist.tracks.length === 0 && playlist.info.count > 0">
+        <div class="no-results">
+          <div class="text">We can't find your music 🦋</div>
+        </div>
+      </div>
+      <div v-else-if="playlist.tracks.length === 0 && playlist.info.count == 0">
+        <div class="no-results">
+          <div class="text">Nothing here</div>
+        </div>
+      </div>
     </div>
     <div class="separator no-border"></div>
     <FeaturedArtists />

@@ -25,7 +25,6 @@
         <div class="text">Nothing down here 😑</div>
       </div>
     </div>
-    <div v-else ref="songtitle"></div>
   </div>
 </template>
 

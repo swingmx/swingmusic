@@ -67,6 +67,7 @@
 import perks from "../../composables/perks.js";
 import useContextStore from "../../stores/context";
 import useModalStore from "../../stores/modal";
+import { ContextSrc } from "../../composables/enums";
 
 import { ref } from "vue";
 import trackContext from "../../contexts/track_context";
@@ -80,7 +81,9 @@ const showContextMenu = (e: Event) => {
   e.preventDefault();
   e.stopPropagation();
 
-  contextStore.showContextMenu(e, trackContext(props.song, modalStore));
+  const menus = trackContext(props.song, modalStore);
+
+  contextStore.showContextMenu(e, menus, ContextSrc.Track);
   context_on.value = true;
 
   contextStore.$subscribe((mutation, state) => {

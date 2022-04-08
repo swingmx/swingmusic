@@ -17,3 +17,9 @@ export enum FromOptions {
   album = "album",
   search = "search",
 }
+
+export enum ContextSrc {
+  PHeader = "PHeader",
+  Track = "Track",
+  AHeader = "AHeader",
+}

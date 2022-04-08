@@ -12,6 +12,7 @@
       <div class="info">
         <div class="btns">
           <PlayBtnRect :source="playSources.playlist" />
+          <Option @showDropdown="showDropdown" :src="context.src" />
         </div>
         <div class="duration">
           <span v-if="props.info.count == 0">No Tracks</span>
@@ -37,11 +38,15 @@
 </template>
 
 <script setup lang="ts">
-import { playSources } from "../../composables/enums";
+import { playSources, ContextSrc } from "../../composables/enums";
 import { Playlist } from "../../interfaces";
 import PlayBtnRect from "../shared/PlayBtnRect.vue";
 import useModalStore from "../../stores/modal";
+import Option from "../shared/Option.vue";
+import pContext from "../../contexts/playlist";
+import useContextStore from "../../stores/context";
 
+const context = useContextStore();
 const modal = useModalStore();
 
 const props = defineProps<{
@@ -50,6 +55,10 @@ const props = defineProps<{
 
 function editPlaylist() {
   modal.showEditPlaylistModal(props.info);
+}
+
+function showDropdown(e: any) {
+  context.showContextMenu(e, pContext(), ContextSrc.PHeader);
 }
 </script>
 
@@ -63,6 +72,7 @@ function editPlaylist() {
   border-radius: 0.75rem;
   color: $white;
   background-color: transparent;
+  z-index: 0;
 
   .gradient {
     position: absolute;
@@ -160,6 +170,8 @@ function editPlaylist() {
 
     .btns {
       margin-top: $small;
+      display: flex;
+      gap: $small;
     }
   }
 }
