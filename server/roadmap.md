@@ -8,7 +8,9 @@
 - [ ] Compress thumbnails
 
 # Features +
+
 ## Needed features
+
 - [ ] Adding songs to queue
 <!--  -->
 - [ ] Add keyboard shortcuts
@@ -19,6 +21,7 @@
 - [ ] Playing song radio
 
 ## Future features
+
 - [ ] Toggle shuffle
 - [ ] Toggle repeat
 - [ ] Suggest similar artists
