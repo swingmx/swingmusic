@@ -2,12 +2,9 @@
 Contains all the playlist routes.
 """
 
-from flask import Blueprint, request
-from app import instances, api
+from app import api, exceptions, instances, models, serializer
 from app.lib import playlistlib
-from app import models
-from app import exceptions
-from app import serializer
+from flask import Blueprint, request
 
 playlist_bp = Blueprint("playlist", __name__, url_prefix="/")
 

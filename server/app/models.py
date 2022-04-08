@@ -5,8 +5,8 @@ Contains all the models for objects generation and typing.
 from dataclasses import dataclass, field
 from datetime import date
 from typing import List
-from app import api
-from app import settings
+
+from app import api, settings
 from app.exceptions import TrackExistsInPlaylist
 
 

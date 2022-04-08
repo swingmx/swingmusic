@@ -6,12 +6,12 @@ import io
 import os
 import random
 import string
+
+from app import api, exceptions, instances, models, settings
+from app.lib import trackslib
 from PIL import Image, ImageSequence
 from progress.bar import Bar
 from werkzeug import datastructures
-from app import api, instances, models, exceptions, settings
-
-from app.lib import trackslib
 
 TrackExistsInPlaylist = exceptions.TrackExistsInPlaylist
 
