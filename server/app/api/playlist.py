@@ -1,10 +1,14 @@
 """
 Contains all the playlist routes.
 """
-
-from app import api, exceptions, instances, models, serializer
+from app import api
+from app import exceptions
+from app import instances
+from app import models
+from app import serializer
 from app.lib import playlistlib
-from flask import Blueprint, request
+from flask import Blueprint
+from flask import request
 
 playlist_bp = Blueprint("playlist", __name__, url_prefix="/")
 

@@ -11,9 +11,17 @@ from typing import List
 
 import mutagen
 import requests
-from app import api, helpers, instances, models, settings
-from app.lib import albumslib, folderslib, playlistlib, watchdoge
-from mutagen.flac import FLAC, MutagenError
+from app import api
+from app import helpers
+from app import instances
+from app import models
+from app import settings
+from app.lib import albumslib
+from app.lib import folderslib
+from app.lib import playlistlib
+from app.lib import watchdoge
+from mutagen.flac import FLAC
+from mutagen.flac import MutagenError
 from mutagen.id3 import ID3
 from PIL import Image
 from progress.bar import Bar
