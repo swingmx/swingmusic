@@ -13,5 +13,8 @@ export default defineStore("playlist-tracks", {
       this.info = playlist.info;
       this.tracks = playlist.tracks;
     },
+    updatePInfo(info: Playlist) {
+      this.info = info;
+    },
   },
 });

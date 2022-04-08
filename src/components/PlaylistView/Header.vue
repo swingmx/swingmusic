@@ -1,12 +1,25 @@
 <template>
-  <div class="p-header">
+  <div
+    class="p-header image"
+    :style="[
+      {
+        backgroundImage: `url(${props.info.image})`,
+      },
+    ]"
+  >
+    <div class="gradient"></div>
     <div class="carddd">
-      <div class="art image shadow-sm"></div>
       <div class="info">
         <div class="btns">
           <PlayBtnRect :source="playSources.playlist" />
         </div>
-        <div class="duration">{{props.info.count}} Tracks • 3 Hours</div>
+        <div class="duration">
+          <span v-if="props.info.count == 0">No Tracks</span>
+          <span v-else-if="props.info.count == 1"
+            >{{ props.info.count }} Track</span
+          >
+          <span v-else>{{ props.info.count }} Tracks</span> • 3 Hours
+        </div>
         <div class="desc">
           {{ props.info.description }}
         </div>
@@ -18,7 +31,7 @@
       <span class="status"
         >Last updated {{ props.info.lastUpdated }} |&#160;</span
       >
-      <span class="edit">Edit</span>
+      <span class="edit" @click="editPlaylist">Edit</span>
     </div>
   </div>
 </template>
@@ -26,23 +39,45 @@
 <script setup lang="ts">
 import { playSources } from "../../composables/enums";
 import { Playlist } from "../../interfaces";
-
 import PlayBtnRect from "../shared/PlayBtnRect.vue";
+import useModalStore from "../../stores/modal";
+
+const modal = useModalStore();
+
 const props = defineProps<{
   info: Playlist;
 }>();
+
+function editPlaylist() {
+  modal.showEditPlaylistModal(props.info);
+}
 </script>
 
 <style lang="scss">
 .p-header {
   display: grid;
   grid-template-columns: 1fr;
-  height: 14rem;
-  background-image: linear-gradient(37deg, $black 4%, $accent, $black);
+  height: 16rem;
   position: relative;
   margin-top: $small;
   border-radius: 0.75rem;
   color: $white;
+  background-color: transparent;
+
+  .gradient {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: linear-gradient(
+      37deg,
+      $black 20%,
+      transparent,
+      $black 90%
+    );
+    border-radius: 0.5rem;
+  }
 
   .last-updated {
     position: absolute;
@@ -54,6 +89,7 @@ const props = defineProps<{
     font-size: 0.9rem;
     border-radius: $smaller;
     box-shadow: 0 0 1rem rgba(0, 0, 0, 0.479);
+    z-index: 12;
 
     @include phone-only {
       bottom: 1rem;
@@ -74,13 +110,19 @@ const props = defineProps<{
     width: 100%;
     padding: 1rem;
     display: grid;
-    grid-template-columns: 13rem 1fr;
+    z-index: 10;
 
     .art {
-      width: 12rem;
-      height: 12rem;
-      background-color: red;
-      background-image: url("../../assets/images/eggs.jpg");
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: flex-end;
+
+      .image {
+        width: 12rem;
+        height: 12rem;
+        background-image: url("../../assets/images/eggs.jpg");
+      }
     }
 
     .info {
@@ -105,6 +147,7 @@ const props = defineProps<{
       display: -webkit-box;
       -webkit-line-clamp: 2;
       -webkit-box-orient: vertical;
+      max-width: 50%;
     }
 
     .duration {

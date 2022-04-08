@@ -10,6 +10,12 @@
         @hideModal="hideModal"
         @title="title"
       />
+      <UpdatePlaylist
+        :playlist="modal.props"
+        v-if="modal.component == modal.options.updatePlaylist"
+        @hideModal="hideModal"
+        @title="title"
+      />
     </div>
   </div>
 </template>
@@ -17,6 +23,7 @@
 <script setup lang="ts">
 import useModalStore from "../stores/modal";
 import NewPlaylist from "./modals/NewPlaylist.vue";
+import UpdatePlaylist from "./modals/updatePlaylist.vue";
 
 const modal = useModalStore();
 
@@ -25,6 +32,7 @@ const modal = useModalStore();
  * @param title
  */
 function title(title: string) {
+  console.log(title);
   modal.setTitle(title);
 }
 
@@ -74,8 +82,6 @@ function hideModal() {
         transform: rotate(135deg);
       }
     }
-
-    
   }
 }
 </style>
