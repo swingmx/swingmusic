@@ -52,10 +52,11 @@ interface Playlist {
   playlistid: string;
   name: string;
   description?: string;
-  image?: string;
+  image?: string | FormData;
   tracks?: Track[];
   count?: number;
-  lastUpdated?: number;
+  lastUpdated?: string;
+  color?: string;
 }
 
 interface Notif {

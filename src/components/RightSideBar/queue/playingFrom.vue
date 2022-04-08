@@ -103,7 +103,6 @@ function goTo() {
   background: linear-gradient(-200deg, $gray4 40%, $red, $gray4);
   background-size: 120%;
   padding: 0.75rem;
-  margin-bottom: $small;
   cursor: pointer;
   position: relative;
   transition: all .2s ease;
@@ -115,7 +114,7 @@ function goTo() {
   .abs {
     position: absolute;
     right: $small;
-    top: $small;
+    bottom: $small;
     font-size: .9rem;
     background-color: $gray;
     padding: $smaller;

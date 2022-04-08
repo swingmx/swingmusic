@@ -1,7 +1,6 @@
 <template>
   <div class="up-next">
     <div class="r-grid">
-      <PlayingFrom :from="queue.from" />
       <UpNext :next="queue.next" :playNext="queue.playNext" />
       <div class="scrollable-r border rounded">
         <TrackItem
@@ -13,6 +12,7 @@
           :isPlaying="queue.playing"
         />
       </div>
+      <PlayingFrom :from="queue.from" />
     </div>
   </div>
 </template>
@@ -33,7 +33,7 @@ function playThis(track: Track) {
 
 <style lang="scss">
 .up-next {
-  padding: $small $small $small 0;
+  padding: $small $small 0 0;
   overflow: hidden;
   height: 100%;
 
@@ -46,13 +46,13 @@ function playThis(track: Track) {
     position: relative;
     height: 100%;
     display: grid;
-    grid-template-rows: max-content max-content 1fr;
+    grid-template-rows: max-content 1fr max-content;
+    gap: $small;
 
     .scrollable-r {
       height: 100%;
       padding: $small;
       overflow: auto;
-      // background-color: $card-dark;
       scrollbar-color: grey transparent;
     }
   }

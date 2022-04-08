@@ -1,6 +1,6 @@
 <template>
   <div class="main-item border" @click="playNext">
-    <div class="h">#Up_Next</div>
+    <div class="h">Up Next</div>
     <div class="itemx  shadow">
       <div
         class="album-art image"
@@ -34,7 +34,6 @@ const props = defineProps<{
 <style lang="scss">
 .main-item {
   border-radius: 0.5rem;
-  margin-bottom: 0.5rem;
   position: relative;
 
   &:hover {
@@ -49,7 +48,7 @@ const props = defineProps<{
   .h {
     position: absolute;
     right: $small;
-    top: $small;
+    bottom: $small;
     font-size: 0.9rem;
     background-color: $accent;
     padding: $smaller;

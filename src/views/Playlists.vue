@@ -25,8 +25,8 @@ const pStore = usePStore();
 
   .grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(9rem, 1fr));
-    gap: 1rem;
+    grid-template-columns: repeat(auto-fill, minmax(11rem, 1fr));
+    gap: $small;
   }
 }
 </style>

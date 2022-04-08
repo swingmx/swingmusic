@@ -84,6 +84,9 @@ function updateQueue(track: Track) {
   overflow-y: auto;
 
   .current {
+    a {
+      color: inherit;
+    }
     color: $red;
   }
 

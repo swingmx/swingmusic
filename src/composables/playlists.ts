@@ -60,7 +60,6 @@ async function getAllPlaylists(): Promise<Playlist[]> {
 
 async function addTrackToPlaylist(playlist: Playlist, track: Track) {
   const uri = `${state.settings.uri}/playlist/${playlist.playlistid}/add`;
-  console.log(track.trackid, playlist.playlistid);
 
   await axios
     .post(uri, { track: track.trackid })
@@ -114,10 +113,30 @@ async function getPlaylist(pid: string) {
   return playlist;
 }
 
+async function updatePlaylist(pid: string, playlist: FormData, pStore: any) {
+  const uri = state.settings.uri + "/playlist/" + pid + "/update";
+
+  await axios
+    .put(uri, playlist, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    })
+    .then((res) => {
+      pStore.updatePInfo(res.data.data);
+      new Notification("Playlist updated!");
+    })
+    .catch((err) => {
+      new Notification("Something funny happened!", NotifType.Error);
+      throw new Error(err);
+    });
+}
+
 export {
   createNewPlaylist,
   getAllPlaylists,
   addTrackToPlaylist,
   getPTracks,
   getPlaylist,
+  updatePlaylist,
 };
