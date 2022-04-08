@@ -1,7 +1,6 @@
 """
 This library contains all the functions related to playlists.
 """
-
 import os
 import random
 import string

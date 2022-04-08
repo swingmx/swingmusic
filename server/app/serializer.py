@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 from datetime import datetime
+
 from app import models
 
 
@@ -61,7 +62,9 @@ class Playlist:
     description: str
     count: int = 0
 
-    def __init__(self, p: models.Playlist, construct_last_updated: bool = True) -> None:
+    def __init__(self,
+                 p: models.Playlist,
+                 construct_last_updated: bool = True) -> None:
         self.playlistid = p.playlistid
         self.name = p.name
         self.image = p.image

@@ -150,7 +150,7 @@ function formatSeconds(seconds) {
   }
 }
 
-export function getCurrentDate(){
+export function getCurrentDate() {
   const date = new Date();
 
   const yyyy = date.getFullYear();
@@ -169,5 +169,5 @@ export default {
   focusCurrent,
   formatSeconds,
   getElem,
-  getCurrentDate
+  getCurrentDate,
 };
