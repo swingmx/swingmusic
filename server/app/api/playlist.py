@@ -21,8 +21,7 @@ TrackExistsInPlaylist = exceptions.TrackExistsInPlaylist
 @playlist_bp.route("/playlists", methods=["GET"])
 def get_all_playlists():
     playlists = [
-        serializer.Playlist(p, construct_last_updated=False)
-        for p in api.PLAYLISTS
+        serializer.Playlist(p, construct_last_updated=False) for p in api.PLAYLISTS
     ]
     playlists.sort(
         key=lambda p: datetime.strptime(p.lastUpdated, "%Y-%m-%d %H:%M:%S"),
@@ -69,7 +68,7 @@ def add_track_to_playlist(playlist_id: str):
     try:
         playlistlib.add_track(playlist_id, trackid)
     except TrackExistsInPlaylist as e:
-        return {"error": str(e)}, 409
+        return {"error": "Track already exists in playlist"}, 409
 
     return {"msg": "I think It's done"}, 200
 
@@ -103,11 +102,14 @@ def update_playlist(playlistid: str):
         "image": None,
     }
 
-    if image:
-        playlist["image"] = playlistlib.save_p_image(image, playlistid)
-
     for p in api.PLAYLISTS:
         if p.playlistid == playlistid:
+
+            if image:
+                playlist["image"] = playlistlib.save_p_image(image, playlistid)
+            else:
+                playlist["image"] = p.image.split("/")[-1]
+
             p.update_playlist(playlist)
             instances.playlist_instance.update_playlist(playlistid, playlist)
 

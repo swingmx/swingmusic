@@ -127,7 +127,7 @@ class Playlist:
         if image:
             return settings.IMG_PLAYLIST_URI + image
 
-        return settings.IMG_PLAYLIST_URI + ""
+        return settings.IMG_PLAYLIST_URI + "default.webp"
 
     def update_count(self):
         self.count = len(self._pre_tracks)
