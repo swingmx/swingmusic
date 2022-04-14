@@ -29,7 +29,7 @@ class AllSongs(db.Mongo):
         }, {
             "$set": song_obj
         },
-                                          upsert=True).upserted_id
+            upsert=True).upserted_id
 
     def get_all_songs(self) -> list:
         """

@@ -21,7 +21,7 @@ class Artists(db.Mongo):
         self.collection.update_one(artist_obj, {
             "$set": artist_obj
         },
-                                   upsert=True).upserted_id
+            upsert=True).upserted_id
 
     def get_all_artists(self) -> list:
         """
