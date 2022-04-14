@@ -1,8 +1,7 @@
 """
 This file contains the Playlists class for interacting with the playlist documents in MongoDB.
 """
-from app import db
-from app import models
+from app import db, models
 from bson import ObjectId
 
 convert_many = db.convert_many
