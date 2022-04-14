@@ -21,8 +21,7 @@ TrackExistsInPlaylist = exceptions.TrackExistsInPlaylist
 @playlist_bp.route("/playlists", methods=["GET"])
 def get_all_playlists():
     playlists = [
-        serializer.Playlist(p, construct_last_updated=False)
-        for p in api.PLAYLISTS
+        serializer.Playlist(p, construct_last_updated=False) for p in api.PLAYLISTS
     ]
     playlists.sort(
         key=lambda p: datetime.strptime(p.lastUpdated, "%Y-%m-%d %H:%M:%S"),
