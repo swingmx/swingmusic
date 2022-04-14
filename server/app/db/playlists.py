@@ -23,8 +23,12 @@ class Playlists(db.Mongo):
         Inserts a new playlist object into the database.
         """
         return self.collection.update_one(
-            {"name": playlist["name"]},
-            {"$set": playlist},
+            {
+                "name": playlist["name"]
+            },
+            {
+                "$set": playlist
+            },
             upsert=True,
         ).upserted_id
 
@@ -49,7 +53,9 @@ class Playlists(db.Mongo):
 
         return self.collection.update_one(
             {"_id": ObjectId(playlistid)},
-            {"$push": {"pre_tracks": track}},
+            {"$push": {
+                "pre_tracks": track
+            }},
         )
 
     def get_playlist_by_name(self, name: str) -> dict:

@@ -18,8 +18,12 @@ class TrackColors(db.Mongo):
         Inserts a new track object into the database.
         """
         return self.collection.update_one(
-            {"filepath": track_color["filepath"]},
-            {"$set": track_color},
+            {
+                "filepath": track_color["filepath"]
+            },
+            {
+                "$set": track_color
+            },
             upsert=True,
         ).upserted_id
 
