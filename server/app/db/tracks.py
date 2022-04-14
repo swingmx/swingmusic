@@ -53,21 +53,24 @@ class AllSongs(db.Mongo):
         """
         Returns all the songs matching the albums in the query params (using regex).
         """
-        songs = self.collection.find({"album": {"$regex": query, "$options": "i"}})
+        songs = self.collection.find(
+            {"album": {"$regex": query, "$options": "i"}})
         return convert_many(songs)
 
     def search_songs_by_artist(self, query: str) -> list:
         """
         Returns all the songs matching the artists in the query params.
         """
-        songs = self.collection.find({"artists": {"$regex": query, "$options": "i"}})
+        songs = self.collection.find(
+            {"artists": {"$regex": query, "$options": "i"}})
         return convert_many(songs)
 
     def find_song_by_title(self, query: str) -> list:
         """
         Finds all the tracks matching the title in the query params.
         """
-        song = self.collection.find({"title": {"$regex": query, "$options": "i"}})
+        song = self.collection.find(
+            {"title": {"$regex": query, "$options": "i"}})
         return convert_many(song)
 
     def find_songs_by_album(self, name: str, artist: str) -> list:
@@ -81,7 +84,8 @@ class AllSongs(db.Mongo):
         """
         Returns a sorted list of all the tracks exactly matching the folder in the query params
         """
-        songs = self.collection.find({"folder": query}).sort("title", db.pymongo.ASCENDING)
+        songs = self.collection.find({"folder": query}).sort(
+            "title", db.pymongo.ASCENDING)
         return convert_many(songs)
 
     def find_songs_by_folder_og(self, query: str) -> list:
