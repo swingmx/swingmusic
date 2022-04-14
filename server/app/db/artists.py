@@ -1,7 +1,6 @@
 """
 This file contains the Artists class for interacting with artist documents in MongoDB.
 """
-
 from app import db
 from bson import ObjectId
 

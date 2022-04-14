@@ -1,7 +1,6 @@
 """
 This file contains the TrackColors class for interacting with Track colors documents in MongoDB.
 """
-
 from app import db
 
 

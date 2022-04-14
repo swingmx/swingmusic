@@ -2,7 +2,6 @@
 This file contains the Album class for interacting with 
 album documents in MongoDB.
 """
-
 from app import db
 from bson import ObjectId
 
