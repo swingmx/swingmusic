@@ -58,6 +58,7 @@ class Playlist:
     playlistid: str
     name: str
     image: str
+    thumb: str
     lastUpdated: int
     description: str
     count: int = 0
@@ -68,6 +69,7 @@ class Playlist:
         self.playlistid = p.playlistid
         self.name = p.name
         self.image = p.image
+        self.thumb = p.thumb
         self.lastUpdated = p.lastUpdated
         self.description = p.description
         self.count = p.count

@@ -1,7 +1,6 @@
 """
 This file contains the AllSongs class for interacting with track documents in MongoDB.
 """
-
 from app import db
 from bson import ObjectId
 
@@ -15,8 +14,8 @@ class AllSongs(db.Mongo):
     """
 
     def __init__(self):
-        super(AllSongs, self).__init__("ALL_SONGS")
-        self.collection = self.db["ALL_SONGS"]
+        super(AllSongs, self).__init__("ALICE_MUSIC_TRACKS")
+        self.collection = self.db["ALL_TRACKS"]
 
     # def drop_db(self):
     #     self.collection.drop()
@@ -25,9 +24,12 @@ class AllSongs(db.Mongo):
         """
         Inserts a new track object into the database.
         """
-        return self.collection.update_one(
-            {"filepath": song_obj["filepath"]}, {"$set": song_obj}, upsert=True
-        ).upserted_id
+        return self.collection.update_one({
+            "filepath": song_obj["filepath"]
+        }, {
+            "$set": song_obj
+        },
+                                          upsert=True).upserted_id
 
     def get_all_songs(self) -> list:
         """
@@ -53,22 +55,33 @@ class AllSongs(db.Mongo):
         """
         Returns all the songs matching the albums in the query params (using regex).
         """
-        songs = self.collection.find({"album": {"$regex": query, "$options": "i"}})
+        songs = self.collection.find(
+            {"album": {
+                "$regex": query,
+                "$options": "i"
+            }})
         return convert_many(songs)
 
     def search_songs_by_artist(self, query: str) -> list:
         """
         Returns all the songs matching the artists in the query params.
         """
-        songs = self.collection.find({"artists": {"$regex": query, "$options": "i"}})
+        songs = self.collection.find(
+            {"artists": {
+                "$regex": query,
+                "$options": "i"
+            }})
         return convert_many(songs)
 
     def find_song_by_title(self, query: str) -> list:
         """
         Finds all the tracks matching the title in the query params.
         """
-        self.collection.create_index([("title", db.pymongo.TEXT)])
-        song = self.collection.find({"title": {"$regex": query, "$options": "i"}})
+        song = self.collection.find(
+            {"title": {
+                "$regex": query,
+                "$options": "i"
+            }})
         return convert_many(song)
 
     def find_songs_by_album(self, name: str, artist: str) -> list:
@@ -82,7 +95,9 @@ class AllSongs(db.Mongo):
         """
         Returns a sorted list of all the tracks exactly matching the folder in the query params
         """
-        songs = self.collection.find({"folder": query}).sort("title", db.pymongo.ASCENDING)
+        songs = self.collection.find({
+            "folder": query
+        }).sort("title", db.pymongo.ASCENDING)
         return convert_many(songs)
 
     def find_songs_by_folder_og(self, query: str) -> list:
@@ -104,8 +119,10 @@ class AllSongs(db.Mongo):
         Returns a list of all the tracks containing the albumartist in the query params.
         """
         songs = self.collection.find(
-            {"albumartist": {"$regex": query, "$options": "i"}}
-        )
+            {"albumartist": {
+                "$regex": query,
+                "$options": "i"
+            }})
         return convert_many(songs)
 
     def get_song_by_path(self, path: str) -> dict:

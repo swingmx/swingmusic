@@ -1,7 +1,6 @@
 """
 This file contains the Artists class for interacting with artist documents in MongoDB.
 """
-
 from app import db
 from bson import ObjectId
 
@@ -12,16 +11,17 @@ class Artists(db.Mongo):
     """
 
     def __init__(self):
-        super(Artists, self).__init__("ALL_ARTISTS")
-        self.collection = self.db["THEM_ARTISTS"]
+        super(Artists, self).__init__("ALICE_ARTISTS")
+        self.collection = self.db["ALL_ARTISTS"]
 
     def insert_artist(self, artist_obj: dict) -> None:
         """
         Inserts an artist into the database.
         """
-        self.collection.update_one(
-            artist_obj, {"$set": artist_obj}, upsert=True
-        ).upserted_id
+        self.collection.update_one(artist_obj, {
+            "$set": artist_obj
+        },
+                                   upsert=True).upserted_id
 
     def get_all_artists(self) -> list:
         """

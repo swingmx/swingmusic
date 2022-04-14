@@ -56,7 +56,7 @@ interface Playlist {
   tracks?: Track[];
   count?: number;
   lastUpdated?: string;
-  color?: string;
+  thumb?: string;
 }
 
 interface Notif {

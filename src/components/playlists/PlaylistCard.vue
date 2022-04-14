@@ -10,7 +10,7 @@
     <div
       class="image p-image rounded shadow-sm"
       :style="{
-        backgroundImage: `url(${props.playlist.image})`,
+        backgroundImage: `url(${props.playlist.thumb})`,
       }"
     ></div>
     <div class="pbtn">
@@ -37,21 +37,21 @@ import Option from "../shared/Option.vue";
 const props = defineProps<{
   playlist: Playlist;
 }>();
-
 </script>
 
 <style lang="scss">
 .p-card {
   width: 100%;
   padding: 0.75rem;
-  transition: all 0.2s ease;
-  background-image: linear-gradient(37deg, #000000e8, $gray);
+  transition: all 0.25s ease;
+  background-position: -10rem;
   position: relative;
 
   .p-image {
     min-width: 100%;
-    height: 10rem;
     transition: all 0.2s ease;
+    background-color: $gray4;
+    aspect-ratio: 1;
   }
 
   .drop {
@@ -60,6 +60,7 @@ const props = defineProps<{
     right: 1.25rem;
     opacity: 0;
     transition: all 0.25s ease-in-out;
+    display: none;
 
     .drop-btn {
       background-color: $gray3;
@@ -67,6 +68,7 @@ const props = defineProps<{
   }
 
   .pbtn {
+    display: none;
     position: absolute;
     bottom: 4.5rem;
     left: 1.25rem;
@@ -75,10 +77,12 @@ const props = defineProps<{
   }
 
   &:hover {
+    background-color: $gray5;
+
     .drop {
-      transition-delay: .75s;
+      transition-delay: 0.75s;
       opacity: 1;
-      transform: translate(0, -.5rem);
+      transform: translate(0, -0.5rem);
     }
   }
 

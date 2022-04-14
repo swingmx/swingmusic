@@ -49,7 +49,7 @@ const playlist = usePTrackStore();
   }
   .songlist {
     padding: $small;
-    min-height: calc(100% - 30rem);
+    min-height: calc(100% - 32rem);
   }
 }
 </style>

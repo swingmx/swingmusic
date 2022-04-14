@@ -1,20 +1,21 @@
 <template>
   <div class="loaderx" :class="{ loader: loading, not_loader: !loading }">
-    <div v-if="!loading">😹</div>
+    <div v-if="!loading">🦋</div>
   </div>
 </template>
 
 <script setup>
 import state from "@/composables/state";
 
-const loading = state.loading
+const loading = state.loading;
 </script>
 
 <style lang="scss">
 .loaderx {
   width: 1.5rem;
-  height:1.5rem;
+  height: 1.5rem;
   border-radius: 50%;
+  user-select: none;
 }
 
 .loader {

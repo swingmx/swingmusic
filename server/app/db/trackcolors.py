@@ -1,7 +1,6 @@
 """
 This file contains the TrackColors class for interacting with Track colors documents in MongoDB.
 """
-
 from app import db
 
 
@@ -11,7 +10,7 @@ class TrackColors(db.Mongo):
     """
 
     def __init__(self):
-        super(TrackColors, self).__init__("TRACK_COLORS")
+        super(TrackColors, self).__init__("ALICE_TRACK_COLORS")
         self.collection = self.db["TRACK_COLORS"]
 
     def insert_track_color(self, track_color: dict) -> None:
@@ -19,8 +18,12 @@ class TrackColors(db.Mongo):
         Inserts a new track object into the database.
         """
         return self.collection.update_one(
-            {"filepath": track_color["filepath"]},
-            {"$set": track_color},
+            {
+                "filepath": track_color["filepath"]
+            },
+            {
+                "$set": track_color
+            },
             upsert=True,
         ).upserted_id
 
