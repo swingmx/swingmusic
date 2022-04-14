@@ -21,7 +21,8 @@ TrackExistsInPlaylist = exceptions.TrackExistsInPlaylist
 @playlist_bp.route("/playlists", methods=["GET"])
 def get_all_playlists():
     playlists = [
-        serializer.Playlist(p, construct_last_updated=False) for p in api.PLAYLISTS
+        serializer.Playlist(p, construct_last_updated=False)
+        for p in api.PLAYLISTS
     ]
     playlists.sort(
         key=lambda p: datetime.strptime(p.lastUpdated, "%Y-%m-%d %H:%M:%S"),
@@ -40,7 +41,7 @@ def create_playlist():
         "pre_tracks": [],
         "lastUpdated": data["lastUpdated"],
         "image": "",
-        "thumb": ""
+        "thumb": "",
     }
 
     try:
@@ -101,7 +102,7 @@ def update_playlist(playlistid: str):
         "description": str(data.get("description").strip()),
         "lastUpdated": str(data.get("lastUpdated")),
         "image": None,
-        "thumb": None
+        "thumb": None,
     }
 
     for p in api.PLAYLISTS:
@@ -114,7 +115,7 @@ def update_playlist(playlistid: str):
 
             else:
                 playlist["image"] = p.image.split("/")[-1]
-                playlist['thumb'] = p.thumb.split("/")[-1]
+                playlist["thumb"] = p.thumb.split("/")[-1]
 
             p.update_playlist(playlist)
             instances.playlist_instance.update_playlist(playlistid, playlist)

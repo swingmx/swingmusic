@@ -1,8 +1,7 @@
 """
-This file contains the Album class for interacting with 
+This file contains the Album class for interacting with
 album documents in MongoDB.
 """
-
 from app import db
 from bson import ObjectId
 
@@ -24,8 +23,13 @@ class Albums(db.Mongo):
         Inserts a new album object into the database.
         """
         return self.collection.update_one(
-            {"album": album["album"], "artist": album["artist"]},
-            {"$set": album},
+            {
+                "album": album["album"],
+                "artist": album["artist"]
+            },
+            {
+                "$set": album
+            },
             upsert=True,
         ).upserted_id
 
