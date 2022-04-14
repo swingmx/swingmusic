@@ -28,7 +28,7 @@
         v-if="search.query.trim().length === 0"
         class="no-res border rounded"
       >
-        <div class="no-res-text">👻 Find your music</div>
+        <div class="no-res-text">🦋 Find your music</div>
       </div>
       <div
         v-else-if="

@@ -38,8 +38,8 @@ def add_track(playlistid: str, trackid: str):
                 instances.playlist_instance.add_track_to_playlist(
                     playlistid, track)
                 return
-            except TrackExistsInPlaylist as e:
-                return {"error": str(e)}, 409
+            except TrackExistsInPlaylist as error:
+                raise error
 
 
 def get_playlist_tracks(pid: str):

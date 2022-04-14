@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 import state from "./state";
 import { AlbumInfo, Track } from "../interfaces";
 
@@ -17,14 +17,14 @@ const getAlbumTracks = async (album: string, artist: string) => {
       data.info = res.data.info;
       data.tracks = res.data.songs;
     })
-    .catch((err) => {
+    .catch((err: AxiosError) => {
       console.error(err);
     });
 
   return data;
 };
 
-const getAlbumArtists = async (album, artist) => {
+const getAlbumArtists = async (album:string, artist:string) => {
   let artists = [];
 
   await axios
@@ -35,7 +35,7 @@ const getAlbumArtists = async (album, artist) => {
     .then((res) => {
       artists = res.data.artists;
     })
-    .catch((err) => {
+    .catch((err: AxiosError) => {
       console.error(err);
     });
 
@@ -53,7 +53,7 @@ const getAlbumBio = async (album: string, albumartist: string) => {
     .then((res) => {
       bio = res.data.bio;
     })
-    .catch((err) => {
+    .catch((err: AxiosError) => {
       if (err.response.status === 404) {
         bio = null;
       }
