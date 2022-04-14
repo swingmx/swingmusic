@@ -1,5 +1,6 @@
 import time
 from typing import List
+
 from app import api, helpers, models
 from progress.bar import Bar
 
