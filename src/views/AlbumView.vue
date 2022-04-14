@@ -46,7 +46,7 @@ onBeforeRouteUpdate(async (to) => {
 
   .songs {
     padding: $small;
-    min-height: calc(100% - 30rem);
+    min-height: calc(100% - 32rem);
   }
 
   &::-webkit-scrollbar {

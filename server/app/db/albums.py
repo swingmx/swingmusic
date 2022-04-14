@@ -16,8 +16,8 @@ class Albums(db.Mongo):
     """
 
     def __init__(self):
-        super(Albums, self).__init__("ALBUMS")
-        self.collection = self.db["ALBUMS"]
+        super(Albums, self).__init__("ALICE_ALBUMS")
+        self.collection = self.db["ALL_ALBUMS"]
 
     def insert_album(self, album: dict) -> None:
         """

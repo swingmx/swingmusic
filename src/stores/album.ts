@@ -21,6 +21,7 @@ export default defineStore("album", {
       this.tracks = tracks.tracks;
       this.info = tracks.info;
       this.artists = artists;
+      this.bio = null;
     },
     fetchBio(title: string, albumartist: string) {
       getAlbumBio(title, albumartist).then((bio) => {

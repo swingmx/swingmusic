@@ -1,8 +1,5 @@
 <template>
   <div id="f-view-parent" class="rounded">
-    <div class="fixed">
-      <Header :path="FStore.path" :first_song="FStore.tracks[0]" />
-    </div>
     <div id="scrollable" ref="scrollable">
       <FolderList :folders="FStore.dirs" />
       <div
@@ -20,7 +17,6 @@ import { onBeforeRouteUpdate } from "vue-router";
 
 import SongList from "@/components/FolderView/SongList.vue";
 import FolderList from "@/components/FolderView/FolderList.vue";
-import Header from "@/components/FolderView/Header.vue";
 
 import useFStore from "../stores/folder";
 import state from "../composables/state";
@@ -44,9 +40,10 @@ onBeforeRouteUpdate((to) => {
 <style lang="scss">
 #f-view-parent {
   position: relative;
-  padding: 4rem $small 0 $small;
+  padding: 0 $small 0 $small;
   overflow: hidden;
   margin: $small;
+  margin-top: $small;
 
   .h {
     font-size: 2rem;
@@ -54,12 +51,12 @@ onBeforeRouteUpdate((to) => {
   }
 }
 
-#f-view-parent .fixed {
-  position: absolute;
-  height: min-content;
-  width: calc(100% - 1rem);
-  top: 0.5rem;
-}
+// #f-view-parent .fixed {
+//   position: absolute;
+//   height: min-content;
+//   width: calc(100% - 1rem);
+//   top: 0.5rem;
+// }
 
 #scrollable {
   overflow-y: auto;

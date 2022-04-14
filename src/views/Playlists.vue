@@ -22,15 +22,15 @@ const pStore = usePStore();
 <style lang="scss">
 #p-view {
   margin: $small;
+  margin-top: 0;
   padding: $small;
   overflow: auto;
   scrollbar-color: $gray2 transparent;
-  border-top: 1px solid $gray3;
 
   .grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(10rem, 1fr));
-    gap: $small;
+    gap: 1rem;
   }
 }
 </style>

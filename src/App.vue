@@ -103,5 +103,6 @@ app_dom.addEventListener("click", (e) => {
   padding: 0 $small;
   display: grid;
   grid-template-rows: 1fr;
+  margin-top: $small;
 }
 </style>

@@ -44,7 +44,7 @@ const props = defineProps<{
 
 .a-header {
   display: grid;
-  grid-template-columns: 13rem 1fr;
+  grid-template-columns: 15rem 1fr;
   padding: 1rem;
   height: 100%;
   background-color: $gray4;
@@ -58,8 +58,8 @@ const props = defineProps<{
     align-items: flex-end;
 
     .image {
-      width: 12rem;
-      height: 12rem;
+      width: 14rem;
+      height: 14rem;
     }
   }
 

@@ -12,8 +12,8 @@ class Artists(db.Mongo):
     """
 
     def __init__(self):
-        super(Artists, self).__init__("ALL_ARTISTS")
-        self.collection = self.db["THEM_ARTISTS"]
+        super(Artists, self).__init__("ALICE_ARTISTS")
+        self.collection = self.db["ALL_ARTISTS"]
 
     def insert_artist(self, artist_obj: dict) -> None:
         """

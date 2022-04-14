@@ -15,8 +15,8 @@ class Playlists(db.Mongo):
     """
 
     def __init__(self):
-        super(Playlists, self).__init__("PLAYLISTS")
-        self.collection = self.db["PLAYLISTS"]
+        super(Playlists, self).__init__("ALICE_PLAYLISTS")
+        self.collection = self.db["ALL_PLAYLISTS"]
 
     def insert_playlist(self, playlist: dict) -> None:
         """

@@ -11,7 +11,7 @@ class TrackColors(db.Mongo):
     """
 
     def __init__(self):
-        super(TrackColors, self).__init__("TRACK_COLORS")
+        super(TrackColors, self).__init__("ALICE_TRACK_COLORS")
         self.collection = self.db["TRACK_COLORS"]
 
     def insert_track_color(self, track_color: dict) -> None:

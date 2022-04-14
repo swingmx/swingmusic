@@ -1,9 +1,8 @@
 <template>
   <div id="playing-from" class="rounded" @click="goTo">
-  <div class="abs shadow-sm">Playing From</div>
     <div class="h">
       <div class="icon image" :class="from.type"></div>
-      {{ from.type }}
+     Playing from
     </div>
     <div class="name">
       <div id="to">
@@ -100,25 +99,15 @@ function goTo() {
 
 <style lang="scss">
 #playing-from {
-  background: linear-gradient(-200deg, $gray4 40%, $red, $gray4);
   background-size: 120%;
   padding: 0.75rem;
   cursor: pointer;
   position: relative;
   transition: all .2s ease;
+  background-color: $accent;
 
   &:hover {
     background-position: -4rem;
-  }
-
-  .abs {
-    position: absolute;
-    right: $small;
-    bottom: $small;
-    font-size: .9rem;
-    background-color: $gray;
-    padding: $smaller;
-    border-radius: .25rem;
   }
 
   .name {
@@ -133,7 +122,7 @@ function goTo() {
     align-items: center;
     gap: $small;
     text-transform: capitalize;
-    color: rgba(255, 255, 255, 0.664);
+    color: rgba(255, 255, 255, 0.849);
 
     .icon {
       height: 1.25rem;

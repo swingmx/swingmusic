@@ -73,9 +73,11 @@ class Album:
 
 def get_p_track(ptrack):
     for track in api.TRACKS:
-        if (track.title == ptrack["title"]
-                and track.artists == ptrack["artists"]
-                and ptrack["album"] == track.album):
+        if (
+            track.title == ptrack["title"]
+            and track.artists == ptrack["artists"]
+            and ptrack["album"] == track.album
+        ):
             return track
 
 
@@ -103,6 +105,7 @@ class Playlist:
     _pre_tracks: list = field(init=False, repr=False)
     lastUpdated: int
     image: str
+    thumb: str
     description: str = ""
     count: int = 0
     """A list of track objects in the playlist"""
@@ -112,6 +115,7 @@ class Playlist:
         self.name = data["name"]
         self.description = data["description"]
         self.image = self.create_img_link(data["image"])
+        self.thumb = self.create_img_link(data["thumb"])
         self._pre_tracks = data["pre_tracks"]
         self.tracks = []
         self.lastUpdated = data["lastUpdated"]
@@ -149,6 +153,7 @@ class Playlist:
 
         if data["image"]:
             self.image = self.create_img_link(data["image"])
+            self.thumb = self.create_img_link(data["thumb"])
 
 
 @dataclass

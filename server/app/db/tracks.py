@@ -15,8 +15,8 @@ class AllSongs(db.Mongo):
     """
 
     def __init__(self):
-        super(AllSongs, self).__init__("ALL_SONGS")
-        self.collection = self.db["ALL_SONGS"]
+        super(AllSongs, self).__init__("ALICE_MUSIC_TRACKS")
+        self.collection = self.db["ALL_TRACKS"]
 
     # def drop_db(self):
     #     self.collection.drop()
@@ -67,7 +67,6 @@ class AllSongs(db.Mongo):
         """
         Finds all the tracks matching the title in the query params.
         """
-        self.collection.create_index([("title", db.pymongo.TEXT)])
         song = self.collection.find({"title": {"$regex": query, "$options": "i"}})
         return convert_many(song)
 

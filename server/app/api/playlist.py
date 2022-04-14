@@ -40,6 +40,7 @@ def create_playlist():
         "pre_tracks": [],
         "lastUpdated": data["lastUpdated"],
         "image": "",
+        "thumb": ""
     }
 
     try:
@@ -100,15 +101,20 @@ def update_playlist(playlistid: str):
         "description": str(data.get("description").strip()),
         "lastUpdated": str(data.get("lastUpdated")),
         "image": None,
+        "thumb": None
     }
 
     for p in api.PLAYLISTS:
         if p.playlistid == playlistid:
 
             if image:
-                playlist["image"] = playlistlib.save_p_image(image, playlistid)
+                image_, thumb_ = playlistlib.save_p_image(image, playlistid)
+                playlist["image"] = image_
+                playlist["thumb"] = thumb_
+
             else:
                 playlist["image"] = p.image.split("/")[-1]
+                playlist['thumb'] = p.thumb.split("/")[-1]
 
             p.update_playlist(playlist)
             instances.playlist_instance.update_playlist(playlistid, playlist)

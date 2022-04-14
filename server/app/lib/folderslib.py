@@ -58,7 +58,6 @@ def get_subdirs(foldername: str) -> List[models.Folder]:
 
             if str1 is not None:
                 subdirs.add(foldername + "/" + str1)
-
     return [create_folder(dir) for dir in subdirs]
 
 
