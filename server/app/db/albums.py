@@ -23,8 +23,13 @@ class Albums(db.Mongo):
         Inserts a new album object into the database.
         """
         return self.collection.update_one(
-            {"album": album["album"], "artist": album["artist"]},
-            {"$set": album},
+            {
+                "album": album["album"],
+                "artist": album["artist"]
+            },
+            {
+                "$set": album
+            },
             upsert=True,
         ).upserted_id
 
