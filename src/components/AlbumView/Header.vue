@@ -32,9 +32,16 @@ import perks from "../../composables/perks.js";
 import { AlbumInfo } from "../../interfaces.js";
 import PlayBtnRect from "../shared/PlayBtnRect.vue";
 import { playSources } from "../../composables/enums";
+
 const props = defineProps<{
   album: AlbumInfo;
 }>();
+
+function extrackColors() {
+  
+}
+
+extrackColors();
 </script>
 
 <style lang="scss">
@@ -48,8 +55,8 @@ const props = defineProps<{
   padding: 1rem;
   height: 100%;
   background-color: $black;
-background-color: #000000;
-background-image: linear-gradient(147deg, #436a91 0%, #2c3e50 74%);
+  background-color: #000000;
+  background-image: linear-gradient(147deg, #436a91 0%, #2c3e50 74%);
   .art {
     width: 100%;
     height: 100%;
