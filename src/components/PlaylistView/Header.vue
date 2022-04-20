@@ -30,7 +30,7 @@
     </div>
     <div class="last-updated">
       <span class="status"
-        >Last updated {{ props.info.lastUpdated }} |&#160;</span
+        >Last updated {{ props.info.lastUpdated }} &#160;|&#160;&#160;</span
       >
       <span class="edit" @click="editPlaylist">Edit</span>
     </div>

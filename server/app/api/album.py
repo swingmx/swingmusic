@@ -4,7 +4,7 @@ Contains all the album routes.
 
 from flask import Blueprint, request
 from app import api
-from app import helpers, cache
+from app import helpers
 from app import functions
 from app.lib import albumslib, trackslib
 

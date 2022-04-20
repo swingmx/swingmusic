@@ -17,9 +17,8 @@ import { ContextSrc } from "../../composables/enums";
 let elem: DOMRect;
 const clicked = ref(false);
 
-const props = defineProps<{
+defineProps<{
   src?: string;
-  color?: string;
 }>();
 
 const emit = defineEmits<{
@@ -45,7 +44,6 @@ function showDropdown(e: Event) {
 <style lang="scss">
 .drop-btn {
   width: 2.5rem;
-  height: 2.5rem;
   background-color: $accent;
   transition: all 0.5s ease-in-out;
   cursor: pointer;

@@ -1,6 +1,7 @@
 """
 This library contains all the functions related to playlists.
 """
+from datetime import datetime
 import os
 import random
 import string
@@ -35,8 +36,7 @@ def add_track(playlistid: str, trackid: str):
 
             try:
                 playlist.add_track(track)
-                instances.playlist_instance.add_track_to_playlist(
-                    playlistid, track)
+                instances.playlist_instance.add_track_to_playlist(playlistid, track)
                 return
             except TrackExistsInPlaylist as error:
                 raise error
@@ -55,6 +55,7 @@ def create_all_playlists():
     playlists = instances.playlist_instance.get_all_playlists()
 
     _bar = Bar("Creating playlists", max=len(playlists))
+
     for playlist in playlists:
         api.PLAYLISTS.append(models.Playlist(playlist))
 
@@ -69,8 +70,7 @@ def create_thumbnail(image: any, img_path: str) -> str:
     Creates a 250 x 250 thumbnail from a playlist image
     """
     thumb_path = "thumb_" + img_path
-    full_thumb_path = os.path.join(settings.APP_DIR, "images", "playlists",
-                                   thumb_path)
+    full_thumb_path = os.path.join(settings.APP_DIR, "images", "playlists", thumb_path)
 
     aspect_ratio = image.width / image.height
 
@@ -88,13 +88,11 @@ def save_p_image(file: datastructures.FileStorage, pid: str):
     """
     img = Image.open(file)
 
-    random_str = "".join(
-        random.choices(string.ascii_letters + string.digits, k=5))
+    random_str = "".join(random.choices(string.ascii_letters + string.digits, k=5))
 
     img_path = pid + str(random_str) + ".webp"
 
-    full_img_path = os.path.join(settings.APP_DIR, "images", "playlists",
-                                 img_path)
+    full_img_path = os.path.join(settings.APP_DIR, "images", "playlists", img_path)
 
     if file.content_type == "image/gif":
         frames = []
@@ -132,3 +130,7 @@ def validate_images():
     for image in os.listdir(p_path):
         if image not in images:
             os.remove(os.path.join(p_path, image))
+
+
+def create_new_date():
+    return datetime.now()

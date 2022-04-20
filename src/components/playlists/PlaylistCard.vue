@@ -91,6 +91,7 @@ const props = defineProps<{
 
     .name {
       text-transform: capitalize;
+      font-weight: 900;
     }
 
     .count {

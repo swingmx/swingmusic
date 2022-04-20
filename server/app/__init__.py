@@ -28,5 +28,4 @@ def create_app():
         app.register_blueprint(folder.folder_bp, url_prefix="/")
         app.register_blueprint(playlist.playlist_bp, url_prefix="/")
 
-
         return app

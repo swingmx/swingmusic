@@ -11,10 +11,10 @@
           ></div>
         </div>
         <div id="bitrate">
-          <span v-if="track.bitrate > 330"
-            >FLAC • {{ track.bitrate }}</span
-          >
-          <span v-else>MP3 | {{ track.bitrate }}</span>
+          <span v-if="track.bitrate > 1500">MASTER</span>
+          <span v-else-if="track.bitrate > 330">FLAC</span>
+          <span v-else>MP3</span>
+          • {{ track.bitrate }}
         </div>
         <div class="title ellip">{{ props.track.title }}</div>
         <div class="separator no-border"></div>

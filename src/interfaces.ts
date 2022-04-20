@@ -80,6 +80,11 @@ interface fromPlaylist {
   playlistid: string;
 }
 
+interface fromSearch {
+  type: FromOptions;
+  query: string;
+}
+
 export {
   Track,
   Folder,
@@ -91,4 +96,5 @@ export {
   fromFolder,
   fromAlbum,
   fromPlaylist,
+  fromSearch,
 };

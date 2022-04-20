@@ -1,54 +1,59 @@
 <template>
   <div id="playing-from" class="rounded" @click="goTo">
     <div class="h">
-      <div class="icon image" :class="from.type"></div>
+      <div class="icon image" :class="from.icon"></div>
      Playing from
     </div>
     <div class="name">
       <div id="to">
-        {{ from.name }}
+        {{ from.text }}
       </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { fromFolder, fromAlbum, fromPlaylist } from "../../../interfaces";
+import { fromFolder, fromAlbum, fromPlaylist, fromSearch } from "../../../interfaces";
 import { FromOptions } from "../../../composables/enums";
 import { useRouter } from "vue-router";
 import { computed } from "@vue/reactivity";
 
 const props = defineProps<{
-  from: fromFolder | fromAlbum | fromPlaylist;
+  from: fromFolder | fromAlbum | fromPlaylist | fromSearch;
 }>();
 
 interface from {
-  type: string;
-  name: string;
+  icon: string;
+  text: string;
 }
 
 const from = computed((): from => {
   switch (props.from.type) {
     case undefined:
       return {
-        type: "album",
-        name: "Welcome to Alice",
+        icon: "album",
+        text: "Welcome to Alice",
       };
     case FromOptions.folder:
       return {
-        type: "folder",
-        name: props.from.name,
+        icon: "folder",
+        text: props.from.name,
       };
     case FromOptions.album:
       return {
-        type: "album",
-        name: props.from.name,
+        icon: "album",
+        text: props.from.name,
       };
     case FromOptions.playlist:
       return {
-        type: "playlist",
-        name: props.from.name,
+        icon: "playlist",
+        text: props.from.name,
       };
+    case FromOptions.search:
+      return {
+        icon: "search",
+        text: `Search results for: "${props.from.query}"`
+      }
   }
 });
 

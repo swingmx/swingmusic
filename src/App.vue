@@ -9,9 +9,9 @@
           ><div class="logo"></div
         ></router-link>
       </div>
-      <Navigation :collapsed="collapsed" />
+      <Navigation />
       <div class="l-album-art">
-        <nowPlaying :collapsed="collapsed" />
+        <nowPlaying />
       </div>
     </div>
     <NavBar />
@@ -40,6 +40,7 @@ import ContextMenu from "./components/contextMenu.vue";
 import Modal from "./components/modal.vue";
 import Notification from "./components/Notification.vue";
 import useQStore from "./stores/queue";
+import shortcuts from "./composables/keyboard";
 
 const context_store = useContextStore();
 const queue = useQStore();
@@ -48,7 +49,7 @@ queue.readQueueFromLocalStorage();
 
 const RightSideBar = Main;
 
-const collapsed = ref(false);
+shortcuts(queue);
 
 const app_dom = document.getElementById("app");
 
