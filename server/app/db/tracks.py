@@ -31,7 +31,7 @@ class AllSongs(db.Mongo):
         },
                                           upsert=True).upserted_id
 
-    def get_all_songs(self) -> list:
+    def get_all_tracks(self) -> list:
         """
         Returns all tracks in the database.
         """

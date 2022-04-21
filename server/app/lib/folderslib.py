@@ -1,5 +1,5 @@
 import time
-from typing import List
+from typing import List, Set
 
 from app import api
 from app import helpers
@@ -31,17 +31,18 @@ def create_folder(foldername: str) -> models.Folder:
     return models.Folder(folder)
 
 
-def create_all_folders() -> List[models.Folder]:
-    folders_: List[models.Folder] = []
+def create_all_folders() -> Set[models.Folder]:
+    folders: List[models.Folder] = []
     _bar = Bar("Creating folders", max=len(api.VALID_FOLDERS))
 
     for foldername in api.VALID_FOLDERS:
         folder = create_folder(foldername)
-        folders_.append(folder)
+        folders.append(folder)
+
         _bar.next()
     _bar.finish()
 
-    return folders_
+    return folders
 
 
 def get_subdirs(foldername: str) -> List[models.Folder]:
@@ -76,5 +77,4 @@ def run_scandir():
     folders_ = create_all_folders()
     """Create all the folder objects before clearing api.FOLDERS"""
 
-    api.FOLDERS.clear()
-    api.FOLDERS.extend(folders_)
+    api.FOLDERS = folders_

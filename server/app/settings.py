@@ -1,6 +1,7 @@
 """
 Contains default configs
 """
+from dataclasses import dataclass
 import os
 
 # paths
@@ -32,3 +33,7 @@ P_COLORS = [
     "rgb(141, 132, 2)",
     "rgb(141, 11, 2)",
 ]
+
+
+class logger:
+    enable = True

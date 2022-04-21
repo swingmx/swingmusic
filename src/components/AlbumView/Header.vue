@@ -12,7 +12,7 @@
       <div class="info">
         <div class="top">
           <div class="h">Album</div>
-          <div class="title ellip">{{ props.album.album }}</div>
+          <div class="title ellip">{{ props.album.title }}</div>
         </div>
         <div class="bottom">
           <div class="stats">

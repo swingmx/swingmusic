@@ -6,8 +6,8 @@ import datetime
 import os
 import random
 import threading
-from typing import List
-import colorgram, time
+from typing import Dict, List
+import time
 
 from app import models, settings
 
@@ -26,7 +26,7 @@ def background(func):
     return background_func
 
 
-def run_fast_scandir(__dir: str, ext: list, full=False):
+def run_fast_scandir(__dir: str, ext: list, full=False) -> Dict[List[str], List[str]]:
     """
     Scans a directory for files with a specific extension. Returns a list of files and folders in the directory.
     """
@@ -91,22 +91,6 @@ def is_valid_file(filename: str) -> bool:
         return True
     else:
         return False
-
-
-def extract_image_colors(image) -> list:
-    """Extracts 2 of the most dominant colors from an image."""
-    try:
-        colors = sorted(colorgram.extract(image, 2), key=lambda c: c.hsl.h)
-    except OSError:
-        return []
-
-    formatted_colors = []
-
-    for color in colors:
-        color = f"rgb({color.rgb.r}, {color.rgb.g}, {color.rgb.b})"
-        formatted_colors.append(color)
-
-    return formatted_colors
 
 
 def use_memoji():

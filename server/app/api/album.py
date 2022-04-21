@@ -23,7 +23,7 @@ def get_albums():
     """returns all the albums"""
     albums = []
 
-    for song in api.PRE_TRACKS:
+    for song in api.DB_TRACKS:
         al_obj = {"name": song["album"], "artist": song["artists"]}
 
         if al_obj not in albums:
@@ -41,7 +41,8 @@ def get_album_tracks():
     artist = data["artist"]
 
     songs = trackslib.get_album_tracks(album, artist)
-    album = albumslib.find_album(album, artist)
+    index = albumslib.find_album(album, artist)
+    album = api.ALBUMS[index]
 
     return {"songs": songs, "info": album}
 
@@ -50,9 +51,8 @@ def get_album_tracks():
 def get_album_bio():
     """Returns the album bio for the given album."""
     data = request.get_json()
-    print(data)
 
-    bio = functions.get_album_bio(data["album"], data["albumartist"])
+    bio = functions.fetch_album_bio(data["album"], data["albumartist"])
 
     if bio is not None:
         return {"bio": bio}

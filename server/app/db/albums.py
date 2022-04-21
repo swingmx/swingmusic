@@ -5,6 +5,8 @@ album documents in MongoDB.
 from app import db
 from bson import ObjectId
 
+from app.models import Album
+
 convert_many = db.convert_many
 convert_one = db.convert_one
 
@@ -18,13 +20,13 @@ class Albums(db.Mongo):
         super(Albums, self).__init__("ALICE_ALBUMS")
         self.collection = self.db["ALL_ALBUMS"]
 
-    def insert_album(self, album: dict) -> None:
+    def insert_album(self, album: Album) -> None:
         """
         Inserts a new album object into the database.
         """
         return self.collection.update_one(
             {
-                "album": album["album"],
+                "album": album["title"],
                 "artist": album["artist"]
             },
             {

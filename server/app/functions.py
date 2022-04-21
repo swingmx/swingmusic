@@ -1,15 +1,14 @@
 """
 This module contains functions for the server
 """
+from dataclasses import asdict
 import datetime
 import os
 import random
 import time
-import urllib
 from io import BytesIO
 from typing import List
 
-import mutagen
 import requests
 from app import api
 from app import helpers
@@ -18,15 +17,12 @@ from app import models
 from app import settings
 from app.lib import albumslib
 from app.lib import folderslib
-from app.lib import playlistlib
 from app.lib import watchdoge
-from mutagen.flac import FLAC
-from mutagen.flac import MutagenError
-from mutagen.id3 import ID3
 from PIL import Image
 from progress.bar import Bar
 
-# from pprint import pprint
+from app.logger import Log
+from app.lib.taglib import get_tags, return_album_art
 
 
 @helpers.background
@@ -34,13 +30,12 @@ def reindex_tracks():
     """
     Checks for new songs every 5 minutes.
     """
-    flag = False
 
-    while flag is False:
+    while True:
         populate()
-        populate_images()
+        fetch_artist_images()
 
-        time.sleep(300)
+        time.sleep(60)
 
 
 @helpers.background
@@ -60,33 +55,84 @@ def populate():
     extract it.
     """
     start = time.time()
+    db_tracks = instances.tracks_instance.get_all_tracks()
+    tagged_tracks = []
+    albums = []
+    folders = set()
 
-    s, files = helpers.run_fast_scandir(settings.HOME_DIR, [".flac", ".mp3"],
-                                        full=True)
+    files = helpers.run_fast_scandir(settings.HOME_DIR, [".flac", ".mp3"], full=True)[1]
 
-    _bar = Bar("Processing files", max=len(files))
+    _bar = Bar("Checking files", max=len(files))
+    for track in db_tracks:
+        if track["filepath"] in files:
+            files.remove(track["filepath"])
+        _bar.next()
 
+    _bar.finish()
+
+    Log(f"Found {len(files)} untagged files")
+
+    _bar = Bar("Tagging files", max=len(files))
     for file in files:
         tags = get_tags(file)
+        foldername = os.path.dirname(file)
+        folders.add(foldername)
 
         if tags is not None:
-            upsert_id = instances.songs_instance.insert_song(tags)
-
-            if upsert_id is not None:
-                tags["_id"] = {"$oid": str(upsert_id)}
-                api.PRE_TRACKS.append(tags)
+            tagged_tracks.append(tags)
+            api.DB_TRACKS.append(tags)
 
         _bar.next()
     _bar.finish()
 
-    albumslib.create_everything()
-    folderslib.run_scandir()
+    Log(f"Tagged {len(tagged_tracks)} tracks")
+
+    _bar = Bar("Creating stuff", max=len(tagged_tracks))
+    for track in tagged_tracks:
+        albumindex = albumslib.find_album(track["album"], track["albumartist"])
+        album = None
+
+        if albumindex is None:
+            album = albumslib.create_album(track)
+            api.ALBUMS.append(album)
+            albums.append(album)
+            instances.album_instance.insert_album(asdict(album))
+        else:
+            album = api.ALBUMS[albumindex]
+
+        track["image"] = album.image
+        upsert_id = instances.tracks_instance.insert_song(track)
+
+        track["_id"] = {"$oid": str(upsert_id)}
+        api.TRACKS.append(models.Track(track))
+
+        _bar.next()
+
+    _bar.finish()
+
+    Log(f"Added {len(tagged_tracks)} new tracks and {len(albums)} new albums")
+
+    _bar = Bar("Creating folders", max=len(folders))
+    for folder in folders:
+        if folder not in api.VALID_FOLDERS:
+            api.VALID_FOLDERS.add(folder)
+            fff = folderslib.create_folder(folder)
+            api.FOLDERS.add(fff)
+
+        _bar.next()
+
+    _bar.finish()
+
+    Log(f"Created {len(api.FOLDERS)} folders")
 
     end = time.time()
 
     print(
-        str(datetime.timedelta(seconds=round(end - start))) + " elapsed for " +
-        str(len(files)) + " files")
+        str(datetime.timedelta(seconds=round(end - start)))
+        + " elapsed for "
+        + str(len(files))
+        + " files"
+    )
 
 
 def fetch_image_path(artist: str) -> str or None:
@@ -107,12 +153,12 @@ def fetch_image_path(artist: str) -> str or None:
         return None
 
 
-def populate_images():
-    """populates the artists images"""
+def fetch_artist_images():
+    """Downloads the artists images"""
 
     artists = []
 
-    for song in api.PRE_TRACKS:
+    for song in api.DB_TRACKS:
         this_artists = song["artists"].split(", ")
 
         for artist in this_artists:
@@ -121,8 +167,9 @@ def populate_images():
 
     _bar = Bar("Processing images", max=len(artists))
     for artist in artists:
-        file_path = (helpers.app_dir + "/images/artists/" +
-                     artist.replace("/", "::") + ".webp")
+        file_path = (
+            helpers.app_dir + "/images/artists/" + artist.replace("/", "::") + ".webp"
+        )
 
         if not os.path.exists(file_path):
             img_path = fetch_image_path(artist)
@@ -139,221 +186,13 @@ def populate_images():
     _bar.finish()
 
 
-def use_defaults() -> str:
-    """
-    Returns a path to a random image in the defaults directory.
-    """
-    path = "defaults/" + str(random.randint(0, 20)) + ".webp"
-    return path
-
-
-def save_track_colors(img, filepath) -> None:
-    """Saves the track colors to the database"""
-
-    track_colors = helpers.extract_colors(img)
-
-    tc_dict = {
-        "filepath": filepath,
-        "colors": track_colors,
-    }
-
-    instances.track_color_instance.insert_track_color(tc_dict)
-
-
-def return_album_art(filepath):
-    """
-    Returns the album art for a given audio file.
-    """
-
-    if filepath.endswith(".flac"):
-        try:
-            audio = FLAC(filepath)
-            return audio.pictures[0].data
-        except:
-            return None
-    elif filepath.endswith(".mp3"):
-        try:
-            audio = ID3(filepath)
-            return audio.getall("APIC")[0].data
-        except:
-            return None
-
-
-def save_t_colors():
-    _bar = Bar("Processing image colors", max=len(api.PRE_TRACKS))
-
-    for track in api.PRE_TRACKS:
-        filepath = track["filepath"]
-        album_art = return_album_art(filepath)
-
-        if album_art is not None:
-            img = Image.open(BytesIO(album_art))
-            save_track_colors(img, filepath)
-
-        _bar.next()
-
-    _bar.finish()
-
-
-def extract_thumb(audio_file_path: str, webp_path: str) -> str:
-    """
-    Extracts the thumbnail from an audio file. Returns the path to the thumbnail.
-    """
-    img_path = os.path.join(settings.THUMBS_PATH, webp_path)
-
-    if os.path.exists(img_path):
-        return urllib.parse.quote(webp_path)
-
-    album_art = return_album_art(audio_file_path)
-
-    if album_art is not None:
-        img = Image.open(BytesIO(album_art))
-
-        try:
-            small_img = img.resize((250, 250), Image.ANTIALIAS)
-            small_img.save(img_path, format="webp")
-        except OSError:
-            try:
-                png = img.convert("RGB")
-                small_img = png.resize((250, 250), Image.ANTIALIAS)
-                small_img.save(webp_path, format="webp")
-            except:
-                return None
-
-        return urllib.parse.quote(webp_path)
-    else:
-        return None
-
-
-def parse_artist_tag(audio):
-    """
-    Parses the artist tag from an audio file.
-    """
-    try:
-        artists = audio["artist"][0]
-    except (KeyError, IndexError):
-        artists = "Unknown"
-
-    return artists
-
-
-def parse_title_tag(audio, full_path: str):
-    """
-    Parses the title tag from an audio file.
-    """
-    try:
-        title = audio["title"][0]
-    except (KeyError, IndexError):
-        title = full_path.split("/")[-1]
-
-    return title
-
-
-def parse_album_artist_tag(audio):
-    """
-    Parses the album artist tag from an audio file.
-    """
-    try:
-        albumartist = audio["albumartist"][0]
-    except (KeyError, IndexError):
-        albumartist = "Unknown"
-
-    return albumartist
-
-
-def parse_album_tag(audio, full_path: str):
-    """
-    Parses the album tag from an audio file.
-    """
-    try:
-        album = audio["album"][0]
-    except (KeyError, IndexError):
-        album = full_path.split("/")[-1]
-
-    return album
-
-
-def parse_genre_tag(audio):
-    """
-    Parses the genre tag from an audio file.
-    """
-    try:
-        genre = audio["genre"][0]
-    except (KeyError, IndexError):
-        genre = "Unknown"
-
-    return genre
-
-
-def parse_date_tag(audio):
-    """
-    Parses the date tag from an audio file.
-    """
-    try:
-        date = audio["date"][0]
-    except (KeyError, IndexError):
-        date = "Unknown"
-
-    return date
-
-
-def parse_track_number(audio):
-    """
-    Parses the track number from an audio file.
-    """
-    try:
-        track_number = audio["tracknumber"][0]
-    except (KeyError, IndexError):
-        track_number = "Unknown"
-
-    return track_number
-
-
-def parse_disk_number(audio):
-    """
-    Parses the disk number from an audio file.
-    """
-    try:
-        disk_number = audio["discnumber"][0]
-    except (KeyError, IndexError):
-        disk_number = "Unknown"
-
-    return disk_number
-
-
-def get_tags(fullpath: str) -> dict:
-    """
-    Returns a dictionary of tags for a given file.
-    """
-    try:
-        audio = mutagen.File(fullpath, easy=True)
-    except MutagenError:
-        return None
-
-    tags = {
-        "artists": parse_artist_tag(audio),
-        "title": parse_title_tag(audio, fullpath),
-        "albumartist": parse_album_artist_tag(audio),
-        "album": parse_album_tag(audio, fullpath),
-        "genre": parse_genre_tag(audio),
-        "date": parse_date_tag(audio)[:4],
-        "tracknumber": parse_track_number(audio),
-        "discnumber": parse_disk_number(audio),
-        "length": round(audio.info.length),
-        "bitrate": round(int(audio.info.bitrate) / 1000),
-        "filepath": fullpath,
-        "folder": os.path.dirname(fullpath),
-    }
-
-    return tags
-
-
-def get_album_bio(title: str, albumartist: str):
+def fetch_album_bio(title: str, albumartist: str):
     """
     Returns the album bio for a given album.
     """
     last_fm_url = "http://ws.audioscrobbler.com/2.0/?method=album.getinfo&api_key={}&artist={}&album={}&format=json".format(
-        settings.LAST_FM_API_KEY, albumartist, title)
+        settings.LAST_FM_API_KEY, albumartist, title
+    )
 
     try:
         response = requests.get(last_fm_url)
@@ -362,29 +201,8 @@ def get_album_bio(title: str, albumartist: str):
         return None
 
     try:
-        bio = data["album"]["wiki"]["summary"].split(
-            '<a href="https://www.last.fm/')[0]
+        bio = data["album"]["wiki"]["summary"].split('<a href="https://www.last.fm/')[0]
     except KeyError:
         bio = None
 
     return bio
-
-
-def get_all_albums() -> List[models.Album]:
-    """
-    Returns a list of album objects for all albums in the database.
-    """
-
-    albums: List[models.Album] = []
-
-    _bar = Bar("Creating albums", max=len(api.PRE_TRACKS))
-    for track in api.PRE_TRACKS:
-        xx = albumslib.create_album(track)
-        if xx not in albums:
-            albums.append(xx)
-
-        _bar.next()
-
-    _bar.finish()
-
-    return albums

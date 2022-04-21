@@ -25,10 +25,7 @@
 </template>
 
 <script setup>
-import { ref } from "vue";
 import Navigation from "./components/LeftSidebar/Navigation.vue";
-
-import perks from "@/composables/perks.js";
 
 import Main from "./components/RightSideBar/Main.vue";
 import nowPlaying from "./components/LeftSidebar/nowPlaying.vue";
@@ -40,18 +37,15 @@ import ContextMenu from "./components/contextMenu.vue";
 import Modal from "./components/modal.vue";
 import Notification from "./components/Notification.vue";
 import useQStore from "./stores/queue";
-import shortcuts from "./composables/keyboard";
-
-const context_store = useContextStore();
-const queue = useQStore();
-
-queue.readQueueFromLocalStorage();
+import listenForKeyboardEvents from "./composables/keyboard";
 
 const RightSideBar = Main;
-
-shortcuts(queue);
-
+const context_store = useContextStore();
+const queue = useQStore();
 const app_dom = document.getElementById("app");
+
+queue.readQueueFromLocalStorage();
+listenForKeyboardEvents(queue);
 
 app_dom.addEventListener("click", (e) => {
   if (context_store.visible) {

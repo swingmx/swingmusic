@@ -13,13 +13,13 @@ from app.lib import folderslib
 from app.lib import playlistlib
 
 
-PRE_TRACKS = instances.songs_instance.get_all_songs()
+DB_TRACKS = instances.tracks_instance.get_all_tracks()
 VALID_FOLDERS: Set[str] = set()
 
 ALBUMS: List[models.Album] = []
 TRACKS: List[models.Track] = []
 PLAYLISTS: List[models.Playlist] = []
-FOLDERS: List[models.Folder] = []
+FOLDERS: Set[models.Folder] = set()
 
 
 @helpers.background
