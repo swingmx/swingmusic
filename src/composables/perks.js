@@ -17,21 +17,21 @@ function focusCurrent() {
 
   if (elem) {
     elem.scrollIntoView({
-      behavior : "smooth",
-      block : "center",
-      inline : "center",
+      behavior: "smooth",
+      block: "center",
+      inline: "center",
     });
   }
 }
 
 function getElem(identifier, type) {
   switch (type) {
-  case "class": {
-    return document.getElementsByClassName(identifier)[0];
-  }
-  case "id": {
-    return document.getElementById(identifier);
-  }
+    case "class": {
+      return document.getElementsByClassName(identifier)[0];
+    }
+    case "id": {
+      return document.getElementById(identifier);
+    }
   }
 }
 
