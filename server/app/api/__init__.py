@@ -3,23 +3,25 @@ This module contains all the Flask Blueprints and API routes. It also contains a
 that are used through-out the app. It handles the initialization of the watchdog,
 checking and creating config dirs and starting the re-indexing process using a background thread.
 """
+from typing import List
+from typing import Set
 
-from typing import List, Set
-
-from app import models, instances
-from app import functions, helpers, prep
+from app import functions
+from app import helpers
+from app import instances
+from app import models
+from app import prep
 from app.lib import albumslib
 from app.lib import folderslib
 from app.lib import playlistlib
 
-
-PRE_TRACKS = instances.songs_instance.get_all_songs()
+DB_TRACKS = instances.tracks_instance.get_all_tracks()
 VALID_FOLDERS: Set[str] = set()
 
 ALBUMS: List[models.Album] = []
 TRACKS: List[models.Track] = []
 PLAYLISTS: List[models.Playlist] = []
-FOLDERS: List[models.Folder] = []
+FOLDERS: Set[models.Folder] = set()
 
 
 @helpers.background

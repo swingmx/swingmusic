@@ -18,18 +18,14 @@ def create_all_tracks() -> List[models.Track]:
     """
     tracks: list[models.Track] = []
 
-    _bar = Bar("Creating tracks", max=len(api.PRE_TRACKS))
+    _bar = Bar("Creating tracks", max=len(api.DB_TRACKS))
 
-    for track in api.PRE_TRACKS:
+    for track in api.DB_TRACKS:
         try:
             os.chmod(track["filepath"], 0o755)
         except FileNotFoundError:
-            instances.songs_instance.remove_song_by_filepath(track["filepath"])
-            api.PRE_TRACKS.remove(track)
-
-        album = albumslib.find_album(track["album"], track["albumartist"])
-
-        track["image"] = album.image
+            instances.tracks_instance.remove_song_by_id(track["_id"]["$oid"])
+            api.DB_TRACKS.remove(track)
 
         tracks.append(models.Track(track))
         _bar.next()

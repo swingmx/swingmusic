@@ -25,7 +25,7 @@ interface Folder {
 }
 
 interface AlbumInfo {
-  album: string;
+  title: string;
   artist: string;
   count: number;
   duration: number;

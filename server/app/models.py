@@ -53,7 +53,7 @@ class Album:
     Album class
     """
 
-    album: str
+    title: str
     artist: str
     count: int
     duration: int
@@ -62,13 +62,13 @@ class Album:
     image: str
 
     def __init__(self, tags):
-        self.album = tags["album"]
+        self.title = tags["album"]
         self.artist = tags["artist"]
         self.count = tags["count"]
         self.duration = tags["duration"]
         self.date = tags["date"]
-        self.artistimage = settings.IMG_ARTIST_URI + tags["artistimage"]
-        self.image = settings.IMG_THUMB_URI + tags["image"]
+        self.artistimage = tags["artistimage"]
+        self.image = tags["image"]
 
 
 def get_p_track(ptrack):

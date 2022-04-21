@@ -1,18 +1,17 @@
 """
 This library contains the classes and functions related to the watchdog file watcher.
 """
-
-import time
 import os
+import time
 
-from watchdog.observers import Observer
-from watchdog.events import PatternMatchingEventHandler
-
-from app import instances, functions
-from app import models
-from app.lib import albumslib
 from app import api
+from app import instances
+from app import models
 from app.lib import folderslib
+from app.lib.albumslib import create_album
+from app.lib.taglib import get_tags
+from watchdog.events import PatternMatchingEventHandler
+from watchdog.observers import Observer
 
 
 class OnMyWatch:
@@ -46,14 +45,14 @@ def add_track(filepath: str) -> None:
 
     Then creates a folder object for the added track and adds it to api.FOLDERS
     """
-    tags = functions.get_tags(filepath)
+    tags = get_tags(filepath)
 
     if tags is not None:
-        instances.songs_instance.insert_song(tags)
-        tags = instances.songs_instance.get_song_by_path(tags["filepath"])
+        instances.tracks_instance.insert_song(tags)
+        tags = instances.tracks_instance.get_song_by_path(tags["filepath"])
 
-        api.PRE_TRACKS.append(tags)
-        album = albumslib.create_album(tags)
+        api.DB_TRACKS.append(tags)
+        album = create_album(tags)
         api.ALBUMS.append(album)
 
         tags["image"] = album.image
@@ -64,7 +63,7 @@ def add_track(filepath: str) -> None:
         if folder not in api.VALID_FOLDERS:
             api.VALID_FOLDERS.add(folder)
             f = folderslib.create_folder(folder)
-            api.FOLDERS.append(f)
+            api.FOLDERS.add(f)
 
 
 def remove_track(filepath: str) -> None:
@@ -75,12 +74,13 @@ def remove_track(filepath: str) -> None:
     fpath = filepath.replace(fname, "")
 
     try:
-        trackid = instances.songs_instance.get_song_by_path(filepath)["_id"]["$oid"]
+        trackid = instances.tracks_instance.get_song_by_path(
+            filepath)["_id"]["$oid"]
     except TypeError:
         print(f"💙 Watchdog Error: Error removing track {filepath} TypeError")
         return
 
-    instances.songs_instance.remove_song_by_id(trackid)
+    instances.tracks_instance.remove_song_by_id(trackid)
 
     for track in api.TRACKS:
         if track.trackid == trackid:

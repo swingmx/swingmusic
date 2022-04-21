@@ -1,15 +1,16 @@
 """
 This module contains mimi functions for the server.
 """
-
 import datetime
 import os
 import random
 import threading
+import time
+from typing import Dict
 from typing import List
-import colorgram, time
 
-from app import models, settings
+from app import models
+from app import settings
 
 app_dir = settings.APP_DIR
 
@@ -26,7 +27,9 @@ def background(func):
     return background_func
 
 
-def run_fast_scandir(__dir: str, ext: list, full=False):
+def run_fast_scandir(__dir: str,
+                     ext: list,
+                     full=False) -> Dict[List[str], List[str]]:
     """
     Scans a directory for files with a specific extension. Returns a list of files and folders in the directory.
     """
@@ -59,12 +62,10 @@ def remove_duplicates(tracklist: List[models.Track]) -> List[models.Track]:
 
     while song_num < len(tracklist) - 1:
         for index, song in enumerate(tracklist):
-            if (
-                tracklist[song_num].title == song.title
-                and tracklist[song_num].album == song.album
-                and tracklist[song_num].artists == song.artists
-                and index != song_num
-            ):
+            if (tracklist[song_num].title == song.title
+                    and tracklist[song_num].album == song.album
+                    and tracklist[song_num].artists == song.artists
+                    and index != song_num):
                 tracklist.remove(song)
 
         song_num += 1
@@ -93,22 +94,6 @@ def is_valid_file(filename: str) -> bool:
         return False
 
 
-def extract_image_colors(image) -> list:
-    """Extracts 2 of the most dominant colors from an image."""
-    try:
-        colors = sorted(colorgram.extract(image, 2), key=lambda c: c.hsl.h)
-    except OSError:
-        return []
-
-    formatted_colors = []
-
-    for color in colors:
-        color = f"rgb({color.rgb.r}, {color.rgb.g}, {color.rgb.b})"
-        formatted_colors.append(color)
-
-    return formatted_colors
-
-
 def use_memoji():
     """
     Returns a path to a random memoji image.
@@ -123,10 +108,11 @@ def check_artist_image(image: str) -> str:
     """
     img_name = image.replace("/", "::") + ".webp"
 
-    if not os.path.exists(os.path.join(app_dir, "images", "artists", img_name)):
+    if not os.path.exists(os.path.join(app_dir, "images", "artists",
+                                       img_name)):
         return use_memoji()
     else:
-        return (settings.IMG_ARTIST_URI + img_name,)
+        return (settings.IMG_ARTIST_URI + img_name, )
 
 
 class Timer:
