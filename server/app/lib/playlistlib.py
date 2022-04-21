@@ -1,19 +1,14 @@
 """
 This library contains all the functions related to playlists.
 """
-from datetime import datetime
 import os
 import random
 import string
+from datetime import datetime
 
-from app import api
-from app import exceptions
-from app import instances
-from app import models
-from app import settings
+from app import api, exceptions, instances, models, settings
 from app.lib import trackslib
-from PIL import Image
-from PIL import ImageSequence
+from PIL import Image, ImageSequence
 from progress.bar import Bar
 from werkzeug import datastructures
 
