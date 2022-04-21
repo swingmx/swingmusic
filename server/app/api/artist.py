@@ -51,4 +51,8 @@ def get_artist_data(artist: str):
 
         return albums_with_count
 
-    return {"artist": artist_obj, "songs": songs, "albums": get_artist_albums()}
+    return {
+        "artist": artist_obj,
+        "songs": songs,
+        "albums": get_artist_albums()
+    }
