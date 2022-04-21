@@ -3,9 +3,8 @@ This file contains the Album class for interacting with
 album documents in MongoDB.
 """
 from app import db
-from bson import ObjectId
-
 from app.models import Album
+from bson import ObjectId
 
 convert_many = db.convert_many
 convert_one = db.convert_one

@@ -6,8 +6,8 @@ import datetime
 import os
 import random
 import threading
-from typing import Dict, List
 import time
+from typing import Dict, List
 
 from app import models, settings
 

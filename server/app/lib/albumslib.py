@@ -5,13 +5,10 @@ import random
 import urllib
 from pprint import pprint
 from typing import List
-from progress.bar import Bar
 
-from app import api
-from app import functions
-from app import models
+from app import api, functions, instances, models
 from app.lib import trackslib
-from app import instances
+from progress.bar import Bar
 
 
 def get_all_albums() -> List[models.Album]:

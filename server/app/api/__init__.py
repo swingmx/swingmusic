@@ -6,12 +6,8 @@ checking and creating config dirs and starting the re-indexing process using a b
 
 from typing import List, Set
 
-from app import models, instances
-from app import functions, helpers, prep
-from app.lib import albumslib
-from app.lib import folderslib
-from app.lib import playlistlib
-
+from app import functions, helpers, instances, models, prep
+from app.lib import albumslib, folderslib, playlistlib
 
 DB_TRACKS = instances.tracks_instance.get_all_tracks()
 VALID_FOLDERS: Set[str] = set()

@@ -2,7 +2,7 @@
 All the MongoDB instances are created here.
 """
 
-from app.db import artists, albums, trackcolors, tracks, playlists
+from app.db import albums, artists, playlists, trackcolors, tracks
 
 tracks_instance = tracks.AllSongs()
 artist_instance = artists.Artists()

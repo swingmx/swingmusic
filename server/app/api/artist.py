@@ -3,12 +3,10 @@ Contains all the artist(s) routes.
 """
 
 
-from app import cache
-from flask import Blueprint
 import urllib
 
-from app import instances
-from app import helpers
+from app import cache, helpers, instances
+from flask import Blueprint
 
 artist_bp = Blueprint("artist", __name__, url_prefix="/")
 
