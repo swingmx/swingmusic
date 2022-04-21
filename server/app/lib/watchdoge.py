@@ -1,19 +1,17 @@
 """
 This library contains the classes and functions related to the watchdog file watcher.
 """
-
-import time
 import os
+import time
 
-from watchdog.observers import Observer
-from watchdog.events import PatternMatchingEventHandler
-
+from app import api
 from app import instances
 from app import models
-from app import api
 from app.lib import folderslib
-from app.lib.taglib import get_tags
 from app.lib.albumslib import create_album
+from app.lib.taglib import get_tags
+from watchdog.events import PatternMatchingEventHandler
+from watchdog.observers import Observer
 
 
 class OnMyWatch:
@@ -76,7 +74,8 @@ def remove_track(filepath: str) -> None:
     fpath = filepath.replace(fname, "")
 
     try:
-        trackid = instances.tracks_instance.get_song_by_path(filepath)["_id"]["$oid"]
+        trackid = instances.tracks_instance.get_song_by_path(
+            filepath)["_id"]["$oid"]
     except TypeError:
         print(f"💙 Watchdog Error: Error removing track {filepath} TypeError")
         return

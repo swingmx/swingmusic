@@ -1,10 +1,11 @@
-import colorgram
-from progress.bar import Bar
-from PIL import Image
 from io import BytesIO
 
-from app import api, instances
+import colorgram
+from app import api
+from app import instances
 from app.lib.taglib import return_album_art
+from PIL import Image
+from progress.bar import Bar
 
 
 def get_image_colors(image) -> list:

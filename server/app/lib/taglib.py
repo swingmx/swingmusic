@@ -1,13 +1,13 @@
 import os
-from mutagen.flac import FLAC
-from mutagen.id3 import ID3
-from mutagen.flac import MutagenError
-import mutagen
 import urllib
-from PIL import Image
 from io import BytesIO
 
+import mutagen
 from app import settings
+from mutagen.flac import FLAC
+from mutagen.flac import MutagenError
+from mutagen.id3 import ID3
+from PIL import Image
 
 
 def return_album_art(filepath: str):

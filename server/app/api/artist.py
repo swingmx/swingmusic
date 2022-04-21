@@ -1,16 +1,14 @@
 """
 Contains all the artist(s) routes.
 """
-
-
-from flask import Blueprint
 import urllib
 
-from app import instances
+from app import cache
 from app import helpers
+from app import instances
+from flask import Blueprint
 
 artist_bp = Blueprint("artist", __name__, url_prefix="/")
-from app import cache
 
 
 @artist_bp.route("/artist/<artist>")
@@ -53,4 +51,8 @@ def get_artist_data(artist: str):
 
         return albums_with_count
 
-    return {"artist": artist_obj, "songs": songs, "albums": get_artist_albums()}
+    return {
+        "artist": artist_obj,
+        "songs": songs,
+        "albums": get_artist_albums()
+    }

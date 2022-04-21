@@ -5,13 +5,13 @@ import random
 import urllib
 from pprint import pprint
 from typing import List
-from progress.bar import Bar
 
 from app import api
 from app import functions
+from app import instances
 from app import models
 from app.lib import trackslib
-from app import instances
+from progress.bar import Bar
 
 
 def get_all_albums() -> List[models.Album]:
@@ -63,7 +63,8 @@ def find_album(albumtitle: str, artist: str) -> models.Album:
         iter += 1
         mid = (left + right) // 2
 
-        if api.ALBUMS[mid].title == albumtitle and api.ALBUMS[mid].artist == artist:
+        if api.ALBUMS[mid].title == albumtitle and api.ALBUMS[
+                mid].artist == artist:
             return mid
 
         if api.ALBUMS[mid].title < albumtitle:
@@ -101,7 +102,8 @@ def get_album_image(album: list) -> str:
     """
 
     for track in album:
-        img_p = (track["album"] + track["albumartist"] + ".webp").replace("/", "::")
+        img_p = (track["album"] + track["albumartist"] + ".webp").replace(
+            "/", "::")
         img = functions.extract_thumb(track["filepath"], webp_path=img_p)
 
         if img is not None:
@@ -140,8 +142,7 @@ def create_album(track) -> models.Album:
     album["date"] = album_tracks[0]["date"]
 
     album["artistimage"] = urllib.parse.quote_plus(
-        album_tracks[0]["albumartist"] + ".webp"
-    )
+        album_tracks[0]["albumartist"] + ".webp")
 
     album["image"] = get_album_image(album_tracks)
 

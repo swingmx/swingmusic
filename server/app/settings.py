@@ -1,8 +1,8 @@
 """
 Contains default configs
 """
-from dataclasses import dataclass
 import os
+from dataclasses import dataclass
 
 # paths
 CONFIG_FOLDER = ".alice"

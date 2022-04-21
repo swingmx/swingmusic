@@ -32,4 +32,4 @@ def get_sample_track():
     """
 
     return instances.tracks_instance.get_song_by_album("Legends Never Die",
-                                                      "Juice WRLD")
+                                                       "Juice WRLD")

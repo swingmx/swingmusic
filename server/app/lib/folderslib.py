@@ -1,5 +1,6 @@
 import time
-from typing import List, Set
+from typing import List
+from typing import Set
 
 from app import api
 from app import helpers
