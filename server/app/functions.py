@@ -60,7 +60,8 @@ def populate():
     albums = []
     folders = set()
 
-    files = helpers.run_fast_scandir(settings.HOME_DIR, [".flac", ".mp3"], full=True)[1]
+    files = helpers.run_fast_scandir(
+        settings.HOME_DIR, [".flac", ".mp3"], full=True)[1]
 
     _bar = Bar("Checking files", max=len(files))
     for track in db_tracks:
@@ -168,7 +169,8 @@ def fetch_artist_images():
     _bar = Bar("Processing images", max=len(artists))
     for artist in artists:
         file_path = (
-            helpers.app_dir + "/images/artists/" + artist.replace("/", "::") + ".webp"
+            helpers.app_dir + "/images/artists/" +
+            artist.replace("/", "::") + ".webp"
         )
 
         if not os.path.exists(file_path):
@@ -201,7 +203,8 @@ def fetch_album_bio(title: str, albumartist: str):
         return None
 
     try:
-        bio = data["album"]["wiki"]["summary"].split('<a href="https://www.last.fm/')[0]
+        bio = data["album"]["wiki"]["summary"].split(
+            '<a href="https://www.last.fm/')[0]
     except KeyError:
         bio = None
 

@@ -76,7 +76,8 @@ def remove_track(filepath: str) -> None:
     fpath = filepath.replace(fname, "")
 
     try:
-        trackid = instances.tracks_instance.get_song_by_path(filepath)["_id"]["$oid"]
+        trackid = instances.tracks_instance.get_song_by_path(filepath)[
+            "_id"]["$oid"]
     except TypeError:
         print(f"💙 Watchdog Error: Error removing track {filepath} TypeError")
         return
