@@ -1,7 +1,10 @@
 import time
-from typing import List, Set
+from typing import List
+from typing import Set
 
-from app import api, helpers, models
+from app import api
+from app import helpers
+from app import models
 from progress.bar import Bar
 
 

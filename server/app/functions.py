@@ -10,9 +10,16 @@ from io import BytesIO
 from typing import List
 
 import requests
-from app import api, helpers, instances, models, settings
-from app.lib import albumslib, folderslib, watchdoge
-from app.lib.taglib import get_tags, return_album_art
+from app import api
+from app import helpers
+from app import instances
+from app import models
+from app import settings
+from app.lib import albumslib
+from app.lib import folderslib
+from app.lib import watchdoge
+from app.lib.taglib import get_tags
+from app.lib.taglib import return_album_art
 from app.logger import Log
 from PIL import Image
 from progress.bar import Bar

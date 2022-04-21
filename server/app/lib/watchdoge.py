@@ -1,11 +1,12 @@
 """
 This library contains the classes and functions related to the watchdog file watcher.
 """
-
 import os
 import time
 
-from app import api, instances, models
+from app import api
+from app import instances
+from app import models
 from app.lib import folderslib
 from app.lib.albumslib import create_album
 from app.lib.taglib import get_tags

@@ -1,15 +1,16 @@
 """
 This module contains mimi functions for the server.
 """
-
 import datetime
 import os
 import random
 import threading
 import time
-from typing import Dict, List
+from typing import Dict
+from typing import List
 
-from app import models, settings
+from app import models
+from app import settings
 
 app_dir = settings.APP_DIR
 
