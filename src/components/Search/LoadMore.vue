@@ -1,8 +1,8 @@
 <template>
   <div class="morexx">
-    <button @click="loadMore" class="">
+    <div @click="loadMore" class="btn circular">
       <div class="text">Load More</div>
-    </button>
+    </div>
   </div>
 </template>
 
@@ -22,19 +22,18 @@ function loadMore() {
   place-items: center;
   margin-top: $small;
 
-  button {
-    border-radius: 1.5rem;
+  .btn {
     height: 2.5rem;
     width: 15rem;
     display: grid;
+    place-items: center;
     transition: all 0.5s ease;
-    color: rgba(255, 255, 255, 0.87) !important;
-    background-color: $accent;
-    // border: solid 1px $gray;
+    background-image: linear-gradient(37deg, $red, $blue);
+    cursor: pointer;
 
     &:hover {
       background-color: $blue !important;
-      width: 50%;
+      width: 12rem;
     }
   }
 }

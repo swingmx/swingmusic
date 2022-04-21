@@ -1,6 +1,6 @@
 <template>
   <div class="folder">
-    <div class="table rounded" v-if="props.tracks.length">
+    <div class="table rounded" v-if="tracks.length">
       <div class="thead">
         <div class="index"></div>
         <div class="track-header">Track</div>
@@ -10,7 +10,7 @@
       </div>
       <div class="songlist">
         <SongItem
-          v-for="(song, index) in props.tracks"
+          v-for="(song, index) in tracks"
           :key="song.trackid"
           :song="song"
           :index="index + 1"
@@ -20,7 +20,7 @@
         />
       </div>
     </div>
-    <div v-else-if="props.tracks.length === 0 && search_query">
+    <div v-else-if="tracks.length === 0 && search_query">
       <div class="no-results">
         <div class="text">Nothing down here 😑</div>
       </div>
@@ -49,9 +49,13 @@ const props = defineProps<{
 let route = useRoute().name;
 const search_query = state.search_query;
 
+/**
+ * Plays a clicked track and updates the queue
+ *
+ * @param track Track object
+ */
 function updateQueue(track: Track) {
   switch (route) {
-    // check which route the play request come from
     case "FolderView":
       queue.playFromFolder(props.path, props.tracks);
       queue.play(track);

@@ -4,16 +4,17 @@ from datetime import datetime
 from app import models
 
 
-def date_string_to_time_passed(dstring: str) -> str:
+def date_string_to_time_passed(prev_date: str) -> str:
     """
     Converts a date string to time passed. eg. 2 minutes ago, 1 hour ago, yesterday, 2 days ago, 2 weeks ago, etc.
     """
 
     now = datetime.now()
-    then = datetime.strptime(dstring, "%Y-%m-%d %H:%M:%S")
+    then = datetime.strptime(prev_date, "%Y-%m-%d %H:%M:%S")
 
     diff = now - then
     days = diff.days
+    print(days)
 
     if days < 0:
         return "in the future"
@@ -32,22 +33,19 @@ def date_string_to_time_passed(dstring: str) -> str:
     elif days == 1:
         return "yesterday"
     elif days < 7:
-        if days == 1:
-            return "1 day ago"
-
         return str(days) + " days ago"
     elif days < 30:
-        if days == 7:
+        if days < 14:
             return "1 week ago"
 
         return str(days // 7) + " weeks ago"
     elif days < 365:
-        if days == 30:
+        if days < 60:
             return "1 month ago"
 
         return str(days // 30) + " months ago"
     elif days > 365:
-        if days == 365:
+        if days < 730:
             return "1 year ago"
 
         return str(days // 365) + " years ago"

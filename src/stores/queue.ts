@@ -1,6 +1,12 @@
 import { defineStore } from "pinia";
 import state from "../composables/state";
-import { Track, fromFolder, fromAlbum, fromPlaylist } from "../interfaces";
+import {
+  Track,
+  fromFolder,
+  fromAlbum,
+  fromPlaylist,
+  fromSearch,
+} from "../interfaces";
 import notif from "../composables/mediaNotification";
 import { FromOptions } from "../composables/enums";
 
@@ -179,6 +185,14 @@ export default defineStore("Queue", {
         type: FromOptions.playlist,
         name: pname,
         playlistid: pid,
+      };
+
+      this.setNewQueue(tracks);
+    },
+    playFromSearch(query: string, tracks: Track[]) {
+      this.from = <fromSearch>{
+        type: FromOptions.search,
+        query: query,
       };
 
       this.setNewQueue(tracks);

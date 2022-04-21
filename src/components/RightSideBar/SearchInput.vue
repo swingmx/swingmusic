@@ -6,13 +6,10 @@
         id="search"
         class="rounded"
         v-model="search.query"
-        placeholder="Search"
+        placeholder="Search your library"
         type="text"
         @keyup.backspace="removeLastFilter"
       />
-      <div class="_loader">
-        <Loader />
-      </div>
     </div>
   </div>
 </template>
@@ -68,23 +65,15 @@ function removeLastFilter() {
       align-items: center;
       width: 100%;
       border: none;
-      border: solid 1px $primary;
       line-height: 2.25rem;
-      background-color: transparent;
-      color: rgb(255, 255, 255);
+      background-color: $gray5;
+      color: inherit;
       font-size: 1rem;
-      outline: none;
-      transition: all 0.5s ease;
       padding-left: 0.75rem;
+      outline: 2px solid transparent;
 
       &:focus {
-        transition: all 0.5s ease;
-        color: rgb(255, 255, 255);
-        outline: none;
-
-        &::placeholder {
-          display: none;
-        }
+        outline: solid $accent;
       }
     }
   }

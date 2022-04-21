@@ -20,14 +20,6 @@
       </div>
       <div @click="emitUpdate(props.song)">
         <span class="ellip title">{{ props.song.title }}</span>
-        <div class="artist ellip">
-          <span
-            v-for="artist in perks.putCommas(props.song.artists)"
-            :key="artist"
-          >
-            {{ artist }}
-          </span>
-        </div>
       </div>
     </div>
     <div class="song-artists">
@@ -199,17 +191,6 @@ function emitUpdate(track: Track) {
 
     .title {
       cursor: pointer;
-    }
-
-    .artist {
-      display: none;
-      font-size: 0.8rem;
-      color: rgba(255, 255, 255, 0.719);
-      cursor: pointer;
-
-      @include phone-only {
-        display: unset;
-      }
     }
   }
 

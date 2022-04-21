@@ -1,7 +1,6 @@
 from flask import Flask
-from flask_cors import CORS
-
 from flask_caching import Cache
+from flask_cors import CORS
 
 config = {"CACHE_TYPE": "SimpleCache", "CACHE_DEFAULT_TIMEOUT": 300}
 
@@ -19,7 +18,7 @@ def create_app():
     cache.init_app(app)
 
     with app.app_context():
-        from app.api import artist, track, search, folder, album, playlist
+        from app.api import album, artist, folder, playlist, search, track
 
         app.register_blueprint(album.album_bp, url_prefix="/")
         app.register_blueprint(artist.artist_bp, url_prefix="/")
@@ -27,6 +26,5 @@ def create_app():
         app.register_blueprint(search.search_bp, url_prefix="/")
         app.register_blueprint(folder.folder_bp, url_prefix="/")
         app.register_blueprint(playlist.playlist_bp, url_prefix="/")
-
 
         return app

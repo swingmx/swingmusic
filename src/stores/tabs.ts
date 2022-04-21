@@ -13,7 +13,7 @@ export default defineStore("tabs", {
     current: tablist.home,
   }),
   actions: {
-    changeTab(tab) {
+    changeTab(tab: string) {
       if (tab === this.tabs.queue) {
         setTimeout(() => {
           perks.focusCurrent();

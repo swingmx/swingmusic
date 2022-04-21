@@ -1,13 +1,15 @@
 <template>
-  <div class="loaderx" :class="{ loader: loading, not_loader: !loading }">
-    <div v-if="!loading">🦋</div>
+  <div
+    class="loaderx"
+    :class="{ loader: loader.loading, not_loader: !loader.loading }"
+  >
+    <div v-if="!loader.loading">🦋</div>
   </div>
 </template>
 
 <script setup>
-import state from "@/composables/state";
-
-const loading = state.loading;
+import useLoaderStore from "../../stores/loader";
+const loader = useLoaderStore();
 </script>
 
 <style lang="scss">

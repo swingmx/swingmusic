@@ -1,12 +1,12 @@
 <template>
   <div class="right-search">
     <Options />
-    <!-- </div> -->
     <div class="scrollable" ref="search_thing">
       <TracksGrid
         v-if="tracks.tracks.length"
         :more="tracks.more"
         :tracks="tracks.tracks"
+        :query="search.query"
         @loadMore="loadMoreTracks"
       />
       <div class="separator no-border" v-if="tracks.tracks.length"></div>
@@ -49,8 +49,7 @@
 
 <script setup>
 import { reactive, ref } from "@vue/reactivity";
-
-import state from "@/composables/state";
+import state from "../../composables/state";
 import searchMusic from "@/composables/searchMusic.js";
 import useDebouncedRef from "@/composables/useDebouncedRef";
 import AlbumGrid from "@/components/Search/AlbumGrid.vue";
@@ -82,8 +81,6 @@ const artists = reactive({
   artists: [],
   more: false,
 });
-
-const query = useDebouncedRef("", 600);
 
 function scrollSearchThing() {
   search_thing.value.scroll({

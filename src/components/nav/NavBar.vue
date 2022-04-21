@@ -11,6 +11,8 @@
           <div class="play">
             <PlayBtnRect />
           </div>
+          <Option v-if="$route.name === 'FolderView'" />
+
           <div class="fname">
             <div class="icon image"></div>
             <div class="ellip">
@@ -35,6 +37,7 @@ import NavButtons from "./NavButtons.vue";
 import Loader from "../shared/Loader.vue";
 import PlayBtnRect from "../shared/PlayBtnRect.vue";
 import Search from "./Search.vue";
+import Option from "../shared/Option.vue";
 </script>
 
 <style lang="scss">
@@ -49,7 +52,6 @@ import Search from "./Search.vue";
   .left {
     display: flex;
     align-items: center;
-    gap: $small;
 
     .info {
       .title {
@@ -59,26 +61,32 @@ import Search from "./Search.vue";
 
       .folder {
         display: flex;
-        gap: 1rem;
+        gap: $small;
 
         .playbtnrect {
           height: 2.25rem;
         }
 
+        .drop-btn {
+          width: 2.25rem;
+
+          .drop-icon {
+            height: 2.25rem;
+            width: 2.25rem;
+          }
+        }
+
         .fname {
-          position: relative;
-          padding-left: 2.25rem;
+          padding-left: 0.5rem;
           background-color: $gray4;
           border-radius: $small;
           height: 2.25rem;
           display: flex;
           align-items: center;
           padding-right: $small;
+          gap: 0.25rem;
 
           .icon {
-            position: absolute;
-            left: $small;
-            top: $small;
             width: 1.5rem;
             height: 1.5rem;
             background-image: url("../../assets/icons/folder.fill.svg");
@@ -96,6 +104,8 @@ import Search from "./Search.vue";
 
   .right {
     width: 100%;
+    display: flex;
+    gap: $small;
   }
 }
 </style>

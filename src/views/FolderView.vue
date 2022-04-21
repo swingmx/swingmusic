@@ -20,19 +20,21 @@ import FolderList from "@/components/FolderView/FolderList.vue";
 
 import useFStore from "../stores/folder";
 import state from "../composables/state";
+import useLoaderStore from "../stores/loader";
 
+const loader = useLoaderStore();
 const FStore = useFStore();
 
 const scrollable = ref(null);
 
 onBeforeRouteUpdate((to) => {
-  state.loading.value = true;
+  loader.startLoading();
   FStore.fetchAll(to.params.path)
     .then(() => {
       scrollable.value.scrollTop = 0;
     })
     .then(() => {
-      state.loading.value = false;
+      loader.stopLoading();
     });
 });
 </script>

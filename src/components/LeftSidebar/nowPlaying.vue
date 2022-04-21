@@ -84,7 +84,7 @@ const queue = useQStore();
     position: absolute;
     font-size: 0.75rem;
     width: max-content;
-    padding: 0.2rem;
+    padding: 0.2rem .35rem;
     top: 13.25rem;
     left: 1.5rem;
     background-color: $black;

@@ -10,7 +10,7 @@
       ]"
       v-for="notif in notifStore.notifs"
     >
-      <div>{{ notif.text }}</div>
+      <div class="ellip">{{ notif.text }}</div>
     </div>
   </div>
 </template>

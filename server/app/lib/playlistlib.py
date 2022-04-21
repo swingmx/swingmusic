@@ -4,6 +4,7 @@ This library contains all the functions related to playlists.
 import os
 import random
 import string
+from datetime import datetime
 
 from app import api
 from app import exceptions
@@ -55,6 +56,7 @@ def create_all_playlists():
     playlists = instances.playlist_instance.get_all_playlists()
 
     _bar = Bar("Creating playlists", max=len(playlists))
+
     for playlist in playlists:
         api.PLAYLISTS.append(models.Playlist(playlist))
 
@@ -132,3 +134,7 @@ def validate_images():
     for image in os.listdir(p_path):
         if image not in images:
             os.remove(os.path.join(p_path, image))
+
+
+def create_new_date():
+    return datetime.now()
