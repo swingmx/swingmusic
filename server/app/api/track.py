@@ -16,8 +16,7 @@ def send_track_file(trackid):
     """
     try:
         filepath = [
-            file["filepath"] for file in api.DB_TRACKS
-            if file["_id"]["$oid"] == trackid
+            file["filepath"] for file in api.DB_TRACKS if file["_id"]["$oid"] == trackid
         ][0]
     except (FileNotFoundError, IndexError) as e:
         return "File not found", 404
@@ -31,5 +30,6 @@ def get_sample_track():
     Returns a sample track object.
     """
 
-    return instances.tracks_instance.get_song_by_album("Legends Never Die",
-                                                       "Juice WRLD")
+    return instances.tracks_instance.get_song_by_album(
+        "Legends Never Die", "Juice WRLD"
+    )
