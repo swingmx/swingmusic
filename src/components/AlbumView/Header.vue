@@ -38,7 +38,7 @@ const props = defineProps<{
 }>();
 
 function extrackColors() {
-  
+
 }
 
 extrackColors();
