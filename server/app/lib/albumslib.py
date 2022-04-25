@@ -13,6 +13,9 @@ from app import models
 from app.lib import trackslib
 from progress.bar import Bar
 
+from app.lib import taglib
+from app import settings
+
 
 def get_all_albums() -> List[models.Album]:
     """
@@ -51,7 +54,7 @@ def create_everything() -> List[models.Track]:
     api.TRACKS.sort(key=lambda x: x.title)
 
 
-def find_album(albumtitle: str, artist: str) -> models.Album:
+def find_album(albumtitle: str, artist: str) -> int or None:
     """
     Finds an album by album title and artist.
     """
@@ -63,8 +66,7 @@ def find_album(albumtitle: str, artist: str) -> models.Album:
         iter += 1
         mid = (left + right) // 2
 
-        if api.ALBUMS[mid].title == albumtitle and api.ALBUMS[
-                mid].artist == artist:
+        if api.ALBUMS[mid].title == albumtitle and api.ALBUMS[mid].artist == artist:
             return mid
 
         if api.ALBUMS[mid].title < albumtitle:
@@ -96,20 +98,33 @@ def use_defaults() -> str:
     return path
 
 
+def gen_random_path() -> str:
+    """
+    Generates a random image file path for an album image.
+    """
+    choices = "abcdefghijklmnopqrstuvwxyz0123456789"
+    path = "".join(random.choice(choices) for i in range(20))
+    path += ".webp"
+
+    return path
+
+
 def get_album_image(album: list) -> str:
     """
     Gets the image of an album.
     """
 
+    uri = settings.IMG_THUMB_URI
+
     for track in album:
-        img_p = (track["album"] + track["albumartist"] + ".webp").replace(
-            "/", "::")
-        img = functions.extract_thumb(track["filepath"], webp_path=img_p)
+        img_p = gen_random_path()
 
-        if img is not None:
-            return img
+        exists = taglib.extract_thumb(track["filepath"], webp_path=img_p)
 
-    return use_defaults()
+        if exists:
+            return uri + img_p
+
+    return uri + use_defaults()
 
 
 def get_album_tracks(album: str, artist: str) -> List:
@@ -142,7 +157,8 @@ def create_album(track) -> models.Album:
     album["date"] = album_tracks[0]["date"]
 
     album["artistimage"] = urllib.parse.quote_plus(
-        album_tracks[0]["albumartist"] + ".webp")
+        album_tracks[0]["albumartist"] + ".webp"
+    )
 
     album["image"] = get_album_image(album_tracks)
 

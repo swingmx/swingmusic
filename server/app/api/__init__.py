@@ -21,7 +21,7 @@ VALID_FOLDERS: Set[str] = set()
 ALBUMS: List[models.Album] = []
 TRACKS: List[models.Track] = []
 PLAYLISTS: List[models.Playlist] = []
-FOLDERS: Set[models.Folder] = set()
+FOLDERS: List[models.Folder] = List
 
 
 @helpers.background

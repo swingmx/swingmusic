@@ -1,5 +1,4 @@
 import os
-import urllib
 from io import BytesIO
 
 import mutagen
@@ -29,14 +28,14 @@ def return_album_art(filepath: str):
             return None
 
 
-def extract_thumb(audio_file_path: str, webp_path: str) -> str:
+def extract_thumb(audio_file_path: str, webp_path: str) -> bool:
     """
     Extracts the thumbnail from an audio file. Returns the path to the thumbnail.
     """
     img_path = os.path.join(settings.THUMBS_PATH, webp_path)
 
     if os.path.exists(img_path):
-        return urllib.parse.quote(webp_path)
+        return True
 
     album_art = return_album_art(audio_file_path)
 
@@ -52,11 +51,11 @@ def extract_thumb(audio_file_path: str, webp_path: str) -> str:
                 small_img = png.resize((250, 250), Image.ANTIALIAS)
                 small_img.save(webp_path, format="webp")
             except:
-                return None
+                return False
 
-        return urllib.parse.quote(webp_path)
+        return True
     else:
-        return None
+        return False
 
 
 def parse_artist_tag(audio):

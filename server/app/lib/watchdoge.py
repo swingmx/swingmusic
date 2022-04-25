@@ -63,7 +63,7 @@ def add_track(filepath: str) -> None:
         if folder not in api.VALID_FOLDERS:
             api.VALID_FOLDERS.add(folder)
             f = folderslib.create_folder(folder)
-            api.FOLDERS.add(f)
+            api.FOLDERS.append(f)
 
 
 def remove_track(filepath: str) -> None:

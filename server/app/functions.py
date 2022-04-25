@@ -3,11 +3,12 @@ This module contains functions for the server
 """
 import datetime
 import os
+from pprint import pprint
 import random
 import time
 from dataclasses import asdict
 from io import BytesIO
-from typing import List
+from typing import List, Type
 
 import requests
 from app import api
@@ -60,8 +61,7 @@ def populate():
     albums = []
     folders = set()
 
-    files = helpers.run_fast_scandir(settings.HOME_DIR, [".flac", ".mp3"],
-                                     full=True)[1]
+    files = helpers.run_fast_scandir(settings.HOME_DIR, [".flac", ".mp3"], full=True)[1]
 
     _bar = Bar("Checking files", max=len(files))
     for track in db_tracks:
@@ -88,24 +88,59 @@ def populate():
 
     Log(f"Tagged {len(tagged_tracks)} tracks")
 
-    _bar = Bar("Creating stuff", max=len(tagged_tracks))
-    for track in tagged_tracks:
-        albumindex = albumslib.find_album(track["album"], track["albumartist"])
-        album = None
+    pre_albums = []
+
+    for t in tagged_tracks:
+        a = {
+            "title": t["album"],
+            "artist": t["albumartist"],
+        }
+
+        if a not in pre_albums:
+            pre_albums.append(a)
+
+    exist_count = 0
+    _bar = Bar("Creating albums", max=len(pre_albums))
+    for aa in pre_albums:
+        albumindex = albumslib.find_album(aa["title"], aa["artist"])
 
         if albumindex is None:
+            track = [
+                track
+                for track in tagged_tracks
+                if track["album"] == aa["title"]
+                and track["albumartist"] == aa["artist"]
+            ][0]
+
             album = albumslib.create_album(track)
             api.ALBUMS.append(album)
             albums.append(album)
+
             instances.album_instance.insert_album(asdict(album))
+
         else:
-            album = api.ALBUMS[albumindex]
+            exist_count += 1
 
-        track["image"] = album.image
-        upsert_id = instances.tracks_instance.insert_song(track)
+        _bar.next()
 
-        track["_id"] = {"$oid": str(upsert_id)}
-        api.TRACKS.append(models.Track(track))
+    _bar.finish()
+
+    Log(f"{exist_count} of {len(albums)} were already in the database")
+
+    _bar = Bar("Creating tracks", max=len(tagged_tracks))
+    for track in tagged_tracks:
+        try:
+            album_index = albumslib.find_album(track["album"], track["albumartist"])
+            album = api.ALBUMS[album_index]
+
+            track["image"] = album.image
+            upsert_id = instances.tracks_instance.insert_song(track)
+
+            track["_id"] = {"$oid": str(upsert_id)}
+            api.TRACKS.append(models.Track(track))
+        except TypeError:
+            # Bug: some albums are not found although they exist in `api.ALBUMS`. It has something to do with the bisection method used or sorting. Not sure yet.
+            pass
 
         _bar.next()
 
@@ -118,7 +153,7 @@ def populate():
         if folder not in api.VALID_FOLDERS:
             api.VALID_FOLDERS.add(folder)
             fff = folderslib.create_folder(folder)
-            api.FOLDERS.add(fff)
+            api.FOLDERS.append(fff)
 
         _bar.next()
 
@@ -129,8 +164,11 @@ def populate():
     end = time.time()
 
     print(
-        str(datetime.timedelta(seconds=round(end - start))) + " elapsed for " +
-        str(len(files)) + " files")
+        str(datetime.timedelta(seconds=round(end - start)))
+        + " elapsed for "
+        + str(len(files))
+        + " files"
+    )
 
 
 def fetch_image_path(artist: str) -> str or None:
@@ -165,8 +203,9 @@ def fetch_artist_images():
 
     _bar = Bar("Processing images", max=len(artists))
     for artist in artists:
-        file_path = (helpers.app_dir + "/images/artists/" +
-                     artist.replace("/", "::") + ".webp")
+        file_path = (
+            helpers.app_dir + "/images/artists/" + artist.replace("/", "::") + ".webp"
+        )
 
         if not os.path.exists(file_path):
             img_path = fetch_image_path(artist)
@@ -188,7 +227,8 @@ def fetch_album_bio(title: str, albumartist: str):
     Returns the album bio for a given album.
     """
     last_fm_url = "http://ws.audioscrobbler.com/2.0/?method=album.getinfo&api_key={}&artist={}&album={}&format=json".format(
-        settings.LAST_FM_API_KEY, albumartist, title)
+        settings.LAST_FM_API_KEY, albumartist, title
+    )
 
     try:
         response = requests.get(last_fm_url)
@@ -197,8 +237,7 @@ def fetch_album_bio(title: str, albumartist: str):
         return None
 
     try:
-        bio = data["album"]["wiki"]["summary"].split(
-            '<a href="https://www.last.fm/')[0]
+        bio = data["album"]["wiki"]["summary"].split('<a href="https://www.last.fm/')[0]
     except KeyError:
         bio = None
 
