@@ -3,12 +3,9 @@ This module contains functions for the server
 """
 import datetime
 import os
-from pprint import pprint
-import random
 import time
 from dataclasses import asdict
 from io import BytesIO
-from typing import List, Type
 
 import requests
 from app import api
@@ -20,7 +17,6 @@ from app.lib import albumslib
 from app.lib import folderslib
 from app.lib import watchdoge
 from app.lib.taglib import get_tags
-from app.lib.taglib import return_album_art
 from app.logger import Log
 from PIL import Image
 from progress.bar import Bar
