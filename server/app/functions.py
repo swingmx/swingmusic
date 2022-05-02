@@ -8,8 +8,14 @@ from dataclasses import asdict
 from io import BytesIO
 
 import requests
-from app import api, helpers, instances, models, settings
-from app.lib import albumslib, folderslib, watchdoge
+from app import api
+from app import helpers
+from app import instances
+from app import models
+from app import settings
+from app.lib import albumslib
+from app.lib import folderslib
+from app.lib import watchdoge
 from app.lib.taglib import get_tags
 from app.logger import Log
 from PIL import Image
