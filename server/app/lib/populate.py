@@ -108,8 +108,7 @@ class Populate:
             if index is None:
                 try:
                     track = [
-                        track
-                        for track in self.tagged_tracks
+                        track for track in self.tagged_tracks
                         if track["album"] == album["title"]
                         and track["albumartist"] == album["artist"]
                     ][0]
@@ -129,9 +128,8 @@ class Populate:
 
             bar.next()
         bar.finish()
-        Log(
-            f"{exist_count} of {len(self.pre_albums)} albums were already in the database"
-        )
+        Log(f"{exist_count} of {len(self.pre_albums)} albums were already in the database"
+            )
 
     def create_tracks(self):
         """
@@ -153,9 +151,8 @@ class Populate:
             bar.next()
         bar.finish()
 
-        Log(
-            f"Added {len(self.tagged_tracks) - failed_count} of {len(self.tagged_tracks)} new tracks and {len(self.albums)} new albums"
-        )
+        Log(f"Added {len(self.tagged_tracks) - failed_count} of {len(self.tagged_tracks)} new tracks and {len(self.albums)} new albums"
+            )
 
     def create_folders(self):
         """
