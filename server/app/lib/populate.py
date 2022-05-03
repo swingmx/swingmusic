@@ -1,11 +1,14 @@
 from dataclasses import asdict
 from os import path
 
-from app import api, settings
+from app import api
+from app import settings
 from app.helpers import run_fast_scandir
-from app.instances import album_instance, tracks_instance
+from app.instances import album_instance
+from app.instances import tracks_instance
 from app.lib import folderslib
-from app.lib.albumslib import create_album, find_album
+from app.lib.albumslib import create_album
+from app.lib.albumslib import find_album
 from app.lib.taglib import get_tags
 from app.logger import Log
 from app.models import Track

@@ -1,7 +1,8 @@
 import os
 from typing import Tuple
 
-from flask import Flask, send_from_directory
+from flask import Flask
+from flask import send_from_directory
 
 app = Flask(__name__)
 
