@@ -9,7 +9,11 @@
     <div class="flex">
       <div
         class="album-art image rounded"
-        :style="{ backgroundImage: `url(&quot;${props.song.image}&quot;` }"
+        :style="{
+          backgroundImage: `url(&quot;${
+            imguri + props.song.image
+          }&quot;`,
+        }"
         @click="emitUpdate(props.song)"
       >
         <div
@@ -64,10 +68,12 @@ import { ContextSrc } from "../../composables/enums";
 import { ref } from "vue";
 import trackContext from "../../contexts/track_context";
 import { Track } from "../../interfaces.js";
+import { paths } from "../../config";
 
 const contextStore = useContextStore();
 const modalStore = useModalStore();
 const context_on = ref(false);
+const imguri = paths.images.thumb
 
 const showContextMenu = (e: Event) => {
   e.preventDefault();
@@ -118,6 +124,7 @@ function emitUpdate(track: Track) {
     width: 45px;
     background-color: red;
   }
+
   @include tablet-landscape {
     grid-template-columns: 1.5rem 1.5fr 1fr 1.5fr;
   }
