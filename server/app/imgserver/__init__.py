@@ -61,6 +61,5 @@ def send_playlist_image(imgpath: str):
 # TODO
 # Return Fallback images instead of JSON
 
-
 if __name__ == "__main__":
     app.run(threaded=True, port=9877)
