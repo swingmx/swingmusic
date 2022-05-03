@@ -6,13 +6,11 @@ import time
 from io import BytesIO
 
 import requests
-from app import api
-from app import helpers
-from app import settings
+from app import api, helpers, settings
 from app.lib import watchdoge
+from app.lib.populate import Populate
 from PIL import Image
 from progress.bar import Bar
-from app.lib.populate import Populate
 
 
 @helpers.background
