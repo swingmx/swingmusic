@@ -114,17 +114,15 @@ def get_album_image(album: list) -> str:
     Gets the image of an album.
     """
 
-    uri = settings.IMG_THUMB_URI
-
     for track in album:
         img_p = gen_random_path()
 
         exists = taglib.extract_thumb(track["filepath"], webp_path=img_p)
 
         if exists:
-            return uri + img_p
+            return img_p
 
-    return uri + use_defaults()
+    return use_defaults()
 
 
 def get_album_tracks(album: str, artist: str) -> List:

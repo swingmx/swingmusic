@@ -26,8 +26,11 @@ def create_all_tracks() -> List[models.Track]:
         except FileNotFoundError:
             instances.tracks_instance.remove_song_by_id(track["_id"]["$oid"])
             api.DB_TRACKS.remove(track)
+        try:
+            tracks.append(models.Track(track))
+        except KeyError:
+            print(track)
 
-        tracks.append(models.Track(track))
         _bar.next()
 
     _bar.finish()

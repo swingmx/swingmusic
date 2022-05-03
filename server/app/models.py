@@ -32,6 +32,7 @@ class Track:
     discnumber: int
 
     def __init__(self, tags):
+        
         self.trackid = tags["_id"]["$oid"]
         self.title = tags["title"]
         self.artists = tags["artists"].split(", ")

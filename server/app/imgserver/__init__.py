@@ -23,12 +23,11 @@ def hello():
 
 @app.route("/thumb/<path>")
 def send_thumbnail(path: str):
-    name = path + ".webp"
-    path = join(THUMB_PATH, name)
-    exists = os.path.exists(path)
+    fpath = join(THUMB_PATH, path)
+    exists = os.path.exists(fpath)
 
     if exists:
-        return send_from_directory(THUMB_PATH, name)
+        return send_from_directory(THUMB_PATH, path)
 
     return {"msg": "Not found"}, 404
 
@@ -36,12 +35,11 @@ def send_thumbnail(path: str):
 @app.route("/artist/<path>")
 def send_artist_image(path: str):
     print(ARTIST_PATH)
-    name = path + ".webp"
-    path = join(ARTIST_PATH, name)
-    exists = os.path.exists(path)
+    fpath = join(ARTIST_PATH, path)
+    exists = os.path.exists(fpath)
 
     if exists:
-        return send_from_directory(ARTIST_PATH, name)
+        return send_from_directory(ARTIST_PATH, path)
 
     return {"msg": "Not found"}, 404
 
