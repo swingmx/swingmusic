@@ -77,7 +77,7 @@ def find_album(albumtitle: str, artist: str) -> int or None:
     return None
 
 
-def get_album_duration(album: list) -> int:
+def get_album_duration(album: List[models.Track]) -> int:
     """
     Gets the duration of an album.
     """
@@ -85,7 +85,7 @@ def get_album_duration(album: list) -> int:
     album_duration = 0
 
     for track in album:
-        album_duration += track["length"]
+        album_duration += track.length
 
     return album_duration
 
@@ -150,8 +150,6 @@ def create_album(track) -> models.Album:
 
     album_tracks = get_album_tracks(album["album"], album["artist"])
 
-    album["count"] = len(album_tracks)
-    album["duration"] = get_album_duration(album_tracks)
     album["date"] = album_tracks[0]["date"]
 
     album["artistimage"] = urllib.parse.quote_plus(

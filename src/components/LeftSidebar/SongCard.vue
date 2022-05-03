@@ -6,7 +6,7 @@
           <div
             class="l-image image rounded"
             :style="{
-              backgroundImage: `url(&quot;${track.image}&quot;)`,
+              backgroundImage: `url(&quot;${imguri + track.image}&quot;)`,
             }"
           ></div>
         </div>
@@ -36,6 +36,9 @@
 <script setup lang="ts">
 import perks from "../../composables/perks";
 import { Track } from "../../interfaces";
+import { paths } from "../../config";
+const imguri = paths.images.thumb
+
 const putCommas = perks.putCommas;
 
 const props = defineProps<{

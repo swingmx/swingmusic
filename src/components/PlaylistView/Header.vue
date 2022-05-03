@@ -3,7 +3,7 @@
     class="p-header image"
     :style="[
       {
-        backgroundImage: `url(${props.info.image})`,
+        backgroundImage: `url(${imguri + props.info.image})`,
       },
     ]"
   >
@@ -45,7 +45,9 @@ import useModalStore from "../../stores/modal";
 import Option from "../shared/Option.vue";
 import pContext from "../../contexts/playlist";
 import useContextStore from "../../stores/context";
+import { paths } from "../../config";
 
+const imguri = paths.images.playlist
 const context = useContextStore();
 const modal = useModalStore();
 
