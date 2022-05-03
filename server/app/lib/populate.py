@@ -1,15 +1,18 @@
 from dataclasses import asdict
-from app.helpers import run_fast_scandir
-from app import settings
-from app.instances import tracks_instance, album_instance
-from progress.bar import Bar
-from app.logger import Log
-from app.lib.taglib import get_tags
 from os import path
-from app.lib.albumslib import find_album, create_album
+
 from app import api
-from app.models import Track
+from app import settings
+from app.helpers import run_fast_scandir
+from app.instances import album_instance
+from app.instances import tracks_instance
 from app.lib import folderslib
+from app.lib.albumslib import create_album
+from app.lib.albumslib import find_album
+from app.lib.taglib import get_tags
+from app.logger import Log
+from app.models import Track
+from progress.bar import Bar
 
 
 class Populate:
@@ -105,8 +108,7 @@ class Populate:
             if index is None:
                 try:
                     track = [
-                        track
-                        for track in self.tagged_tracks
+                        track for track in self.tagged_tracks
                         if track["album"] == album["title"]
                         and track["albumartist"] == album["artist"]
                     ][0]
@@ -126,9 +128,8 @@ class Populate:
 
             bar.next()
         bar.finish()
-        Log(
-            f"{exist_count} of {len(self.pre_albums)} albums were already in the database"
-        )
+        Log(f"{exist_count} of {len(self.pre_albums)} albums were already in the database"
+            )
 
     def create_tracks(self):
         """
@@ -150,9 +151,8 @@ class Populate:
             bar.next()
         bar.finish()
 
-        Log(
-            f"Added {len(self.tagged_tracks) - failed_count} of {len(self.tagged_tracks)} new tracks and {len(self.albums)} new albums"
-        )
+        Log(f"Added {len(self.tagged_tracks) - failed_count} of {len(self.tagged_tracks)} new tracks and {len(self.albums)} new albums"
+            )
 
     def create_folders(self):
         """
