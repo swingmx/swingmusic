@@ -6,13 +6,8 @@ import urllib
 from pprint import pprint
 from typing import List
 
-from app import api
-from app import functions
-from app import instances
-from app import models
-from app import settings
-from app.lib import taglib
-from app.lib import trackslib
+from app import api, functions, instances, models, settings
+from app.lib import taglib, trackslib
 from progress.bar import Bar
 
 
