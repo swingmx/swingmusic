@@ -47,7 +47,7 @@ def send_artist_image(imgpath: str):
     return {"msg": "Not found"}, 404
 
 
-@app.route('/p/<imgpath>')
+@app.route("/p/<imgpath>")
 def send_playlist_image(imgpath: str):
     fpath = join(PLAYLIST_PATH, imgpath)
     exists = path.exists(fpath)
@@ -56,6 +56,7 @@ def send_playlist_image(imgpath: str):
         return send_from_directory(PLAYLIST_PATH, imgpath)
 
     return {"msg": "Not found"}, 404
+
 
 # TODO
 # Return Fallback images instead of JSON
