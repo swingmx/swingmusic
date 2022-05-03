@@ -10,11 +10,10 @@ from app import api
 from app import functions
 from app import instances
 from app import models
+from app import settings
+from app.lib import taglib
 from app.lib import trackslib
 from progress.bar import Bar
-
-from app.lib import taglib
-from app import settings
 
 
 def get_all_albums() -> List[models.Album]:
@@ -66,7 +65,8 @@ def find_album(albumtitle: str, artist: str) -> int or None:
         iter += 1
         mid = (left + right) // 2
 
-        if api.ALBUMS[mid].title == albumtitle and api.ALBUMS[mid].artist == artist:
+        if api.ALBUMS[mid].title == albumtitle and api.ALBUMS[
+                mid].artist == artist:
             return mid
 
         if api.ALBUMS[mid].title < albumtitle:
@@ -114,17 +114,15 @@ def get_album_image(album: list) -> str:
     Gets the image of an album.
     """
 
-    uri = settings.IMG_THUMB_URI
-
     for track in album:
         img_p = gen_random_path()
 
         exists = taglib.extract_thumb(track["filepath"], webp_path=img_p)
 
         if exists:
-            return uri + img_p
+            return img_p
 
-    return uri + use_defaults()
+    return use_defaults()
 
 
 def get_album_tracks(album: str, artist: str) -> List:
@@ -157,8 +155,7 @@ def create_album(track) -> models.Album:
     album["date"] = album_tracks[0]["date"]
 
     album["artistimage"] = urllib.parse.quote_plus(
-        album_tracks[0]["albumartist"] + ".webp"
-    )
+        album_tracks[0]["albumartist"] + ".webp")
 
     album["image"] = get_album_image(album_tracks)
 
