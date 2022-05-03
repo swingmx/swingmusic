@@ -1,11 +1,11 @@
 <template>
   <div class="main-item border" @click="playNext">
     <div class="h">Up Next</div>
-    <div class="itemx  shadow">
+    <div class="itemx shadow">
       <div
         class="album-art image"
         :style="{
-          backgroundImage: `url(&quot;${next.image}&quot;)`,
+          backgroundImage: `url(&quot;${imguri + next.image}&quot;)`,
         }"
       ></div>
       <div class="tags">
@@ -24,6 +24,8 @@
 <script setup lang="ts">
 import { Track } from "../../../interfaces";
 import perks from "../../../composables/perks";
+import { paths } from "../../../config";
+const imguri = paths.images.thumb;
 
 const props = defineProps<{
   next: Track;
@@ -38,7 +40,7 @@ const props = defineProps<{
 
   &:hover {
     background-color: $accent;
-    border:  1px solid transparent;
+    border: 1px solid transparent;
 
     .h {
       background-color: $black;

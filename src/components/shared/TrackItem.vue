@@ -13,7 +13,7 @@
     <div
       class="album-art image rounded"
       :style="{
-        backgroundImage: `url(&quot;${props.track.image}&quot;)`,
+        backgroundImage: `url(&quot;${imguri + props.track.image}&quot;)`,
       }"
     >
       <div
@@ -43,9 +43,12 @@ import { ContextSrc } from "../../composables/enums";
 
 import useContextStore from "../../stores/context";
 import useModalStore from "../../stores/modal";
+import { paths } from "../../config";
+
 
 const contextStore = useContextStore();
 const modalStore = useModalStore();
+const imguri = paths.images.thumb
 
 const props = defineProps<{
   track: Track;

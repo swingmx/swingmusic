@@ -5,7 +5,7 @@
         <div
           class="image shadow-lg"
           :style="{
-            backgroundImage: `url(&quot;${props.album.image}&quot;)`,
+            backgroundImage: `url(&quot;${imguri + props.album.image}&quot;)`,
           }"
         ></div>
       </div>
@@ -32,7 +32,9 @@ import perks from "../../composables/perks.js";
 import { AlbumInfo } from "../../interfaces.js";
 import PlayBtnRect from "../shared/PlayBtnRect.vue";
 import { playSources } from "../../composables/enums";
+import { paths } from "../../config";
 
+const imguri = paths.images.thumb
 const props = defineProps<{
   album: AlbumInfo;
 }>();

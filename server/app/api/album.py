@@ -44,6 +44,9 @@ def get_album_tracks():
     index = albumslib.find_album(album, artist)
     album = api.ALBUMS[index]
 
+    album.count = len(songs)
+    album.duration = albumslib.get_album_duration(songs)
+
     return {"songs": songs, "info": album}
 
 

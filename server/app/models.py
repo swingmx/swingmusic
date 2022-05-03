@@ -56,17 +56,15 @@ class Album:
 
     title: str
     artist: str
-    count: int
-    duration: int
     date: int
     artistimage: str
     image: str
+    count: int = 0
+    duration: int = 0
 
     def __init__(self, tags):
         self.title = tags["album"]
         self.artist = tags["artist"]
-        self.count = tags["count"]
-        self.duration = tags["duration"]
         self.date = tags["date"]
         self.artistimage = tags["artistimage"]
         self.image = tags["image"]
@@ -128,9 +126,9 @@ class Playlist:
 
     def create_img_link(self, image: str):
         if image:
-            return settings.IMG_PLAYLIST_URI + image
+            return image
 
-        return settings.IMG_PLAYLIST_URI + "default.webp"
+        return "default.webp"
 
     def update_count(self):
         self.count = len(self._pre_tracks)

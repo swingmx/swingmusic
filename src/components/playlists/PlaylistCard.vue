@@ -10,7 +10,7 @@
     <div
       class="image p-image rounded shadow-sm"
       :style="{
-        backgroundImage: `url(${props.playlist.thumb})`,
+        backgroundImage: `url(${imguri + props.playlist.thumb})`,
       }"
     ></div>
     <div class="pbtn">
@@ -33,6 +33,10 @@
 import { Playlist } from "../../interfaces";
 import PlayBtn from "../shared/PlayBtn.vue";
 import Option from "../shared/Option.vue";
+import { paths } from "../../config";
+
+const imguri = paths.images.playlist
+
 
 const props = defineProps<{
   playlist: Playlist;
