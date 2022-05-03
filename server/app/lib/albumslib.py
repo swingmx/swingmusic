@@ -148,7 +148,6 @@ def create_album(track) -> models.Album:
         "artist": track["albumartist"],
     }
 
-
     album_tracks = get_album_tracks(album["album"], album["artist"])
 
     album["date"] = album_tracks[0]["date"]
