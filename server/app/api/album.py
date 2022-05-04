@@ -1,6 +1,7 @@
 """
 Contains all the album routes.
 """
+from typing import List
 from app import api
 from app import functions
 from app import helpers
@@ -8,6 +9,8 @@ from app.lib import albumslib
 from app.lib import trackslib
 from flask import Blueprint
 from flask import request
+
+from app import models
 
 album_bp = Blueprint("album", __name__, url_prefix="")
 
@@ -71,7 +74,7 @@ def get_albumartists():
     album = data["album"]
     artist = data["artist"]
 
-    tracks = []
+    tracks:List[models.Track] = []
 
     for track in api.TRACKS:
         if track.album == album and track.albumartist == artist:
