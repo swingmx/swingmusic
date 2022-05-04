@@ -99,7 +99,7 @@ def use_memoji():
     Returns a path to a random memoji image.
     """
     path = str(random.randint(0, 20)) + ".svg"
-    return settings.IMG_ARTIST_URI + "defaults/" + path
+    return "defaults/" + path
 
 
 def check_artist_image(image: str) -> str:
@@ -112,7 +112,7 @@ def check_artist_image(image: str) -> str:
                                        img_name)):
         return use_memoji()
     else:
-        return (settings.IMG_ARTIST_URI + img_name, )
+        return img_name
 
 
 class Timer:

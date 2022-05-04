@@ -2,7 +2,7 @@
   <router-link
     :to="{
       name: 'AlbumView',
-      params: { album: album.album, artist: album.artist },
+      params: { album: album.title, artist: album.artist },
     }"
     class="result-item"
   >
@@ -10,20 +10,24 @@
       <div
         class="album-art image"
         :style="{
-          backgroundImage: `url(&quot;${album.image}&quot;)`,
+          backgroundImage: `url(&quot;${imguri + album.image}&quot;)`,
         }"
       ></div>
       <div class="play shadow-lg image"></div>
     </div>
-    <div class="title ellip">{{ album.album }}</div>
+    <div class="title ellip">{{ album.title }}</div>
     <div class="artistsx ellipsis">{{ album.artist }}</div>
   </router-link>
 </template>
 
-<script>
-export default {
-  props: ["album"],
-};
+<script setup lang="ts">
+import { AlbumInfo } from "../../interfaces";
+import { paths } from "../../config";
+
+const imguri = paths.images.thumb;
+defineProps<{
+  album: AlbumInfo;
+}>();
 </script>
 
 <style lang="scss">

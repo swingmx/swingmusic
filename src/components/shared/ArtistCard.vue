@@ -2,7 +2,7 @@
   <div class="xartist" :style="{ backgroundColor: `#${color}` }">
     <div
       class="artist-image image border-sm"
-      :style="{ backgroundImage: `url('${artist.image}')` }"
+      :style="{ backgroundImage: `url('${imguri + artist.image}')` }"
     ></div>
     <div>
       <p class="artist-name ellipsis">{{ artist.name }}</p>
@@ -10,10 +10,16 @@
   </div>
 </template>
 
-<script>
-export default {
-  props: ["artist", "color"],
-};
+<script setup lang="ts">
+import { paths } from "../../config";
+
+const imguri = paths.images.artist;
+
+defineProps<{
+  artist: any;
+  color: string;
+}>();
+
 </script>
 
 <style lang="scss">
@@ -24,13 +30,12 @@ export default {
 
   min-width: 8.25em;
   height: 11em;
-  border-radius: .75rem;
+  border-radius: 0.75rem;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-
 
   .artist-image {
     width: 7em;
@@ -41,7 +46,7 @@ export default {
     background-position: center;
     background-repeat: no-repeat;
     transition: all 0.5s ease-in-out;
-    transition-delay: .25s;
+    transition-delay: 0.25s;
   }
 
   &:hover {
