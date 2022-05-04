@@ -2,15 +2,10 @@
 Contains all the album routes.
 """
 from typing import List
-from app import api
-from app import functions
-from app import helpers
-from app.lib import albumslib
-from app.lib import trackslib
-from flask import Blueprint
-from flask import request
 
-from app import models
+from app import api, functions, helpers, models
+from app.lib import albumslib, trackslib
+from flask import Blueprint, request
 
 album_bp = Blueprint("album", __name__, url_prefix="")
 
