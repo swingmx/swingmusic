@@ -74,7 +74,7 @@ def get_albumartists():
     album = data["album"]
     artist = data["artist"]
 
-    tracks:List[models.Track] = []
+    tracks: List[models.Track] = []
 
     for track in api.TRACKS:
         if track.album == album and track.albumartist == artist:
