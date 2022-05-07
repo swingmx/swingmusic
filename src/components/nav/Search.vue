@@ -23,7 +23,6 @@
       border: none;
       padding: $small;
       width: 100%;
-      min-width: 24rem;
       color: $white;
       font-size: 1rem;
 

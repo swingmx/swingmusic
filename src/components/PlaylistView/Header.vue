@@ -70,7 +70,6 @@ function showDropdown(e: any) {
   grid-template-columns: 1fr;
   height: 16rem;
   position: relative;
-  margin-top: $small;
   border-radius: 0.75rem;
   color: $white;
   background-color: transparent;

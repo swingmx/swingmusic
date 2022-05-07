@@ -82,7 +82,7 @@ const context = useContextStore();
       width: 1.5rem;
       position: absolute;
       right: 0;
-      background-image: url("../assets/icons/more.svg");
+      background-image: url("../assets/icons/expand.svg");
     }
 
     .children {

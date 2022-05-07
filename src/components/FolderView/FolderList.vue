@@ -31,5 +31,7 @@ const props = defineProps({
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(13rem, 1fr));
   gap: $medium;
+  border-bottom: 1px solid $gray3;
+  padding-bottom: .55rem;
 }
 </style>

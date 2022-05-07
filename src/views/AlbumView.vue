@@ -41,12 +41,12 @@ onBeforeRouteUpdate(async (to) => {
 .al-view {
   height: calc(100% - 1rem);
   overflow: auto;
-  margin: $small $small;
+  margin: $small;
+  margin-right: 0;
   scrollbar-width: none;
 
   .songs {
-    padding: $small;
-    min-height: calc(100% - 32rem);
+    min-height: calc(100% - 31.5rem);
   }
 
   &::-webkit-scrollbar {

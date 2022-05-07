@@ -80,6 +80,7 @@ app_dom.addEventListener("click", (e) => {
     cursor: pointer;
   }
 }
+
 .logo {
   height: 4.5rem;
   width: 15rem;
@@ -94,10 +95,9 @@ app_dom.addEventListener("click", (e) => {
 }
 
 .content {
-  width: 100%;
   padding: 0 $small;
-  display: grid;
-  grid-template-rows: 1fr;
   margin-top: $small;
+  overflow: auto;
+  padding-right: $small !important;
 }
 </style>

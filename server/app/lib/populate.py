@@ -37,11 +37,11 @@ class Populate:
 
     def run(self):
         self.check_untagged()
+        self.tag_files()
 
-        if len(self.files) == 0:
+        if len(self.tagged_tracks) == 0:
             return
 
-        self.tag_files()
         self.create_pre_albums()
         self.create_albums()
         api.ALBUMS.sort(key=lambda x: x.hash)

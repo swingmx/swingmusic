@@ -8,11 +8,6 @@
       <div class="info">
         <div class="title" v-if="$route.name == 'Playlists'">Playlists</div>
         <div class="folder" v-else-if="$route.name == 'FolderView'">
-          <div class="play">
-            <PlayBtnRect />
-          </div>
-          <Option v-if="$route.name === 'FolderView'" />
-
           <div class="fname">
             <div class="icon image"></div>
             <div class="ellip">
@@ -27,6 +22,7 @@
       <Loader />
     </div>
     <div class="right">
+      <div class="more image"></div>
       <Search />
     </div>
   </div>
@@ -35,9 +31,7 @@
 <script setup>
 import NavButtons from "./NavButtons.vue";
 import Loader from "../shared/Loader.vue";
-import PlayBtnRect from "../shared/PlayBtnRect.vue";
 import Search from "./Search.vue";
-import Option from "../shared/Option.vue";
 </script>
 
 <style lang="scss">
@@ -85,6 +79,7 @@ import Option from "../shared/Option.vue";
           align-items: center;
           padding-right: $small;
           gap: 0.25rem;
+          margin-left: $smaller;
 
           .icon {
             width: 1.5rem;
@@ -106,6 +101,16 @@ import Option from "../shared/Option.vue";
     width: 100%;
     display: flex;
     gap: $small;
+
+    .more {
+      width: 2.25rem;
+      aspect-ratio: 1;
+      height: 100%;
+      background-color: $gray5;
+      background-image: url("../../assets/icons/more.svg");
+      transform: rotate(90deg);
+      border-radius: $small;
+    }
   }
 }
 </style>
