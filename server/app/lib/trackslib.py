@@ -26,6 +26,7 @@ def create_all_tracks() -> List[models.Track]:
         except FileNotFoundError:
             instances.tracks_instance.remove_song_by_id(track["_id"]["$oid"])
             api.DB_TRACKS.remove(track)
+
         try:
             tracks.append(models.Track(track))
         except KeyError:
@@ -54,3 +55,27 @@ def get_track_by_id(trackid: str) -> models.Track:
     for track in api.TRACKS:
         if track.trackid == trackid:
             return track
+
+
+def find_track(tracks: list, hash: str) -> int or None:
+    """
+    Finds an album by album title and artist.
+    """
+
+    left = 0
+    right = len(tracks) - 1
+    iter = 0
+
+    while left <= right:
+        iter += 1
+        mid = (left + right) // 2
+
+        if tracks[mid]["albumhash"] == hash:
+            return mid
+
+        if tracks[mid]["albumhash"] < hash:
+            left = mid + 1
+        else:
+            right = mid - 1
+
+    return None

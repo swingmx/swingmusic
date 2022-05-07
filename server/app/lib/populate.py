@@ -3,7 +3,7 @@ from os import path
 
 from app import api
 from app import settings
-from app.helpers import run_fast_scandir
+from app.helpers import create_album_hash, run_fast_scandir
 from app.instances import album_instance
 from app.instances import tracks_instance
 from app.lib import folderslib
@@ -11,7 +11,7 @@ from app.lib.albumslib import create_album
 from app.lib.albumslib import find_album
 from app.lib.taglib import get_tags
 from app.logger import Log
-from app.models import Track
+from app.models import Album, Track
 from progress.bar import Bar
 
 
@@ -44,6 +44,7 @@ class Populate:
         self.tag_files()
         self.create_pre_albums()
         self.create_albums()
+        api.ALBUMS.sort(key=lambda x: x.hash)
         self.create_tracks()
         self.create_folders()
 
@@ -73,6 +74,9 @@ class Populate:
             self.folders.add(folder)
 
             if tags is not None:
+                tags["albumhash"] = create_album_hash(
+                    tags["album"], tags["albumartist"]
+                )
                 self.tagged_tracks.append(tags)
                 api.DB_TRACKS.append(tags)
 
@@ -108,16 +112,17 @@ class Populate:
             if index is None:
                 try:
                     track = [
-                        track for track in self.tagged_tracks
+                        track
+                        for track in self.tagged_tracks
                         if track["album"] == album["title"]
                         and track["albumartist"] == album["artist"]
                     ][0]
 
                     album = create_album(track)
-                    api.ALBUMS.append(album)
+                    api.ALBUMS.append(Album(album))
                     self.albums.append(album)
 
-                    album_instance.insert_album(asdict(album))
+                    album_instance.insert_album(album)
 
                 except IndexError:
                     print("😠\n")
@@ -128,8 +133,9 @@ class Populate:
 
             bar.next()
         bar.finish()
-        Log(f"{exist_count} of {len(self.pre_albums)} albums were already in the database"
-            )
+        Log(
+            f"{exist_count} of {len(self.pre_albums)} albums were already in the database"
+        )
 
     def create_tracks(self):
         """
@@ -137,13 +143,16 @@ class Populate:
         """
         bar = Bar("Creating tracks", max=len(self.tagged_tracks))
         failed_count = 0
+
         for track in self.tagged_tracks:
             try:
                 album_index = find_album(track["album"], track["albumartist"])
                 album = api.ALBUMS[album_index]
                 track["image"] = album.image
+
                 upsert_id = tracks_instance.insert_song(track)
                 track["_id"] = {"$oid": str(upsert_id)}
+
                 api.TRACKS.append(Track(track))
             except:
                 # Bug: some albums are not found although they exist in `api.ALBUMS`. It has something to do with the bisection method used or sorting. Not sure yet.
@@ -151,19 +160,21 @@ class Populate:
             bar.next()
         bar.finish()
 
-        Log(f"Added {len(self.tagged_tracks) - failed_count} of {len(self.tagged_tracks)} new tracks and {len(self.albums)} new albums"
-            )
+        Log(
+            f"Added {len(self.tagged_tracks) - failed_count} of {len(self.tagged_tracks)} new tracks and {len(self.albums)} new albums"
+        )
 
     def create_folders(self):
         """
         Creates the folder objects for all the tracks.
         """
         bar = Bar("Creating folders", max=len(self.folders))
-        old_f_count = len(api.FOLDERS)
         for folder in self.folders:
             api.VALID_FOLDERS.add(folder)
+
             fff = folderslib.create_folder(folder)
             api.FOLDERS.append(fff)
+
             bar.next()
 
         bar.finish()

@@ -1,19 +1,19 @@
 """
 This library contains all the functions related to albums.
 """
+from copy import deepcopy
 import random
 import urllib
-from pprint import pprint
 from typing import List
 
 from app import api
-from app import functions
 from app import instances
 from app import models
-from app import settings
 from app.lib import taglib
 from app.lib import trackslib
 from progress.bar import Bar
+
+from app import helpers
 
 
 def get_all_albums() -> List[models.Album]:
@@ -23,6 +23,7 @@ def get_all_albums() -> List[models.Album]:
     print("Getting all albums...")
 
     albums: List[models.Album] = []
+
     db_albums = instances.album_instance.get_all_albums()
 
     _bar = Bar("Creating albums", max=len(db_albums))
@@ -44,7 +45,7 @@ def create_everything() -> List[models.Track]:
     albums: list[models.Album] = get_all_albums()
 
     api.ALBUMS = albums
-    api.ALBUMS.sort(key=lambda x: x.title)
+    api.ALBUMS.sort(key=lambda x: x.hash)
 
     tracks = trackslib.create_all_tracks()
 
@@ -57,6 +58,7 @@ def find_album(albumtitle: str, artist: str) -> int or None:
     """
     Finds an album by album title and artist.
     """
+
     left = 0
     right = len(api.ALBUMS) - 1
     iter = 0
@@ -64,12 +66,15 @@ def find_album(albumtitle: str, artist: str) -> int or None:
     while left <= right:
         iter += 1
         mid = (left + right) // 2
+        hash = helpers.create_album_hash(albumtitle, artist)
 
-        if api.ALBUMS[mid].title == albumtitle and api.ALBUMS[
-                mid].artist == artist:
-            return mid
+        try:
+            if api.ALBUMS[mid].hash == hash:
+                return mid
+        except:
+            print(api.ALBUMS[mid])
 
-        if api.ALBUMS[mid].title < albumtitle:
+        if api.ALBUMS[mid].hash < hash:
             left = mid + 1
         else:
             right = mid - 1
@@ -125,18 +130,33 @@ def get_album_image(album: list) -> str:
     return use_defaults()
 
 
+class GetAlbumTracks:
+    """
+    Finds all the tracks that match a specific album, given the album title
+    and album artist.
+    """
+
+    def __init__(self, album: str, artist: str) -> None:
+        self.hash = helpers.create_album_hash(album, artist)
+        self.tracks = api.DB_TRACKS
+        self.tracks.sort(key=lambda x: x["albumhash"])
+
+    def find_tracks(self):
+        tracks = []
+        index = trackslib.find_track(self.tracks, self.hash)
+
+        while index is not None:
+            track = self.tracks[index]
+            tracks.append(track)
+            self.tracks.remove(track)
+            index = trackslib.find_track(self.tracks, self.hash)
+
+        api.DB_TRACKS.extend(tracks)
+        return tracks
+
+
 def get_album_tracks(album: str, artist: str) -> List:
-    tracks = []
-
-    for track in api.DB_TRACKS:
-        try:
-            if track["album"] == album and track["albumartist"] == artist:
-                tracks.append(track)
-        except TypeError:
-            pprint(track, indent=4)
-            print(album, artist)
-
-    return tracks
+    return GetAlbumTracks(album, artist).find_tracks()
 
 
 def create_album(track) -> models.Album:
@@ -144,20 +164,21 @@ def create_album(track) -> models.Album:
     Generates and returns an album object from a track object.
     """
     album = {
-        "album": track["album"],
+        "title": track["album"],
         "artist": track["albumartist"],
     }
 
-    album_tracks = get_album_tracks(album["album"], album["artist"])
+    album_tracks = get_album_tracks(album["title"], album["artist"])
 
     album["date"] = album_tracks[0]["date"]
 
     album["artistimage"] = urllib.parse.quote_plus(
-        album_tracks[0]["albumartist"] + ".webp")
+        album_tracks[0]["albumartist"] + ".webp"
+    )
 
     album["image"] = get_album_image(album_tracks)
 
-    return models.Album(album)
+    return album
 
 
 def search_albums_by_name(query: str) -> List[models.Album]:

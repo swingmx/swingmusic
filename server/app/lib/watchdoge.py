@@ -8,10 +8,12 @@ from app import api
 from app import instances
 from app import models
 from app.lib import folderslib
-from app.lib.albumslib import create_album
+from app.lib.albumslib import create_album, find_album
 from app.lib.taglib import get_tags
 from watchdog.events import PatternMatchingEventHandler
 from watchdog.observers import Observer
+
+from app.helpers import create_album_hash
 
 
 class OnMyWatch:
@@ -48,14 +50,24 @@ def add_track(filepath: str) -> None:
     tags = get_tags(filepath)
 
     if tags is not None:
-        instances.tracks_instance.insert_song(tags)
-        tags = instances.tracks_instance.get_song_by_path(tags["filepath"])
-
+        tags["albumhash"] = create_album_hash(tags["album"], tags["albumartist"])
         api.DB_TRACKS.append(tags)
-        album = create_album(tags)
-        api.ALBUMS.append(album)
+
+        albumindex = find_album(tags["album"], tags["albumartist"])
+
+        if albumindex is not None:
+            album = api.ALBUMS[albumindex]
+        else:
+            album_data = create_album(tags)
+            instances.album_instance.insert_album(album_data)
+
+            album = models.Album(album_data)
+            api.ALBUMS.append(album)
 
         tags["image"] = album.image
+        upsert_id = instances.tracks_instance.insert_song(tags)
+        tags["_id"] = {"$oid": str(upsert_id)}
+
         api.TRACKS.append(models.Track(tags))
 
         folder = tags["folder"]
@@ -74,8 +86,7 @@ def remove_track(filepath: str) -> None:
     fpath = filepath.replace(fname, "")
 
     try:
-        trackid = instances.tracks_instance.get_song_by_path(
-            filepath)["_id"]["$oid"]
+        trackid = instances.tracks_instance.get_song_by_path(filepath)["_id"]["$oid"]
     except TypeError:
         print(f"💙 Watchdog Error: Error removing track {filepath} TypeError")
         return

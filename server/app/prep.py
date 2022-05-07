@@ -13,7 +13,6 @@ def create_config_dir() -> None:
 
     _home_dir = os.path.expanduser("~")
     config_folder = os.path.join(_home_dir, settings.CONFIG_FOLDER)
-    print(config_folder)
 
     dirs = [
         "",

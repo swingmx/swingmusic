@@ -3,12 +3,11 @@ Contains all the models for objects generation and typing.
 """
 from dataclasses import dataclass
 from dataclasses import field
-from datetime import date
 from typing import List
 
 from app import api
-from app import settings
 from app.exceptions import TrackExistsInPlaylist
+from app import helpers
 
 
 @dataclass
@@ -30,6 +29,7 @@ class Track:
     image: str
     tracknumber: int
     discnumber: int
+    albumhash: str
 
     def __init__(self, tags):
 
@@ -46,6 +46,7 @@ class Track:
         self.image = tags["image"]
         self.tracknumber = tags["tracknumber"]
         self.discnumber = tags["discnumber"]
+        self.albumhash = tags['albumhash']
 
 
 @dataclass
@@ -59,22 +60,26 @@ class Album:
     date: int
     artistimage: str
     image: str
+    hash: str
     count: int = 0
     duration: int = 0
 
     def __init__(self, tags):
-        self.title = tags["album"]
+        self.title = tags["title"]
         self.artist = tags["artist"]
         self.date = tags["date"]
         self.artistimage = tags["artistimage"]
         self.image = tags["image"]
+        self.hash = helpers.create_album_hash(self.title, self.artist)
 
 
 def get_p_track(ptrack):
     for track in api.TRACKS:
-        if (track.title == ptrack["title"]
-                and track.artists == ptrack["artists"]
-                and ptrack["album"] == track.album):
+        if (
+            track.title == ptrack["title"]
+            and track.artists == ptrack["artists"]
+            and ptrack["album"] == track.album
+        ):
             return track
 
 

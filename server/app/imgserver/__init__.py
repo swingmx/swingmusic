@@ -37,7 +37,6 @@ def send_thumbnail(imgpath: str):
 
 @app.route("/a/<imgpath>")
 def send_artist_image(imgpath: str):
-    print(ARTIST_PATH)
     fpath = join(ARTIST_PATH, imgpath)
     exists = path.exists(fpath)
 
