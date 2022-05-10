@@ -5,6 +5,8 @@ from app import db
 from app import models
 from bson import ObjectId
 
+from app.helpers import create_new_date
+
 convert_many = db.convert_many
 convert_one = db.convert_one
 
@@ -23,12 +25,8 @@ class Playlists(db.Mongo):
         Inserts a new playlist object into the database.
         """
         return self.collection.update_one(
-            {
-                "name": playlist["name"]
-            },
-            {
-                "$set": playlist
-            },
+            {"name": playlist["name"]},
+            {"$set": playlist},
             upsert=True,
         ).upserted_id
 
@@ -50,12 +48,13 @@ class Playlists(db.Mongo):
         """
         Adds a track to a playlist.
         """
+        date = create_new_date()
 
         return self.collection.update_one(
-            {"_id": ObjectId(playlistid)},
-            {"$push": {
-                "pre_tracks": track
-            }},
+            {
+                "_id": ObjectId(playlistid),
+            },
+            {"$push": {"pre_tracks": track}, "$set": {"lastUpdated": date}},
         )
 
     def get_playlist_by_name(self, name: str) -> dict:

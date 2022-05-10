@@ -1,7 +1,7 @@
 """
 This module contains mini functions for the server.
 """
-import datetime
+from datetime import datetime
 import os
 import random
 import threading
@@ -114,21 +114,13 @@ def check_artist_image(image: str) -> str:
         return img_name
 
 
-class Timer:
-    begin: int = 0
-    end: int = 0
-
-    def start(self):
-        self.begin = time.time()
-
-    def stop(self):
-        self.end = time.time()
-        print(str(datetime.timedelta(seconds=round(self.end - self.begin))))
-
-
 def create_album_hash(title: str, artist: str) -> str:
     """
     Creates a simple hash for an album
     """
     return (title + artist).replace(" ", "").lower()
 
+def create_new_date():
+    now = datetime.now()
+    str = now.strftime("%Y-%m-%d %H:%M:%S")
+    return str

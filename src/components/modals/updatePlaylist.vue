@@ -49,7 +49,6 @@ import { onMounted, ref } from "vue";
 import { Playlist } from "../../interfaces";
 import { updatePlaylist } from "../../composables/playlists";
 import usePStore from "../../stores/p.ptracks";
-import { getCurrentDate } from "../../composables/perks";
 
 const pStore = usePStore();
 
@@ -103,7 +102,6 @@ function update_playlist(e: Event) {
   const formData = new FormData(form);
 
   formData.append("image", image);
-  formData.append("lastUpdated", getCurrentDate());
 
   if (formData.get("name").toString().trim() !== "") {
     updatePlaylist(props.playlist.playlistid, formData, pStore).then(() => {

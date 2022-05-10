@@ -2,7 +2,6 @@ import axios from "axios";
 import { Playlist, Track } from "../interfaces";
 import { Notification, NotifType } from "../stores/notification";
 import state from "./state";
-import { getCurrentDate } from "../composables/perks";
 /**
  * Creates a new playlist on the server.
  * @param playlist_name The name of the playlist to create.
@@ -13,7 +12,6 @@ async function createNewPlaylist(playlist_name: string, track?: Track) {
   await axios
     .post(state.settings.uri + "/playlist/new", {
       name: playlist_name,
-      lastUpdated: getCurrentDate(),
     })
     .then((res) => {
       new Notification("✅ Playlist created successfullly!");
@@ -29,7 +27,7 @@ async function createNewPlaylist(playlist_name: string, track?: Track) {
     .catch((err) => {
       if (err.response.status == 409) {
         new Notification(
-          "That playlist already exists ... you might want to try another name!",
+          "That playlist already exists",
           NotifType.Error
         );
       }

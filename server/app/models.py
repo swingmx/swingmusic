@@ -145,6 +145,7 @@ class Playlist:
         if track not in self._pre_tracks:
             self._pre_tracks.append(track)
             self.update_count()
+            self.lastUpdated = helpers.create_new_date()
         else:
             raise TrackExistsInPlaylist("Track already exists in playlist")
 

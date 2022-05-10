@@ -12,6 +12,8 @@ from app.lib import playlistlib
 from flask import Blueprint
 from flask import request
 
+from app.helpers import create_new_date
+
 playlist_bp = Blueprint("playlist", __name__, url_prefix="/")
 
 PlaylistExists = exceptions.PlaylistExists
@@ -38,7 +40,7 @@ def create_playlist():
         "name": data["name"],
         "description": "",
         "pre_tracks": [],
-        "lastUpdated": data["lastUpdated"],
+        "lastUpdated": create_new_date(),
         "image": "",
         "thumb": "",
     }
@@ -99,7 +101,7 @@ def update_playlist(playlistid: str):
     playlist = {
         "name": str(data.get("name")).strip(),
         "description": str(data.get("description").strip()),
-        "lastUpdated": str(data.get("lastUpdated")),
+        "lastUpdated": create_new_date(),
         "image": None,
         "thumb": None,
     }

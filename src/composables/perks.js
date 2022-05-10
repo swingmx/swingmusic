@@ -75,24 +75,10 @@ function formatSeconds(seconds) {
   }
 }
 
-export function getCurrentDate() {
-  const date = new Date();
-
-  const yyyy = date.getFullYear();
-  const mm = date.getMonth() + 1;
-  const dd = date.getDate();
-
-  const hh = date.getHours();
-  const min = date.getMinutes();
-  const sec = date.getSeconds();
-
-  return `${yyyy}-${mm}-${dd} ${hh}:${min}:${sec}`;
-}
 
 export default {
   putCommas,
   focusCurrent,
   formatSeconds,
   getElem,
-  getCurrentDate,
 };
