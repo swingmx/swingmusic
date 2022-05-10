@@ -1,5 +1,11 @@
-from dataclasses import asdict
+from concurrent.futures import ThreadPoolExecutor
+from copy import deepcopy
+
 from os import path
+import time
+from typing import List
+
+from tqdm import tqdm
 
 from app import api
 from app import settings
@@ -12,7 +18,8 @@ from app.lib.albumslib import find_album
 from app.lib.taglib import get_tags
 from app.logger import Log
 from app.models import Album, Track
-from progress.bar import Bar
+
+from app.lib.trackslib import find_track
 
 
 class Populate:
@@ -30,21 +37,30 @@ class Populate:
         self.tagged_tracks = []
         self.folders = set()
         self.pre_albums = []
-        self.albums = []
+        self.albums: List[Album] = []
 
         self.files = run_fast_scandir(settings.HOME_DIR, [".flac", ".mp3"])[1]
         self.db_tracks = tracks_instance.get_all_tracks()
+        self.tag_count = 0
+        self.exist_count = 0
 
     def run(self):
         self.check_untagged()
-        self.tag_files()
+        self.tag_all_files()
 
         if len(self.tagged_tracks) == 0:
             return
 
+        self.tagged_tracks.sort(key=lambda x: x["albumhash"])
+        self.tracks = deepcopy(self.tagged_tracks)
+
         self.create_pre_albums()
         self.create_albums()
+
+        self.albums.sort(key=lambda x: x.hash)
         api.ALBUMS.sort(key=lambda x: x.hash)
+
+        self.save_albums()
         self.create_tracks()
         self.create_folders()
 
@@ -54,129 +70,142 @@ class Populate:
         from the list of tagged tracks if it exists.
         We will now only have untagged tracks left in `files`.
         """
-        bar = Bar("Checking untagged", max=len(self.db_tracks))
-        for track in self.db_tracks:
+        for track in tqdm(self.db_tracks, desc="Checking untagged"):
             if track["filepath"] in self.files:
                 self.files.remove(track["filepath"])
-            bar.next()
 
-        bar.finish()
         Log(f"Found {len(self.files)} untagged tracks")
 
-    def tag_files(self):
+    def get_tags(self, file: str):
+        tags = get_tags(file)
+
+        if tags is not None:
+            folder = tags["folder"]
+            self.folders.add(folder)
+
+            tags["albumhash"] = create_album_hash(tags["album"], tags["albumartist"])
+            self.tagged_tracks.append(tags)
+            api.DB_TRACKS.append(tags)
+
+    def tag_all_files(self):
         """
         Loops through all the untagged files and tags them.
         """
-        bar = Bar("Tagging files", max=len(self.files))
-        for file in self.files:
-            tags = get_tags(file)
-            folder = path.dirname(file)
-            self.folders.add(folder)
 
-            if tags is not None:
-                tags["albumhash"] = create_album_hash(
-                    tags["album"], tags["albumartist"]
-                )
-                self.tagged_tracks.append(tags)
-                api.DB_TRACKS.append(tags)
+        s = time.time()
+        print(f"Started tagging files")
+        with ThreadPoolExecutor() as executor:
+            executor.map(self.get_tags, self.files)
 
-            bar.next()
-        bar.finish()
-        Log(f"Tagged {len(self.tagged_tracks)} files")
+        d = time.time() - s
+        Log(f"Tagged {len(self.tagged_tracks)} files in {d} seconds")
 
     def create_pre_albums(self):
         """
         Creates pre-albums for the all tagged tracks.
         """
-        bar = Bar("Creating pre-albums", max=len(self.tagged_tracks))
-        for track in self.tagged_tracks:
+        for track in tqdm(self.tagged_tracks, desc="Creating pre-albums"):
             album = {"title": track["album"], "artist": track["albumartist"]}
 
             if album not in self.pre_albums:
                 self.pre_albums.append(album)
-            bar.next()
 
-        bar.finish()
         Log(f"Created {len(self.pre_albums)} pre-albums")
+
+    def create_album(self, album: dict):
+        albumhash = create_album_hash(album["title"], album["artist"])
+        index = find_album(api.ALBUMS, albumhash)
+
+        if index is not None:
+            album = api.ALBUMS[index]
+            self.albums.append(album)
+
+            self.exist_count += 1
+            return
+
+        self.albums.sort(key=lambda x: x.hash)
+        index = find_track(self.tagged_tracks, albumhash)
+
+        if index is None:
+            return
+
+        track = self.tagged_tracks[index]
+
+        album = create_album(track, self.tagged_tracks)
+
+        if album is None:
+            print("album is none")
+            return
+
+        album = Album(album)
+
+        api.ALBUMS.append(album)
+        self.albums.append(album)
 
     def create_albums(self):
         """
         Uses the pre-albums to create new albums and add them to the database.
         """
-        exist_count = 0
+        for album in tqdm(self.pre_albums, desc="Building albums"):
+            self.create_album(album)
 
-        bar = Bar("Creating albums", max=len(self.pre_albums))
-        for album in self.pre_albums:
-            index = find_album(album["title"], album["artist"])
-
-            if index is None:
-                try:
-                    track = [
-                        track
-                        for track in self.tagged_tracks
-                        if track["album"] == album["title"]
-                        and track["albumartist"] == album["artist"]
-                    ][0]
-
-                    album = create_album(track)
-                    api.ALBUMS.append(Album(album))
-                    self.albums.append(album)
-
-                    album_instance.insert_album(album)
-
-                except IndexError:
-                    print("😠\n")
-                    print(album)
-
-            else:
-                exist_count += 1
-
-            bar.next()
-        bar.finish()
         Log(
-            f"{exist_count} of {len(self.pre_albums)} albums were already in the database"
+            f"{self.exist_count} of {len(self.pre_albums)} albums were already in the database"
         )
+
+    def create_track(self, track: dict):
+        """
+        Creates a single track object.
+        """
+
+        albumhash = track["albumhash"]
+        index = find_album(self.albums, albumhash)
+
+        if index is None:
+            return
+
+        try:
+            album: Album = self.albums[index]
+        except (TypeError):
+            """
+            😭😭😭
+            """
+            pass
+
+        track["image"] = album.image
+
+        upsert_id = tracks_instance.insert_song(track)
+        track["_id"] = {"$oid": str(upsert_id)}
+
+        api.TRACKS.append(Track(track))
 
     def create_tracks(self):
         """
         Loops through all the tagged tracks creating complete track objects using the `models.Track` model.
         """
-        bar = Bar("Creating tracks", max=len(self.tagged_tracks))
-        failed_count = 0
-
-        for track in self.tagged_tracks:
-            try:
-                album_index = find_album(track["album"], track["albumartist"])
-                album = api.ALBUMS[album_index]
-                track["image"] = album.image
-
-                upsert_id = tracks_instance.insert_song(track)
-                track["_id"] = {"$oid": str(upsert_id)}
-
-                api.TRACKS.append(Track(track))
-            except:
-                # Bug: some albums are not found although they exist in `api.ALBUMS`. It has something to do with the bisection method used or sorting. Not sure yet.
-                failed_count += 1
-            bar.next()
-        bar.finish()
+        with ThreadPoolExecutor() as executor:
+            executor.map(self.create_track, self.tagged_tracks)
 
         Log(
-            f"Added {len(self.tagged_tracks) - failed_count} of {len(self.tagged_tracks)} new tracks and {len(self.albums)} new albums"
+            f"Added {len(self.tagged_tracks)} new tracks and {len(self.albums)} new albums"
         )
+
+    def save_albums(self):
+        """
+        Saves the albums to the database.
+        """
+
+        with ThreadPoolExecutor() as executor:
+            executor.map(album_instance.insert_album, self.albums)
 
     def create_folders(self):
         """
         Creates the folder objects for all the tracks.
         """
-        bar = Bar("Creating folders", max=len(self.folders))
-        for folder in self.folders:
+        for folder in tqdm(self.folders, desc="Creating folders"):
             api.VALID_FOLDERS.add(folder)
 
             fff = folderslib.create_folder(folder)
             api.FOLDERS.append(fff)
-
-            bar.next()
-
-        bar.finish()
 
         Log(f"Created {len(self.folders)} new folders")

@@ -6,6 +6,8 @@ import random
 import string
 from datetime import datetime
 
+from tqdm import tqdm
+
 from app import api
 from app import exceptions
 from app import instances
@@ -55,13 +57,9 @@ def create_all_playlists():
     """
     playlists = instances.playlist_instance.get_all_playlists()
 
-    _bar = Bar("Creating playlists", max=len(playlists))
 
-    for playlist in playlists:
+    for playlist in tqdm(playlists, desc="Creating playlists"):
         api.PLAYLISTS.append(models.Playlist(playlist))
-
-        _bar.next()
-    _bar.finish()
 
     validate_images()
 

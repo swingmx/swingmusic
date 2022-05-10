@@ -58,7 +58,7 @@ def add_track(filepath: str) -> None:
         if albumindex is not None:
             album = api.ALBUMS[albumindex]
         else:
-            album_data = create_album(tags)
+            album_data = create_album(tags, api.DB_TRACKS)
             instances.album_instance.insert_album(album_data)
 
             album = models.Album(album_data)

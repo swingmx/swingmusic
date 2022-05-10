@@ -23,6 +23,7 @@ class Albums(db.Mongo):
         """
         Inserts a new album object into the database.
         """
+        album = album.__dict__
         return self.collection.update_one(
             {
                 "album": album["title"],
