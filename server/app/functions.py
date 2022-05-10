@@ -6,6 +6,7 @@ import time
 from io import BytesIO
 
 import requests
+from tqdm import tqdm
 from app import api
 from app import helpers
 from app import settings
@@ -73,15 +74,14 @@ def fetch_artist_images():
 
     artists = []
 
-    for song in api.DB_TRACKS:
+    for song in tqdm(api.DB_TRACKS, desc="Gathering artists"):
         this_artists = song["artists"].split(", ")
 
         for artist in this_artists:
             if artist not in artists:
                 artists.append(artist)
 
-    _bar = Bar("Processing images", max=len(artists))
-    for artist in artists:
+    for artist in tqdm(artists, desc="Fetching images"):
         file_path = (
             helpers.app_dir + "/images/artists/" + artist.replace("/", "::") + ".webp"
         )
@@ -96,12 +96,8 @@ def fetch_artist_images():
                 except requests.exceptions.ConnectionError:
                     time.sleep(5)
 
-        _bar.next()
 
-    _bar.finish()
-
-
-def fetch_album_bio(title: str, albumartist: str):
+def fetch_album_bio(title: str, albumartist: str) -> str | None:
     """
     Returns the album bio for a given album.
     """
@@ -121,6 +117,19 @@ def fetch_album_bio(title: str, albumartist: str):
         bio = None
 
     return bio
+
+
+class FetchAlbumBio:
+    """
+    Returns the album bio for a given album.
+    """
+
+    def __init__(self, title: str, albumartist: str):
+        self.title = title
+        self.albumartist = albumartist
+
+    def __call__(self):
+        return fetch_album_bio(self.title, self.albumartist)
 
 
 # TODO

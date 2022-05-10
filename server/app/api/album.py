@@ -4,13 +4,13 @@ Contains all the album routes.
 from typing import List
 
 from app import api
-from app import functions
 from app import helpers
 from app import models
 from app.lib import albumslib
 from app.lib import trackslib
 from flask import Blueprint
 from flask import request
+from app.functions import FetchAlbumBio
 
 album_bp = Blueprint("album", __name__, url_prefix="")
 
@@ -58,13 +58,13 @@ def get_album_tracks():
 def get_album_bio():
     """Returns the album bio for the given album."""
     data = request.get_json()
+    fetch_bio = FetchAlbumBio(data["album"], data["albumartist"])()
+    bio = fetch_bio()
 
-    bio = functions.fetch_album_bio(data["album"], data["albumartist"])
-
-    if bio is not None:
-        return {"bio": bio}
-    else:
+    if bio is None:
         return {"bio": "No bio found."}, 404
+
+    return {"bio": bio}
 
 
 @album_bp.route("/album/artists", methods=["POST"])
