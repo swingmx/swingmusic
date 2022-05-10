@@ -58,7 +58,7 @@ def get_album_tracks():
 def get_album_bio():
     """Returns the album bio for the given album."""
     data = request.get_json()
-    fetch_bio = FetchAlbumBio(data["album"], data["albumartist"])()
+    fetch_bio = FetchAlbumBio(data["album"], data["albumartist"])
     bio = fetch_bio()
 
     if bio is None:
