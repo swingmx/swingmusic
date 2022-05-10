@@ -43,11 +43,11 @@ import { ContextSrc } from "../../composables/enums";
 
 import useContextStore from "../../stores/context";
 import useModalStore from "../../stores/modal";
+import useQueueStore from "../../stores/queue";
 import { paths } from "../../config";
 
 
 const contextStore = useContextStore();
-const modalStore = useModalStore();
 const imguri = paths.images.thumb
 
 const props = defineProps<{
@@ -62,7 +62,7 @@ const showContextMenu = (e: Event) => {
   e.preventDefault();
   e.stopPropagation();
 
-  const menus = trackContext(props.track, modalStore);
+  const menus = trackContext(props.track, useModalStore, useQueueStore);
 
   contextStore.showContextMenu(e, menus, ContextSrc.Track);
   context_on.value = true;

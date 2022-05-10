@@ -63,6 +63,7 @@
 import perks from "../../composables/perks.js";
 import useContextStore from "../../stores/context";
 import useModalStore from "../../stores/modal";
+import useQueueStore from "../../stores/queue";
 import { ContextSrc } from "../../composables/enums";
 
 import { ref } from "vue";
@@ -71,7 +72,7 @@ import { Track } from "../../interfaces.js";
 import { paths } from "../../config";
 
 const contextStore = useContextStore();
-const modalStore = useModalStore();
+
 const context_on = ref(false);
 const imguri = paths.images.thumb
 
@@ -79,7 +80,7 @@ const showContextMenu = (e: Event) => {
   e.preventDefault();
   e.stopPropagation();
 
-  const menus = trackContext(props.song, modalStore);
+  const menus = trackContext(props.song, useModalStore, useQueueStore);
 
   contextStore.showContextMenu(e, menus, ContextSrc.Track);
   context_on.value = true;

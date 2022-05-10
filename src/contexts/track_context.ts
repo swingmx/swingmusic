@@ -3,6 +3,8 @@ import Router from "../router";
 import { Option } from "../interfaces";
 import { getAllPlaylists, addTrackToPlaylist } from "../composables/playlists";
 
+import useQueueStore from "../stores/queue";
+import useModalStore from "../stores/modal";
 /**
  * Returns a list of context menu items for a track.
  * @param  {any} track a track object.
@@ -10,7 +12,11 @@ import { getAllPlaylists, addTrackToPlaylist } from "../composables/playlists";
  * @return {Array<Option>()} a list of context menu items.
  */
 
-export default async (track: Track, modalStore: any): Promise<Option[]> => {
+export default async (
+  track: Track,
+  modalStore: typeof useModalStore,
+  QueueStore: typeof useQueueStore,
+): Promise<Option[]> => {
   const separator: Option = {
     type: "separator",
   };
@@ -46,7 +52,7 @@ export default async (track: Track, modalStore: any): Promise<Option[]> => {
     const new_playlist = <Option>{
       label: "New playlist",
       action: () => {
-        modalStore.showNewPlaylistModal(track);
+        modalStore().showNewPlaylistModal(track);
       },
     };
 
@@ -61,9 +67,19 @@ export default async (track: Track, modalStore: any): Promise<Option[]> => {
 
   const add_to_q: Option = {
     label: "Add to Queue",
-    action: () => console.log("Add to Queue"),
+    action: () => {
+      QueueStore().addTrackToQueue(track);
+    },
     icon: "add_to_queue",
   };
+
+  const play_next: Option = {
+    label: "Play next",
+    action: () => {
+      QueueStore().playTrackNext(track);
+    },
+    icon: "add_to_queue",
+  }
 
   const go_to_folder: Option = {
     label: "Go to Folder",
@@ -120,6 +136,7 @@ export default async (track: Track, modalStore: any): Promise<Option[]> => {
   const options: Option[] = [
     add_to_playlist,
     add_to_q,
+    play_next,
     add_to_fav,
     separator,
     go_to_folder,

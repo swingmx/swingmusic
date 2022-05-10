@@ -197,5 +197,17 @@ export default defineStore("Queue", {
 
       this.setNewQueue(tracks);
     },
+    addTrackToQueue(track: Track) {
+      this.tracks.push(track);
+      addQToLocalStorage(this.from, this.tracks);
+    },
+    playTrackNext(track: Track) {
+      const current = this.tracks.findIndex(
+        (t: Track) => t.trackid === this.current.trackid
+      );
+
+      this.tracks.splice(current + 1, 0, track);
+      addQToLocalStorage(this.from, this.tracks);
+    },
   },
 });

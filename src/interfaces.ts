@@ -30,7 +30,6 @@ interface AlbumInfo {
   count: number;
   duration: number;
   date: string;
-  artistimage: string;
   image: string;
 }
 
