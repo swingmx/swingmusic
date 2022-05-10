@@ -14,6 +14,8 @@ from app.lib.populate import Populate
 from PIL import Image
 from progress.bar import Bar
 
+from app.lib.trackslib import create_all_tracks
+
 
 @helpers.background
 def reindex_tracks():
@@ -40,6 +42,10 @@ def start_watchdog():
 def populate():
     pop = Populate()
     pop.run()
+
+    tracks = create_all_tracks()
+    api.TRACKS.clear()
+    api.TRACKS.extend(tracks)
 
 
 @helpers.background
@@ -76,8 +82,9 @@ def fetch_artist_images():
 
     _bar = Bar("Processing images", max=len(artists))
     for artist in artists:
-        file_path = (helpers.app_dir + "/images/artists/" +
-                     artist.replace("/", "::") + ".webp")
+        file_path = (
+            helpers.app_dir + "/images/artists/" + artist.replace("/", "::") + ".webp"
+        )
 
         if not os.path.exists(file_path):
             img_path = fetch_image_path(artist)
@@ -99,7 +106,8 @@ def fetch_album_bio(title: str, albumartist: str):
     Returns the album bio for a given album.
     """
     last_fm_url = "http://ws.audioscrobbler.com/2.0/?method=album.getinfo&api_key={}&artist={}&album={}&format=json".format(
-        settings.LAST_FM_API_KEY, albumartist, title)
+        settings.LAST_FM_API_KEY, albumartist, title
+    )
 
     try:
         response = requests.get(last_fm_url)
@@ -108,8 +116,7 @@ def fetch_album_bio(title: str, albumartist: str):
         return None
 
     try:
-        bio = data["album"]["wiki"]["summary"].split(
-            '<a href="https://www.last.fm/')[0]
+        bio = data["album"]["wiki"]["summary"].split('<a href="https://www.last.fm/')[0]
     except KeyError:
         bio = None
 

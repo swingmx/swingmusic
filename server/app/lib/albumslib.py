@@ -1,7 +1,6 @@
 """
 This library contains all the functions related to albums.
 """
-from copy import deepcopy
 import random
 import urllib
 from typing import List
@@ -12,7 +11,7 @@ from app import models
 from app.lib import taglib
 from app.lib import trackslib
 from progress.bar import Bar
-
+from tqdm import tqdm
 from app import helpers
 
 
@@ -26,13 +25,9 @@ def get_all_albums() -> List[models.Album]:
 
     db_albums = instances.album_instance.get_all_albums()
 
-    _bar = Bar("Creating albums", max=len(db_albums))
-    for album in db_albums:
+    for album in tqdm(db_albums, desc="Creating albums"):
         aa = models.Album(album)
         albums.append(aa)
-        _bar.next()
-
-    _bar.finish()
 
     return albums
 
@@ -54,27 +49,23 @@ def create_everything() -> List[models.Track]:
     api.TRACKS.sort(key=lambda x: x.title)
 
 
-def find_album(albumtitle: str, artist: str) -> int or None:
+def find_album(albums: List[models.Album], hash: str) -> int | None:
     """
     Finds an album by album title and artist.
     """
 
     left = 0
-    right = len(api.ALBUMS) - 1
+    right = len(albums) - 1
     iter = 0
 
     while left <= right:
         iter += 1
         mid = (left + right) // 2
-        hash = helpers.create_album_hash(albumtitle, artist)
 
-        try:
-            if api.ALBUMS[mid].hash == hash:
-                return mid
-        except:
-            print(api.ALBUMS[mid])
+        if albums[mid].hash == hash:
+            return mid
 
-        if api.ALBUMS[mid].hash < hash:
+        if albums[mid].hash < hash:
             left = mid + 1
         else:
             right = mid - 1
@@ -136,9 +127,9 @@ class GetAlbumTracks:
     and album artist.
     """
 
-    def __init__(self, album: str, artist: str) -> None:
-        self.hash = helpers.create_album_hash(album, artist)
-        self.tracks = api.DB_TRACKS
+    def __init__(self, tracklist: list, albumhash: str) -> None:
+        self.hash = albumhash
+        self.tracks = tracklist
         self.tracks.sort(key=lambda x: x["albumhash"])
 
     def find_tracks(self):
@@ -151,7 +142,8 @@ class GetAlbumTracks:
             self.tracks.remove(track)
             index = trackslib.find_track(self.tracks, self.hash)
 
-        api.DB_TRACKS.extend(tracks)
+        # self.tracks.extend(tracks)
+        # self.tracks.sort(key=lambda x: x["albumhash"])
         return tracks
 
 
@@ -159,7 +151,7 @@ def get_album_tracks(album: str, artist: str) -> List:
     return GetAlbumTracks(album, artist).find_tracks()
 
 
-def create_album(track) -> models.Album:
+def create_album(track: dict, tracklist: list) -> models.Album:
     """
     Generates and returns an album object from a track object.
     """
@@ -168,15 +160,16 @@ def create_album(track) -> models.Album:
         "artist": track["albumartist"],
     }
 
-    album_tracks = get_album_tracks(album["title"], album["artist"])
+    albumhash = helpers.create_album_hash(album["title"], album["artist"])
+    album_tracks = get_album_tracks(tracklist, albumhash)
+
+    if len(album_tracks) == 0:
+        return None
 
     album["date"] = album_tracks[0]["date"]
 
-    album["artistimage"] = urllib.parse.quote_plus(
-        album_tracks[0]["albumartist"] + ".webp"
-    )
-
     album["image"] = get_album_image(album_tracks)
+    # album["image"] = "".join(x for x in albumhash if x not in "\/:*?<>|")
 
     return album
 

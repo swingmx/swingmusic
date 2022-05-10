@@ -10,7 +10,7 @@ from app.exceptions import TrackExistsInPlaylist
 from app import helpers
 
 
-@dataclass
+@dataclass(slots=True)
 class Track:
     """
     Track class
@@ -46,7 +46,7 @@ class Track:
         self.image = tags["image"]
         self.tracknumber = tags["tracknumber"]
         self.discnumber = tags["discnumber"]
-        self.albumhash = tags['albumhash']
+        self.albumhash = tags["albumhash"]
 
 
 @dataclass
@@ -58,7 +58,6 @@ class Album:
     title: str
     artist: str
     date: int
-    artistimage: str
     image: str
     hash: str
     count: int = 0
@@ -68,9 +67,13 @@ class Album:
         self.title = tags["title"]
         self.artist = tags["artist"]
         self.date = tags["date"]
-        self.artistimage = tags["artistimage"]
         self.image = tags["image"]
         self.hash = helpers.create_album_hash(self.title, self.artist)
+
+        try:
+            self.hash = tags["albumhash"]
+        except KeyError:
+            self.hash = helpers.create_album_hash(self.title, self.artist)
 
 
 def get_p_track(ptrack):

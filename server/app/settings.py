@@ -3,13 +3,15 @@ Contains default configs
 """
 import os
 from dataclasses import dataclass
+import multiprocessing
+
 
 # paths
 CONFIG_FOLDER = ".alice"
 HOME_DIR = os.path.expanduser("~")
 APP_DIR = os.path.join(HOME_DIR, CONFIG_FOLDER)
 THUMBS_PATH = os.path.join(APP_DIR, "images", "thumbnails")
-
+TEST_DIR = "/home/cwilvx/Music/Link to Music/Chill"
 # URL
 IMG_BASE_URI = "http://127.0.0.1:8900/images/"
 IMG_ARTIST_URI = IMG_BASE_URI + "artists/"
@@ -34,6 +36,8 @@ P_COLORS = [
     "rgb(141, 11, 2)",
 ]
 
+CPU_COUNT = multiprocessing.cpu_count()
 
 class logger:
     enable = True
+

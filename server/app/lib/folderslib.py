@@ -2,6 +2,8 @@ import time
 from typing import List
 from typing import Set
 
+from tqdm import tqdm
+
 from app import api
 from app import helpers
 from app import models
@@ -34,14 +36,10 @@ def create_folder(foldername: str) -> models.Folder:
 
 def create_all_folders() -> Set[models.Folder]:
     folders: List[models.Folder] = []
-    _bar = Bar("Creating folders", max=len(api.VALID_FOLDERS))
 
-    for foldername in api.VALID_FOLDERS:
+    for foldername in tqdm(api.VALID_FOLDERS, desc="Creating folders"):
         folder = create_folder(foldername)
         folders.append(folder)
-
-        _bar.next()
-    _bar.finish()
 
     return folders
 

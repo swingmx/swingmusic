@@ -44,7 +44,8 @@ def get_album_tracks():
     artist = data["artist"]
 
     songs = trackslib.get_album_tracks(album, artist)
-    index = albumslib.find_album(album, artist)
+    albumhash = helpers.create_album_hash(album, artist)
+    index = albumslib.find_album(api.ALBUMS, albumhash)
     album = api.ALBUMS[index]
 
     album.count = len(songs)
