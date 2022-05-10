@@ -37,7 +37,7 @@ const notifStore = useNotifStore();
   height: 3.5rem;
   bottom: 2rem;
   padding: $small;
-  background-color: $green;
+  background: linear-gradient(to top right, #021b79, #0575e6);
   display: grid;
   place-items: center;
   align-items: center;
@@ -50,10 +50,10 @@ const notifStore = useNotifStore();
 }
 
 .notif-error {
-  background-color: $red;
+  background: linear-gradient(to top right, #cf0b25, #e60518);
 }
 
 .notif-info {
-  background-color: $gray2;
+  background: linear-gradient(to top right, $gray4, $gray3);
 }
 </style>

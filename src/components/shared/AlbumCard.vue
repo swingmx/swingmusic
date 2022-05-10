@@ -6,7 +6,7 @@
     }"
     class="result-item"
   >
-    <div class="_idk">
+    <div class="img">
       <div
         class="album-art image"
         :style="{
@@ -38,12 +38,11 @@ defineProps<{
   padding: $small;
   border-radius: 0.75rem;
   text-align: left !important;
-  background-color: $gray;
+  background-color: $gray4;
   color: #ffffffde !important;
   transition: all 0.5s ease;
-  // border: solid 1px $gray3;
 
-  ._idk {
+  .img {
     position: relative;
 
     &:hover {

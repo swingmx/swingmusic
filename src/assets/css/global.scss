@@ -38,7 +38,9 @@ a {
 }
 
 .border {
-  border: solid 1px $gray3;
+  // border: solid 1px $gray5;
+  background-color: $black;
+  box-shadow: 0 0 1rem rgba(0, 0, 0, 0.1);
 }
 
 .separator {
@@ -98,7 +100,8 @@ a {
   width: 15rem;
   grid-area: l-sidebar;
   padding-top: 0.5rem;
-  border-right: solid 1px $gray3;
+  // border-right: solid 1px $gray3;
+  background-color: $black;
 }
 
 .bottom-bar {

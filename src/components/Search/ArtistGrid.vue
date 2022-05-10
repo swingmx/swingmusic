@@ -1,5 +1,5 @@
 <template>
-  <div class="artists-results">
+  <div class="artists-results border">
     <div class="heading">Artists</div>
     <div class="grid">
       <ArtistCard v-for="artist in artists" :key="artist" :artist="artist" />
@@ -38,7 +38,6 @@ export default {
   border-radius: 0.5rem;
   padding: $small;
   margin-bottom: $small;
-  border: solid 1px $gray3;
 
   .xartist {
     background-color: $gray;

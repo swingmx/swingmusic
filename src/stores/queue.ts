@@ -1,5 +1,7 @@
 import { defineStore } from "pinia";
 import state from "../composables/state";
+import { useNotifStore, NotifType } from "./notification";
+
 import {
   Track,
   fromFolder,
@@ -202,11 +204,23 @@ export default defineStore("Queue", {
       addQToLocalStorage(this.from, this.tracks);
     },
     playTrackNext(track: Track) {
-      const current = this.tracks.findIndex(
+      const Toast = useNotifStore();
+      const currentid = this.tracks.findIndex(
         (t: Track) => t.trackid === this.current.trackid
       );
 
-      this.tracks.splice(current + 1, 0, track);
+      const next: Track = this.tracks[currentid + 1];
+
+      if (next.trackid === track.trackid) {
+        Toast.showNotification("Track is already queued", NotifType.Info);
+        return;
+      }
+
+      this.tracks.splice(currentid + 1, 0, track);
+      Toast.showNotification(
+        `Added ${track.title} to queue`,
+        NotifType.Success
+      );
       addQToLocalStorage(this.from, this.tracks);
     },
   },

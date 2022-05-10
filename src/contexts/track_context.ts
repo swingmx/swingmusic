@@ -135,8 +135,8 @@ export default async (
 
   const options: Option[] = [
     add_to_playlist,
-    add_to_q,
     play_next,
+    add_to_q,
     add_to_fav,
     separator,
     go_to_folder,

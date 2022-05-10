@@ -1,7 +1,7 @@
 <template>
   <div class="right-search">
     <Options />
-    <div class="scrollable" ref="search_thing">
+    <div class="scrollable rounded" ref="search_thing">
       <TracksGrid
         v-if="tracks.tracks.length"
         :more="tracks.more"

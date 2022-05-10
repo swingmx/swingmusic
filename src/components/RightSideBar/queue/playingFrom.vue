@@ -109,7 +109,7 @@ function goTo() {
   cursor: pointer;
   position: relative;
   transition: all .2s ease;
-  background-color: $accent;
+  background-color: $black;
 
   &:hover {
     background-position: -4rem;

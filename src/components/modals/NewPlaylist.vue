@@ -46,7 +46,7 @@ function create(e: Event) {
     });
   } else {
     new Notification(
-      "A Playlist name can not be empty",
+      "Playlist name can't be empty",
       NotifType.Error
     );
   }

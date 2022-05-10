@@ -66,7 +66,7 @@ function removeLastFilter() {
       width: 100%;
       border: none;
       line-height: 2.25rem;
-      background-color: $gray5;
+      background-color: $black;
       color: inherit;
       font-size: 1rem;
       padding-left: 0.75rem;

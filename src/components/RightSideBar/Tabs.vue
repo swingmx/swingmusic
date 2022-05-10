@@ -26,7 +26,7 @@ const tabs = useTabStore();
   height: 4.25rem;
 
   .cont {
-    background-color: $primary;
+    background-color: $black;
     display: flex;
     gap: $small;
     height: 100%;

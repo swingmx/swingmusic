@@ -48,8 +48,6 @@ const options = [
 .right-search .options {
   display: flex;
   margin-bottom: $small;
-    border: solid 1px $gray3;
-  // background: $gray3;
 
   .item {
     margin: $small;

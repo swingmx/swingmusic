@@ -1,5 +1,5 @@
 <template>
-  <div class="tracks-results" v-if="tracks">
+  <div class="tracks-results border" v-if="tracks">
     <div class="heading">Tracks</div>
     <TransitionGroup class="items" name="list">
       <TrackItem
@@ -49,7 +49,6 @@ function updateQueue(track: Track) {
 .right-search .tracks-results {
   border-radius: 0.5rem;
   padding: $small;
-  border: 1px solid $gray3;
 
   .list-enter-active,
   .list-leave-active {

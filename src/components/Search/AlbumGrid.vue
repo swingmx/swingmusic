@@ -1,5 +1,5 @@
 <template>
-  <div class="albums-results">
+  <div class="albums-results border">
     <div class="heading">Albums</div>
     <div class="grid">
       <AlbumCard v-for="album in albums" :key="album" :album="album" />
@@ -39,7 +39,6 @@ export default {
   margin-top: $small;
   padding: $small;
   overflow-x: hidden;
-  border: solid 1px $gray3;
 
   .result-item:hover {
     background-color: $gray4;
