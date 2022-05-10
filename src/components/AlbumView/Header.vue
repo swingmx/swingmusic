@@ -11,7 +11,13 @@
       </div>
       <div class="info">
         <div class="top">
-          <div class="h">Album</div>
+          <div
+            class="h"
+            v-if="props.album.artist.toLowerCase() == 'various artists'"
+          >
+            Compilation
+          </div>
+          <div class="h" v-else>Album</div>
           <div class="title ellip">{{ props.album.title }}</div>
         </div>
         <div class="bottom">
@@ -34,14 +40,12 @@ import PlayBtnRect from "../shared/PlayBtnRect.vue";
 import { playSources } from "../../composables/enums";
 import { paths } from "../../config";
 
-const imguri = paths.images.thumb
+const imguri = paths.images.thumb;
 const props = defineProps<{
   album: AlbumInfo;
 }>();
 
-function extrackColors() {
-
-}
+function extrackColors() {}
 
 extrackColors();
 </script>
