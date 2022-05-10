@@ -1,3 +1,0 @@
-server { listen 8901;
-
- location / { root /home/cwilvx/; autoindex on; sendfile off;  } }

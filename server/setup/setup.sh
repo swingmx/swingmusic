@@ -1,6 +1,3 @@
-# 1. install nginx
-# 2. install mongodb
-
 # commands to install and start mongodb ubuntu 20.04
 wget -qO - https://www.mongodb.org/static/pgp/server-5.0.asc | sudo apt-key add -
 sudo apt-get install gnupg
@@ -12,8 +9,3 @@ sudo apt-get install -y mongodb
 sudo systemctl start mongodb
 sudo systemctl daemon-reload
 sudo systemctl enable mongodb
-
-# commands to install and start nginx ubuntu 20.04
-sudo apt-get install nginx
-sudo systemctl start nginx
-sudo systemctl enable nginx
