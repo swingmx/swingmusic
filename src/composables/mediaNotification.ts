@@ -1,5 +1,5 @@
 import { Track } from "../interfaces.js";
-import perks from "./perks.js";
+import { paths } from "../config";
 
 export default (
   track: Track,
@@ -13,32 +13,32 @@ export default (
       artist: track.artists.join(", "),
       artwork: [
         {
-          src: track.image,
+          src: paths.images.thumb + track.image,
           sizes: "96x96",
           type: "image/jpeg",
         },
         {
-          src: track.image,
+          src: paths.images.thumb + track.image,
           sizes: "128x128",
           type: "image/webp",
         },
         {
-          src: track.image,
+          src: paths.images.thumb + track.image,
           sizes: "192x192",
           type: "image/webp",
         },
         {
-          src: track.image,
+          src: paths.images.thumb + track.image,
           sizes: "256x256",
           type: "image/webp",
         },
         {
-          src: track.image,
+          src: paths.images.thumb + track.image,
           sizes: "384x384",
           type: "image/webp",
         },
         {
-          src: track.image,
+          src: paths.images.thumb + track.image,
           sizes: "512x512",
           type: "image/webp",
         },

@@ -35,6 +35,20 @@ const queue = useQStore();
   position: relative;
   text-transform: capitalize;
 
+  &:hover {
+    ::-moz-range-thumb {
+      height: 0.8rem;
+    }
+
+    ::-webkit-slider-thumb {
+      height: 0.8rem;
+    }
+
+    ::-ms-thumb {
+      height: 0.8rem;
+    }
+  }
+
   .headin {
     font-weight: bold;
     font-size: 0.9rem;
@@ -84,7 +98,7 @@ const queue = useQStore();
     position: absolute;
     font-size: 0.75rem;
     width: max-content;
-    padding: 0.2rem .35rem;
+    padding: 0.2rem 0.35rem;
     top: 13.25rem;
     left: 1.5rem;
     background-color: $black;

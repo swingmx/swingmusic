@@ -90,12 +90,12 @@ const context = useContextStore();
       right: -13rem;
       width: 13rem;
       top: -0.5rem;
-      max-height: 21.25rem;
+      height: 23.5rem;
 
       padding: $small !important;
       background-color: $context;
       transform: scale(0);
-      transform-origin: left;
+      transform-origin: top left;
     }
 
     .icon {
@@ -177,14 +177,14 @@ const context = useContextStore();
 .context-normalizedY {
   .context-item > .children {
     transform-origin: bottom right;
+      top: -.5rem;
   }
 }
 
 .context-many-kids {
   .context-item > .children {
-    top: -0.5rem;
+    // top: -0.5rem;
     overflow-y: auto;
-    scrollbar-width: none;
   }
 }
 </style>

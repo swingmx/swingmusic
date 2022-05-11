@@ -40,7 +40,6 @@ const props = defineProps<{
 
   &:hover {
     background-color: $accent;
-    border: 1px solid transparent;
 
     .h {
       background-color: $black;

@@ -116,6 +116,7 @@ function emitUpdate(track: Track) {
   height: 3.75rem;
   text-align: left;
   gap: $small;
+  user-select: none;
 
   .context {
     position: fixed;

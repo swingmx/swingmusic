@@ -53,6 +53,7 @@ function playThis(track: Track) {
       height: 100%;
       padding: $small;
       overflow: auto;
+      overflow-x: hidden;
       scrollbar-color: grey transparent;
     }
   }

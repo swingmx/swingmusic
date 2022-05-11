@@ -10,7 +10,7 @@ const tablist = {
 export default defineStore("tabs", {
   state: () => ({
     tabs: tablist,
-    current: tablist.home,
+    current: tablist.queue,
   }),
   actions: {
     changeTab(tab: string) {

@@ -17,6 +17,7 @@ body {
     Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
   font-size: 1rem;
   overflow: hidden;
+  image-rendering: -webkit-optimize-contrast;
 }
 
 .heading {
@@ -61,7 +62,6 @@ a {
   display: none;
 }
 
-
 .l-container {
   display: grid;
   grid-template-columns: min-content 1fr min-content;
@@ -84,8 +84,6 @@ a {
     display: none;
   }
 }
-
-
 
 .gsearch-input {
   grid-area: search-input;
@@ -164,7 +162,7 @@ a {
 }
 
 .shadow-sm {
-  box-shadow: 0 0 .5rem rgba(0, 0, 0, 0.452);
+  box-shadow: 0 0 0.5rem rgba(0, 0, 0, 0.452);
 }
 
 .shadow-md {
