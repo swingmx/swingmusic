@@ -45,6 +45,26 @@ There may be a few more, but I can't remember them at the moment.
 
 I'm working on this section. I'll be adding instructions soon. Please check back later!
 
+<details>
+  <summary><b>🔥🔥🔥 Version 0.1.0-alpha is coming soon 🔥🔥🔥</b></summary>
+
+I've been working on this for a while and I'm happy to announce that version 0.1 alpha is almost ready.
+
+Here are some of the features that will be working:
+
+1. Browsing and playing music from your folders
+2. Creating playlists
+3. Viewing album page
+4. Adding single tracks to queue
+5. Adding tracks to playlist
+6. Customizing playlist, etc
+
+I'm testing this out on my Ubuntu machine. If you have Windows, Mac or FreeBSD, you might run into some issues.
+
+⏩️⏩️⏩️⏩️⏩️
+
+</details>
+
 ### Contributing
 
-The app runs on Python, Vue, Flask, MongoDB and Nginx. If you want to contribute, please open an issue or pull request. Your contribution is highly valued.
+The app runs on Python, Vue, Flask, and MongoDB. If you want to contribute, please open an issue or pull request. Your contribution is highly valued.

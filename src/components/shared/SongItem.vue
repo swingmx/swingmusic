@@ -117,6 +117,7 @@ function emitUpdate(track: Track) {
   text-align: left;
   gap: $small;
   user-select: none;
+  -moz-user-select: none;
 
   .context {
     position: fixed;
