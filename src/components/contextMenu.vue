@@ -90,7 +90,7 @@ const context = useContextStore();
       right: -13rem;
       width: 13rem;
       top: -0.5rem;
-      height: 23.5rem;
+      max-height: 23.5rem;
 
       padding: $small !important;
       background-color: $context;

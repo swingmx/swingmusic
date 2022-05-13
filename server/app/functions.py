@@ -74,7 +74,7 @@ def fetch_artist_images():
 
     artists = []
 
-    for song in tqdm(api.DB_TRACKS, desc="Gathering artists"):
+    for song in tqdm(api.DB_TRACKS, desc="Finding artists"):
         this_artists = song["artists"].split(", ")
 
         for artist in this_artists:

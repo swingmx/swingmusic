@@ -48,8 +48,8 @@ const props = defineProps<{
   width: 100%;
   padding: 0.75rem;
   transition: all 0.25s ease;
-  background-position: -10rem;
   position: relative;
+  background-color: #1c1c1e80;
 
   .p-image {
     min-width: 100%;

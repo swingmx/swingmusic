@@ -1,11 +1,21 @@
 <template>
-  <div class="p-card rounded" id="new-playlist-card">
+  <div
+    class="p-card rounded"
+    id="new-playlist-card"
+    @click="Modal.showNewPlaylistModal()"
+  >
     <div class="gradient rounded"></div>
     <div class="plus image p-image"></div>
     <div>New Playlist</div>
     <div></div>
   </div>
 </template>
+
+<script setup lang="ts">
+import useModalStore from "../../stores/modal";
+
+const Modal = useModalStore();
+</script>
 
 <style lang="scss">
 #new-playlist-card {
@@ -35,10 +45,10 @@
 
   &:hover {
     .gradient {
-      background-size: 300rem;
+      background-size: 29rem;
     }
     .image {
-      transform: rotate(270deg);
+      transform: rotate(180deg);
     }
   }
 }

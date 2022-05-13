@@ -19,9 +19,13 @@ export default defineStore("newModal", {
       this.component = modalOption;
       this.visible = true;
     },
-    showNewPlaylistModal(track: Track) {
+    showNewPlaylistModal(track?: Track) {
       this.component = ModalOptions.newPlaylist;
-      this.props.track = track;
+
+      if (track) {
+        this.props.track = track;
+      }
+      
       this.visible = true;
     },
     showEditPlaylistModal(playlist: Playlist) {

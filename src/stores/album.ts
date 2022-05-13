@@ -14,6 +14,12 @@ export default defineStore("album", {
     bio: null,
   }),
   actions: {
+    /**
+     * Fetches a single album information, artists and its tracks from the server
+     * using the title and album-artist of the album.
+     * @param title title of the album
+     * @param albumartist artist of the album
+     */
     async fetchTracksAndArtists(title: string, albumartist: string) {
       const tracks = await getAlbumTracks(title, albumartist);
       const artists = await getAlbumArtists(title, albumartist);
@@ -22,6 +28,11 @@ export default defineStore("album", {
       this.info = tracks.info;
       this.artists = artists;
     },
+    /**
+     * Fetches the album bio from the server
+     * @param title title of the album
+     * @param albumartist artist of the album
+     */
     fetchBio(title: string, albumartist: string) {
       this.bio = null;
       getAlbumBio(title, albumartist).then((bio) => {

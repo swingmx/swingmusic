@@ -40,7 +40,9 @@
         }"
       />
     </div>
-    <input type="submit" class="rounded" value="Update" />
+    <div class="submit">
+      <input type="submit" class="rounded" value="Update" />
+    </div>
   </form>
 </template>
 
@@ -113,40 +115,6 @@ function update_playlist(e: Event) {
 
 <style lang="scss">
 .new-p-form {
-  grid-gap: 1rem;
-  margin-top: 1rem;
-
-  label {
-    font-size: 0.9rem;
-    color: $gray1;
-  }
-
-  input[type="text"] {
-    margin: $small 0;
-    border: 2px solid $gray3;
-    background-color: transparent;
-    color: #fff;
-    width: 100%;
-    padding: 0.5rem;
-    font-size: 1rem;
-
-    &:focus {
-      border: 2px solid transparent;
-      outline: solid 2px $gray1;
-    }
-  }
-
-  input[type="submit"] {
-    margin: $small 0;
-    background-color: $accent;
-    width: 7rem;
-    padding: 0.75rem;
-    font-size: 1rem;
-    border: none;
-    outline: none;
-    cursor: pointer;
-  }
-
   #upload {
     width: 100%;
     padding: $small;
@@ -182,23 +150,6 @@ function update_playlist(e: Event) {
     &:focus {
       border: 2px solid transparent;
       outline: solid 2px $gray1;
-    }
-  }
-
-  .colors {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(2rem, 1fr));
-    grid-gap: 0.5rem;
-    margin: 0.5rem 0;
-
-    .color {
-      height: 2.5rem;
-      width: 2.5rem;
-      border-radius: 2rem;
-    }
-
-    .selected {
-      border: 4px solid $white;
     }
   }
 }

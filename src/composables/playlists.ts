@@ -7,7 +7,10 @@ import state from "./state";
  * @param playlist_name The name of the playlist to create.
  */
 async function createNewPlaylist(playlist_name: string, track?: Track) {
-  let status = false;
+  let status = {
+    success: false,
+    playlist: <Playlist>{},
+  };
 
   await axios
     .post(state.settings.uri + "/playlist/new", {
@@ -22,7 +25,8 @@ async function createNewPlaylist(playlist_name: string, track?: Track) {
         }, 1000);
       }
 
-      status = true;
+      status.success = true;
+      status.playlist = res.data.playlist;
     })
     .catch((err) => {
       if (err.response.status == 409) {
