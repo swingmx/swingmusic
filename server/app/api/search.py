@@ -40,7 +40,7 @@ def search():
                 if artist_obj not in artists_dicts:
                     artists_dicts.append(artist_obj)
 
-    _tracks = searchlib.get_tracks(query)
+    _tracks = searchlib.SearchTracks(query)()
     tracks = [*_tracks, *artist_tracks]
 
     SEARCH_RESULTS.clear()

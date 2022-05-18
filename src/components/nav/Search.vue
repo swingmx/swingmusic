@@ -5,7 +5,7 @@
         type="search"
         name=""
         id=""
-        placeholder="Search this playlist"
+        placeholder="Search here"
         class="rounded"
       />
     </form>

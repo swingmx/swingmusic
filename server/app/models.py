@@ -32,8 +32,11 @@ class Track:
     albumhash: str
 
     def __init__(self, tags):
+        try:
+            self.trackid = tags["_id"]["$oid"]
+        except KeyError:
+            print(tags)
 
-        self.trackid = tags["_id"]["$oid"]
         self.title = tags["title"]
         self.artists = tags["artists"].split(", ")
         self.albumartist = tags["albumartist"]
@@ -47,6 +50,22 @@ class Track:
         self.tracknumber = tags["tracknumber"]
         self.discnumber = tags["discnumber"]
         self.albumhash = tags["albumhash"]
+
+
+@dataclass(slots=True)
+class Artist:
+    """
+    Artist class
+    """
+
+    artistid: str
+    name: str
+    image: str
+
+    def __init__(self, tags):
+        self.artistid = tags["_id"]["$oid"]
+        self.name = tags["name"]
+        self.image = tags["image"]
 
 
 @dataclass

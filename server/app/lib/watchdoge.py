@@ -50,18 +50,19 @@ def add_track(filepath: str) -> None:
     tags = get_tags(filepath)
 
     if tags is not None:
-        tags["albumhash"] = create_album_hash(tags["album"], tags["albumartist"])
+        hash = create_album_hash(tags["album"], tags["albumartist"])
+        tags["albumhash"] = hash
         api.DB_TRACKS.append(tags)
 
-        albumindex = find_album(tags["album"], tags["albumartist"])
+        albumindex = find_album(api.ALBUMS, hash)
 
         if albumindex is not None:
             album = api.ALBUMS[albumindex]
         else:
             album_data = create_album(tags, api.DB_TRACKS)
-            instances.album_instance.insert_album(album_data)
-
             album = models.Album(album_data)
+
+            instances.album_instance.insert_album(album)
             api.ALBUMS.append(album)
 
         tags["image"] = album.image
@@ -152,7 +153,14 @@ class Handler(PatternMatchingEventHandler):
         Fired when a created file is closed.
         """
         print("⚫ closed ~~~")
-        self.files_to_process.remove(event.src_path)
+        try:
+            self.files_to_process.remove(event.src_path)
+        except ValueError:
+            """
+            The file was already removed from the list, or it was not in the list to begin with.
+            """
+            pass
+
         add_track(event.src_path)
 
 
