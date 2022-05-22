@@ -17,12 +17,12 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import Search from "./Search.vue";
 import UpNext from "./Queue.vue";
 import Main from "./Home/Main.vue";
 import useTabStore from "../../stores/tabs";
-
+// import Search from "./Searchh.vue";
 const DashBoard = Main;
 const tabs = useTabStore();
 </script>

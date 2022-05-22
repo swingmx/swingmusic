@@ -5,10 +5,6 @@
   </div>
 </template>
 
-<script setup>
-console.log();
-</script>
-
 <style lang="scss">
 #back-forward {
   display: grid;

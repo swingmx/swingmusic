@@ -2,10 +2,10 @@
   <ContextMenu />
   <Modal />
   <Notification />
-  <div class="l-container" :class="{ collapsed: collapsed }">
+  <div class="l-container">
     <div class="l-sidebar">
       <div id="logo-container">
-        <router-link :to="{ name: 'Home' }" v-if="!collapsed"
+        <router-link :to="{ name: 'Home' }">
           ><div class="logo"></div
         ></router-link>
       </div>
@@ -44,7 +44,7 @@ const context_store = useContextStore();
 const queue = useQStore();
 const app_dom = document.getElementById("app");
 
-queue.readQueueFromLocalStorage();
+queue.readQueue();
 listenForKeyboardEvents(queue);
 
 app_dom.addEventListener("click", (e) => {

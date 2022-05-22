@@ -28,9 +28,9 @@ class Limit:
     Holds all the default limit values.
     """
 
-    tracks: int = 10
-    albums: int = 10
-    artists: int = 10
+    tracks: int = 50
+    albums: int = 50
+    artists: int = 50
 
 
 class SearchTracks:

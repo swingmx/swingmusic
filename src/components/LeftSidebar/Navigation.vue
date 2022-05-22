@@ -1,5 +1,5 @@
 <template>
-  <div class="side-nav-container" :class="{ collapsed: props.collapsed }">
+  <div class="side-nav-container">
     <router-link
       v-for="menu in menus"
       :key="menu.name"
@@ -47,29 +47,9 @@ const menus = [
   },
 ];
 
-const props = defineProps({
-  collapsed: {
-    type: Boolean,
-    default: false,
-  },
-});
 </script>
 
 <style lang="scss">
-.collapsed {
-  .nav-button {
-    margin-top: 5px;
-
-    span {
-      display: none;
-    }
-
-    .in {
-      width: 100%;
-      flex-direction: column;
-    }
-  }
-}
 
 .side-nav-container {
   color: #fff;
