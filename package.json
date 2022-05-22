@@ -9,6 +9,7 @@
     "lint": "eslint --ext .js,.vue --ignore-path .gitignore --fix src"
   },
   "dependencies": {
+    "@vueuse/motion": "^2.0.0-beta.12",
     "axios": "^0.26.1",
     "mitt": "^3.0.0",
     "node-vibrant": "^3.2.1-alpha.1",

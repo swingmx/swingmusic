@@ -4,15 +4,14 @@
     :class="[{ current: props.isCurrent }, { 'context-on': context_on }]"
     @dblclick="emitUpdate(props.song)"
     @contextmenu="showContextMenu"
+    v-motion-slide-visible-once-right
   >
     <div class="index">{{ props.index }}</div>
     <div class="flex">
       <div
         class="album-art image rounded"
         :style="{
-          backgroundImage: `url(&quot;${
-            imguri + props.song.image
-          }&quot;`,
+          backgroundImage: `url(&quot;${imguri + props.song.image}&quot;`,
         }"
         @click="emitUpdate(props.song)"
       >
@@ -74,7 +73,7 @@ import { paths } from "../../config";
 const contextStore = useContextStore();
 
 const context_on = ref(false);
-const imguri = paths.images.thumb
+const imguri = paths.images.thumb;
 
 const showContextMenu = (e: Event) => {
   e.preventDefault();

@@ -6,7 +6,7 @@
     <div class="l-sidebar">
       <div id="logo-container">
         <router-link :to="{ name: 'Home' }">
-          ><div class="logo"></div
+          <div class="logo"></div
         ></router-link>
       </div>
       <Navigation />

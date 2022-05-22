@@ -1,6 +1,7 @@
 <template>
   <div
     class="p-header image"
+    
     :style="[
       {
         backgroundImage: `url(${imguri + props.info.image})`,
@@ -11,7 +12,7 @@
     <div class="carddd">
       <div class="info">
         <div class="btns">
-          <PlayBtnRect :source="playSources.playlist" />
+          <PlayBtnRect :source="playSources.playlist" v-motion-slide-visible-once-bottom/>
           <Option @showDropdown="showDropdown" :src="context.src" />
         </div>
         <div class="duration">
@@ -25,7 +26,7 @@
           {{ props.info.description }}
         </div>
         <div class="title ellip">{{ props.info.name }}</div>
-        <div class="type">Playlist</div>
+        <div class="type" >Playlist</div>
       </div>
     </div>
     <div class="last-updated">

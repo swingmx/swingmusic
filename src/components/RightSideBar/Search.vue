@@ -1,7 +1,7 @@
 <template>
   <div class="right-search">
     <TabsWrapper>
-      <Tab name="Tracks">
+      <Tab name="Tracks" v-motion-slide-visible-left>
         <TracksGrid />
       </Tab>
       <Tab name="Albums">

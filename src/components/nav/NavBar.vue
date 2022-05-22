@@ -7,7 +7,7 @@
 
       <div class="info">
         <div class="title" v-if="$route.name == 'Playlists'">Playlists</div>
-        <div class="folder" v-else-if="$route.name == 'FolderView'">
+        <div class="folder" v-else-if="$route.name == 'FolderView'" >
           <div class="fname">
             <div class="icon image"></div>
             <div class="ellip">
