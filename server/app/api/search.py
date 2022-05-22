@@ -16,6 +16,63 @@ SEARCH_RESULTS = {
 }
 
 
+@search_bp.route("/search/tracks", methods=["GET"])
+def search_tracks():
+    """
+    Searches for tracks.
+    """
+
+    query = request.args.get("q")
+    if not query:
+        return {"error": "No query provided"}, 400
+
+    results = searchlib.SearchTracks(query)()
+    SEARCH_RESULTS["tracks"] = results
+
+    return {
+        "tracks": results[:5],
+        "more": len(results) > 5,
+    }, 200
+
+
+@search_bp.route("/search/albums", methods=["GET"])
+def search_albums():
+    """
+    Searches for albums.
+    """
+
+    query = request.args.get("q")
+    if not query:
+        return {"error": "No query provided"}, 400
+
+    results = searchlib.SearchAlbums(query)()
+    SEARCH_RESULTS["albums"] = results
+
+    return {
+        "albums": results[:6],
+        "more": len(results) > 6,
+    }, 200
+
+
+@search_bp.route("/search/artists", methods=["GET"])
+def search_artists():
+    """
+    Searches for artists.
+    """
+
+    query = request.args.get("q")
+    if not query:
+        return {"error": "No query provided"}, 400
+
+    results = searchlib.SearchArtists(query)()
+    SEARCH_RESULTS["artists"] = results
+
+    return {
+        "artists": results[:6],
+        "more": len(results) > 6,
+    }, 200
+
+
 @search_bp.route("/search")
 def search():
     """
@@ -52,24 +109,25 @@ def search_load_more():
     Returns more songs, albums or artists from a search query.
     """
     type = request.args.get("type")
-    start = int(request.args.get("start"))
+    index = int(request.args.get("index"))
 
-    print(type, start)
+    print(type, index)
+    print(len(SEARCH_RESULTS["tracks"]))
 
     if type == "tracks":
         return {
-            "tracks": SEARCH_RESULTS["tracks"][start : start + 5],
-            "more": len(SEARCH_RESULTS["tracks"]) > start + 5,
+            "tracks": SEARCH_RESULTS["tracks"][index : index + 5],
+            "more": len(SEARCH_RESULTS["tracks"]) > index + 5,
         }
 
     elif type == "albums":
         return {
-            "albums": SEARCH_RESULTS["albums"][start : start + 6],
-            "more": len(SEARCH_RESULTS["albums"]) > start + 6,
+            "albums": SEARCH_RESULTS["albums"][index : index + 6],
+            "more": len(SEARCH_RESULTS["albums"]) > index + 6,
         }
 
     elif type == "artists":
         return {
-            "artists": SEARCH_RESULTS["artists"][start : start + 6],
-            "more": len(SEARCH_RESULTS["artists"]) > start + 6,
+            "artists": SEARCH_RESULTS["artists"][index : index + 6],
+            "more": len(SEARCH_RESULTS["artists"]) > index + 6,
         }
