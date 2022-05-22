@@ -1,6 +1,5 @@
 <template>
   <div class="gsearch-input">
-    <Filters :filters="search.filters" @removeFilter="removeFilter" />
     <div class="input-loader">
       <input
         id="search"
@@ -8,36 +7,16 @@
         v-model="search.query"
         placeholder="Search your library"
         type="text"
-        @keyup.backspace="removeLastFilter"
       />
     </div>
   </div>
 </template>
 
-<script setup>
-import Filters from "../Search/Filters.vue";
-import Loader from "../shared/Loader.vue";
-import useSearchStore from "../../stores/gsearch";
+<script setup lang="ts">
+import useSearchStore from "../../stores/search";
 
 const search = useSearchStore();
 
-function removeFilter(filter) {
-  search.removeFilter(filter);
-}
-
-let counter = 0;
-
-function removeLastFilter() {
-  if (search.query === "") {
-    counter++;
-
-    if (counter > 0) {
-      search.removeLastFilter();
-    }
-  } else {
-    counter = 0;
-  }
-}
 </script>
 
 <style lang="scss">

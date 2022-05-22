@@ -17,7 +17,7 @@ const imguri = paths.images.artist;
 
 defineProps<{
   artist: any;
-  color: string;
+  color?: string;
 }>();
 
 </script>

@@ -1,36 +1,29 @@
 <template>
   <div class="albums-results border">
-    <div class="heading">Albums</div>
     <div class="grid">
-      <AlbumCard v-for="album in albums" :key="album" :album="album" />
+      <AlbumCard
+        v-for="album in search.albums.value"
+        :key="album.image"
+        :album="album"
+      />
     </div>
-    <LoadMore v-if="more" @loadMore="loadMore" />
+    <LoadMore v-if="search.albums.more" @loadMore="loadMore()" />
   </div>
 </template>
 
-<script>
-import AlbumCard from "@/components/shared/AlbumCard.vue";
+<script setup lang="ts">
+import AlbumCard from "../../shared/AlbumCard.vue";
 import LoadMore from "./LoadMore.vue";
+import useSearchStore from "../../../stores/search";
 
-export default {
-  props: ["albums", "more"],
-  components: {
-    AlbumCard,
-    LoadMore,
-  },
-  setup(props, { emit }) {
-    let counter = 0;
+const search = useSearchStore();
 
-    function loadMore() {
-      counter += 6;
-      emit("loadMore", counter);
-    }
+let counter = 0;
 
-    return {
-      loadMore,
-    };
-  },
-};
+function loadMore() {
+  counter += 6;
+  search.loadAlbums(counter);
+}
 </script>
 
 <style lang="scss">

@@ -97,7 +97,6 @@ const playThis = (track: Track) => {
 }
 
 .track-item {
-  width: 26.55rem;
   display: flex;
   align-items: center;
   border-radius: 0.5rem;

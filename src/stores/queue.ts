@@ -12,7 +12,8 @@ import {
 import notif from "../composables/mediaNotification";
 import { FromOptions } from "../composables/enums";
 
-function addQToLocalStorage(
+
+function writeQueue(
   from: fromFolder | fromAlbum | fromPlaylist,
   tracks: Track[]
 ) {
@@ -25,11 +26,11 @@ function addQToLocalStorage(
   );
 }
 
-function addCurrentToLocalStorage(track: Track) {
+function writeCurrent(track: Track) {
   localStorage.setItem("current", JSON.stringify(track));
 }
 
-function readCurrentFromLocalStorage(): Track {
+function readCurrent(): Track {
   const current = localStorage.getItem("current");
   if (current) {
     return JSON.parse(current);
@@ -114,7 +115,7 @@ export default defineStore("Queue", {
         }
       }
     },
-    readQueueFromLocalStorage() {
+    readQueue() {
       const queue = localStorage.getItem("queue");
 
       if (queue) {
@@ -123,7 +124,7 @@ export default defineStore("Queue", {
         this.tracks = parsed.tracks;
       }
 
-      this.updateCurrent(readCurrentFromLocalStorage());
+      this.updateCurrent(readCurrent());
     },
     updateCurrent(track: Track) {
       this.current = track;
@@ -131,7 +132,7 @@ export default defineStore("Queue", {
       this.updateNext(this.current);
       this.updatePrev(this.current);
 
-      addCurrentToLocalStorage(track);
+      writeCurrent(track);
     },
     updateNext(track: Track) {
       const index = this.tracks.findIndex(
@@ -161,8 +162,9 @@ export default defineStore("Queue", {
     },
     setNewQueue(tracklist: Track[]) {
       if (this.tracks !== tracklist) {
-        this.tracks = tracklist;
-        addQToLocalStorage(this.from, this.tracks);
+        this.tracks = [];
+        this.tracks.push(...tracklist);
+        writeQueue(this.from, this.tracks);
       }
     },
     playFromFolder(fpath: string, tracks: Track[]) {
@@ -201,7 +203,8 @@ export default defineStore("Queue", {
     },
     addTrackToQueue(track: Track) {
       this.tracks.push(track);
-      addQToLocalStorage(this.from, this.tracks);
+      writeQueue(this.from, this.tracks);
+      this.updateNext(this.current);
     },
     playTrackNext(track: Track) {
       const Toast = useNotifStore();
@@ -209,19 +212,24 @@ export default defineStore("Queue", {
         (t: Track) => t.trackid === this.current.trackid
       );
 
-      const next: Track = this.tracks[currentid + 1];
+      if (currentid == this.tracks.length - 1) {
+        this.tracks.push(track);
+      } else {
+        const next: Track = this.tracks[currentid + 1];
 
-      if (next.trackid === track.trackid) {
-        Toast.showNotification("Track is already queued", NotifType.Info);
-        return;
+        if (next.trackid === track.trackid) {
+          Toast.showNotification("Track is already queued", NotifType.Info);
+          return;
+        }
       }
 
       this.tracks.splice(currentid + 1, 0, track);
+      this.updateNext(this.current);
       Toast.showNotification(
         `Added ${track.title} to queue`,
         NotifType.Success
       );
-      addQToLocalStorage(this.from, this.tracks);
+      writeQueue(this.from, this.tracks);
     },
   },
 });
