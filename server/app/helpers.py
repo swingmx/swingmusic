@@ -1,16 +1,14 @@
 """
 This module contains mini functions for the server.
 """
-from datetime import datetime
 import os
 import random
 import threading
 import time
-from typing import Dict
-from typing import List
+from datetime import datetime
+from typing import Dict, List
 
-from app import models
-from app import settings
+from app import models, settings
 
 app_dir = settings.APP_DIR
 
@@ -120,7 +118,15 @@ def create_album_hash(title: str, artist: str) -> str:
     """
     return (title + artist).replace(" ", "").lower()
 
+
 def create_new_date():
     now = datetime.now()
     str = now.strftime("%Y-%m-%d %H:%M:%S")
     return str
+
+
+def create_safe_name(name: str) -> str:
+    """
+    Creates a url-safe name from a name.
+    """
+    return "".join([i for i in name if i not in '/\\:*?"<>|'])

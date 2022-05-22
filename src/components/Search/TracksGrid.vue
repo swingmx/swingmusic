@@ -35,6 +35,7 @@ const emit = defineEmits(["loadMore"]);
 
 function loadMore() {
   counter += 5;
+  console.log("load more", counter);
   emit("loadMore", counter);
 }
 

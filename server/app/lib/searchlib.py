@@ -9,6 +9,30 @@ from app.lib import albumslib
 from rapidfuzz import fuzz, process
 
 
+ratio = fuzz.ratio
+wratio = fuzz.WRatio
+
+
+class Cutoff:
+    """
+    Holds all the default cutoff values.
+    """
+
+    tracks: int = 70
+    albums: int = 70
+    artists: int = 70
+
+
+class Limit:
+    """
+    Holds all the default limit values.
+    """
+
+    tracks: int = 10
+    albums: int = 10
+    artists: int = 10
+
+
 class SearchTracks:
     def __init__(self, query) -> None:
         self.query = query
@@ -20,9 +44,13 @@ class SearchTracks:
 
         tracks = [track.title for track in api.TRACKS]
         results = process.extract(
-            self.query, tracks, scorer=fuzz.token_set_ratio, score_cutoff=50
+            self.query,
+            tracks,
+            scorer=fuzz.WRatio,
+            score_cutoff=Cutoff.tracks,
+            limit=Limit.tracks,
         )
-        print(results)
+
         return [api.TRACKS[i[2]] for i in results]
 
 
@@ -38,20 +66,13 @@ class SearchArtists:
 
         artists = [track.artists for track in api.TRACKS]
 
-        f_artists = []
+        f_artists = set()
+
         for artist in artists:
-            aa = artist.split(",")
-            f_artists.extend(aa)
+            for a in artist:
+                f_artists.add(a)
 
         return f_artists
-
-    @staticmethod
-    def get_valid_name(name: str) -> str:
-        """
-        returns a valid artist name
-        """
-
-        return "".join([i for i in name if i not in '/\\:*?"<>|'])
 
     def __call__(self) -> list:
         """
@@ -59,13 +80,19 @@ class SearchArtists:
         """
 
         artists = self.get_all_artist_names()
-        results = process.extract(self.query, artists)
+        results = process.extract(
+            self.query,
+            artists,
+            scorer=fuzz.WRatio,
+            score_cutoff=Cutoff.artists,
+            limit=Limit.artists,
+        )
 
         f_artists = []
         for artist in results:
             aa = {
                 "name": artist[0],
-                "image": self.get_valid_name(artist[0]) + ".webp",
+                "image": helpers.create_safe_name(artist[0]) + ".webp",
             }
             f_artists.append(aa)
 
@@ -90,13 +117,35 @@ class SearchAlbums:
         Gets all albums with a given title.
         """
 
-        artists = SearchArtists(self.query)()
-        a_albums = []
+        albums = [a.title for a in api.ALBUMS]
+        results = process.extract(
+            self.query,
+            albums,
+            scorer=fuzz.WRatio,
+            score_cutoff=Cutoff.albums,
+            limit=Limit.albums,
+        )
+
+        return [api.ALBUMS[i[2]] for i in results]
 
         # get all artists that matched the query
         # for get all albums from the artists
         # get all albums that matched the query
         # return [**artist_albums **albums]
+
+        # recheck next and previous artist on play next or add to playlist
+
+
+class GetTopArtistTracks:
+    def __init__(self, artist: str) -> None:
+        self.artist = artist
+
+    def __call__(self) -> List[models.Track]:
+        """
+        Gets all tracks from a given artist.
+        """
+
+        return [track for track in api.TRACKS if self.artist in track.artists]
 
 
 def get_search_albums(query: str) -> List[models.Album]:

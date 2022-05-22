@@ -23,25 +23,14 @@ def search():
     """
     query = request.args.get("q") or "Mexican girl"
 
-    albums = searchlib.get_search_albums(query)
-    artists_dicts = []
+    albums = searchlib.SearchAlbums(query)()
+    artists_dicts = searchlib.SearchArtists(query)()
 
-    artist_tracks = searchlib.get_artists(query)
+    tracks = searchlib.SearchTracks(query)()
+    top_artist = artists_dicts[0]["name"]
 
-    for song in artist_tracks:
-        for artist in song.artists:
-            if query.lower() in artist.lower():
-
-                artist_obj = {
-                    "name": artist,
-                    "image": helpers.check_artist_image(artist),
-                }
-
-                if artist_obj not in artists_dicts:
-                    artists_dicts.append(artist_obj)
-
-    _tracks = searchlib.SearchTracks(query)()
-    tracks = [*_tracks, *artist_tracks]
+    _tracks = searchlib.GetTopArtistTracks(top_artist)()
+    tracks = [*tracks, *[t for t in _tracks if t not in tracks]]
 
     SEARCH_RESULTS.clear()
     SEARCH_RESULTS["tracks"] = tracks
@@ -64,6 +53,8 @@ def search_load_more():
     """
     type = request.args.get("type")
     start = int(request.args.get("start"))
+
+    print(type, start)
 
     if type == "tracks":
         return {
