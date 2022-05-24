@@ -30,7 +30,7 @@ function play() {
       queue.play(queue.tracks[0]);
       break;
     case playSources.album:
-      queue.playFromAlbum(album.info.album, album.info.artist, album.tracks);
+      queue.playFromAlbum(album.info.title, album.info.artist, album.tracks);
       queue.play(album.tracks[0]);
       break;
     case playSources.playlist:
