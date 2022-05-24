@@ -1,13 +1,13 @@
 <template>
   <div class="right-search">
     <TabsWrapper>
-      <Tab name="Tracks" v-motion-slide-visible-left>
+      <Tab name="tracks" v-motion-slide-visible-left>
         <TracksGrid />
       </Tab>
-      <Tab name="Albums">
+      <Tab name="albums">
         <AlbumGrid />
       </Tab>
-      <Tab name="Artists">
+      <Tab name="artists">
         <ArtistGrid />
       </Tab>
     </TabsWrapper>
