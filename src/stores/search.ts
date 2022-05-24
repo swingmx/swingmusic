@@ -50,17 +50,21 @@ export default defineStore("search", () => {
    * Searches for tracks, albums and artists
    * @param query query to search for
    */
-  function search(query: string) {
+  function fetchTracks(query: string) {
     searchTracks(query).then((res) => {
       tracks.value = res.tracks;
       tracks.more = res.more;
     });
+  }
 
+  function fetchAlbums(query: string) {
     searchAlbums(query).then((res) => {
       albums.value = res.albums;
       albums.more = res.more;
     });
+  }
 
+  function fetchArtists(query: string) {
     searchArtists(query).then((res) => {
       artists.value = res.artists;
       artists.more = res.more;
@@ -118,11 +122,45 @@ export default defineStore("search", () => {
   watch(
     () => query.value,
     (newQuery) => {
-      search(newQuery);
       const tabs = useTabStore();
 
       if (tabs.current !== "search") {
         tabs.switchToSearch();
+      }
+
+      switch (currentTab.value) {
+        case "tracks":
+          fetchTracks(newQuery);
+          break;
+        case "albums":
+          fetchAlbums(newQuery);
+          break;
+        case "artists":
+          fetchArtists(newQuery);
+          break;
+        default:
+          fetchTracks(newQuery);
+          break;
+      }
+    }
+  );
+
+  watch(
+    () => currentTab.value,
+    (newTab) => {
+      switch (newTab) {
+        case "tracks":
+          fetchTracks(query.value);
+          break;
+        case "albums":
+          fetchAlbums(query.value);
+          break;
+        case "artists":
+          fetchArtists(query.value);
+          break;
+        default:
+          fetchTracks(query.value);
+          break;
       }
     }
   );
@@ -139,7 +177,6 @@ export default defineStore("search", () => {
     artists,
     query,
     currentTab,
-    search,
     loadTracks,
     loadAlbums,
     loadArtists,
