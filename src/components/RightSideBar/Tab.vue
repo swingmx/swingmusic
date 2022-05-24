@@ -1,15 +1,13 @@
 <template>
-  <div v-show="name == selectedTab">
+  <div v-show="name == s.currentTab">
     <slot />
   </div>
 </template>
 
 <script setup lang="ts">
-import { inject } from "vue";
-
+import useSearchStore from "../../stores/search";
+const s = useSearchStore();
 defineProps<{
   name: string;
 }>();
-
-const selectedTab = inject("currentTab");
 </script>

@@ -11,7 +11,7 @@ import {
 } from "../composables/searchMusic";
 import { watch } from "vue";
 import useDebouncedRef from "../composables/useDebouncedRef";
-
+import useTabStore from "./tabs";
 /**
  *
  * @param id  The id of the element of the div to scroll
@@ -28,7 +28,8 @@ function scrollOnLoad(id: string) {
 }
 
 export default defineStore("search", () => {
-  const query = useDebouncedRef("", 600);
+  const query = useDebouncedRef(null, 600);
+  const currentTab = ref("tracks");
 
   const tracks = reactive({
     value: <Track[]>[],
@@ -118,17 +119,30 @@ export default defineStore("search", () => {
     () => query.value,
     (newQuery) => {
       search(newQuery);
+      const tabs = useTabStore();
+
+      if (tabs.current !== "search") {
+        tabs.switchToSearch();
+      }
     }
   );
+
+  function changeTab(tab: string) {
+    currentTab.value = tab;
+  }
+
+  setTimeout(() => {}, 3000);
 
   return {
     tracks,
     albums,
     artists,
     query,
+    currentTab,
     search,
     loadTracks,
     loadAlbums,
     loadArtists,
+    changeTab,
   };
 });

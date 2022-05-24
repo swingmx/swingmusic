@@ -5,7 +5,8 @@
         class="tab rounded"
         v-for="slot in $slots.default()"
         :key="slot.key"
-        @click="currentTab = slot.props.name"
+        @click="s.changeTab(slot.props.name)"
+        :class="{ activetab: slot.props.name === s.currentTab }"
       >
         {{ slot.props.name }}
       </div>
@@ -17,10 +18,9 @@
 </template>
 
 <script setup lang="ts">
-import { ref, provide } from "vue";
+import useSearchStore from "../../stores/search";
 
-const currentTab = ref("Tracks");
-provide("currentTab", currentTab);
+const s = useSearchStore();
 </script>
 
 <style lang="scss">
@@ -31,7 +31,6 @@ provide("currentTab", currentTab);
   grid-template-rows: min-content 1fr;
 
   #tabheaders {
-    border: solid 1px rgb(0, 68, 255);
     display: flex;
     gap: $small;
     margin: $small 0;
@@ -40,6 +39,11 @@ provide("currentTab", currentTab);
       background-color: $gray3;
       padding: $small;
       text-transform: capitalize;
+      cursor: pointer;
+    }
+
+    .activetab {
+      background-color: $accent;
     }
   }
 
