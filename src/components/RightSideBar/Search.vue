@@ -15,26 +15,12 @@
 </template>
 
 <script setup lang="ts">
-import { reactive, ref } from "@vue/reactivity";
-import useSearchStore from "../../stores/gsearch";
-import useTabStore from "../../stores/tabs";
 import TabsWrapper from "./TabsWrapper.vue";
 import Tab from "./Tab.vue";
 import TracksGrid from "./Search/TracksGrid.vue";
 import AlbumGrid from "./Search/AlbumGrid.vue";
 import "@/assets/css/Search/Search.scss";
 import ArtistGrid from "./Search/ArtistGrid.vue";
-
-const search = useSearchStore();
-const tabs = useTabStore();
-
-const search_thing = ref(null);
-
-const artists = reactive({
-  artists: [],
-  more: false,
-});
-
 </script>
 
 <style lang="scss">

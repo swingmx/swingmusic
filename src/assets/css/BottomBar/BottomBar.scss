@@ -7,56 +7,22 @@
     display: grid;
     height: 100%;
     padding-right: $small;
-
     
-
     @include phone-only {
       grid-template-columns: 1fr 9.2rem;
-    }
-
-    .info {
-      display: flex;
-      padding-top: $small;
-      margin-left: $small;
-
-      .art {
-        width: 3rem;
-        height: 3rem;
-        background-image: url("../../images/null.webp");
-      }
-
-      .separator {
-        margin: 2px;
-      }
-
-      .desc {
-        width: calc(100% - 5rem);
-        margin-left: $small;
-        display: flex;
-        align-items: center;
-        margin-top: -$small;
-
-        .artists {
-          font-size: 0.8rem;
-          color: $white;
-        }
-      }
     }
 
     .controlsx {
       width: 100%;
       overflow: hidden;
-      display: flex;
+      display: grid;
+      grid-template-columns: 12rem 1fr 12rem;
       align-items: center;
       padding: $small;
 
       .progress-bottom {
         display: flex;
         align-items: center;
-      }
-
-      .controls-bottom {
-        width: min-content;
       }
 
       .progress-bottom {

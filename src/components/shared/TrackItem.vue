@@ -36,7 +36,7 @@
 
 <script setup lang="ts">
 import { ref } from "vue";
-import perks from "../../composables/perks";
+import { putCommas } from "../../composables/perks";
 import trackContext from "../../contexts/track_context";
 import { Track } from "../../interfaces";
 import { ContextSrc } from "../../composables/enums";
@@ -46,9 +46,8 @@ import useModalStore from "../../stores/modal";
 import useQueueStore from "../../stores/queue";
 import { paths } from "../../config";
 
-
 const contextStore = useContextStore();
-const imguri = paths.images.thumb
+const imguri = paths.images.thumb;
 
 const props = defineProps<{
   track: Track;
@@ -77,9 +76,6 @@ const showContextMenu = (e: Event) => {
 const emit = defineEmits<{
   (e: "PlayThis", track: Track): void;
 }>();
-
-const current = ref(perks.current);
-const putCommas = perks.putCommas;
 
 const playThis = (track: Track) => {
   emit("PlayThis", track);

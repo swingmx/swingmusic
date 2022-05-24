@@ -23,8 +23,8 @@
         <div class="bottom">
           <div class="stats">
             {{ props.album.count }} Tracks •
-            {{ perks.formatSeconds(props.album.duration, "long") }} •
-            {{ props.album.date }} • {{ props.album.artist }}
+            {{ formatSeconds(props.album.duration) }} • {{ props.album.date }} •
+            {{ props.album.artist }}
           </div>
           <PlayBtnRect :source="playSources.album" />
         </div>
@@ -34,8 +34,8 @@
 </template>
 
 <script setup lang="ts">
-import perks from "../../composables/perks.js";
-import { AlbumInfo } from "../../interfaces.js";
+import { formatSeconds } from "../../composables/perks";
+import { AlbumInfo } from "../../interfaces";
 import PlayBtnRect from "../shared/PlayBtnRect.vue";
 import { playSources } from "../../composables/enums";
 import { paths } from "../../config";

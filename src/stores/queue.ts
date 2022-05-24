@@ -12,7 +12,6 @@ import {
 import notif from "../composables/mediaNotification";
 import { FromOptions } from "../composables/enums";
 
-
 function writeQueue(
   from: fromFolder | fromAlbum | fromPlaylist,
   tracks: Track[]
@@ -49,11 +48,15 @@ export default defineStore("Queue", {
   state: () => ({
     progressElem: HTMLElement,
     audio: new Audio(),
+    track: {
+      current_time: 0,
+      duration: 0,
+    },
     current: <Track>{},
+    length: 0,
     next: <Track>{},
     prev: <Track>{},
     playing: false,
-    current_time: 0,
     from: <fromFolder>{} || <fromAlbum>{} || <fromPlaylist>{},
     tracks: <Track[]>[defaultTrack],
   }),
@@ -69,12 +72,15 @@ export default defineStore("Queue", {
         this.audio.onerror = reject;
       })
         .then(() => {
+          this.length = this.audio.duration;
+
           this.audio.play().then(() => {
             this.playing = true;
             notif(track, this.playPause, this.playNext, this.playPrev);
 
             this.audio.ontimeupdate = () => {
-              this.current_time =
+              this.track.current_time = this.audio.currentTime;
+              const current_time =
                 (this.audio.currentTime / this.audio.duration) * 100;
               elem.style.backgroundSize = `${this.current_time}% 100%`;
             };

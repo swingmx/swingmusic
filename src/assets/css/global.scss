@@ -1,4 +1,5 @@
 @import "../css/ProgressBar.scss";
+@import "mixins.scss";
 
 :root {
   --separator: #ffffff46;
@@ -20,6 +21,8 @@ body {
   image-rendering: -webkit-optimize-contrast;
 }
 
+
+
 .heading {
   font-size: 2rem;
   font-weight: bold;
@@ -39,7 +42,6 @@ a {
 }
 
 .border {
-  // border: solid 1px $gray5;
   background-color: $black;
   box-shadow: 0 0 1rem rgba(0, 0, 0, 0.1);
 }
@@ -95,11 +97,11 @@ a {
 }
 
 .l-sidebar {
-  width: 15rem;
+  width: 17rem;
   grid-area: l-sidebar;
-  padding-top: 0.5rem;
-  // border-right: solid 1px $gray3;
   background-color: $black;
+  margin: $small;
+  padding: 1rem;
 }
 
 .bottom-bar {
