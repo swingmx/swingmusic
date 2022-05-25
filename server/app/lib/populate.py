@@ -95,7 +95,8 @@ class Populate:
             folder = tags["folder"]
             self.folders.add(folder)
 
-            tags["albumhash"] = create_album_hash(tags["album"], tags["albumartist"])
+            tags["albumhash"] = create_album_hash(
+                tags["album"], tags["albumartist"])
             self.tagged_tracks.append(tags)
             api.DB_TRACKS.append(tags)
 
