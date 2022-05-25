@@ -97,11 +97,9 @@ class Album:
 
 def get_p_track(ptrack):
     for track in api.TRACKS:
-        if (
-            track.title == ptrack["title"]
-            and track.artists == ptrack["artists"]
-            and ptrack["album"] == track.album
-        ):
+        if (track.title == ptrack["title"]
+                and track.artists == ptrack["artists"]
+                and ptrack["album"] == track.album):
             return track
 
 

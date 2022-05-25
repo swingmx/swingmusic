@@ -95,9 +95,18 @@ def search():
 
     return {
         "data": [
-            {"tracks": tracks[:5], "more": len(tracks) > 5},
-            {"albums": albums[:6], "more": len(albums) > 6},
-            {"artists": artists_dicts[:6], "more": len(artists_dicts) > 6},
+            {
+                "tracks": tracks[:5],
+                "more": len(tracks) > 5
+            },
+            {
+                "albums": albums[:6],
+                "more": len(albums) > 6
+            },
+            {
+                "artists": artists_dicts[:6],
+                "more": len(artists_dicts) > 6
+            },
         ]
     }
 
@@ -115,18 +124,18 @@ def search_load_more():
 
     if type == "tracks":
         return {
-            "tracks": SEARCH_RESULTS["tracks"][index : index + 5],
+            "tracks": SEARCH_RESULTS["tracks"][index:index + 5],
             "more": len(SEARCH_RESULTS["tracks"]) > index + 5,
         }
 
     elif type == "albums":
         return {
-            "albums": SEARCH_RESULTS["albums"][index : index + 6],
+            "albums": SEARCH_RESULTS["albums"][index:index + 6],
             "more": len(SEARCH_RESULTS["albums"]) > index + 6,
         }
 
     elif type == "artists":
         return {
-            "artists": SEARCH_RESULTS["artists"][index : index + 6],
+            "artists": SEARCH_RESULTS["artists"][index:index + 6],
             "more": len(SEARCH_RESULTS["artists"]) > index + 6,
         }
