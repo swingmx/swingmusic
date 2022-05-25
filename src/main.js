@@ -1,11 +1,13 @@
-import { createApp } from "vue";
-import App from "./App.vue";
 import "./registerServiceWorker";
-import router from "./router";
-import { createPinia } from "pinia";
-import { MotionPlugin } from "@vueuse/motion";
-import useCustomTransitions from "./transitions";
 import "../src/assets/css/global.scss";
+
+import {MotionPlugin} from "@vueuse/motion";
+import {createPinia} from "pinia";
+import {createApp} from "vue";
+
+import App from "./App.vue";
+import router from "./router";
+import useCustomTransitions from "./transitions";
 
 const app = createApp(App);
 

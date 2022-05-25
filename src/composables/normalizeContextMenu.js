@@ -1,10 +1,11 @@
-import { getElem } from "./perks";
+import {getElem} from "./perks";
 
 export default (mouseX, mouseY) => {
   const scope = getElem("app", "id");
   const contextMenu = getElem("context-menu", "class");
-  // ? compute what is the mouse position relative to the container element (scope)
-  let { left: scopeOffsetX, top: scopeOffsetY } = scope.getBoundingClientRect();
+  // ? compute what is the mouse position relative to the container element
+  // (scope)
+  let {left : scopeOffsetX, top : scopeOffsetY} = scope.getBoundingClientRect();
 
   scopeOffsetX = scopeOffsetX < 0 ? 0 : scopeOffsetX;
   scopeOffsetY = scopeOffsetY < 0 ? 0 : scopeOffsetY;
@@ -39,5 +40,5 @@ export default (mouseX, mouseY) => {
     normalizedY = true;
   }
 
-  return { normalX, normalY, normalizedX, normalizedY };
+  return {normalX, normalY, normalizedX, normalizedY};
 };
