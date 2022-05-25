@@ -1,7 +1,7 @@
 <template>
   <div class="right-search">
     <TabsWrapper>
-      <Tab name="tracks" v-motion-slide-visible-left>
+      <Tab name="tracks">
         <TracksGrid />
       </Tab>
       <Tab name="albums">
@@ -11,16 +11,20 @@
         <ArtistGrid />
       </Tab>
     </TabsWrapper>
+    <component :is="s.currentTab" />
   </div>
 </template>
 
 <script setup lang="ts">
 import TabsWrapper from "./TabsWrapper.vue";
 import Tab from "./Tab.vue";
-import TracksGrid from "./Search/TracksGrid.vue";
-import AlbumGrid from "./Search/AlbumGrid.vue";
+import TracksGrid from "./TracksGrid.vue";
+import AlbumGrid from "./AlbumGrid.vue";
+import ArtistGrid from "./ArtistGrid.vue";
 import "@/assets/css/Search/Search.scss";
-import ArtistGrid from "./Search/ArtistGrid.vue";
+import useSearchStore from "@/stores/search";
+const s = useSearchStore();
+
 </script>
 
 <style lang="scss">

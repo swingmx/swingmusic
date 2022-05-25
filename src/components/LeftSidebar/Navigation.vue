@@ -5,7 +5,12 @@
       :key="menu.name"
       :to="{ name: menu.route_name, params: menu.params }"
     >
-      <div class="nav-button" id="home-button">
+      <div
+        class="nav-button"
+        id="home-button"
+        v-motion-slide-from-left-100
+        
+      >
         <div class="in">
           <div class="nav-icon image" :id="`${menu.name}-icon`"></div>
           <span>{{ menu.name }}</span>
@@ -46,11 +51,9 @@ const menus = [
     route_name: "SettingsView",
   },
 ];
-
 </script>
 
 <style lang="scss">
-
 .side-nav-container {
   color: #fff;
   margin: 1rem 0;

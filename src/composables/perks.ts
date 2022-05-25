@@ -35,7 +35,7 @@ function getElem(id: string, type: string) {
   }
 }
 
-function formatSeconds(seconds: number) {
+function formatSeconds(seconds: number, long?: boolean) {
   // check if there are arguments
 
   const date = new Date(seconds * 1000);
@@ -48,7 +48,7 @@ function formatSeconds(seconds: number) {
   let _mm = mm < 10 ? `0${mm}` : mm;
   let _ss = ss < 10 ? `0${ss}` : ss;
 
-  if (arguments[1]) {
+  if (long == true) {
     if (hh === 1) {
       _hh = hh + " Hour";
     } else {

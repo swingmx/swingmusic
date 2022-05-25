@@ -18,7 +18,7 @@
 </template>
 
 <script setup lang="ts">
-import useSearchStore from "../../stores/search";
+import useSearchStore from "@/stores/search";
 
 const s = useSearchStore();
 </script>
@@ -40,16 +40,23 @@ const s = useSearchStore();
       padding: $small;
       text-transform: capitalize;
       cursor: pointer;
+      display: flex;
+      justify-content: center;
+      transition: all 0.3s ease;
+      width: 4rem;
     }
 
     .activetab {
       background-color: $accent;
+      width: 6rem;
+      transition: all 0.3s ease;
     }
   }
 
   #tab-content {
     height: 100%;
     overflow: auto;
+    overflow-x: hidden;
     border-radius: $small;
     background-color: $gray;
     // overflow: hidden;

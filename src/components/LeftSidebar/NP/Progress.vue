@@ -4,7 +4,7 @@
     type="range"
     :value="q.track.current_time"
     min="0"
-    :max="q.track.duration"
+    max="100"
     step="0.1"
     @change="seek()"
   />

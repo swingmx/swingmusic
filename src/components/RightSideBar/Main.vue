@@ -18,7 +18,7 @@
 </template>
 
 <script setup lang="ts">
-import Search from "./Search.vue";
+import Search from "./Search/Main.vue";
 import UpNext from "./Queue.vue";
 import Main from "./Home/Main.vue";
 import useTabStore from "../../stores/tabs";

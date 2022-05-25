@@ -1,5 +1,7 @@
 <template>
-  <div id="logo-container">
+  <div id="logo-container"
+    v-motion-slide-from-top
+  >
     <router-link :to="{ name: 'Home' }">
       <div id="logo" class="rounded"></div
     ></router-link>

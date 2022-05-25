@@ -4,7 +4,6 @@
     :class="[{ current: props.isCurrent }, { 'context-on': context_on }]"
     @dblclick="emitUpdate(props.song)"
     @contextmenu="showContextMenu"
-    v-motion-slide-visible-once-right
   >
     <div class="index">{{ props.index }}</div>
     <div class="flex">

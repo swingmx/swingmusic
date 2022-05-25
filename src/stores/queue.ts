@@ -53,7 +53,6 @@ export default defineStore("Queue", {
       duration: 0,
     },
     current: <Track>{},
-    length: 0,
     next: <Track>{},
     prev: <Track>{},
     playing: false,
@@ -72,17 +71,16 @@ export default defineStore("Queue", {
         this.audio.onerror = reject;
       })
         .then(() => {
-          this.length = this.audio.duration;
+          this.track.duration = this.audio.duration;
 
           this.audio.play().then(() => {
             this.playing = true;
             notif(track, this.playPause, this.playNext, this.playPrev);
 
             this.audio.ontimeupdate = () => {
-              this.track.current_time = this.audio.currentTime;
-              const current_time =
+              this.track.current_time =
                 (this.audio.currentTime / this.audio.duration) * 100;
-              elem.style.backgroundSize = `${this.current_time}% 100%`;
+              elem.style.backgroundSize = `${this.track.current_time}% 100%`;
             };
 
             this.audio.onended = () => {

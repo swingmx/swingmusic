@@ -6,12 +6,45 @@
       </div>
 
       <div class="info">
-        <div class="title" v-if="$route.name == 'Playlists'">Playlists</div>
-        <div class="folder" v-else-if="$route.name == 'FolderView'" >
+        <div
+          class="title"
+          v-show="$route.name == 'Playlists'"
+          v-motion
+          :initial="{
+            opacity: 0,
+            x: -20,
+          }"
+          :visible="{
+            opacity: 1,
+            x: 0,
+            transition: {
+              delay: 100,
+            },
+          }"
+        >
+          Playlists
+        </div>
+        <div
+          class="folder"
+          v-show="$route.name == 'FolderView'"
+          v-motion
+          :initial="{
+            opacity: 0,
+            x: -20,
+          }"
+          :visible="{
+            opacity: 1,
+            x: 0,
+            transition: {
+              delay: 100,
+            },
+          }"
+        >
           <div class="fname">
             <div class="icon image"></div>
             <div class="ellip">
-              {{ $route.params.path.split("/").splice(-1)[0] }}
+              <!-- {{ $route.params.path.split("/").splice(-1)[0] }} -->
+              {{ $route.params.path }}
             </div>
           </div>
         </div>
@@ -28,7 +61,7 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import NavButtons from "./NavButtons.vue";
 import Loader from "../shared/Loader.vue";
 import Search from "./Search.vue";
