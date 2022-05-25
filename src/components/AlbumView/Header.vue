@@ -3,17 +3,19 @@
     <div class="a-header rounded">
       <div class="art">
         <div
-          class="image shadow-lg"
+          class="image shadow-lg rounded"
           :style="{
             backgroundImage: `url(&quot;${imguri + props.album.image}&quot;)`,
           }"
+          v-motion-slide-from-left
         ></div>
       </div>
       <div class="info">
-        <div class="top">
+        <div class="top" v-motion-slide-from-top>
           <div
             class="h"
             v-if="props.album.artist.toLowerCase() == 'various artists'"
+            
           >
             Compilation
           </div>
@@ -23,7 +25,8 @@
         <div class="bottom">
           <div class="stats">
             {{ props.album.count }} Tracks •
-            {{ formatSeconds(props.album.duration) }} • {{ props.album.date }} •
+            {{ formatSeconds(props.album.duration, true) }} •
+            {{ props.album.date }} •
             {{ props.album.artist }}
           </div>
           <PlayBtnRect :source="playSources.album" />
@@ -34,11 +37,11 @@
 </template>
 
 <script setup lang="ts">
+import { playSources } from "../../composables/enums";
 import { formatSeconds } from "../../composables/perks";
+import { paths } from "../../config";
 import { AlbumInfo } from "../../interfaces";
 import PlayBtnRect from "../shared/PlayBtnRect.vue";
-import { playSources } from "../../composables/enums";
-import { paths } from "../../config";
 
 const imguri = paths.images.thumb;
 const props = defineProps<{
@@ -89,7 +92,7 @@ extrackColors();
 
       .title {
         font-size: 2.5rem;
-        font-weight: 1000;
+        font-weight: 600;
         color: white;
         text-transform: capitalize;
       }
