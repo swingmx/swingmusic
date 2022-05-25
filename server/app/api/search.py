@@ -2,10 +2,9 @@
 Contains all the search routes.
 """
 
-from flask import Blueprint, request
-
-from app.lib import searchlib
 from app import helpers
+from app.lib import searchlib
+from flask import Blueprint, request
 
 search_bp = Blueprint("search", __name__, url_prefix="/")
 

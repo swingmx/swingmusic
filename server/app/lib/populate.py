@@ -1,26 +1,21 @@
-from concurrent.futures import ThreadPoolExecutor
-from multiprocessing import Pool
-from copy import deepcopy
 import os
-from os import path
 import time
+from concurrent.futures import ThreadPoolExecutor
+from copy import deepcopy
+from multiprocessing import Pool
+from os import path
 from typing import List
 
-from tqdm import tqdm
-
-from app import api
-from app import settings
+from app import api, settings
 from app.helpers import create_album_hash, run_fast_scandir
-from app.instances import album_instance
-from app.instances import tracks_instance
+from app.instances import album_instance, tracks_instance
 from app.lib import folderslib
-from app.lib.albumslib import create_album
-from app.lib.albumslib import find_album
+from app.lib.albumslib import create_album, find_album
 from app.lib.taglib import get_tags
+from app.lib.trackslib import find_track
 from app.logger import Log
 from app.models import Album, Track
-
-from app.lib.trackslib import find_track
+from tqdm import tqdm
 
 
 class Populate:

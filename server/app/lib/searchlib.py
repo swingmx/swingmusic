@@ -8,7 +8,6 @@ from app import api, helpers, models
 from app.lib import albumslib
 from rapidfuzz import fuzz, process
 
-
 ratio = fuzz.ratio
 wratio = fuzz.WRatio
 

@@ -4,16 +4,13 @@ This library contains the classes and functions related to the watchdog file wat
 import os
 import time
 
-from app import api
-from app import instances
-from app import models
+from app import api, instances, models
+from app.helpers import create_album_hash
 from app.lib import folderslib
 from app.lib.albumslib import create_album, find_album
 from app.lib.taglib import get_tags
 from watchdog.events import PatternMatchingEventHandler
 from watchdog.observers import Observer
-
-from app.helpers import create_album_hash
 
 
 class OnMyWatch:
