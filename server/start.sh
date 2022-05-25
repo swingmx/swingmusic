@@ -8,17 +8,15 @@ gpath=$(poetry run which gunicorn)
 while getopts ':s' opt; do
   case $opt in
     s)
-    echo "🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴"
-    cd "./app"
-    "$gpath" -b 0.0.0.0:9877 -w 4 --threads=2 "imgserver:app" &
-    cd ../
-    ;;
+      echo "🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴"
+      cd "./app"
+      "$gpath" -b 0.0.0.0:9877 -w 4 --threads=2 "imgserver:app" &
+      cd ../
+      ;;
     \?)
-    echo "Invalid option: -$OPTARG" >&2
-    ;;
+      echo "Invalid option: -$OPTARG" >&2
+      ;;
   esac
 done
 
 "$gpath" -b 0.0.0.0:9876 -w 1 --threads=4 "manage:create_app()"
-
-
