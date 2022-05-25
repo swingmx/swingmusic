@@ -6,15 +6,20 @@ from multiprocessing import Pool
 from os import path
 from typing import List
 
-from app import api, settings
-from app.helpers import create_album_hash, run_fast_scandir
-from app.instances import album_instance, tracks_instance
+from app import api
+from app import settings
+from app.helpers import create_album_hash
+from app.helpers import run_fast_scandir
+from app.instances import album_instance
+from app.instances import tracks_instance
 from app.lib import folderslib
-from app.lib.albumslib import create_album, find_album
+from app.lib.albumslib import create_album
+from app.lib.albumslib import find_album
 from app.lib.taglib import get_tags
 from app.lib.trackslib import find_track
 from app.logger import Log
-from app.models import Album, Track
+from app.models import Album
+from app.models import Track
 from tqdm import tqdm
 
 
