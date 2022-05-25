@@ -15,7 +15,7 @@
           <div
             class="h"
             v-if="props.album.artist.toLowerCase() == 'various artists'"
-            
+
           >
             Compilation
           </div>
