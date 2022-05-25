@@ -376,7 +376,7 @@
   resolved "https://registry.yarnpkg.com/@vue/shared/-/shared-3.2.29.tgz#07dac7051117236431d2f737d16932aa38bbb925"
   integrity sha512-BjNpU8OK6Z0LVzGUppEk0CMYm/hKDnZfYdjSmPOs0N+TR1cLKJAkDwW8ASZUvaaSLEi6d3hVM7jnWnX+6yWnHw==
 
-"@vueuse/core@^8.1.2":
+"@vueuse/core@^8.1.2", "@vueuse/core@^8.5.0":
   version "8.5.0"
   resolved "https://registry.yarnpkg.com/@vueuse/core/-/core-8.5.0.tgz#2b7548e52165c88e1463756c36188e105d806543"
   integrity sha512-VEJ6sGNsPlUp0o9BGda2YISvDZbhWJSOJu5zlp2TufRGVrLcYUKr31jyFEOj6RXzG3k/H4aCYeZyjpItfU8glw==
