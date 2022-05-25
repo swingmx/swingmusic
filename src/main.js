@@ -1,9 +1,9 @@
 import "./registerServiceWorker";
 import "../src/assets/css/global.scss";
 
-import {MotionPlugin} from "@vueuse/motion";
-import {createPinia} from "pinia";
-import {createApp} from "vue";
+import { MotionPlugin } from "@vueuse/motion";
+import { createPinia } from "pinia";
+import { createApp } from "vue";
 
 import App from "./App.vue";
 import router from "./router";
