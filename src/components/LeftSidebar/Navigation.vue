@@ -5,12 +5,7 @@
       :key="menu.name"
       :to="{ name: menu.route_name, params: menu.params }"
     >
-      <div
-        class="nav-button"
-        id="home-button"
-        v-motion-slide-from-left-100
-
-      >
+      <div class="nav-button" id="home-button" v-motion-slide-from-left-100>
         <div class="in">
           <div class="nav-icon image" :id="`${menu.name}-icon`"></div>
           <span>{{ menu.name }}</span>
@@ -21,6 +16,8 @@
 </template>
 
 <script setup lang="ts">
+import { useRouter } from "vue-router";
+
 const menus = [
   {
     name: "home",
@@ -51,6 +48,7 @@ const menus = [
     route_name: "SettingsView",
   },
 ];
+
 </script>
 
 <style lang="scss">

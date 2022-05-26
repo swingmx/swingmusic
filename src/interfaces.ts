@@ -84,6 +84,11 @@ interface fromSearch {
   query: string;
 }
 
+interface subPath {
+  name: string;
+  path: string;
+}
+
 export {
   Track,
   Folder,
@@ -96,4 +101,5 @@ export {
   fromAlbum,
   fromPlaylist,
   fromSearch,
+  subPath,
 };
