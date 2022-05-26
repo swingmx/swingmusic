@@ -1,9 +1,8 @@
 <template>
-  <div class="tracks-results border" v-if="tracks">
-    <div class="heading">Tracks</div>
-    <TransitionGroup class="items" name="list">
+  <div id="tracks-results" v-if="search.tracks.value">
+    <TransitionGroup name="list">
       <TrackItem
-        v-for="track in tracks"
+        v-for="track in search.tracks.value"
         :key="track.trackid"
         :track="track"
         :isPlaying="queue.playing"
@@ -12,43 +11,38 @@
         @PlayThis="updateQueue"
       />
     </TransitionGroup>
-    <LoadMore v-if="more" @loadMore="loadMore" />
+    <LoadMore v-if="search.tracks.more" @loadMore="loadMore" />
   </div>
 </template>
 
 <script setup lang="ts">
 import LoadMore from "./LoadMore.vue";
-import TrackItem from "../shared/TrackItem.vue";
-import useQStore from "../../stores/queue";
-import { Track } from "../../interfaces";
+import TrackItem from "../../shared/TrackItem.vue";
+import useQStore from "../../../stores/queue";
+import { Track } from "../../../interfaces";
+import useSearchStore from "../../../stores/search";
 
 let counter = 0;
 const queue = useQStore();
-
-const props = defineProps<{
-  tracks: Track[];
-  more: boolean;
-  query: string;
-}>();
-
-const emit = defineEmits(["loadMore"]);
+const search = useSearchStore();
 
 function loadMore() {
   counter += 5;
-  emit("loadMore", counter);
+  search.loadTracks(counter);
 }
 
 function updateQueue(track: Track) {
-  console.log(props.query);
-  queue.playFromSearch(props.query, props.tracks);
+  queue.playFromSearch(search.query, search.tracks.value);
   queue.play(track);
 }
 </script>
 
 <style lang="scss">
-.right-search .tracks-results {
+.right-search #tracks-results {
   border-radius: 0.5rem;
   padding: $small;
+  height: 100% !important;
+  overflow: hidden;
 
   .list-enter-active,
   .list-leave-active {

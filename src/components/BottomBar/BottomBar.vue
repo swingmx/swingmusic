@@ -1,37 +1,33 @@
-<!-- <template>
+<template>
   <div class="b-bar">
     <div class="grid rounded">
       <div class="controlsx rounded">
-        <div class="controls controls-bottom">
+        <div class="controls-bottom">
           <HotKeys />
         </div>
         <div class="progress progress-bottom">
-          <span class="durationx">{{ formatSeconds(current_pos) }}</span>
+          <span class="durationx">{{ formatSeconds(q.track.current_time) }}</span>
           <Progress />
-          <span class="durationx">{{
-            formatSeconds(state.current.value.length)
-          }}</span>
+          <span class="durationx">{{ formatSeconds(q.length) }}</span>
         </div>
         <div class="r-group">
           <div id="heart" class="image ctrl-btn"></div>
           <div id="add-to" class="image ctrl-btn"></div>
           <div id="repeat" class="image ctrl-btn"></div>
         </div>
-        <div class="controls controls-bottom"></div>
       </div>
       <div class="volume-group"></div>
     </div>
   </div>
 </template>
 
-<script setup>
-import "../../assets/css/BottomBar/BottomBar.scss";
-import Progress from "../shared/Progress.vue";
-import HotKeys from "../shared/HotKeys.vue";
-import state from "../../composables/state";
-import perks from "../../composables/perks";
-import playAudio from "../../composables/playAudio";
+<script setup lang="ts">
+import "@/assets/css/BottomBar/BottomBar.scss";
+import Progress from "../LeftSidebar/NP/Progress.vue";
+import HotKeys from "../LeftSidebar/NP/HotKeys.vue";
+import { formatSeconds } from "@/composables/perks";
 
-const current_pos = playAudio.current_time;
-const formatSeconds = perks.formatSeconds;
-</script> -->
+import useQStore from "@/stores/queue";
+
+const q = useQStore();
+</script>

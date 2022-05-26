@@ -137,14 +137,14 @@ export default async (
     add_to_playlist,
     play_next,
     add_to_q,
-    add_to_fav,
+    // add_to_fav,
     separator,
     go_to_folder,
-    go_to_artist,
-    go_to_alb_artist,
+    // go_to_artist,
+    // go_to_alb_artist,
     go_to_album,
-    separator,
-    del_track,
+    // separator,
+    // del_track,
   ];
 
   return options;

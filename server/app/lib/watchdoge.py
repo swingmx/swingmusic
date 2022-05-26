@@ -7,13 +7,13 @@ import time
 from app import api
 from app import instances
 from app import models
+from app.helpers import create_album_hash
 from app.lib import folderslib
-from app.lib.albumslib import create_album, find_album
+from app.lib.albumslib import create_album
+from app.lib.albumslib import find_album
 from app.lib.taglib import get_tags
 from watchdog.events import PatternMatchingEventHandler
 from watchdog.observers import Observer
-
-from app.helpers import create_album_hash
 
 
 class OnMyWatch:
@@ -50,18 +50,19 @@ def add_track(filepath: str) -> None:
     tags = get_tags(filepath)
 
     if tags is not None:
-        tags["albumhash"] = create_album_hash(tags["album"], tags["albumartist"])
+        hash = create_album_hash(tags["album"], tags["albumartist"])
+        tags["albumhash"] = hash
         api.DB_TRACKS.append(tags)
 
-        albumindex = find_album(tags["album"], tags["albumartist"])
+        albumindex = find_album(api.ALBUMS, hash)
 
         if albumindex is not None:
             album = api.ALBUMS[albumindex]
         else:
             album_data = create_album(tags, api.DB_TRACKS)
-            instances.album_instance.insert_album(album_data)
-
             album = models.Album(album_data)
+
+            instances.album_instance.insert_album(album)
             api.ALBUMS.append(album)
 
         tags["image"] = album.image
@@ -86,7 +87,8 @@ def remove_track(filepath: str) -> None:
     fpath = filepath.replace(fname, "")
 
     try:
-        trackid = instances.tracks_instance.get_song_by_path(filepath)["_id"]["$oid"]
+        trackid = instances.tracks_instance.get_song_by_path(
+            filepath)["_id"]["$oid"]
     except TypeError:
         print(f"💙 Watchdog Error: Error removing track {filepath} TypeError")
         return
@@ -152,7 +154,14 @@ class Handler(PatternMatchingEventHandler):
         Fired when a created file is closed.
         """
         print("⚫ closed ~~~")
-        self.files_to_process.remove(event.src_path)
+        try:
+            self.files_to_process.remove(event.src_path)
+        except ValueError:
+            """
+            The file was already removed from the list, or it was not in the list to begin with.
+            """
+            pass
+
         add_track(event.src_path)
 
 

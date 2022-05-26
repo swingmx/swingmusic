@@ -1,25 +1,26 @@
+import os
+import time
 from concurrent.futures import ThreadPoolExecutor
 from copy import deepcopy
-
+from multiprocessing import Pool
 from os import path
-import time
 from typing import List
-
-from tqdm import tqdm
 
 from app import api
 from app import settings
-from app.helpers import create_album_hash, run_fast_scandir
+from app.helpers import create_album_hash
+from app.helpers import run_fast_scandir
 from app.instances import album_instance
 from app.instances import tracks_instance
 from app.lib import folderslib
 from app.lib.albumslib import create_album
 from app.lib.albumslib import find_album
 from app.lib.taglib import get_tags
-from app.logger import Log
-from app.models import Album, Track
-
 from app.lib.trackslib import find_track
+from app.logger import Log
+from app.models import Album
+from app.models import Track
+from tqdm import tqdm
 
 
 class Populate:
@@ -46,7 +47,7 @@ class Populate:
 
     def run(self):
         self.check_untagged()
-        self.tag_all_files()
+        self.get_all_tags()
 
         if len(self.tagged_tracks) == 0:
             return
@@ -76,6 +77,17 @@ class Populate:
 
         Log(f"Found {len(self.files)} untagged tracks")
 
+    def process_tags(self, tags: dict):
+        for t in tags:
+            if t is None:
+                continue
+
+            t["albumhash"] = create_album_hash(t["album"], t["albumartist"])
+            self.tagged_tracks.append(t)
+            api.DB_TRACKS.append(t)
+
+            self.folders.add(t["folder"])
+
     def get_tags(self, file: str):
         tags = get_tags(file)
 
@@ -83,19 +95,27 @@ class Populate:
             folder = tags["folder"]
             self.folders.add(folder)
 
-            tags["albumhash"] = create_album_hash(tags["album"], tags["albumartist"])
+            tags["albumhash"] = create_album_hash(tags["album"],
+                                                  tags["albumartist"])
             self.tagged_tracks.append(tags)
             api.DB_TRACKS.append(tags)
 
-    def tag_all_files(self):
+    def get_all_tags(self):
         """
         Loops through all the untagged files and tags them.
         """
 
         s = time.time()
-        print(f"Started tagging files")
-        with ThreadPoolExecutor() as executor:
-            executor.map(self.get_tags, self.files)
+        # print(f"Started tagging files")
+        # with ThreadPoolExecutor() as executor:
+        #     executor.map(self.get_tags, self.files)
+
+        with Pool(maxtasksperchild=10) as p:
+            tags = p.map(get_tags, tqdm(self.files))
+            self.process_tags(tags)
+
+        # for t in tqdm(self.files):
+        #     self.get_tags(t)
 
         d = time.time() - s
         Log(f"Tagged {len(self.tagged_tracks)} files in {d} seconds")
@@ -149,9 +169,8 @@ class Populate:
         for album in tqdm(self.pre_albums, desc="Building albums"):
             self.create_album(album)
 
-        Log(
-            f"{self.exist_count} of {len(self.pre_albums)} albums were already in the database"
-        )
+        Log(f"{self.exist_count} of {len(self.pre_albums)} albums were already in the database"
+            )
 
     def create_track(self, track: dict):
         """
@@ -186,9 +205,8 @@ class Populate:
         with ThreadPoolExecutor() as executor:
             executor.map(self.create_track, self.tagged_tracks)
 
-        Log(
-            f"Added {len(self.tagged_tracks)} new tracks and {len(self.albums)} new albums"
-        )
+        Log(f"Added {len(self.tagged_tracks)} new tracks and {len(self.albums)} new albums"
+            )
 
     def save_albums(self):
         """

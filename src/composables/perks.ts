@@ -1,4 +1,4 @@
-const putCommas = (artists) => {
+const putCommas = (artists: string[]) => {
   let result = [];
 
   artists.forEach((i, index, artists) => {
@@ -24,18 +24,18 @@ function focusCurrent() {
   }
 }
 
-function getElem(identifier, type) {
+function getElem(id: string, type: string) {
   switch (type) {
     case "class": {
-      return document.getElementsByClassName(identifier)[0];
+      return document.getElementsByClassName(id)[0];
     }
     case "id": {
-      return document.getElementById(identifier);
+      return document.getElementById(id);
     }
   }
 }
 
-function formatSeconds(seconds) {
+function formatSeconds(seconds: number, long?: boolean) {
   // check if there are arguments
 
   const date = new Date(seconds * 1000);
@@ -48,7 +48,7 @@ function formatSeconds(seconds) {
   let _mm = mm < 10 ? `0${mm}` : mm;
   let _ss = ss < 10 ? `0${ss}` : ss;
 
-  if (arguments[1]) {
+  if (long == true) {
     if (hh === 1) {
       _hh = hh + " Hour";
     } else {
@@ -75,10 +75,4 @@ function formatSeconds(seconds) {
   }
 }
 
-
-export default {
-  putCommas,
-  focusCurrent,
-  formatSeconds,
-  getElem,
-};
+export { putCommas, focusCurrent, formatSeconds, getElem };

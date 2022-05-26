@@ -6,8 +6,8 @@ from dataclasses import field
 from typing import List
 
 from app import api
-from app.exceptions import TrackExistsInPlaylist
 from app import helpers
+from app.exceptions import TrackExistsInPlaylist
 
 
 @dataclass(slots=True)
@@ -18,7 +18,7 @@ class Track:
 
     trackid: str
     title: str
-    artists: str
+    artists: list
     albumartist: str
     album: str
     folder: str
@@ -32,8 +32,11 @@ class Track:
     albumhash: str
 
     def __init__(self, tags):
+        try:
+            self.trackid = tags["_id"]["$oid"]
+        except KeyError:
+            print(tags)
 
-        self.trackid = tags["_id"]["$oid"]
         self.title = tags["title"]
         self.artists = tags["artists"].split(", ")
         self.albumartist = tags["albumartist"]
@@ -47,6 +50,22 @@ class Track:
         self.tracknumber = tags["tracknumber"]
         self.discnumber = tags["discnumber"]
         self.albumhash = tags["albumhash"]
+
+
+@dataclass(slots=True)
+class Artist:
+    """
+    Artist class
+    """
+
+    artistid: str
+    name: str
+    image: str
+
+    def __init__(self, tags):
+        self.artistid = tags["_id"]["$oid"]
+        self.name = tags["name"]
+        self.image = tags["image"]
 
 
 @dataclass
@@ -78,11 +97,9 @@ class Album:
 
 def get_p_track(ptrack):
     for track in api.TRACKS:
-        if (
-            track.title == ptrack["title"]
-            and track.artists == ptrack["artists"]
-            and ptrack["album"] == track.album
-        ):
+        if (track.title == ptrack["title"]
+                and track.artists == ptrack["artists"]
+                and ptrack["album"] == track.album):
             return track
 
 

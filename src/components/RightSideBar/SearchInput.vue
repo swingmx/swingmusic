@@ -1,47 +1,36 @@
 <template>
-  <div class="gsearch-input">
-    <Filters :filters="search.filters" @removeFilter="removeFilter" />
-    <div class="input-loader">
+  <div id="gsearch-input">
+    <div id="ginner" tabindex="0">
+      <div class="icon image"></div>
       <input
         id="search"
         class="rounded"
         v-model="search.query"
         placeholder="Search your library"
         type="text"
-        @keyup.backspace="removeLastFilter"
+        @focus="focusThis()"
+        @blur="unfocusThis()"
       />
     </div>
   </div>
 </template>
 
-<script setup>
-import Filters from "../Search/Filters.vue";
-import Loader from "../shared/Loader.vue";
-import useSearchStore from "../../stores/gsearch";
+<script setup lang="ts">
+import useSearchStore from "../../stores/search";
 
 const search = useSearchStore();
 
-function removeFilter(filter) {
-  search.removeFilter(filter);
+function focusThis() {
+  document.getElementById("ginner").classList.add("focused");
 }
 
-let counter = 0;
-
-function removeLastFilter() {
-  if (search.query === "") {
-    counter++;
-
-    if (counter > 0) {
-      search.removeLastFilter();
-    }
-  } else {
-    counter = 0;
-  }
+function unfocusThis() {
+  document.getElementById("ginner").classList.remove("focused");
 }
 </script>
 
 <style lang="scss">
-.gsearch-input {
+#gsearch-input {
   padding: $small;
   display: flex;
 
@@ -49,15 +38,20 @@ function removeLastFilter() {
     display: none;
   }
 
-  .input-loader {
+  #ginner {
     width: 100%;
     border-radius: 0.4rem;
     position: relative;
+    display: flex;
+    gap: $small;
+    background-color: $gray4;
+    height: 2.25rem;
 
-    ._loader {
-      position: absolute;
-      top: -0.15rem;
-      right: 2rem;
+    .icon {
+      width: 2rem;
+      background-image: url("../../assets/icons/search.svg");
+      background-size: 1.5rem;
+      margin-left: $smaller;
     }
 
     input {
@@ -66,16 +60,15 @@ function removeLastFilter() {
       width: 100%;
       border: none;
       line-height: 2.25rem;
-      background-color: $black;
       color: inherit;
       font-size: 1rem;
-      padding-left: 0.75rem;
+      background-color: transparent;
       outline: 2px solid transparent;
-
-      &:focus {
-        outline: solid $accent;
-      }
     }
+  }
+
+  .focused {
+    outline: solid $accent;
   }
 }
 </style>

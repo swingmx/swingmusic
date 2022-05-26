@@ -2,7 +2,7 @@
   <input
     id="progress"
     type="range"
-    :value="props.pos"
+    :value="q.track.current_time"
     min="0"
     max="100"
     step="0.1"
@@ -11,13 +11,13 @@
 </template>
 
 <script setup lang="ts">
-const seek = () => {
-  const value = Number(document.getElementById("progress").value);
-  props.seek(value);
-};
+import useQStore from "../../../stores/queue";
 
-const props = defineProps<{
-  pos: number;
-  seek: (time: number) => void;
-}>();
+const q = useQStore();
+const seek = () => {
+  const elem = <HTMLFormElement>document.getElementById("progress");
+  const value = elem.value;
+
+  q.seek(value);
+};
 </script>

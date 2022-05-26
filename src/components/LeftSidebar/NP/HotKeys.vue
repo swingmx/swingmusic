@@ -1,33 +1,31 @@
 <template>
   <div class="hotkeys">
-    <div class="image ctrl-btn" id="previous" @click="props.prev"></div>
+    <div class="image ctrl-btn" id="previous" @click="q.playPrev"></div>
     <div
       class="image ctrl-btn play-pause"
-      @click="playPause"
-      :class="{ isPlaying: props.playing }"
+      @click="q.playPause"
+      :class="{ isPlaying: q.playing }"
     ></div>
-    <div class="image ctrl-btn" id="next" @click="props.next"></div>
+    <div class="image ctrl-btn" id="next" @click="q.playNext"></div>
   </div>
 </template>
 
 <script setup lang="ts">
-const props = defineProps<{
-  playing: boolean;
-  playPause: () => void;
-  next: () => void;
-  prev: () => void;
-}>();
+import useQStore from "@/stores/queue";
+
+const q = useQStore();
 </script>
 
 <style lang="scss">
 .hotkeys {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  width: 100%;
   gap: $small;
-  height: 3rem;
+  height: 2.5rem;
   align-items: center;
+  justify-content: center;
   place-content: flex-end;
+  width: 100%;
 
   .ctrl-btn {
     height: 2.5rem;
@@ -37,7 +35,7 @@ const props = defineProps<{
     border-radius: 0.5rem;
 
     &:hover {
-      background-color: $red;
+      background-color: $accent;
     }
   }
 

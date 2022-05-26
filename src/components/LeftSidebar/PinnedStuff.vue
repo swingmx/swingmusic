@@ -1,9 +1,5 @@
 <template>
-  <div
-    class="side-nav-container rounded hidden"
-    :class="{ hidden: collapsed }"
-    id="pinned-container"
-  >
+  <div class="side-nav-container rounded hidden" id="pinned-container">
     <div>
       <div class="nav-button" id="pinned-button">
         <span id="text">Quick access</span>
@@ -53,13 +49,6 @@
   </div>
 </template>
 
-<script>
-export default {
-  props: ["collapsed"],
-  setup() {},
-};
-</script>
-
 <style lang="scss">
 #pinned-container {
   background: #6e2c00;
@@ -102,5 +91,4 @@ export default {
 #pinned-container #pinned-button:hover {
   background-color: transparent;
 }
-
 </style>

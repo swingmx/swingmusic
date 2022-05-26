@@ -84,7 +84,7 @@ function updateQueue(track: Track) {
 .table {
   width: 100%;
   height: 100%;
-  overflow-y: auto;
+  overflow-y: hidden;
 
   .current {
     a {
@@ -141,6 +141,10 @@ function updateQueue(track: Track) {
   }
 
   .songlist {
+    scrollbar-width: none;
+    &::-webkit-scrollbar {
+      display: none;
+    }
     .context-on {
       background-color: $gray4;
       color: $white !important;

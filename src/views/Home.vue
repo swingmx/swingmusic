@@ -1,23 +1,15 @@
 <template>
   <div class="home">
-    <AlbumOfTheDay />
+    <home />
   </div>
 </template>
 
-<script>
-import AlbumOfTheDay from "@/components/AlbumOfTheDay.vue";
-
-export default {
-  name: "Home",
-  components: {
-    AlbumOfTheDay,
-  },
-};
+<script setup lang="ts">
+import Home from "@/components/Home.vue";
 </script>
-
 <style>
-  .home {
-    padding-left: 20px;
-    text-align: center;
-  }
+.home {
+  padding-left: 20px;
+  text-align: center;
+}
 </style>

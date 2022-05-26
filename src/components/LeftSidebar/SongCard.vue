@@ -34,12 +34,10 @@
 </template>
 
 <script setup lang="ts">
-import perks from "../../composables/perks";
+import { putCommas } from "../../composables/perks";
 import { Track } from "../../interfaces";
 import { paths } from "../../config";
-const imguri = paths.images.thumb
-
-const putCommas = perks.putCommas;
+const imguri = paths.images.thumb;
 
 const props = defineProps<{
   track: Track;

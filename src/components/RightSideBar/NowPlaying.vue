@@ -51,7 +51,7 @@
 <script>
 import playAudio from "@/composables/playAudio.js";
 import {ref} from "@vue/reactivity";
-import perks from "../../composables/perks.js";
+import {putCommas, formatSeconds} from "../../composables/perks.js";
 import HotKeys from "../shared/HotKeys.vue";
 import Progress from "../shared/Progress.vue";
 

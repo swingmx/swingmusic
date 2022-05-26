@@ -6,13 +6,13 @@ import urllib
 from typing import List
 
 from app import api
+from app import helpers
 from app import instances
 from app import models
 from app.lib import taglib
 from app.lib import trackslib
 from progress.bar import Bar
 from tqdm import tqdm
-from app import helpers
 
 
 def get_all_albums() -> List[models.Album]:
@@ -52,6 +52,10 @@ def create_everything() -> List[models.Track]:
 def find_album(albums: List[models.Album], hash: str) -> int | None:
     """
     Finds an album by album title and artist.
+
+    :param `albums`: List of album objects.
+    :param `hash`: Hash of album.
+    :return: Index of album in list.
     """
 
     left = 0
@@ -62,8 +66,11 @@ def find_album(albums: List[models.Album], hash: str) -> int | None:
         iter += 1
         mid = (left + right) // 2
 
-        if albums[mid].hash == hash:
-            return mid
+        try:
+            if albums[mid].hash == hash:
+                return mid
+        except AttributeError:
+            print(albums)
 
         if albums[mid].hash < hash:
             left = mid + 1
@@ -151,7 +158,7 @@ def get_album_tracks(album: str, artist: str) -> List:
     return GetAlbumTracks(album, artist).find_tracks()
 
 
-def create_album(track: dict, tracklist: list) -> models.Album:
+def create_album(track: dict, tracklist: list) -> dict:
     """
     Generates and returns an album object from a track object.
     """

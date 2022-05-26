@@ -5,18 +5,13 @@
     <div class="separator no-border"></div>
     <div>
       <SongCard :track="queue.current" />
-      <Progress :seek="queue.seek" :pos="queue.current_time" />
-      <HotKeys
-        :playing="queue.playing"
-        :playPause="queue.playPause"
-        :next="queue.playNext"
-        :prev="queue.playPrev"
-      />
+      <Progress />
+      <HotKeys />
     </div>
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import SongCard from "./SongCard.vue";
 import HotKeys from "./NP/HotKeys.vue";
 import Progress from "./NP/Progress.vue";
@@ -28,9 +23,8 @@ const queue = useQStore();
 .l_ {
   padding: 1rem;
   background-color: $primary;
-  margin: $small;
   text-align: center;
-  width: 14rem;
+  width: 100%;
   display: grid;
   position: relative;
   text-transform: capitalize;

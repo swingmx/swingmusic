@@ -1,5 +1,5 @@
 import { defineStore } from "pinia";
-import perks from "../composables/perks";
+import { focusCurrent } from "../composables/perks";
 
 const tablist = {
   home: "home",
@@ -16,7 +16,7 @@ export default defineStore("tabs", {
     changeTab(tab: string) {
       if (tab === this.tabs.queue) {
         setTimeout(() => {
-          perks.focusCurrent();
+          focusCurrent();
         }, 500);
       }
       this.current = tab;

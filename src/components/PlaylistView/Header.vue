@@ -28,7 +28,7 @@
         <div class="type">Playlist</div>
       </div>
     </div>
-    <div class="last-updated">
+    <div class="last-updated" v-motion-slide-from-right>
       <span class="status"
         >Last updated {{ props.info.lastUpdated }} &#160;|&#160;&#160;</span
       >
@@ -46,8 +46,9 @@ import Option from "../shared/Option.vue";
 import pContext from "../../contexts/playlist";
 import useContextStore from "../../stores/context";
 import { paths } from "../../config";
+import { onBeforeUnmount } from "vue";
 
-const imguri = paths.images.playlist
+const imguri = paths.images.playlist;
 const context = useContextStore();
 const modal = useModalStore();
 

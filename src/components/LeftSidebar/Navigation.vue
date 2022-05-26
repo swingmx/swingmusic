@@ -1,11 +1,16 @@
 <template>
-  <div class="side-nav-container" :class="{ collapsed: props.collapsed }">
+  <div class="side-nav-container">
     <router-link
       v-for="menu in menus"
       :key="menu.name"
       :to="{ name: menu.route_name, params: menu.params }"
     >
-      <div class="nav-button" id="home-button">
+      <div
+        class="nav-button"
+        id="home-button"
+        v-motion-slide-from-left-100
+
+      >
         <div class="in">
           <div class="nav-icon image" :id="`${menu.name}-icon`"></div>
           <span>{{ menu.name }}</span>
@@ -15,7 +20,7 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 const menus = [
   {
     name: "home",
@@ -46,36 +51,12 @@ const menus = [
     route_name: "SettingsView",
   },
 ];
-
-const props = defineProps({
-  collapsed: {
-    type: Boolean,
-    default: false,
-  },
-});
 </script>
 
 <style lang="scss">
-.collapsed {
-  .nav-button {
-    margin-top: 5px;
-
-    span {
-      display: none;
-    }
-
-    .in {
-      width: 100%;
-      flex-direction: column;
-    }
-  }
-}
-
 .side-nav-container {
   color: #fff;
-  margin-bottom: 1rem;
-  padding: 10px $small $small;
-  margin-top: 1rem;
+  margin: 1rem 0;
   text-transform: capitalize;
 
   .nav-button {
@@ -83,11 +64,10 @@ const props = defineProps({
     display: flex;
     align-items: flex-start;
     justify-content: flex-start;
-    height: 100%;
-    padding: 0.6rem 0 0.6rem 0;
+    padding: 0.6rem 0;
 
     &:hover {
-      background-color: $gray;
+      background-color: $gray3;
     }
 
     .nav-icon {

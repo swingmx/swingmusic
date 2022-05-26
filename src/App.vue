@@ -2,13 +2,9 @@
   <ContextMenu />
   <Modal />
   <Notification />
-  <div class="l-container" :class="{ collapsed: collapsed }">
-    <div class="l-sidebar">
-      <div id="logo-container">
-        <router-link :to="{ name: 'Home' }" v-if="!collapsed"
-          ><div class="logo"></div
-        ></router-link>
-      </div>
+  <div class="l-container">
+    <div class="l-sidebar rounded">
+      <Logo />
       <Navigation />
       <div class="l-album-art">
         <nowPlaying />
@@ -24,7 +20,7 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import Navigation from "./components/LeftSidebar/Navigation.vue";
 
 import Main from "./components/RightSideBar/Main.vue";
@@ -38,13 +34,14 @@ import Modal from "./components/modal.vue";
 import Notification from "./components/Notification.vue";
 import useQStore from "./stores/queue";
 import listenForKeyboardEvents from "./composables/keyboard";
+import Logo from "./components/Logo.vue";
 
 const RightSideBar = Main;
 const context_store = useContextStore();
 const queue = useQStore();
 const app_dom = document.getElementById("app");
 
-queue.readQueueFromLocalStorage();
+queue.readQueue();
 listenForKeyboardEvents(queue);
 
 app_dom.addEventListener("click", (e) => {
@@ -55,38 +52,22 @@ app_dom.addEventListener("click", (e) => {
 </script>
 
 <style lang="scss">
+@import "./assets/css/mixins.scss";
+
 .l-sidebar {
   position: relative;
 
   .l-album-art {
+    width: calc(100% - 2rem);
     position: absolute;
     bottom: 0;
+    margin-bottom: 1rem;
   }
 }
 
-#logo-container {
-  position: relative;
-  height: 3.6rem;
-  display: flex;
-  align-items: center;
-  margin-bottom: 0.5rem;
 
-  #toggle {
-    position: absolute;
-    width: 3rem;
-    height: 100%;
-    background: url(./assets/icons/menu.svg) no-repeat center;
-    background-size: 2rem;
-    cursor: pointer;
-  }
-}
 
-.logo {
-  height: 4.5rem;
-  width: 15rem;
-  background: url(./assets/icons/logo.svg) no-repeat 1rem;
-  background-size: 9rem;
-}
+
 
 .r-sidebar {
   &::-webkit-scrollbar {

@@ -154,7 +154,7 @@ def parse_disk_number(audio):
     return disk_number
 
 
-def get_tags(fullpath: str) -> dict:
+def get_tags(fullpath: str) -> dict | None:
     """
     Returns a dictionary of tags for a given file.
     """

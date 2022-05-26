@@ -12,7 +12,6 @@ export default defineStore("Loader", {
     },
     stopLoading() {
       const diff = new Date().getTime() - this.duration;
-      console.log(diff);
 
       if (diff <= 250) {
         setTimeout(() => {

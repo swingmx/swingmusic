@@ -12,7 +12,7 @@
         <p class="title ellip">{{ next.title }}</p>
         <hr />
         <p class="artist ellip">
-          <span v-for="artist in perks.putCommas(next.artists)" :key="artist">{{
+          <span v-for="artist in putCommas(next.artists)" :key="artist">{{
             artist
           }}</span>
         </p>
@@ -23,7 +23,7 @@
 
 <script setup lang="ts">
 import { Track } from "../../../interfaces";
-import perks from "../../../composables/perks";
+import {putCommas} from "../../../composables/perks";
 import { paths } from "../../../config";
 const imguri = paths.images.thumb;
 

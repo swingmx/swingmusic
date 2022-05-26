@@ -10,9 +10,7 @@
       <div
         class="album-art image rounded"
         :style="{
-          backgroundImage: `url(&quot;${
-            imguri + props.song.image
-          }&quot;`,
+          backgroundImage: `url(&quot;${imguri + props.song.image}&quot;`,
         }"
         @click="emitUpdate(props.song)"
       >
@@ -30,7 +28,7 @@
       <div class="ellip" v-if="props.song.artists[0] !== ''">
         <span
           class="artist"
-          v-for="artist in perks.putCommas(props.song.artists)"
+          v-for="artist in putCommas(props.song.artists)"
           :key="artist"
           >{{ artist }}</span
         >
@@ -54,13 +52,13 @@
       </div>
     </router-link>
     <div class="song-duration">
-      {{ perks.formatSeconds(props.song.length) }}
+      {{ formatSeconds(props.song.length) }}
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import perks from "../../composables/perks.js";
+import { putCommas, formatSeconds } from "../../composables/perks";
 import useContextStore from "../../stores/context";
 import useModalStore from "../../stores/modal";
 import useQueueStore from "../../stores/queue";
@@ -68,13 +66,13 @@ import { ContextSrc } from "../../composables/enums";
 
 import { ref } from "vue";
 import trackContext from "../../contexts/track_context";
-import { Track } from "../../interfaces.js";
+import { Track } from "../../interfaces";
 import { paths } from "../../config";
 
 const contextStore = useContextStore();
 
 const context_on = ref(false);
-const imguri = paths.images.thumb
+const imguri = paths.images.thumb;
 
 const showContextMenu = (e: Event) => {
   e.preventDefault();
