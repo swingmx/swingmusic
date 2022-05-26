@@ -6,9 +6,11 @@ import random
 import threading
 import time
 from datetime import datetime
-from typing import Dict, List
+from typing import Dict
+from typing import List
 
-from app import models, settings
+from app import models
+from app import settings
 
 app_dir = settings.APP_DIR
 
@@ -25,7 +27,9 @@ def background(func):
     return background_func
 
 
-def run_fast_scandir(__dir: str, ext: list, full=False) -> Dict[List[str], List[str]]:
+def run_fast_scandir(__dir: str,
+                     ext: list,
+                     full=False) -> Dict[List[str], List[str]]:
     """
     Scans a directory for files with a specific extension. Returns a list of files and folders in the directory.
     """
@@ -58,12 +62,10 @@ def remove_duplicates(tracklist: List[models.Track]) -> List[models.Track]:
 
     while song_num < len(tracklist) - 1:
         for index, song in enumerate(tracklist):
-            if (
-                tracklist[song_num].title == song.title
-                and tracklist[song_num].album == song.album
-                and tracklist[song_num].artists == song.artists
-                and index != song_num
-            ):
+            if (tracklist[song_num].title == song.title
+                    and tracklist[song_num].album == song.album
+                    and tracklist[song_num].artists == song.artists
+                    and index != song_num):
                 tracklist.remove(song)
 
         song_num += 1
@@ -106,7 +108,8 @@ def check_artist_image(image: str) -> str:
     """
     img_name = image.replace("/", "::") + ".webp"
 
-    if not os.path.exists(os.path.join(app_dir, "images", "artists", img_name)):
+    if not os.path.exists(os.path.join(app_dir, "images", "artists",
+                                       img_name)):
         return use_memoji()
     else:
         return img_name

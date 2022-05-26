@@ -3,7 +3,8 @@ import { getElem } from "./perks";
 export default (mouseX, mouseY) => {
   const scope = getElem("app", "id");
   const contextMenu = getElem("context-menu", "class");
-  // ? compute what is the mouse position relative to the container element (scope)
+  // ? compute what is the mouse position relative to the container element
+  // (scope)
   let { left: scopeOffsetX, top: scopeOffsetY } = scope.getBoundingClientRect();
 
   scopeOffsetX = scopeOffsetX < 0 ? 0 : scopeOffsetX;

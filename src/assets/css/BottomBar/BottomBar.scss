@@ -7,7 +7,7 @@
     display: grid;
     height: 100%;
     padding-right: $small;
-    
+
     @include phone-only {
       grid-template-columns: 1fr 9.2rem;
     }

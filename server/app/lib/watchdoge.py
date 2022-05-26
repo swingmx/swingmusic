@@ -7,13 +7,13 @@ import time
 from app import api
 from app import instances
 from app import models
+from app.helpers import create_album_hash
 from app.lib import folderslib
-from app.lib.albumslib import create_album, find_album
+from app.lib.albumslib import create_album
+from app.lib.albumslib import find_album
 from app.lib.taglib import get_tags
 from watchdog.events import PatternMatchingEventHandler
 from watchdog.observers import Observer
-
-from app.helpers import create_album_hash
 
 
 class OnMyWatch:
@@ -87,7 +87,8 @@ def remove_track(filepath: str) -> None:
     fpath = filepath.replace(fname, "")
 
     try:
-        trackid = instances.tracks_instance.get_song_by_path(filepath)["_id"]["$oid"]
+        trackid = instances.tracks_instance.get_song_by_path(
+            filepath)["_id"]["$oid"]
     except TypeError:
         print(f"💙 Watchdog Error: Error removing track {filepath} TypeError")
         return

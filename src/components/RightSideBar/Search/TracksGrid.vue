@@ -43,7 +43,7 @@ function updateQueue(track: Track) {
   padding: $small;
   height: 100% !important;
   overflow: hidden;
-  
+
   .list-enter-active,
   .list-leave-active {
     transition: all 0.5s ease;

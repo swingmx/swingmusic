@@ -9,7 +9,7 @@
         class="nav-button"
         id="home-button"
         v-motion-slide-from-left-100
-        
+
       >
         <div class="in">
           <div class="nav-icon image" :id="`${menu.name}-icon`"></div>

@@ -64,7 +64,7 @@ export default function (queue: any) {
         if (!key_down_fired) {
           if (!ctrlKey) return;
           e.preventDefault();
-          
+
 
           key_down_fired = true;
         }

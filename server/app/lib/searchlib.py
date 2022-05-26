@@ -1,13 +1,14 @@
 """
 This library contains all the functions related to the search functionality.
 """
-
 from typing import List
 
-from app import api, helpers, models
+from app import api
+from app import helpers
+from app import models
 from app.lib import albumslib
-from rapidfuzz import fuzz, process
-
+from rapidfuzz import fuzz
+from rapidfuzz import process
 
 ratio = fuzz.ratio
 wratio = fuzz.WRatio
@@ -34,6 +35,7 @@ class Limit:
 
 
 class SearchTracks:
+
     def __init__(self, query) -> None:
         self.query = query
 
@@ -55,6 +57,7 @@ class SearchTracks:
 
 
 class SearchArtists:
+
     def __init__(self, query) -> None:
         self.query = query
 
@@ -100,6 +103,7 @@ class SearchArtists:
 
 
 class SearchAlbums:
+
     def __init__(self, query) -> None:
         self.query = query
 
@@ -137,6 +141,7 @@ class SearchAlbums:
 
 
 class GetTopArtistTracks:
+
     def __init__(self, artist: str) -> None:
         self.artist = artist
 
@@ -160,5 +165,6 @@ def get_artists(artist: str) -> List[models.Track]:
     Gets all songs with a given artist.
     """
     return [
-        track for track in api.TRACKS if artist.lower() in str(track.artists).lower()
+        track for track in api.TRACKS
+        if artist.lower() in str(track.artists).lower()
     ]

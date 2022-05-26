@@ -6,13 +6,13 @@ import urllib
 from typing import List
 
 from app import api
+from app import helpers
 from app import instances
 from app import models
 from app.lib import taglib
 from app.lib import trackslib
 from progress.bar import Bar
 from tqdm import tqdm
-from app import helpers
 
 
 def get_all_albums() -> List[models.Album]:

@@ -6,8 +6,8 @@ from dataclasses import field
 from typing import List
 
 from app import api
-from app.exceptions import TrackExistsInPlaylist
 from app import helpers
+from app.exceptions import TrackExistsInPlaylist
 
 
 @dataclass(slots=True)
@@ -97,11 +97,9 @@ class Album:
 
 def get_p_track(ptrack):
     for track in api.TRACKS:
-        if (
-            track.title == ptrack["title"]
-            and track.artists == ptrack["artists"]
-            and ptrack["album"] == track.album
-        ):
+        if (track.title == ptrack["title"]
+                and track.artists == ptrack["artists"]
+                and ptrack["album"] == track.album):
             return track
 
 
