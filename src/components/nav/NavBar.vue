@@ -114,7 +114,7 @@ onMounted(() => {
   display: grid;
   grid-template-columns: 1fr min-content max-content;
   padding-bottom: 1rem;
-  margin: $small $small 0 $small;
+  margin: $small $small 0 0;
   border-bottom: 1px solid $gray3;
   height: 3rem;
 

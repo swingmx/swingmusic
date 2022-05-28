@@ -37,8 +37,6 @@ onBeforeRouteUpdate((to) => {
 <style lang="scss">
 #f-view-parent {
   position: relative;
-  padding: 0 0 0 $small;
-  margin-top: $small;
 
   .h {
     font-size: 2rem;

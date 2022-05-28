@@ -39,10 +39,6 @@ onBeforeRouteUpdate(async (to) => {
 
 <style lang="scss">
 .al-view {
-  height: calc(100% - 1rem);
-  overflow: auto;
-  margin: $small;
-  margin-right: 0;
   scrollbar-width: none;
 
   .songs {
