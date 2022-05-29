@@ -38,6 +38,8 @@ const playlist = usePTrackStore();
 
 <style lang="scss">
 .playlist-view {
+  height: 100%;
+
   &::-webkit-scrollbar {
     display: none;
   }

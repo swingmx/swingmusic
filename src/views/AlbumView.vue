@@ -40,6 +40,7 @@ onBeforeRouteUpdate(async (to) => {
 <style lang="scss">
 .al-view {
   scrollbar-width: none;
+  height: 100%;
 
   .songs {
     min-height: calc(100% - 31.5rem);
