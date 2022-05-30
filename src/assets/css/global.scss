@@ -133,6 +133,7 @@ a {
   grid-area: content;
   max-width: 1504px;
   padding: $small;
+  padding-left: 0;
   overflow: auto;
 
   .nav {

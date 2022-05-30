@@ -106,13 +106,13 @@ class Populate:
         """
 
         s = time.time()
-        # print(f"Started tagging files")
-        # with ThreadPoolExecutor() as executor:
-        #     executor.map(self.get_tags, self.files)
+        print(f"Started tagging files")
+        with ThreadPoolExecutor() as executor:
+            executor.map(self.get_tags, self.files)
 
-        with Pool(maxtasksperchild=10) as p:
-            tags = p.map(get_tags, tqdm(self.files))
-            self.process_tags(tags)
+        # with Pool(maxtasksperchild=10, processes=10) as p:
+        #     tags = p.map(get_tags, tqdm(self.files))
+        #     self.process_tags(tags)
 
         # for t in tqdm(self.files):
         #     self.get_tags(t)

@@ -14,6 +14,7 @@ from app.lib import watchdoge
 from app.lib.populate import Populate
 from PIL import Image
 from progress.bar import Bar
+from concurrent.futures import ThreadPoolExecutor
 
 from app.lib.trackslib import create_all_tracks
 
@@ -23,11 +24,10 @@ def reindex_tracks():
     """
     Checks for new songs every 5 minutes.
     """
-    is_underway = False
 
     while True:
         populate()
-        fetch_artist_images()
+        CheckArtistImages()()
 
         time.sleep(60)
 
@@ -49,52 +49,103 @@ def populate():
     api.TRACKS.extend(tracks)
 
 
-@helpers.background
-def fetch_image_path(artist: str) -> str or None:
+class getArtistImage:
     """
-    Returns a direct link to an artist image.
+    Returns an artist image url.
     """
 
-    try:
-        url = f"https://api.deezer.com/search/artist?q={artist}"
-        response = requests.get(url)
-        data = response.json()
+    def __init__(self, artist: str):
+        self.artist = artist
 
-        return data["data"][0]["picture_medium"]
-    except requests.exceptions.ConnectionError:
-        time.sleep(5)
-        return None
-    except (IndexError, KeyError):
-        return None
+    def __call__(self):
+        try:
+            url = f"https://api.deezer.com/search/artist?q={self.artist}"
+            response = requests.get(url)
+            data = response.json()
+
+            return data["data"][0]["picture_medium"]
+        except requests.exceptions.ConnectionError:
+            time.sleep(5)
+            return None
+        except (IndexError, KeyError):
+            return None
 
 
-@helpers.background
-def fetch_artist_images():
-    """Downloads the artists images"""
+class useImageDownloader:
+    def __init__(self, url: str, dest: str) -> None:
+        self.url = url
+        self.dest = dest
 
-    artists = []
+    def __call__(self) -> None:
+        try:
+            img = Image.open(BytesIO(requests.get(self.url).content))
+            img.save(self.dest, format="webp")
+            img.close()
+        except requests.exceptions.ConnectionError:
+            print("🔴🔴🔴🔴🔴🔴🔴")
+            time.sleep(5)
 
-    for song in tqdm(api.DB_TRACKS, desc="Finding artists"):
-        this_artists = song["artists"].split(", ")
 
-        for artist in this_artists:
-            if artist not in artists:
-                artists.append(artist)
+class CheckArtistImages:
+    def __init__(self):
+        self.artists: list[str] = []
+        print("Checking for artist images")
 
-    for artist in tqdm(artists, desc="Fetching images"):
-        file_path = (
-            helpers.app_dir + "/images/artists/" + artist.replace("/", "::") + ".webp"
+    @staticmethod
+    def check_if_exists(img_path: str):
+        """
+        Checks if an image exists on disk.
+        """
+
+        if os.path.exists(img_path):
+            return True
+        else:
+            return False
+
+    def gather_artists(self):
+        """
+        Loops through all the tracks and gathers all the artists.
+        """
+
+        for song in api.DB_TRACKS:
+            this_artists: list = song["artists"].split(", ")
+
+            for artist in this_artists:
+                if artist not in self.artists:
+                    self.artists.append(artist)
+
+    @classmethod
+    def download_image(cls, artistname: str):
+        """
+        Checks if an artist image exists and downloads it if not.
+
+        :param artistname: The artist name
+        """
+
+        img_path = (
+            helpers.app_dir
+            + "/images/artists/"
+            + artistname.replace("/", "::")
+            + ".webp"
         )
 
-        if not os.path.exists(file_path):
-            img_path = fetch_image_path(artist)
+        if cls.check_if_exists(img_path):
+            return
 
-            if img_path is not None:
-                try:
-                    img = Image.open(BytesIO(requests.get(img_path).content))
-                    img.save(file_path, format="webp")
-                except requests.exceptions.ConnectionError:
-                    time.sleep(5)
+        url = getArtistImage(artistname)()
+
+        if url is None:
+            return
+
+        useImageDownloader(url, img_path)()
+
+    def __call__(self):
+        self.gather_artists()
+
+        with ThreadPoolExecutor() as pool:
+            pool.map(self.download_image, self.artists)
+
+        print("Done fetching images")
 
 
 def fetch_album_bio(title: str, albumartist: str) -> str | None:

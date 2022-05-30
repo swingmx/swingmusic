@@ -15,7 +15,6 @@
           <div
             class="h"
             v-if="props.album.artist.toLowerCase() == 'various artists'"
-
           >
             Compilation
           </div>
@@ -65,8 +64,9 @@ extrackColors();
   height: 100%;
   background-color: $black;
   background-color: #000000;
-  background-image: linear-gradient(147deg, #436a91 0%, #2c3e50 74%);
-  .art {
+  background-image: linear-gradient(37deg, $black 20%, $gray, $black 90%);
+
+.art {
     width: 100%;
     height: 100%;
     left: 1rem;

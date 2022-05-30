@@ -46,7 +46,12 @@ class Track:
         self.length = tags["length"]
         self.genre = tags["genre"]
         self.bitrate = tags["bitrate"]
-        self.image = tags["image"]
+        
+        try:
+            self.image = tags["image"]
+        except KeyError:
+            print(tags)
+
         self.tracknumber = tags["tracknumber"]
         self.discnumber = tags["discnumber"]
         self.albumhash = tags["albumhash"]
@@ -97,9 +102,11 @@ class Album:
 
 def get_p_track(ptrack):
     for track in api.TRACKS:
-        if (track.title == ptrack["title"]
-                and track.artists == ptrack["artists"]
-                and ptrack["album"] == track.album):
+        if (
+            track.title == ptrack["title"]
+            and track.artists == ptrack["artists"]
+            and ptrack["album"] == track.album
+        ):
             return track
 
 
