@@ -2,6 +2,7 @@
 This file contains the Album class for interacting with
 album documents in MongoDB.
 """
+from app.db.mongodb import MongoAlbums
 from app import db
 from app.models import Album
 from bson import ObjectId
@@ -10,14 +11,10 @@ convert_many = db.convert_many
 convert_one = db.convert_one
 
 
-class Albums(db.Mongo):
+class Albums(MongoAlbums, db.AlbumMethods):
     """
     The class for all album-related database operations.
     """
-
-    def __init__(self):
-        super(Albums, self).__init__("ALICE_ALBUMS")
-        self.collection = self.db["ALL_ALBUMS"]
 
     def insert_album(self, album: Album) -> None:
         """
@@ -25,13 +22,8 @@ class Albums(db.Mongo):
         """
         album = album.__dict__
         return self.collection.update_one(
-            {
-                "album": album["title"],
-                "artist": album["artist"]
-            },
-            {
-                "$set": album
-            },
+            {"album": album["title"], "artist": album["artist"]},
+            {"$set": album},
             upsert=True,
         ).upserted_id
 

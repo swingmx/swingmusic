@@ -1,7 +1,7 @@
 """
 All the MongoDB instances are created here.
 """
-from app.db import albums
+from app.db.mongodb import albums
 from app.db import artists
 from app.db import playlists
 from app.db import trackcolors
