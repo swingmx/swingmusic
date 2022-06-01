@@ -11,7 +11,7 @@ convert_many = db.convert_many
 convert_one = db.convert_one
 
 
-class Albums(MongoAlbums, db.AlbumMethods):
+class Albums(MongoAlbums):
     """
     The class for all album-related database operations.
     """
