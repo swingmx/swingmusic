@@ -14,11 +14,10 @@ import useDebouncedRef from "../composables/useDebouncedRef";
 import useTabStore from "./tabs";
 /**
  *
- * @param id  The id of the element of the div to scroll
  * Scrolls on clicking the loadmore button
  */
-function scrollOnLoad(id: string) {
-  const elem = document.getElementById(id);
+function scrollOnLoad() {
+  const elem = document.getElementById("tab-content");
 
   elem.scroll({
     top: elem.scrollHeight,
@@ -32,28 +31,32 @@ export default defineStore("search", () => {
   const currentTab = ref("tracks");
 
   const tracks = reactive({
+    query: "",
     value: <Track[]>[],
     more: false,
   });
 
   const albums = reactive({
+    query: "",
     value: <AlbumInfo[]>[],
     more: false,
   });
 
   const artists = reactive({
+    query: "",
     value: <Artist[]>[],
     more: false,
   });
 
   /**
    * Searches for tracks, albums and artists
-   * @param query query to search for
+   * @param newquery query to search for
    */
-  function fetchTracks(query: string) {
-    searchTracks(query).then((res) => {
+  function fetchTracks(newquery: string) {
+    searchTracks(newquery).then((res) => {
       tracks.value = res.tracks;
       tracks.more = res.more;
+      tracks.query = newquery;
     });
   }
 
@@ -61,6 +64,7 @@ export default defineStore("search", () => {
     searchAlbums(query).then((res) => {
       albums.value = res.albums;
       albums.more = res.more;
+      albums.query = query;
     });
   }
 
@@ -68,6 +72,7 @@ export default defineStore("search", () => {
     searchArtists(query).then((res) => {
       artists.value = res.artists;
       artists.more = res.more;
+      artists.query = query;
     });
   }
 
@@ -82,9 +87,7 @@ export default defineStore("search", () => {
         tracks.value = [...tracks.value, ...res.tracks];
         tracks.more = res.more;
       })
-      .then(() => {
-        scrollOnLoad("tab-content");
-      });
+      .then(() => scrollOnLoad());
   }
 
   /**
@@ -98,9 +101,7 @@ export default defineStore("search", () => {
         albums.value = [...albums.value, ...res.albums];
         albums.more = res.more;
       })
-      .then(() => {
-        scrollOnLoad("tab-content");
-      });
+      .then(() => scrollOnLoad());
   }
 
   /**
@@ -114,9 +115,7 @@ export default defineStore("search", () => {
         artists.value = [...artists.value, ...res.artists];
         artists.more = res.more;
       })
-      .then(() => {
-        scrollOnLoad("tab-content");
-      });
+      .then(() => scrollOnLoad());
   }
 
   watch(
@@ -148,18 +147,25 @@ export default defineStore("search", () => {
   watch(
     () => currentTab.value,
     (newTab) => {
+      const current_query: string = query.value;
+
       switch (newTab) {
         case "tracks":
-          fetchTracks(query.value);
+          if (tracks.query == current_query) break;
+          fetchTracks(current_query);
           break;
+
         case "albums":
-          fetchAlbums(query.value);
+          if (albums.query == current_query) break;
+          fetchAlbums(current_query);
           break;
+
         case "artists":
-          fetchArtists(query.value);
+          if (artists.query == current_query) break;
+          fetchArtists(current_query);
           break;
         default:
-          fetchTracks(query.value);
+          fetchTracks(current_query);
           break;
       }
     }
