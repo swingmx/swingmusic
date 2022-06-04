@@ -1,21 +1,14 @@
 """
 This file contains the AllSongs class for interacting with track documents in MongoDB.
 """
-from app import db
+from app.db.mongodb import MongoTracks, convert_many, convert_one
 from bson import ObjectId
 
-convert_many = db.convert_many
-convert_one = db.convert_one
 
-
-class AllSongs(db.Mongo):
+class Tracks(MongoTracks):
     """
     The class for all track-related database operations.
     """
-
-    def __init__(self):
-        super(AllSongs, self).__init__("ALICE_MUSIC_TRACKS")
-        self.collection = self.db["ALL_TRACKS"]
 
     # def drop_db(self):
     #     self.collection.drop()

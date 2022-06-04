@@ -1,24 +1,16 @@
 """
 This file contains the Playlists class for interacting with the playlist documents in MongoDB.
 """
-from app import db
-from app import models
+from app.db.mongodb import MongoPlaylists, convert_many, convert_one
 from bson import ObjectId
 
 from app.helpers import create_new_date
 
-convert_many = db.convert_many
-convert_one = db.convert_one
 
-
-class Playlists(db.Mongo):
+class Playlists(MongoPlaylists):
     """
     The class for all playlist-related database operations.
     """
-
-    def __init__(self):
-        super(Playlists, self).__init__("ALICE_PLAYLISTS")
-        self.collection = self.db["ALL_PLAYLISTS"]
 
     def insert_playlist(self, playlist: dict) -> None:
         """
