@@ -2,12 +2,13 @@
 This module creates and initiliazes a MongoDB instance. It also contains the
 `convert_one()` and `conver_many()` methods for converting MongoDB cursors to Python dicts.
 """
-
-
 import json
 
 import pymongo
-from app.db import AlbumMethods, ArtistMethods, PlaylistMethods, TrackMethods
+from app.db import AlbumMethods
+from app.db import ArtistMethods
+from app.db import PlaylistMethods
+from app.db import TrackMethods
 from bson import json_util
 
 
