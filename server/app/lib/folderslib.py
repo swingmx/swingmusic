@@ -1,5 +1,5 @@
-import time
-from typing import List
+from os import scandir
+from typing import Dict, List
 from typing import Set
 
 from tqdm import tqdm
@@ -7,7 +7,6 @@ from tqdm import tqdm
 from app import api
 from app import helpers
 from app import models
-from progress.bar import Bar
 
 
 def get_valid_folders() -> None:
@@ -19,8 +18,11 @@ def get_folder_track_count(foldername: str) -> int:
     """
     Returns the number of files associated with a folder.
     """
-    track_list = [track for track in api.TRACKS if foldername in track.folder]
-    return len(track_list)
+    count = 0
+    for track in api.TRACKS:
+        if foldername in track.folder:
+            count += 1
+    return count
 
 
 def create_folder(foldername: str) -> models.Folder:
@@ -77,3 +79,28 @@ def run_scandir():
     """Create all the folder objects before clearing api.FOLDERS"""
 
     api.FOLDERS = folders_
+
+
+class getFnF:
+    def __init__(self, path: str) -> None:
+        self.path = path
+
+    @staticmethod
+    def get_tracks(files: List[str]) -> List[models.Track]:
+        """
+        Returns a list of Track objects for each file in the given list.
+        """
+        return [file for file in api.TRACKS if file.filepath in files]
+
+    def __call__(self) -> Dict[models.Track, models.Folder]:
+        try:
+            all = scandir(self.path)
+        except FileNotFoundError:
+            return ([], [])
+
+        dirs, files = helpers.run_fast_scandir(self.path)
+
+        tracks = self.get_tracks(files)
+        folders = [create_folder(dir) for dir in dirs]
+
+        return (tracks, folders)
