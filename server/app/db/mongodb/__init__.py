@@ -2,13 +2,14 @@
 This module creates and initiliazes a MongoDB instance. It also contains the
 `convert_one()` and `conver_many()` methods for converting MongoDB cursors to Python dicts.
 """
-
-
 import json
-import pymongo
-from bson import json_util
 
-from app.db import AlbumMethods, ArtistMethods, PlaylistMethods, TrackMethods
+import pymongo
+from app.db import AlbumMethods
+from app.db import ArtistMethods
+from app.db import PlaylistMethods
+from app.db import TrackMethods
+from bson import json_util
 
 
 class Mongo:
@@ -22,27 +23,33 @@ class Mongo:
 
 
 class MongoAlbums(Mongo, AlbumMethods):
+
     def __init__(self):
         super(MongoAlbums, self).__init__("ALICE_ALBUMS")
         self.collection = self.db["ALL_ALBUMS"]
 
 
 class MongoArtists(Mongo, ArtistMethods):
+
     def __init__(self):
         super(MongoArtists, self).__init__("ALICE_ARTISTS")
         self.collection = self.db["ALL_ARTISTS"]
 
 
 class MongoPlaylists(Mongo, PlaylistMethods):
+
     def __init__(self):
         super(MongoPlaylists, self).__init__("ALICE_PLAYLISTS")
         self.collection = self.db["ALL_PLAYLISTS"]
 
 
 class MongoTracks(Mongo, TrackMethods):
+
     def __init__(self):
         super(MongoTracks, self).__init__("ALICE_MUSIC_TRACKS")
         self.collection = self.db["ALL_TRACKS"]
+
+
 # ====================================================================== #
 # cursor convertion methods
 
