@@ -5,10 +5,10 @@ This module creates and initiliazes a MongoDB instance. It also contains the
 
 
 import json
-import pymongo
-from bson import json_util
 
+import pymongo
 from app.db import AlbumMethods, ArtistMethods, PlaylistMethods, TrackMethods
+from bson import json_util
 
 
 class Mongo:

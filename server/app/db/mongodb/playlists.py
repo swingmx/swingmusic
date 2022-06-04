@@ -2,9 +2,8 @@
 This file contains the Playlists class for interacting with the playlist documents in MongoDB.
 """
 from app.db.mongodb import MongoPlaylists, convert_many, convert_one
-from bson import ObjectId
-
 from app.helpers import create_new_date
+from bson import ObjectId
 
 
 class Playlists(MongoPlaylists):
