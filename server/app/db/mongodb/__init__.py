@@ -43,6 +43,8 @@ class MongoTracks(Mongo, TrackMethods):
     def __init__(self):
         super(MongoTracks, self).__init__("ALICE_MUSIC_TRACKS")
         self.collection = self.db["ALL_TRACKS"]
+
+
 # ====================================================================== #
 # cursor convertion methods
 
