@@ -1,32 +1,29 @@
 """
 This file contains the Playlists class for interacting with the playlist documents in MongoDB.
 """
-from app import db
-from app import models
+from app.db.mongodb import convert_many
+from app.db.mongodb import convert_one
+from app.db.mongodb import MongoPlaylists
+from app.helpers import create_new_date
 from bson import ObjectId
 
-from app.helpers import create_new_date
 
-convert_many = db.convert_many
-convert_one = db.convert_one
-
-
-class Playlists(db.Mongo):
+class Playlists(MongoPlaylists):
     """
     The class for all playlist-related database operations.
     """
-
-    def __init__(self):
-        super(Playlists, self).__init__("ALICE_PLAYLISTS")
-        self.collection = self.db["ALL_PLAYLISTS"]
 
     def insert_playlist(self, playlist: dict) -> None:
         """
         Inserts a new playlist object into the database.
         """
         return self.collection.update_one(
-            {"name": playlist["name"]},
-            {"$set": playlist},
+            {
+                "name": playlist["name"]
+            },
+            {
+                "$set": playlist
+            },
             upsert=True,
         ).upserted_id
 
@@ -54,7 +51,14 @@ class Playlists(db.Mongo):
             {
                 "_id": ObjectId(playlistid),
             },
-            {"$push": {"pre_tracks": track}, "$set": {"lastUpdated": date}},
+            {
+                "$push": {
+                    "pre_tracks": track
+                },
+                "$set": {
+                    "lastUpdated": date
+                }
+            },
         )
 
     def get_playlist_by_name(self, name: str) -> dict:

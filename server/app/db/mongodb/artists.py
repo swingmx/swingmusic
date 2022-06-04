@@ -1,18 +1,14 @@
 """
 This file contains the Artists class for interacting with artist documents in MongoDB.
 """
-from app import db
+from app.db.mongodb import MongoArtists
 from bson import ObjectId
 
 
-class Artists(db.Mongo):
+class Artists(MongoArtists):
     """
     The artist class for all artist related database operations.
     """
-
-    def __init__(self):
-        super(Artists, self).__init__("ALICE_ARTISTS")
-        self.collection = self.db["ALL_ARTISTS"]
 
     def insert_artist(self, artist_obj: dict) -> None:
         """

@@ -3,21 +3,17 @@ This file contains the Album class for interacting with
 album documents in MongoDB.
 """
 from app import db
+from app.db.mongodb import convert_many
+from app.db.mongodb import convert_one
+from app.db.mongodb import MongoAlbums
 from app.models import Album
 from bson import ObjectId
 
-convert_many = db.convert_many
-convert_one = db.convert_one
 
-
-class Albums(db.Mongo):
+class Albums(MongoAlbums):
     """
     The class for all album-related database operations.
     """
-
-    def __init__(self):
-        super(Albums, self).__init__("ALICE_ALBUMS")
-        self.collection = self.db["ALL_ALBUMS"]
 
     def insert_album(self, album: Album) -> None:
         """
