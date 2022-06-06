@@ -27,15 +27,14 @@ def background(func):
     return background_func
 
 
-def run_fast_scandir(__dir: str,
-                     ext: list,
-                     full=False) -> Dict[List[str], List[str]]:
+def run_fast_scandir(__dir: str, full=False) -> Dict[List[str], List[str]]:
     """
     Scans a directory for files with a specific extension. Returns a list of files and folders in the directory.
     """
 
     subfolders = []
     files = []
+    ext = [".flac", ".mp3"]
 
     for f in os.scandir(__dir):
         if f.is_dir() and not f.name.startswith("."):
@@ -46,7 +45,7 @@ def run_fast_scandir(__dir: str,
 
     if full or len(files) == 0:
         for _dir in list(subfolders):
-            sf, f = run_fast_scandir(_dir, ext, full=True)
+            sf, f = run_fast_scandir(_dir, full=True)
             subfolders.extend(sf)
             files.extend(f)
 
@@ -62,10 +61,12 @@ def remove_duplicates(tracklist: List[models.Track]) -> List[models.Track]:
 
     while song_num < len(tracklist) - 1:
         for index, song in enumerate(tracklist):
-            if (tracklist[song_num].title == song.title
-                    and tracklist[song_num].album == song.album
-                    and tracklist[song_num].artists == song.artists
-                    and index != song_num):
+            if (
+                tracklist[song_num].title == song.title
+                and tracklist[song_num].album == song.album
+                and tracklist[song_num].artists == song.artists
+                and index != song_num
+            ):
                 tracklist.remove(song)
 
         song_num += 1
@@ -108,8 +109,7 @@ def check_artist_image(image: str) -> str:
     """
     img_name = image.replace("/", "::") + ".webp"
 
-    if not os.path.exists(os.path.join(app_dir, "images", "artists",
-                                       img_name)):
+    if not os.path.exists(os.path.join(app_dir, "images", "artists", img_name)):
         return use_memoji()
     else:
         return img_name

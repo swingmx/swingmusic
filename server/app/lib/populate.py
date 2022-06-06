@@ -40,7 +40,7 @@ class Populate:
         self.pre_albums = []
         self.albums: List[Album] = []
 
-        self.files = run_fast_scandir(settings.HOME_DIR, [".flac", ".mp3"])[1]
+        self.files = run_fast_scandir(settings.HOME_DIR, full=True)[1]
         self.db_tracks = tracks_instance.get_all_tracks()
         self.tag_count = 0
         self.exist_count = 0
@@ -95,8 +95,7 @@ class Populate:
             folder = tags["folder"]
             self.folders.add(folder)
 
-            tags["albumhash"] = create_album_hash(tags["album"],
-                                                  tags["albumartist"])
+            tags["albumhash"] = create_album_hash(tags["album"], tags["albumartist"])
             self.tagged_tracks.append(tags)
             api.DB_TRACKS.append(tags)
 
@@ -169,8 +168,9 @@ class Populate:
         for album in tqdm(self.pre_albums, desc="Building albums"):
             self.create_album(album)
 
-        Log(f"{self.exist_count} of {len(self.pre_albums)} albums were already in the database"
-            )
+        Log(
+            f"{self.exist_count} of {len(self.pre_albums)} albums were already in the database"
+        )
 
     def create_track(self, track: dict):
         """
@@ -205,8 +205,9 @@ class Populate:
         with ThreadPoolExecutor() as executor:
             executor.map(self.create_track, self.tagged_tracks)
 
-        Log(f"Added {len(self.tagged_tracks)} new tracks and {len(self.albums)} new albums"
-            )
+        Log(
+            f"Added {len(self.tagged_tracks)} new tracks and {len(self.albums)} new albums"
+        )
 
     def save_albums(self):
         """
