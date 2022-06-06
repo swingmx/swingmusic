@@ -1,5 +1,5 @@
 from os import scandir
-from typing import Dict, List
+from typing import Dict, List, Tuple
 from typing import Set
 
 from tqdm import tqdm
@@ -25,12 +25,12 @@ def get_folder_track_count(foldername: str) -> int:
     return count
 
 
-def create_folder(foldername: str) -> models.Folder:
+def create_folder(path: str) -> models.Folder:
     """Create a single Folder object"""
     folder = {
-        "name": foldername.split("/")[-1],
-        "path": foldername,
-        "trackcount": get_folder_track_count(foldername),
+        "name": path.split("/")[-1],
+        "path": path,
+        "trackcount": get_folder_track_count(path),
     }
 
     return models.Folder(folder)
@@ -92,13 +92,19 @@ class getFnF:
         """
         return [file for file in api.TRACKS if file.filepath in files]
 
-    def __call__(self) -> Dict[models.Track, models.Folder]:
+    def __call__(self) -> Tuple[models.Track, models.Folder]:
         try:
             all = scandir(self.path)
         except FileNotFoundError:
             return ([], [])
 
-        dirs, files = helpers.run_fast_scandir(self.path)
+        dirs, files = [], []
+
+        for entry in all:
+            if entry.is_dir() and not entry.name.startswith("."):
+                dirs.append(entry.path)
+            elif entry.is_file() and entry.name.endswith((".mp3", ".flac")):
+                files.append(entry.path)
 
         tracks = self.get_tracks(files)
         folders = [create_folder(dir) for dir in dirs]
