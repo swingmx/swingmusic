@@ -35,7 +35,6 @@ def get_folder_track_count(foldername: str) -> int:
 
 def create_folder(dir: Dir) -> models.Folder:
     """Create a single Folder object"""
-    print(dir)
     folder = {
         "name": dir.path.split("/")[-1],
         "path": dir.path,
@@ -122,5 +121,6 @@ class getFnF:
 
         tracks = self.get_tracks(files)
         folders = [create_folder(dir) for dir in dirs]
+        folders = filter(lambda f: f.trackcount > 0, folders)
 
         return (tracks, folders)

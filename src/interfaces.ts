@@ -20,7 +20,7 @@ interface Track {
 interface Folder {
   name: string;
   path: string;
-  trackscount: number;
+  trackcount: number;
   subdircount: number;
 }
 
