@@ -46,7 +46,7 @@ class Track:
         self.length = tags["length"]
         self.genre = tags["genre"]
         self.bitrate = tags["bitrate"]
-        
+
         try:
             self.image = tags["image"]
         except KeyError:
@@ -191,9 +191,11 @@ class Folder:
     name: str
     path: str
     trackcount: int
+    is_sym: bool = False
     """The number of tracks in the folder"""
 
     def __init__(self, data) -> None:
         self.name = data["name"]
         self.path = data["path"]
+        self.is_sym = data["is_sym"]
         self.trackcount = data["trackcount"]

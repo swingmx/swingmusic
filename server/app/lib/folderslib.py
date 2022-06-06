@@ -1,4 +1,6 @@
+from dataclasses import dataclass
 from os import scandir
+from pprint import pprint
 from typing import Dict, List, Tuple
 from typing import Set
 
@@ -7,6 +9,12 @@ from tqdm import tqdm
 from app import api
 from app import helpers
 from app import models
+
+
+@dataclass
+class Dir:
+    path: str
+    is_sym: bool
 
 
 def get_valid_folders() -> None:
@@ -25,12 +33,14 @@ def get_folder_track_count(foldername: str) -> int:
     return count
 
 
-def create_folder(path: str) -> models.Folder:
+def create_folder(dir: Dir) -> models.Folder:
     """Create a single Folder object"""
+    print(dir)
     folder = {
-        "name": path.split("/")[-1],
-        "path": path,
-        "trackcount": get_folder_track_count(path),
+        "name": dir.path.split("/")[-1],
+        "path": dir.path,
+        "is_sym": dir.is_sym,
+        "trackcount": get_folder_track_count(dir.path),
     }
 
     return models.Folder(folder)
@@ -75,10 +85,10 @@ def run_scandir():
     It calls the
     """
     get_valid_folders()
-    folders_ = create_all_folders()
+    # folders_ = create_all_folders()
     """Create all the folder objects before clearing api.FOLDERS"""
 
-    api.FOLDERS = folders_
+    # api.FOLDERS = folders_
 
 
 class getFnF:
@@ -102,7 +112,11 @@ class getFnF:
 
         for entry in all:
             if entry.is_dir() and not entry.name.startswith("."):
-                dirs.append(entry.path)
+                dir = {
+                    "path": entry.path,
+                    "is_sym": entry.is_symlink(),
+                }
+                dirs.append(Dir(**dir))
             elif entry.is_file() and entry.name.endswith((".mp3", ".flac")):
                 files.append(entry.path)
 

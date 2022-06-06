@@ -63,7 +63,7 @@ class Populate:
 
         self.save_albums()
         self.create_tracks()
-        self.create_folders()
+        # self.create_folders()
 
     def check_untagged(self):
         """
@@ -217,14 +217,14 @@ class Populate:
         with ThreadPoolExecutor() as executor:
             executor.map(album_instance.insert_album, self.albums)
 
-    def create_folders(self):
-        """
-        Creates the folder objects for all the tracks.
-        """
-        for folder in tqdm(self.folders, desc="Creating folders"):
-            api.VALID_FOLDERS.add(folder)
+    # def create_folders(self):
+    #     """
+    #     Creates the folder objects for all the tracks.
+    #     """
+    #     for folder in tqdm(self.folders, desc="Creating folders"):
+    #         api.VALID_FOLDERS.add(folder)
 
-            fff = folderslib.create_folder(folder)
-            api.FOLDERS.append(fff)
+    #         fff = folderslib.create_folder(folder)
+    #         api.FOLDERS.append(fff)
 
-        Log(f"Created {len(self.folders)} new folders")
+    #     Log(f"Created {len(self.folders)} new folders")
