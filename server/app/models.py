@@ -1,12 +1,10 @@
 """
 Contains all the models for objects generation and typing.
 """
-from dataclasses import dataclass
-from dataclasses import field
+from dataclasses import dataclass, field
 from typing import List
 
-from app import api
-from app import helpers
+from app import api, helpers
 from app.exceptions import TrackExistsInPlaylist
 
 

@@ -2,12 +2,9 @@
 Contains all the folder routes.
 """
 
-from app import api
-from app import helpers
-from app import settings
+from app import api, helpers, settings
 from app.lib.folderslib import getFnF
-from flask import Blueprint
-from flask import request
+from flask import Blueprint, request
 
 folder_bp = Blueprint("folder", __name__, url_prefix="/")
 
