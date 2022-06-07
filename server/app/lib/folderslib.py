@@ -94,6 +94,10 @@ def run_scandir():
 
 
 class getFnF:
+    """
+    Get files and folders from a directory.
+    """
+
     def __init__(self, path: str) -> None:
         self.path = path
 
