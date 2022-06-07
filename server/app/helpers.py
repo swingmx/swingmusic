@@ -160,4 +160,3 @@ class UseBisection:
 
     def __call__(self) -> Any:
         return [self.find(query) for query in self.queries]
-
