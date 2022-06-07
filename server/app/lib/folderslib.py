@@ -1,16 +1,12 @@
 from dataclasses import dataclass
 from os import scandir
-from pprint import pprint
 from time import time
-from typing import Dict
 from typing import List
 from typing import Set
 from typing import Tuple
 
 from app import api
 from app import helpers
-from app.instances import tracks_instance
-from app.lib import taglib
 from app.models import Folder
 from app.models import Track
 from tqdm import tqdm
