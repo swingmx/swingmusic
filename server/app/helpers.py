@@ -6,7 +6,7 @@ import random
 import threading
 import time
 from datetime import datetime
-from typing import Dict
+from typing import Any, Dict
 from typing import List
 
 from app import models
@@ -133,3 +133,31 @@ def create_safe_name(name: str) -> str:
     Creates a url-safe name from a name.
     """
     return "".join([i for i in name if i not in '/\\:*?"<>|'])
+
+
+class UseBisection:
+    def __init__(self, list: List, search_from: str, queries: List[str]) -> None:
+        self.list = list
+        self.queries = queries
+        self.search_from = search_from
+        self.list.sort(key=lambda x: getattr(x, search_from))
+
+    def find(self, query: str):
+        left = 0
+        right = len(self.list) - 1
+
+        while left <= right:
+            mid = (left + right) // 2
+
+            if self.list[mid].__getattribute__(self.search_from) == query:
+                return self.list[mid]
+            elif self.list[mid].__getattribute__(self.search_from) > query:
+                right = mid - 1
+            else:
+                left = mid + 1
+
+        return None
+
+    def __call__(self) -> Any:
+        return [self.find(query) for query in self.queries]
+

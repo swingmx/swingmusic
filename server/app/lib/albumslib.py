@@ -60,10 +60,8 @@ def find_album(albums: List[models.Album], hash: str) -> int | None:
 
     left = 0
     right = len(albums) - 1
-    iter = 0
 
     while left <= right:
-        iter += 1
         mid = (left + right) // 2
 
         try:

@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from os import scandir
 from pprint import pprint
+from time import time
 from typing import Dict, List, Tuple
 from typing import Set
 
@@ -8,7 +9,9 @@ from tqdm import tqdm
 
 from app import api
 from app import helpers
-from app import models
+from app.models import Track, Folder
+from app.lib import taglib
+from app.instances import tracks_instance
 
 
 @dataclass
@@ -33,7 +36,7 @@ def get_folder_track_count(foldername: str) -> int:
     return count
 
 
-def create_folder(dir: Dir) -> models.Folder:
+def create_folder(dir: Dir) -> Folder:
     """Create a single Folder object"""
     folder = {
         "name": dir.path.split("/")[-1],
@@ -42,11 +45,11 @@ def create_folder(dir: Dir) -> models.Folder:
         "trackcount": get_folder_track_count(dir.path),
     }
 
-    return models.Folder(folder)
+    return Folder(folder)
 
 
-def create_all_folders() -> Set[models.Folder]:
-    folders: List[models.Folder] = []
+def create_all_folders() -> Set[Folder]:
+    folders: List[Folder] = []
 
     for foldername in tqdm(api.VALID_FOLDERS, desc="Creating folders"):
         folder = create_folder(foldername)
@@ -55,9 +58,9 @@ def create_all_folders() -> Set[models.Folder]:
     return folders
 
 
-def get_subdirs(foldername: str) -> List[models.Folder]:
+def get_subdirs(foldername: str) -> List[Folder]:
     """
-    Finds and Creates models.Folder objects for each sub-directory string in the foldername passed.
+    Finds and Creates Folder objects for each sub-directory string in the foldername passed.
     """
     subdirs = set()
 
@@ -94,14 +97,14 @@ class getFnF:
     def __init__(self, path: str) -> None:
         self.path = path
 
-    @staticmethod
-    def get_tracks(files: List[str]) -> List[models.Track]:
+    @classmethod
+    def get_tracks(cls, files: List[str]) -> List[Track]:
         """
         Returns a list of Track objects for each file in the given list.
         """
-        return [file for file in api.TRACKS if file.filepath in files]
+        return helpers.UseBisection(api.TRACKS, "filepath", files)()
 
-    def __call__(self) -> Tuple[models.Track, models.Folder]:
+    def __call__(self) -> Tuple[Track, Folder]:
         try:
             all = scandir(self.path)
         except FileNotFoundError:
@@ -118,8 +121,10 @@ class getFnF:
                 dirs.append(Dir(**dir))
             elif entry.is_file() and entry.name.endswith((".mp3", ".flac")):
                 files.append(entry.path)
-
+        s = time()
         tracks = self.get_tracks(files)
+        print(f"{time() - s} seconds to get tracks")
+
         folders = [create_folder(dir) for dir in dirs]
         folders = filter(lambda f: f.trackcount > 0, folders)
 
