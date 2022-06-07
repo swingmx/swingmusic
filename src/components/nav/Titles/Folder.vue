@@ -2,7 +2,7 @@
   <div id="folder-nav-title">
     <div
       class="folder"
-      v-show="$route.name == 'FolderView'"
+      
       v-motion
       :initial="{
         opacity: 0,

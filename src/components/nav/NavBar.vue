@@ -6,25 +6,8 @@
       </div>
 
       <div class="info">
-        <div
-          class="title"
-          v-show="$route.name == 'Playlists'"
-          v-motion
-          :initial="{
-            opacity: 0,
-            x: -20,
-          }"
-          :visible="{
-            opacity: 1,
-            x: 0,
-            transition: {
-              delay: 100,
-            },
-          }"
-        >
-          Playlists
-        </div>
-        <Folder :subPaths="subPaths" />
+        <Playlists v-show="$route.name == Routes.playlists" />
+        <Folder v-show="$route.name == Routes.folder" :subPaths="subPaths" />
       </div>
     </div>
 
@@ -48,6 +31,7 @@ import { Routes } from "@/composables/enums";
 import createSubPaths from "@/composables/createSubPaths";
 import { subPath } from "@/interfaces";
 import Folder from "./Titles/Folder.vue";
+import Playlists from "./Titles/Playlists.vue";
 
 const route = useRoute();
 

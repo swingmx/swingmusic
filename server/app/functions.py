@@ -6,17 +6,13 @@ import time
 from io import BytesIO
 
 import requests
-from tqdm import tqdm
 from app import api
 from app import helpers
 from app import settings
 from app.lib import watchdoge
 from app.lib.populate import Populate
 from PIL import Image
-from progress.bar import Bar
 from concurrent.futures import ThreadPoolExecutor
-
-from app.lib.trackslib import create_all_tracks
 
 
 @helpers.background
@@ -44,9 +40,9 @@ def populate():
     pop = Populate()
     pop.run()
 
-    tracks = create_all_tracks()
-    api.TRACKS.clear()
-    api.TRACKS.extend(tracks)
+    # tracks = create_all_tracks()
+    # api.TRACKS.clear()
+    # api.TRACKS.extend(tracks)
 
 
 class getArtistImage:
