@@ -1,14 +1,10 @@
 from dataclasses import dataclass
 from os import scandir
 from time import time
-from typing import List
-from typing import Set
-from typing import Tuple
+from typing import List, Set, Tuple
 
-from app import api
-from app import helpers
-from app.models import Folder
-from app.models import Track
+from app import api, helpers
+from app.models import Folder, Track
 from tqdm import tqdm
 
 

@@ -3,16 +3,14 @@ This module contains functions for the server
 """
 import os
 import time
+from concurrent.futures import ThreadPoolExecutor
 from io import BytesIO
 
 import requests
-from app import api
-from app import helpers
-from app import settings
+from app import api, helpers, settings
 from app.lib import watchdoge
 from app.lib.populate import Populate
 from PIL import Image
-from concurrent.futures import ThreadPoolExecutor
 
 
 @helpers.background
