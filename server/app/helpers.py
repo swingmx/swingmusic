@@ -62,12 +62,10 @@ def remove_duplicates(tracklist: List[models.Track]) -> List[models.Track]:
 
     while song_num < len(tracklist) - 1:
         for index, song in enumerate(tracklist):
-            if (
-                tracklist[song_num].title == song.title
-                and tracklist[song_num].album == song.album
-                and tracklist[song_num].artists == song.artists
-                and index != song_num
-            ):
+            if (tracklist[song_num].title == song.title
+                    and tracklist[song_num].album == song.album
+                    and tracklist[song_num].artists == song.artists
+                    and index != song_num):
                 tracklist.remove(song)
 
         song_num += 1
@@ -110,7 +108,8 @@ def check_artist_image(image: str) -> str:
     """
     img_name = image.replace("/", "::") + ".webp"
 
-    if not os.path.exists(os.path.join(app_dir, "images", "artists", img_name)):
+    if not os.path.exists(os.path.join(app_dir, "images", "artists",
+                                       img_name)):
         return use_memoji()
     else:
         return img_name
@@ -137,7 +136,9 @@ def create_safe_name(name: str) -> str:
 
 
 class UseBisection:
-    def __init__(self, list: List, search_from: str, queries: List[str]) -> None:
+
+    def __init__(self, list: List, search_from: str,
+                 queries: List[str]) -> None:
         self.list = list
         self.queries = queries
         self.search_from = search_from
