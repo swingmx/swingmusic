@@ -123,9 +123,7 @@ class getFnF:
                 dirs.append(Dir(**dir))
             elif entry.is_file() and entry.name.endswith((".mp3", ".flac")):
                 files.append(entry.path)
-        s = time()
         tracks = self.get_tracks(files)
-        print(f"{time() - s} seconds to get tracks")
 
         folders = [create_folder(dir) for dir in dirs]
         folders = filter(lambda f: f.trackcount > 0, folders)
