@@ -40,7 +40,7 @@ class Populate:
         self.pre_albums = []
         self.albums: List[Album] = []
 
-        self.files = run_fast_scandir(settings.HOME_DIR, [".flac", ".mp3"])[1]
+        self.files = run_fast_scandir(settings.HOME_DIR, full=True)[1]
         self.db_tracks = tracks_instance.get_all_tracks()
         self.tag_count = 0
         self.exist_count = 0
@@ -55,15 +55,15 @@ class Populate:
         self.tagged_tracks.sort(key=lambda x: x["albumhash"])
         self.tracks = deepcopy(self.tagged_tracks)
 
-        self.create_pre_albums()
-        self.create_albums()
+        self.pre_albums = self.create_pre_albums(self.tagged_tracks)
+        self.create_albums(self.pre_albums)
 
         self.albums.sort(key=lambda x: x.hash)
         api.ALBUMS.sort(key=lambda x: x.hash)
 
         self.save_albums()
         self.create_tracks()
-        self.create_folders()
+        # self.create_folders()
 
     def check_untagged(self):
         """
@@ -120,17 +120,21 @@ class Populate:
         d = time.time() - s
         Log(f"Tagged {len(self.tagged_tracks)} files in {d} seconds")
 
-    def create_pre_albums(self):
+    @staticmethod
+    def create_pre_albums(tracks: List[dict]):
         """
         Creates pre-albums for the all tagged tracks.
         """
-        for track in tqdm(self.tagged_tracks, desc="Creating pre-albums"):
+        prealbums = []
+
+        for track in tqdm(tracks, desc="Creating pre-albums"):
             album = {"title": track["album"], "artist": track["albumartist"]}
 
-            if album not in self.pre_albums:
-                self.pre_albums.append(album)
+            if album not in prealbums:
+                prealbums.append(album)
 
-        Log(f"Created {len(self.pre_albums)} pre-albums")
+        Log(f"Created {len(prealbums)} pre-albums")
+        return prealbums
 
     def create_album(self, album: dict):
         albumhash = create_album_hash(album["title"], album["artist"])
@@ -162,14 +166,14 @@ class Populate:
         api.ALBUMS.append(album)
         self.albums.append(album)
 
-    def create_albums(self):
+    def create_albums(self, albums: List[dict]):
         """
         Uses the pre-albums to create new albums and add them to the database.
         """
-        for album in tqdm(self.pre_albums, desc="Building albums"):
+        for album in tqdm(albums, desc="Building albums"):
             self.create_album(album)
 
-        Log(f"{self.exist_count} of {len(self.pre_albums)} albums were already in the database"
+        Log(f"{self.exist_count} of {len(albums)} albums were already in the database"
             )
 
     def create_track(self, track: dict):
@@ -216,14 +220,14 @@ class Populate:
         with ThreadPoolExecutor() as executor:
             executor.map(album_instance.insert_album, self.albums)
 
-    def create_folders(self):
-        """
-        Creates the folder objects for all the tracks.
-        """
-        for folder in tqdm(self.folders, desc="Creating folders"):
-            api.VALID_FOLDERS.add(folder)
+    # def create_folders(self):
+    #     """
+    #     Creates the folder objects for all the tracks.
+    #     """
+    #     for folder in tqdm(self.folders, desc="Creating folders"):
+    #         api.VALID_FOLDERS.add(folder)
 
-            fff = folderslib.create_folder(folder)
-            api.FOLDERS.append(fff)
+    #         fff = folderslib.create_folder(folder)
+    #         api.FOLDERS.append(fff)
 
-        Log(f"Created {len(self.folders)} new folders")
+    #     Log(f"Created {len(self.folders)} new folders")

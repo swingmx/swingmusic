@@ -71,12 +71,12 @@ def add_track(filepath: str) -> None:
 
         api.TRACKS.append(models.Track(tags))
 
-        folder = tags["folder"]
+        # folder = tags["folder"]
 
-        if folder not in api.VALID_FOLDERS:
-            api.VALID_FOLDERS.add(folder)
-            f = folderslib.create_folder(folder)
-            api.FOLDERS.append(f)
+        # if folder not in api.VALID_FOLDERS:
+        #     api.VALID_FOLDERS.add(folder)
+        #     f = folderslib.create_folder(folder)
+        #     api.FOLDERS.append(f)
 
 
 def remove_track(filepath: str) -> None:

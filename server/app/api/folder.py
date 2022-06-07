@@ -1,13 +1,10 @@
 """
 Contains all the folder routes.
 """
-import datetime
-import os
-
 from app import api
 from app import helpers
 from app import settings
-from app.lib import folderslib
+from app.lib.folderslib import getFnF
 from flask import Blueprint
 from flask import request
 
@@ -20,21 +17,14 @@ def get_folder_tree():
     Returns a list of all the folders and tracks in the given folder.
     """
     data = request.get_json()
-    req_dir = data["folder"]
+    req_dir: str = data["folder"]
 
     if req_dir == "$home":
         req_dir = settings.HOME_DIR
 
-    folders = folderslib.get_subdirs(req_dir)
-    songs = []
-
-    for track in api.TRACKS:
-        if track.folder == req_dir:
-            songs.append(track)
-
-    final_tracks = helpers.remove_duplicates(songs)
+    tracks, folders = getFnF(req_dir)()
 
     return {
-        "tracks": final_tracks,
+        "tracks": tracks,
         "folders": sorted(folders, key=lambda i: i.name),
     }

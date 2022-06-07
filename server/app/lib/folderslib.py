@@ -1,13 +1,25 @@
-import time
+from dataclasses import dataclass
+from os import scandir
+from pprint import pprint
+from time import time
+from typing import Dict
 from typing import List
 from typing import Set
-
-from tqdm import tqdm
+from typing import Tuple
 
 from app import api
 from app import helpers
-from app import models
-from progress.bar import Bar
+from app.instances import tracks_instance
+from app.lib import taglib
+from app.models import Folder
+from app.models import Track
+from tqdm import tqdm
+
+
+@dataclass
+class Dir:
+    path: str
+    is_sym: bool
 
 
 def get_valid_folders() -> None:
@@ -19,23 +31,27 @@ def get_folder_track_count(foldername: str) -> int:
     """
     Returns the number of files associated with a folder.
     """
-    track_list = [track for track in api.TRACKS if foldername in track.folder]
-    return len(track_list)
+    count = 0
+    for track in api.TRACKS:
+        if foldername in track.folder:
+            count += 1
+    return count
 
 
-def create_folder(foldername: str) -> models.Folder:
+def create_folder(dir: Dir) -> Folder:
     """Create a single Folder object"""
     folder = {
-        "name": foldername.split("/")[-1],
-        "path": foldername,
-        "trackcount": get_folder_track_count(foldername),
+        "name": dir.path.split("/")[-1],
+        "path": dir.path,
+        "is_sym": dir.is_sym,
+        "trackcount": get_folder_track_count(dir.path),
     }
 
-    return models.Folder(folder)
+    return Folder(folder)
 
 
-def create_all_folders() -> Set[models.Folder]:
-    folders: List[models.Folder] = []
+def create_all_folders() -> Set[Folder]:
+    folders: List[Folder] = []
 
     for foldername in tqdm(api.VALID_FOLDERS, desc="Creating folders"):
         folder = create_folder(foldername)
@@ -44,9 +60,9 @@ def create_all_folders() -> Set[models.Folder]:
     return folders
 
 
-def get_subdirs(foldername: str) -> List[models.Folder]:
+def get_subdirs(foldername: str) -> List[Folder]:
     """
-    Finds and Creates models.Folder objects for each sub-directory string in the foldername passed.
+    Finds and Creates Folder objects for each sub-directory string in the foldername passed.
     """
     subdirs = set()
 
@@ -73,7 +89,49 @@ def run_scandir():
     It calls the
     """
     get_valid_folders()
-    folders_ = create_all_folders()
+    # folders_ = create_all_folders()
     """Create all the folder objects before clearing api.FOLDERS"""
 
-    api.FOLDERS = folders_
+    # api.FOLDERS = folders_
+
+
+class getFnF:
+    """
+    Get files and folders from a directory.
+    """
+
+    def __init__(self, path: str) -> None:
+        self.path = path
+
+    @classmethod
+    def get_tracks(cls, files: List[str]) -> List[Track]:
+        """
+        Returns a list of Track objects for each file in the given list.
+        """
+        return helpers.UseBisection(api.TRACKS, "filepath", files)()
+
+    def __call__(self) -> Tuple[Track, Folder]:
+        try:
+            all = scandir(self.path)
+        except FileNotFoundError:
+            return ([], [])
+
+        dirs, files = [], []
+
+        for entry in all:
+            if entry.is_dir() and not entry.name.startswith("."):
+                dir = {
+                    "path": entry.path,
+                    "is_sym": entry.is_symlink(),
+                }
+                dirs.append(Dir(**dir))
+            elif entry.is_file() and entry.name.endswith((".mp3", ".flac")):
+                files.append(entry.path)
+        s = time()
+        tracks = self.get_tracks(files)
+        print(f"{time() - s} seconds to get tracks")
+
+        folders = [create_folder(dir) for dir in dirs]
+        folders = filter(lambda f: f.trackcount > 0, folders)
+
+        return (tracks, folders)
