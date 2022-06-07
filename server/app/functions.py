@@ -14,6 +14,8 @@ from app.lib.populate import Populate
 from PIL import Image
 from concurrent.futures import ThreadPoolExecutor
 
+from app.lib.trackslib import create_all_tracks
+
 
 @helpers.background
 def reindex_tracks():
@@ -40,9 +42,9 @@ def populate():
     pop = Populate()
     pop.run()
 
-    # tracks = create_all_tracks()
-    # api.TRACKS.clear()
-    # api.TRACKS.extend(tracks)
+    tracks = create_all_tracks()
+    api.TRACKS.clear()
+    api.TRACKS.extend(tracks)
 
 
 class getArtistImage:

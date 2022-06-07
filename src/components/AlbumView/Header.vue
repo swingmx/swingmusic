@@ -12,13 +12,11 @@
       </div>
       <div class="info">
         <div class="top" v-motion-slide-from-top>
-          <div
-            class="h"
-            v-if="props.album.artist.toLowerCase() == 'various artists'"
-          >
-            Compilation
+          <div class="h">
+            <span v-if="album.is_soundtrack">Soundtrack</span>
+            <span v-else-if="album.is_compilation">Compilation</span>
+            <span v-else>Album</span>
           </div>
-          <div class="h" v-else>Album</div>
           <div class="title ellip">{{ props.album.title }}</div>
         </div>
         <div class="bottom">
@@ -66,7 +64,7 @@ extrackColors();
   background-color: #000000;
   background-image: linear-gradient(37deg, $black 20%, $gray, $black 90%);
 
-.art {
+  .art {
     width: 100%;
     height: 100%;
     left: 1rem;
