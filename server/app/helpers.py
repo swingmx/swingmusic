@@ -6,9 +6,12 @@ import random
 import threading
 import time
 from datetime import datetime
-from typing import Any, Dict, List
+from typing import Any
+from typing import Dict
+from typing import List
 
-from app import models, settings
+from app import models
+from app import settings
 
 app_dir = settings.APP_DIR
 
