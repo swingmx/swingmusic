@@ -86,25 +86,41 @@ class Album:
     hash: str
     count: int = 0
     duration: int = 0
+    is_soundtrack: bool = False
+    is_compilation: bool = False
 
     def __init__(self, tags):
         self.title = tags["title"]
         self.artist = tags["artist"]
         self.date = tags["date"]
         self.image = tags["image"]
-        self.hash = helpers.create_album_hash(self.title, self.artist)
 
         try:
             self.hash = tags["albumhash"]
         except KeyError:
             self.hash = helpers.create_album_hash(self.title, self.artist)
 
+    @property
+    def is_soundtrack(self) -> bool:
+        keywords = ["motion picture", "soundtrack"]
+        for keyword in keywords:
+            if keyword in self.title.lower():
+                return True
+
+        return False
+
+    @property
+    def is_compilation(self) -> bool:
+        return self.artist.lower() == "various artists"
+
 
 def get_p_track(ptrack):
     for track in api.TRACKS:
-        if (track.title == ptrack["title"]
-                and track.artists == ptrack["artists"]
-                and ptrack["album"] == track.album):
+        if (
+            track.title == ptrack["title"]
+            and track.artists == ptrack["artists"]
+            and ptrack["album"] == track.album
+        ):
             return track
 
 

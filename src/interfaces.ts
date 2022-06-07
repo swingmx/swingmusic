@@ -31,6 +31,8 @@ interface AlbumInfo {
   duration: number;
   date: string;
   image: string;
+  is_compilation: boolean;
+  is_soundtrack: boolean;
 }
 
 interface Artist {
