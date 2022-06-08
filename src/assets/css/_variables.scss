@@ -27,6 +27,7 @@ $gray5: rgb(44, 44, 46);
 
 $red: #FF453A;
 $blue: #0A84FF;
+$darkblue: #055ee2;
 $green: rgb(20, 160, 55);
 $yellow: rgb(255, 214, 10);
 $orange: rgb(255, 159, 10);
@@ -36,9 +37,10 @@ $brown: rgb(172, 142, 104);
 $indigo: #5E5CE6;
 $teal: rgb(64, 200, 224);
 
-// 60 30 10
+
 $primary: $gray4;
-$accent: $indigo;
+$accent: $darkblue;
+$secondary: $gray5;
 $cta: $blue;
 $danger: $red;
 $track-hover: $gray4;

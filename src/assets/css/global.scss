@@ -131,10 +131,12 @@ a {
 
 #acontent {
   grid-area: content;
+  width: 100%;
   max-width: 1504px;
   padding: $small;
   padding-left: 0;
   overflow: auto;
+  margin: 0 auto;
 
   .nav {
     margin: $small;

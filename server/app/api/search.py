@@ -119,9 +119,6 @@ def search_load_more():
     type = request.args.get("type")
     index = int(request.args.get("index"))
 
-    print(type, index)
-    print(len(SEARCH_RESULTS["tracks"]))
-
     if type == "tracks":
         return {
             "tracks": SEARCH_RESULTS["tracks"][index:index + 5],

@@ -10,13 +10,13 @@
       </div>
       <div class="songlist">
         <SongItem
-          v-for="(song, index) in tracks"
-          :key="song.trackid"
-          :song="song"
+          v-for="(track, index) in tracks"
+          :key="track.trackid"
+          :song="track"
           :index="index + 1"
           @updateQueue="updateQueue"
           :isPlaying="queue.playing"
-          :isCurrent="queue.current.trackid == song.trackid"
+          :isCurrent="queue.current.trackid == track.trackid"
         />
       </div>
     </div>

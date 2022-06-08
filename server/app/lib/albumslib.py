@@ -62,11 +62,8 @@ def find_album(albums: List[models.Album], hash: str) -> int | None:
     while left <= right:
         mid = (left + right) // 2
 
-        try:
-            if albums[mid].hash == hash:
-                return mid
-        except AttributeError:
-            print(albums)
+        if albums[mid].hash == hash:
+            return mid
 
         if albums[mid].hash < hash:
             left = mid + 1

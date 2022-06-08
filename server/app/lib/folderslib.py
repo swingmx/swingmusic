@@ -104,7 +104,9 @@ class getFnF:
         """
         Returns a list of Track objects for each file in the given list.
         """
-        return helpers.UseBisection(api.TRACKS, "filepath", files)()
+        tracks = helpers.UseBisection(api.TRACKS, "filepath", files)()
+        tracks = filter(lambda t: t is not None, tracks)
+        return list(tracks)
 
     def __call__(self) -> Tuple[Track, Folder]:
         try:
@@ -128,4 +130,4 @@ class getFnF:
         folders = [create_folder(dir) for dir in dirs]
         folders = filter(lambda f: f.trackcount > 0, folders)
 
-        return (tracks, folders)
+        return tracks, folders

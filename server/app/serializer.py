@@ -14,7 +14,6 @@ def date_string_to_time_passed(prev_date: str) -> str:
 
     diff = now - then
     days = diff.days
-    print(days)
 
     if days < 0:
         return "in the future"
