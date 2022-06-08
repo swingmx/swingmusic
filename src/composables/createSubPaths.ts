@@ -2,16 +2,53 @@ import { subPath } from "@/interfaces";
 
 /**
  * Breaks a path into sub-paths.
- * @param {string} paths to break into subpaths
- * @returns {subPath[]} an array of subpaths
+ * @param {string} newpath the new path to break into sub-paths.
+ * @param {string} oldpath the old path to compare with the new path.
  */
-export default function createSubPaths(paths: string | string[]): subPath[] {
-  const pathlist = (paths as string).split("/");
-  pathlist.shift();
+export default function createSubPaths(
+  newpath: string | string[],
+  oldpath: string | string[]
+): [string, subPath[]] {
+  if (oldpath === undefined) oldpath = "";
 
-  const subPaths = pathlist.map((path, index) => {
-    return { name: path, path: pathlist.slice(0, index + 1).join("/") };
-  });
+  newpath = newpath as string;
+  oldpath = oldpath as string;
 
-  return subPaths;
+  const newlist = newpath.split("/");
+  newlist.shift();
+
+  if (oldpath.includes(newpath)) {
+    const oldlist = oldpath.split("/");
+    oldlist.shift();
+
+    const current = newlist.slice(-1)[0];
+    return [oldpath, createSubs(oldlist, current)];
+  } else {
+    const current = newlist.slice(-1)[0];
+
+    return [newpath, createSubs(newlist, current)];
+  }
+
+  function createSubs(list: string[], current: string) {
+    const paths = list.map((path, index) => {
+      return {
+        active: false,
+        name: path,
+        path: newlist.slice(0, index + 1).join("/"),
+      };
+    });
+    paths.reverse();
+
+    for (let i = 0; i < paths.length; i++) {
+      if (paths[i].name === current) {
+        paths[i].active = true;
+        break;
+      }
+    }
+
+    return paths.reverse();
+  }
 }
+
+// function that takes 2 strings as parameters and returns a string
+// that is the concatenation of the two strings

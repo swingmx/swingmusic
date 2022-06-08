@@ -2,7 +2,6 @@
   <div id="folder-nav-title">
     <div
       class="folder"
-      
       v-motion
       :initial="{
         opacity: 0,
@@ -19,7 +18,12 @@
       <div class="fname">
         <div class="icon image"></div>
         <div class="paths">
-          <div class="path" v-for="path in subPaths" :key="path.path">
+          <div
+            class="path"
+            v-for="path in subPaths"
+            :key="path.path"
+            :class="{ current: path.active }"
+          >
             <span class="text">{{ path.name }}</span>
           </div>
         </div>
@@ -119,6 +123,10 @@ defineProps<{
               background-color: $gray;
             }
           }
+        }
+
+        .current > .text {
+          background-color: $accent;
         }
       }
     }

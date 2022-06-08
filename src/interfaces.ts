@@ -89,6 +89,7 @@ interface fromSearch {
 interface subPath {
   name: string;
   path: string;
+  active: boolean;
 }
 
 export {

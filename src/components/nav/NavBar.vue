@@ -43,15 +43,15 @@ function useSubRoutes() {
     (newRoute: string) => {
       switch (newRoute) {
         case Routes.folder:
-          console.log(newRoute);
-          subPaths.value = createSubPaths(route.params.path);
+          let oldpath = "";
+          [oldpath, subPaths.value] = createSubPaths(route.params.path, oldpath);
 
           watch(
             () => route.params.path,
             (newPath) => {
               if (newPath == undefined) return;
 
-              subPaths.value = createSubPaths(newPath);
+              [oldpath, subPaths.value] = createSubPaths(newPath, oldpath);
             }
           );
           break;
