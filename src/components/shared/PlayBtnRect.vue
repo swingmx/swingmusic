@@ -1,48 +1,29 @@
 <template>
-  <div class="playbtnrect rounded" @click="play">
+  <div
+    class="playbtnrect rounded"
+    @click="usePlayFrom(source, useQStore, store)"
+  >
     <div class="icon image"></div>
     <div class="text">Play</div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { playSources } from "../../composables/enums";
+import { playSources } from "@/composables/enums";
+import usePlayFrom from "@/composables/usePlayFrom";
+import useQStore from "@/stores/queue";
+import useFStore from "@/stores/folder";
+import useAStore from "@/stores/album";
+import usePStore from "@/stores/p.ptracks";
 
-import useQStore from "../../stores/queue";
-import useFStore from "../../stores/folder";
-import useAStore from "../../stores/album";
-import usePStore from "../../stores/p.ptracks";
-
-const props = defineProps<{
+defineProps<{
   source: playSources;
+  store:
+    | typeof useQStore
+    | typeof useFStore
+    | typeof useAStore
+    | typeof usePStore;
 }>();
-
-const queue = useQStore();
-const folder = useFStore();
-const album = useAStore();
-const playlist = usePStore();
-
-function play() {
-  switch (props.source) {
-    // check which route the play request come from
-    case playSources.folder:
-      queue.playFromFolder(folder.path, folder.tracks);
-      queue.play(queue.tracks[0]);
-      break;
-    case playSources.album:
-      queue.playFromAlbum(album.info.title, album.info.artist, album.tracks);
-      queue.play(album.tracks[0]);
-      break;
-    case playSources.playlist:
-      queue.playFromPlaylist(
-        playlist.info.name,
-        playlist.info.playlistid,
-        playlist.tracks
-      );
-      queue.play(playlist.tracks[0]);
-      break;
-  }
-}
 </script>
 
 <style lang="scss">

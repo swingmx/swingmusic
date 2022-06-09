@@ -25,7 +25,7 @@
             {{ formatSeconds(album.duration, true) }} • {{ album.date }} •
             {{ album.artist }}
           </div>
-          <PlayBtnRect :source="playSources.album" />
+          <PlayBtnRect :source="playSources.album" :store="useAlbumStore" />
         </div>
       </div>
     </div>
@@ -41,6 +41,7 @@ import { AlbumInfo } from "../../interfaces";
 import PlayBtnRect from "../shared/PlayBtnRect.vue";
 import useVisibility from "@/composables/useVisibility";
 import useNavStore from "@/stores/nav";
+import useAlbumStore from "@/stores/album";
 
 defineProps<{
   album: AlbumInfo;

@@ -1,11 +1,21 @@
 <template>
-  <div class="play-btn rounded shadow-sm" @click="playThis"></div>
+  <div
+    class="play-btn rounded shadow-sm"
+    @click="usePlayFrom(source, useQStore, store)"
+  ></div>
 </template>
+
 <script setup lang="ts">
-function playThis(e: Event) {
-  e.preventDefault();
-  e.stopImmediatePropagation();
-}
+import { playSources } from "@/composables/enums";
+import useAlbumStore from "@/stores/album";
+import usePlaylistStore from "@/stores/p.ptracks";
+import usePlayFrom from "@/composables/usePlayFrom";
+import useQStore from "@/stores/queue";
+
+defineProps<{
+  source: playSources;
+  store: typeof useAlbumStore | typeof usePlaylistStore;
+}>();
 </script>
 <style lang="scss">
 .play-btn {

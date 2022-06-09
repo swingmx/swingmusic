@@ -1,6 +1,6 @@
 <template>
   <div class="title albumnavtitle" v-motion-slide-from-left-100>
-    <PlayBtn />
+    <PlayBtn :source="playSources.album" :store="useAlbumStore" />
     <div class="ellip">
       {{ store.info.title }}
     </div>
@@ -10,7 +10,7 @@
 <script setup lang="ts">
 import useAlbumStore from "@/stores/album";
 import PlayBtn from "@/components/shared/PlayBtn.vue";
-
+import { playSources } from "@/composables/enums";
 const store = useAlbumStore();
 </script>
 

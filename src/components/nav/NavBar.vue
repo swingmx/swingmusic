@@ -6,7 +6,7 @@
       </div>
 
       <div class="info">
-        <Album v-show="$route.name == Routes.album && nav.showPlay" />
+        <Album v-show="$route.name == Routes.album && !nav.showPlay" />
         <Playlists v-show="$route.name == Routes.playlists" />
         <Folder v-show="$route.name == Routes.folder" :subPaths="subPaths" />
       </div>

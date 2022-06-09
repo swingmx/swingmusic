@@ -4,7 +4,7 @@ import { Ref, watch } from "vue";
 
 export default function useVisibility(
   elem: Ref<HTMLElement>,
-  callback: () => void
+  callback: (state: boolean) => void
 ) {
   const visible = ref(false);
 
@@ -15,7 +15,7 @@ export default function useVisibility(
   watch(
     () => visible.value,
     (newVal) => {
-      callback();
+      callback(newVal);
     }
   );
 }

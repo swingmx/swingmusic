@@ -2,12 +2,11 @@ import { defineStore } from "pinia";
 
 export default defineStore("navmanagement", {
   state: () => ({
-    showPlay: true,
+    showPlay: false,
   }),
   actions: {
-    toggleShowPlay() {
-      this.showPlay = !this.showPlay;
-      console.log(this.showPlay);
+    toggleShowPlay(state: boolean) {
+      this.showPlay = state;
     },
   },
 });
