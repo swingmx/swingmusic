@@ -36,7 +36,7 @@ def get_albums():
 
 
 @album_bp.route("/album/tracks", methods=["POST"])
-def get_album_tracks():
+def get_album():
     """Returns all the tracks in the given album."""
     data = request.get_json()
 
@@ -46,10 +46,18 @@ def get_album_tracks():
     songs = trackslib.get_album_tracks(album, artist)
     albumhash = helpers.create_album_hash(album, artist)
     index = albumslib.find_album(api.ALBUMS, albumhash)
-    album = api.ALBUMS[index]
+    album: models.Album = api.ALBUMS[index]
 
     album.count = len(songs)
     album.duration = albumslib.get_album_duration(songs)
+
+    if (
+        album.count == 1
+        and songs[0].title == album.title
+        and songs[0].tracknumber == 1
+        and songs[0].disknumber == 1
+    ):
+        album.is_single = True
 
     return {"songs": songs, "info": album}
 

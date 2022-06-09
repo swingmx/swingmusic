@@ -28,7 +28,7 @@ def return_album_art(filepath: str):
             return None
 
 
-def extract_thumb(audio_file_path: str, webp_path: str) -> bool:
+def extract_thumb(filepath: str, webp_path: str) -> bool:
     """
     Extracts the thumbnail from an audio file. Returns the path to the thumbnail.
     """
@@ -37,7 +37,7 @@ def extract_thumb(audio_file_path: str, webp_path: str) -> bool:
     if os.path.exists(img_path):
         return True
 
-    album_art = return_album_art(audio_file_path)
+    album_art = return_album_art(filepath)
 
     if album_art is not None:
         img = Image.open(BytesIO(album_art))
@@ -58,98 +58,98 @@ def extract_thumb(audio_file_path: str, webp_path: str) -> bool:
         return False
 
 
-def parse_artist_tag(audio):
+def parse_artist_tag(tags):
     """
     Parses the artist tag from an audio file.
     """
     try:
-        artists = audio["artist"][0]
+        artists = tags["artist"][0]
     except (KeyError, IndexError):
         artists = "Unknown"
 
     return artists
 
 
-def parse_title_tag(audio, full_path: str):
+def parse_title_tag(tags, full_path: str):
     """
     Parses the title tag from an audio file.
     """
     try:
-        title = audio["title"][0]
+        title = tags["title"][0]
     except (KeyError, IndexError):
         title = full_path.split("/")[-1]
 
     return title
 
 
-def parse_album_artist_tag(audio):
+def parse_album_artist_tag(tags):
     """
     Parses the album artist tag from an audio file.
     """
     try:
-        albumartist = audio["albumartist"][0]
+        albumartist = tags["albumartist"][0]
     except (KeyError, IndexError):
         albumartist = "Unknown"
 
     return albumartist
 
 
-def parse_album_tag(audio, full_path: str):
+def parse_album_tag(tags, full_path: str):
     """
     Parses the album tag from an audio file.
     """
     try:
-        album = audio["album"][0]
+        album = tags["album"][0]
     except (KeyError, IndexError):
         album = full_path.split("/")[-1]
 
     return album
 
 
-def parse_genre_tag(audio):
+def parse_genre_tag(tags):
     """
     Parses the genre tag from an audio file.
     """
     try:
-        genre = audio["genre"][0]
+        genre = tags["genre"][0]
     except (KeyError, IndexError):
         genre = "Unknown"
 
     return genre
 
 
-def parse_date_tag(audio):
+def parse_date_tag(tags):
     """
     Parses the date tag from an audio file.
     """
     try:
-        date = audio["date"][0]
+        date = tags["date"][0]
     except (KeyError, IndexError):
         date = "Unknown"
 
     return date
 
 
-def parse_track_number(audio):
+def parse_track_number(tags):
     """
     Parses the track number from an audio file.
     """
     try:
-        track_number = audio["tracknumber"][0]
+        track_number = tags["tracknumber"][0]
     except (KeyError, IndexError):
-        track_number = "Unknown"
+        track_number = 1
 
     return track_number
 
 
-def parse_disk_number(audio):
+def parse_disk_number(tags):
     """
     Parses the disk number from an audio file.
     """
     try:
-        disk_number = audio["discnumber"][0]
+        disk_number = tags["disknumber"][0]
     except (KeyError, IndexError):
-        disk_number = "Unknown"
+        disk_number = 1
 
     return disk_number
 
@@ -159,21 +159,21 @@ def get_tags(fullpath: str) -> dict | None:
     Returns a dictionary of tags for a given file.
     """
     try:
-        audio = mutagen.File(fullpath, easy=True)
+        tags = mutagen.File(fullpath, easy=True)
     except MutagenError:
         return None
 
     tags = {
-        "artists": parse_artist_tag(audio),
-        "title": parse_title_tag(audio, fullpath),
-        "albumartist": parse_album_artist_tag(audio),
-        "album": parse_album_tag(audio, fullpath),
-        "genre": parse_genre_tag(audio),
-        "date": parse_date_tag(audio)[:4],
-        "tracknumber": parse_track_number(audio),
-        "discnumber": parse_disk_number(audio),
-        "length": round(audio.info.length),
-        "bitrate": round(int(audio.info.bitrate) / 1000),
+        "artists": parse_artist_tag(tags),
+        "title": parse_title_tag(tags, fullpath),
+        "albumartist": parse_album_artist_tag(tags),
+        "album": parse_album_tag(tags, fullpath),
+        "genre": parse_genre_tag(tags),
+        "date": parse_date_tag(tags)[:4],
+        "tracknumber": parse_track_number(tags),
+        "disknumber": parse_disk_number(tags),
+        "length": round(tags.info.length),
+        "bitrate": round(int(tags.info.bitrate) / 1000),
         "filepath": fullpath,
         "folder": os.path.dirname(fullpath),
     }

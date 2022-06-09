@@ -1,12 +1,10 @@
 """
 Contains all the models for objects generation and typing.
 """
-from dataclasses import dataclass
-from dataclasses import field
+from dataclasses import dataclass, field
 from typing import List
 
-from app import api
-from app import helpers
+from app import api, helpers
 from app.exceptions import TrackExistsInPlaylist
 
 
@@ -28,7 +26,7 @@ class Track:
     bitrate: int
     image: str
     tracknumber: int
-    discnumber: int
+    disknumber: int
     albumhash: str
 
     def __init__(self, tags):
@@ -43,18 +41,21 @@ class Track:
         self.album = tags["album"]
         self.folder = tags["folder"]
         self.filepath = tags["filepath"]
-        self.length = tags["length"]
         self.genre = tags["genre"]
-        self.bitrate = tags["bitrate"]
+        self.bitrate = int(tags["bitrate"])
+        self.length = int(tags["length"])
+        self.disknumber = int(tags["disknumber"])
+        self.albumhash = tags["albumhash"]
 
         try:
             self.image = tags["image"]
         except KeyError:
             print(tags)
 
-        self.tracknumber = tags["tracknumber"]
-        self.discnumber = tags["discnumber"]
-        self.albumhash = tags["albumhash"]
+        try:
+            self.tracknumber = int(tags["tracknumber"])
+        except ValueError:
+            self.tracknumber = 1
 
 
 @dataclass(slots=True)
@@ -88,6 +89,7 @@ class Album:
     duration: int = 0
     is_soundtrack: bool = False
     is_compilation: bool = False
+    is_single: bool = False
 
     def __init__(self, tags):
         self.title = tags["title"]

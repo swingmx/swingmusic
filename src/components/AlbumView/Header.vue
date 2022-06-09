@@ -15,6 +15,7 @@
           <div class="h">
             <span v-if="album.is_soundtrack">Soundtrack</span>
             <span v-else-if="album.is_compilation">Compilation</span>
+            <span v-else-if="album.is_single">Single</span>
             <span v-else>Album</span>
           </div>
           <div class="title ellip">{{ album.title }}</div>

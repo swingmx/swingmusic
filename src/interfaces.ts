@@ -1,5 +1,4 @@
-import { FromOptions } from "./composables/enums";
-import { NotifType } from "./composables/enums";
+import { FromOptions, NotifType } from "./composables/enums";
 
 interface Track {
   trackid: string;
@@ -14,7 +13,7 @@ interface Track {
   genre?: string;
   image: string;
   tracknumber?: number;
-  discnumber?: number;
+  disknumber?: number;
 }
 
 interface Folder {
@@ -33,6 +32,7 @@ interface AlbumInfo {
   image: string;
   is_compilation: boolean;
   is_soundtrack: boolean;
+  is_single: boolean;
 }
 
 interface Artist {
