@@ -4,7 +4,7 @@ export default {
       initial: {
         opacity: 0,
         x: 0,
-        y: 20
+        y: 20,
       },
       enter: {
         opacity: 1,
@@ -21,7 +21,7 @@ export default {
         opacity: 0,
         x: -20,
       },
-      enter: {
+      visible: {
         opacity: 1,
         x: 0,
         transition: {
@@ -52,17 +52,6 @@ export default {
         opacity: 1,
         transition: {
           delay: 200,
-        },
-      },
-    },
-    scale: {
-      initial: {
-        scale: 0.8,
-      },
-      enter: {
-        scale: 1,
-        transition: {
-          duration: 200,
         },
       },
     },

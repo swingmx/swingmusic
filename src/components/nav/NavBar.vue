@@ -6,6 +6,7 @@
       </div>
 
       <div class="info">
+        <Album v-show="$route.name == Routes.album" />
         <Playlists v-show="$route.name == Routes.playlists" />
         <Folder v-show="$route.name == Routes.folder" :subPaths="subPaths" />
       </div>
@@ -32,6 +33,7 @@ import createSubPaths from "@/composables/createSubPaths";
 import { subPath } from "@/interfaces";
 import Folder from "./Titles/Folder.vue";
 import Playlists from "./Titles/Playlists.vue";
+import Album from "./Titles/Album.vue";
 
 const route = useRoute();
 
@@ -44,7 +46,10 @@ function useSubRoutes() {
       switch (newRoute) {
         case Routes.folder:
           let oldpath = "";
-          [oldpath, subPaths.value] = createSubPaths(route.params.path, oldpath);
+          [oldpath, subPaths.value] = createSubPaths(
+            route.params.path,
+            oldpath
+          );
 
           watch(
             () => route.params.path,
@@ -87,6 +92,8 @@ onMounted(() => {
       .title {
         font-size: 1.5rem;
         font-weight: bold;
+        margin-top: $smaller;
+        display: flex;
       }
     }
   }

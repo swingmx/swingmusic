@@ -1,20 +1,6 @@
 <template>
   <div id="folder-nav-title">
-    <div
-      class="folder"
-      v-motion
-      :initial="{
-        opacity: 0,
-        x: -20,
-      }"
-      :visible="{
-        opacity: 1,
-        x: 0,
-        transition: {
-          delay: 100,
-        },
-      }"
-    >
+    <div class="folder" v-motion-slide-from-left-100>
       <div class="fname">
         <div class="icon image"></div>
         <div class="paths">
@@ -22,7 +8,11 @@
             class="path"
             v-for="path in subPaths"
             :key="path.path"
-            :class="{ current: path.active }"
+            :class="{ inthisfolder: path.active }"
+            v-motion-slide-from-left-100
+            @click="
+              $router.push({ name: 'FolderView', params: { path: path.path } })
+            "
           >
             <span class="text">{{ path.name }}</span>
           </div>
@@ -33,11 +23,17 @@
 </template>
 
 <script setup lang="ts">
+import { focusElem } from "@/composables/perks";
 import { subPath } from "@/interfaces";
+import { onUpdated } from "vue";
 
 defineProps<{
   subPaths: subPath[];
 }>();
+
+onUpdated(() => {
+  focusElem("inthisfolder");
+});
 </script>
 
 <style lang="scss">
@@ -68,6 +64,7 @@ defineProps<{
       margin-left: $smaller;
       overflow: auto;
       padding-right: $smaller;
+      color: rgba(255, 255, 255, 0.678);
 
       .icon {
         height: 2rem;
@@ -125,8 +122,12 @@ defineProps<{
           }
         }
 
-        .current > .text {
-          background-color: $accent;
+        .inthisfolder > .text {
+          color: #fff;
+          font-weight: bold;
+          background-color: $gray;
+
+          transition: all 0.5s;
         }
       }
     }

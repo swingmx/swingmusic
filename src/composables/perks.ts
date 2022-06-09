@@ -12,16 +12,19 @@ const putCommas = (artists: string[]) => {
   return result;
 };
 
-function focusCurrent() {
-  const elem = document.getElementsByClassName("currentInQueue")[0];
+function focusElem(className: string, delay?: number) {
+  const dom = document.getElementsByClassName(className)[0];
+  if (!delay) delay = 300;
 
-  if (elem) {
-    elem.scrollIntoView({
-      behavior: "smooth",
-      block: "center",
-      inline: "center",
-    });
-  }
+  setTimeout(() => {
+    if (dom) {
+      dom.scrollIntoView({
+        behavior: "smooth",
+        block: "center",
+        inline: "center",
+      });
+    }
+  }, delay);
 }
 
 function getElem(id: string, type: string) {
@@ -75,4 +78,4 @@ function formatSeconds(seconds: number, long?: boolean) {
   }
 }
 
-export { putCommas, focusCurrent, formatSeconds, getElem };
+export { putCommas, focusElem, formatSeconds, getElem };

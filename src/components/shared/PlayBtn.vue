@@ -9,17 +9,17 @@ function playThis(e: Event) {
 </script>
 <style lang="scss">
 .play-btn {
-  width: 2.5rem;
-  height: 2.5rem;
+  height: 2.25rem;
   background-color: $gray3;
   background-image: url("../../assets/icons/play.svg");
   background-size: 1.75rem;
+  background-repeat: no-repeat;
   background-position: 50% 50%;
   transition: all 0.25s ease-in-out;
+  aspect-ratio: 1;
 
   &:hover {
     background-color: $accent;
-    transform: scale(1.1);
   }
 }
 </style>
