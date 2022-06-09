@@ -6,7 +6,7 @@
       </div>
 
       <div class="info">
-        <Album v-show="$route.name == Routes.album" />
+        <Album v-show="$route.name == Routes.album && nav.showPlay" />
         <Playlists v-show="$route.name == Routes.playlists" />
         <Folder v-show="$route.name == Routes.folder" :subPaths="subPaths" />
       </div>
@@ -34,8 +34,10 @@ import { subPath } from "@/interfaces";
 import Folder from "./Titles/Folder.vue";
 import Playlists from "./Titles/Playlists.vue";
 import Album from "./Titles/Album.vue";
+import useNavStore from "@/stores/nav";
 
 const route = useRoute();
+const nav = useNavStore();
 
 const subPaths = ref<subPath[]>([]);
 

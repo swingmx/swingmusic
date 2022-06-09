@@ -1,0 +1,21 @@
+import { ref } from "@vue/reactivity";
+import { useIntersectionObserver } from "@vueuse/core";
+import { Ref, watch } from "vue";
+
+export default function useVisibility(
+  elem: Ref<HTMLElement>,
+  callback: () => void
+) {
+  const visible = ref(false);
+
+  useIntersectionObserver(elem, ([{ isIntersecting }], observerElement) => {
+    visible.value = isIntersecting;
+  });
+
+  watch(
+    () => visible.value,
+    (newVal) => {
+      callback();
+    }
+  );
+}

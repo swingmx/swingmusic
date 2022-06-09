@@ -1,11 +1,11 @@
 <template>
-  <div class="album-h">
+  <div class="album-h" ref="albumheaderthing">
     <div class="a-header rounded">
       <div class="art">
         <div
           class="image shadow-lg rounded"
           :style="{
-            backgroundImage: `url(&quot;${imguri + props.album.image}&quot;)`,
+            backgroundImage: `url(&quot;${imguri + album.image}&quot;)`,
           }"
           v-motion-slide-from-left
         ></div>
@@ -17,14 +17,13 @@
             <span v-else-if="album.is_compilation">Compilation</span>
             <span v-else>Album</span>
           </div>
-          <div class="title ellip">{{ props.album.title }}</div>
+          <div class="title ellip">{{ album.title }}</div>
         </div>
         <div class="bottom">
           <div class="stats">
-            {{ props.album.count }} Tracks •
-            {{ formatSeconds(props.album.duration, true) }} •
-            {{ props.album.date }} •
-            {{ props.album.artist }}
+            {{ album.count }} Tracks •
+            {{ formatSeconds(album.duration, true) }} • {{ album.date }} •
+            {{ album.artist }}
           </div>
           <PlayBtnRect :source="playSources.album" />
         </div>
@@ -34,20 +33,24 @@
 </template>
 
 <script setup lang="ts">
+import { ref } from "vue";
 import { playSources } from "../../composables/enums";
 import { formatSeconds } from "../../composables/perks";
 import { paths } from "../../config";
 import { AlbumInfo } from "../../interfaces";
 import PlayBtnRect from "../shared/PlayBtnRect.vue";
+import useVisibility from "@/composables/useVisibility";
+import useNavStore from "@/stores/nav";
 
-const imguri = paths.images.thumb;
-const props = defineProps<{
+defineProps<{
   album: AlbumInfo;
 }>();
 
-function extrackColors() {}
+const albumheaderthing = ref<HTMLElement>(null);
+const imguri = paths.images.thumb;
+const nav = useNavStore();
 
-extrackColors();
+useVisibility(albumheaderthing, nav.toggleShowPlay);
 </script>
 
 <style lang="scss">
