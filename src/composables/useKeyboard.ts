@@ -13,10 +13,14 @@ export default function (queue: any) {
     let target = e.target;
     let ctrlKey = e.ctrlKey;
 
+    function FocusedOnInput(target: any) {
+      return target.tagName === "INPUT" || target.tagName === "TEXTAREA";
+    }
+
+    if (FocusedOnInput(target)) return;
+
     switch (e.key) {
       case "ArrowRight":
-        if (target.tagName === "INPUT" || target.tagName === "TEXTAREA") return;
-
         {
           if (!key_down_fired) {
             key_down_fired = true;
@@ -33,8 +37,6 @@ export default function (queue: any) {
       case "ArrowLeft":
         {
           if (!key_down_fired) {
-            if (target.tagName === "INPUT" || target.tagName === "TEXTAREA") return;
-
             key_down_fired = true;
 
             queue.playPrev();
@@ -50,7 +52,6 @@ export default function (queue: any) {
       case " ":
         {
           if (!key_down_fired) {
-            if (target.tagName === "INPUT" || target.tagName === "TEXTAREA") return;
             e.preventDefault();
             key_down_fired = true;
 
@@ -65,14 +66,15 @@ export default function (queue: any) {
           if (!ctrlKey) return;
           e.preventDefault();
 
-
           key_down_fired = true;
         }
       }
-      case "/": {{
-        e.preventDefault();
-        focusSearchBox();
-      }}
+      case "/": {
+        {
+          e.preventDefault();
+          focusSearchBox();
+        }
+      }
     }
   });
 }

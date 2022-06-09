@@ -11,7 +11,7 @@
     <div class="carddd">
       <div class="info">
         <div class="btns">
-          <PlayBtnRect :source="playSources.playlist" />
+          <PlayBtnRect :source="playSources.playlist" :store="usePStore" />
           <Option @showDropdown="showDropdown" :src="context.src" />
         </div>
         <div class="duration">
@@ -46,7 +46,7 @@ import Option from "../shared/Option.vue";
 import pContext from "../../contexts/playlist";
 import useContextStore from "../../stores/context";
 import { paths } from "../../config";
-import { onBeforeUnmount } from "vue";
+import usePStore from "@/stores/p.ptracks";
 
 const imguri = paths.images.playlist;
 const context = useContextStore();

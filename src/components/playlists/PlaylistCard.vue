@@ -13,9 +13,6 @@
         backgroundImage: `url(${imguri + props.playlist.thumb})`,
       }"
     ></div>
-    <div class="pbtn">
-      <PlayBtn />
-    </div>
     <div class="bottom">
       <div class="name ellip">{{ props.playlist.name }}</div>
       <div class="count">

@@ -14,7 +14,6 @@
     "axios": "^0.26.1",
     "defu": "^6.0.0",
     "mitt": "^3.0.0",
-    "node-vibrant": "^3.2.1-alpha.1",
     "pinia": "^2.0.11",
     "register-service-worker": "^1.7.1",
     "sass": "^1.49.0",

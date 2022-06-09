@@ -33,6 +33,7 @@ class Track:
         try:
             self.trackid = tags["_id"]["$oid"]
         except KeyError:
+            print("No id")
             print(tags)
 
         self.title = tags["title"]

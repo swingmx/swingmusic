@@ -26,7 +26,6 @@ def create_all_tracks() -> List[models.Track]:
 
         tracks.append(models.Track(track))
 
-
     return tracks
 
 
@@ -44,8 +43,12 @@ def get_album_tracks(albumname, artist):
 def get_track_by_id(trackid: str) -> models.Track:
     """Returns api track matching an id"""
     for track in api.TRACKS:
-        if track.trackid == trackid:
-            return track
+        try:
+            if track.trackid == trackid:
+                return track
+        except AttributeError:
+            print("AttributeError")
+            print(track)
 
 
 def find_track(tracks: list, hash: str) -> int or None:

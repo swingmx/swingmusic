@@ -33,7 +33,7 @@ import ContextMenu from "./components/contextMenu.vue";
 import Modal from "./components/modal.vue";
 import Notification from "./components/Notification.vue";
 import useQStore from "./stores/queue";
-import listenForKeyboardEvents from "./composables/keyboard";
+import useShortcuts from "./composables/useKeyboard";
 import Logo from "./components/Logo.vue";
 
 const RightSideBar = Main;
@@ -42,7 +42,7 @@ const queue = useQStore();
 const app_dom = document.getElementById("app");
 
 queue.readQueue();
-listenForKeyboardEvents(queue);
+useShortcuts(queue);
 
 app_dom.addEventListener("click", (e) => {
   if (context_store.visible) {

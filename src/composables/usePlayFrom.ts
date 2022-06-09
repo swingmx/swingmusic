@@ -23,28 +23,25 @@ export default function play(
     // check which route the play request come from
     case playSources.folder:
       store = store as typeof folder;
+      const f = store();
 
-      useQueue.playFromFolder(store().path, store().tracks);
-      useQueue.play(store().tracks[0]);
+      useQueue.playFromFolder(f.path, f.tracks);
+      useQueue.play(f.tracks[0]);
       break;
     case playSources.album:
       store = store as typeof album;
+      const a = store();
 
-      useQueue.playFromAlbum(
-        store().info.title,
-        store().info.artist,
-        store().tracks
-      );
+      useQueue.playFromAlbum(a.info.title, a.info.artist, a.tracks);
       useQueue.play(store().tracks[0]);
       break;
     case playSources.playlist:
       store = store as typeof playlist;
+      const p = store();
 
-      useQueue.playFromPlaylist(
-        store().info.name,
-        store().info.playlistid,
-        store().tracks
-      );
+      if (p.tracks.length === 0) return;
+
+      useQueue.playFromPlaylist(p.info.name, p.info.playlistid, p.tracks);
       useQueue.play(store().tracks[0]);
       break;
   }
