@@ -14,7 +14,7 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import useTabStore from "../../stores/tabs";
 
 const tabs = useTabStore();

@@ -21,22 +21,23 @@
 </template>
 
 <script setup lang="ts">
-import Navigation from "./components/LeftSidebar/Navigation.vue";
+import Navigation from "@/components/LeftSidebar/Navigation.vue";
 
-import Main from "./components/RightSideBar/Main.vue";
-import nowPlaying from "./components/LeftSidebar/nowPlaying.vue";
-import NavBar from "./components/nav/NavBar.vue";
-import Tabs from "./components/RightSideBar/Tabs.vue";
-import SearchInput from "./components/RightSideBar/SearchInput.vue";
-import useContextStore from "./stores/context";
-import ContextMenu from "./components/contextMenu.vue";
-import Modal from "./components/modal.vue";
-import Notification from "./components/Notification.vue";
-import useQStore from "./stores/queue";
-import useShortcuts from "./composables/useKeyboard";
-import Logo from "./components/Logo.vue";
+import RightSideBar from "@/components/RightSideBar/Main.vue";
+import nowPlaying from "@/components/LeftSidebar/nowPlaying.vue";
+import NavBar from "@/components/nav/NavBar.vue";
+import Tabs from "@/components/RightSideBar/Tabs.vue";
+import SearchInput from "@/components/RightSideBar/SearchInput.vue";
+import useContextStore from "@/stores/context";
+import ContextMenu from "@/components/contextMenu.vue";
+import Modal from "@/components/modal.vue";
+import Notification from "@/components/Notification.vue";
+import useQStore from "@/stores/queue";
+import useShortcuts from "@/composables/useKeyboard";
+import Logo from "@/components/Logo.vue";
+import Content from "@/components/Content.vue";
+import { useRouter } from "vue-router";
 
-const RightSideBar = Main;
 const context_store = useContextStore();
 const queue = useQStore();
 const app_dom = document.getElementById("app");
@@ -48,6 +49,10 @@ app_dom.addEventListener("click", (e) => {
   if (context_store.visible) {
     context_store.hideContextMenu();
   }
+});
+
+useRouter().afterEach(() => {
+  document.getElementById("acontent")?.scrollTo(0, 0);
 });
 </script>
 
@@ -64,10 +69,6 @@ app_dom.addEventListener("click", (e) => {
     margin-bottom: 1rem;
   }
 }
-
-
-
-
 
 .r-sidebar {
   &::-webkit-scrollbar {
