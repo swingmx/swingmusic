@@ -1,6 +1,7 @@
 <template>
   <div
     class="p-header image"
+    ref="playlistheader"
     :style="[
       {
         backgroundImage: `url(${imguri + props.info.image})`,
@@ -47,10 +48,17 @@ import pContext from "../../contexts/playlist";
 import useContextStore from "../../stores/context";
 import { paths } from "../../config";
 import usePStore from "@/stores/p.ptracks";
+import useVisibility from "@/composables/useVisibility";
+import { ref } from "vue";
+import useNavStore from "@/stores/nav";
 
 const imguri = paths.images.playlist;
 const context = useContextStore();
 const modal = useModalStore();
+const nav = useNavStore();
+const playlistheader = ref(null);
+
+useVisibility(playlistheader, nav.toggleShowPlay);
 
 const props = defineProps<{
   info: Playlist;

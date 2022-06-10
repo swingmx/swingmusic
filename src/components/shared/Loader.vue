@@ -7,7 +7,7 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import useLoaderStore from "../../stores/loader";
 const loader = useLoaderStore();
 </script>

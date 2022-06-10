@@ -6,20 +6,19 @@ import { subPath } from "@/interfaces";
  * @param {string} oldpath the old path to compare with the new path.
  */
 export default function createSubPaths(
-  newpath: string | string[],
-  oldpath: string | string[]
+  newpath: string,
+  oldpath: string
 ): [string, subPath[]] {
   if (oldpath === undefined) oldpath = "";
 
-  newpath = newpath as string;
-  oldpath = oldpath as string;
-
   const newlist = newpath.split("/");
-  newlist.shift();
+
+  if (newlist[0] == "$home") {
+    newlist.shift();
+  }
 
   if (oldpath.includes(newpath)) {
     const oldlist = oldpath.split("/");
-    oldlist.shift();
 
     const current = newlist.slice(-1)[0];
     return [oldpath, createSubs(oldlist, current)];
@@ -34,7 +33,7 @@ export default function createSubPaths(
       return {
         active: false,
         name: path,
-        path: newlist.slice(0, index + 1).join("/"),
+        path: list.slice(0, index + 1).join("/"),
       };
     });
     paths.reverse();

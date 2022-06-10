@@ -6,7 +6,7 @@
       </div>
 
       <div class="info">
-        <Album v-show="$route.name == Routes.album && !nav.showPlay" />
+        <APTitle v-show="showAPTitle" />
         <Playlists v-show="$route.name == Routes.playlists" />
         <Folder v-show="$route.name == Routes.folder" :subPaths="subPaths" />
       </div>
@@ -27,53 +27,58 @@ import NavButtons from "./NavButtons.vue";
 import Loader from "../shared/Loader.vue";
 import Search from "./Search.vue";
 import { useRoute } from "vue-router";
-import { onMounted, ref, watch } from "vue";
+import { ref, watch } from "vue";
 import { Routes } from "@/composables/enums";
 import createSubPaths from "@/composables/createSubPaths";
 import { subPath } from "@/interfaces";
 import Folder from "./Titles/Folder.vue";
 import Playlists from "./Titles/Playlists.vue";
-import Album from "./Titles/Album.vue";
+import APTitle from "./Titles/APTitle.vue";
 import useNavStore from "@/stores/nav";
+
+import { computed } from "@vue/reactivity";
 
 const route = useRoute();
 const nav = useNavStore();
 
 const subPaths = ref<subPath[]>([]);
 
-function useSubRoutes() {
-  watch(
-    () => route.name,
-    (newRoute: string) => {
-      switch (newRoute) {
-        case Routes.folder:
-          let oldpath = "";
-          [oldpath, subPaths.value] = createSubPaths(
-            route.params.path,
-            oldpath
-          );
-
-          watch(
-            () => route.params.path,
-            (newPath) => {
-              if (newPath == undefined) return;
-
-              [oldpath, subPaths.value] = createSubPaths(newPath, oldpath);
-            }
-          );
-          break;
-
-        default:
-          break;
-      }
-    }
+const showAPTitle = computed(() => {
+  return (
+    (route.name == Routes.album || route.name == Routes.playlist) &&
+    !nav.h_visible
   );
-}
-
-onMounted(() => {
-  useSubRoutes();
 });
+
+watch(
+  () => route.name,
+  (newRoute: string) => {
+    switch (newRoute) {
+      case Routes.folder:
+        let oldpath = "";
+        [oldpath, subPaths.value] = createSubPaths(
+          route.params.path as string,
+          oldpath
+        );
+
+        watch(
+          () => route.params.path,
+          (newPath) => {
+            newPath = newPath as string;
+            if (newPath == undefined) return;
+
+            [oldpath, subPaths.value] = createSubPaths(newPath, oldpath);
+          }
+        );
+        break;
+      default:
+        break;
+    }
+  }
+);
 </script>
+
+<!-- !!use nav store to sync the title component!! -->
 
 <style lang="scss">
 .topnav {

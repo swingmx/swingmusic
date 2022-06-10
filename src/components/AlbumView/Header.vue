@@ -53,6 +53,8 @@ const imguri = paths.images.thumb;
 const nav = useNavStore();
 
 useVisibility(albumheaderthing, nav.toggleShowPlay);
+
+
 </script>
 
 <style lang="scss">
