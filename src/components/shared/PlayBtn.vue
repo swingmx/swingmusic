@@ -7,8 +7,8 @@
 
 <script setup lang="ts">
 import { playSources } from "@/composables/enums";
-import useAlbumStore from "@/stores/album";
-import usePlaylistStore from "@/stores/p.ptracks";
+import useAlbumStore from "@/stores/pages/album";
+import usePlaylistStore from "@/stores/pages/playlist";
 import usePlayFrom from "@/composables/usePlayFrom";
 import useQStore from "@/stores/queue";
 

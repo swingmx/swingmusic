@@ -47,10 +47,10 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref } from "vue";
-import { Playlist } from "../../interfaces";
+import usePStore from "@/stores/pages/playlist";
+import { onMounted } from "vue";
 import { updatePlaylist } from "../../composables/playlists";
-import usePStore from "../../stores/p.ptracks";
+import { Playlist } from "../../interfaces";
 
 const pStore = usePStore();
 

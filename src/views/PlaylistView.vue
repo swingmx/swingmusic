@@ -28,10 +28,10 @@
 </template>
 
 <script setup lang="ts">
-import Header from "../components/PlaylistView/Header.vue";
-import SongList from "../components/FolderView/SongList.vue";
-import FeaturedArtists from "../components/PlaylistView/FeaturedArtists.vue";
-import usePTrackStore from "../stores/p.ptracks";
+import Header from "@/components/PlaylistView/Header.vue";
+import SongList from "@/components/FolderView/SongList.vue";
+import FeaturedArtists from "@/components/PlaylistView/FeaturedArtists.vue";
+import usePTrackStore from "@/stores/pages/playlist";
 
 const playlist = usePTrackStore();
 </script>

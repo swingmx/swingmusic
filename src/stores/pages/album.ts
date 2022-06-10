@@ -1,10 +1,10 @@
 import { defineStore } from "pinia";
-import { Track, Artist, AlbumInfo } from "../interfaces";
+import { Track, Artist, AlbumInfo } from "../../interfaces";
 import {
   getAlbumTracks,
   getAlbumArtists,
   getAlbumBio,
-} from "../composables/album";
+} from "../../composables/album";
 
 export default defineStore("album", {
   state: () => ({

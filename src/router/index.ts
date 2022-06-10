@@ -1,20 +1,20 @@
 import { createRouter, createWebHashHistory } from "vue-router";
-import Home from "../views/Home.vue";
-import FolderView from "../views/FolderView.vue";
-import PlaylistView from "../views/PlaylistView.vue";
-import Playlists from "../views/Playlists.vue";
+import Home from "@/views/Home.vue";
+import FolderView from "@/views/FolderView.vue";
+import PlaylistView from "@/views/PlaylistView.vue";
+import Playlists from "@/views/Playlists.vue";
 
-import AlbumsExplorer from "../views/AlbumsExplorer.vue";
-import AlbumView from "../views/AlbumView.vue";
+import AlbumsExplorer from "@/views/AlbumsExplorer.vue";
+import AlbumView from "@/views/AlbumView.vue";
 
-import ArtistsExplorer from "../views/ArtistsExplorer.vue";
-import SettingsView from "../views/SettingsView.vue";
+import ArtistsExplorer from "@/views/ArtistsExplorer.vue";
+import SettingsView from "@/views/SettingsView.vue";
 
-import usePStore from "../stores/playlists";
-import usePTrackStore from "../stores/p.ptracks";
-import useFStore from "../stores/folder";
-import useAStore from "../stores/album";
-import state from "../composables/state";
+import usePStore from "@/stores/pages/playlists";
+import usePTrackStore from "@/stores/pages/playlist";
+import useFStore from "@/stores/pages/folder";
+import useAStore from "@/stores/pages/album";
+import state from "@/composables/state";
 
 const routes = [
   {

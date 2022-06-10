@@ -34,15 +34,15 @@
 </template>
 
 <script setup lang="ts">
+import useVisibility from "@/composables/useVisibility";
+import useNavStore from "@/stores/nav";
+import useAlbumStore from "@/stores/pages/album";
 import { ref } from "vue";
 import { playSources } from "../../composables/enums";
 import { formatSeconds } from "../../composables/perks";
 import { paths } from "../../config";
 import { AlbumInfo } from "../../interfaces";
 import PlayBtnRect from "../shared/PlayBtnRect.vue";
-import useVisibility from "@/composables/useVisibility";
-import useNavStore from "@/stores/nav";
-import useAlbumStore from "@/stores/album";
 
 defineProps<{
   album: AlbumInfo;

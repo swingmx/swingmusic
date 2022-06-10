@@ -12,10 +12,10 @@
 </template>
 
 <script setup lang="ts">
-import PlaylistCard from "../components/playlists/PlaylistCard.vue";
+import PlaylistCard from "@/components/playlists/PlaylistCard.vue";
 
-import usePStore from "../stores/playlists";
-import NewPlaylistCard from "../components/playlists/NewPlaylistCard.vue";
+import usePStore from "@/stores/pages/playlists";
+import NewPlaylistCard from "@/components/playlists/NewPlaylistCard.vue";
 const pStore = usePStore();
 </script>
 

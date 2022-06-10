@@ -1,9 +1,9 @@
 import { playSources } from "@/composables/enums";
-
+import useAStore from "@/stores/pages/album";
+import useFStore from "@/stores/pages/folder";
+import usePStore from "@/stores/pages/playlist";
 import useQStore from "@/stores/queue";
-import useFStore from "@/stores/folder";
-import useAStore from "@/stores/album";
-import usePStore from "@/stores/p.ptracks";
+
 
 const queue = useQStore;
 const folder = useFStore;

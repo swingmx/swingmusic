@@ -7,14 +7,14 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ref } from "@vue/reactivity";
 import { onBeforeRouteUpdate } from "vue-router";
 
 import SongList from "@/components/FolderView/SongList.vue";
 import FolderList from "@/components/FolderView/FolderList.vue";
 
-import useFStore from "../stores/folder";
+import useFStore from "../stores/pages/folder";
 import useLoaderStore from "../stores/loader";
 
 const loader = useLoaderStore();
@@ -24,7 +24,7 @@ const scrollable = ref(null);
 
 onBeforeRouteUpdate((to) => {
   loader.startLoading();
-  FStore.fetchAll(to.params.path)
+  FStore.fetchAll(to.params.path as string)
     .then(() => {
       scrollable.value.scrollTop = 0;
     })

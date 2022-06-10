@@ -35,7 +35,6 @@ import Notification from "@/components/Notification.vue";
 import useQStore from "@/stores/queue";
 import useShortcuts from "@/composables/useKeyboard";
 import Logo from "@/components/Logo.vue";
-import Content from "@/components/Content.vue";
 import { useRouter } from "vue-router";
 
 const context_store = useContextStore();

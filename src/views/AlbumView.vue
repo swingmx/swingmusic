@@ -23,7 +23,7 @@ import AlbumBio from "../components/AlbumView/AlbumBio.vue";
 import SongList from "../components/FolderView/SongList.vue";
 import FeaturedArtists from "../components/PlaylistView/FeaturedArtists.vue";
 
-import useAStore from "../stores/album";
+import useAStore from "../stores/pages/album";
 import { onBeforeRouteUpdate } from "vue-router";
 
 const album = useAStore();

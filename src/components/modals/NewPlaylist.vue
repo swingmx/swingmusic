@@ -21,7 +21,7 @@ import { useRoute } from "vue-router";
 import { createNewPlaylist } from "../../composables/playlists";
 import { Track } from "../../interfaces";
 import { Notification, NotifType } from "../../stores/notification";
-import usePlaylistStore from "../../stores/playlists";
+import usePlaylistStore from "@/stores/pages/playlists";
 
 const props = defineProps<{
   track?: Track;

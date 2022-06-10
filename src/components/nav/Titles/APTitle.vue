@@ -8,13 +8,13 @@
 </template>
 
 <script setup lang="ts">
-import useAlbumStore from "@/stores/album";
-import usePStore from "@/stores/p.ptracks";
-
 import PlayBtn from "@/components/shared/PlayBtn.vue";
 import { playSources, Routes } from "@/composables/enums";
+import useAlbumStore from "@/stores/pages/album";
+import usePStore from "@/stores/pages/playlist";
 import { computed } from "@vue/reactivity";
 import { useRoute } from "vue-router";
+
 
 const things = computed(() => {
   const route = useRoute();

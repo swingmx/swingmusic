@@ -11,10 +11,10 @@
 <script setup lang="ts">
 import { playSources } from "@/composables/enums";
 import usePlayFrom from "@/composables/usePlayFrom";
-import useQStore from "@/stores/queue";
 import useFStore from "@/stores/folder";
-import useAStore from "@/stores/album";
-import usePStore from "@/stores/p.ptracks";
+import useAStore from "@/stores/pages/album";
+import usePStore from "@/stores/pages/playlist";
+import useQStore from "@/stores/queue";
 
 defineProps<{
   source: playSources;
