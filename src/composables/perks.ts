@@ -14,7 +14,6 @@ const putCommas = (artists: string[]) => {
 
 function focusElem(className: string, delay?: number) {
   const dom = document.getElementsByClassName(className)[0];
-  if (!delay) delay = 300;
 
   setTimeout(() => {
     if (dom) {
@@ -24,7 +23,7 @@ function focusElem(className: string, delay?: number) {
         inline: "center",
       });
     }
-  }, delay);
+  }, delay | 300);
 }
 
 function getElem(id: string, type: string) {

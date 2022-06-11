@@ -66,13 +66,13 @@ export default defineStore("Queue", {
       this.updateCurrent(track);
 
       new Promise((resolve, reject) => {
+        this.audio.autoplay = true;
         this.audio.src = uri;
         this.audio.oncanplaythrough = resolve;
         this.audio.onerror = reject;
       })
         .then(() => {
           this.track.duration = this.audio.duration;
-
           this.audio.play().then(() => {
             this.playing = true;
             notif(track, this.playPause, this.playNext, this.playPrev);

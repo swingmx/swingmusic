@@ -2,12 +2,16 @@
   <div class="up-next">
     <div class="r-grid">
       <UpNext :next="queue.next" :playNext="queue.playNext" />
-      <div class="scrollable-r border rounded">
+      <div
+        class="scrollable-r border rounded"
+        @mouseenter="setMouseOver(true)"
+        @mouseleave="setMouseOver(false)"
+      >
         <TrackItem
           v-for="t in queue.tracks"
           :key="t.trackid"
           :track="t"
-          @playThis="playThis"
+          @playThis="queue.play(t)"
           :isCurrent="t.trackid === queue.current.trackid"
           :isPlaying="queue.playing"
         />
@@ -20,15 +24,23 @@
 <script setup lang="ts">
 import TrackItem from "../shared/TrackItem.vue";
 import useQStore from "../../stores/queue";
-import { Track } from "../../interfaces.js";
 import PlayingFrom from "./queue/playingFrom.vue";
 import UpNext from "./queue/upNext.vue";
+import { onUpdated, ref } from "vue";
+import { focusElem } from "@/composables/perks";
 
 const queue = useQStore();
+const mouseover = ref(false);
 
-function playThis(track: Track) {
-  queue.play(track);
+function setMouseOver(val: boolean) {
+  mouseover.value = val;
 }
+
+onUpdated(() => {
+  if (mouseover.value) return;
+
+  focusElem("currentInQueue");
+});
 </script>
 
 <style lang="scss">
