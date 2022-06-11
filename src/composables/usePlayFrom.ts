@@ -4,7 +4,6 @@ import useFStore from "@/stores/pages/folder";
 import usePStore from "@/stores/pages/playlist";
 import useQStore from "@/stores/queue";
 
-
 const queue = useQStore;
 const folder = useFStore;
 const album = useAStore;

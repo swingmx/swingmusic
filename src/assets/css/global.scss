@@ -21,8 +21,6 @@ body {
   image-rendering: -webkit-optimize-contrast;
 }
 
-
-
 .heading {
   font-size: 2rem;
   font-weight: bold;
@@ -87,9 +85,10 @@ a {
   }
 }
 
-.gsearch-input {
+#gsearch-input {
   grid-area: search-input;
-  border-left: solid 1px $gray3;
+  // border-left: solid 1px $gray3;
+  // border-bottom: 1px solid $gray3;
 }
 
 .topnav {

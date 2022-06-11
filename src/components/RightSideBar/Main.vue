@@ -20,10 +20,9 @@
 <script setup lang="ts">
 import Search from "./Search/Main.vue";
 import UpNext from "./Queue.vue";
-import Main from "./Home/Main.vue";
+import DashBoard from "./Home/Main.vue";
 import useTabStore from "../../stores/tabs";
-// import Search from "./Searchh.vue";
-const DashBoard = Main;
+
 const tabs = useTabStore();
 </script>
 
@@ -31,7 +30,7 @@ const tabs = useTabStore();
 .r-sidebar {
   width: 29em;
   background-color: rgba(4, 12, 34, 0.103);
-  padding: 0 0 0 $small;
+  padding: 0 $small;
 
   @include phone-only {
     display: none;

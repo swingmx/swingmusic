@@ -1,5 +1,5 @@
 <template>
-  <div class="xartist" :style="{ backgroundColor: `#${color}` }">
+  <div class="xartist" :class="{ _is_on_sidebar: alt }">
     <div
       class="artist-image image border-sm"
       :style="{ backgroundImage: `url('${imguri + artist.image}')` }"
@@ -11,15 +11,15 @@
 </template>
 
 <script setup lang="ts">
+import { Artist } from "@/interfaces";
 import { paths } from "../../config";
 
 const imguri = paths.images.artist;
 
 defineProps<{
-  artist: any;
-  color?: string;
+  artist: Artist;
+  alt?: boolean;
 }>();
-
 </script>
 
 <style lang="scss">
@@ -64,5 +64,9 @@ defineProps<{
     font-weight: 510;
     max-width: 7rem;
   }
+}
+
+._is_on_sidebar {
+  background-color: $gray4 !important;
 }
 </style>

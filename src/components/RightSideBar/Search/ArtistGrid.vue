@@ -5,6 +5,7 @@
         v-for="artist in search.artists.value"
         :key="artist.image"
         :artist="artist"
+        :alt="true"
       />
     </div>
     <LoadMore v-if="search.artists.more" @loadMore="loadMore" />
@@ -17,11 +18,9 @@ import LoadMore from "./LoadMore.vue";
 import useSearchStore from "../../../stores/search";
 const search = useSearchStore();
 
-let counter = 0;
-
 function loadMore() {
-  counter += 6;
-  search.loadArtists(counter);
+  search.updateLoadCounter("artists", 6);
+  search.loadArtists(search.loadCounter.artists);
 }
 </script>
 
@@ -30,7 +29,6 @@ function loadMore() {
   border-radius: 0.5rem;
   padding: $small;
   margin-bottom: $small;
-
 
   .xartist {
     background-color: $gray;

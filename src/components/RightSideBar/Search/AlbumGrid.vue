@@ -3,7 +3,7 @@
     <div class="grid">
       <AlbumCard
         v-for="album in search.albums.value"
-        :key="album.image"
+        :key="`${album.artist}-${album.title}`"
         :album="album"
       />
     </div>
@@ -18,11 +18,9 @@ import useSearchStore from "../../../stores/search";
 
 const search = useSearchStore();
 
-let counter = 0;
-
 function loadMore() {
-  counter += 6;
-  search.loadAlbums(counter);
+  search.updateLoadCounter("albums", 6);
+  search.loadAlbums(search.loadCounter.albums);
 }
 </script>
 

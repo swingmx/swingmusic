@@ -22,13 +22,12 @@ import useQStore from "../../../stores/queue";
 import { Track } from "../../../interfaces";
 import useSearchStore from "../../../stores/search";
 
-let counter = 0;
 const queue = useQStore();
 const search = useSearchStore();
 
 function loadMore() {
-  counter += 5;
-  search.loadTracks(counter);
+    search.updateLoadCounter("tracks", 5);
+  search.loadTracks(search.loadCounter.tracks);
 }
 
 function updateQueue(track: Track) {

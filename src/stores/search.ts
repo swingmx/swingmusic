@@ -29,6 +29,11 @@ function scrollOnLoad() {
 export default defineStore("search", () => {
   const query = useDebouncedRef(null, 600);
   const currentTab = ref("tracks");
+  const loadCounter = reactive({
+    tracks: 0,
+    albums: 0,
+    artists: 0,
+  });
 
   const tracks = reactive({
     query: "",
@@ -118,9 +123,27 @@ export default defineStore("search", () => {
       .then(() => scrollOnLoad());
   }
 
+  function updateLoadCounter(type: string, value: number) {
+    switch (type) {
+      case "tracks":
+        loadCounter.tracks += value;
+        break;
+      case "albums":
+        loadCounter.albums += value;
+        break;
+      case "artists":
+        loadCounter.artists += value;
+        break;
+    }
+  }
+
   watch(
     () => query.value,
     (newQuery) => {
+      for (const key in loadCounter) {
+        loadCounter[key] = 0;
+      }
+
       const tabs = useTabStore();
 
       if (tabs.current !== "search") {
@@ -183,6 +206,8 @@ export default defineStore("search", () => {
     artists,
     query,
     currentTab,
+    loadCounter,
+    updateLoadCounter,
     loadTracks,
     loadAlbums,
     loadArtists,

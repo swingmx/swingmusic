@@ -33,7 +33,6 @@ function playThis(track: Track) {
 
 <style lang="scss">
 .up-next {
-  padding: $small $small 0 0;
   overflow: hidden;
   height: 100%;
 
