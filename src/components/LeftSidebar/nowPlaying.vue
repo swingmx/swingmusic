@@ -78,13 +78,13 @@ const queue = useQStore();
 
   .art {
     width: 100%;
-    display: grid;
+    aspect-ratio: 1;
     place-items: center;
     margin-bottom: $small;
 
     .l-image {
-      height: 12rem;
-      width: 12rem;
+      height: 100%;
+      width: 100%;
     }
   }
 
@@ -93,7 +93,7 @@ const queue = useQStore();
     font-size: 0.75rem;
     width: max-content;
     padding: 0.2rem 0.35rem;
-    top: 13.25rem;
+    top: 14.25rem;
     left: 1.5rem;
     background-color: $black;
     border-radius: $smaller;
