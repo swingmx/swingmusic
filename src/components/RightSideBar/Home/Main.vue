@@ -14,7 +14,7 @@
 </style>
 
 <script setup lang="ts">
-import Recommendations from "../Recommendation.vue";
+import Recommendations from "./Recommendation.vue";
 import UpNext from "../queue/upNext.vue";
 import useQStore from "../../../stores/queue";
 const queue = useQStore();

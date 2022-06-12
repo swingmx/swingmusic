@@ -1,4 +1,4 @@
-import { Store } from "pinia";
+import useQStore from "@/stores/queue"
 
 let key_down_fired = false;
 
@@ -8,7 +8,8 @@ function focusSearchBox() {
   elem.focus();
 }
 
-export default function (queue: any) {
+export default function (queue: typeof useQStore) {
+  const q = queue()
   window.addEventListener("keydown", (e: any) => {
     let target = e.target;
     let ctrlKey = e.ctrlKey;
@@ -29,7 +30,7 @@ export default function (queue: any) {
               key_down_fired = false;
             }, 1000);
 
-            queue.playNext();
+            q.playNext();
           }
         }
         break;
@@ -39,7 +40,7 @@ export default function (queue: any) {
           if (!key_down_fired) {
             key_down_fired = true;
 
-            queue.playPrev();
+            q.playPrev();
 
             setTimeout(() => {
               key_down_fired = false;
@@ -55,7 +56,7 @@ export default function (queue: any) {
             e.preventDefault();
             key_down_fired = true;
 
-            queue.playPause();
+            q.playPause();
           }
         }
 

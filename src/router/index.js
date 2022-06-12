@@ -87,7 +87,6 @@ const routes = [
   },
   {
     path: "/:pathMatch(.*)",
-    // alias: "*",
     component: () => import("../views/NotFound.vue"),
   },
 ];

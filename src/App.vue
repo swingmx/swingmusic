@@ -42,7 +42,7 @@ const queue = useQStore();
 const app_dom = document.getElementById("app");
 
 queue.readQueue();
-useShortcuts(queue);
+useShortcuts(useQStore);
 
 app_dom.addEventListener("click", (e) => {
   if (context_store.visible) {
