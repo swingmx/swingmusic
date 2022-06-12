@@ -34,7 +34,7 @@ def initialize() -> None:
     albumslib.create_everything()
     folderslib.run_scandir()
     playlistlib.create_all_playlists()
-    functions.reindex_tracks()
+    # functions.reindex_tracks()
 
 
 initialize()

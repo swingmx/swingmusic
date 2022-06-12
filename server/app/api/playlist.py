@@ -12,7 +12,7 @@ from app.lib import playlistlib
 from flask import Blueprint
 from flask import request
 
-from app.helpers import create_new_date
+from app.helpers import UseBisection, create_new_date
 
 playlist_bp = Blueprint("playlist", __name__, url_prefix="/")
 
@@ -78,13 +78,12 @@ def add_track_to_playlist(playlist_id: str):
 
 @playlist_bp.route("/playlist/<playlistid>")
 def get_single_p_info(playlistid: str):
-    for p in api.PLAYLISTS:
-        if p.playlistid == playlistid:
-            tracks = p.get_tracks()
-            return {
-                "info": serializer.Playlist(p),
-                "tracks": tracks,
-            }
+    p = UseBisection(api.PLAYLISTS, "playlistid", [playlistid])()
+    playlist: models.Playlist = p[0]
+
+    if playlist is not None:
+        tracks = playlist.get_tracks()
+        return {"info": serializer.Playlist(playlist), "tracks": tracks}
 
     return {"info": {}, "tracks": []}
 
@@ -106,9 +105,10 @@ def update_playlist(playlistid: str):
         "thumb": None,
     }
 
-    for p in api.PLAYLISTS:
-        if p.playlistid == playlistid:
+    p = UseBisection(api.PLAYLISTS, "playlistid", [playlistid])()
+    p: models.Playlist = p[0]
 
+    if playlist is not None:
             if image:
                 image_, thumb_ = playlistlib.save_p_image(image, playlistid)
                 playlist["image"] = image_

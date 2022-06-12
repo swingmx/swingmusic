@@ -7,8 +7,7 @@ import time
 from app import api
 from app import instances
 from app import models
-from app.helpers import create_album_hash
-from app.lib import folderslib
+from app.helpers import UseBisection, create_album_hash
 from app.lib.albumslib import create_album
 from app.lib.albumslib import find_album
 from app.lib.taglib import get_tags
@@ -71,38 +70,22 @@ def add_track(filepath: str) -> None:
 
         api.TRACKS.append(models.Track(tags))
 
-        # folder = tags["folder"]
-
-        # if folder not in api.VALID_FOLDERS:
-        #     api.VALID_FOLDERS.add(folder)
-        #     f = folderslib.create_folder(folder)
-        #     api.FOLDERS.append(f)
-
 
 def remove_track(filepath: str) -> None:
     """
     Removes a track from the music dict.
     """
-    fname = filepath.split("/")[-1]
-    fpath = filepath.replace(fname, "")
 
     try:
-        trackid = instances.tracks_instance.get_song_by_path(
-            filepath)["_id"]["$oid"]
+        trackid = instances.tracks_instance.get_song_by_path(filepath)["_id"]["$oid"]
     except TypeError:
         print(f"💙 Watchdog Error: Error removing track {filepath} TypeError")
         return
 
-    instances.tracks_instance.remove_song_by_id(trackid)
-
-    for track in api.TRACKS:
-        if track.trackid == trackid:
-            api.TRACKS.remove(track)
-
-    for folder in api.FOLDERS:
-        if folder.path + "/" == fpath and folder.trackcount - 1 == 0:
-            api.FOLDERS.remove(folder)
-            api.VALID_FOLDERS.remove(folder.path)
+    track = UseBisection(api.TRACKS, "trackid", [trackid])()
+    if track is not None:
+        api.TRACKS.remove(track[0])
+        instances.tracks_instance.remove_song_by_id(trackid)
 
 
 class Handler(PatternMatchingEventHandler):
@@ -156,13 +139,12 @@ class Handler(PatternMatchingEventHandler):
         print("⚫ closed ~~~")
         try:
             self.files_to_process.remove(event.src_path)
+            add_track(event.src_path)
         except ValueError:
             """
             The file was already removed from the list, or it was not in the list to begin with.
             """
             pass
-
-        add_track(event.src_path)
 
 
 watch = OnMyWatch()

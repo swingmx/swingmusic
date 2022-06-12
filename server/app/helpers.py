@@ -4,9 +4,7 @@ This module contains mini functions for the server.
 import os
 import random
 import threading
-import time
 from datetime import datetime
-from typing import Any
 from typing import Dict
 from typing import List
 
@@ -62,10 +60,12 @@ def remove_duplicates(tracklist: List[models.Track]) -> List[models.Track]:
 
     while song_num < len(tracklist) - 1:
         for index, song in enumerate(tracklist):
-            if (tracklist[song_num].title == song.title
-                    and tracklist[song_num].album == song.album
-                    and tracklist[song_num].artists == song.artists
-                    and index != song_num):
+            if (
+                tracklist[song_num].title == song.title
+                and tracklist[song_num].album == song.album
+                and tracklist[song_num].artists == song.artists
+                and index != song_num
+            ):
                 tracklist.remove(song)
 
         song_num += 1
@@ -108,8 +108,7 @@ def check_artist_image(image: str) -> str:
     """
     img_name = image.replace("/", "::") + ".webp"
 
-    if not os.path.exists(os.path.join(app_dir, "images", "artists",
-                                       img_name)):
+    if not os.path.exists(os.path.join(app_dir, "images", "artists", img_name)):
         return use_memoji()
     else:
         return img_name
@@ -136,10 +135,15 @@ def create_safe_name(name: str) -> str:
 
 
 class UseBisection:
+    """
+    Uses bisection to find a list of items in another list. 
 
-    def __init__(self, list: List, search_from: str,
-                 queries: List[str]) -> None:
-        self.list = list
+    returns a list of found items with `None` items being not found 
+    items.
+    """
+
+    def __init__(self, source: List, search_from: str, queries: List[str]) -> None:
+        self.list = source
         self.queries = queries
         self.search_from = search_from
         self.list.sort(key=lambda x: getattr(x, search_from))
@@ -160,5 +164,5 @@ class UseBisection:
 
         return None
 
-    def __call__(self) -> Any:
+    def __call__(self) -> List:
         return [self.find(query) for query in self.queries]
