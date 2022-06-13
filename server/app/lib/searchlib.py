@@ -19,9 +19,9 @@ class Cutoff:
     Holds all the default cutoff values.
     """
 
-    tracks: int = 70
-    albums: int = 70
-    artists: int = 70
+    tracks: int = 80
+    albums: int = 80
+    artists: int = 80
 
 
 class Limit:
@@ -35,7 +35,6 @@ class Limit:
 
 
 class SearchTracks:
-
     def __init__(self, query) -> None:
         self.query = query
 
@@ -57,35 +56,18 @@ class SearchTracks:
 
 
 class SearchArtists:
-
-    def __init__(self, query) -> None:
+    def __init__(self, artists: set[str], query) -> None:
         self.query = query
-
-    @staticmethod
-    def get_all_artist_names() -> List[str]:
-        """
-        Gets all artist names.
-        """
-
-        artists = [track.artists for track in api.TRACKS]
-
-        f_artists = set()
-
-        for artist in artists:
-            for a in artist:
-                f_artists.add(a)
-
-        return f_artists
+        self.artists = artists
 
     def __call__(self) -> list:
         """
         Gets all artists with a given name.
         """
 
-        artists = self.get_all_artist_names()
         results = process.extract(
             self.query,
-            artists,
+            self.artists,
             scorer=fuzz.WRatio,
             score_cutoff=Cutoff.artists,
             limit=Limit.artists,
@@ -103,7 +85,6 @@ class SearchArtists:
 
 
 class SearchAlbums:
-
     def __init__(self, query) -> None:
         self.query = query
 
@@ -141,7 +122,6 @@ class SearchAlbums:
 
 
 class GetTopArtistTracks:
-
     def __init__(self, artist: str) -> None:
         self.artist = artist
 
@@ -165,6 +145,5 @@ def get_artists(artist: str) -> List[models.Track]:
     Gets all songs with a given artist.
     """
     return [
-        track for track in api.TRACKS
-        if artist.lower() in str(track.artists).lower()
+        track for track in api.TRACKS if artist.lower() in str(track.artists).lower()
     ]

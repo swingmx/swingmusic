@@ -1,10 +1,13 @@
 """
 Contains all the search routes.
 """
+from typing import List
 from app import helpers
 from app.lib import searchlib
 from flask import Blueprint
 from flask import request
+
+from server.app import instances, models
 
 search_bp = Blueprint("search", __name__, url_prefix="/")
 
@@ -13,6 +16,52 @@ SEARCH_RESULTS = {
     "albums": [],
     "artists": [],
 }
+
+
+class SearchResults:
+    """
+    Holds all the search results.
+    """
+
+    query: str = ""
+
+    class Tracks:
+        """
+        Holds all the tracks search results.
+        """
+
+        results: List[models.Track]
+
+    class Albums:
+        """
+        Holds all the albums search results.
+        """
+
+        results: List[models.Album]
+
+    class Artists:
+        """
+        Holds all the artists search results.
+        """
+
+        results: List[models.Artist]
+
+
+class DoSearch:
+    def __init__(self, query: str) -> None:
+        self.query = query
+        self.tracks = helpers.Get.get_all_tracks()
+        self.albums = helpers.Get.get_all_albums()
+        self.artists = helpers.Get.get_all_artists()
+        self.playlists = helpers.Get.get_all_playlists()
+
+    def search_tracks(self):
+        results = searchlib.SearchTracks(self.tracks, self.query)
+
+    def search_artists(self):
+        SearchResults.Artists.results = searchlib.SearchArtists(
+            self.artists, self.query
+        )
 
 
 @search_bp.route("/search/tracks", methods=["GET"])

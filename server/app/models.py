@@ -16,7 +16,7 @@ class Track:
 
     trackid: str
     title: str
-    artists: list
+    artists: list[str]
     albumartist: str
     album: str
     folder: str

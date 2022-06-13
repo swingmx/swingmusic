@@ -10,6 +10,7 @@ from typing import List
 
 from app import models
 from app import settings
+from app import instances
 
 app_dir = settings.APP_DIR
 
@@ -136,9 +137,9 @@ def create_safe_name(name: str) -> str:
 
 class UseBisection:
     """
-    Uses bisection to find a list of items in another list. 
+    Uses bisection to find a list of items in another list.
 
-    returns a list of found items with `None` items being not found 
+    returns a list of found items with `None` items being not found
     items.
     """
 
@@ -166,3 +167,38 @@ class UseBisection:
 
     def __call__(self) -> List:
         return [self.find(query) for query in self.queries]
+
+
+class Get:
+    @staticmethod
+    def get_all_tracks() -> List[models.Track]:
+        """
+        Returns all tracks
+        """
+        t = instances.tracks_instance.get_all_tracks()
+        return [models.Track(t) for t in t]
+
+    def get_all_albums() -> List[models.Album]:
+        """
+        Returns all albums
+        """
+        a = instances.album_instance.get_all_albums()
+        return [models.Album(a) for a in a]
+
+    def get_all_artists(self) -> set[str]:
+        tracks = self.get_all_tracks()
+        artists: set[str] = set()
+
+        for track in tracks:
+            for artist in track.artists:
+                artists.add(artist.lower())
+
+        return artists
+
+    @staticmethod
+    def get_all_playlists() -> List[models.Playlist]:
+        """
+        Returns all playlists
+        """
+        p = instances.playlist_instance.get_all_playlists()
+        return [models.Playlist(p) for p in p]
