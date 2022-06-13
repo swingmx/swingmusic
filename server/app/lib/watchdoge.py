@@ -148,3 +148,7 @@ class Handler(PatternMatchingEventHandler):
 
 
 watch = OnMyWatch()
+
+# TODO
+# When removing a track, check if there are other tracks in the same album,
+# if it was the last one, remove the album.

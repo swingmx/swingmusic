@@ -41,7 +41,7 @@
       />
     </div>
     <div class="submit">
-      <input type="submit" class="rounded" value="Update" />
+      <input type="submit" id="updateplaylistsubmit" class="rounded" value="Update" @click="" />
     </div>
   </form>
 </template>
@@ -98,8 +98,19 @@ function handleFile(file: File) {
   image = file;
 }
 
+let clicked = false;
+
 function update_playlist(e: Event) {
   e.preventDefault();
+
+  if (!clicked) {
+    clicked = true;
+    const elem = document.getElementById("updateplaylistsubmit") as HTMLFormElement
+    elem.value = "Updating"
+  } else {
+    return;
+  }
+
   const form = e.target as HTMLFormElement;
   const formData = new FormData(form);
 

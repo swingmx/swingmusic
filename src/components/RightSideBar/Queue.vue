@@ -2,19 +2,21 @@
   <div class="up-next">
     <div class="r-grid">
       <UpNext :next="queue.next" :playNext="queue.playNext" />
-      <div
-        class="scrollable-r border rounded"
-        @mouseenter="setMouseOver(true)"
-        @mouseleave="setMouseOver(false)"
-      >
-        <TrackItem
-          v-for="t in queue.tracks"
-          :key="t.trackid"
-          :track="t"
-          @playThis="queue.play(t)"
-          :isCurrent="t.trackid === queue.current.trackid"
-          :isPlaying="queue.playing"
-        />
+      <div class="scrollable-r border rounded">
+        <div
+          class="inner"
+          @mouseenter="setMouseOver(true)"
+          @mouseleave="setMouseOver(false)"
+        >
+          <TrackItem
+            v-for="t in queue.tracks"
+            :key="t.trackid"
+            :track="t"
+            @playThis="queue.play(t)"
+            :isCurrent="t.trackid === queue.current.trackid"
+            :isPlaying="queue.playing"
+          />
+        </div>
       </div>
       <PlayingFrom :from="queue.from" />
     </div>
@@ -62,10 +64,17 @@ onUpdated(() => {
 
     .scrollable-r {
       height: 100%;
-      padding: $small;
-      overflow: auto;
-      overflow-x: hidden;
-      scrollbar-color: grey transparent;
+      padding: $small 0 $small $small;
+      overflow: hidden;
+
+      .inner {
+        height: 100%;
+        overflow: scroll;
+        margin-top: 1rem;
+        padding-right: $small;
+        overflow-x: hidden;
+        scrollbar-color: grey transparent;
+      }
     }
   }
 }

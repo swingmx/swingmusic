@@ -20,9 +20,9 @@
         />
       </div>
     </div>
-    <div v-else-if="tracks.length === 0 && search_query">
+    <div v-else-if="tracks.length === 0">
       <div class="no-results">
-        <div class="text">Nothing down here 😑</div>
+        <div class="text">No tracks here</div>
       </div>
     </div>
   </div>
@@ -33,7 +33,6 @@ import { useRoute } from "vue-router";
 
 import SongItem from "../shared/SongItem.vue";
 
-import state from "../../composables/state";
 import useQStore from "../../stores/queue";
 import { Track } from "../../interfaces";
 
@@ -47,7 +46,6 @@ const props = defineProps<{
 }>();
 
 let route = useRoute().name;
-const search_query = state.search_query;
 
 /**
  * Plays a clicked track and updates the queue

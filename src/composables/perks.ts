@@ -19,7 +19,7 @@ function focusElem(className: string, delay?: number) {
     if (dom) {
       dom.scrollIntoView({
         behavior: "smooth",
-        block: "center",
+        block: "start",
         inline: "center",
       });
     }

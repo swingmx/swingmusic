@@ -11,7 +11,6 @@
         <ArtistGrid />
       </Tab>
     </TabsWrapper>
-    <component :is="s.currentTab" />
   </div>
 </template>
 
@@ -22,8 +21,6 @@ import TracksGrid from "./TracksGrid.vue";
 import AlbumGrid from "./AlbumGrid.vue";
 import ArtistGrid from "./ArtistGrid.vue";
 import "@/assets/css/Search/Search.scss";
-import useSearchStore from "@/stores/search";
-const s = useSearchStore();
 
 </script>
 
