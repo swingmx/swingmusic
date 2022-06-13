@@ -1,16 +1,17 @@
 """
 Contains all the album routes.
 """
+from pprint import pprint
 from typing import List
 
 from app import api
 from app import helpers
 from app import models
 from app.lib import albumslib
-from app.lib import trackslib
 from flask import Blueprint
 from flask import request
 from app.functions import FetchAlbumBio
+from app import instances
 
 album_bp = Blueprint("album", __name__, url_prefix="")
 
@@ -35,31 +36,31 @@ def get_albums():
     return {"albums": albums}
 
 
-@album_bp.route("/album/tracks", methods=["POST"])
+@album_bp.route("/album", methods=["POST"])
 def get_album():
     """Returns all the tracks in the given album."""
     data = request.get_json()
-
-    album = data["album"]
-    artist = data["artist"]
-
-    songs = trackslib.get_album_tracks(album, artist)
+    album, artist = data["album"], data["artist"]
     albumhash = helpers.create_album_hash(album, artist)
-    index = albumslib.find_album(api.ALBUMS, albumhash)
-    album: models.Album = api.ALBUMS[index]
 
-    album.count = len(songs)
-    album.duration = albumslib.get_album_duration(songs)
+    tracks = instances.tracks_instance.find_tracks_by_hash(albumhash)
+    tracks = [models.Track(t) for t in tracks]
+
+    album = instances.album_instance.find_album_by_hash(albumhash)
+    album = models.Album(album)
+
+    album.count = len(tracks)
+    album.duration = albumslib.get_album_duration(tracks)
 
     if (
         album.count == 1
-        and songs[0].title == album.title
-        and songs[0].tracknumber == 1
-        and songs[0].disknumber == 1
+        and tracks[0].title == album.title
+        and tracks[0].tracknumber == 1
+        and tracks[0].disknumber == 1
     ):
         album.is_single = True
 
-    return {"songs": songs, "info": album}
+    return {"tracks": tracks, "info": album}
 
 
 @album_bp.route("/album/bio", methods=["POST"])
@@ -80,14 +81,11 @@ def get_albumartists():
     """Returns a list of artists featured in a given album."""
     data = request.get_json()
 
-    album = data["album"]
-    artist = data["artist"]
+    album, artist = data["album"], data["artist"]
+    albumhash = helpers.create_album_hash(album, artist)
 
-    tracks: List[models.Track] = []
-
-    for track in api.TRACKS:
-        if track.album == album and track.albumartist == artist:
-            tracks.append(track)
+    tracks = instances.tracks_instance.find_tracks_by_hash(albumhash)
+    tracks = [models.Track(t) for t in tracks]
 
     artists = []
 

@@ -22,8 +22,12 @@ TrackExistsInPlaylist = exceptions.TrackExistsInPlaylist
 
 @playlist_bp.route("/playlists", methods=["GET"])
 def get_all_playlists():
+    """Returns all the playlists."""
+    dbplaylists = instances.playlist_instance.get_all_playlists()
+    dbplaylists = [models.Playlist(p) for p in dbplaylists]
+
     playlists = [
-        serializer.Playlist(p, construct_last_updated=False) for p in api.PLAYLISTS
+        serializer.Playlist(p, construct_last_updated=False) for p in dbplaylists
     ]
     playlists.sort(
         key=lambda p: datetime.strptime(p.lastUpdated, "%Y-%m-%d %H:%M:%S"),
@@ -36,7 +40,7 @@ def get_all_playlists():
 def create_playlist():
     data = request.get_json()
 
-    playlist = {
+    data = {
         "name": data["name"],
         "description": "",
         "pre_tracks": [],
@@ -45,21 +49,16 @@ def create_playlist():
         "thumb": "",
     }
 
-    try:
-        for pl in api.PLAYLISTS:
-            if pl.name == playlist["name"]:
-                raise PlaylistExists("Playlist already exists.")
+    dbp = instances.playlist_instance.get_playlist_by_name(data["name"])
 
-    except PlaylistExists as e:
-        return {"error": str(e)}, 409
+    if dbp is not None:
+        return {"message": "Playlist already exists."}, 409
 
-    upsert_id = instances.playlist_instance.insert_playlist(playlist)
+    upsert_id = instances.playlist_instance.insert_playlist(data)
     p = instances.playlist_instance.get_playlist_by_id(upsert_id)
-    pp = models.Playlist(p)
+    playlist = models.Playlist(p)
 
-    api.PLAYLISTS.append(pp)
-
-    return {"playlist": pp}, 201
+    return {"playlist": playlist}, 201
 
 
 @playlist_bp.route("/playlist/<playlist_id>/add", methods=["POST"])
@@ -70,22 +69,22 @@ def add_track_to_playlist(playlist_id: str):
 
     try:
         playlistlib.add_track(playlist_id, trackid)
-    except TrackExistsInPlaylist as e:
+    except TrackExistsInPlaylist:
         return {"error": "Track already exists in playlist"}, 409
 
     return {"msg": "I think It's done"}, 200
 
 
 @playlist_bp.route("/playlist/<playlistid>")
-def get_single_p_info(playlistid: str):
-    p = UseBisection(api.PLAYLISTS, "playlistid", [playlistid])()
-    playlist: models.Playlist = p[0]
+def get_playlist(playlistid: str):
+    p = instances.playlist_instance.get_playlist_by_id(playlistid)
+    if p is None:
+        return {"info": {}, "tracks": []}
 
-    if playlist is not None:
-        tracks = playlist.get_tracks()
-        return {"info": serializer.Playlist(playlist), "tracks": tracks}
+    playlist = models.Playlist(p)
 
-    return {"info": {}, "tracks": []}
+    tracks = playlistlib.create_playlist_tracks(playlist.pretracks)
+    return {"info": serializer.Playlist(playlist), "tracks": tracks}
 
 
 @playlist_bp.route("/playlist/<playlistid>/update", methods=["PUT"])
@@ -109,21 +108,21 @@ def update_playlist(playlistid: str):
     p: models.Playlist = p[0]
 
     if playlist is not None:
-            if image:
-                image_, thumb_ = playlistlib.save_p_image(image, playlistid)
-                playlist["image"] = image_
-                playlist["thumb"] = thumb_
+        if image:
+            image_, thumb_ = playlistlib.save_p_image(image, playlistid)
+            playlist["image"] = image_
+            playlist["thumb"] = thumb_
 
-            else:
-                playlist["image"] = p.image.split("/")[-1]
-                playlist["thumb"] = p.thumb.split("/")[-1]
+        else:
+            playlist["image"] = p.image.split("/")[-1]
+            playlist["thumb"] = p.thumb.split("/")[-1]
 
-            p.update_playlist(playlist)
-            instances.playlist_instance.update_playlist(playlistid, playlist)
+        p.update_playlist(playlist)
+        instances.playlist_instance.update_playlist(playlistid, playlist)
 
-            return {
-                "data": serializer.Playlist(p),
-            }
+        return {
+            "data": serializer.Playlist(p),
+        }
 
     return {"msg": "Something shady happened"}, 500
 

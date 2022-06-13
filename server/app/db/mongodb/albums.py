@@ -21,15 +21,16 @@ class Albums(MongoAlbums):
         """
         album = album.__dict__
         return self.collection.update_one(
-            {
-                "album": album["title"],
-                "artist": album["artist"]
-            },
-            {
-                "$set": album
-            },
+            {"album": album["title"], "artist": album["artist"]},
+            {"$set": album},
             upsert=True,
         ).upserted_id
+
+    def insert_many(self, albums: list):
+        """
+        Inserts multiple albums into the database.
+        """
+        return self.collection.insert_many(albums)
 
     def get_all_albums(self) -> list:
         """
@@ -52,9 +53,9 @@ class Albums(MongoAlbums):
         album = self.collection.find_one({"album": name, "artist": artist})
         return convert_one(album)
 
-    def get_album_by_artist(self, name: str) -> dict:
+    def find_album_by_hash(self, hash: str) -> dict:
         """
-        Returns a single album matching the artist in the query params.
+        Returns a single album matching the hash in the query params.
         """
-        album = self.collection.find_one({"albumartist": name})
+        album = self.collection.find_one({"hash": hash})
         return convert_one(album)

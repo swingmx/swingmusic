@@ -4,7 +4,7 @@ Contains all the models for objects generation and typing.
 from dataclasses import dataclass, field
 from typing import List
 
-from app import api, helpers
+from app import helpers
 from app.exceptions import TrackExistsInPlaylist
 
 
@@ -117,30 +117,6 @@ class Album:
         return self.artist.lower() == "various artists"
 
 
-def get_p_track(ptrack):
-    for track in api.TRACKS:
-        if (
-            track.title == ptrack["title"]
-            and track.artists == ptrack["artists"]
-            and ptrack["album"] == track.album
-        ):
-            return track
-
-
-def create_playlist_tracks(playlist_tracks: List) -> List[Track]:
-    """
-    Creates a list of model.Track objects from a list of playlist track dicts.
-    """
-    tracks: List[Track] = []
-
-    for t in playlist_tracks:
-        track = get_p_track(t)
-        if track is not None:
-            tracks.append(track)
-
-    return tracks
-
-
 @dataclass
 class Playlist:
     """Creates playlist objects"""
@@ -148,7 +124,7 @@ class Playlist:
     playlistid: str
     name: str
     tracks: List[Track]
-    _pre_tracks: list = field(init=False, repr=False)
+    pretracks: list = field(init=False, repr=False)
     lastUpdated: int
     image: str
     thumb: str
@@ -162,16 +138,11 @@ class Playlist:
         self.description = data["description"]
         self.image = self.create_img_link(data["image"])
         self.thumb = self.create_img_link(data["thumb"])
-        self._pre_tracks = data["pre_tracks"]
+        self.pretracks = data["pre_tracks"]
         self.tracks = []
         self.lastUpdated = data["lastUpdated"]
-        self.count = len(self._pre_tracks)
+        self.count = len(self.pretracks)
 
-    def get_tracks(self) -> List[Track]:
-        """
-        Generates and returns Track objects from pre_tracks
-        """
-        return create_playlist_tracks(self._pre_tracks)
 
     def create_img_link(self, image: str):
         if image:
@@ -180,11 +151,11 @@ class Playlist:
         return "default.webp"
 
     def update_count(self):
-        self.count = len(self._pre_tracks)
+        self.count = len(self.pretracks)
 
     def add_track(self, track):
-        if track not in self._pre_tracks:
-            self._pre_tracks.append(track)
+        if track not in self.pretracks:
+            self.pretracks.append(track)
             self.update_count()
             self.lastUpdated = helpers.create_new_date()
         else:

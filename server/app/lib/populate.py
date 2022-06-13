@@ -1,4 +1,5 @@
 import os
+from pprint import pprint
 import time
 from concurrent.futures import ThreadPoolExecutor
 from copy import deepcopy
@@ -12,7 +13,6 @@ from app.helpers import create_album_hash
 from app.helpers import run_fast_scandir
 from app.instances import album_instance
 from app.instances import tracks_instance
-from app.lib import folderslib
 from app.lib.albumslib import create_album
 from app.lib.albumslib import find_album
 from app.lib.taglib import get_tags
@@ -44,6 +44,7 @@ class Populate:
         self.db_tracks = tracks_instance.get_all_tracks()
         self.tag_count = 0
         self.exist_count = 0
+        self.tracks = []
 
     def run(self):
         self.check_untagged()
@@ -53,17 +54,14 @@ class Populate:
             return
 
         self.tagged_tracks.sort(key=lambda x: x["albumhash"])
-        self.tracks = deepcopy(self.tagged_tracks)
 
         self.pre_albums = self.create_pre_albums(self.tagged_tracks)
         self.create_albums(self.pre_albums)
 
         self.albums.sort(key=lambda x: x.hash)
-        api.ALBUMS.sort(key=lambda x: x.hash)
-
-        self.save_albums()
         self.create_tracks()
-        # self.create_folders()
+
+        self.save_all()
 
     def check_untagged(self):
         """
@@ -84,7 +82,6 @@ class Populate:
 
             t["albumhash"] = create_album_hash(t["album"], t["albumartist"])
             self.tagged_tracks.append(t)
-            api.DB_TRACKS.append(t)
 
             self.folders.add(t["folder"])
 
@@ -95,8 +92,7 @@ class Populate:
             folder = tags["folder"]
             self.folders.add(folder)
 
-            tags["albumhash"] = create_album_hash(tags["album"],
-                                                  tags["albumartist"])
+            tags["albumhash"] = create_album_hash(tags["album"], tags["albumartist"])
             self.tagged_tracks.append(tags)
             api.DB_TRACKS.append(tags)
 
@@ -109,13 +105,6 @@ class Populate:
         print(f"Started tagging files")
         with ThreadPoolExecutor() as executor:
             executor.map(self.get_tags, self.files)
-
-        # with Pool(maxtasksperchild=10, processes=10) as p:
-        #     tags = p.map(get_tags, tqdm(self.files))
-        #     self.process_tags(tags)
-
-        # for t in tqdm(self.files):
-        #     self.get_tags(t)
 
         d = time.time() - s
         Log(f"Tagged {len(self.tagged_tracks)} files in {d} seconds")
@@ -147,7 +136,6 @@ class Populate:
             self.exist_count += 1
             return
 
-        self.albums.sort(key=lambda x: x.hash)
         index = find_track(self.tagged_tracks, albumhash)
 
         if index is None:
@@ -163,7 +151,6 @@ class Populate:
 
         album = Album(album)
 
-        api.ALBUMS.append(album)
         self.albums.append(album)
 
     def create_albums(self, albums: List[dict]):
@@ -173,8 +160,7 @@ class Populate:
         for album in tqdm(albums, desc="Building albums"):
             self.create_album(album)
 
-        Log(f"{self.exist_count} of {len(albums)} albums were already in the database"
-            )
+        Log(f"{self.exist_count} of {len(albums)} albums were already in the database")
 
     def create_track(self, track: dict):
         """
@@ -196,38 +182,25 @@ class Populate:
             pass
 
         track["image"] = album.image
-
-        upsert_id = tracks_instance.insert_song(track)
-        track["_id"] = {"$oid": str(upsert_id)}
-
-        api.TRACKS.append(Track(track))
+        return track
 
     def create_tracks(self):
         """
         Loops through all the tagged tracks creating complete track objects using the `models.Track` model.
         """
         with ThreadPoolExecutor() as executor:
-            executor.map(self.create_track, self.tagged_tracks)
+            iterable = executor.map(self.create_track, self.tagged_tracks)
 
-        Log(f"Added {len(self.tagged_tracks)} new tracks and {len(self.albums)} new albums"
-            )
+            self.tracks = [t for t in iterable if t is not None]
 
-    def save_albums(self):
+        Log(
+            f"Added {len(self.tagged_tracks)} new tracks and {len(self.albums)} new albums"
+        )
+
+    def save_all(self):
         """
         Saves the albums to the database.
         """
 
-        with ThreadPoolExecutor() as executor:
-            executor.map(album_instance.insert_album, self.albums)
-
-    # def create_folders(self):
-    #     """
-    #     Creates the folder objects for all the tracks.
-    #     """
-    #     for folder in tqdm(self.folders, desc="Creating folders"):
-    #         api.VALID_FOLDERS.add(folder)
-
-    #         fff = folderslib.create_folder(folder)
-    #         api.FOLDERS.append(fff)
-
-    #     Log(f"Created {len(self.folders)} new folders")
+        album_instance.insert_many([a.__dict__ for a in self.albums])
+        tracks_instance.insert_many(self.tracks)

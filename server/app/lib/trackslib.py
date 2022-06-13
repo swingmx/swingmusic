@@ -2,31 +2,25 @@
 This library contains all the functions related to tracks.
 """
 import os
+from pprint import pprint
 from typing import List
 
-from app import api
-from app import instances
-from app import models
+from app import api, instances, models
 from app.helpers import remove_duplicates
 from tqdm import tqdm
 
 
-def create_all_tracks() -> List[models.Track]:
+def validate_tracks() -> None:
     """
     Gets all songs under the ~/ directory.
     """
-    tracks: list[models.Track] = []
+    entries = instances.tracks_instance.get_all_tracks()
 
-    for track in tqdm(api.DB_TRACKS, desc="Creating tracks"):
+    for track in tqdm(entries, desc="Validating tracks"):
         try:
             os.chmod(track["filepath"], 0o755)
         except FileNotFoundError:
             instances.tracks_instance.remove_song_by_id(track["_id"]["$oid"])
-            api.DB_TRACKS.remove(track)
-
-        tracks.append(models.Track(track))
-
-    return tracks
 
 
 def get_album_tracks(albumname, artist):
@@ -48,7 +42,6 @@ def get_track_by_id(trackid: str) -> models.Track:
                 return track
         except AttributeError:
             print("AttributeError")
-            print(track)
 
 
 def find_track(tracks: list, hash: str) -> int or None:
@@ -73,3 +66,9 @@ def find_track(tracks: list, hash: str) -> int or None:
             right = mid - 1
 
     return None
+
+
+def get_p_track(ptrack):
+    return instances.tracks_instance.find_track_by_title_artists_album(
+        ptrack["title"], ptrack["artists"], ptrack["album"]
+    )

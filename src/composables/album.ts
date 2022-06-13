@@ -9,13 +9,13 @@ const getAlbumTracks = async (album: string, artist: string) => {
   };
 
   await axios
-    .post(state.settings.uri + "/album/tracks", {
+    .post(state.settings.uri + "/album", {
       album: album,
       artist: artist,
     })
     .then((res) => {
       data.info = res.data.info;
-      data.tracks = res.data.songs;
+      data.tracks = res.data.tracks;
     })
     .catch((err: AxiosError) => {
       console.error(err);

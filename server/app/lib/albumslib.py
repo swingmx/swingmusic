@@ -4,12 +4,8 @@ This library contains all the functions related to albums.
 import random
 from typing import List
 
-from app import api
-from app import helpers
-from app import instances
-from app import models
-from app.lib import taglib
-from app.lib import trackslib
+from app import api, helpers, instances, models
+from app.lib import taglib, trackslib
 from tqdm import tqdm
 
 
@@ -30,21 +26,12 @@ def get_all_albums() -> List[models.Album]:
     return albums
 
 
-def create_everything() -> List[models.Track]:
+def validate() -> None:
     """
     Creates album objects for all albums and returns
     a list of track objects
     """
-    albums: list[models.Album] = get_all_albums()
 
-    api.ALBUMS = albums
-    api.ALBUMS.sort(key=lambda x: x.hash)
-
-    tracks = trackslib.create_all_tracks()
-
-    api.TRACKS.clear()
-    api.TRACKS.extend(tracks)
-    api.TRACKS.sort(key=lambda x: x.title)
 
 
 def find_album(albums: List[models.Album], hash: str) -> int | None:
@@ -142,8 +129,6 @@ class GetAlbumTracks:
             self.tracks.remove(track)
             index = trackslib.find_track(self.tracks, self.hash)
 
-        # self.tracks.extend(tracks)
-        # self.tracks.sort(key=lambda x: x["albumhash"])
         return tracks
 
 

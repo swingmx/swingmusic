@@ -2,9 +2,7 @@
 This file contains the AllSongs class for interacting with track documents in MongoDB.
 """
 import pymongo
-from app.db.mongodb import convert_many
-from app.db.mongodb import convert_one
-from app.db.mongodb import MongoTracks
+from app.db.mongodb import MongoTracks, convert_many, convert_one
 from bson import ObjectId
 
 
@@ -24,17 +22,23 @@ class Tracks(MongoTracks):
             {"filepath": song_obj["filepath"]}, {"$set": song_obj}, upsert=True
         ).upserted_id
 
+    def insert_many(self, songs: list):
+        """
+        Inserts multiple songs into the database.
+        """
+        return self.collection.insert_many(songs)
+
     def get_all_tracks(self) -> list:
         """
         Returns all tracks in the database.
         """
         return convert_many(self.collection.find())
 
-    def get_song_by_id(self, file_id: str) -> dict:
+    def get_track_by_id(self, id: str) -> dict:
         """
         Returns a track object by its mongodb id.
         """
-        song = self.collection.find_one({"_id": ObjectId(file_id)})
+        song = self.collection.find_one({"_id": ObjectId(id)})
         return convert_one(song)
 
     def get_song_by_album(self, name: str, artist: str) -> dict:
@@ -81,9 +85,18 @@ class Tracks(MongoTracks):
 
     def find_songs_by_folder_og(self, query: str) -> list:
         """
-        Returns an unsorted list of all the tracks exactly matching the folder in the query params
+        Returns an unsorted list of all the track matching the folder in the query params
         """
         songs = self.collection.find({"folder": query})
+        return convert_many(songs)
+
+    def find_tracks_inside_path_regex(self, path: str) -> list:
+        """
+        Returns a list of all the tracks matching the path in the query params.
+        """
+        songs = self.collection.find(
+            {"filepath": {"$regex": f"^{path}", "$options": "i"}}
+        )
         return convert_many(songs)
 
     def find_songs_by_artist(self, query: str) -> list:
@@ -128,3 +141,21 @@ class Tracks(MongoTracks):
             return True
         except:
             return False
+
+    def find_tracks_by_hash(self, hash: str) -> list:
+        """
+        Returns a list of all the tracks matching the hash in the query params.
+        """
+        songs = self.collection.find({"albumhash": hash})
+        return convert_many(songs)
+
+    def find_track_by_title_artists_album(
+        self, title: str, artist: str, album: str
+    ) -> dict:
+        """
+        Returns a single track matching the title, artist, and album in the query params.
+        """
+        song = self.collection.find_one(
+            {"title": title, "artists": artist, "album": album}
+        )
+        return convert_one(song)

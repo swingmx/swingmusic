@@ -14,7 +14,9 @@ from app.lib.populate import Populate
 from PIL import Image
 from concurrent.futures import ThreadPoolExecutor
 
-from app.lib.trackslib import create_all_tracks
+from app.lib.trackslib import validate_tracks
+from app.lib import trackslib
+from server.app import instances, models
 
 
 @helpers.background
@@ -24,6 +26,8 @@ def reindex_tracks():
     """
 
     while True:
+        trackslib.validate_tracks()
+
         populate()
         CheckArtistImages()()
 
@@ -41,10 +45,6 @@ def start_watchdog():
 def populate():
     pop = Populate()
     pop.run()
-
-    tracks = create_all_tracks()
-    api.TRACKS.clear()
-    api.TRACKS.extend(tracks)
 
 
 class getArtistImage:
@@ -104,11 +104,11 @@ class CheckArtistImages:
         """
         Loops through all the tracks and gathers all the artists.
         """
+        ar = instances.tracks_instance.get_all_tracks()
+        tracks = [models.Track(t) for t in ar]
 
-        for song in api.DB_TRACKS:
-            this_artists: list = song["artists"].split(", ")
-
-            for artist in this_artists:
+        for t in tracks:
+            for artist in t.artists:
                 if artist not in self.artists:
                     self.artists.append(artist)
 
