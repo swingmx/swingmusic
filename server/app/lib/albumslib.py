@@ -157,21 +157,3 @@ def create_album(track: dict, tracklist: list) -> dict:
     # album["image"] = "".join(x for x in albumhash if x not in "\/:*?<>|")
 
     return album
-
-
-def search_albums_by_name(query: str) -> List[models.Album]:
-    """
-    Searches albums by album name.
-    """
-    title_albums: List[models.Album] = []
-    artist_albums: List[models.Album] = []
-
-    for album in api.ALBUMS:
-        if query.lower() in album.title.lower():
-            title_albums.append(album)
-
-    for album in api.ALBUMS:
-        if query.lower() in album.artist.lower():
-            artist_albums.append(album)
-
-    return [*title_albums, *artist_albums]

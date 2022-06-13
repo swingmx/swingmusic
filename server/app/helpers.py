@@ -5,7 +5,7 @@ import os
 import random
 import threading
 from datetime import datetime
-from typing import Dict
+from typing import Dict, Set
 from typing import List
 
 from app import models
@@ -185,9 +185,9 @@ class Get:
         a = instances.album_instance.get_all_albums()
         return [models.Album(a) for a in a]
 
-    def get_all_artists(self) -> set[str]:
+    def get_all_artists(self) -> Set[str]:
         tracks = self.get_all_tracks()
-        artists: set[str] = set()
+        artists: Set[str] = set()
 
         for track in tracks:
             for artist in track.artists:

@@ -24,62 +24,91 @@ class SearchResults:
     """
 
     query: str = ""
-
-    class Tracks:
-        """
-        Holds all the tracks search results.
-        """
-
-        results: List[models.Track]
-
-    class Albums:
-        """
-        Holds all the albums search results.
-        """
-
-        results: List[models.Album]
-
-    class Artists:
-        """
-        Holds all the artists search results.
-        """
-
-        results: List[models.Artist]
+    tracks: list[models.Track]
+    albums: list[models.Album]
+    playlists: list[models.Playlist]
+    artists: list[models.Artist]
 
 
 class DoSearch:
+    """Class containing the methods that perform searching."""
+
     def __init__(self, query: str) -> None:
+        """
+        :param :str:`query`: the search query.
+        """
         self.query = query
-        self.tracks = helpers.Get.get_all_tracks()
-        self.albums = helpers.Get.get_all_albums()
-        self.artists = helpers.Get.get_all_artists()
-        self.playlists = helpers.Get.get_all_playlists()
+        SearchResults.query = query
 
     def search_tracks(self):
-        results = searchlib.SearchTracks(self.tracks, self.query)
+        """Calls :class:`SearchTracks` which returns the tracks that fuzzily match
+        the search terms. Then adds them to the `SearchResults` store.
+        """
+        self.tracks = helpers.Get.get_all_tracks()
+        tracks = searchlib.SearchTracks(self.tracks, self.query)()
+        SearchResults.tracks = tracks
+
+        return tracks
 
     def search_artists(self):
-        SearchResults.Artists.results = searchlib.SearchArtists(
-            self.artists, self.query
-        )
+        """Calls :class:`SearchArtists` which returns the artists that fuzzily match
+        the search term. Then adds them to the `SearchResults` store.
+        """
+        self.artists = helpers.Get.get_all_artists()
+        artists = searchlib.SearchArtists(self.artists, self.query)()
+        SearchResults.artists = artists
+
+        return artists
+
+    def search_albums(self):
+        """Calls :class:`SearchAlbums` which returns the albums that fuzzily match
+        the search term. Then adds them to the `SearchResults` store.
+        """
+        self.albums = helpers.Get.get_all_albums()
+        albums = searchlib.SearchAlbums(self.albums, self.query)()
+        SearchResults.albums = albums
+
+        return albums
+
+    def search_playlists(self):
+        """Calls :class:`SearchPlaylists` which returns the playlists that fuzzily match
+        the search term. Then adds them to the `SearchResults` store.
+        """
+        self.playlists = helpers.Get.get_all_playlists()
+        playlists = searchlib.SearchPlaylists(self.playlists, self.query)
+        SearchResults.playlists = playlists
+
+        return playlists
+
+    def search_all(self):
+        """Calls all the search methods."""
+        self.search_tracks()
+        self.search_albums()
+        self.search_artists()
+        self.search_playlists()
 
 
 @search_bp.route("/search/tracks", methods=["GET"])
 def search_tracks():
     """
-    Searches for tracks.
+    Searches for tracks that match the search query.
     """
 
     query = request.args.get("q")
     if not query:
         return {"error": "No query provided"}, 400
 
-    results = searchlib.SearchTracks(query)()
-    SEARCH_RESULTS["tracks"] = results
+    if SearchResults.query == query and len(SearchResults.tracks) > 0:
+        return {
+            "tracks": SearchResults.tracks[:5],
+            "more": len(SearchResults.tracks) > 5,
+        }, 200
+
+    tracks = DoSearch(query).search_tracks()
 
     return {
-        "tracks": results[:5],
-        "more": len(results) > 5,
+        "tracks": tracks[:5],
+        "more": len(tracks) > 5,
     }, 200
 
 
@@ -93,12 +122,17 @@ def search_albums():
     if not query:
         return {"error": "No query provided"}, 400
 
-    results = searchlib.SearchAlbums(query)()
-    SEARCH_RESULTS["albums"] = results
+    if SearchResults.query == query and len(SearchResults.albums) > 0:
+        return {
+            "albums": SearchResults.albums[:6],
+            "more": len(SearchResults.albums) > 6,
+        }, 200
+
+    tracks = DoSearch(query).search_albums()
 
     return {
-        "albums": results[:6],
-        "more": len(results) > 6,
+        "albums": tracks[:6],
+        "more": len(tracks) > 6,
     }, 200
 
 
@@ -112,13 +146,39 @@ def search_artists():
     if not query:
         return {"error": "No query provided"}, 400
 
-    results = searchlib.SearchArtists(query)()
-    SEARCH_RESULTS["artists"] = results
+    if SearchResults.query == query and len(SearchResults.artists) > 0:
+        return {
+            "artists": SearchResults.artists[:6],
+            "more": len(SearchResults.artists) > 6,
+        }, 200
+
+    artists = DoSearch(query).search_artists()
 
     return {
-        "artists": results[:6],
-        "more": len(results) > 6,
+        "artists": artists[:6],
+        "more": len(artists) > 6,
     }, 200
+
+
+@search_bp.route("/search/top", methods=["GET"])
+def get_top_results():
+    """
+    Returns the top results for the search query.
+    """
+
+    query = request.args.get("q")
+    if not query:
+        return {"error": "No query provided"}, 400
+
+    DoSearch(query).search_all()
+
+    max = 2
+    return {
+        "tracks": SearchResults.tracks[:max],
+        "albums": SearchResults.albums[:max],
+        "artists": SearchResults.artists[:max],
+        "playlists": SearchResults.playlists[:max],
+    }
 
 
 @search_bp.route("/search")
