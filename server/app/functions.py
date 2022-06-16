@@ -14,9 +14,8 @@ from app.lib.populate import Populate
 from PIL import Image
 from concurrent.futures import ThreadPoolExecutor
 
-from app.lib.trackslib import validate_tracks
 from app.lib import trackslib
-from server.app import instances, models
+from app import instances, models
 
 
 @helpers.background
@@ -100,18 +99,6 @@ class CheckArtistImages:
         else:
             return False
 
-    def gather_artists(self):
-        """
-        Loops through all the tracks and gathers all the artists.
-        """
-        ar = instances.tracks_instance.get_all_tracks()
-        tracks = [models.Track(t) for t in ar]
-
-        for t in tracks:
-            for artist in t.artists:
-                if artist not in self.artists:
-                    self.artists.append(artist)
-
     @classmethod
     def download_image(cls, artistname: str):
         """
@@ -123,7 +110,7 @@ class CheckArtistImages:
         img_path = (
             helpers.app_dir
             + "/images/artists/"
-            + artistname.replace("/", "::")
+            + helpers.create_safe_name(artistname)
             + ".webp"
         )
 
@@ -138,7 +125,7 @@ class CheckArtistImages:
         useImageDownloader(url, img_path)()
 
     def __call__(self):
-        self.gather_artists()
+        self.artists = helpers.Get.get_all_artists()
 
         with ThreadPoolExecutor() as pool:
             pool.map(self.download_image, self.artists)

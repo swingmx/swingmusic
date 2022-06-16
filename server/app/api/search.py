@@ -1,13 +1,15 @@
 """
 Contains all the search routes.
 """
+from pprint import pprint
 from typing import List
 from app import helpers
 from app.lib import searchlib
 from flask import Blueprint
 from flask import request
 
-from server.app import instances, models
+from app import models
+from app import serializer
 
 search_bp = Blueprint("search", __name__, url_prefix="/")
 
@@ -24,10 +26,10 @@ class SearchResults:
     """
 
     query: str = ""
-    tracks: list[models.Track]
-    albums: list[models.Album]
-    playlists: list[models.Playlist]
-    artists: list[models.Artist]
+    tracks: list[models.Track] = []
+    albums: list[models.Album] = []
+    playlists: list[models.Playlist] = []
+    artists: list[models.Artist] = []
 
 
 class DoSearch:
@@ -64,8 +66,8 @@ class DoSearch:
         """Calls :class:`SearchAlbums` which returns the albums that fuzzily match
         the search term. Then adds them to the `SearchResults` store.
         """
-        self.albums = helpers.Get.get_all_albums()
-        albums = searchlib.SearchAlbums(self.albums, self.query)()
+        albums = helpers.Get.get_all_albums()
+        albums = searchlib.SearchAlbums(albums, self.query)()
         SearchResults.albums = albums
 
         return albums
@@ -74,8 +76,10 @@ class DoSearch:
         """Calls :class:`SearchPlaylists` which returns the playlists that fuzzily match
         the search term. Then adds them to the `SearchResults` store.
         """
-        self.playlists = helpers.Get.get_all_playlists()
-        playlists = searchlib.SearchPlaylists(self.playlists, self.query)
+        playlists = helpers.Get.get_all_playlists()
+        playlists = [serializer.Playlist(playlist) for playlist in playlists]
+
+        playlists = searchlib.SearchPlaylists(playlists, self.query)()
         SearchResults.playlists = playlists
 
         return playlists
@@ -98,17 +102,11 @@ def search_tracks():
     if not query:
         return {"error": "No query provided"}, 400
 
-    if SearchResults.query == query and len(SearchResults.tracks) > 0:
-        return {
-            "tracks": SearchResults.tracks[:5],
-            "more": len(SearchResults.tracks) > 5,
-        }, 200
-
     tracks = DoSearch(query).search_tracks()
 
     return {
-        "tracks": tracks[:5],
-        "more": len(tracks) > 5,
+        "tracks": tracks[:6],
+        "more": len(tracks) > 6,
     }, 200
 
 
@@ -121,12 +119,6 @@ def search_albums():
     query = request.args.get("q")
     if not query:
         return {"error": "No query provided"}, 400
-
-    if SearchResults.query == query and len(SearchResults.albums) > 0:
-        return {
-            "albums": SearchResults.albums[:6],
-            "more": len(SearchResults.albums) > 6,
-        }, 200
 
     tracks = DoSearch(query).search_albums()
 
@@ -146,17 +138,29 @@ def search_artists():
     if not query:
         return {"error": "No query provided"}, 400
 
-    if SearchResults.query == query and len(SearchResults.artists) > 0:
-        return {
-            "artists": SearchResults.artists[:6],
-            "more": len(SearchResults.artists) > 6,
-        }, 200
-
     artists = DoSearch(query).search_artists()
 
     return {
         "artists": artists[:6],
         "more": len(artists) > 6,
+    }, 200
+
+
+@search_bp.route("/search/playlists", methods=["GET"])
+def search_playlists():
+    """
+    Searches for playlists.
+    """
+
+    query = request.args.get("q")
+    if not query:
+        return {"error": "No query provided"}, 400
+
+    playlists = DoSearch(query).search_playlists()
+
+    return {
+        "playlists": playlists[:6],
+        "more": len(playlists) > 6,
     }, 200
 
 
@@ -220,19 +224,22 @@ def search_load_more():
     index = int(request.args.get("index"))
 
     if type == "tracks":
+        t = SearchResults.tracks
         return {
-            "tracks": SEARCH_RESULTS["tracks"][index : index + 5],
-            "more": len(SEARCH_RESULTS["tracks"]) > index + 5,
+            "tracks": t[index : index + 5],
+            "more": len(t) > index + 5,
         }
 
     elif type == "albums":
+        a = SearchResults.albums
         return {
-            "albums": SEARCH_RESULTS["albums"][index : index + 6],
-            "more": len(SEARCH_RESULTS["albums"]) > index + 6,
+            "albums": a[index : index + 6],
+            "more": len(a) > index + 6,
         }
 
     elif type == "artists":
+        a = SearchResults.artists
         return {
-            "artists": SEARCH_RESULTS["artists"][index : index + 6],
-            "more": len(SEARCH_RESULTS["artists"]) > index + 6,
+            "artists": a[index : index + 6],
+            "more": len(a) > index + 6,
         }

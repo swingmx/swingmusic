@@ -91,6 +91,7 @@ def get_albumartists():
 
     for track in tracks:
         for artist in track.artists:
+            artist = artist.lower()
             if artist not in artists:
                 artists.append(artist)
 
@@ -98,7 +99,7 @@ def get_albumartists():
     for artist in artists:
         artist_obj = {
             "name": artist,
-            "image": helpers.check_artist_image(artist),
+            "image": helpers.check_artist_image(helpers.create_safe_name(artist)),
         }
         final_artists.append(artist_obj)
 

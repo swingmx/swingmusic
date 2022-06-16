@@ -26,7 +26,7 @@ const queue = useQStore();
 const search = useSearchStore();
 
 function loadMore() {
-  search.updateLoadCounter("tracks", 5);
+  search.updateLoadCounter("tracks");
   search.loadTracks(search.loadCounter.tracks);
 }
 

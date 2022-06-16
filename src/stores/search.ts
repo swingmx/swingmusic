@@ -123,16 +123,16 @@ export default defineStore("search", () => {
       .then(() => scrollOnLoad());
   }
 
-  function updateLoadCounter(type: string, value: number) {
+  function updateLoadCounter(type: string) {
     switch (type) {
       case "tracks":
-        loadCounter.tracks += value;
+        loadCounter.tracks += 6;
         break;
       case "albums":
-        loadCounter.albums += value;
+        loadCounter.albums += 6;
         break;
       case "artists":
-        loadCounter.artists += value;
+        loadCounter.artists += 6;
         break;
     }
   }

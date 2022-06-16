@@ -4,7 +4,7 @@ This file contains the Playlists class for interacting with the playlist documen
 from app.db.mongodb import convert_many
 from app.db.mongodb import convert_one
 from app.db.mongodb import MongoPlaylists
-from app.helpers import create_new_date
+from app import helpers
 from bson import ObjectId
 
 
@@ -41,7 +41,7 @@ class Playlists(MongoPlaylists):
         """
         Sets the lastUpdated field to the current date.
         """
-        date = create_new_date()
+        date = helpers.create_new_date()
 
         return self.collection.update_one(
             {"_id": ObjectId(playlistid)},

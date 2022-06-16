@@ -185,8 +185,9 @@ class Get:
         a = instances.album_instance.get_all_albums()
         return [models.Album(a) for a in a]
 
-    def get_all_artists(self) -> Set[str]:
-        tracks = self.get_all_tracks()
+    @classmethod
+    def get_all_artists(cls) -> Set[str]:
+        tracks = cls.get_all_tracks()
         artists: Set[str] = set()
 
         for track in tracks:
