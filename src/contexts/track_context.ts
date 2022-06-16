@@ -1,7 +1,7 @@
 import { Playlist, Track } from "../interfaces";
 import Router from "../router";
 import { Option } from "../interfaces";
-import { getAllPlaylists, addTrackToPlaylist } from "../composables/playlists";
+import { getAllPlaylists, addTrackToPlaylist } from "../composables/fetch/playlists";
 
 import useQueueStore from "../stores/queue";
 import useModalStore from "../stores/modal";

@@ -18,7 +18,7 @@
 <script setup lang="ts">
 import { onMounted } from "vue";
 import { useRoute } from "vue-router";
-import { createNewPlaylist } from "../../composables/playlists";
+import { createNewPlaylist } from "../../composables/fetch/playlists";
 import { Track } from "../../interfaces";
 import { Notification, NotifType } from "../../stores/notification";
 import usePlaylistStore from "@/stores/pages/playlists";
@@ -43,22 +43,22 @@ emit("title", "New Playlist");
 /**
  * Create a new playlist. If this modal is called with a track,
  * add the track to the new playlist.
- * @param e Event
+ * @param {Event} e
  */
 function create(e: Event) {
   e.preventDefault();
   const name = (e.target as HTMLFormElement).elements["name"].value;
 
   if (name.trim()) {
-    createNewPlaylist(name, props.track).then((status) => {
+    createNewPlaylist(name, props.track).then(({ success, playlist }) => {
       emit("hideModal");
 
-      if (!status.success) return;
+      if (!success) return;
 
       if (route.name !== "Playlists") return;
 
       setTimeout(() => {
-        playlistStore.addPlaylist(status.playlist);
+        playlistStore.addPlaylist(playlist);
       }, 600);
     });
   } else {

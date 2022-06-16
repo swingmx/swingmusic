@@ -12,7 +12,7 @@ from app.lib import playlistlib
 from flask import Blueprint
 from flask import request
 
-from app.helpers import UseBisection, create_new_date
+from app.helpers import Get, UseBisection, create_new_date
 
 playlist_bp = Blueprint("playlist", __name__, url_prefix="/")
 
@@ -104,7 +104,9 @@ def update_playlist(playlistid: str):
         "thumb": None,
     }
 
-    p = UseBisection(api.PLAYLISTS, "playlistid", [playlistid])()
+    playlists = Get.get_all_playlists()
+
+    p = UseBisection(playlists, "playlistid", [playlistid])()
     p: models.Playlist = p[0]
 
     if playlist is not None:

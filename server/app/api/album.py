@@ -40,6 +40,7 @@ def get_albums():
 def get_album():
     """Returns all the tracks in the given album."""
     data = request.get_json()
+    print(data)
     album, artist = data["album"], data["artist"]
     albumhash = helpers.create_album_hash(album, artist)
 
@@ -47,6 +48,10 @@ def get_album():
     tracks = [models.Track(t) for t in tracks]
 
     album = instances.album_instance.find_album_by_hash(albumhash)
+
+    if not album:
+        return {"error": "Album not found."}, 404
+
     album = models.Album(album)
 
     album.count = len(tracks)

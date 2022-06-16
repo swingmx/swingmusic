@@ -4,7 +4,7 @@ import {
   getAlbumTracks,
   getAlbumArtists,
   getAlbumBio,
-} from "../../composables/album";
+} from "../../composables/fetch/album";
 
 export default defineStore("album", {
   state: () => ({
@@ -21,6 +21,7 @@ export default defineStore("album", {
      * @param albumartist artist of the album
      */
     async fetchTracksAndArtists(title: string, albumartist: string) {
+
       const tracks = await getAlbumTracks(title, albumartist);
       const artists = await getAlbumArtists(title, albumartist);
 

@@ -1,6 +1,6 @@
 import { FromOptions, NotifType } from "./composables/enums";
 
-interface Track {
+export interface Track {
   trackid: string;
   title: string;
   album?: string;
@@ -16,14 +16,14 @@ interface Track {
   disknumber?: number;
 }
 
-interface Folder {
+export interface Folder {
   name: string;
   path: string;
   trackcount: number;
   subdircount: number;
 }
 
-interface AlbumInfo {
+export interface AlbumInfo {
   title: string;
   artist: string;
   count: number;
@@ -35,12 +35,12 @@ interface AlbumInfo {
   is_single: boolean;
 }
 
-interface Artist {
+export interface Artist {
   name: string;
   image: string;
 }
 
-interface Option {
+export interface Option {
   type?: string;
   label?: string;
   action?: Function;
@@ -49,7 +49,7 @@ interface Option {
   critical?: Boolean;
 }
 
-interface Playlist {
+export interface Playlist {
   playlistid: string;
   name: string;
   description?: string;
@@ -60,49 +60,42 @@ interface Playlist {
   thumb?: string;
 }
 
-interface Notif {
+export interface Notif {
   text: string;
   type: NotifType;
 }
 
-interface fromFolder {
+export interface fromFolder {
   type: FromOptions;
   path: string;
   name: string;
 }
-interface fromAlbum {
+export interface fromAlbum {
   type: FromOptions;
   name: string;
   albumartist: string;
 }
-interface fromPlaylist {
+export interface fromPlaylist {
   type: FromOptions;
   name: string;
   playlistid: string;
 }
 
-interface fromSearch {
+export interface fromSearch {
   type: FromOptions;
   query: string;
 }
 
-interface subPath {
+export interface subPath {
   name: string;
   path: string;
   active: boolean;
 }
 
-export {
-  Track,
-  Folder,
-  AlbumInfo,
-  Artist,
-  Option,
-  Playlist,
-  Notif,
-  fromFolder,
-  fromAlbum,
-  fromPlaylist,
-  fromSearch,
-  subPath,
-};
+export interface FetchProps {
+  url: string;
+  props?: {};
+  get?: boolean;
+  put?: boolean;
+  headers?: {};
+}

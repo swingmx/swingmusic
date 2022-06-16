@@ -1,22 +1,31 @@
 import axios from "axios";
 import { Folder, Track } from "../interfaces";
 import state from "./state";
+import useAxios from "./useAxios";
 
 export default async function (path: string) {
-  let tracks = Array<Track>();
-  let folders = Array<Folder>();
+  interface FolderData {
+    tracks: Track[];
+    folders: Folder[];
+  }
 
-  await axios
-    .post(`${state.settings.uri}/folder`, {
+  const { data, error } = await useAxios({
+    url: `${state.settings.uri}/folder`,
+    props: {
       folder: path,
-    })
-    .then((res) => {
-      tracks = res.data.tracks;
-      folders = res.data.folders;
-    })
-    .catch((err) => {
-      console.error(err);
-    });
+    },
+  });
 
-  return { tracks, folders };
+  if (error) {
+    console.error(error);
+  }
+
+  if (data) {
+    return data as FolderData;
+  }
+
+  return <FolderData>{
+    tracks: [],
+    folders: [],
+  };
 }

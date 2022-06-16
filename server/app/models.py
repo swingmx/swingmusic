@@ -143,26 +143,11 @@ class Playlist:
         self.lastUpdated = data["lastUpdated"]
         self.count = len(self.pretracks)
 
-
     def create_img_link(self, image: str):
         if image:
             return image
 
         return "default.webp"
-
-    def update_count(self):
-        self.count = len(self.pretracks)
-
-    def add_track(self, track):
-        if track not in self.pretracks:
-            self.pretracks.append(track)
-            self.update_count()
-            self.lastUpdated = helpers.create_new_date()
-        else:
-            raise TrackExistsInPlaylist("Track already exists in playlist")
-
-    def update_desc(self, desc):
-        self.description = desc
 
     def update_playlist(self, data: dict):
         self.name = data["name"]
