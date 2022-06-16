@@ -3,7 +3,7 @@
     <div id="ginner" tabindex="0">
       <div class="icon image"></div>
       <input
-        id="search"
+        id="globalsearch"
         class="rounded"
         v-model="search.query"
         placeholder="Search your library"
@@ -16,6 +16,7 @@
 </template>
 
 <script setup lang="ts">
+import { ref } from "vue";
 import useSearchStore from "../../stores/search";
 
 const search = useSearchStore();
