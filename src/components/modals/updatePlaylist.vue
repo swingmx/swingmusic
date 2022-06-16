@@ -55,7 +55,7 @@
 <script setup lang="ts">
 import usePStore from "@/stores/pages/playlist";
 import { onMounted } from "vue";
-import { updatePlaylist } from "../../composables/fetch/playlists";
+import { updatePlaylist } from "../../composables/pages/playlists";
 import { Playlist } from "../../interfaces";
 
 const pStore = usePStore();

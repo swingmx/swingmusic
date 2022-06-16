@@ -72,8 +72,11 @@ a {
     "l-sidebar content r-sidebar"
     "l-sidebar content r-sidebar"
     "l-sidebar content tabs";
-  width: 100vw;
+  width: 100%;
+  align-content: center;
+  max-width: 2720px;
   height: 100vh;
+  margin: 0 auto;
 }
 
 .tabs {
@@ -87,8 +90,6 @@ a {
 
 #gsearch-input {
   grid-area: search-input;
-  // border-left: solid 1px $gray3;
-  // border-bottom: 1px solid $gray3;
 }
 
 .topnav {
@@ -131,7 +132,7 @@ a {
 #acontent {
   grid-area: content;
   width: 100%;
-  max-width: 1504px;
+  max-width: 1955px;
   padding: $small;
   padding-left: 0;
   overflow: auto;

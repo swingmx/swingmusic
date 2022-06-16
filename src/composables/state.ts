@@ -1,11 +1,11 @@
+import { Track, AlbumInfo, Artist } from "./../interfaces";
 import { ref } from "@vue/reactivity";
 import { reactive } from "vue";
-import * as i from "../interfaces";
 
 const search_query = ref("");
 
 const queue = ref(
-  Array<i.Track>({
+  Array<Track>({
     title: "Nothing played yet",
     artists: ["... blah blah blah"],
     image: "http://127.0.0.1:8900/images/thumbnails/4.webp",
@@ -16,14 +16,14 @@ const queue = ref(
 const folder_song_list = ref([]);
 const folder_list = ref([]);
 
-const current = ref(<i.Track>{
+const current = ref(<Track>{
   title: "Nothing played yet",
   artists: ["... blah blah blah"],
   image: "http://127.0.0.1:8900/images/thumbnails/4.webp",
   trackid: "",
 });
 
-const prev = ref(<i.Track>{
+const prev = ref(<Track>{
   title: "Nothing played yet",
   artists: ["... blah blah blah"],
   image: "http://127.0.0.1:8900/images/thumbnails/4.webp",
@@ -31,9 +31,9 @@ const prev = ref(<i.Track>{
 });
 
 const album = reactive({
-  tracklist: Array<i.Track>(),
-  info: <i.AlbumInfo>{},
-  artists: Array<i.Artist>(),
+  tracklist: Array<Track>(),
+  info: <AlbumInfo>{},
+  artists: Array<Artist>(),
   bio: "",
 });
 

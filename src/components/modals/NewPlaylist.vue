@@ -18,7 +18,7 @@
 <script setup lang="ts">
 import { onMounted } from "vue";
 import { useRoute } from "vue-router";
-import { createNewPlaylist } from "../../composables/fetch/playlists";
+import { createNewPlaylist } from "../../composables/pages/playlists";
 import { Track } from "../../interfaces";
 import { Notification, NotifType } from "../../stores/notification";
 import usePlaylistStore from "@/stores/pages/playlists";

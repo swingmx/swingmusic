@@ -1,7 +1,6 @@
-import axios from "axios";
-import { Folder, Track } from "../interfaces";
-import state from "./state";
-import useAxios from "./useAxios";
+import { Folder, Track } from "@/interfaces";
+import state from "../state";
+import useAxios from "../useAxios";
 
 export default async function (path: string) {
   interface FolderData {

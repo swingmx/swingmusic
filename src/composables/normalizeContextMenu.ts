@@ -1,6 +1,6 @@
 import { getElem } from "./perks";
 
-export default (mouseX, mouseY) => {
+export default (mouseX: number, mouseY: number) => {
   const scope = getElem("app", "id");
   const contextMenu = getElem("context-menu", "class");
   // ? compute what is the mouse position relative to the container element

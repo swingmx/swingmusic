@@ -1,6 +1,6 @@
 import { defineStore } from "pinia";
 import { Playlist } from "../../interfaces";
-import { getAllPlaylists } from "../../composables/fetch/playlists";
+import { getAllPlaylists } from "../../composables/pages/playlists";
 
 export default defineStore("playlists", {
   state: () => ({
