@@ -1,13 +1,7 @@
-import os
-from pprint import pprint
 import time
 from concurrent.futures import ThreadPoolExecutor
-from copy import deepcopy
-from multiprocessing import Pool
-from os import path
 from typing import List
 
-from app import api
 from app import settings
 from app.helpers import create_album_hash
 from app.helpers import run_fast_scandir
@@ -19,8 +13,9 @@ from app.lib.taglib import get_tags
 from app.lib.trackslib import find_track
 from app.logger import Log
 from app.models import Album
-from app.models import Track
 from tqdm import tqdm
+
+from app import instances
 
 
 class Populate:
@@ -48,12 +43,12 @@ class Populate:
 
     def run(self):
         self.check_untagged()
-        self.get_all_tags()
+        self.tag_untagged()
 
         if len(self.tagged_tracks) == 0:
             return
 
-        self.tagged_tracks.sort(key=lambda x: x["albumhash"])
+        # self.tagged_tracks.sort(key=lambda x: x["albumhash"])
 
         self.pre_albums = self.create_pre_albums(self.tagged_tracks)
         self.create_albums(self.pre_albums)
@@ -75,28 +70,15 @@ class Populate:
 
         Log(f"Found {len(self.files)} untagged tracks")
 
-    def process_tags(self, tags: dict):
-        for t in tags:
-            if t is None:
-                continue
-
-            t["albumhash"] = create_album_hash(t["album"], t["albumartist"])
-            self.tagged_tracks.append(t)
-
-            self.folders.add(t["folder"])
-
     def get_tags(self, file: str):
         tags = get_tags(file)
 
         if tags is not None:
-            folder = tags["folder"]
-            self.folders.add(folder)
-
-            tags["albumhash"] = create_album_hash(tags["album"], tags["albumartist"])
+            hash = create_album_hash(tags["album"], tags["albumartist"])
+            tags["albumhash"] = hash
             self.tagged_tracks.append(tags)
-            api.DB_TRACKS.append(tags)
 
-    def get_all_tags(self):
+    def tag_untagged(self):
         """
         Loops through all the untagged files and tags them.
         """
@@ -106,6 +88,7 @@ class Populate:
         with ThreadPoolExecutor() as executor:
             executor.map(self.get_tags, self.files)
 
+        tracks_instance.insert_many(self.tagged_tracks)
         d = time.time() - s
         Log(f"Tagged {len(self.tagged_tracks)} files in {d} seconds")
 
@@ -127,19 +110,14 @@ class Populate:
 
     def create_album(self, album: dict):
         albumhash = create_album_hash(album["title"], album["artist"])
-        index = find_album(api.ALBUMS, albumhash)
+        album = instances.album_instance.find_album_by_hash(albumhash)
 
-        if index is not None:
-            album = api.ALBUMS[index]
+        if album is not None:
             self.albums.append(album)
-
             self.exist_count += 1
             return
 
         index = find_track(self.tagged_tracks, albumhash)
-
-        if index is None:
-            return
 
         track = self.tagged_tracks[index]
 

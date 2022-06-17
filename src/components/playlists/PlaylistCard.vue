@@ -4,9 +4,6 @@
     :playlist="props.playlist"
     class="p-card rounded"
   >
-    <div class="drop">
-      <Option :color="'#48484a'" />
-    </div>
     <div
       class="image p-image rounded shadow-sm"
       :style="{
@@ -28,12 +25,9 @@
 
 <script setup lang="ts">
 import { Playlist } from "../../interfaces";
-import PlayBtn from "../shared/PlayBtn.vue";
-import Option from "../shared/Option.vue";
 import { paths } from "../../config";
 
-const imguri = paths.images.playlist
-
+const imguri = paths.images.playlist;
 
 const props = defineProps<{
   playlist: Playlist;

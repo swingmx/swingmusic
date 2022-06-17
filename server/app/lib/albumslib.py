@@ -5,8 +5,8 @@ from pprint import pprint
 import random
 from typing import List
 
-from app import api, helpers, instances, models
-from app.lib import taglib, trackslib
+from app import helpers, instances, models
+from app.lib import taglib
 from tqdm import tqdm
 
 
@@ -120,7 +120,6 @@ class GetAlbumTracks:
         self.tracks.sort(key=lambda x: x.albumhash)
 
     def __call__(self):
-        tracks = []
         tracks = helpers.UseBisection(self.tracks, "albumhash", [self.hash])()
 
         pprint(tracks)
@@ -138,7 +137,7 @@ def get_album_tracks(tracklist: List[models.Track], hash: str) -> List:
     return GetAlbumTracks(tracklist, hash)()
 
 
-def create_album(track: dict, tracklist: list) -> dict:
+def create_album(track: dict, tracklist: list[models.Track]) -> dict:
     """
     Generates and returns an album object from a track object.
     """

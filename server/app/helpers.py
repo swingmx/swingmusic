@@ -119,7 +119,9 @@ def create_album_hash(title: str, artist: str) -> str:
     """
     Creates a simple hash for an album
     """
-    return (title + artist).replace(" ", "").lower()
+    lower = (title + artist).replace(" ", "").lower()
+    hash = lower.join([i for i in lower if i not in '/\\:*?"<>|&'])
+    return hash
 
 
 def create_new_date():
