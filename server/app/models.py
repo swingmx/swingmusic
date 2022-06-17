@@ -2,6 +2,7 @@
 Contains all the models for objects generation and typing.
 """
 from dataclasses import dataclass, field
+import random
 from typing import List
 
 from app import helpers
@@ -33,8 +34,10 @@ class Track:
         try:
             self.trackid = tags["_id"]["$oid"]
         except KeyError:
+            self.trackid = "".join(
+                random.choice("abcdefghijklmnopqrstuvwxyz0123456789") for i in range(20)
+            )
             print("No id")
-            print(tags)
 
         self.title = tags["title"]
         self.artists = tags["artists"].split(", ")

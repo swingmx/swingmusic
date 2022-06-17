@@ -12,7 +12,7 @@ HOME_DIR = os.path.expanduser("~")
 APP_DIR = os.path.join(HOME_DIR, CONFIG_FOLDER)
 THUMBS_PATH = os.path.join(APP_DIR, "images", "thumbnails")
 TEST_DIR = "/home/cwilvx/Music/Link to Music/Chill/Wolftyla Radio"
-HOME_DIR = TEST_DIR
+# HOME_DIR = TEST_DIR
 # URL
 IMG_BASE_URI = "http://127.0.0.1:8900/images/"
 IMG_ARTIST_URI = IMG_BASE_URI + "artists/"

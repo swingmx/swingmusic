@@ -7,9 +7,8 @@ import time
 from app import api
 from app import instances
 from app import models
-from app.helpers import UseBisection, create_album_hash
+from app.helpers import Get, create_album_hash
 from app.lib.albumslib import create_album
-from app.lib.albumslib import find_album
 from app.lib.taglib import get_tags
 from watchdog.events import PatternMatchingEventHandler
 from watchdog.observers import Observer
@@ -51,24 +50,19 @@ def add_track(filepath: str) -> None:
     if tags is not None:
         hash = create_album_hash(tags["album"], tags["albumartist"])
         tags["albumhash"] = hash
-        api.DB_TRACKS.append(tags)
 
-        albumindex = find_album(api.ALBUMS, hash)
+        album = instances.album_instance.find_album_by_hash(hash)
+        all_tracks = Get.get_all_tracks()
+        all_tracks.append(models.Track(tags))
 
-        if albumindex is not None:
-            album = api.ALBUMS[albumindex]
-        else:
-            album_data = create_album(tags, api.DB_TRACKS)
+        if album is None:
+            album_data = create_album(tags, all_tracks)
             album = models.Album(album_data)
 
             instances.album_instance.insert_album(album)
-            api.ALBUMS.append(album)
 
         tags["image"] = album.image
-        upsert_id = instances.tracks_instance.insert_song(tags)
-        tags["_id"] = {"$oid": str(upsert_id)}
-
-        api.TRACKS.append(models.Track(tags))
+        instances.tracks_instance.insert_song(tags)
 
 
 def remove_track(filepath: str) -> None:
@@ -76,16 +70,9 @@ def remove_track(filepath: str) -> None:
     Removes a track from the music dict.
     """
 
-    try:
-        trackid = instances.tracks_instance.get_song_by_path(filepath)["_id"]["$oid"]
-    except TypeError:
-        print(f"💙 Watchdog Error: Error removing track {filepath} TypeError")
-        return
+    filepath = filepath + "k"
 
-    track = UseBisection(api.TRACKS, "trackid", [trackid])()
-    if track is not None:
-        api.TRACKS.remove(track[0])
-        instances.tracks_instance.remove_song_by_id(trackid)
+    instances.tracks_instance.remove_song_by_filepath(filepath)
 
 
 class Handler(PatternMatchingEventHandler):

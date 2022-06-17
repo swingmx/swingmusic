@@ -1,6 +1,7 @@
 """
 This library contains all the functions related to albums.
 """
+from pprint import pprint
 import random
 from typing import List
 
@@ -31,7 +32,6 @@ def validate() -> None:
     Creates album objects for all albums and returns
     a list of track objects
     """
-
 
 
 def find_album(albums: List[models.Album], hash: str) -> int | None:
@@ -114,26 +114,28 @@ class GetAlbumTracks:
     and album artist.
     """
 
-    def __init__(self, tracklist: list, albumhash: str) -> None:
+    def __init__(self, tracklist: List[models.Track], albumhash: str) -> None:
         self.hash = albumhash
         self.tracks = tracklist
-        self.tracks.sort(key=lambda x: x["albumhash"])
+        self.tracks.sort(key=lambda x: x.albumhash)
 
-    def find_tracks(self):
+    def __call__(self):
         tracks = []
-        index = trackslib.find_track(self.tracks, self.hash)
+        tracks = helpers.UseBisection(self.tracks, "albumhash", [self.hash])()
 
-        while index is not None:
-            track = self.tracks[index]
-            tracks.append(track)
-            self.tracks.remove(track)
-            index = trackslib.find_track(self.tracks, self.hash)
+        pprint(tracks)
+
+        # while index is not None:
+        #     track = self.tracks[index]
+        #     tracks.append(track)
+        #     self.tracks.remove(track)
+        #     index = helpers.UseBisection(self.tracks, "albumhash", [self.hash])()
 
         return tracks
 
 
-def get_album_tracks(album: str, artist: str) -> List:
-    return GetAlbumTracks(album, artist).find_tracks()
+def get_album_tracks(tracklist: List[models.Track], hash: str) -> List:
+    return GetAlbumTracks(tracklist, hash)()
 
 
 def create_album(track: dict, tracklist: list) -> dict:
@@ -144,7 +146,6 @@ def create_album(track: dict, tracklist: list) -> dict:
         "title": track["album"],
         "artist": track["albumartist"],
     }
-
     albumhash = helpers.create_album_hash(album["title"], album["artist"])
     album_tracks = get_album_tracks(tracklist, albumhash)
 
