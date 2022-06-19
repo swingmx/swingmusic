@@ -6,6 +6,7 @@ export interface Track {
   album?: string;
   artists: string[];
   albumartist?: string;
+  albumhash?: string;
   folder?: string;
   filepath?: string;
   length?: number;

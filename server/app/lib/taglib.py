@@ -135,8 +135,8 @@ def parse_track_number(tags):
     Parses the track number from an audio file.
     """
     try:
-        track_number = tags["tracknumber"][0]
-    except (KeyError, IndexError):
+        track_number = int(tags["tracknumber"][0])
+    except (KeyError, IndexError, ValueError):
         track_number = 1
 
     return track_number
@@ -147,8 +147,8 @@ def parse_disk_number(tags):
     Parses the disk number from an audio file.
     """
     try:
-        disk_number = tags["disknumber"][0]
-    except (KeyError, IndexError):
+        disk_number = int(tags["disknumber"][0])
+    except (KeyError, IndexError, ValueError):
         disk_number = 1
 
     return disk_number

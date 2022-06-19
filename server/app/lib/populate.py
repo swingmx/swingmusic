@@ -1,18 +1,17 @@
+from dataclasses import dataclass
+from pprint import pprint
 import time
 from concurrent.futures import ThreadPoolExecutor
 from typing import List
 
 from app import settings
-from app.helpers import create_album_hash
+from app.helpers import Get, UseBisection, create_album_hash
 from app.helpers import run_fast_scandir
-from app.instances import album_instance
 from app.instances import tracks_instance
 from app.lib.albumslib import create_album
-from app.lib.albumslib import find_album
 from app.lib.taglib import get_tags
-from app.lib.trackslib import find_track
 from app.logger import Log
-from app.models import Album
+from app.models import Album, Track
 from tqdm import tqdm
 
 from app import instances
@@ -28,35 +27,14 @@ class Populate:
     """
 
     def __init__(self) -> None:
-        self.files = []
         self.db_tracks = []
         self.tagged_tracks = []
-        self.folders = set()
-        self.pre_albums = []
-        self.albums: List[Album] = []
 
         self.files = run_fast_scandir(settings.HOME_DIR, full=True)[1]
         self.db_tracks = tracks_instance.get_all_tracks()
-        self.tag_count = 0
-        self.exist_count = 0
-        self.tracks = []
 
-    def run(self):
         self.check_untagged()
         self.tag_untagged()
-
-        if len(self.tagged_tracks) == 0:
-            return
-
-        # self.tagged_tracks.sort(key=lambda x: x["albumhash"])
-
-        self.pre_albums = self.create_pre_albums(self.tagged_tracks)
-        self.create_albums(self.pre_albums)
-
-        self.albums.sort(key=lambda x: x.hash)
-        self.create_tracks()
-
-        self.save_all()
 
     def check_untagged(self):
         """
@@ -88,97 +66,80 @@ class Populate:
         with ThreadPoolExecutor() as executor:
             executor.map(self.get_tags, self.files)
 
-        tracks_instance.insert_many(self.tagged_tracks)
+        if len(self.tagged_tracks) > 0:
+            tracks_instance.insert_many(self.tagged_tracks)
+
         d = time.time() - s
         Log(f"Tagged {len(self.tagged_tracks)} files in {d} seconds")
 
+
+@dataclass
+class PreAlbum:
+    title: str
+    artist: str
+    hash: str
+
+
+class CreateAlbums:
+    def __init__(self) -> None:
+        self.db_tracks = Get.get_all_tracks()
+        self.db_albums = Get.get_all_albums()
+
+        prealbums = self.create_pre_albums(self.db_tracks)
+        prealbums = self.filter_processed(self.db_albums, prealbums)
+        print(f"📌 {len(prealbums)}")
+
+        albums = []
+        for album in tqdm(prealbums, desc="Creating albums"):
+            a = self.create_album(album)
+            albums.append(a)
+
+        if len(albums) > 0:
+            instances.album_instance.insert_many(albums)
+
     @staticmethod
-    def create_pre_albums(tracks: List[dict]):
-        """
-        Creates pre-albums for the all tagged tracks.
-        """
+    def create_pre_albums(tracks: List[Track]) -> List[PreAlbum]:
         prealbums = []
 
-        for track in tqdm(tracks, desc="Creating pre-albums"):
-            album = {"title": track["album"], "artist": track["albumartist"]}
+        for track in tqdm(tracks, desc="Creating prealbums"):
+            album = {
+                "title": track.album,
+                "artist": track.albumartist,
+                "hash": track.albumhash,
+            }
+
+            album = PreAlbum(**album)
 
             if album not in prealbums:
                 prealbums.append(album)
 
-        Log(f"Created {len(prealbums)} pre-albums")
         return prealbums
 
-    def create_album(self, album: dict):
-        albumhash = create_album_hash(album["title"], album["artist"])
-        album = instances.album_instance.find_album_by_hash(albumhash)
+    @staticmethod
+    def filter_processed(albums: List[Album], prealbums: List[PreAlbum]) -> List[dict]:
+        to_process = []
 
-        if album is not None:
-            self.albums.append(album)
-            self.exist_count += 1
-            return
+        for p in tqdm(prealbums, desc="Filtering processed albums"):
+            album = UseBisection(albums, "hash", [p.hash])()[0]
 
-        index = find_track(self.tagged_tracks, albumhash)
+            if album is None:
+                to_process.append(p)
 
-        track = self.tagged_tracks[index]
+        return to_process
 
-        album = create_album(track, self.tagged_tracks)
+    def create_album(self, album: PreAlbum) -> Album:
+        hash = album.hash
 
-        if album is None:
-            print("album is none")
-            return
+        album = {"image": None}
+
+        while album["image"] is None:
+            track = UseBisection(self.db_tracks, "albumhash", [hash])()[0]
+
+            if track is not None:
+                album = create_album(track)
+                self.db_tracks.remove(track)
+            else:
+                album["image"] = hash
 
         album = Album(album)
-
-        self.albums.append(album)
-
-    def create_albums(self, albums: List[dict]):
-        """
-        Uses the pre-albums to create new albums and add them to the database.
-        """
-        for album in tqdm(albums, desc="Building albums"):
-            self.create_album(album)
-
-        Log(f"{self.exist_count} of {len(albums)} albums were already in the database")
-
-    def create_track(self, track: dict):
-        """
-        Creates a single track object.
-        """
-
-        albumhash = track["albumhash"]
-        index = find_album(self.albums, albumhash)
-
-        if index is None:
-            return
-
-        try:
-            album: Album = self.albums[index]
-        except (TypeError):
-            """
-            😭😭😭
-            """
-            pass
-
-        track["image"] = album.image
-        return track
-
-    def create_tracks(self):
-        """
-        Loops through all the tagged tracks creating complete track objects using the `models.Track` model.
-        """
-        with ThreadPoolExecutor() as executor:
-            iterable = executor.map(self.create_track, self.tagged_tracks)
-
-            self.tracks = [t for t in iterable if t is not None]
-
-        Log(
-            f"Added {len(self.tagged_tracks)} new tracks and {len(self.albums)} new albums"
-        )
-
-    def save_all(self):
-        """
-        Saves the albums to the database.
-        """
-
-        album_instance.insert_many([a.__dict__ for a in self.albums])
-        tracks_instance.insert_many(self.tracks)
+        return album

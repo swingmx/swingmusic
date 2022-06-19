@@ -34,32 +34,6 @@ def validate() -> None:
     """
 
 
-def find_album(albums: List[models.Album], hash: str) -> int | None:
-    """
-    Finds an album by album title and artist.
-
-    :param `albums`: List of album objects.
-    :param `hash`: Hash of album.
-    :return: Index of album in list.
-    """
-
-    left = 0
-    right = len(albums) - 1
-
-    while left <= right:
-        mid = (left + right) // 2
-
-        if albums[mid].hash == hash:
-            return mid
-
-        if albums[mid].hash < hash:
-            left = mid + 1
-        else:
-            right = mid - 1
-
-    return None
-
-
 def get_album_duration(album: List[models.Track]) -> int:
     """
     Gets the duration of an album.
@@ -81,31 +55,19 @@ def use_defaults() -> str:
     return path
 
 
-def gen_random_path() -> str:
-    """
-    Generates a random image file path for an album image.
-    """
-    choices = "abcdefghijklmnopqrstuvwxyz0123456789"
-    path = "".join(random.choice(choices) for i in range(20))
-    path += ".webp"
-
-    return path
-
-
-def get_album_image(album: list) -> str:
+def get_album_image(track: models.Track) -> str:
     """
     Gets the image of an album.
     """
 
-    for track in album:
-        img_p = gen_random_path()
+    img_p = track.albumhash + ".webp"
 
-        exists = taglib.extract_thumb(track["filepath"], webp_path=img_p)
+    success = taglib.extract_thumb(track.filepath, webp_path=img_p)
 
-        if exists:
-            return img_p
+    if success:
+        return img_p
 
-    return use_defaults()
+    return None
 
 
 class GetAlbumTracks:
@@ -122,14 +84,6 @@ class GetAlbumTracks:
     def __call__(self):
         tracks = helpers.UseBisection(self.tracks, "albumhash", [self.hash])()
 
-        pprint(tracks)
-
-        # while index is not None:
-        #     track = self.tracks[index]
-        #     tracks.append(track)
-        #     self.tracks.remove(track)
-        #     index = helpers.UseBisection(self.tracks, "albumhash", [self.hash])()
-
         return tracks
 
 
@@ -137,23 +91,23 @@ def get_album_tracks(tracklist: List[models.Track], hash: str) -> List:
     return GetAlbumTracks(tracklist, hash)()
 
 
-def create_album(track: dict, tracklist: list[models.Track]) -> dict:
+def create_album(track: models.Track) -> dict:
     """
     Generates and returns an album object from a track object.
     """
     album = {
-        "title": track["album"],
-        "artist": track["albumartist"],
+        "title": track.album,
+        "artist": track.albumartist,
+        "hash": track.albumhash,
     }
-    albumhash = helpers.create_album_hash(album["title"], album["artist"])
-    album_tracks = get_album_tracks(tracklist, albumhash)
 
-    if len(album_tracks) == 0:
-        return None
+    album["date"] = track.date
 
-    album["date"] = album_tracks[0]["date"]
+    img_p = get_album_image(track)
 
-    album["image"] = get_album_image(album_tracks)
-    # album["image"] = "".join(x for x in albumhash if x not in "\/:*?<>|")
+    if img_p is not None:
+        album["image"] = img_p
+        return album
 
+    album["image"] = None
     return album

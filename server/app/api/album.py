@@ -40,7 +40,6 @@ def get_albums():
 def get_album():
     """Returns all the tracks in the given album."""
     data = request.get_json()
-    print(data)
     album, artist = data["album"], data["artist"]
     albumhash = helpers.create_album_hash(album, artist)
 

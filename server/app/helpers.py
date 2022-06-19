@@ -73,17 +73,6 @@ def remove_duplicates(tracklist: List[models.Track]) -> List[models.Track]:
 
     return tracklist
 
-
-# def save_image(url: str, path: str) -> None:
-#     """
-#     Saves an image from an url to a path.
-#     """
-
-#     response = requests.get(url)
-#     img = Image.open(BytesIO(response.content))
-#     img.save(path, "JPEG")
-
-
 def is_valid_file(filename: str) -> bool:
     """
     Checks if a file is valid. Returns True if it is, False if it isn't.
@@ -120,7 +109,7 @@ def create_album_hash(title: str, artist: str) -> str:
     Creates a simple hash for an album
     """
     lower = (title + artist).replace(" ", "").lower()
-    hash = lower.join([i for i in lower if i not in '/\\:*?"<>|&'])
+    hash = "".join([i for i in lower if i not in '/\\:*?"<>|&'])
     return hash
 
 

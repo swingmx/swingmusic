@@ -6,7 +6,6 @@ import random
 from typing import List
 
 from app import helpers
-from app.exceptions import TrackExistsInPlaylist
 
 
 @dataclass(slots=True)
@@ -25,20 +24,14 @@ class Track:
     length: int
     genre: str
     bitrate: int
-    image: str
     tracknumber: int
     disknumber: int
     albumhash: str
+    date: str
+    image: str
 
     def __init__(self, tags):
-        try:
-            self.trackid = tags["_id"]["$oid"]
-        except KeyError:
-            self.trackid = "".join(
-                random.choice("abcdefghijklmnopqrstuvwxyz0123456789") for i in range(20)
-            )
-            print("No id")
-
+        self.trackid = tags["_id"]["$oid"]
         self.title = tags["title"]
         self.artists = tags["artists"].split(", ")
         self.albumartist = tags["albumartist"]
@@ -50,16 +43,9 @@ class Track:
         self.length = int(tags["length"])
         self.disknumber = int(tags["disknumber"])
         self.albumhash = tags["albumhash"]
-
-        try:
-            self.image = tags["image"]
-        except KeyError:
-            print(tags)
-
-        try:
-            self.tracknumber = int(tags["tracknumber"])
-        except ValueError:
-            self.tracknumber = 1
+        self.date = tags["date"]
+        self.image = tags["albumhash"] + ".webp"
+        self.tracknumber = int(tags["tracknumber"])
 
 
 @dataclass(slots=True)
@@ -81,14 +67,14 @@ class Artist:
 @dataclass
 class Album:
     """
-    Album class
+    Creates an album object
     """
 
     title: str
     artist: str
+    hash: str
     date: int
     image: str
-    hash: str
     count: int = 0
     duration: int = 0
     is_soundtrack: bool = False
@@ -100,11 +86,7 @@ class Album:
         self.artist = tags["artist"]
         self.date = tags["date"]
         self.image = tags["image"]
-
-        try:
-            self.hash = tags["albumhash"]
-        except KeyError:
-            self.hash = helpers.create_album_hash(self.title, self.artist)
+        self.hash = tags["hash"]
 
     @property
     def is_soundtrack(self) -> bool:

@@ -44,7 +44,7 @@ def get_track_by_id(trackid: str) -> models.Track:
             print("AttributeError")
 
 
-def find_track(tracks: list, hash: str) -> int or None:
+def find_track(tracks: list, hash: str) -> int | None:
     """
     Finds an album by album title and artist.
     """

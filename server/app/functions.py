@@ -6,16 +6,14 @@ import time
 from io import BytesIO
 
 import requests
-from app import api
 from app import helpers
 from app import settings
 from app.lib import watchdoge
-from app.lib.populate import Populate
+from app.lib.populate import Populate, CreateAlbums
 from PIL import Image
 from concurrent.futures import ThreadPoolExecutor
 
 from app.lib import trackslib
-from app import instances, models
 
 
 @helpers.background
@@ -27,7 +25,8 @@ def reindex_tracks():
     while True:
         trackslib.validate_tracks()
 
-        populate()
+        Populate()
+        CreateAlbums()
         CheckArtistImages()()
 
         time.sleep(60)
@@ -39,11 +38,6 @@ def start_watchdog():
     Starts the file watcher.
     """
     watchdoge.watch.run()
-
-
-def populate():
-    pop = Populate()
-    pop.run()
 
 
 class getArtistImage:
