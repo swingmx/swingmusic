@@ -14,11 +14,11 @@ class Dir:
     is_sym: bool
 
 
-def get_folder_track_count(foldername: str) -> int:
+def get_folder_track_count(path: str) -> int:
     """
     Returns the number of files associated with a folder.
     """
-    tracks = instances.tracks_instance.find_tracks_inside_path_regex(foldername)
+    tracks = instances.tracks_instance.find_tracks_inside_path_regex(path)
     return len(tracks)
 
 

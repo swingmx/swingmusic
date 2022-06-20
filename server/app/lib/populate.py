@@ -89,10 +89,23 @@ class CreateAlbums:
         prealbums = self.filter_processed(self.db_albums, prealbums)
         print(f"📌 {len(prealbums)}")
 
+        s = time.time()
         albums = []
+
         for album in tqdm(prealbums, desc="Creating albums"):
             a = self.create_album(album)
-            albums.append(a)
+            if a is not None:
+                albums.append(a)
+
+        # with ThreadPoolExecutor() as pool:
+        #     iterator = pool.map(self.create_album, prealbums)
+
+        #     for i in iterator:
+        #         if i is not None:
+        #             albums.append(i)
+
+        d = time.time() - s
+        Log(f"Created {len(albums)} albums in {d} seconds")
 
         if len(albums) > 0:
             instances.album_instance.insert_many(albums)
@@ -131,15 +144,20 @@ class CreateAlbums:
         hash = album.hash
 
         album = {"image": None}
+        iter = 0
 
         while album["image"] is None:
             track = UseBisection(self.db_tracks, "albumhash", [hash])()[0]
 
             if track is not None:
+                iter += 1
                 album = create_album(track)
                 self.db_tracks.remove(track)
             else:
                 album["image"] = hash
-
-        album = Album(album)
-        return album
+        try:
+            album = Album(album)
+            return album
+        except KeyError:
+            print(f"📌 {iter}")
+            print(album)

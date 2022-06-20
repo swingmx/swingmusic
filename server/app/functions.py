@@ -27,7 +27,9 @@ def reindex_tracks():
 
         Populate()
         CreateAlbums()
-        CheckArtistImages()()
+
+        if helpers.Ping()():
+            CheckArtistImages()()
 
         time.sleep(60)
 
@@ -73,7 +75,6 @@ class useImageDownloader:
             img.save(self.dest, format="webp")
             img.close()
         except requests.exceptions.ConnectionError:
-            print("🔴🔴🔴🔴🔴🔴🔴")
             time.sleep(5)
 
 
@@ -102,7 +103,7 @@ class CheckArtistImages:
         """
 
         img_path = (
-            helpers.app_dir
+            settings.APP_DIR
             + "/images/artists/"
             + helpers.create_safe_name(artistname)
             + ".webp"
@@ -115,14 +116,15 @@ class CheckArtistImages:
 
         if url is None:
             return
-
         useImageDownloader(url, img_path)()
 
     def __call__(self):
         self.artists = helpers.Get.get_all_artists()
 
         with ThreadPoolExecutor() as pool:
-            pool.map(self.download_image, self.artists)
+            iter = pool.map(self.download_image, self.artists)
+            for i in iter:
+                pass
 
         print("Done fetching images")
 

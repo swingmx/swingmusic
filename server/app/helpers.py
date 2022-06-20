@@ -8,11 +8,11 @@ from datetime import datetime
 from typing import Dict, Set
 from typing import List
 
+import requests
+
 from app import models
 from app import settings
 from app import instances
-
-app_dir = settings.APP_DIR
 
 
 def background(func):
@@ -73,6 +73,7 @@ def remove_duplicates(tracklist: List[models.Track]) -> List[models.Track]:
 
     return tracklist
 
+
 def is_valid_file(filename: str) -> bool:
     """
     Checks if a file is valid. Returns True if it is, False if it isn't.
@@ -97,7 +98,7 @@ def check_artist_image(image: str) -> str:
     Checks if the artist image is valid.
     """
     img_name = image.replace("/", "::") + ".webp"
-
+    app_dir = settings.APP_DIR
     if not os.path.exists(os.path.join(app_dir, "images", "artists", img_name)):
         return use_memoji()
     else:
@@ -194,3 +195,15 @@ class Get:
         """
         p = instances.playlist_instance.get_all_playlists()
         return [models.Playlist(p) for p in p]
+
+
+class Ping:
+    """Checks if there is a connection to the internet by pinging google.com"""
+
+    @staticmethod
+    def __call__() -> bool:
+        try:
+            requests.get("https://google.com")
+            return True
+        except requests.exceptions.ConnectionError:
+            return False
