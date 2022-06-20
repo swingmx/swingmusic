@@ -10,7 +10,9 @@ import multiprocessing
 CONFIG_FOLDER = ".alice"
 HOME_DIR = os.path.expanduser("~")
 APP_DIR = os.path.join(HOME_DIR, CONFIG_FOLDER)
-THUMBS_PATH = os.path.join(APP_DIR, "images", "thumbnails")
+IMG_PATH = os.path.join(APP_DIR, "images")
+
+THUMBS_PATH = os.path.join(IMG_PATH, "thumbnails")
 TEST_DIR = "/home/cwilvx/Music/Link to Music/Chill/Wolftyla Radio"
 # HOME_DIR = TEST_DIR
 # URL
@@ -42,4 +44,3 @@ CPU_COUNT = multiprocessing.cpu_count()
 
 class logger:
     enable = True
-
