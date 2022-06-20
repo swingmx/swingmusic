@@ -85,26 +85,6 @@ def is_valid_file(filename: str) -> bool:
         return False
 
 
-def use_memoji():
-    """
-    Returns a path to a random memoji image.
-    """
-    path = str(random.randint(0, 20)) + ".svg"
-    return "defaults/" + path
-
-
-def check_artist_image(image: str) -> str:
-    """
-    Checks if the artist image is valid.
-    """
-    img_name = image.replace("/", "::") + ".webp"
-    app_dir = settings.APP_DIR
-    if not os.path.exists(os.path.join(app_dir, "images", "artists", img_name)):
-        return use_memoji()
-    else:
-        return img_name
-
-
 def create_album_hash(title: str, artist: str) -> str:
     """
     Creates a simple hash for an album

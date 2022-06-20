@@ -103,7 +103,7 @@ def get_albumartists():
     for artist in artists:
         artist_obj = {
             "name": artist,
-            "image": helpers.check_artist_image(helpers.create_safe_name(artist)),
+            "image": helpers.create_safe_name(artist) + ".webp",
         }
         final_artists.append(artist_obj)
 
