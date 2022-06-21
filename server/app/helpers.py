@@ -183,7 +183,7 @@ class Ping:
     @staticmethod
     def __call__() -> bool:
         try:
-            requests.get("https://google.com")
+            requests.get("https://google.com", timeout=10)
             return True
-        except requests.exceptions.ConnectionError:
+        except (requests.exceptions.ConnectionError, requests.Timeout):
             return False
