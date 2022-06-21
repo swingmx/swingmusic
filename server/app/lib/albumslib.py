@@ -1,37 +1,95 @@
 """
 This library contains all the functions related to albums.
 """
-from pprint import pprint
+from dataclasses import dataclass
+import os
 import random
 from typing import List
 
-from app import helpers, instances, models
+from app import helpers, models
 from app.lib import taglib
 from tqdm import tqdm
 
+from app.settings import THUMBS_PATH
+from app import instances
 
-def get_all_albums() -> List[models.Album]:
+
+# def get_all_albums() -> List[models.Album]:
+#     """
+#     Returns a list of album objects for all albums in the database.
+#     """
+#     print("Getting all albums...")
+
+#     albums: List[models.Album] = []
+
+#     db_albums = instances.album_instance.get_all_albums()
+
+#     for album in tqdm(db_albums, desc="Creating albums"):
+#         aa = models.Album(album)
+#         albums.append(aa)
+
+#     return albums
+
+
+@dataclass
+class Thumbnail:
+    filename: str
+
+
+class RipAlbumImage:
     """
-    Returns a list of album objects for all albums in the database.
+    Rips a thumbnail for the given album hash.
     """
-    print("Getting all albums...")
 
-    albums: List[models.Album] = []
+    def __init__(self, hash: str) -> None:
+        tracks = instances.tracks_instance.find_tracks_by_hash(hash)
+        tracks = [models.Track(track) for track in tracks]
 
-    db_albums = instances.album_instance.get_all_albums()
+        for track in tracks:
+            ripped = taglib.extract_thumb(track.filepath, hash + ".webp")
 
-    for album in tqdm(db_albums, desc="Creating albums"):
-        aa = models.Album(album)
-        albums.append(aa)
-
-    return albums
+            if ripped:
+                break
 
 
-def validate() -> None:
-    """
-    Creates album objects for all albums and returns
-    a list of track objects
-    """
+class ValidateThumbs:
+    @staticmethod
+    def remove_obsolete():
+        """
+        Removes unreferenced thumbnails from the thumbnails folder.
+        """
+        entries = os.scandir(THUMBS_PATH)
+        entries = [entry for entry in entries if entry.is_file()]
+
+        albums = helpers.Get.get_all_albums()
+        thumbs = [Thumbnail(album.hash + ".webp") for album in albums]
+
+        for entry in tqdm(entries, desc="Validating thumbnails"):
+            e = helpers.UseBisection(thumbs, "filename", [entry.name])()
+            if e is not None:
+                os.remove(entry.path)
+
+    @staticmethod
+    def find_lost_thumbnails():
+        """
+        Re-rip lost album thumbnails
+        """
+        entries = os.scandir(THUMBS_PATH)
+        entries = [Thumbnail(entry) for entry in entries if entry.is_file()]
+
+        albums = helpers.Get.get_all_albums()
+        thumbs = [(album.hash + ".webp") for album in albums]
+
+        for t in thumbs:
+            e = helpers.UseBisection(entries, "filename", [t])
+
+            if e is None:
+                hash = t.split(".")[0]
+                RipAlbumImage(hash)
+
+    def __init__(self) -> None:
+        self.remove_obsolete()
+        self.find_lost_thumbnails()
 
 
 def get_album_duration(album: List[models.Track]) -> int:

@@ -2,7 +2,6 @@
 Contains default configs
 """
 import os
-from dataclasses import dataclass
 import multiprocessing
 
 
@@ -15,7 +14,8 @@ IMG_PATH = os.path.join(APP_DIR, "images")
 THUMBS_PATH = os.path.join(IMG_PATH, "thumbnails")
 TEST_DIR = "/home/cwilvx/Music/Link to Music/Chill/Wolftyla Radio"
 # HOME_DIR = TEST_DIR
-# URL
+
+# URLS
 IMG_BASE_URI = "http://127.0.0.1:8900/images/"
 IMG_ARTIST_URI = IMG_BASE_URI + "artists/"
 IMG_THUMB_URI = IMG_BASE_URI + "thumbnails/"

@@ -3,33 +3,33 @@ This module contains functions for the server
 """
 import os
 import time
+from concurrent.futures import ThreadPoolExecutor
 from io import BytesIO
 
 import requests
-from app import helpers
-from app import settings
-from app.lib import watchdoge
-from app.lib.populate import Populate, CreateAlbums
 from PIL import Image
-from concurrent.futures import ThreadPoolExecutor
 
-from app.lib import trackslib
+from app import helpers, settings
+from app.lib import watchdoge
+from app.lib.albumslib import ValidateThumbs
 
 
 @helpers.background
-def reindex_tracks():
+def run_checks():
     """
     Checks for new songs every 5 minutes.
     """
 
     # while True:
-    trackslib.validate_tracks()
+    # trackslib.validate_tracks()
 
-    Populate()
-    CreateAlbums()
+    # Populate()
+    # CreateAlbums()
 
-    if helpers.Ping()():
-        CheckArtistImages()()
+    # if helpers.Ping()():
+    #     CheckArtistImages()()
+
+    ValidateThumbs()
 
 
 @helpers.background

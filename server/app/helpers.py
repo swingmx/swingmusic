@@ -104,7 +104,7 @@ def create_safe_name(name: str) -> str:
     """
     Creates a url-safe name from a name.
     """
-    return "".join([i for i in name if i not in '/\\:*?"<>|'])
+    return "".join([i for i in name if i not in '/\\:*?"<>|#'])
 
 
 class UseBisection:

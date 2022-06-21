@@ -16,7 +16,7 @@ def initialize() -> None:
     """
     functions.start_watchdog()
     prep.create_config_dir()
-    functions.reindex_tracks()
+    functions.run_checks()
 
 
 initialize()
