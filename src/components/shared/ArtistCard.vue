@@ -63,6 +63,7 @@ defineProps<{
     font-size: 0.9rem;
     font-weight: 510;
     max-width: 7rem;
+    text-transform: capitalize;
   }
 }
 

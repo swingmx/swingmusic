@@ -122,7 +122,13 @@ const playThis = (track: Track) => {
     margin: 0 0.5rem 0 0;
     background-image: url(../../assets/images/null.webp);
   }
+
+  .title {
+    word-break: break-all;
+  }
+
   .artist {
+    word-break: break-all;
     font-size: small;
     color: rgba(255, 255, 255, 0.637);
   }

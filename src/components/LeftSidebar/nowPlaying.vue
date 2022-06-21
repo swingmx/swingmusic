@@ -102,6 +102,7 @@ const queue = useQStore();
 
   .title {
     font-weight: 900;
+    word-break: break-all;
   }
 
   .artists {

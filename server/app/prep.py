@@ -21,7 +21,6 @@ class CopyFiles:
 
         for entry in files:
             src = os.path.join(os.getcwd(), entry["src"])
-            print(f"Copying {src} to {entry['dest']}")
 
             if entry["is_dir"]:
                 shutil.copytree(

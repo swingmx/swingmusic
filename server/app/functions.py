@@ -22,16 +22,14 @@ def reindex_tracks():
     Checks for new songs every 5 minutes.
     """
 
-    while True:
-        trackslib.validate_tracks()
+    # while True:
+    trackslib.validate_tracks()
 
-        Populate()
-        CreateAlbums()
+    Populate()
+    CreateAlbums()
 
-        if helpers.Ping()():
-            CheckArtistImages()()
-
-        time.sleep(60)
+    if helpers.Ping()():
+        CheckArtistImages()()
 
 
 @helpers.background

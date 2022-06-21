@@ -117,15 +117,6 @@ function emitUpdate(track: Track) {
   user-select: none;
   -moz-user-select: none;
 
-  .context {
-    position: fixed;
-    top: 0;
-    left: 0;
-    height: 45px;
-    width: 45px;
-    background-color: red;
-  }
-
   @include tablet-landscape {
     grid-template-columns: 1.5rem 1.5fr 1fr 1.5fr;
   }
@@ -145,6 +136,8 @@ function emitUpdate(track: Track) {
   }
 
   .song-album {
+    word-break: break-all;
+
     .album {
       cursor: pointer;
       max-width: max-content;
@@ -156,6 +149,8 @@ function emitUpdate(track: Track) {
   }
 
   .song-artists {
+    word-break: break-all;
+
     .artist {
       cursor: pointer;
     }
@@ -199,6 +194,7 @@ function emitUpdate(track: Track) {
 
     .title {
       cursor: pointer;
+      word-break: break-all;
     }
   }
 

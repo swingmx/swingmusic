@@ -1,11 +1,14 @@
 from dataclasses import dataclass
 from os import scandir
+import time
 from typing import Tuple
+from concurrent.futures import ThreadPoolExecutor
 
 from app.models import Folder
 from app.models import Track
 
 from app import instances
+from app.logger import Log
 
 
 @dataclass
@@ -28,7 +31,7 @@ def create_folder(dir: Dir) -> Folder:
         "name": dir.path.split("/")[-1],
         "path": dir.path,
         "is_sym": dir.is_sym,
-        "trackcount": get_folder_track_count(dir.path),
+        "trackcount": instances.tracks_instance.find_tracks_inside_path_regex(dir.path),
     }
 
     return Folder(folder)
@@ -59,11 +62,17 @@ class getFnF:
                 dirs.append(Dir(**dir))
             elif entry.is_file() and entry.name.endswith((".mp3", ".flac")):
                 files.append(entry.path)
-        tracks = instances.tracks_instance.find_songs_by_folder(self.path)
+
+        tracks = instances.tracks_instance.find_songs_by_filenames(files)
         tracks = [Track(track) for track in tracks]
+        s = time.time()
 
-        folders = [create_folder(dir) for dir in dirs]
-
+        # folders = [create_folder(dir) for dir in dirs]
+        with ThreadPoolExecutor() as pool:
+            iter = pool.map(create_folder, dirs)
+            folders = [i for i in iter if i is not None]
+        d = time.time() - s
+        Log(f"Did that in {d} seconds")
         folders = filter(lambda f: f.trackcount > 0, folders)
 
         return tracks, folders

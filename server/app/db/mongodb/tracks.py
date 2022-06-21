@@ -83,6 +83,13 @@ class Tracks(MongoTracks):
         songs = self.collection.find({"folder": query}).sort("title", pymongo.ASCENDING)
         return convert_many(songs)
 
+    def find_songs_by_filenames(self, filenames: list) -> list:
+        """
+        Returns a list of all the tracks matching the filenames in the query params.
+        """
+        songs = self.collection.find({"filepath": {"$in": filenames}})
+        return convert_many(songs)
+
     def find_songs_by_folder_og(self, query: str) -> list:
         """
         Returns an unsorted list of all the track matching the folder in the query params
@@ -90,14 +97,13 @@ class Tracks(MongoTracks):
         songs = self.collection.find({"folder": query})
         return convert_many(songs)
 
-    def find_tracks_inside_path_regex(self, path: str) -> list:
+    def find_tracks_inside_path_regex(self, path: str) -> int:
         """
         Returns a list of all the tracks matching the path in the query params.
         """
-        songs = self.collection.find(
+        return self.collection.count_documents(
             {"filepath": {"$regex": f"^{path}", "$options": "i"}}
         )
-        return convert_many(songs)
 
     def find_songs_by_artist(self, query: str) -> list:
         """
