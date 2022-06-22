@@ -4,12 +4,12 @@ from concurrent.futures import ThreadPoolExecutor
 from typing import List
 
 from app import settings
+from app.logger import logg
 from app.helpers import Get, UseBisection, create_album_hash
 from app.helpers import run_fast_scandir
 from app.instances import tracks_instance
 from app.lib.albumslib import create_album
 from app.lib.taglib import get_tags
-from app.logger import Log
 from app.models import Album, Track
 from tqdm import tqdm
 
@@ -45,8 +45,6 @@ class Populate:
             if track["filepath"] in self.files:
                 self.files.remove(track["filepath"])
 
-        Log(f"Found {len(self.files)} untagged tracks")
-
     def get_tags(self, file: str):
         tags = get_tags(file)
 
@@ -60,16 +58,14 @@ class Populate:
         Loops through all the untagged files and tags them.
         """
 
-        s = time.time()
-        print(f"Started tagging files")
+        logg.info("Tagging untagged tracks...")
         with ThreadPoolExecutor() as executor:
             executor.map(self.get_tags, self.files)
 
         if len(self.tagged_tracks) > 0:
             tracks_instance.insert_many(self.tagged_tracks)
 
-        d = time.time() - s
-        Log(f"Tagged {len(self.tagged_tracks)} files in {d} seconds")
+        logg.info(f"Tagged {len(self.tagged_tracks)} tracks.")
 
 
 @dataclass
@@ -86,9 +82,7 @@ class CreateAlbums:
 
         prealbums = self.create_pre_albums(self.db_tracks)
         prealbums = self.filter_processed(self.db_albums, prealbums)
-        print(f"📌 {len(prealbums)}")
 
-        s = time.time()
         albums = []
 
         for album in tqdm(prealbums, desc="Creating albums"):
@@ -102,9 +96,6 @@ class CreateAlbums:
         #     for i in iterator:
         #         if i is not None:
         #             albums.append(i)
-
-        d = time.time() - s
-        Log(f"Created {len(albums)} albums in {d} seconds")
 
         if len(albums) > 0:
             instances.album_instance.insert_many(albums)

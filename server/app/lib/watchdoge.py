@@ -4,7 +4,7 @@ This library contains the classes and functions related to the watchdog file wat
 import os
 import time
 
-from app import api
+from app.logger import logg
 from app import instances
 from app import models
 from app.helpers import Get, create_album_hash
@@ -27,7 +27,12 @@ class OnMyWatch:
     def run(self):
         event_handler = Handler()
         self.observer.schedule(event_handler, self.directory, recursive=True)
-        self.observer.start()
+
+        try:
+            self.observer.start()
+        except OSError:
+            logg.error("Could not start watchdog.")
+            return
 
         try:
             while True:

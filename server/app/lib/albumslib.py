@@ -1,6 +1,7 @@
 """
 This library contains all the functions related to albums.
 """
+from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass
 import os
 import random
@@ -80,12 +81,17 @@ class ValidateThumbs:
         albums = helpers.Get.get_all_albums()
         thumbs = [(album.hash + ".webp") for album in albums]
 
-        for t in thumbs:
-            e = helpers.UseBisection(entries, "filename", [t])
+        def rip_image(t_hash: str):
+            e = helpers.UseBisection(entries, "filename", [t_hash])()[0]
 
             if e is None:
-                hash = t.split(".")[0]
+                hash = t_hash.split(".")[0]
                 RipAlbumImage(hash)
+
+            return e
+
+        with ThreadPoolExecutor() as pool:
+            pool.map(rip_image, thumbs)
 
     def __init__(self) -> None:
         self.remove_obsolete()

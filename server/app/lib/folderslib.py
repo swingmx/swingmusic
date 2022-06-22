@@ -8,7 +8,6 @@ from app.models import Folder
 from app.models import Track
 
 from app import instances
-from app.logger import Log
 
 
 @dataclass
@@ -65,14 +64,11 @@ class getFnF:
 
         tracks = instances.tracks_instance.find_songs_by_filenames(files)
         tracks = [Track(track) for track in tracks]
-        s = time.time()
 
-        # folders = [create_folder(dir) for dir in dirs]
         with ThreadPoolExecutor() as pool:
             iter = pool.map(create_folder, dirs)
             folders = [i for i in iter if i is not None]
-        d = time.time() - s
-        Log(f"Did that in {d} seconds")
+
         folders = filter(lambda f: f.trackcount > 0, folders)
 
         return tracks, folders
