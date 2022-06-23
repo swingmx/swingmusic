@@ -7,9 +7,6 @@
     >
       <div class="nav-button" id="home-button" v-motion-slide-from-left-100>
         <div class="in">
-          <!-- <div class="nav-icon image" :id="`${menu.name}-icon`"></div> -->
-          <!-- <img src="../../assets/icons/a.svg" alt="" /> -->
-          <!-- <HomeSvg /> -->
           <component :is="menu.icon"></component>
           <span>{{ menu.name }}</span>
         </div>
@@ -19,28 +16,10 @@
 </template>
 
 <script setup lang="ts">
-// import HomeSvg from "../../assets/icons/home.svg";
-// import AlbumSvg from "../../assets/icons/album.svg";
-// import ArtistSvg from "../../assets/icons/artist.svg";
 import PlaylistSvg from "../../assets/icons/playlist.svg";
 import FolderSvg from "../../assets/icons/folder.svg";
 
 const menus = [
-  // {
-  //   name: "home",
-  //   route_name: "Home",
-  //   icon: HomeSvg,
-  // },
-  // {
-  //   name: "albums",
-  //   route_name: "AlbumsView",
-  //   icon: AlbumSvg,
-  // },
-  // {
-  //   name: "artists",
-  //   route_name: "ArtistsView",
-  //   icon: ArtistSvg,
-  // },
   {
     name: "playlists",
     route_name: "Playlists",
@@ -52,13 +31,6 @@ const menus = [
     params: { path: "$home" },
     icon: FolderSvg,
   },
-  // {
-  //   name: "tags",
-  // },
-  // {
-  //   name: "settings",
-  //   route_name: "SettingsView",
-  // },
 ];
 </script>
 
@@ -95,20 +67,6 @@ const menus = [
         background-size: 1.5rem;
       }
     }
-
-    // #mixes-icon {
-    //   background-image: url(../../assets/icons/mix.svg);
-    // }
-
-    // #folders-icon {
-    //   background-image: url(../../assets/icons/folder.svg);
-    // }
-    // #settings-icon {
-    //   background-image: url(../../assets/icons/settings.svg);
-    // }
-    // #tags-icon {
-    //   background-image: url(../../assets/icons/tag.svg);
-    // }
   }
 
   svg {
