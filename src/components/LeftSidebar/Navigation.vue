@@ -19,9 +19,9 @@
 </template>
 
 <script setup lang="ts">
-import HomeSvg from "../../assets/icons/home.svg";
-import AlbumSvg from "../../assets/icons/album.svg";
-import ArtistSvg from "../../assets/icons/artist.svg";
+// import HomeSvg from "../../assets/icons/home.svg";
+// import AlbumSvg from "../../assets/icons/album.svg";
+// import ArtistSvg from "../../assets/icons/artist.svg";
 import PlaylistSvg from "../../assets/icons/playlist.svg";
 import FolderSvg from "../../assets/icons/folder.svg";
 
