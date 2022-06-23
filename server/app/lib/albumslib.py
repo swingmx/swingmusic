@@ -2,6 +2,7 @@
 This library contains all the functions related to albums.
 """
 from concurrent.futures import ThreadPoolExecutor
+from multiprocessing import Manager
 from dataclasses import dataclass
 import os
 import random
@@ -13,7 +14,7 @@ from tqdm import tqdm
 
 from app.settings import THUMBS_PATH
 from app import instances
-
+from app.logger import logg
 
 # def get_all_albums() -> List[models.Album]:
 #     """
@@ -67,7 +68,8 @@ class ValidateThumbs:
 
         for entry in tqdm(entries, desc="Validating thumbnails"):
             e = helpers.UseBisection(thumbs, "filename", [entry.name])()
-            if e is not None:
+
+            if e is None:
                 os.remove(entry.path)
 
     @staticmethod
@@ -76,7 +78,7 @@ class ValidateThumbs:
         Re-rip lost album thumbnails
         """
         entries = os.scandir(THUMBS_PATH)
-        entries = [Thumbnail(entry) for entry in entries if entry.is_file()]
+        entries = [Thumbnail(entry.name) for entry in entries if entry.is_file()]
 
         albums = helpers.Get.get_all_albums()
         thumbs = [(album.hash + ".webp") for album in albums]
@@ -85,13 +87,18 @@ class ValidateThumbs:
             e = helpers.UseBisection(entries, "filename", [t_hash])()[0]
 
             if e is None:
-                hash = t_hash.split(".")[0]
+                hash = t_hash.replace(".webp", "")
                 RipAlbumImage(hash)
 
-            return e
+        logg.info("Ripping lost album thumbnails...")
+        # with ThreadPoolExecutor() as pool:
+        #     i = pool.map(rip_image, thumbs)
+        #     [a for a in i]
+        # ⚠️ empty lists are sent to the useBisection function as the source list.
+        for thumb in thumbs:
+            rip_image(thumb)
 
-        with ThreadPoolExecutor() as pool:
-            pool.map(rip_image, thumbs)
+        logg.info("Ripping lost album thumbnails...done")
 
     def __init__(self) -> None:
         self.remove_obsolete()

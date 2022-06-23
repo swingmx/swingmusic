@@ -2,7 +2,6 @@
 This module contains mini functions for the server.
 """
 import os
-import random
 import threading
 from datetime import datetime
 from typing import Dict, Set
@@ -11,8 +10,8 @@ from typing import List
 import requests
 
 from app import models
-from app import settings
 from app import instances
+from app.lib.albumslib import Thumbnail
 
 
 def background(func):
@@ -85,12 +84,15 @@ def is_valid_file(filename: str) -> bool:
         return False
 
 
+ill_chars = '/\\:*?"<>|#&'
+
+
 def create_album_hash(title: str, artist: str) -> str:
     """
     Creates a simple hash for an album
     """
     lower = (title + artist).replace(" ", "").lower()
-    hash = "".join([i for i in lower if i not in '/\\:*?"<>|&'])
+    hash = "".join([i for i in lower if i not in ill_chars])
     return hash
 
 
@@ -104,7 +106,7 @@ def create_safe_name(name: str) -> str:
     """
     Creates a url-safe name from a name.
     """
-    return "".join([i for i in name if i not in '/\\:*?"<>|#'])
+    return "".join([i for i in name if i not in ill_chars])
 
 
 class UseBisection:
@@ -116,21 +118,20 @@ class UseBisection:
     """
 
     def __init__(self, source: List, search_from: str, queries: List[str]) -> None:
-        self.list = source
-        self.queries = queries
-        self.search_from = search_from
-        self.list.sort(key=lambda x: getattr(x, search_from))
+        self.source_list = source
+        self.queries_list = queries
+        self.attr = search_from
+        self.source_list.sort(key=lambda x: getattr(x, search_from))
 
     def find(self, query: str):
         left = 0
-        right = len(self.list) - 1
+        right = len(self.source_list) - 1
 
         while left <= right:
             mid = (left + right) // 2
-
-            if self.list[mid].__getattribute__(self.search_from) == query:
-                return self.list[mid]
-            elif self.list[mid].__getattribute__(self.search_from) > query:
+            if self.source_list[mid].__getattribute__(self.attr) == query:
+                return self.source_list[mid]
+            elif self.source_list[mid].__getattribute__(self.attr) > query:
                 right = mid - 1
             else:
                 left = mid + 1
@@ -138,7 +139,11 @@ class UseBisection:
         return None
 
     def __call__(self) -> List:
-        return [self.find(query) for query in self.queries]
+        if len(self.source_list) == 0:
+            print("🚀🚀🚀🚀🚀🚀🚀")
+            return [None]
+
+        return [self.find(query) for query in self.queries_list]
 
 
 class Get:

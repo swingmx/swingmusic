@@ -1,4 +1,5 @@
 import { defineStore } from "pinia";
+import { useNotifStore } from "../notification";
 import { Track, Artist, AlbumInfo } from "../../interfaces";
 import {
   getAlbumTracks,
@@ -21,7 +22,7 @@ export default defineStore("album", {
      * @param albumartist artist of the album
      */
     async fetchTracksAndArtists(title: string, albumartist: string) {
-      const tracks = await getAlbumTracks(title, albumartist);
+      const tracks = await getAlbumTracks(title, albumartist, useNotifStore);
       const artists = await getAlbumArtists(title, albumartist);
 
       this.tracks = tracks.tracks;

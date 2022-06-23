@@ -49,7 +49,7 @@ def get_album():
     album = instances.album_instance.find_album_by_hash(albumhash)
 
     if not album:
-        return {"error": "Album not found."}, 404
+        return {"error": "Album not created yet."}, 204
 
     album = models.Album(album)
 

@@ -1,9 +1,13 @@
-import axios, { AxiosError } from "axios";
 import state from "../state";
 import { AlbumInfo, Track } from "../../interfaces";
 import useAxios from "../useAxios";
+import { NotifType, useNotifStore } from "@/stores/notification";
 
-const getAlbumTracks = async (album: string, artist: string) => {
+const getAlbumData = async (
+  album: string,
+  artist: string,
+  ToastStore: typeof useNotifStore
+) => {
   const url = state.settings.uri + "/album";
 
   interface AlbumData {
@@ -19,9 +23,13 @@ const getAlbumTracks = async (album: string, artist: string) => {
     },
   });
 
-  if (status == 404) {
+  if (status == 204) {
+    ToastStore().showNotification("Album not created yet!", NotifType.Error);
     return {
-      info: {},
+      info: {
+        album: album,
+        artist: artist,
+      },
       tracks: [],
     };
   }
@@ -63,4 +71,4 @@ const getAlbumBio = async (album: string, albumartist: string) => {
   }
 };
 
-export { getAlbumTracks, getAlbumArtists, getAlbumBio };
+export { getAlbumData as getAlbumTracks, getAlbumArtists, getAlbumBio };
