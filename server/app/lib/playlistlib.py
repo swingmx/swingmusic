@@ -7,9 +7,6 @@ import string
 from datetime import datetime
 from typing import List
 
-from tqdm import tqdm
-
-from app import api
 from app import exceptions
 from app import instances
 from app import models
@@ -19,8 +16,12 @@ from PIL import ImageSequence
 from werkzeug import datastructures
 
 from app.lib import trackslib
+from app.helpers import Get
+from app.logger import get_logger
 
 TrackExistsInPlaylist = exceptions.TrackExistsInPlaylist
+
+logg = get_logger()
 
 
 def add_track(playlistid: str, trackid: str):
@@ -93,27 +94,31 @@ def save_p_image(file: datastructures.FileStorage, pid: str):
     return img_path, thumb_path
 
 
-def validate_images():
+class ValidatePlaylistThumbs:
     """
     Removes all unused images in the images/playlists folder.
     """
-    images = []
-    p = instances.playlist_instance.get_all_playlists()
-    playlists = [models.Playlist(p) for p in p]
 
-    for playlist in playlists:
-        if playlist.image:
-            img_path = playlist.image.split("/")[-1]
-            thumb_path = playlist.thumb.split("/")[-1]
+    def __init__(self) -> None:
+        images = []
+        playlists = Get.get_all_playlists()
 
-            images.append(img_path)
-            images.append(thumb_path)
+        logg.info("Validating playlist thumbnails")
+        for playlist in playlists:
+            if playlist.image:
+                img_path = playlist.image.split("/")[-1]
+                thumb_path = playlist.thumb.split("/")[-1]
 
-    p_path = os.path.join(settings.APP_DIR, "images", "playlists")
+                images.append(img_path)
+                images.append(thumb_path)
 
-    for image in os.listdir(p_path):
-        if image not in images:
-            os.remove(os.path.join(p_path, image))
+        p_path = os.path.join(settings.APP_DIR, "images", "playlists")
+
+        for image in os.listdir(p_path):
+            if image not in images:
+                os.remove(os.path.join(p_path, image))
+
+        logg.info("Validating playlist thumbnails ... ✅")
 
 
 def create_new_date():

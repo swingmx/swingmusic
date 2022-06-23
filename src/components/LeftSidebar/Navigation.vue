@@ -7,7 +7,10 @@
     >
       <div class="nav-button" id="home-button" v-motion-slide-from-left-100>
         <div class="in">
-          <div class="nav-icon image" :id="`${menu.name}-icon`"></div>
+          <!-- <div class="nav-icon image" :id="`${menu.name}-icon`"></div> -->
+          <!-- <img src="../../assets/icons/a.svg" alt="" /> -->
+          <!-- <HomeSvg /> -->
+          <component :is="menu.icon"></component>
           <span>{{ menu.name }}</span>
         </div>
       </div>
@@ -16,39 +19,47 @@
 </template>
 
 <script setup lang="ts">
-import { useRouter } from "vue-router";
+import HomeSvg from "../../assets/icons/home.svg";
+import AlbumSvg from "../../assets/icons/album.svg";
+import ArtistSvg from "../../assets/icons/artist.svg";
+import PlaylistSvg from "../../assets/icons/playlist.svg";
+import FolderSvg from "../../assets/icons/folder.svg";
 
 const menus = [
-  {
-    name: "home",
-    route_name: "Home",
-  },
-  {
-    name: "albums",
-    route_name: "AlbumsView",
-  },
-  {
-    name: "artists",
-    route_name: "ArtistsView",
-  },
+  // {
+  //   name: "home",
+  //   route_name: "Home",
+  //   icon: HomeSvg,
+  // },
+  // {
+  //   name: "albums",
+  //   route_name: "AlbumsView",
+  //   icon: AlbumSvg,
+  // },
+  // {
+  //   name: "artists",
+  //   route_name: "ArtistsView",
+  //   icon: ArtistSvg,
+  // },
   {
     name: "playlists",
     route_name: "Playlists",
+    icon: PlaylistSvg,
   },
   {
     name: "folders",
     route_name: "FolderView",
     params: { path: "$home" },
+    icon: FolderSvg,
   },
-  {
-    name: "tags",
-  },
-  {
-    name: "settings",
-    route_name: "SettingsView",
-  },
+  // {
+  //   name: "tags",
+  // },
+  // {
+  //   name: "settings",
+  //   route_name: "SettingsView",
+  // },
 ];
-
 </script>
 
 <style lang="scss">
@@ -85,35 +96,30 @@ const menus = [
       }
     }
 
-    #home-icon {
-      background-image: url(../../assets/icons/home.svg);
-    }
+    // #mixes-icon {
+    //   background-image: url(../../assets/icons/mix.svg);
+    // }
 
-    #albums-icon {
-      background-image: url(../../assets/icons/album.svg);
-    }
+    // #folders-icon {
+    //   background-image: url(../../assets/icons/folder.svg);
+    // }
+    // #settings-icon {
+    //   background-image: url(../../assets/icons/settings.svg);
+    // }
+    // #tags-icon {
+    //   background-image: url(../../assets/icons/tag.svg);
+    // }
+  }
 
-    #artists-icon {
-      background-image: url(../../assets/icons/artist.svg);
-    }
+  svg {
+    width: 2rem;
+    height: 2rem;
+    margin: 0 $small 0 $small;
+    border-radius: $small;
+  }
 
-    #playlists-icon {
-      background-image: url(../../assets/icons/playlist.svg);
-    }
-
-    #mixes-icon {
-      background-image: url(../../assets/icons/mix.svg);
-    }
-
-    #folders-icon {
-      background-image: url(../../assets/icons/folder.svg);
-    }
-    #settings-icon {
-      background-image: url(../../assets/icons/settings.svg);
-    }
-    #tags-icon {
-      background-image: url(../../assets/icons/tag.svg);
-    }
+  svg > path {
+    fill: $red !important;
   }
 }
 </style>

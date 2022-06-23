@@ -1,36 +1,16 @@
 """
 This library contains all the functions related to albums.
 """
-from concurrent.futures import ThreadPoolExecutor
-from multiprocessing import Manager
-from dataclasses import dataclass
 import os
 import random
+from dataclasses import dataclass
 from typing import List
 
-from app import helpers, models
+from app import helpers, instances, models
 from app.lib import taglib
-from tqdm import tqdm
-
-from app.settings import THUMBS_PATH
-from app import instances
 from app.logger import logg
-
-# def get_all_albums() -> List[models.Album]:
-#     """
-#     Returns a list of album objects for all albums in the database.
-#     """
-#     print("Getting all albums...")
-
-#     albums: List[models.Album] = []
-
-#     db_albums = instances.album_instance.get_all_albums()
-
-#     for album in tqdm(db_albums, desc="Creating albums"):
-#         aa = models.Album(album)
-#         albums.append(aa)
-
-#     return albums
+from app.settings import THUMBS_PATH
+from tqdm import tqdm
 
 
 @dataclass
@@ -54,7 +34,7 @@ class RipAlbumImage:
                 break
 
 
-class ValidateThumbs:
+class ValidateAlbumThumbs:
     @staticmethod
     def remove_obsolete():
         """
@@ -90,7 +70,7 @@ class ValidateThumbs:
                 hash = t_hash.replace(".webp", "")
                 RipAlbumImage(hash)
 
-        logg.info("Ripping lost album thumbnails...")
+        logg.info("Ripping lost album thumbnails")
         # with ThreadPoolExecutor() as pool:
         #     i = pool.map(rip_image, thumbs)
         #     [a for a in i]
@@ -98,7 +78,7 @@ class ValidateThumbs:
         for thumb in thumbs:
             rip_image(thumb)
 
-        logg.info("Ripping lost album thumbnails...done")
+        logg.info("Ripping lost album thumbnails ... ✅")
 
     def __init__(self) -> None:
         self.remove_obsolete()

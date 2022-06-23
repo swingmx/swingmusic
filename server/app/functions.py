@@ -11,9 +11,10 @@ from PIL import Image
 
 from app import helpers, settings
 from app.lib import watchdoge
-from app.lib.albumslib import ValidateThumbs
+from app.lib.albumslib import ValidateAlbumThumbs
 from app.lib import trackslib
 from app.lib.populate import CreateAlbums, Populate
+from app.lib.playlistlib import ValidatePlaylistThumbs
 
 
 @helpers.background
@@ -31,7 +32,8 @@ def run_checks():
     if helpers.Ping()():
         CheckArtistImages()()
 
-    ValidateThumbs()
+    ValidateAlbumThumbs()
+    ValidatePlaylistThumbs()
 
 
 @helpers.background

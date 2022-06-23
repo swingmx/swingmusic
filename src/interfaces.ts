@@ -22,6 +22,7 @@ export interface Folder {
   path: string;
   trackcount: number;
   subdircount: number;
+  is_sym: boolean;
 }
 
 export interface AlbumInfo {

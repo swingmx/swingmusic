@@ -13,7 +13,7 @@ class CustomFormatter(logging.Formatter):
     # format = (
     #     "%(asctime)s - %(name)s - %(levelname)s - %(message)s (%(filename)s:%(lineno)d)"
     # )
-    format = "[%(asctime)s] [%(levelname)s] [@%(name)s] >>> %(message)s [%(filename)s:%(lineno)d]"
+    format = "[%(asctime)s] [%(levelname)s] [@%(name)s]ℹ️ %(message)s"
 
     FORMATS = {
         logging.DEBUG: grey + format + reset,
@@ -42,10 +42,7 @@ logg.addHandler(ch)
 
 
 def get_logger():
-    if logger.enable:
-        return logg
-
-    return None
+    return logg
 
 
 logg = get_logger()
