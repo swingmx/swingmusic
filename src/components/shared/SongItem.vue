@@ -53,9 +53,18 @@
     </router-link>
     <div class="song-duration">
       <div class="text">{{ formatSeconds(props.song.length) }}</div>
-      <div class="options-icon circular">
-        <OptionSvg />
-      </div>
+    </div>
+    <div
+      class="options-icon circular"
+      :class="{ options_button_clicked }"
+      @click="
+        (e) => {
+          showContextMenu(e);
+          options_button_clicked = true;
+        }
+      "
+    >
+      <OptionSvg />
     </div>
   </div>
 </template>
@@ -77,6 +86,7 @@ const contextStore = useContextStore();
 
 const context_on = ref(false);
 const imguri = paths.images.thumb;
+const options_button_clicked = ref(false);
 
 const showContextMenu = (e: Event) => {
   e.preventDefault();
@@ -90,6 +100,7 @@ const showContextMenu = (e: Event) => {
   contextStore.$subscribe((mutation, state) => {
     if (!state.visible) {
       context_on.value = false;
+      options_button_clicked.value = false;
     }
   });
 };
@@ -114,7 +125,7 @@ function emitUpdate(track: Track) {
 .songlist-item {
   display: grid;
   align-items: center;
-  grid-template-columns: 1.5rem 1.5fr 1fr 1.5fr 0.25fr;
+  grid-template-columns: 1.5rem 1.5fr 1fr 1.5fr 0.25fr 2.5rem;
   height: 3.75rem;
   text-align: left;
   gap: $small;
@@ -122,11 +133,11 @@ function emitUpdate(track: Track) {
   -moz-user-select: none;
 
   @include tablet-landscape {
-    grid-template-columns: 1.5rem 1.5fr 1fr 1.5fr;
+    grid-template-columns: 1.5rem 1.5fr 1fr 1.5fr 2.5rem;
   }
 
   @include tablet-portrait {
-    grid-template-columns: 1.5rem 1.5fr 1fr;
+    grid-template-columns: 1.5rem 1.5fr 1fr 2.5rem;
   }
 
   &:hover {
@@ -139,7 +150,7 @@ function emitUpdate(track: Track) {
 
   .song-duration {
     @include tablet-landscape {
-      display: none;
+      display: none !important;
     }
   }
 
@@ -183,11 +194,18 @@ function emitUpdate(track: Track) {
   .song-duration {
     font-size: 0.9rem;
     width: 5rem !important;
+
+    text-align: right;
+  }
+
+  .options-icon {
+    opacity: 0;
     display: flex;
     align-items: center;
-    gap: $smaller;
-    opacity: 1;
-    transition: all 0.2s ease-in;
+    justify-content: center;
+    aspect-ratio: 1;
+    width: 2rem;
+    margin-right: 1rem;
 
     svg {
       transition: all 0.2s ease-in;
@@ -199,18 +217,14 @@ function emitUpdate(track: Track) {
       }
     }
 
-    .options-icon {
-      opacity: 0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      width: 2rem;
-      aspect-ratio: 1;
-
-      &:hover {
-        background-color: $gray5;
-      }
+    &:hover {
+      background-color: $gray5;
     }
+  }
+
+  .options_button_clicked {
+    background-color: $gray5;
+    opacity: 1;
   }
 
   .flex {
