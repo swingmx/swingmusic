@@ -18,20 +18,7 @@
 
 ### Notes
 
-- Maybe first process tags and store them to the database, then process albums from these tags.
-
-Like,this:
-1. Tag files
-2. Insert all into the database
-3. Fetch all albums
-4. Fetch all tracks
-5. Create prealbums
-6. Pop all processed albums
-7. Use the following procedure to process single album image:
-    7.1. Get a single album track, pop it from memory
-    7.2. Try ripping image,
-        (i). if successful: hurray! we won't have to go further.
-        (ii). if failed, try getting another track from the same album, try ripping image.
-        (iii). If failed, repeat (ii) until success, or until you run out of tracks. In that case, set album image to fallback.
 
 
+
+- Resolve album page using albumhash instead of album title and artist

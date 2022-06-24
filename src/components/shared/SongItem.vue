@@ -52,7 +52,10 @@
       </div>
     </router-link>
     <div class="song-duration">
-      {{ formatSeconds(props.song.length) }}
+      <div class="text">{{ formatSeconds(props.song.length) }}</div>
+      <div class="options-icon circular">
+        <OptionSvg />
+      </div>
     </div>
   </div>
 </template>
@@ -63,6 +66,7 @@ import useContextStore from "../../stores/context";
 import useModalStore from "../../stores/modal";
 import useQueueStore from "../../stores/queue";
 import { ContextSrc } from "../../composables/enums";
+import OptionSvg from "../../assets/icons/more.svg";
 
 import { ref } from "vue";
 import trackContext from "../../contexts/track_context";
@@ -127,6 +131,10 @@ function emitUpdate(track: Track) {
 
   &:hover {
     background-color: $gray4;
+
+    .options-icon {
+      opacity: 1 !important;
+    }
   }
 
   .song-duration {
@@ -137,6 +145,7 @@ function emitUpdate(track: Track) {
 
   .song-album {
     word-break: break-all;
+    text-transform: capitalize;
 
     .album {
       cursor: pointer;
@@ -174,6 +183,34 @@ function emitUpdate(track: Track) {
   .song-duration {
     font-size: 0.9rem;
     width: 5rem !important;
+    display: flex;
+    align-items: center;
+    gap: $smaller;
+    opacity: 1;
+    transition: all 0.2s ease-in;
+
+    svg {
+      transition: all 0.2s ease-in;
+      transform: rotate(90deg);
+      stroke: $track-btn-svg;
+
+      circle {
+        fill: $track-btn-svg;
+      }
+    }
+
+    .options-icon {
+      opacity: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 2rem;
+      aspect-ratio: 1;
+
+      &:hover {
+        background-color: $gray5;
+      }
+    }
   }
 
   .flex {

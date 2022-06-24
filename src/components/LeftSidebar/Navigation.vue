@@ -77,7 +77,7 @@ const menus = [
   }
 
   svg > path {
-    fill: $red !important;
+    fill: $side-nav-svg;
   }
 }
 </style>

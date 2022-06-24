@@ -46,6 +46,11 @@ $danger: $red;
 $track-hover: $gray4;
 $context: $gray5;
 
+// SVG COLORS
+$default: $accent;
+$track-btn-svg: $red;
+$side-nav-svg: $red;
+
 // media query mixins
 @mixin phone-only {
   @media (max-width: 599px) {
