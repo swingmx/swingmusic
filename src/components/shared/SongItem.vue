@@ -38,7 +38,7 @@
       </div>
     </div>
     <router-link
-      class="song-album"
+      class="song-album ellip"
       :to="{
         name: 'AlbumView',
         params: {
@@ -47,9 +47,7 @@
         },
       }"
     >
-      <div class="album ellip">
-        {{ props.song.album }}
-      </div>
+      {{ props.song.album }}
     </router-link>
     <div class="song-duration">
       <div class="text">{{ formatSeconds(props.song.length) }}</div>
@@ -157,11 +155,8 @@ function emitUpdate(track: Track) {
   .song-album {
     word-break: break-all;
     text-transform: capitalize;
-
-    .album {
-      cursor: pointer;
-      max-width: max-content;
-    }
+    max-width: max-content;
+    cursor: pointer;
 
     @include tablet-portrait {
       display: none;
