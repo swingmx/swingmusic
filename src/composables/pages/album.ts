@@ -3,11 +3,7 @@ import { AlbumInfo, Track } from "../../interfaces";
 import useAxios from "../useAxios";
 import { NotifType, useNotifStore } from "@/stores/notification";
 
-const getAlbumData = async (
-  album: string,
-  artist: string,
-  ToastStore: typeof useNotifStore
-) => {
+const getAlbumData = async (hash: string, ToastStore: typeof useNotifStore) => {
   const url = state.settings.uri + "/album";
 
   interface AlbumData {
@@ -18,8 +14,7 @@ const getAlbumData = async (
   const { data, status } = await useAxios({
     url,
     props: {
-      album: album,
-      artist: artist,
+      hash: hash,
     },
   });
 
@@ -27,8 +22,8 @@ const getAlbumData = async (
     ToastStore().showNotification("Album not created yet!", NotifType.Error);
     return {
       info: {
-        album: album,
-        artist: artist,
+        album: "",
+        artist: "",
       },
       tracks: [],
     };
@@ -37,12 +32,11 @@ const getAlbumData = async (
   return data as AlbumData;
 };
 
-const getAlbumArtists = async (album: string, artist: string) => {
+const getAlbumArtists = async (hash: string) => {
   const { data, error } = await useAxios({
     url: state.settings.uri + "/album/artists",
     props: {
-      album: album,
-      artist: artist,
+      hash: hash,
     },
   });
 
@@ -53,12 +47,11 @@ const getAlbumArtists = async (album: string, artist: string) => {
   return data.artists;
 };
 
-const getAlbumBio = async (album: string, albumartist: string) => {
+const getAlbumBio = async (hash: string) => {
   const { data, status } = await useAxios({
     url: state.settings.uri + "/album/bio",
     props: {
-      album: album,
-      albumartist: albumartist,
+      hash: hash,
     },
   });
 

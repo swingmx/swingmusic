@@ -62,17 +62,14 @@ const routes = [
     component: AlbumsExplorer,
   },
   {
-    path: "/albums/:album/:artist",
+    path: "/albums/:hash",
     name: "AlbumView",
     component: AlbumView,
     beforeEnter: async (to) => {
       state.loading.value = true;
-      await useAStore().fetchTracksAndArtists(
-        to.params.album,
-        to.params.artist
-      );
+      await useAStore().fetchTracksAndArtists(to.params.hash);
       state.loading.value = false;
-      useAStore().fetchBio(to.params.album, to.params.artist);
+      useAStore().fetchBio(to.params.hash);
     },
   },
   {

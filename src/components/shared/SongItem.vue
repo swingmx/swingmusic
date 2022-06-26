@@ -42,8 +42,7 @@
       :to="{
         name: 'AlbumView',
         params: {
-          album: props.song.album,
-          artist: props.song.albumartist,
+          hash: props.song.albumhash,
         },
       }"
     >

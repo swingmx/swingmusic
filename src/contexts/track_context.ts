@@ -1,7 +1,10 @@
 import { Playlist, Track } from "../interfaces";
 import Router from "../router";
 import { Option } from "../interfaces";
-import { getAllPlaylists, addTrackToPlaylist } from "../composables/pages/playlists";
+import {
+  getAllPlaylists,
+  addTrackToPlaylist,
+} from "../composables/pages/playlists";
 
 import useQueueStore from "../stores/queue";
 import useModalStore from "../stores/modal";
@@ -15,7 +18,7 @@ import useModalStore from "../stores/modal";
 export default async (
   track: Track,
   modalStore: typeof useModalStore,
-  QueueStore: typeof useQueueStore,
+  QueueStore: typeof useQueueStore
 ): Promise<Option[]> => {
   const separator: Option = {
     type: "separator",
@@ -79,7 +82,7 @@ export default async (
       QueueStore().playTrackNext(track);
     },
     icon: "add_to_queue",
-  }
+  };
 
   const go_to_folder: Option = {
     label: "Go to Folder",
@@ -114,7 +117,7 @@ export default async (
     action: () => {
       Router.push({
         name: "AlbumView",
-        params: { album: track.album, artist: track.albumartist },
+        params: { hash: track.albumhash },
       });
     },
     icon: "album",

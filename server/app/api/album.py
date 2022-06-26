@@ -40,8 +40,7 @@ def get_albums():
 def get_album():
     """Returns all the tracks in the given album."""
     data = request.get_json()
-    album, artist = data["album"], data["artist"]
-    albumhash = helpers.create_album_hash(album, artist)
+    albumhash = data["hash"]
 
     tracks = instances.tracks_instance.find_tracks_by_hash(albumhash)
     tracks = [models.Track(t) for t in tracks]
@@ -72,8 +71,10 @@ def get_album():
 def get_album_bio():
     """Returns the album bio for the given album."""
     data = request.get_json()
-    fetch_bio = FetchAlbumBio(data["album"], data["albumartist"])
-    bio = fetch_bio()
+    album_hash = data["hash"]
+
+    album = instances.album_instance.find_album_by_hash(album_hash)
+    bio = FetchAlbumBio(album["title"], album["artist"])()
 
     if bio is None:
         return {"bio": "No bio found."}, 404
@@ -86,8 +87,7 @@ def get_albumartists():
     """Returns a list of artists featured in a given album."""
     data = request.get_json()
 
-    album, artist = data["album"], data["artist"]
-    albumhash = helpers.create_album_hash(album, artist)
+    albumhash = data["hash"]
 
     tracks = instances.tracks_instance.find_tracks_by_hash(albumhash)
     tracks = [models.Track(t) for t in tracks]

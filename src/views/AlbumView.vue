@@ -29,10 +29,7 @@ import { onBeforeRouteUpdate } from "vue-router";
 const album = useAStore();
 
 onBeforeRouteUpdate(async (to) => {
-  await album.fetchTracksAndArtists(
-    to.params.album.toString(),
-    to.params.artist.toString()
-  );
+  await album.fetchTracksAndArtists(to.params.hash.toString());
   album.fetchBio(to.params.album.toString(), to.params.artist.toString());
 });
 </script>

@@ -23,7 +23,7 @@
       v-for="option in context.options"
       :key="option.label"
       :class="[{ critical: option.critical }, option.type]"
-      @click="option.action"
+      @click="option.action()"
     >
       <div class="icon image" :class="option.icon"></div>
       <div class="label ellip">{{ option.label }}</div>
@@ -32,7 +32,7 @@
         <div
           class="context-item"
           v-for="child in option.children"
-          :key="child"
+          :key="child.label"
           :class="[{ critical: child.critical }, child.type]"
           @click="child.action()"
         >
@@ -177,7 +177,7 @@ const context = useContextStore();
 .context-normalizedY {
   .context-item > .children {
     transform-origin: bottom right;
-      top: -.5rem;
+    top: -0.5rem;
   }
 }
 

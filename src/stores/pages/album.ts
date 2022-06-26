@@ -21,9 +21,9 @@ export default defineStore("album", {
      * @param title title of the album
      * @param albumartist artist of the album
      */
-    async fetchTracksAndArtists(title: string, albumartist: string) {
-      const tracks = await getAlbumTracks(title, albumartist, useNotifStore);
-      const artists = await getAlbumArtists(title, albumartist);
+    async fetchTracksAndArtists(hash: string) {
+      const tracks = await getAlbumTracks(hash, useNotifStore);
+      const artists = await getAlbumArtists(hash);
 
       this.tracks = tracks.tracks;
       this.info = tracks.info;
@@ -31,12 +31,11 @@ export default defineStore("album", {
     },
     /**
      * Fetches the album bio from the server
-     * @param title title of the album
-     * @param albumartist artist of the album
+     * @param {string} hash title of the album
      */
-    fetchBio(title: string, albumartist: string) {
+    fetchBio(hash: string) {
       this.bio = null;
-      getAlbumBio(title, albumartist).then((bio) => {
+      getAlbumBio(hash).then((bio) => {
         this.bio = bio;
       });
     },
