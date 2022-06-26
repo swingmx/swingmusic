@@ -29,6 +29,7 @@ class Track:
     albumhash: str
     date: str
     image: str
+    uniq_hash: str
 
     def __init__(self, tags):
         self.trackid = tags["_id"]["$oid"]
@@ -46,6 +47,17 @@ class Track:
         self.date = tags["date"]
         self.image = tags["albumhash"] + ".webp"
         self.tracknumber = int(tags["tracknumber"])
+
+        self.uniq_hash = self.create_unique_hash(
+            "".join(self.artists), self.album, self.title
+        )
+
+    @staticmethod
+    def create_unique_hash(*args):
+        ill_chars = '/\\:*?"<>|#&'
+
+        string = "".join(str(a) for a in args).replace(" ", "")
+        return "".join(string).strip(ill_chars).lower()
 
 
 @dataclass(slots=True)

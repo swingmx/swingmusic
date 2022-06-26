@@ -48,6 +48,7 @@ class DoSearch:
         """
         self.tracks = helpers.Get.get_all_tracks()
         tracks = searchlib.SearchTracks(self.tracks, self.query)()
+        tracks = helpers.RemoveDuplicates(tracks)()
         SearchResults.tracks = tracks
 
         return tracks

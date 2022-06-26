@@ -45,6 +45,7 @@ def get_album():
 
     tracks = instances.tracks_instance.find_tracks_by_hash(albumhash)
     tracks = [models.Track(t) for t in tracks]
+    tracks = helpers.RemoveDuplicates(tracks)()
 
     album = instances.album_instance.find_album_by_hash(albumhash)
 

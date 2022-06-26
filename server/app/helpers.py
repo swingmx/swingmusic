@@ -1,7 +1,9 @@
 """
 This module contains mini functions for the server.
 """
+from dataclasses import dataclass
 import os
+from pprint import pprint
 import threading
 from datetime import datetime
 from typing import Dict, Set
@@ -51,26 +53,17 @@ def run_fast_scandir(__dir: str, full=False) -> Dict[List[str], List[str]]:
     return subfolders, files
 
 
-def remove_duplicates(tracklist: List[models.Track]) -> List[models.Track]:
-    """
-    Removes duplicates from a list. Returns a list without duplicates.
-    """
 
-    song_num = 0
 
-    while song_num < len(tracklist) - 1:
-        for index, song in enumerate(tracklist):
-            if (
-                tracklist[song_num].title == song.title
-                and tracklist[song_num].album == song.album
-                and tracklist[song_num].artists == song.artists
-                and index != song_num
-            ):
-                tracklist.remove(song)
+class RemoveDuplicates:
+    def __init__(self, tracklist: List[models.Track]) -> None:
+        self.tracklist = tracklist
 
-        song_num += 1
+    def __call__(self) -> List[models.Track]:
+        uniq_hashes = set(t.uniq_hash for t in self.tracklist)
+        tracks = UseBisection(self.tracklist, "uniq_hash", uniq_hashes)()
 
-    return tracklist
+        return tracks
 
 
 def is_valid_file(filename: str) -> bool:
