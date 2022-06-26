@@ -15,6 +15,7 @@ export interface Track {
   image: string;
   tracknumber?: number;
   disknumber?: number;
+  index?: number
 }
 
 export interface Folder {

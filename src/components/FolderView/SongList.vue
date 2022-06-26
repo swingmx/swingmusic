@@ -10,10 +10,10 @@
       </div>
       <div class="songlist">
         <SongItem
-          v-for="(track, index) in tracks"
+          v-for="track in getTracks()"
           :key="track.trackid"
           :song="track"
-          :index="index + 1"
+          :index="track.index"
           @updateQueue="updateQueue"
           :isPlaying="queue.playing"
           :isCurrent="queue.current.trackid == track.trackid"
@@ -43,6 +43,7 @@ const props = defineProps<{
   path?: string;
   pname?: string;
   playlistid?: string;
+  on_album_page?: boolean;
 }>();
 
 let route = useRoute().name;
@@ -67,6 +68,24 @@ function updateQueue(track: Track) {
       queue.play(track);
       break;
   }
+}
+
+function getTracks() {
+  if (props.on_album_page) {
+    let tracks = props.tracks.map((track, index) => {
+      track.index = track.tracknumber;
+      return track;
+    });
+
+    return tracks;
+  }
+
+  let tracks = props.tracks.map((track, index) => {
+    track.index = index + 1;
+    return track;
+  });
+
+  return tracks;
 }
 </script>
 

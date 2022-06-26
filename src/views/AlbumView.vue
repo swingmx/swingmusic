@@ -5,7 +5,7 @@
     </div>
     <div class="separator" id="av-sep"></div>
     <div class="songs rounded">
-      <SongList :tracks="album.tracks" />
+      <SongList :tracks="album.tracks" :on_album_page="true"/>
     </div>
     <div class="separator" id="av-sep"></div>
     <FeaturedArtists :artists="album.artists" />
