@@ -7,6 +7,16 @@ import {
   getAlbumBio,
 } from "../../composables/pages/album";
 
+function sortTracks(tracks: Track[]) {
+  return tracks.sort((a, b) => {
+    if (a.tracknumber && b.tracknumber) {
+      return a.tracknumber - b.tracknumber;
+    }
+
+    return 0;
+  });
+}
+
 export default defineStore("album", {
   state: () => ({
     info: <AlbumInfo>{},
@@ -18,14 +28,13 @@ export default defineStore("album", {
     /**
      * Fetches a single album information, artists and its tracks from the server
      * using the title and album-artist of the album.
-     * @param title title of the album
-     * @param albumartist artist of the album
+     * @param hash title of the album
      */
     async fetchTracksAndArtists(hash: string) {
       const tracks = await getAlbumTracks(hash, useNotifStore);
       const artists = await getAlbumArtists(hash);
 
-      this.tracks = tracks.tracks;
+      this.tracks = sortTracks(tracks.tracks);
       this.info = tracks.info;
       this.artists = artists;
     },

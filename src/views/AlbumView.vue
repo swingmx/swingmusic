@@ -30,7 +30,7 @@ const album = useAStore();
 
 onBeforeRouteUpdate(async (to) => {
   await album.fetchTracksAndArtists(to.params.hash.toString());
-  album.fetchBio(to.params.album.toString(), to.params.artist.toString());
+  album.fetchBio(to.params.hash.toString());
 });
 </script>
 
