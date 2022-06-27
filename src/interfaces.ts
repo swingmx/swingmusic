@@ -36,6 +36,7 @@ export interface AlbumInfo {
   is_compilation: boolean;
   is_soundtrack: boolean;
   is_single: boolean;
+  hash: string
 }
 
 export interface Artist {
