@@ -97,12 +97,7 @@ class SearchAlbums:
         Gets all albums with a given title.
         """
 
-        albums = []
-
-        for album in self.albums:
-            title = album.title.lower()
-            if title not in albums:
-                albums.append(title)
+        albums = [a.title.lower() for a in self.albums]
 
         results = process.extract(
             self.query,
