@@ -8,10 +8,10 @@
   </div>
 </template>
 
-<script>
-export default {
-  props: ['bio'],
-};
+<script setup lang="ts">
+defineProps<{
+  bio: string;
+}>();
 </script>
 
 <style lang="scss">
@@ -48,7 +48,6 @@ export default {
       width: 10rem;
     }
 
-
     .rect {
       width: 10rem;
       height: 10rem;
@@ -59,10 +58,10 @@ export default {
       left: 7rem;
       transform: rotate(45deg) translate(-1rem, -9rem);
       z-index: 1;
-      transition: all .5s ease-in-out;
+      transition: all 0.5s ease-in-out;
 
       &:hover {
-        transition: all .5s ease-in-out;
+        transition: all 0.5s ease-in-out;
       }
     }
 
