@@ -53,18 +53,17 @@ const imguri = paths.images.thumb;
 const nav = useNavStore();
 
 useVisibility(albumheaderthing, nav.toggleShowPlay);
-
-
 </script>
 
 <style lang="scss">
 .album-h {
-  height: 16rem;
+  height: auto;
 }
 
 .a-header {
   display: grid;
-  grid-template-columns: 15rem 1fr;
+  grid-template-columns: max-content 1fr;
+  gap: 1rem;
   padding: 1rem;
   height: 100%;
   background-color: $black;
@@ -79,8 +78,8 @@ useVisibility(albumheaderthing, nav.toggleShowPlay);
     align-items: flex-end;
 
     .image {
-      width: 14rem;
-      height: 14rem;
+      width: 15rem;
+      height: 15rem;
     }
   }
 

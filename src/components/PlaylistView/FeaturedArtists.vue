@@ -3,56 +3,49 @@
     <div class="header">
       <div class="headin">Featured Artists</div>
       <div class="xcontrols">
-        <div class="prev" @click="scrollLeft"></div>
-        <div class="next" @click="scrollRight"></div>
+        <div class="expand rounded">
+          EXPAND
+        </div>
+        <div class="prev icon" @click="scrollLeft()"></div>
+        <div class="next icon" @click="scrollRight()"></div>
       </div>
     </div>
     <div class="separator no-border"></div>
     <div class="artists" ref="artists_dom">
       <ArtistCard
         v-for="artist in artists"
-        :key="artist"
+        :key="artist.image"
         :artist="artist"
         :color="'ffffff00'"
       />
     </div>
   </div>
 </template>
-<script>
+<script setup lang="ts">
 import { ref } from "@vue/reactivity";
 import ArtistCard from "@/components/shared/ArtistCard.vue";
-import { computed, reactive } from "vue";
+import { Artist } from "@/interfaces";
 
-export default {
-  props: ["artists"],
-  components: {
-    ArtistCard,
-  },
-  setup() {
-    const artists_dom = ref(null);
+defineProps<{
+  artists: Artist[];
+}>();
 
-    const scrollLeft = () => {
-      const dom = artists_dom.value;
-      dom.scrollBy({
-        left: -700,
-        behavior: "smooth",
-      });
-    };
+const artists_dom = ref(null);
 
-    const scrollRight = () => {
-      const dom = artists_dom.value;
-      dom.scrollBy({
-        left: 700,
-        behavior: "smooth",
-      });
-    };
+const scrollLeft = () => {
+  const dom = artists_dom.value;
+  dom.scrollBy({
+    left: -700,
+    behavior: "smooth",
+  });
+};
 
-    return {
-      artists_dom,
-      scrollLeft,
-      scrollRight,
-    };
-  },
+const scrollRight = () => {
+  const dom = artists_dom.value;
+  dom.scrollBy({
+    left: 700,
+    behavior: "smooth",
+  });
 };
 </script>
 
@@ -64,9 +57,9 @@ export default {
   padding-bottom: 0;
   border-radius: $small;
   user-select: none;
-  background: linear-gradient(0deg, transparent, $black);
+  // background: linear-gradient(0deg, transparent, $black);
   position: relative;
-  background-color: #ffffff00;
+  // background-color: #ffffff00;
 
   .header {
     display: flex;
@@ -85,40 +78,45 @@ export default {
 
 .f-artists .xcontrols {
   z-index: 1;
-  width: 5rem;
-  height: 2rem;
   position: absolute;
   top: 0;
   right: 0;
   display: flex;
+  gap: 1rem;
   justify-content: space-between;
 
-  &:hover {
-    z-index: 1;
-  }
-
-  .next {
-    background: url(../../assets/icons/right-arrow.svg) no-repeat center;
-  }
-
   .prev {
-    background: url(../../assets/icons/right-arrow.svg) no-repeat center;
     transform: rotate(180deg);
   }
-  .next,
-  .prev {
-    width: 2em;
-    height: 2em;
+  .icon {
+    background: url(../../assets/icons/right-arrow.svg) no-repeat center;
+    width: 2rem;
+    height: 2rem;
     border-radius: $small;
     cursor: pointer;
     transition: all 0.5s ease;
     background-color: rgb(51, 51, 51);
+
+    &:hover {
+      background-color: $blue;
+      transition: all 0.5s ease;
+    }
   }
 
-  .next:hover,
-  .prev:hover {
-    background-color: $blue;
-    transition: all 0.5s ease;
+  .expand {
+    background-color: $gray3;
+    padding: $smaller 1rem;
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    .icon {
+      height: 1rem;
+      aspect-ratio: 1;
+      background-color: transparent;
+      transform: rotate(-90deg);
+    }
   }
 }
 

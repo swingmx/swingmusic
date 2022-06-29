@@ -130,7 +130,7 @@ function emitUpdate(track: Track) {
   -moz-user-select: none;
 
   @include tablet-landscape {
-    grid-template-columns: 1.5rem 1.5fr 1fr 1.5fr 2.5rem;
+    grid-template-columns: 1.5rem 1.5fr 1fr 1fr 2.5rem;
   }
 
   @include tablet-portrait {

@@ -1,8 +1,5 @@
 import logging
 
-from app.settings import logger
-
-
 class CustomFormatter(logging.Formatter):
 
     grey = "\x1b[38;20m"
