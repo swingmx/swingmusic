@@ -12,7 +12,14 @@
     <div class="carddd">
       <div class="info">
         <div class="btns">
-          <PlayBtnRect :source="playSources.playlist" :store="usePStore" />
+          <PlayBtnRect
+            :source="playSources.playlist"
+            :store="usePStore"
+            :background="{
+              color: '#fff',
+              isDark: true,
+            }"
+          />
           <Option @showDropdown="showDropdown" :src="context.src" />
         </div>
         <div class="duration">

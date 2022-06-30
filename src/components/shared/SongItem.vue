@@ -157,6 +157,10 @@ function emitUpdate(track: Track) {
     max-width: max-content;
     cursor: pointer;
 
+    &:hover {
+      text-decoration: underline;
+    }
+
     @include tablet-portrait {
       display: none;
     }

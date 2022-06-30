@@ -54,10 +54,8 @@ class Track:
 
     @staticmethod
     def create_unique_hash(*args):
-        ill_chars = '/\\:*?"<>|#&'
-
         string = "".join(str(a) for a in args).replace(" ", "")
-        return "".join(string).strip(ill_chars).lower()
+        return "".join([i for i in string if i.isalnum()]).lower()
 
 
 @dataclass(slots=True)

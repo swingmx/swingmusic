@@ -2,8 +2,12 @@
   <div
     class="playbtnrect rounded"
     @click="usePlayFrom(source, useQStore, store)"
+    :style="{
+      backgroundColor: background.color,
+    }"
+    :class="{ playbtnrectdark: background.isDark }"
   >
-    <div class="icon image"></div>
+    <playBtnSvg />
     <div class="text">Play</div>
   </div>
 </template>
@@ -15,9 +19,14 @@ import useFStore from "@/stores/pages/folder";
 import useAStore from "@/stores/pages/album";
 import usePStore from "@/stores/pages/playlist";
 import useQStore from "@/stores/queue";
+import playBtnSvg from "@/assets/icons/play.svg";
 
 defineProps<{
   source: playSources;
+  background?: {
+    color: string;
+    isDark?: boolean;
+  };
   store:
     | typeof useQStore
     | typeof useFStore
@@ -34,7 +43,6 @@ defineProps<{
   height: 2.5rem;
   padding-left: 0.75rem;
   cursor: pointer;
-  background-color: $accent;
   user-select: none;
   color: $white;
   transition: all 0.5s ease-in-out;
@@ -49,6 +57,14 @@ defineProps<{
     .icon {
       transform: rotate(120deg);
     }
+  }
+}
+
+.playbtnrectdark {
+  color: $black !important;
+
+  svg > path {
+    fill: $accent !important;
   }
 }
 </style>
