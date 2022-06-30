@@ -1,9 +1,7 @@
 """
 This module contains mini functions for the server.
 """
-from dataclasses import dataclass
 import os
-from pprint import pprint
 import threading
 from datetime import datetime
 from typing import Dict, Set
@@ -13,7 +11,6 @@ import requests
 
 from app import models
 from app import instances
-from app.lib.albumslib import Thumbnail
 
 
 def background(func):
@@ -53,8 +50,6 @@ def run_fast_scandir(__dir: str, full=False) -> Dict[List[str], List[str]]:
     return subfolders, files
 
 
-
-
 class RemoveDuplicates:
     def __init__(self, tracklist: List[models.Track]) -> None:
         self.tracklist = tracklist
@@ -77,15 +72,12 @@ def is_valid_file(filename: str) -> bool:
         return False
 
 
-ill_chars = '/\\:*?"<>|#&'
-
-
 def create_album_hash(title: str, artist: str) -> str:
     """
     Creates a simple hash for an album
     """
     lower = (title + artist).replace(" ", "").lower()
-    hash = "".join([i for i in lower if i not in ill_chars])
+    hash = "".join([i for i in lower if i.isalnum()])
     return hash
 
 
@@ -99,7 +91,7 @@ def create_safe_name(name: str) -> str:
     """
     Creates a url-safe name from a name.
     """
-    return "".join([i for i in name if i not in ill_chars])
+    return "".join([i for i in name if i.isalnum()])
 
 
 class UseBisection:

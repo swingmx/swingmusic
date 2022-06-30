@@ -35,7 +35,11 @@
             {{ formatSeconds(album.duration, true) }} • {{ album.date }} •
             {{ album.artist }}
           </div>
-          <PlayBtnRect :source="playSources.album" :store="useAlbumStore" />
+          <PlayBtnRect
+            :source="playSources.album"
+            :store="useAlbumStore"
+            :background="getButtonColor()"
+          />
         </div>
       </div>
     </div>
@@ -73,10 +77,57 @@ function isLight(rgb: string = props.album.colors[0]) {
 
   const [r, g, b] = rgb.match(/\d+/g)!.map(Number);
   const brightness = (r * 299 + g * 587 + b * 114) / 1000;
-  console.log(brightness);
 
-  return brightness > 150;
+  return brightness > 170;
 }
+
+function getButtonColor(colors: string[] = props.album.colors) {
+  const base_color = colors[0];
+  console.log(colors.length);
+  if (colors.length === 0) return { color: "#000" };
+
+  for (let i = 0; i < colors.length; i++) {
+    // if (isLight(colors[i])) break;
+    if (theyContrast(base_color, colors[i])) {
+      return {
+        color: colors[i],
+        isDark: isLight(colors[i]),
+      };
+    }
+  }
+
+  return {
+    color: "#000",
+  };
+}
+
+function luminance(r: any, g: any, b: any) {
+  let a = [r, g, b].map(function (v) {
+    v /= 255;
+    return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4);
+  });
+  return a[0] * 0.2126 + a[1] * 0.7152 + a[2] * 0.0722;
+}
+
+function contrast(rgb1: number[], rgb2: number[]) {
+  let lum1 = luminance(rgb1[0], rgb1[1], rgb1[2]);
+  let lum2 = luminance(rgb2[0], rgb2[1], rgb2[2]);
+  let brightest = Math.max(lum1, lum2);
+  let darkest = Math.min(lum1, lum2);
+  return (brightest + 0.05) / (darkest + 0.05);
+}
+
+function rgbToArray(rgb: string) {
+  return rgb.match(/\d+/g)!.map(Number);
+}
+
+function theyContrast(color1: string, color2: string) {
+  return contrast(rgbToArray(color1), rgbToArray(color2)) > 3;
+}
+
+console.log(
+  contrast(rgbToArray(props.album.colors[0]), rgbToArray(props.album.colors[3]))
+);
 </script>
 
 <style lang="scss">
