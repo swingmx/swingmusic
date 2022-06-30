@@ -82,6 +82,7 @@ class Album:
     Creates an album object
     """
 
+    albumid: str
     title: str
     artist: str
     hash: str
@@ -92,13 +93,20 @@ class Album:
     is_soundtrack: bool = False
     is_compilation: bool = False
     is_single: bool = False
+    colors: List[str] = field(default_factory=list)
 
     def __init__(self, tags):
+        self.albumid = tags["_id"]["$oid"]
         self.title = tags["title"]
         self.artist = tags["artist"]
         self.date = tags["date"]
         self.image = tags["image"]
         self.hash = tags["hash"]
+
+        try:
+            self.colors = tags["colors"]
+        except KeyError:
+            self.colors = []
 
     @property
     def is_soundtrack(self) -> bool:

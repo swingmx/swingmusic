@@ -20,7 +20,6 @@
         <AlbumBio :bio="album.bio" />
       </div>
       </div>
-     
     </div>
   </div>
 </template>

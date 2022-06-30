@@ -1,17 +1,19 @@
-from io import BytesIO
-
 import colorgram
-from app import api
 from app import instances
-from app.lib.taglib import return_album_art
-from PIL import Image
-from progress.bar import Bar
 
 
-def get_image_colors(image) -> list:
+from app.helpers import Get
+from app import settings
+from app.models import Album
+from app.logger import get_logger
+
+log = get_logger()
+
+
+def get_image_colors(image: str) -> list:
     """Extracts 2 of the most dominant colors from an image."""
     try:
-        colors = sorted(colorgram.extract(image, 2), key=lambda c: c.hsl.h)
+        colors = sorted(colorgram.extract(image, 4), key=lambda c: c.hsl.h)
     except OSError:
         return []
 
@@ -24,30 +26,25 @@ def get_image_colors(image) -> list:
     return formatted_colors
 
 
-def save_track_colors(img, filepath) -> None:
-    """Saves the track colors to the database"""
+class ProcessAlbumColors:
+    def __init__(self) -> None:
+        log.info("Processing album colors")
+        all_albums = Get.get_all_albums()
 
-    track_colors = get_image_colors(img)
+        all_albums = [a for a in all_albums if len(a.colors) == 0]
 
-    tc_dict = {
-        "filepath": filepath,
-        "colors": track_colors,
-    }
+        for a in all_albums:
+            self.process_color(a)
 
-    instances.track_color_instance.insert_track_color(tc_dict)
+        log.info("Processing album colors ... ✅")
 
+    @staticmethod
+    def process_color(album: Album):
+        img = settings.THUMBS_PATH + "/" + album.image
 
-def save_t_colors():
-    _bar = Bar("Processing image colors", max=len(api.DB_TRACKS))
+        colors = get_image_colors(img)
 
-    for track in api.DB_TRACKS:
-        filepath = track["filepath"]
-        album_art = return_album_art(filepath)
+        if len(colors) > 0:
+            instances.album_instance.set_album_colors(colors, album.albumid)
 
-        if album_art is not None:
-            img = Image.open(BytesIO(album_art))
-            save_track_colors(img, filepath)
-
-        _bar.next()
-
-    _bar.finish()
+        return colors

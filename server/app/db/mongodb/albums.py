@@ -2,6 +2,7 @@
 This file contains the Album class for interacting with
 album documents in MongoDB.
 """
+from typing import List
 from app.db.mongodb import convert_many
 from app.db.mongodb import convert_one
 from app.db.mongodb import MongoAlbums
@@ -59,3 +60,12 @@ class Albums(MongoAlbums):
         """
         album = self.collection.find_one({"hash": hash})
         return convert_one(album)
+
+    def set_album_colors(self, colors: List[str], album_id: str) -> None:
+        """
+        Sets the colors for an album.
+        """
+        self.collection.update_one(
+            {"_id": ObjectId(album_id)},
+            {"$set": {"colors": colors}},
+        )
