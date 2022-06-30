@@ -45,6 +45,6 @@ class ProcessAlbumColors:
         colors = get_image_colors(img)
 
         if len(colors) > 0:
-            instances.album_instance.set_album_colors(colors, album.albumid)
+            instances.album_instance.set_album_colors(colors, album.hash)
 
         return colors

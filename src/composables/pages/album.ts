@@ -24,6 +24,7 @@ const getAlbumData = async (hash: string, ToastStore: typeof useNotifStore) => {
       info: {
         album: "",
         artist: "",
+        colors: []
       },
       tracks: [],
     };

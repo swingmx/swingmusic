@@ -61,11 +61,11 @@ class Albums(MongoAlbums):
         album = self.collection.find_one({"hash": hash})
         return convert_one(album)
 
-    def set_album_colors(self, colors: List[str], album_id: str) -> None:
+    def set_album_colors(self, colors: List[str], hash: str) -> None:
         """
         Sets the colors for an album.
         """
         self.collection.update_one(
-            {"_id": ObjectId(album_id)},
+            {"hash": hash},
             {"$set": {"colors": colors}},
         )
