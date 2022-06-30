@@ -82,7 +82,6 @@ class Album:
     Creates an album object
     """
 
-    albumid: str
     title: str
     artist: str
     hash: str
@@ -96,7 +95,6 @@ class Album:
     colors: List[str] = field(default_factory=list)
 
     def __init__(self, tags):
-        self.albumid = tags["_id"]["$oid"]
         self.title = tags["title"]
         self.artist = tags["artist"]
         self.date = tags["date"]

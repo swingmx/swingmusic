@@ -4,7 +4,7 @@
       class="a-header rounded"
       :style="{
         backgroundImage: `linear-gradient(
-        37deg, ${album.colors[0]}, ${album.colors[3]}
+        37deg, ${props.album.colors[0]}, ${props.album.colors[3]}
       )`,
       }"
     >
@@ -17,7 +17,7 @@
           v-motion-slide-from-left
         ></div>
       </div>
-      <div class="info">
+      <div class="info" :class="{ nocontrast: isLight() }">
         <div class="top" v-motion-slide-from-top>
           <div class="h">
             <span v-if="album.is_soundtrack">Soundtrack</span>
@@ -46,14 +46,14 @@
 import useVisibility from "@/composables/useVisibility";
 import useNavStore from "@/stores/nav";
 import useAlbumStore from "@/stores/pages/album";
-import { ref } from "vue";
+import { reactive, ref } from "vue";
 import { playSources } from "../../composables/enums";
 import { formatSeconds } from "../../composables/perks";
 import { paths } from "../../config";
 import { AlbumInfo } from "../../interfaces";
 import PlayBtnRect from "../shared/PlayBtnRect.vue";
 
-defineProps<{
+const props = defineProps<{
   album: AlbumInfo;
 }>();
 
@@ -61,7 +61,22 @@ const albumheaderthing = ref<HTMLElement>(null);
 const imguri = paths.images.thumb;
 const nav = useNavStore();
 
+const colors = reactive({
+  color1: props.album.colors[0],
+  color2: props.album.colors[3],
+});
+
 useVisibility(albumheaderthing, nav.toggleShowPlay);
+
+function isLight(rgb: string = props.album.colors[0]) {
+  if (rgb == null || undefined) return false;
+
+  const [r, g, b] = rgb.match(/\d+/g)!.map(Number);
+  const brightness = (r * 299 + g * 587 + b * 114) / 1000;
+  console.log(brightness);
+
+  return brightness > 150;
+}
 </script>
 
 <style lang="scss">
@@ -91,6 +106,10 @@ useVisibility(albumheaderthing, nav.toggleShowPlay);
     }
   }
 
+  .nocontrast {
+    color: $black;
+  }
+
   .info {
     width: 100%;
     display: flex;
@@ -98,20 +117,14 @@ useVisibility(albumheaderthing, nav.toggleShowPlay);
     justify-content: flex-end;
 
     .top {
-      .h {
-        color: #ffffffcb;
-      }
-
       .title {
         font-size: 2.5rem;
         font-weight: 600;
-        color: white;
         text-transform: capitalize;
       }
 
       .artist {
         font-size: 1.15rem;
-        color: #ffffffe0;
       }
     }
 
@@ -127,23 +140,6 @@ useVisibility(albumheaderthing, nav.toggleShowPlay);
         font-weight: bold;
         font-size: 0.8rem;
         margin-bottom: 0.75rem;
-      }
-
-      .play {
-        height: 2.5rem;
-        width: 6rem;
-        display: flex;
-        align-items: center;
-        background: $blue;
-        padding: $small;
-        cursor: pointer;
-
-        .icon {
-          height: 1.5rem;
-          width: 1.5rem;
-          margin-right: $small;
-          background: url(../../assets/icons/play.svg) no-repeat center/cover;
-        }
       }
     }
   }

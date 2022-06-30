@@ -11,7 +11,7 @@
 <script setup lang="ts">
 import { playSources } from "@/composables/enums";
 import usePlayFrom from "@/composables/usePlayFrom";
-import useFStore from "@/stores/folder";
+import useFStore from "@/stores/pages/folder";
 import useAStore from "@/stores/pages/album";
 import usePStore from "@/stores/pages/playlist";
 import useQStore from "@/stores/queue";
@@ -34,8 +34,9 @@ defineProps<{
   height: 2.5rem;
   padding-left: 0.75rem;
   cursor: pointer;
-  background: linear-gradient(34deg, $accent, $red);
+  background-color: $accent;
   user-select: none;
+  color: $white;
   transition: all 0.5s ease-in-out;
 
   .icon {

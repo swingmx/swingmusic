@@ -77,7 +77,7 @@ const menus = [
   }
 
   svg > path {
-    fill: $side-nav-svg;
+    fill: $accent;
   }
 }
 </style>

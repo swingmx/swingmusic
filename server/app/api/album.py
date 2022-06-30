@@ -41,20 +41,28 @@ def get_album():
     """Returns all the tracks in the given album."""
     data = request.get_json()
     albumhash = data["hash"]
+    error_msg = {"error": "Album not created yet."}
 
     tracks = instances.tracks_instance.find_tracks_by_hash(albumhash)
+
+    if len(tracks) == 0:
+        return error_msg, 204
+
     tracks = [models.Track(t) for t in tracks]
     tracks = helpers.RemoveDuplicates(tracks)()
 
     album = instances.album_instance.find_album_by_hash(albumhash)
 
     if not album:
-        return {"error": "Album not created yet."}, 204
+        return error_msg, 204
 
     album = models.Album(album)
 
     album.count = len(tracks)
-    album.duration = albumslib.get_album_duration(tracks)
+    try:
+        album.duration = albumslib.get_album_duration(tracks)
+    except AttributeError:
+        album.duration = 0
 
     if (
         album.count == 1
