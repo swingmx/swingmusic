@@ -15,6 +15,7 @@ from app.lib.albumslib import ValidateAlbumThumbs
 from app.lib import trackslib
 from app.lib.populate import CreateAlbums, Populate
 from app.lib.playlistlib import ValidatePlaylistThumbs
+from app.lib.colorlib import ProcessAlbumColors
 
 
 @helpers.background
@@ -23,17 +24,20 @@ def run_checks():
     Checks for new songs every 5 minutes.
     """
 
-    # while True:
-    trackslib.validate_tracks()
+    while True:
+        trackslib.validate_tracks()
 
-    Populate()
-    CreateAlbums()
+        Populate()
+        CreateAlbums()
 
-    if helpers.Ping()():
-        CheckArtistImages()()
+        if helpers.Ping()():
+            CheckArtistImages()()
 
-    ValidateAlbumThumbs()
-    ValidatePlaylistThumbs()
+        ValidateAlbumThumbs()
+        ValidatePlaylistThumbs()
+        ProcessAlbumColors()
+
+        time.sleep(300)
 
 
 @helpers.background

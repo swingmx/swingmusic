@@ -1,6 +1,13 @@
 <template>
   <div class="album-h" ref="albumheaderthing">
-    <div class="a-header rounded">
+    <div
+      class="a-header rounded"
+      :style="{
+        backgroundImage: `linear-gradient(
+        37deg, ${album.colors[0]}, ${album.colors[3]}
+      )`,
+      }"
+    >
       <div class="art">
         <div
           class="image shadow-lg rounded"
@@ -18,7 +25,9 @@
             <span v-else-if="album.is_single">Single</span>
             <span v-else>Album</span>
           </div>
-          <div class="title ellip">{{ album.title }}</div>
+          <div class="title ellip">
+            {{ album.title }}
+          </div>
         </div>
         <div class="bottom">
           <div class="stats">
@@ -67,7 +76,6 @@ useVisibility(albumheaderthing, nav.toggleShowPlay);
   padding: 1rem;
   height: 100%;
   background-color: $black;
-  background-color: #000000;
   background-image: linear-gradient(37deg, $black 20%, $gray, $black 90%);
 
   .art {

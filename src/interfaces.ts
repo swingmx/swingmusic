@@ -15,7 +15,7 @@ export interface Track {
   image: string;
   tracknumber?: number;
   disknumber?: number;
-  index?: number
+  index?: number;
 }
 
 export interface Folder {
@@ -27,6 +27,7 @@ export interface Folder {
 }
 
 export interface AlbumInfo {
+  albumid: string;
   title: string;
   artist: string;
   count: number;
@@ -36,7 +37,8 @@ export interface AlbumInfo {
   is_compilation: boolean;
   is_soundtrack: boolean;
   is_single: boolean;
-  hash: string
+  hash: string;
+  colors: string[];
 }
 
 export interface Artist {
