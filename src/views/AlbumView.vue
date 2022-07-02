@@ -12,7 +12,7 @@
         class="rounded"
         ref="albumbottomcards"
         :class="{
-          bottomexpanded: !bottomContainerState,
+          bottomexpanded: bottomContainerRaised,
         }"
       >
         <div class="click-to-expand" @click="toggleBottom">
@@ -46,11 +46,13 @@ import { onMounted, ref } from "vue";
 
 const album = useAStore();
 const albumbottomcards = ref<HTMLElement>(null);
-const bottomContainerState = ref(true);
+const bottomContainerRaised = ref(false);
+let elem: HTMLElement = null;
 let classlist: DOMTokenList = null;
 
 onMounted(() => {
-  classlist = document.getElementById("albumcontent").classList;
+  elem = document.getElementById("albumcontent");
+  classlist = elem.classList;
 });
 
 onBeforeRouteUpdate(async (to) => {
@@ -62,8 +64,16 @@ onBeforeRouteUpdate(async (to) => {
  * Toggles the state of the bottom container. Adds the `addbottompadding` class that adds a bottom padding to the album content div.
  */
 function toggleBottom() {
-  bottomContainerState.value = !bottomContainerState.value;
-  classlist.add("addbottompadding");
+  bottomContainerRaised.value = !bottomContainerRaised.value;
+
+  if (bottomContainerRaised.value) {
+    classlist.add("addbottompadding");
+    return;
+  }
+
+  if (elem.scrollTop == 0) {
+    classlist.remove("addbottompadding");
+  }
 }
 
 /**
@@ -71,22 +81,26 @@ function toggleBottom() {
  * Removes the bottom padding which was added when you expand the bottom container.
  */
 function resetBottomPadding() {
+  if (bottomContainerRaised.value) return;
+
   classlist.remove("addbottompadding");
 }
 </script>
 
 <style lang="scss">
 .al-view {
-  scrollbar-width: none;
   height: 100%;
   position: relative;
+  margin-right: -$small;
   overflow: hidden;
 
   .al-content {
     height: 100%;
     overflow: auto;
     padding-bottom: 17rem;
+    padding-right: $small;
     transition: all 0.5s;
+    z-index: -1 !important;
   }
 
   .addbottompadding {
@@ -107,10 +121,9 @@ function resetBottomPadding() {
   }
 
   #bottom-items {
-    z-index: 77;
     position: absolute;
     bottom: 0;
-    width: 100%;
+    width: calc(100% - $small);
     height: 15rem;
     background-color: $gray;
     transition: all 0.5s ease;
@@ -118,15 +131,20 @@ function resetBottomPadding() {
     display: grid;
     grid-template-rows: 2rem 1fr;
 
+    .bottom-content {
+      overflow: hidden;
+      scroll-behavior: contain;
+    }
+
     .click-to-expand {
       height: 1.5rem;
       display: flex;
       align-items: center;
+      color: $gray1;
 
       div {
         margin: 0 auto;
         font-size: small;
-        color: $gray1;
         cursor: default;
         user-select: none;
         display: flex;
@@ -137,18 +155,23 @@ function resetBottomPadding() {
         max-width: min-content;
         transition: all 0.2s ease-in-out;
       }
+
+      &:hover {
+        color: $accent !important;
+      }
     }
   }
 
   .bottomexpanded {
-    height: 35rem !important;
+    height: 32rem !important;
+    scroll-behavior: contain;
 
     .arrow {
       transform: rotate(180deg) !important;
     }
 
     .bottom-content {
-      overflow: auto;
+      overflow: auto !important;
       scrollbar-width: none;
 
       &::-webkit-scrollbar {

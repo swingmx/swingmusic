@@ -49,7 +49,7 @@ const scrollRight = () => {
 
 <style lang="scss">
 .f-artists {
-  width: calc(100%);
+  width: 100%;
   padding: 0 $small;
   border-radius: $small;
   user-select: none;
