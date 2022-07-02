@@ -160,8 +160,7 @@ def fetch_album_bio(title: str, albumartist: str) -> str | None:
         return None
 
     try:
-        bio = data["album"]["wiki"]["summary"].split(
-            '<a href="https://www.last.fm/')[0]
+        bio = data["album"]["wiki"]["summary"].split('<a href="https://www.last.fm/')[0]
     except KeyError:
         bio = None
 
