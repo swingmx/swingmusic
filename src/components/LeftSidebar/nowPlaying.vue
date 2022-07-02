@@ -10,7 +10,7 @@
     </div>
     <div class="separator no-border"></div>
     <div>
-      <SongCard :track="queue.current" />
+      <SongCard :track="queue.tracks[queue.current]" />
       <Progress />
       <HotKeys />
     </div>
@@ -39,7 +39,11 @@ const showContextMenu = (e: Event) => {
   e.preventDefault();
   e.stopPropagation();
 
-  const menus = trackContext(queue.current, useModalStore, useQueueStore);
+  const menus = trackContext(
+    queue.tracks[queue.current],
+    useModalStore,
+    useQueueStore
+  );
 
   contextStore.showContextMenu(e, menus, ContextSrc.Track);
   context_on.value = true;
@@ -82,7 +86,6 @@ const showContextMenu = (e: Event) => {
 
   .button {
     position: absolute;
-    background-size: 1.5rem;
     top: $small;
     cursor: pointer;
     transition: all 200ms;

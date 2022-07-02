@@ -139,7 +139,7 @@ const context = useContextStore();
 
       .children {
         transform: scale(1);
-        transition: transform 0.2s ease-in-out;
+        transition: transform 0.1s ease-in-out;
       }
     }
   }

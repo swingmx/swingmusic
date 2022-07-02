@@ -74,11 +74,11 @@ const showContextMenu = (e: Event) => {
 };
 
 const emit = defineEmits<{
-  (e: "PlayThis", track: Track): void;
+  (e: "PlayThis"): void;
 }>();
 
 const playThis = (track: Track) => {
-  emit("PlayThis", track);
+  emit("PlayThis");
 };
 </script>
 
