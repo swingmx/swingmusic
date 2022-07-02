@@ -16,13 +16,16 @@ from app.lib import trackslib
 from app.lib.populate import CreateAlbums, Populate
 from app.lib.playlistlib import ValidatePlaylistThumbs
 from app.lib.colorlib import ProcessAlbumColors
+from app.logger import get_logger
 
+log = get_logger()
 
 @helpers.background
 def run_checks():
     """
     Checks for new songs every 5 minutes.
     """
+    ValidateAlbumThumbs()
 
     while True:
         trackslib.validate_tracks()
@@ -33,9 +36,12 @@ def run_checks():
         if helpers.Ping()():
             CheckArtistImages()()
 
-        ValidateAlbumThumbs()
+        @helpers.background
+        def process_album_colors():
+            ProcessAlbumColors()
+
         ValidatePlaylistThumbs()
-        ProcessAlbumColors()
+        process_album_colors()
 
         time.sleep(300)
 
@@ -80,14 +86,17 @@ class useImageDownloader:
             img = Image.open(BytesIO(requests.get(self.url).content))
             img.save(self.dest, format="webp")
             img.close()
+            return "fetched image"
         except requests.exceptions.ConnectionError:
             time.sleep(5)
+            return "connection error"
 
 
 class CheckArtistImages:
     def __init__(self):
         self.artists: list[str] = []
         print("Checking for artist images")
+        log.info("Checking artist images")
 
     @staticmethod
     def check_if_exists(img_path: str):
@@ -116,21 +125,21 @@ class CheckArtistImages:
         )
 
         if cls.check_if_exists(img_path):
-            return
+            return "exists"
 
         url = getArtistImage(artistname)()
 
         if url is None:
-            return
-        useImageDownloader(url, img_path)()
+            return "url is none"
+
+        return useImageDownloader(url, img_path)()
 
     def __call__(self):
         self.artists = helpers.Get.get_all_artists()
 
         with ThreadPoolExecutor() as pool:
             iter = pool.map(self.download_image, self.artists)
-            for i in iter:
-                pass
+            [print(i) for i in iter]
 
         print("Done fetching images")
 

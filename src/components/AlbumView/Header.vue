@@ -78,16 +78,14 @@ function isLight(rgb: string = props.album.colors[0]) {
   const [r, g, b] = rgb.match(/\d+/g)!.map(Number);
   const brightness = (r * 299 + g * 587 + b * 114) / 1000;
 
-  return brightness > 170;
+  return brightness > 150;
 }
 
 function getButtonColor(colors: string[] = props.album.colors) {
   const base_color = colors[0];
-  console.log(colors.length);
-  if (colors.length === 0) return { color: "#000" };
+  if (colors.length === 0) return { color: "#fff", isDark: true };
 
   for (let i = 0; i < colors.length; i++) {
-    // if (isLight(colors[i])) break;
     if (theyContrast(base_color, colors[i])) {
       return {
         color: colors[i],
@@ -97,7 +95,8 @@ function getButtonColor(colors: string[] = props.album.colors) {
   }
 
   return {
-    color: "#000",
+    color: "#fff",
+    isDark: true,
   };
 }
 
@@ -124,10 +123,6 @@ function rgbToArray(rgb: string) {
 function theyContrast(color1: string, color2: string) {
   return contrast(rgbToArray(color1), rgbToArray(color2)) > 3;
 }
-
-console.log(
-  contrast(rgbToArray(props.album.colors[0]), rgbToArray(props.album.colors[3]))
-);
 </script>
 
 <style lang="scss">

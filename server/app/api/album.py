@@ -80,12 +80,17 @@ def get_album_bio():
     """Returns the album bio for the given album."""
     data = request.get_json()
     album_hash = data["hash"]
+    err_msg = {"bio": "No bio found"}
 
     album = instances.album_instance.find_album_by_hash(album_hash)
+
+    if album is None:
+        return err_msg, 404
+
     bio = FetchAlbumBio(album["title"], album["artist"])()
 
     if bio is None:
-        return {"bio": "No bio found."}, 404
+        return err_msg, 404
 
     return {"bio": bio}
 
