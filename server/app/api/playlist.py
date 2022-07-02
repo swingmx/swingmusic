@@ -84,7 +84,12 @@ def get_playlist(playlistid: str):
     playlist = models.Playlist(p)
 
     tracks = playlistlib.create_playlist_tracks(playlist.pretracks)
-    return {"info": serializer.Playlist(playlist), "tracks": tracks}
+
+    duration = sum([t.length for t in tracks])
+    playlist = serializer.Playlist(playlist)
+    playlist.duration = duration
+
+    return {"info": playlist, "tracks": tracks}
 
 
 @playlist_bp.route("/playlist/<playlistid>/update", methods=["PUT"])

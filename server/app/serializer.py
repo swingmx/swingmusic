@@ -59,10 +59,9 @@ class Playlist:
     lastUpdated: int
     description: str
     count: int = 0
+    duration: int = 0
 
-    def __init__(self,
-                 p: models.Playlist,
-                 construct_last_updated: bool = True) -> None:
+    def __init__(self, p: models.Playlist, construct_last_updated: bool = True) -> None:
         self.playlistid = p.playlistid
         self.name = p.name
         self.image = p.image
@@ -72,7 +71,8 @@ class Playlist:
         self.count = p.count
 
         if construct_last_updated:
-            self.lastUpdated = self.l_updated(p.lastUpdated)
+            self.lastUpdated = self.get_l_updated(p.lastUpdated)
 
-    def l_updated(self, date: str) -> str:
+    @staticmethod
+    def get_l_updated(date: str) -> str:
         return date_string_to_time_passed(date)
