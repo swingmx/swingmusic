@@ -61,18 +61,37 @@ const props = defineProps<{
   album: AlbumInfo;
 }>();
 
+const emit = defineEmits<{
+  (event: "resetBottomPadding"): void;
+}>();
+
 const albumheaderthing = ref<HTMLElement>(null);
 const imguri = paths.images.thumb;
 const nav = useNavStore();
 
-const colors = reactive({
-  color1: props.album.colors[0],
-  color2: props.album.colors[3],
-});
+/**
+ * Calls the `toggleShowPlay` method which toggles the play button in the nav.
+ * Emits the `resetBottomPadding` event to reset the album page content bottom padding.
+ *
+ * @param {boolean} state the new visibility state of the album page header.
+ */
+function handleVisibilityState(state: boolean) {
+  if (state) {
+    emit("resetBottomPadding");
+  }
 
-useVisibility(albumheaderthing, nav.toggleShowPlay);
+  nav.toggleShowPlay(state);
+}
 
-function isLight(rgb: string = props.album.colors[0]) {
+useVisibility(albumheaderthing, handleVisibilityState);
+
+/**
+ * Returns `true` if the rgb color passed is light.
+ *
+ * @param {string} rgb The color to check whether it's light or dark.
+ * @returns {boolean} true if color is light, false if color is dark.
+ */
+function isLight(rgb: string = props.album.colors[0]): boolean {
   if (rgb == null || undefined) return false;
 
   const [r, g, b] = rgb.match(/\d+/g)!.map(Number);
@@ -81,7 +100,18 @@ function isLight(rgb: string = props.album.colors[0]) {
   return brightness > 170;
 }
 
-function getButtonColor(colors: string[] = props.album.colors) {
+interface BtnColor {
+  color: string;
+  isDark: boolean;
+}
+
+/**
+ * Returns the first contrasting color in the album colors.
+ *
+ * @param {string[]} colors The album colors to choose from.
+ * @returns {BtnColor} A color to use as the play button background
+ */
+function getButtonColor(colors: string[] = props.album.colors): BtnColor {
   const base_color = colors[0];
   if (colors.length === 0) return { color: "#fff", isDark: true };
 
@@ -100,6 +130,12 @@ function getButtonColor(colors: string[] = props.album.colors) {
   };
 }
 
+/**
+ * Returns the luminance of a color.
+ * @param r The red value of the color.
+ * @param g The green value of the color.
+ * @param b The blue value of the color.
+ */
 function luminance(r: any, g: any, b: any) {
   let a = [r, g, b].map(function (v) {
     v /= 255;
@@ -108,18 +144,33 @@ function luminance(r: any, g: any, b: any) {
   return a[0] * 0.2126 + a[1] * 0.7152 + a[2] * 0.0722;
 }
 
-function contrast(rgb1: number[], rgb2: number[]) {
-  let lum1 = luminance(rgb1[0], rgb1[1], rgb1[2]);
-  let lum2 = luminance(rgb2[0], rgb2[1], rgb2[2]);
+/**
+ * Returns a contrast ratio of `color1`:`color2`
+ * @param {string} color1 The first color
+ * @param {string} color2 The second color
+ */
+function contrast(color1: number[], color2: number[]): number {
+  let lum1 = luminance(color1[0], color1[1], color1[2]);
+  let lum2 = luminance(color2[0], color2[1], color2[2]);
   let brightest = Math.max(lum1, lum2);
   let darkest = Math.min(lum1, lum2);
   return (brightest + 0.05) / (darkest + 0.05);
 }
 
-function rgbToArray(rgb: string) {
+/**
+ * Converts a rgb color string to an array of the form: `[r, g, b]`
+ * @param rgb The color to convert
+ * @returns {number[]} The array representation of the color
+ */
+function rgbToArray(rgb: string): number[] {
   return rgb.match(/\d+/g)!.map(Number);
 }
 
+/**
+ * Returns true if the `color2` contrast with `color1`.
+ * @param color1 The first color
+ * @param color2 The second color
+ */
 function theyContrast(color1: string, color2: string) {
   return contrast(rgbToArray(color1), rgbToArray(color2)) > 3;
 }

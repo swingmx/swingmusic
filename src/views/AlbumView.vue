@@ -1,8 +1,8 @@
 <template>
   <div class="al-view rounded">
-    <div class="al-content">
+    <div class="al-content" id="albumcontent">
       <div>
-        <Header :album="album.info" />
+        <Header :album="album.info" @resetBottomPadding="resetBottomPadding" />
       </div>
       <div class="songs rounded">
         <SongList :tracks="album.tracks" :on_album_page="true" />
@@ -42,23 +42,37 @@ import SongList from "../components/FolderView/SongList.vue";
 import FeaturedArtists from "../components/PlaylistView/FeaturedArtists.vue";
 import useAStore from "../stores/pages/album";
 import { onBeforeRouteUpdate } from "vue-router";
-import { reactive, ref } from "vue";
+import { onMounted, ref } from "vue";
 
 const album = useAStore();
 const albumbottomcards = ref<HTMLElement>(null);
+const bottomContainerState = ref(true);
+let classlist: DOMTokenList = null;
+
+onMounted(() => {
+  classlist = document.getElementById("albumcontent").classList;
+});
 
 onBeforeRouteUpdate(async (to) => {
   await album.fetchTracksAndArtists(to.params.hash.toString());
   album.fetchBio(to.params.hash.toString());
 });
 
+/**
+ * Toggles the state of the bottom container. Adds the `addbottompadding` class that adds a bottom padding to the album content div.
+ */
 function toggleBottom() {
-  // const elem = albumbottomcards.value;
-  // elem.style.height = `${40}rem`;
   bottomContainerState.value = !bottomContainerState.value;
+  classlist.add("addbottompadding");
 }
 
-const bottomContainerState = ref(true);
+/**
+ * Called when the album page header gets into the viewport.
+ * Removes the bottom padding which was added when you expand the bottom container.
+ */
+function resetBottomPadding() {
+  classlist.remove("addbottompadding");
+}
 </script>
 
 <style lang="scss">
@@ -72,6 +86,11 @@ const bottomContainerState = ref(true);
     height: 100%;
     overflow: auto;
     padding-bottom: 17rem;
+    transition: all 0.5s;
+  }
+
+  .addbottompadding {
+    padding-bottom: 37rem;
   }
 
   .songs {
