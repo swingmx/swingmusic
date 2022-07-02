@@ -49,9 +49,8 @@ class Track:
         self.image = tags["albumhash"] + ".webp"
         self.tracknumber = int(tags["tracknumber"])
 
-        self.uniq_hash = self.create_unique_hash(
-            "".join(self.artists), self.album, self.title
-        )
+        self.uniq_hash = self.create_unique_hash("".join(self.artists),
+                                                 self.album, self.title)
 
     @staticmethod
     def create_unique_hash(*args):

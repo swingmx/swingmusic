@@ -27,7 +27,6 @@ LAST_FM_API_KEY = "762db7a44a9e6fb5585661f5f2bdf23a"
 
 CPU_COUNT = multiprocessing.cpu_count()
 
-
 THUMB_SIZE: int = 400
 """
 The size of extracted in pixels
