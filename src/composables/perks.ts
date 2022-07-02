@@ -37,9 +37,12 @@ function getElem(id: string, type: string) {
   }
 }
 
+/**
+ * Converts seconds into minutes and hours.
+ * @param seconds The seconds to convert
+ * @param long Whether to provide the time in the long format
+ */
 function formatSeconds(seconds: number, long?: boolean) {
-  // check if there are arguments
-
   const date = new Date(seconds * 1000);
 
   const hh = date.getUTCHours();

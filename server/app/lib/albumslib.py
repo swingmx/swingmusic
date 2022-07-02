@@ -85,19 +85,6 @@ class ValidateAlbumThumbs:
         self.find_lost_thumbnails()
 
 
-def get_album_duration(album: List[models.Track]) -> int:
-    """
-    Gets the duration of an album.
-    """
-
-    album_duration = 0
-
-    for track in album:
-        album_duration += track.length
-
-    return album_duration
-
-
 def use_defaults() -> str:
     """
     Returns a path to a random image in the defaults directory.

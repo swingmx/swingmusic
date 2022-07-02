@@ -64,6 +64,7 @@ export interface Playlist {
   count?: number;
   lastUpdated?: string;
   thumb?: string;
+  duration?: number
 }
 
 export interface Notif {

@@ -27,7 +27,8 @@
           <span v-else-if="props.info.count == 1"
             >{{ props.info.count }} Track</span
           >
-          <span v-else>{{ props.info.count }} Tracks</span> • 3 Hours
+          <span v-else>{{ props.info.count }} Tracks</span> •
+          {{ formatSeconds(props.info.duration, true) }}
         </div>
         <div class="desc">
           {{ props.info.description }}
@@ -58,6 +59,7 @@ import useContextStore from "../../stores/context";
 import useModalStore from "../../stores/modal";
 import Option from "../shared/Option.vue";
 import PlayBtnRect from "../shared/PlayBtnRect.vue";
+import { formatSeconds } from "@/composables/perks";
 
 const imguri = paths.images.playlist;
 const context = useContextStore();

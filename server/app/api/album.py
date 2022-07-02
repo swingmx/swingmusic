@@ -60,12 +60,16 @@ def get_album():
 
     album.count = len(tracks)
     try:
-        album.duration = albumslib.get_album_duration(tracks)
+        album.duration = sum([t.length for t in tracks])
     except AttributeError:
         album.duration = 0
 
-    if (album.count == 1 and tracks[0].title == album.title
-            and tracks[0].tracknumber == 1 and tracks[0].disknumber == 1):
+    if (
+        album.count == 1
+        and tracks[0].title == album.title
+        and tracks[0].tracknumber == 1
+        and tracks[0].disknumber == 1
+    ):
         album.is_single = True
 
     return {"tracks": tracks, "info": album}
