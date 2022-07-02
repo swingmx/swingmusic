@@ -3,11 +3,8 @@
     <div class="header">
       <div class="headin">Featured Artists</div>
       <div class="xcontrols">
-        <div class="expand rounded">
-          EXPAND
-        </div>
-        <div class="prev icon" @click="scrollLeft()"></div>
-        <div class="next icon" @click="scrollRight()"></div>
+        <div class="prev icon" @click="scrollLeft()"><ArrowSvg /></div>
+        <div class="next icon" @click="scrollRight()"><ArrowSvg /></div>
       </div>
     </div>
     <div class="separator no-border"></div>
@@ -25,6 +22,7 @@
 import { ref } from "@vue/reactivity";
 import ArtistCard from "@/components/shared/ArtistCard.vue";
 import { Artist } from "@/interfaces";
+import ArrowSvg from "../../assets/icons/right-arrow.svg";
 
 defineProps<{
   artists: Artist[];
@@ -57,9 +55,7 @@ const scrollRight = () => {
   padding-bottom: 0;
   border-radius: $small;
   user-select: none;
-  // background: linear-gradient(0deg, transparent, $black);
   position: relative;
-  // background-color: #ffffff00;
 
   .header {
     display: flex;
@@ -70,7 +66,6 @@ const scrollRight = () => {
     .headin {
       font-size: 1.5rem;
       font-weight: 900;
-      // border: solid;
       margin-left: $small;
     }
   }
@@ -89,33 +84,19 @@ const scrollRight = () => {
     transform: rotate(180deg);
   }
   .icon {
-    background: url(../../assets/icons/right-arrow.svg) no-repeat center;
-    width: 2rem;
-    height: 2rem;
     border-radius: $small;
     cursor: pointer;
     transition: all 0.5s ease;
     background-color: rgb(51, 51, 51);
+    padding: $smaller;
+
+    svg {
+      display: flex;
+    }
 
     &:hover {
-      background-color: $blue;
+      background-color: $accent;
       transition: all 0.5s ease;
-    }
-  }
-
-  .expand {
-    background-color: $gray3;
-    padding: $smaller 1rem;
-    font-size: 0.9rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    .icon {
-      height: 1rem;
-      aspect-ratio: 1;
-      background-color: transparent;
-      transform: rotate(-90deg);
     }
   }
 }

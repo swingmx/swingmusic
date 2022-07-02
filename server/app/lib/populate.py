@@ -144,7 +144,7 @@ class CreateAlbums:
                 album = create_album(track)
                 self.db_tracks.remove(track)
             else:
-                album["image"] = hash
+                album["image"] = hash + ".webp"
         try:
             album = Album(album)
             return album
