@@ -6,12 +6,12 @@ from typing import List
 
 from app import api
 from app import helpers
+from app import instances
 from app import models
+from app.functions import FetchAlbumBio
 from app.lib import albumslib
 from flask import Blueprint
 from flask import request
-from app.functions import FetchAlbumBio
-from app import instances
 
 album_bp = Blueprint("album", __name__, url_prefix="")
 
@@ -64,12 +64,8 @@ def get_album():
     except AttributeError:
         album.duration = 0
 
-    if (
-        album.count == 1
-        and tracks[0].title == album.title
-        and tracks[0].tracknumber == 1
-        and tracks[0].disknumber == 1
-    ):
+    if (album.count == 1 and tracks[0].title == album.title
+            and tracks[0].tracknumber == 1 and tracks[0].disknumber == 1):
         album.is_single = True
 
     return {"tracks": tracks, "info": album}

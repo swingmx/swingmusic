@@ -4,13 +4,13 @@ This module contains mini functions for the server.
 import os
 import threading
 from datetime import datetime
-from typing import Dict, Set
+from typing import Dict
 from typing import List
+from typing import Set
 
 import requests
-
-from app import models
 from app import instances
+from app import models
 
 
 def background(func):
@@ -51,6 +51,7 @@ def run_fast_scandir(__dir: str, full=False) -> Dict[List[str], List[str]]:
 
 
 class RemoveDuplicates:
+
     def __init__(self, tracklist: List[models.Track]) -> None:
         self.tracklist = tracklist
 
@@ -102,7 +103,8 @@ class UseBisection:
     items.
     """
 
-    def __init__(self, source: List, search_from: str, queries: List[str]) -> None:
+    def __init__(self, source: List, search_from: str,
+                 queries: List[str]) -> None:
         self.source_list = source
         self.queries_list = queries
         self.attr = search_from
@@ -132,6 +134,7 @@ class UseBisection:
 
 
 class Get:
+
     @staticmethod
     def get_all_tracks() -> List[models.Track]:
         """

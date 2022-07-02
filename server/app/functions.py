@@ -7,18 +7,20 @@ from concurrent.futures import ThreadPoolExecutor
 from io import BytesIO
 
 import requests
-from PIL import Image
-
-from app import helpers, settings
+from app import helpers
+from app import settings
+from app.lib import trackslib
 from app.lib import watchdoge
 from app.lib.albumslib import ValidateAlbumThumbs
-from app.lib import trackslib
-from app.lib.populate import CreateAlbums, Populate
-from app.lib.playlistlib import ValidatePlaylistThumbs
 from app.lib.colorlib import ProcessAlbumColors
+from app.lib.playlistlib import ValidatePlaylistThumbs
+from app.lib.populate import CreateAlbums
+from app.lib.populate import Populate
 from app.logger import get_logger
+from PIL import Image
 
 log = get_logger()
+
 
 @helpers.background
 def run_checks():
@@ -77,6 +79,7 @@ class getArtistImage:
 
 
 class useImageDownloader:
+
     def __init__(self, url: str, dest: str) -> None:
         self.url = url
         self.dest = dest
@@ -93,6 +96,7 @@ class useImageDownloader:
 
 
 class CheckArtistImages:
+
     def __init__(self):
         self.artists: list[str] = []
         print("Checking for artist images")
@@ -117,12 +121,8 @@ class CheckArtistImages:
         :param artistname: The artist name
         """
 
-        img_path = (
-            settings.APP_DIR
-            + "/images/artists/"
-            + helpers.create_safe_name(artistname)
-            + ".webp"
-        )
+        img_path = (settings.APP_DIR + "/images/artists/" +
+                    helpers.create_safe_name(artistname) + ".webp")
 
         if cls.check_if_exists(img_path):
             return "exists"
@@ -149,8 +149,7 @@ def fetch_album_bio(title: str, albumartist: str) -> str | None:
     Returns the album bio for a given album.
     """
     last_fm_url = "http://ws.audioscrobbler.com/2.0/?method=album.getinfo&api_key={}&artist={}&album={}&format=json".format(
-        settings.LAST_FM_API_KEY, albumartist, title
-    )
+        settings.LAST_FM_API_KEY, albumartist, title)
 
     try:
         response = requests.get(last_fm_url)
@@ -159,7 +158,8 @@ def fetch_album_bio(title: str, albumartist: str) -> str | None:
         return None
 
     try:
-        bio = data["album"]["wiki"]["summary"].split('<a href="https://www.last.fm/')[0]
+        bio = data["album"]["wiki"]["summary"].split(
+            '<a href="https://www.last.fm/')[0]
     except KeyError:
         bio = None
 
