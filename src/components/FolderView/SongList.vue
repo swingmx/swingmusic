@@ -1,13 +1,6 @@
 <template>
   <div class="folder">
     <div class="table rounded" v-if="tracks.length">
-      <div class="thead">
-        <div class="index"></div>
-        <div class="track-header">Track</div>
-        <div class="artists-header">Artist</div>
-        <div class="album-header">Album</div>
-        <div class="duration-header">Duration</div>
-      </div>
       <div class="songlist">
         <SongItem
           v-for="track in getTracks()"
@@ -113,47 +106,6 @@ function getTracks() {
   .current:hover {
     * {
       color: rgb(255, 255, 255);
-    }
-  }
-
-  .thead {
-    display: grid;
-    grid-template-columns: 1.5rem 1.5fr 1fr 1.5fr 0.25fr;
-    height: 2.5rem;
-    align-items: center;
-    text-transform: uppercase;
-    font-weight: bold;
-    color: $gray1;
-    gap: $small;
-
-    @include tablet-landscape {
-      grid-template-columns: 1.5rem 1.5fr 1fr 1.5fr;
-    }
-
-    @include tablet-portrait {
-      grid-template-columns: 1.5rem 1.5fr 1fr;
-    }
-
-    @include phone-only {
-      display: none;
-    }
-
-    .duration-header {
-      @include tablet-landscape {
-        display: none;
-      }
-
-      width: 6rem;
-    }
-
-    .album-header {
-      @include tablet-portrait {
-        display: none;
-      }
-    }
-
-    &::-webkit-scrollbar {
-      display: none;
     }
   }
 
