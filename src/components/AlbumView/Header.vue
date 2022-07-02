@@ -9,13 +9,12 @@
       }"
     >
       <div class="art">
-        <div
-          class="image shadow-lg rounded"
-          :style="{
-            backgroundImage: `url(&quot;${imguri + album.image}&quot;)`,
-          }"
+        <img
+          :src="imguri + album.image"
+          alt=""
           v-motion-slide-from-left
-        ></div>
+          class="rounded shadow-lg"
+        />
       </div>
       <div class="info" :class="{ nocontrast: isLight() }">
         <div class="top" v-motion-slide-from-top>
@@ -50,7 +49,7 @@
 import useVisibility from "@/composables/useVisibility";
 import useNavStore from "@/stores/nav";
 import useAlbumStore from "@/stores/pages/album";
-import { reactive, ref } from "vue";
+import { ref } from "vue";
 import { playSources } from "../../composables/enums";
 import { formatSeconds } from "../../composables/perks";
 import { paths } from "../../config";
@@ -177,10 +176,6 @@ function theyContrast(color1: string, color2: string) {
 </script>
 
 <style lang="scss">
-.album-h {
-  height: auto;
-}
-
 .a-header {
   display: grid;
   grid-template-columns: max-content 1fr;
@@ -197,9 +192,10 @@ function theyContrast(color1: string, color2: string) {
     display: flex;
     align-items: flex-end;
 
-    .image {
+    img {
       width: 15rem;
       height: 15rem;
+      transition: all 0.2s ease-in-out;
     }
   }
 

@@ -7,13 +7,12 @@
   >
     <div class="index">{{ props.index }}</div>
     <div class="flex">
-      <div
-        class="album-art image rounded"
-        :style="{
-          backgroundImage: `url(&quot;${imguri + props.song.image}&quot;`,
-        }"
-        @click="emitUpdate(props.song)"
-      >
+      <div @click="emitUpdate(props.song)" class="thumbnail">
+        <img
+          :src="imguri + props.song.image"
+          alt=""
+          class="album-art image rounded"
+        />
         <div
           class="now-playing-track image"
           v-if="props.isPlaying && props.isCurrent"
@@ -226,18 +225,23 @@ function emitUpdate(track: Track) {
 
   .flex {
     position: relative;
-    padding-left: 4rem;
     align-items: center;
 
+    .thumbnail {
+      margin-right: $small;
+      display: flex;
+    }
+
     .album-art {
-      position: absolute;
-      left: $small;
       width: 3rem;
       height: 3rem;
-      margin-right: 1rem;
-      display: grid;
-      place-items: center;
       cursor: pointer;
+    }
+
+    .now-playing-track {
+      position: absolute;
+      left: $small;
+      top: $small;
     }
 
     .title {

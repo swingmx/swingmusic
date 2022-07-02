@@ -11,12 +11,7 @@
           }"
         >
           <div class="art">
-            <div
-              class="l-image image rounded"
-              :style="{
-                backgroundImage: `url(&quot;${imguri + track.image}&quot;)`,
-              }"
-            ></div>
+            <img :src="imguri + track.image" alt="" class="l-image rounded" />
           </div>
         </router-link>
 
