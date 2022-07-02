@@ -122,7 +122,7 @@ function emitUpdate(track: Track) {
 .songlist-item {
   display: grid;
   align-items: center;
-  grid-template-columns: 1.5rem 1.5fr 1fr 1.5fr 0.25fr 2.5rem;
+  grid-template-columns: 1.5rem 1.5fr 1fr 1.5fr 2rem 2.5rem;
   height: 3.75rem;
   text-align: left;
   gap: $small;
@@ -192,7 +192,7 @@ function emitUpdate(track: Track) {
     font-size: 0.9rem;
     width: 5rem !important;
 
-    text-align: right;
+    text-align: left;
   }
 
   .options-icon {
