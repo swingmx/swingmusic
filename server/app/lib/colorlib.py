@@ -1,11 +1,8 @@
 import colorgram
-from app import instances
-
-
+from app import instances, settings
 from app.helpers import Get
-from app import settings
-from app.models import Album
 from app.logger import get_logger
+from app.models import Album
 
 log = get_logger()
 

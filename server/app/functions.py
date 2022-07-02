@@ -7,16 +7,14 @@ from concurrent.futures import ThreadPoolExecutor
 from io import BytesIO
 
 import requests
-from PIL import Image
-
 from app import helpers, settings
-from app.lib import watchdoge
+from app.lib import trackslib, watchdoge
 from app.lib.albumslib import ValidateAlbumThumbs
-from app.lib import trackslib
-from app.lib.populate import CreateAlbums, Populate
-from app.lib.playlistlib import ValidatePlaylistThumbs
 from app.lib.colorlib import ProcessAlbumColors
+from app.lib.playlistlib import ValidatePlaylistThumbs
+from app.lib.populate import CreateAlbums, Populate
 from app.logger import get_logger
+from PIL import Image
 
 log = get_logger()
 

@@ -1,19 +1,16 @@
-from dataclasses import dataclass
 import time
 from concurrent.futures import ThreadPoolExecutor
+from dataclasses import dataclass
 from typing import List
 
-from app import settings
-from app.logger import logg
-from app.helpers import Get, UseBisection, create_album_hash
-from app.helpers import run_fast_scandir
+from app import instances, settings
+from app.helpers import Get, UseBisection, create_album_hash, run_fast_scandir
 from app.instances import tracks_instance
 from app.lib.albumslib import create_album
 from app.lib.taglib import get_tags
+from app.logger import logg
 from app.models import Album, Track
 from tqdm import tqdm
-
-from app import instances
 
 
 class Populate:

@@ -1,9 +1,8 @@
 """
 Contains default configs
 """
-import os
 import multiprocessing
-
+import os
 
 # paths
 CONFIG_FOLDER = ".alice"

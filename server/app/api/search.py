@@ -3,13 +3,10 @@ Contains all the search routes.
 """
 from pprint import pprint
 from typing import List
-from app import helpers
-from app.lib import searchlib
-from flask import Blueprint
-from flask import request
 
-from app import models
-from app import serializer
+from app import helpers, models, serializer
+from app.lib import searchlib
+from flask import Blueprint, request
 
 search_bp = Blueprint("search", __name__, url_prefix="/")
 

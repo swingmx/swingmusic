@@ -1,8 +1,8 @@
 """
 Contains all the models for objects generation and typing.
 """
-from dataclasses import dataclass, field
 import random
+from dataclasses import dataclass, field
 from typing import List
 
 from app import helpers
