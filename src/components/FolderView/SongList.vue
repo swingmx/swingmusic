@@ -9,7 +9,7 @@
           :index="track.index"
           @updateQueue="updateQueue"
           :isPlaying="queue.playing"
-          :isCurrent="queue.current.trackid == track.trackid"
+          :isCurrent="queue.currentid == track.trackid"
         />
       </div>
     </div>
@@ -47,18 +47,22 @@ let route = useRoute().name;
  * @param track Track object
  */
 function updateQueue(track: Track) {
+  const index = props.tracks.findIndex(
+    (t: Track) => t.trackid === track.trackid
+  );
+
   switch (route) {
     case "FolderView":
       queue.playFromFolder(props.path, props.tracks);
-      queue.play(track);
+      queue.play(index);
       break;
     case "AlbumView":
       queue.playFromAlbum(track.album, track.albumartist, props.tracks);
-      queue.play(track);
+      queue.play(index);
       break;
     case "PlaylistView":
       queue.playFromPlaylist(props.pname, props.playlistid, props.tracks);
-      queue.play(track);
+      queue.play(index);
       break;
   }
 }

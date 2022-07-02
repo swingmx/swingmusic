@@ -25,14 +25,14 @@ export default function play(
       const f = store();
 
       useQueue.playFromFolder(f.path, f.tracks);
-      useQueue.play(f.tracks[0]);
+      useQueue.play();
       break;
     case playSources.album:
       store = store as typeof album;
       const a = store();
 
       useQueue.playFromAlbum(a.info.title, a.info.artist, a.tracks);
-      useQueue.play(store().tracks[0]);
+      useQueue.play();
       break;
     case playSources.playlist:
       store = store as typeof playlist;
@@ -41,7 +41,7 @@ export default function play(
       if (p.tracks.length === 0) return;
 
       useQueue.playFromPlaylist(p.info.name, p.info.playlistid, p.tracks);
-      useQueue.play(store().tracks[0]);
+      useQueue.play();
       break;
   }
 }

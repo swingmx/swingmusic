@@ -2,13 +2,13 @@
   <div id="tracks-results" v-if="search.tracks.value">
     <TransitionGroup name="list">
       <TrackItem
-        v-for="track in search.tracks.value"
+        v-for="(track, index) in search.tracks.value"
         :key="track.trackid"
         :track="track"
         :isPlaying="queue.playing"
-        :isCurrent="queue.current.trackid == track.trackid"
+        :isCurrent="queue.currentid == track.trackid"
         :isSearchTrack="true"
-        @PlayThis="updateQueue"
+        @PlayThis="updateQueue(index)"
       />
     </TransitionGroup>
     <LoadMore v-if="search.tracks.more" @loadMore="loadMore" />
@@ -30,9 +30,9 @@ function loadMore() {
   search.loadTracks(search.loadCounter.tracks);
 }
 
-function updateQueue(track: Track) {
+function updateQueue(index: number) {
   queue.playFromSearch(search.query, search.tracks.value);
-  queue.play(track);
+  queue.play(index);
 }
 </script>
 
