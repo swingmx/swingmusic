@@ -49,17 +49,14 @@ const scrollRight = () => {
 
 <style lang="scss">
 .f-artists {
-  height: 14.5em;
   width: calc(100%);
-  padding: $small;
-  padding-bottom: 0;
+  padding: 0 $small;
   border-radius: $small;
   user-select: none;
   position: relative;
 
   .header {
     display: flex;
-    height: 2.5rem;
     align-items: center;
     position: relative;
 
@@ -78,11 +75,11 @@ const scrollRight = () => {
   right: 0;
   display: flex;
   gap: 1rem;
-  justify-content: space-between;
 
   .prev {
     transform: rotate(180deg);
   }
+
   .icon {
     border-radius: $small;
     cursor: pointer;
