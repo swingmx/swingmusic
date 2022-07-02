@@ -78,7 +78,7 @@ function isLight(rgb: string = props.album.colors[0]) {
   const [r, g, b] = rgb.match(/\d+/g)!.map(Number);
   const brightness = (r * 299 + g * 587 + b * 114) / 1000;
 
-  return brightness > 150;
+  return brightness > 170;
 }
 
 function getButtonColor(colors: string[] = props.album.colors) {
