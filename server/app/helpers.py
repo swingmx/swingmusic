@@ -4,10 +4,13 @@ This module contains mini functions for the server.
 import os
 import threading
 from datetime import datetime
-from typing import Dict, List, Set
+from typing import Dict
+from typing import List
+from typing import Set
 
 import requests
-from app import instances, models
+from app import instances
+from app import models
 
 
 def background(func):
