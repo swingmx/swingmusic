@@ -1,7 +1,13 @@
 <template>
   <div class="l_ rounded">
     <div class="headin">Now Playing</div>
-    <div class="button menu image rounded"></div>
+    <div
+      class="button menu rounded"
+      @click="showContextMenu"
+      :class="{ context_on: context_on }"
+    >
+      <MenuSvg />
+    </div>
     <div class="separator no-border"></div>
     <div>
       <SongCard :track="queue.current" />
@@ -16,8 +22,34 @@ import SongCard from "./SongCard.vue";
 import HotKeys from "./NP/HotKeys.vue";
 import Progress from "./NP/Progress.vue";
 import useQStore from "../../stores/queue";
+import MenuSvg from "../../assets/icons/more.svg";
+import trackContext from "@/contexts/track_context";
+import useContextStore from "@/stores/context";
+import useModalStore from "@/stores/modal";
+import useQueueStore from "@/stores/queue";
+import { ContextSrc } from "@/composables/enums";
+
+import { ref } from "vue";
 
 const queue = useQStore();
+const contextStore = useContextStore();
+const context_on = ref(false);
+
+const showContextMenu = (e: Event) => {
+  e.preventDefault();
+  e.stopPropagation();
+
+  const menus = trackContext(queue.current, useModalStore, useQueueStore);
+
+  contextStore.showContextMenu(e, menus, ContextSrc.Track);
+  context_on.value = true;
+
+  contextStore.$subscribe((mutation, state) => {
+    if (!state.visible) {
+      context_on.value = false;
+    }
+  });
+};
 </script>
 <style lang="scss">
 .l_ {
@@ -49,31 +81,27 @@ const queue = useQStore();
   }
 
   .button {
-    height: 2rem;
-    width: 2rem;
     position: absolute;
     background-size: 1.5rem;
     top: $small;
     cursor: pointer;
     transition: all 200ms;
+    display: flex;
+    align-items: center;
+    padding: $smaller;
 
     &:hover {
-      background-color: $gray2;
+      background-color: $accent;
     }
+  }
+
+  .context_on {
+    background-color: $accent;
   }
 
   .menu {
     right: $small;
-    background-image: url("../../assets/icons/right-arrow.svg");
     transform: rotate(90deg);
-
-    &:hover {
-      transform: rotate(0deg);
-    }
-  }
-
-  br {
-    height: 0rem;
   }
 
   .art {

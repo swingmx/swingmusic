@@ -2,14 +2,24 @@
   <div class="info">
     <div class="desc">
       <div>
-        <div class="art">
-          <div
-            class="l-image image rounded"
-            :style="{
-              backgroundImage: `url(&quot;${imguri + track.image}&quot;)`,
-            }"
-          ></div>
-        </div>
+        <router-link
+          :to="{
+            name: 'AlbumView',
+            params: {
+              hash: track.albumhash,
+            },
+          }"
+        >
+          <div class="art">
+            <div
+              class="l-image image rounded"
+              :style="{
+                backgroundImage: `url(&quot;${imguri + track.image}&quot;)`,
+              }"
+            ></div>
+          </div>
+        </router-link>
+
         <div id="bitrate">
           <span v-if="track.bitrate > 1500">MASTER</span>
           <span v-else-if="track.bitrate > 330">FLAC</span>

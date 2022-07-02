@@ -67,17 +67,17 @@
 </template>
 
 <script setup lang="ts">
-import { putCommas, formatSeconds } from "../../composables/perks";
-import useContextStore from "../../stores/context";
-import useModalStore from "../../stores/modal";
-import useQueueStore from "../../stores/queue";
-import { ContextSrc } from "../../composables/enums";
-import OptionSvg from "../../assets/icons/more.svg";
+import { putCommas, formatSeconds } from "@/composables/perks";
+import useContextStore from "@/stores/context";
+import useModalStore from "@/stores/modal";
+import useQueueStore from "@/stores/queue";
+import { ContextSrc } from "@/composables/enums";
+import OptionSvg from "@/assets/icons/more.svg";
 
 import { ref } from "vue";
-import trackContext from "../../contexts/track_context";
-import { Track } from "../../interfaces";
-import { paths } from "../../config";
+import trackContext from "@/contexts/track_context";
+import { Track } from "@/interfaces";
+import { paths } from "@/config";
 
 const contextStore = useContextStore();
 
