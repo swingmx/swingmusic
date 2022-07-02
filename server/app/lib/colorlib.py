@@ -1,11 +1,9 @@
 import colorgram
 from app import instances
-
-
-from app.helpers import Get
 from app import settings
-from app.models import Album
+from app.helpers import Get
 from app.logger import get_logger
+from app.models import Album
 
 log = get_logger()
 
@@ -27,6 +25,7 @@ def get_image_colors(image: str) -> list:
 
 
 class ProcessAlbumColors:
+
     def __init__(self) -> None:
         log.info("Processing album colors")
         all_albums = Get.get_all_albums()

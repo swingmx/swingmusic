@@ -1,8 +1,9 @@
 """
 Contains all the models for objects generation and typing.
 """
-from dataclasses import dataclass, field
 import random
+from dataclasses import dataclass
+from dataclasses import field
 from typing import List
 
 from app import helpers
@@ -48,9 +49,8 @@ class Track:
         self.image = tags["albumhash"] + ".webp"
         self.tracknumber = int(tags["tracknumber"])
 
-        self.uniq_hash = self.create_unique_hash(
-            "".join(self.artists), self.album, self.title
-        )
+        self.uniq_hash = self.create_unique_hash("".join(self.artists),
+                                                 self.album, self.title)
 
     @staticmethod
     def create_unique_hash(*args):

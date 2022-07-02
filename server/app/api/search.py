@@ -3,13 +3,13 @@ Contains all the search routes.
 """
 from pprint import pprint
 from typing import List
+
 from app import helpers
+from app import models
+from app import serializer
 from app.lib import searchlib
 from flask import Blueprint
 from flask import request
-
-from app import models
-from app import serializer
 
 search_bp = Blueprint("search", __name__, url_prefix="/")
 
@@ -197,20 +197,20 @@ def search_load_more():
     if type == "tracks":
         t = SearchResults.tracks
         return {
-            "tracks": t[index : index + 5],
+            "tracks": t[index:index + 5],
             "more": len(t) > index + 5,
         }
 
     elif type == "albums":
         a = SearchResults.albums
         return {
-            "albums": a[index : index + 6],
+            "albums": a[index:index + 6],
             "more": len(a) > index + 6,
         }
 
     elif type == "artists":
         a = SearchResults.artists
         return {
-            "artists": a[index : index + 6],
+            "artists": a[index:index + 6],
             "more": len(a) > index + 6,
         }

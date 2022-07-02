@@ -1,9 +1,8 @@
 """
 Contains default configs
 """
-import os
 import multiprocessing
-
+import os
 
 # paths
 CONFIG_FOLDER = ".alice"
@@ -27,7 +26,6 @@ DEFAULT_ARTIST_IMG = IMG_ARTIST_URI + "0.webp"
 LAST_FM_API_KEY = "762db7a44a9e6fb5585661f5f2bdf23a"
 
 CPU_COUNT = multiprocessing.cpu_count()
-
 
 THUMB_SIZE: int = 400
 """
