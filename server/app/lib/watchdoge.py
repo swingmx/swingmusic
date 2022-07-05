@@ -4,10 +4,10 @@ This library contains the classes and functions related to the watchdog file wat
 import os
 import time
 
-from app.logger import get_logger
 from app import instances
 from app.helpers import create_album_hash
 from app.lib.taglib import get_tags
+from app.logger import get_logger
 from watchdog.events import PatternMatchingEventHandler
 from watchdog.observers import Observer
 
