@@ -57,7 +57,7 @@ const context = useContextStore();
   top: 0;
   left: 0;
   width: 12rem;
-  z-index: 10000;
+  z-index: 10000 !important;
   transform: scale(0);
 
   padding: $small;
@@ -158,7 +158,6 @@ const context = useContextStore();
 
 .context-menu-visible {
   transform: scale(1);
-  transition: transform 0.2s ease-in-out;
 }
 
 .context-normalizedX {
