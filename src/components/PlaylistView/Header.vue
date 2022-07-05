@@ -86,7 +86,7 @@ function showDropdown(e: any) {
 .p-header {
   display: grid;
   grid-template-columns: 1fr;
-  height: 16rem;
+  height: 17rem;
   position: relative;
   border-radius: 0.75rem;
   color: $white;

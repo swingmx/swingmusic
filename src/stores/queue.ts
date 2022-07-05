@@ -40,6 +40,7 @@ function readCurrent(): number {
 
 const defaultTrack = <Track>{
   title: "Nothing played yet",
+  albumhash: " ",
   artists: ["Alice"],
   trackid: "",
   image: "",
