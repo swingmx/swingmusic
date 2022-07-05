@@ -6,7 +6,9 @@ import random
 from dataclasses import dataclass
 from typing import List
 
-from app import helpers, instances, models
+from app import helpers
+from app import instances
+from app import models
 from app.lib import taglib
 from app.logger import logg
 from app.settings import THUMBS_PATH

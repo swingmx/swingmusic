@@ -3,13 +3,18 @@ from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass
 from typing import List
 
-from app import instances, settings
-from app.helpers import Get, UseBisection, create_album_hash, run_fast_scandir
+from app import instances
+from app import settings
+from app.helpers import create_album_hash
+from app.helpers import Get
+from app.helpers import run_fast_scandir
+from app.helpers import UseBisection
 from app.instances import tracks_instance
 from app.lib.albumslib import create_album
 from app.lib.taglib import get_tags
 from app.logger import logg
-from app.models import Album, Track
+from app.models import Album
+from app.models import Track
 from tqdm import tqdm
 
 
