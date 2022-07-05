@@ -17,14 +17,18 @@ def send_track_file(trackid):
     Returns an audio file that matches the passed id to the client.
     """
     track = instances.tracks_instance.get_track_by_id(trackid)
+    msg = {"msg": "File Not Found"}
 
     if track is None:
-        return "File not found", 404
+        return msg, 404
 
     track = models.Track(track)
     type = track.filepath.split(".")[-1]
 
-    return send_file(track.filepath, mimetype=f"audio/{type}")
+    try:
+        return send_file(track.filepath, mimetype=f"audio/{type}")
+    except FileNotFoundError:
+        return msg, 404
 
 
 @track_bp.route("/sample")
