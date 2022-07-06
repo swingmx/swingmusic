@@ -3,12 +3,9 @@ This library contains all the functions related to the search functionality.
 """
 from typing import List
 
-from app import api
-from app import helpers
-from app import models
+from app import api, helpers, models
 from app.lib import albumslib
-from rapidfuzz import fuzz
-from rapidfuzz import process
+from rapidfuzz import fuzz, process
 
 ratio = fuzz.ratio
 wratio = fuzz.WRatio

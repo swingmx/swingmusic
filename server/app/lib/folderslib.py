@@ -1,13 +1,11 @@
+import time
+from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass
 from os import scandir
-import time
 from typing import Tuple
-from concurrent.futures import ThreadPoolExecutor
-
-from app.models import Folder
-from app.models import Track
 
 from app import instances
+from app.models import Folder, Track
 
 
 @dataclass

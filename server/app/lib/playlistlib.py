@@ -7,17 +7,12 @@ import string
 from datetime import datetime
 from typing import List
 
-from app import exceptions
-from app import instances
-from app import models
-from app import settings
-from PIL import Image
-from PIL import ImageSequence
-from werkzeug import datastructures
-
-from app.lib import trackslib
+from app import exceptions, instances, models, settings
 from app.helpers import Get
+from app.lib import trackslib
 from app.logger import get_logger
+from PIL import Image, ImageSequence
+from werkzeug import datastructures
 
 TrackExistsInPlaylist = exceptions.TrackExistsInPlaylist
 

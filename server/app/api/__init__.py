@@ -4,9 +4,7 @@ that are used through-out the app. It handles the initialization of the watchdog
 checking and creating config dirs and starting the re-indexing process using a background thread.
 """
 
-from app import functions
-from app import helpers
-from app import prep
+from app import functions, helpers, prep
 
 
 @helpers.background

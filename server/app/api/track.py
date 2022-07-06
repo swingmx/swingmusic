@@ -1,11 +1,8 @@
 """
 Contains all the track routes.
 """
-from app import api
-from app import instances
-from app import models
-from flask import Blueprint
-from flask import send_file
+from app import api, instances, models
+from flask import Blueprint, send_file
 
 track_bp = Blueprint("track", __name__, url_prefix="/")
 
