@@ -11,58 +11,58 @@ import Home from "@/views/Home.vue";
 import Playlists from "@/views/Playlists.vue";
 import PlaylistView from "@/views/PlaylistView.vue";
 import SettingsView from "@/views/SettingsView.vue";
-import {createRouter, createWebHashHistory} from "vue-router";
+import { createRouter, createWebHashHistory } from "vue-router";
 
 const routes = [
   {
-    path : "/",
-    name : "Home",
-    component : Home,
+    path: "/",
+    name: "Home",
+    component: Home,
   },
   {
-    path : "/folder/:path",
-    name : "FolderView",
-    component : FolderView,
-    beforeEnter : async (to) => {
+    path: "/folder/:path",
+    name: "FolderView",
+    component: FolderView,
+    beforeEnter: async (to) => {
       state.loading.value = true;
       await useFStore().fetchAll(to.params.path);
       state.loading.value = false;
     },
   },
   {
-    path : "/folder/",
-    redirect : "/folder/home",
+    path: "/folder/",
+    redirect: "/folder/home",
   },
   {
-    path : "/playlists",
-    name : "Playlists",
-    component : Playlists,
-    beforeEnter : async () => {
+    path: "/playlists",
+    name: "Playlists",
+    component: Playlists,
+    beforeEnter: async () => {
       state.loading.value = true;
       await usePStore().fetchAll();
       state.loading.value = false;
     },
   },
   {
-    path : "/playlist/:pid",
-    name : "PlaylistView",
-    component : PlaylistView,
-    beforeEnter : async (to) => {
+    path: "/playlist/:pid",
+    name: "PlaylistView",
+    component: PlaylistView,
+    beforeEnter: async (to) => {
       state.loading.value = true;
       await usePTrackStore().fetchAll(to.params.pid);
       state.loading.value = false;
     },
   },
   {
-    path : "/albums",
-    name : "AlbumsView",
-    component : AlbumsExplorer,
+    path: "/albums",
+    name: "AlbumsView",
+    component: AlbumsExplorer,
   },
   {
-    path : "/albums/:hash",
-    name : "AlbumView",
-    component : AlbumView,
-    beforeEnter : async (to) => {
+    path: "/albums/:hash",
+    name: "AlbumView",
+    component: AlbumView,
+    beforeEnter: async (to) => {
       state.loading.value = true;
       await useAStore().fetchTracksAndArtists(to.params.hash);
       state.loading.value = false;
@@ -70,24 +70,24 @@ const routes = [
     },
   },
   {
-    path : "/artists",
-    name : "ArtistsView",
-    component : ArtistsExplorer,
+    path: "/artists",
+    name: "ArtistsView",
+    component: ArtistsExplorer,
   },
   {
-    path : "/settings",
-    name : "SettingsView",
-    component : SettingsView,
+    path: "/settings",
+    name: "SettingsView",
+    component: SettingsView,
   },
   {
-    path : "/:pathMatch(.*)",
-    component : () => import("../views/NotFound.vue"),
+    path: "/:pathMatch(.*)",
+    component: () => import("../views/NotFound.vue"),
   },
 ];
 
 const router = createRouter({
-  mode : "hash",
-  history : createWebHashHistory(import.meta.env.BASE_URL),
+  mode: "hash",
+  history: createWebHashHistory(import.meta.env.BASE_URL),
   routes,
 });
 
