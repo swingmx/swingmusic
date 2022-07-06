@@ -2,15 +2,9 @@
   "compilerOptions": {
     "jsx": "preserve",
     "paths": {
-      "baseUrl": [
-        "./"
-      ],
-      "@/*": [
-        "./src/*"
-      ]
+      "baseUrl": ["./"],
+      "@/*": ["./src/*"]
     }
   },
-  "include": [
-    "src/**/*"
-  ]
+  "include": ["src/**/*"]
 }
