@@ -10,7 +10,6 @@ from flask import Blueprint
 
 artist_bp = Blueprint("artist", __name__, url_prefix="/")
 
-
 # @artist_bp.route("/artist/<artist>")
 # @cache.cached()
 # def get_artist_data(artist: str):

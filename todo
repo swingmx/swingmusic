@@ -7,7 +7,7 @@
 - [ ] Add and deploy demo branch
 
 ### Client
-- [ ] Add processes tab to show running tasks, eg. when tagging files. I have no idea on how to go about it so far. Web sockets? 
+- [ ] Add processes tab to show running tasks, eg. when tagging files. I have no idea on how to go about it so far. Web sockets?
 - [ ] Responsiveness, especially the track list.
 - [ ] Make dummy buttons functional.
 - [ ] Add settings page (or modal)

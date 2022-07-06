@@ -1,10 +1,10 @@
 """
 This file contains the Playlists class for interacting with the playlist documents in MongoDB.
 """
+from app import helpers
 from app.db.mongodb import convert_many
 from app.db.mongodb import convert_one
 from app.db.mongodb import MongoPlaylists
-from app import helpers
 from bson import ObjectId
 
 
@@ -18,8 +18,12 @@ class Playlists(MongoPlaylists):
         Inserts a new playlist object into the database.
         """
         return self.collection.update_one(
-            {"name": playlist["name"]},
-            {"$set": playlist},
+            {
+                "name": playlist["name"]
+            },
+            {
+                "$set": playlist
+            },
             upsert=True,
         ).upserted_id
 
@@ -45,7 +49,9 @@ class Playlists(MongoPlaylists):
 
         return self.collection.update_one(
             {"_id": ObjectId(playlistid)},
-            {"$set": {"lastUpdated": date}},
+            {"$set": {
+                "lastUpdated": date
+            }},
         )
 
     def add_track_to_playlist(self, playlistid: str, track: dict) -> None:
@@ -56,7 +62,9 @@ class Playlists(MongoPlaylists):
             {
                 "_id": ObjectId(playlistid),
             },
-            {"$push": {"pre_tracks": track}},
+            {"$push": {
+                "pre_tracks": track
+            }},
         )
         self.set_last_updated(playlistid)
 
