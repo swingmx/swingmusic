@@ -28,7 +28,8 @@ def get_all_playlists():
     dbplaylists = [models.Playlist(p) for p in dbplaylists]
 
     playlists = [
-        serializer.Playlist(p, construct_last_updated=False) for p in dbplaylists
+        serializer.Playlist(p, construct_last_updated=False)
+        for p in dbplaylists
     ]
     playlists.sort(
         key=lambda p: datetime.strptime(p.lastUpdated, "%Y-%m-%d %H:%M:%S"),

@@ -22,5 +22,4 @@ def validate_tracks() -> None:
 
 def get_p_track(ptrack):
     return instances.tracks_instance.find_track_by_title_artists_album(
-        ptrack["title"], ptrack["artists"], ptrack["album"]
-    )
+        ptrack["title"], ptrack["artists"], ptrack["album"])

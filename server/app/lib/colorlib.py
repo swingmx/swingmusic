@@ -25,6 +25,7 @@ def get_image_colors(image: str) -> list:
 
 
 class ProcessAlbumColors:
+
     def __init__(self) -> None:
         log.info("Processing album colors")
         all_albums = Get.get_all_albums()

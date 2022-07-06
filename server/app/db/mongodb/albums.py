@@ -22,8 +22,13 @@ class Albums(MongoAlbums):
         """
         album = album.__dict__
         return self.collection.update_one(
-            {"album": album["title"], "artist": album["artist"]},
-            {"$set": album},
+            {
+                "album": album["title"],
+                "artist": album["artist"]
+            },
+            {
+                "$set": album
+            },
             upsert=True,
         ).upserted_id
 
@@ -68,5 +73,7 @@ class Albums(MongoAlbums):
         """
         self.collection.update_one(
             {"hash": hash},
-            {"$set": {"colors": colors}},
+            {"$set": {
+                "colors": colors
+            }},
         )

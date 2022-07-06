@@ -26,10 +26,14 @@ def get_folder_track_count(path: str) -> int:
 def create_folder(dir: Dir) -> Folder:
     """Create a single Folder object"""
     folder = {
-        "name": dir.path.split("/")[-1],
-        "path": dir.path,
-        "is_sym": dir.is_sym,
-        "trackcount": instances.tracks_instance.find_tracks_inside_path_regex(dir.path),
+        "name":
+        dir.path.split("/")[-1],
+        "path":
+        dir.path,
+        "is_sym":
+        dir.is_sym,
+        "trackcount":
+        instances.tracks_instance.find_tracks_inside_path_regex(dir.path),
     }
 
     return Folder(folder)
