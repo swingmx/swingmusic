@@ -1,4 +1,3 @@
-import axios from "axios";
 import { Playlist, Track } from "../../interfaces";
 import { Notification, NotifType } from "../../stores/notification";
 import state from "../state";

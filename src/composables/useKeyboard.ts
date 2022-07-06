@@ -11,7 +11,7 @@ function focusSearchBox() {
 export default function (queue: typeof useQStore) {
   const q = queue();
   window.addEventListener("keydown", (e: KeyboardEvent) => {
-    let target = e.target as HTMLElement;
+    const target = e.target as HTMLElement;
     let ctrlKey = e.ctrlKey;
 
     function FocusedOnInput(target: HTMLElement) {

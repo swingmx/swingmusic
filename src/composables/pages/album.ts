@@ -49,7 +49,7 @@ const getAlbumArtists = async (hash: string) => {
 };
 
 const getAlbumBio = async (hash: string) => {
-  const { data, status, error } = await useAxios({
+  const { data, status } = await useAxios({
     url: state.settings.uri + "/album/bio",
     props: {
       hash: hash,
