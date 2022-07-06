@@ -8,11 +8,12 @@ from app import exceptions
 from app import instances
 from app import models
 from app import serializer
+from app.helpers import create_new_date
+from app.helpers import Get
+from app.helpers import UseBisection
 from app.lib import playlistlib
 from flask import Blueprint
 from flask import request
-
-from app.helpers import Get, UseBisection, create_new_date
 
 playlist_bp = Blueprint("playlist", __name__, url_prefix="/")
 
@@ -27,7 +28,8 @@ def get_all_playlists():
     dbplaylists = [models.Playlist(p) for p in dbplaylists]
 
     playlists = [
-        serializer.Playlist(p, construct_last_updated=False) for p in dbplaylists
+        serializer.Playlist(p, construct_last_updated=False)
+        for p in dbplaylists
     ]
     playlists.sort(
         key=lambda p: datetime.strptime(p.lastUpdated, "%Y-%m-%d %H:%M:%S"),
