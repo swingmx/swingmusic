@@ -3,10 +3,9 @@ Contains all the track routes.
 """
 from app import api
 from app import instances
+from app import models
 from flask import Blueprint
 from flask import send_file
-
-from app import models
 
 track_bp = Blueprint("track", __name__, url_prefix="/")
 
@@ -37,6 +36,5 @@ def get_sample_track():
     Returns a sample track object.
     """
 
-    return instances.tracks_instance.get_song_by_album(
-        "Legends Never Die", "Juice WRLD"
-    )
+    return instances.tracks_instance.get_song_by_album("Legends Never Die",
+                                                       "Juice WRLD")
