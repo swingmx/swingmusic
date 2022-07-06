@@ -1,19 +1,21 @@
-from dataclasses import dataclass
 import time
 from concurrent.futures import ThreadPoolExecutor
+from dataclasses import dataclass
 from typing import List
 
+from app import instances
 from app import settings
-from app.logger import logg
-from app.helpers import Get, UseBisection, create_album_hash
+from app.helpers import create_album_hash
+from app.helpers import Get
 from app.helpers import run_fast_scandir
+from app.helpers import UseBisection
 from app.instances import tracks_instance
 from app.lib.albumslib import create_album
 from app.lib.taglib import get_tags
-from app.models import Album, Track
+from app.logger import logg
+from app.models import Album
+from app.models import Track
 from tqdm import tqdm
-
-from app import instances
 
 
 class Populate:
@@ -76,6 +78,7 @@ class PreAlbum:
 
 
 class CreateAlbums:
+
     def __init__(self) -> None:
         self.db_tracks = Get.get_all_tracks()
         self.db_albums = Get.get_all_albums()
@@ -119,7 +122,8 @@ class CreateAlbums:
         return prealbums
 
     @staticmethod
-    def filter_processed(albums: List[Album], prealbums: List[PreAlbum]) -> List[dict]:
+    def filter_processed(albums: List[Album],
+                         prealbums: List[PreAlbum]) -> List[dict]:
         to_process = []
 
         for p in tqdm(prealbums, desc="Filtering processed albums"):
@@ -144,7 +148,7 @@ class CreateAlbums:
                 album = create_album(track)
                 self.db_tracks.remove(track)
             else:
-                album["image"] = hash
+                album["image"] = hash + ".webp"
         try:
             album = Album(album)
             return album

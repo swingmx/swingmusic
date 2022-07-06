@@ -4,14 +4,14 @@ This library contains the classes and functions related to the watchdog file wat
 import os
 import time
 
-from app.logger import logg
 from app import instances
-from app import models
-from app.helpers import Get, create_album_hash
-from app.lib.albumslib import create_album
+from app.helpers import create_album_hash
 from app.lib.taglib import get_tags
+from app.logger import get_logger
 from watchdog.events import PatternMatchingEventHandler
 from watchdog.observers import Observer
+
+log = get_logger()
 
 
 class OnMyWatch:
@@ -31,7 +31,7 @@ class OnMyWatch:
         try:
             self.observer.start()
         except OSError:
-            logg.error("Could not start watchdog.")
+            log.error("Could not start watchdog.")
             return
 
         try:
@@ -55,18 +55,6 @@ def add_track(filepath: str) -> None:
     if tags is not None:
         hash = create_album_hash(tags["album"], tags["albumartist"])
         tags["albumhash"] = hash
-
-        album = instances.album_instance.find_album_by_hash(hash)
-        all_tracks = Get.get_all_tracks()
-        all_tracks.append(models.Track(tags))
-
-        if album is None:
-            album_data = create_album(tags, all_tracks)
-            album = models.Album(album_data)
-
-            instances.album_instance.insert_album(album)
-
-        tags["image"] = album.image
         instances.tracks_instance.insert_song(tags)
 
 
@@ -74,8 +62,6 @@ def remove_track(filepath: str) -> None:
     """
     Removes a track from the music dict.
     """
-
-    filepath = filepath + "k"
 
     instances.tracks_instance.remove_song_by_filepath(filepath)
 
@@ -140,7 +126,3 @@ class Handler(PatternMatchingEventHandler):
 
 
 watch = OnMyWatch()
-
-# TODO
-# When removing a track, check if there are other tracks in the same album,
-# if it was the last one, remove the album.

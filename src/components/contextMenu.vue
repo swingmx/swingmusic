@@ -57,7 +57,7 @@ const context = useContextStore();
   top: 0;
   left: 0;
   width: 12rem;
-  z-index: 10;
+  z-index: 10000 !important;
   transform: scale(0);
 
   padding: $small;
@@ -68,12 +68,10 @@ const context = useContextStore();
   .context-item {
     width: 100%;
     display: flex;
-    justify-content: flex-start;
     align-items: center;
     cursor: default;
     padding: $small;
     border-radius: $small;
-    color: rgb(255, 255, 255);
     position: relative;
     text-transform: capitalize;
 
@@ -141,7 +139,7 @@ const context = useContextStore();
 
       .children {
         transform: scale(1);
-        transition: transform 0.2s ease-in-out;
+        transition: transform 0.1s ease-in-out;
       }
     }
   }
@@ -160,7 +158,6 @@ const context = useContextStore();
 
 .context-menu-visible {
   transform: scale(1);
-  transition: transform 0.2s ease-in-out;
 }
 
 .context-normalizedX {

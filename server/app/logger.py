@@ -1,7 +1,5 @@
 import logging
 
-from app.settings import logger
-
 
 class CustomFormatter(logging.Formatter):
 

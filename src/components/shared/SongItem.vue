@@ -7,13 +7,12 @@
   >
     <div class="index">{{ props.index }}</div>
     <div class="flex">
-      <div
-        class="album-art image rounded"
-        :style="{
-          backgroundImage: `url(&quot;${imguri + props.song.image}&quot;`,
-        }"
-        @click="emitUpdate(props.song)"
-      >
+      <div @click="emitUpdate(props.song)" class="thumbnail">
+        <img
+          :src="imguri + props.song.image"
+          alt=""
+          class="album-art image rounded"
+        />
         <div
           class="now-playing-track image"
           v-if="props.isPlaying && props.isCurrent"
@@ -67,17 +66,17 @@
 </template>
 
 <script setup lang="ts">
-import { putCommas, formatSeconds } from "../../composables/perks";
-import useContextStore from "../../stores/context";
-import useModalStore from "../../stores/modal";
-import useQueueStore from "../../stores/queue";
-import { ContextSrc } from "../../composables/enums";
-import OptionSvg from "../../assets/icons/more.svg";
+import { putCommas, formatSeconds } from "@/composables/perks";
+import useContextStore from "@/stores/context";
+import useModalStore from "@/stores/modal";
+import useQueueStore from "@/stores/queue";
+import { ContextSrc } from "@/composables/enums";
+import OptionSvg from "@/assets/icons/more.svg";
 
 import { ref } from "vue";
-import trackContext from "../../contexts/track_context";
-import { Track } from "../../interfaces";
-import { paths } from "../../config";
+import trackContext from "@/contexts/track_context";
+import { Track } from "@/interfaces";
+import { paths } from "@/config";
 
 const contextStore = useContextStore();
 
@@ -122,15 +121,14 @@ function emitUpdate(track: Track) {
 .songlist-item {
   display: grid;
   align-items: center;
-  grid-template-columns: 1.5rem 1.5fr 1fr 1.5fr 0.25fr 2.5rem;
+  grid-template-columns: 1.5rem 1.5fr 1fr 1.5fr 2rem 2.5rem;
   height: 3.75rem;
   text-align: left;
   gap: $small;
   user-select: none;
-  -moz-user-select: none;
 
   @include tablet-landscape {
-    grid-template-columns: 1.5rem 1.5fr 1fr 1.5fr 2.5rem;
+    grid-template-columns: 1.5rem 1.5fr 1fr 1fr 2.5rem;
   }
 
   @include tablet-portrait {
@@ -156,6 +154,10 @@ function emitUpdate(track: Track) {
     text-transform: capitalize;
     max-width: max-content;
     cursor: pointer;
+
+    &:hover {
+      text-decoration: underline;
+    }
 
     @include tablet-portrait {
       display: none;
@@ -189,7 +191,7 @@ function emitUpdate(track: Track) {
     font-size: 0.9rem;
     width: 5rem !important;
 
-    text-align: right;
+    text-align: left;
   }
 
   .options-icon {
@@ -223,18 +225,23 @@ function emitUpdate(track: Track) {
 
   .flex {
     position: relative;
-    padding-left: 4rem;
     align-items: center;
 
+    .thumbnail {
+      margin-right: $small;
+      display: flex;
+    }
+
     .album-art {
-      position: absolute;
-      left: $small;
       width: 3rem;
       height: 3rem;
-      margin-right: 1rem;
-      display: grid;
-      place-items: center;
       cursor: pointer;
+    }
+
+    .now-playing-track {
+      position: absolute;
+      left: $small;
+      top: $small;
     }
 
     .title {

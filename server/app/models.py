@@ -1,8 +1,9 @@
 """
 Contains all the models for objects generation and typing.
 """
-from dataclasses import dataclass, field
 import random
+from dataclasses import dataclass
+from dataclasses import field
 from typing import List
 
 from app import helpers
@@ -48,16 +49,13 @@ class Track:
         self.image = tags["albumhash"] + ".webp"
         self.tracknumber = int(tags["tracknumber"])
 
-        self.uniq_hash = self.create_unique_hash(
-            "".join(self.artists), self.album, self.title
-        )
+        self.uniq_hash = self.create_unique_hash("".join(self.artists),
+                                                 self.album, self.title)
 
     @staticmethod
     def create_unique_hash(*args):
-        ill_chars = '/\\:*?"<>|#&'
-
         string = "".join(str(a) for a in args).replace(" ", "")
-        return "".join(string).strip(ill_chars).lower()
+        return "".join([i for i in string if i.isalnum()]).lower()
 
 
 @dataclass(slots=True)
@@ -92,6 +90,7 @@ class Album:
     is_soundtrack: bool = False
     is_compilation: bool = False
     is_single: bool = False
+    colors: List[str] = field(default_factory=list)
 
     def __init__(self, tags):
         self.title = tags["title"]
@@ -99,6 +98,11 @@ class Album:
         self.date = tags["date"]
         self.image = tags["image"]
         self.hash = tags["hash"]
+
+        try:
+            self.colors = tags["colors"]
+        except KeyError:
+            self.colors = []
 
     @property
     def is_soundtrack(self) -> bool:

@@ -6,12 +6,12 @@ from typing import List
 
 from app import api
 from app import helpers
+from app import instances
 from app import models
+from app.functions import FetchAlbumBio
 from app.lib import albumslib
 from flask import Blueprint
 from flask import request
-from app.functions import FetchAlbumBio
-from app import instances
 
 album_bp = Blueprint("album", __name__, url_prefix="")
 
@@ -41,27 +41,31 @@ def get_album():
     """Returns all the tracks in the given album."""
     data = request.get_json()
     albumhash = data["hash"]
+    error_msg = {"error": "Album not created yet."}
 
     tracks = instances.tracks_instance.find_tracks_by_hash(albumhash)
+
+    if len(tracks) == 0:
+        return error_msg, 204
+
     tracks = [models.Track(t) for t in tracks]
     tracks = helpers.RemoveDuplicates(tracks)()
 
     album = instances.album_instance.find_album_by_hash(albumhash)
 
     if not album:
-        return {"error": "Album not created yet."}, 204
+        return error_msg, 204
 
     album = models.Album(album)
 
     album.count = len(tracks)
-    album.duration = albumslib.get_album_duration(tracks)
+    try:
+        album.duration = sum([t.length for t in tracks])
+    except AttributeError:
+        album.duration = 0
 
-    if (
-        album.count == 1
-        and tracks[0].title == album.title
-        and tracks[0].tracknumber == 1
-        and tracks[0].disknumber == 1
-    ):
+    if (album.count == 1 and tracks[0].title == album.title
+            and tracks[0].tracknumber == 1 and tracks[0].disknumber == 1):
         album.is_single = True
 
     return {"tracks": tracks, "info": album}
@@ -72,12 +76,17 @@ def get_album_bio():
     """Returns the album bio for the given album."""
     data = request.get_json()
     album_hash = data["hash"]
+    err_msg = {"bio": "No bio found"}
 
     album = instances.album_instance.find_album_by_hash(album_hash)
+
+    if album is None:
+        return err_msg, 404
+
     bio = FetchAlbumBio(album["title"], album["artist"])()
 
     if bio is None:
-        return {"bio": "No bio found."}, 404
+        return err_msg, 404
 
     return {"bio": bio}
 

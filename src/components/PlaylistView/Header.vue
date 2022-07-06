@@ -12,7 +12,14 @@
     <div class="carddd">
       <div class="info">
         <div class="btns">
-          <PlayBtnRect :source="playSources.playlist" :store="usePStore" />
+          <PlayBtnRect
+            :source="playSources.playlist"
+            :store="usePStore"
+            :background="{
+              color: '#fff',
+              isDark: true,
+            }"
+          />
           <Option @showDropdown="showDropdown" :src="context.src" />
         </div>
         <div class="duration">
@@ -20,7 +27,8 @@
           <span v-else-if="props.info.count == 1"
             >{{ props.info.count }} Track</span
           >
-          <span v-else>{{ props.info.count }} Tracks</span> • 3 Hours
+          <span v-else>{{ props.info.count }} Tracks</span> •
+          {{ formatSeconds(props.info.duration, true) }}
         </div>
         <div class="desc">
           {{ props.info.description }}
@@ -51,6 +59,7 @@ import useContextStore from "../../stores/context";
 import useModalStore from "../../stores/modal";
 import Option from "../shared/Option.vue";
 import PlayBtnRect from "../shared/PlayBtnRect.vue";
+import { formatSeconds } from "@/composables/perks";
 
 const imguri = paths.images.playlist;
 const context = useContextStore();
@@ -77,7 +86,7 @@ function showDropdown(e: any) {
 .p-header {
   display: grid;
   grid-template-columns: 1fr;
-  height: 16rem;
+  height: 17rem;
   position: relative;
   border-radius: 0.75rem;
   color: $white;

@@ -7,14 +7,19 @@ from concurrent.futures import ThreadPoolExecutor
 from io import BytesIO
 
 import requests
-from PIL import Image
-
-from app import helpers, settings
+from app import helpers
+from app import settings
+from app.lib import trackslib
 from app.lib import watchdoge
 from app.lib.albumslib import ValidateAlbumThumbs
-from app.lib import trackslib
-from app.lib.populate import CreateAlbums, Populate
+from app.lib.colorlib import ProcessAlbumColors
 from app.lib.playlistlib import ValidatePlaylistThumbs
+from app.lib.populate import CreateAlbums
+from app.lib.populate import Populate
+from app.logger import get_logger
+from PIL import Image
+
+log = get_logger()
 
 
 @helpers.background
@@ -22,18 +27,25 @@ def run_checks():
     """
     Checks for new songs every 5 minutes.
     """
-
-    # while True:
-    trackslib.validate_tracks()
-
-    Populate()
-    CreateAlbums()
-
-    if helpers.Ping()():
-        CheckArtistImages()()
-
     ValidateAlbumThumbs()
-    ValidatePlaylistThumbs()
+
+    while True:
+        trackslib.validate_tracks()
+
+        Populate()
+        CreateAlbums()
+
+        if helpers.Ping()():
+            CheckArtistImages()()
+
+        @helpers.background
+        def process_album_colors():
+            ProcessAlbumColors()
+
+        ValidatePlaylistThumbs()
+        process_album_colors()
+
+        time.sleep(300)
 
 
 @helpers.background
@@ -67,6 +79,7 @@ class getArtistImage:
 
 
 class useImageDownloader:
+
     def __init__(self, url: str, dest: str) -> None:
         self.url = url
         self.dest = dest
@@ -76,14 +89,18 @@ class useImageDownloader:
             img = Image.open(BytesIO(requests.get(self.url).content))
             img.save(self.dest, format="webp")
             img.close()
+            return "fetched image"
         except requests.exceptions.ConnectionError:
             time.sleep(5)
+            return "connection error"
 
 
 class CheckArtistImages:
+
     def __init__(self):
         self.artists: list[str] = []
         print("Checking for artist images")
+        log.info("Checking artist images")
 
     @staticmethod
     def check_if_exists(img_path: str):
@@ -104,29 +121,25 @@ class CheckArtistImages:
         :param artistname: The artist name
         """
 
-        img_path = (
-            settings.APP_DIR
-            + "/images/artists/"
-            + helpers.create_safe_name(artistname)
-            + ".webp"
-        )
+        img_path = (settings.APP_DIR + "/images/artists/" +
+                    helpers.create_safe_name(artistname) + ".webp")
 
         if cls.check_if_exists(img_path):
-            return
+            return "exists"
 
         url = getArtistImage(artistname)()
 
         if url is None:
-            return
-        useImageDownloader(url, img_path)()
+            return "url is none"
+
+        return useImageDownloader(url, img_path)()
 
     def __call__(self):
         self.artists = helpers.Get.get_all_artists()
 
         with ThreadPoolExecutor() as pool:
             iter = pool.map(self.download_image, self.artists)
-            for i in iter:
-                pass
+            [i for i in iter]
 
         print("Done fetching images")
 
@@ -136,8 +149,7 @@ def fetch_album_bio(title: str, albumartist: str) -> str | None:
     Returns the album bio for a given album.
     """
     last_fm_url = "http://ws.audioscrobbler.com/2.0/?method=album.getinfo&api_key={}&artist={}&album={}&format=json".format(
-        settings.LAST_FM_API_KEY, albumartist, title
-    )
+        settings.LAST_FM_API_KEY, albumartist, title)
 
     try:
         response = requests.get(last_fm_url)
@@ -146,7 +158,8 @@ def fetch_album_bio(title: str, albumartist: str) -> str | None:
         return None
 
     try:
-        bio = data["album"]["wiki"]["summary"].split('<a href="https://www.last.fm/')[0]
+        bio = data["album"]["wiki"]["summary"].split(
+            '<a href="https://www.last.fm/')[0]
     except KeyError:
         bio = None
 

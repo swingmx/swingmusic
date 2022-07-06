@@ -6,7 +6,9 @@ import random
 from dataclasses import dataclass
 from typing import List
 
-from app import helpers, instances, models
+from app import helpers
+from app import instances
+from app import models
 from app.lib import taglib
 from app.logger import logg
 from app.settings import THUMBS_PATH
@@ -35,6 +37,7 @@ class RipAlbumImage:
 
 
 class ValidateAlbumThumbs:
+
     @staticmethod
     def remove_obsolete():
         """
@@ -58,7 +61,9 @@ class ValidateAlbumThumbs:
         Re-rip lost album thumbnails
         """
         entries = os.scandir(THUMBS_PATH)
-        entries = [Thumbnail(entry.name) for entry in entries if entry.is_file()]
+        entries = [
+            Thumbnail(entry.name) for entry in entries if entry.is_file()
+        ]
 
         albums = helpers.Get.get_all_albums()
         thumbs = [(album.hash + ".webp") for album in albums]
@@ -83,19 +88,6 @@ class ValidateAlbumThumbs:
     def __init__(self) -> None:
         self.remove_obsolete()
         self.find_lost_thumbnails()
-
-
-def get_album_duration(album: List[models.Track]) -> int:
-    """
-    Gets the duration of an album.
-    """
-
-    album_duration = 0
-
-    for track in album:
-        album_duration += track.length
-
-    return album_duration
 
 
 def use_defaults() -> str:
