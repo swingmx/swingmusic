@@ -61,9 +61,7 @@ class Playlist:
     count: int = 0
     duration: int = 0
 
-    def __init__(self,
-                 p: models.Playlist,
-                 construct_last_updated: bool = True) -> None:
+    def __init__(self, p: models.Playlist, construct_last_updated: bool = True) -> None:
         self.playlistid = p.playlistid
         self.name = p.name
         self.image = p.image

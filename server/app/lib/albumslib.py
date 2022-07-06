@@ -37,7 +37,6 @@ class RipAlbumImage:
 
 
 class ValidateAlbumThumbs:
-
     @staticmethod
     def remove_obsolete():
         """
@@ -61,9 +60,7 @@ class ValidateAlbumThumbs:
         Re-rip lost album thumbnails
         """
         entries = os.scandir(THUMBS_PATH)
-        entries = [
-            Thumbnail(entry.name) for entry in entries if entry.is_file()
-        ]
+        entries = [Thumbnail(entry.name) for entry in entries if entry.is_file()]
 
         albums = helpers.Get.get_all_albums()
         thumbs = [(album.hash + ".webp") for album in albums]
