@@ -4,7 +4,7 @@ import useFStore from "@/stores/pages/folder";
 import usePTrackStore from "@/stores/pages/playlist";
 import usePStore from "@/stores/pages/playlists";
 import AlbumsExplorer from "@/views/AlbumsExplorer.vue";
-import AlbumView from "@/views/AlbumView.vue";
+import AlbumView from "@/views/album/index.vue";
 import ArtistsExplorer from "@/views/ArtistsExplorer.vue";
 import FolderView from "@/views/FolderView.vue";
 import Home from "@/views/Home.vue";
