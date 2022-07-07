@@ -19,7 +19,7 @@ def get_folder_track_count(path: str) -> int:
     """
     Returns the number of files associated with a folder.
     """
-    tracks = instances.tracks_instance.find_tracks_inside_path_regex(path)
+    tracks = instances.tracks_instance.get_dir_t_count(path)
     return len(tracks)
 
 
@@ -29,7 +29,7 @@ def create_folder(dir: Dir) -> Folder:
         "name": dir.path.split("/")[-1],
         "path": dir.path,
         "is_sym": dir.is_sym,
-        "trackcount": instances.tracks_instance.find_tracks_inside_path_regex(dir.path),
+        "trackcount": instances.tracks_instance.get_dir_t_count(dir.path),
     }
 
     return Folder(folder)

@@ -2,10 +2,9 @@
 This file contains the AllSongs class for interacting with track documents in MongoDB.
 """
 import re
+
 import pymongo
-from app.db.mongodb import convert_many
-from app.db.mongodb import convert_one
-from app.db.mongodb import MongoTracks
+from app.db.mongodb import MongoTracks, convert_many, convert_one
 from bson import ObjectId
 
 
@@ -100,7 +99,7 @@ class Tracks(MongoTracks):
         songs = self.collection.find({"folder": query})
         return convert_many(songs)
 
-    def find_tracks_inside_path_regex(self, path: str) -> int:
+    def get_dir_t_count(self, path: str) -> int:
         """
         Returns a list of all the tracks matching the path in the query params.
         """

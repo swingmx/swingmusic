@@ -207,7 +207,7 @@ class TrackMethods:
         """
         pass
 
-    def find_tracks_inside_path_regex():
+    def get_dir_t_count():
         """
         Returns a list of all the tracks matching the path in the query params.
         """
