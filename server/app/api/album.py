@@ -4,14 +4,10 @@ Contains all the album routes.
 from pprint import pprint
 from typing import List
 
-from app import api
-from app import helpers
-from app import instances
-from app import models
+from app import api, helpers, instances, models
 from app.functions import FetchAlbumBio
 from app.lib import albumslib
-from flask import Blueprint
-from flask import request
+from flask import Blueprint, request
 
 album_bp = Blueprint("album", __name__, url_prefix="")
 

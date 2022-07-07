@@ -5,8 +5,7 @@ from os import scandir
 from typing import Tuple
 
 from app import instances
-from app.models import Folder
-from app.models import Track
+from app.models import Folder, Track
 
 
 @dataclass
