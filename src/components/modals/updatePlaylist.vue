@@ -41,7 +41,13 @@
       />
     </div>
     <div class="submit">
-      <input type="submit" id="updateplaylistsubmit" class="rounded" value="Update" @click="" />
+      <input
+        type="submit"
+        id="updateplaylistsubmit"
+        class="rounded"
+        value="Update"
+        @click=""
+      />
     </div>
   </form>
 </template>
@@ -49,7 +55,7 @@
 <script setup lang="ts">
 import usePStore from "@/stores/pages/playlist";
 import { onMounted } from "vue";
-import { updatePlaylist } from "../../composables/playlists";
+import { updatePlaylist } from "../../composables/pages/playlists";
 import { Playlist } from "../../interfaces";
 
 const pStore = usePStore();
@@ -105,8 +111,10 @@ function update_playlist(e: Event) {
 
   if (!clicked) {
     clicked = true;
-    const elem = document.getElementById("updateplaylistsubmit") as HTMLFormElement
-    elem.value = "Updating"
+    const elem = document.getElementById(
+      "updateplaylistsubmit"
+    ) as HTMLFormElement;
+    elem.value = "Updating";
   } else {
     return;
   }

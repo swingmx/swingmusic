@@ -74,11 +74,11 @@ const showContextMenu = (e: Event) => {
 };
 
 const emit = defineEmits<{
-  (e: "PlayThis", track: Track): void;
+  (e: "PlayThis"): void;
 }>();
 
 const playThis = (track: Track) => {
-  emit("PlayThis", track);
+  emit("PlayThis");
 };
 </script>
 
@@ -122,7 +122,13 @@ const playThis = (track: Track) => {
     margin: 0 0.5rem 0 0;
     background-image: url(../../assets/images/null.webp);
   }
+
+  .title {
+    word-break: break-all;
+  }
+
   .artist {
+    word-break: break-all;
     font-size: small;
     color: rgba(255, 255, 255, 0.637);
   }

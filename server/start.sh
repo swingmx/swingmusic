@@ -8,7 +8,7 @@ gpath=$(poetry run which gunicorn)
 while getopts ':s' opt; do
   case $opt in
     s)
-      echo "🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴"
+      echo "Starting Alice server"
       cd "./app"
       "$gpath" -b 0.0.0.0:9877 -w 4 --threads=2 "imgserver:app" &
       cd ../

@@ -7,10 +7,18 @@
 - [ ] Add and deploy demo branch
 
 ### Client
-- [ ] Add processes tab to show running tasks, eg. when tagging files. I have no idea on how to go about it so far. Web sockets? 
+- [ ] Add processes tab to show running tasks, eg. when tagging files. I have no idea on how to go about it so far. Web sockets?
 - [ ] Responsiveness, especially the track list.
 - [ ] Make dummy buttons functional.
 - [ ] Add settings page (or modal)
 - [ ] Add keyboard shortcuts listing page (or modal)
 - [ ] Add backspace shortcut to go back.
 - [ ] Implement Esc key to cancel modals.
+
+
+### Notes
+
+
+
+
+- Resolve album page using albumhash instead of album title and artist

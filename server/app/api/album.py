@@ -1,16 +1,17 @@
 """
 Contains all the album routes.
 """
+from pprint import pprint
 from typing import List
 
 from app import api
 from app import helpers
+from app import instances
 from app import models
+from app.functions import FetchAlbumBio
 from app.lib import albumslib
-from app.lib import trackslib
 from flask import Blueprint
 from flask import request
-from app.functions import FetchAlbumBio
 
 album_bp = Blueprint("album", __name__, url_prefix="")
 
@@ -35,42 +36,57 @@ def get_albums():
     return {"albums": albums}
 
 
-@album_bp.route("/album/tracks", methods=["POST"])
+@album_bp.route("/album", methods=["POST"])
 def get_album():
     """Returns all the tracks in the given album."""
     data = request.get_json()
+    albumhash = data["hash"]
+    error_msg = {"error": "Album not created yet."}
 
-    album = data["album"]
-    artist = data["artist"]
+    tracks = instances.tracks_instance.find_tracks_by_hash(albumhash)
 
-    songs = trackslib.get_album_tracks(album, artist)
-    albumhash = helpers.create_album_hash(album, artist)
-    index = albumslib.find_album(api.ALBUMS, albumhash)
-    album: models.Album = api.ALBUMS[index]
+    if len(tracks) == 0:
+        return error_msg, 204
 
-    album.count = len(songs)
-    album.duration = albumslib.get_album_duration(songs)
+    tracks = [models.Track(t) for t in tracks]
+    tracks = helpers.RemoveDuplicates(tracks)()
 
-    if (
-        album.count == 1
-        and songs[0].title == album.title
-        and songs[0].tracknumber == 1
-        and songs[0].disknumber == 1
-    ):
+    album = instances.album_instance.find_album_by_hash(albumhash)
+
+    if not album:
+        return error_msg, 204
+
+    album = models.Album(album)
+
+    album.count = len(tracks)
+    try:
+        album.duration = sum([t.length for t in tracks])
+    except AttributeError:
+        album.duration = 0
+
+    if (album.count == 1 and tracks[0].title == album.title
+            and tracks[0].tracknumber == 1 and tracks[0].disknumber == 1):
         album.is_single = True
 
-    return {"songs": songs, "info": album}
+    return {"tracks": tracks, "info": album}
 
 
 @album_bp.route("/album/bio", methods=["POST"])
 def get_album_bio():
     """Returns the album bio for the given album."""
     data = request.get_json()
-    fetch_bio = FetchAlbumBio(data["album"], data["albumartist"])
-    bio = fetch_bio()
+    album_hash = data["hash"]
+    err_msg = {"bio": "No bio found"}
+
+    album = instances.album_instance.find_album_by_hash(album_hash)
+
+    if album is None:
+        return err_msg, 404
+
+    bio = FetchAlbumBio(album["title"], album["artist"])()
 
     if bio is None:
-        return {"bio": "No bio found."}, 404
+        return err_msg, 404
 
     return {"bio": bio}
 
@@ -80,19 +96,16 @@ def get_albumartists():
     """Returns a list of artists featured in a given album."""
     data = request.get_json()
 
-    album = data["album"]
-    artist = data["artist"]
+    albumhash = data["hash"]
 
-    tracks: List[models.Track] = []
-
-    for track in api.TRACKS:
-        if track.album == album and track.albumartist == artist:
-            tracks.append(track)
+    tracks = instances.tracks_instance.find_tracks_by_hash(albumhash)
+    tracks = [models.Track(t) for t in tracks]
 
     artists = []
 
     for track in tracks:
         for artist in track.artists:
+            artist = artist.lower()
             if artist not in artists:
                 artists.append(artist)
 
@@ -100,7 +113,7 @@ def get_albumartists():
     for artist in artists:
         artist_obj = {
             "name": artist,
-            "image": helpers.check_artist_image(artist),
+            "image": helpers.create_safe_name(artist) + ".webp",
         }
         final_artists.append(artist_obj)
 

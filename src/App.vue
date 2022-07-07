@@ -36,6 +36,7 @@ import useQStore from "@/stores/queue";
 import useShortcuts from "@/composables/useKeyboard";
 import Logo from "@/components/Logo.vue";
 import { useRouter } from "vue-router";
+import { onStartTyping } from "@vueuse/core";
 
 const context_store = useContextStore();
 const queue = useQStore();
@@ -52,6 +53,10 @@ app_dom.addEventListener("click", (e) => {
 
 useRouter().afterEach(() => {
   document.getElementById("acontent")?.scrollTo(0, 0);
+});
+
+onStartTyping(() => {
+  document.getElementById("globalsearch").focus();
 });
 </script>
 

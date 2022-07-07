@@ -1,22 +1,15 @@
 <template>
   <div class="folder">
     <div class="table rounded" v-if="tracks.length">
-      <div class="thead">
-        <div class="index"></div>
-        <div class="track-header">Track</div>
-        <div class="artists-header">Artist</div>
-        <div class="album-header">Album</div>
-        <div class="duration-header">Duration</div>
-      </div>
       <div class="songlist">
         <SongItem
-          v-for="(track, index) in tracks"
+          v-for="track in getTracks()"
           :key="track.trackid"
           :song="track"
-          :index="index + 1"
+          :index="track.index"
           @updateQueue="updateQueue"
           :isPlaying="queue.playing"
-          :isCurrent="queue.current.trackid == track.trackid"
+          :isCurrent="queue.currentid == track.trackid"
         />
       </div>
     </div>
@@ -43,6 +36,7 @@ const props = defineProps<{
   path?: string;
   pname?: string;
   playlistid?: string;
+  on_album_page?: boolean;
 }>();
 
 let route = useRoute().name;
@@ -53,20 +47,42 @@ let route = useRoute().name;
  * @param track Track object
  */
 function updateQueue(track: Track) {
+  const index = props.tracks.findIndex(
+    (t: Track) => t.trackid === track.trackid
+  );
+
   switch (route) {
     case "FolderView":
       queue.playFromFolder(props.path, props.tracks);
-      queue.play(track);
+      queue.play(index);
       break;
     case "AlbumView":
       queue.playFromAlbum(track.album, track.albumartist, props.tracks);
-      queue.play(track);
+      queue.play(index);
       break;
     case "PlaylistView":
       queue.playFromPlaylist(props.pname, props.playlistid, props.tracks);
-      queue.play(track);
+      queue.play(index);
       break;
   }
+}
+
+function getTracks() {
+  if (props.on_album_page) {
+    let tracks = props.tracks.map((track, index) => {
+      track.index = track.tracknumber;
+      return track;
+    });
+
+    return tracks;
+  }
+
+  let tracks = props.tracks.map((track, index) => {
+    track.index = index + 1;
+    return track;
+  });
+
+  return tracks;
 }
 </script>
 
@@ -94,47 +110,6 @@ function updateQueue(track: Track) {
   .current:hover {
     * {
       color: rgb(255, 255, 255);
-    }
-  }
-
-  .thead {
-    display: grid;
-    grid-template-columns: 1.5rem 1.5fr 1fr 1.5fr 0.25fr;
-    height: 2.5rem;
-    align-items: center;
-    text-transform: uppercase;
-    font-weight: bold;
-    color: $gray1;
-    gap: $small;
-
-    @include tablet-landscape {
-      grid-template-columns: 1.5rem 1.5fr 1fr 1.5fr;
-    }
-
-    @include tablet-portrait {
-      grid-template-columns: 1.5rem 1.5fr 1fr;
-    }
-
-    @include phone-only {
-      display: none;
-    }
-
-    .duration-header {
-      @include tablet-landscape {
-        display: none;
-      }
-
-      width: 6rem;
-    }
-
-    .album-header {
-      @include tablet-portrait {
-        display: none;
-      }
-    }
-
-    &::-webkit-scrollbar {
-      display: none;
     }
   }
 

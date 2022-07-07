@@ -1,6 +1,6 @@
 import { ref, reactive } from "@vue/reactivity";
 import { defineStore } from "pinia";
-import { AlbumInfo, Artist, Track } from "../interfaces";
+import { AlbumInfo, Artist, Playlist, Track } from "../interfaces";
 import {
   searchTracks,
   searchAlbums,
@@ -33,6 +33,7 @@ export default defineStore("search", () => {
     tracks: 0,
     albums: 0,
     artists: 0,
+    playlists: 0,
   });
 
   const tracks = reactive({
@@ -50,6 +51,12 @@ export default defineStore("search", () => {
   const artists = reactive({
     query: "",
     value: <Artist[]>[],
+    more: false,
+  });
+
+  const playlists = reactive({
+    query: "",
+    value: <Playlist[]>[],
     more: false,
   });
 
@@ -123,16 +130,18 @@ export default defineStore("search", () => {
       .then(() => scrollOnLoad());
   }
 
-  function updateLoadCounter(type: string, value: number) {
+  type loadType = "tracks" | "albums" | "artists" | "playlists";
+
+  function updateLoadCounter(type: loadType) {
     switch (type) {
       case "tracks":
-        loadCounter.tracks += value;
+        loadCounter.tracks += 6;
         break;
       case "albums":
-        loadCounter.albums += value;
+        loadCounter.albums += 6;
         break;
       case "artists":
-        loadCounter.artists += value;
+        loadCounter.artists += 6;
         break;
     }
   }
@@ -204,6 +213,7 @@ export default defineStore("search", () => {
     tracks,
     albums,
     artists,
+    playlists,
     query,
     currentTab,
     loadCounter,

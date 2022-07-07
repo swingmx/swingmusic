@@ -7,13 +7,12 @@
   >
     <div class="index">{{ props.index }}</div>
     <div class="flex">
-      <div
-        class="album-art image rounded"
-        :style="{
-          backgroundImage: `url(&quot;${imguri + props.song.image}&quot;`,
-        }"
-        @click="emitUpdate(props.song)"
-      >
+      <div @click="emitUpdate(props.song)" class="thumbnail">
+        <img
+          :src="imguri + props.song.image"
+          alt=""
+          class="album-art image rounded"
+        />
         <div
           class="now-playing-track image"
           v-if="props.isPlaying && props.isCurrent"
@@ -38,41 +37,52 @@
       </div>
     </div>
     <router-link
-      class="song-album"
+      class="song-album ellip"
       :to="{
         name: 'AlbumView',
         params: {
-          album: props.song.album,
-          artist: props.song.albumartist,
+          hash: props.song.albumhash,
         },
       }"
     >
-      <div class="album ellip">
-        {{ props.song.album }}
-      </div>
+      {{ props.song.album }}
     </router-link>
     <div class="song-duration">
-      {{ formatSeconds(props.song.length) }}
+      <div class="text">{{ formatSeconds(props.song.length) }}</div>
+    </div>
+    <div
+      class="options-icon circular"
+      :class="{ options_button_clicked }"
+      @click="
+        (e) => {
+          showContextMenu(e);
+          options_button_clicked = true;
+        }
+      "
+    >
+      <OptionSvg />
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { putCommas, formatSeconds } from "../../composables/perks";
-import useContextStore from "../../stores/context";
-import useModalStore from "../../stores/modal";
-import useQueueStore from "../../stores/queue";
-import { ContextSrc } from "../../composables/enums";
+import { putCommas, formatSeconds } from "@/composables/perks";
+import useContextStore from "@/stores/context";
+import useModalStore from "@/stores/modal";
+import useQueueStore from "@/stores/queue";
+import { ContextSrc } from "@/composables/enums";
+import OptionSvg from "@/assets/icons/more.svg";
 
 import { ref } from "vue";
-import trackContext from "../../contexts/track_context";
-import { Track } from "../../interfaces";
-import { paths } from "../../config";
+import trackContext from "@/contexts/track_context";
+import { Track } from "@/interfaces";
+import { paths } from "@/config";
 
 const contextStore = useContextStore();
 
 const context_on = ref(false);
 const imguri = paths.images.thumb;
+const options_button_clicked = ref(false);
 
 const showContextMenu = (e: Event) => {
   e.preventDefault();
@@ -86,6 +96,7 @@ const showContextMenu = (e: Event) => {
   contextStore.$subscribe((mutation, state) => {
     if (!state.visible) {
       context_on.value = false;
+      options_button_clicked.value = false;
     }
   });
 };
@@ -110,44 +121,42 @@ function emitUpdate(track: Track) {
 .songlist-item {
   display: grid;
   align-items: center;
-  grid-template-columns: 1.5rem 1.5fr 1fr 1.5fr 0.25fr;
+  grid-template-columns: 1.5rem 1.5fr 1fr 1.5fr 2rem 2.5rem;
   height: 3.75rem;
   text-align: left;
   gap: $small;
   user-select: none;
-  -moz-user-select: none;
-
-  .context {
-    position: fixed;
-    top: 0;
-    left: 0;
-    height: 45px;
-    width: 45px;
-    background-color: red;
-  }
 
   @include tablet-landscape {
-    grid-template-columns: 1.5rem 1.5fr 1fr 1.5fr;
+    grid-template-columns: 1.5rem 1.5fr 1fr 1fr 2.5rem;
   }
 
   @include tablet-portrait {
-    grid-template-columns: 1.5rem 1.5fr 1fr;
+    grid-template-columns: 1.5rem 1.5fr 1fr 2.5rem;
   }
 
   &:hover {
     background-color: $gray4;
+
+    .options-icon {
+      opacity: 1 !important;
+    }
   }
 
   .song-duration {
     @include tablet-landscape {
-      display: none;
+      display: none !important;
     }
   }
 
   .song-album {
-    .album {
-      cursor: pointer;
-      max-width: max-content;
+    word-break: break-all;
+    text-transform: capitalize;
+    max-width: max-content;
+    cursor: pointer;
+
+    &:hover {
+      text-decoration: underline;
     }
 
     @include tablet-portrait {
@@ -156,6 +165,8 @@ function emitUpdate(track: Track) {
   }
 
   .song-artists {
+    word-break: break-all;
+
     .artist {
       cursor: pointer;
     }
@@ -179,26 +190,63 @@ function emitUpdate(track: Track) {
   .song-duration {
     font-size: 0.9rem;
     width: 5rem !important;
+
+    text-align: left;
+  }
+
+  .options-icon {
+    opacity: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    aspect-ratio: 1;
+    width: 2rem;
+    margin-right: 1rem;
+
+    svg {
+      transition: all 0.2s ease-in;
+      transform: rotate(90deg);
+      stroke: $track-btn-svg;
+
+      circle {
+        fill: $track-btn-svg;
+      }
+    }
+
+    &:hover {
+      background-color: $gray5;
+    }
+  }
+
+  .options_button_clicked {
+    background-color: $gray5;
+    opacity: 1;
   }
 
   .flex {
     position: relative;
-    padding-left: 4rem;
     align-items: center;
 
+    .thumbnail {
+      margin-right: $small;
+      display: flex;
+    }
+
     .album-art {
-      position: absolute;
-      left: $small;
       width: 3rem;
       height: 3rem;
-      margin-right: 1rem;
-      display: grid;
-      place-items: center;
       cursor: pointer;
+    }
+
+    .now-playing-track {
+      position: absolute;
+      left: $small;
+      top: $small;
     }
 
     .title {
       cursor: pointer;
+      word-break: break-all;
     }
   }
 

@@ -19,9 +19,10 @@ class Cutoff:
     Holds all the default cutoff values.
     """
 
-    tracks: int = 70
-    albums: int = 70
-    artists: int = 70
+    tracks: int = 80
+    albums: int = 80
+    artists: int = 80
+    playlists: int = 80
 
 
 class Limit:
@@ -32,19 +33,21 @@ class Limit:
     tracks: int = 50
     albums: int = 50
     artists: int = 50
+    playlists: int = 50
 
 
 class SearchTracks:
 
-    def __init__(self, query) -> None:
+    def __init__(self, tracks: List[models.Track], query: str) -> None:
         self.query = query
+        self.tracks = tracks
 
     def __call__(self) -> List[models.Track]:
         """
         Gets all songs with a given title.
         """
 
-        tracks = [track.title for track in api.TRACKS]
+        tracks = [track.title for track in self.tracks]
         results = process.extract(
             self.query,
             tracks,
@@ -53,39 +56,23 @@ class SearchTracks:
             limit=Limit.tracks,
         )
 
-        return [api.TRACKS[i[2]] for i in results]
+        return [self.tracks[i[2]] for i in results]
 
 
 class SearchArtists:
 
-    def __init__(self, query) -> None:
+    def __init__(self, artists: set[str], query: str) -> None:
         self.query = query
-
-    @staticmethod
-    def get_all_artist_names() -> List[str]:
-        """
-        Gets all artist names.
-        """
-
-        artists = [track.artists for track in api.TRACKS]
-
-        f_artists = set()
-
-        for artist in artists:
-            for a in artist:
-                f_artists.add(a)
-
-        return f_artists
+        self.artists = artists
 
     def __call__(self) -> list:
         """
         Gets all artists with a given name.
         """
 
-        artists = self.get_all_artist_names()
         results = process.extract(
             self.query,
-            artists,
+            self.artists,
             scorer=fuzz.WRatio,
             score_cutoff=Cutoff.artists,
             limit=Limit.artists,
@@ -104,24 +91,17 @@ class SearchArtists:
 
 class SearchAlbums:
 
-    def __init__(self, query) -> None:
+    def __init__(self, albums: List[models.Album], query: str) -> None:
         self.query = query
-
-    def get_albums_by_name(self) -> List[models.Album]:
-        """
-        Gets all albums with a given title.
-        """
-
-        albums = [album.title for album in api.ALBUMS]
-        results = process.extract(self.query, albums)
-        return [api.ALBUMS[i[2]] for i in results]
+        self.albums = albums
 
     def __call__(self) -> List[models.Album]:
         """
         Gets all albums with a given title.
         """
 
-        albums = [a.title for a in api.ALBUMS]
+        albums = [a.title.lower() for a in self.albums]
+
         results = process.extract(
             self.query,
             albums,
@@ -130,7 +110,7 @@ class SearchAlbums:
             limit=Limit.albums,
         )
 
-        return [api.ALBUMS[i[2]] for i in results]
+        return [self.albums[i[2]] for i in results]
 
         # get all artists that matched the query
         # for get all albums from the artists
@@ -140,31 +120,20 @@ class SearchAlbums:
         # recheck next and previous artist on play next or add to playlist
 
 
-class GetTopArtistTracks:
+class SearchPlaylists:
 
-    def __init__(self, artist: str) -> None:
-        self.artist = artist
+    def __init__(self, playlists: List[models.Playlist], query: str) -> None:
+        self.playlists = playlists
+        self.query = query
 
-    def __call__(self) -> List[models.Track]:
-        """
-        Gets all tracks from a given artist.
-        """
+    def __call__(self) -> List[models.Playlist]:
+        playlists = [p.name for p in self.playlists]
+        results = process.extract(
+            self.query,
+            playlists,
+            scorer=fuzz.WRatio,
+            score_cutoff=Cutoff.playlists,
+            limit=Limit.playlists,
+        )
 
-        return [track for track in api.TRACKS if self.artist in track.artists]
-
-
-def get_search_albums(query: str) -> List[models.Album]:
-    """
-    Gets all songs with a given album.
-    """
-    return albumslib.search_albums_by_name(query)
-
-
-def get_artists(artist: str) -> List[models.Track]:
-    """
-    Gets all songs with a given artist.
-    """
-    return [
-        track for track in api.TRACKS
-        if artist.lower() in str(track.artists).lower()
-    ]
+        return [self.playlists[i[2]] for i in results]

@@ -1,11 +1,12 @@
 """
 Contains all the models for objects generation and typing.
 """
-from dataclasses import dataclass, field
+import random
+from dataclasses import dataclass
+from dataclasses import field
 from typing import List
 
-from app import api, helpers
-from app.exceptions import TrackExistsInPlaylist
+from app import helpers
 
 
 @dataclass(slots=True)
@@ -16,7 +17,7 @@ class Track:
 
     trackid: str
     title: str
-    artists: list
+    artists: list[str]
     albumartist: str
     album: str
     folder: str
@@ -24,18 +25,15 @@ class Track:
     length: int
     genre: str
     bitrate: int
-    image: str
     tracknumber: int
     disknumber: int
     albumhash: str
+    date: str
+    image: str
+    uniq_hash: str
 
     def __init__(self, tags):
-        try:
-            self.trackid = tags["_id"]["$oid"]
-        except KeyError:
-            print("No id")
-            print(tags)
-
+        self.trackid = tags["_id"]["$oid"]
         self.title = tags["title"]
         self.artists = tags["artists"].split(", ")
         self.albumartist = tags["albumartist"]
@@ -47,16 +45,17 @@ class Track:
         self.length = int(tags["length"])
         self.disknumber = int(tags["disknumber"])
         self.albumhash = tags["albumhash"]
+        self.date = tags["date"]
+        self.image = tags["albumhash"] + ".webp"
+        self.tracknumber = int(tags["tracknumber"])
 
-        try:
-            self.image = tags["image"]
-        except KeyError:
-            print(tags)
+        self.uniq_hash = self.create_unique_hash("".join(self.artists),
+                                                 self.album, self.title)
 
-        try:
-            self.tracknumber = int(tags["tracknumber"])
-        except ValueError:
-            self.tracknumber = 1
+    @staticmethod
+    def create_unique_hash(*args):
+        string = "".join(str(a) for a in args).replace(" ", "")
+        return "".join([i for i in string if i.isalnum()]).lower()
 
 
 @dataclass(slots=True)
@@ -78,30 +77,32 @@ class Artist:
 @dataclass
 class Album:
     """
-    Album class
+    Creates an album object
     """
 
     title: str
     artist: str
+    hash: str
     date: int
     image: str
-    hash: str
     count: int = 0
     duration: int = 0
     is_soundtrack: bool = False
     is_compilation: bool = False
     is_single: bool = False
+    colors: List[str] = field(default_factory=list)
 
     def __init__(self, tags):
         self.title = tags["title"]
         self.artist = tags["artist"]
         self.date = tags["date"]
         self.image = tags["image"]
+        self.hash = tags["hash"]
 
         try:
-            self.hash = tags["albumhash"]
+            self.colors = tags["colors"]
         except KeyError:
-            self.hash = helpers.create_album_hash(self.title, self.artist)
+            self.colors = []
 
     @property
     def is_soundtrack(self) -> bool:
@@ -117,30 +118,6 @@ class Album:
         return self.artist.lower() == "various artists"
 
 
-def get_p_track(ptrack):
-    for track in api.TRACKS:
-        if (
-            track.title == ptrack["title"]
-            and track.artists == ptrack["artists"]
-            and ptrack["album"] == track.album
-        ):
-            return track
-
-
-def create_playlist_tracks(playlist_tracks: List) -> List[Track]:
-    """
-    Creates a list of model.Track objects from a list of playlist track dicts.
-    """
-    tracks: List[Track] = []
-
-    for t in playlist_tracks:
-        track = get_p_track(t)
-        if track is not None:
-            tracks.append(track)
-
-    return tracks
-
-
 @dataclass
 class Playlist:
     """Creates playlist objects"""
@@ -148,7 +125,7 @@ class Playlist:
     playlistid: str
     name: str
     tracks: List[Track]
-    _pre_tracks: list = field(init=False, repr=False)
+    pretracks: list = field(init=False, repr=False)
     lastUpdated: int
     image: str
     thumb: str
@@ -162,36 +139,16 @@ class Playlist:
         self.description = data["description"]
         self.image = self.create_img_link(data["image"])
         self.thumb = self.create_img_link(data["thumb"])
-        self._pre_tracks = data["pre_tracks"]
+        self.pretracks = data["pre_tracks"]
         self.tracks = []
         self.lastUpdated = data["lastUpdated"]
-        self.count = len(self._pre_tracks)
-
-    def get_tracks(self) -> List[Track]:
-        """
-        Generates and returns Track objects from pre_tracks
-        """
-        return create_playlist_tracks(self._pre_tracks)
+        self.count = len(self.pretracks)
 
     def create_img_link(self, image: str):
         if image:
             return image
 
         return "default.webp"
-
-    def update_count(self):
-        self.count = len(self._pre_tracks)
-
-    def add_track(self, track):
-        if track not in self._pre_tracks:
-            self._pre_tracks.append(track)
-            self.update_count()
-            self.lastUpdated = helpers.create_new_date()
-        else:
-            raise TrackExistsInPlaylist("Track already exists in playlist")
-
-    def update_desc(self, desc):
-        self.description = desc
 
     def update_playlist(self, data: dict):
         self.name = data["name"]

@@ -1,7 +1,12 @@
 """
 Contains all the search routes.
 """
+from pprint import pprint
+from typing import List
+
 from app import helpers
+from app import models
+from app import serializer
 from app.lib import searchlib
 from flask import Blueprint
 from flask import request
@@ -15,22 +20,94 @@ SEARCH_RESULTS = {
 }
 
 
+class SearchResults:
+    """
+    Holds all the search results.
+    """
+
+    query: str = ""
+    tracks: list[models.Track] = []
+    albums: list[models.Album] = []
+    playlists: list[models.Playlist] = []
+    artists: list[models.Artist] = []
+
+
+class DoSearch:
+    """Class containing the methods that perform searching."""
+
+    def __init__(self, query: str) -> None:
+        """
+        :param :str:`query`: the search query.
+        """
+        self.query = query
+        SearchResults.query = query
+
+    def search_tracks(self):
+        """Calls :class:`SearchTracks` which returns the tracks that fuzzily match
+        the search terms. Then adds them to the `SearchResults` store.
+        """
+        self.tracks = helpers.Get.get_all_tracks()
+        tracks = searchlib.SearchTracks(self.tracks, self.query)()
+        tracks = helpers.RemoveDuplicates(tracks)()
+        SearchResults.tracks = tracks
+
+        return tracks
+
+    def search_artists(self):
+        """Calls :class:`SearchArtists` which returns the artists that fuzzily match
+        the search term. Then adds them to the `SearchResults` store.
+        """
+        self.artists = helpers.Get.get_all_artists()
+        artists = searchlib.SearchArtists(self.artists, self.query)()
+        SearchResults.artists = artists
+
+        return artists
+
+    def search_albums(self):
+        """Calls :class:`SearchAlbums` which returns the albums that fuzzily match
+        the search term. Then adds them to the `SearchResults` store.
+        """
+        albums = helpers.Get.get_all_albums()
+        albums = searchlib.SearchAlbums(albums, self.query)()
+        SearchResults.albums = albums
+
+        return albums
+
+    def search_playlists(self):
+        """Calls :class:`SearchPlaylists` which returns the playlists that fuzzily match
+        the search term. Then adds them to the `SearchResults` store.
+        """
+        playlists = helpers.Get.get_all_playlists()
+        playlists = [serializer.Playlist(playlist) for playlist in playlists]
+
+        playlists = searchlib.SearchPlaylists(playlists, self.query)()
+        SearchResults.playlists = playlists
+
+        return playlists
+
+    def search_all(self):
+        """Calls all the search methods."""
+        self.search_tracks()
+        self.search_albums()
+        self.search_artists()
+        self.search_playlists()
+
+
 @search_bp.route("/search/tracks", methods=["GET"])
 def search_tracks():
     """
-    Searches for tracks.
+    Searches for tracks that match the search query.
     """
 
     query = request.args.get("q")
     if not query:
         return {"error": "No query provided"}, 400
 
-    results = searchlib.SearchTracks(query)()
-    SEARCH_RESULTS["tracks"] = results
+    tracks = DoSearch(query).search_tracks()
 
     return {
-        "tracks": results[:5],
-        "more": len(results) > 5,
+        "tracks": tracks[:6],
+        "more": len(tracks) > 6,
     }, 200
 
 
@@ -44,12 +121,11 @@ def search_albums():
     if not query:
         return {"error": "No query provided"}, 400
 
-    results = searchlib.SearchAlbums(query)()
-    SEARCH_RESULTS["albums"] = results
+    tracks = DoSearch(query).search_albums()
 
     return {
-        "albums": results[:6],
-        "more": len(results) > 6,
+        "albums": tracks[:6],
+        "more": len(tracks) > 6,
     }, 200
 
 
@@ -63,51 +139,50 @@ def search_artists():
     if not query:
         return {"error": "No query provided"}, 400
 
-    results = searchlib.SearchArtists(query)()
-    SEARCH_RESULTS["artists"] = results
+    artists = DoSearch(query).search_artists()
 
     return {
-        "artists": results[:6],
-        "more": len(results) > 6,
+        "artists": artists[:6],
+        "more": len(artists) > 6,
     }, 200
 
 
-@search_bp.route("/search")
-def search():
+@search_bp.route("/search/playlists", methods=["GET"])
+def search_playlists():
     """
-    Returns a list of songs, albums and artists that match the search query.
+    Searches for playlists.
     """
-    query = request.args.get("q") or "Mexican girl"
 
-    albums = searchlib.SearchAlbums(query)()
-    artists_dicts = searchlib.SearchArtists(query)()
+    query = request.args.get("q")
+    if not query:
+        return {"error": "No query provided"}, 400
 
-    tracks = searchlib.SearchTracks(query)()
-    top_artist = artists_dicts[0]["name"]
-
-    _tracks = searchlib.GetTopArtistTracks(top_artist)()
-    tracks = [*tracks, *[t for t in _tracks if t not in tracks]]
-
-    SEARCH_RESULTS.clear()
-    SEARCH_RESULTS["tracks"] = tracks
-    SEARCH_RESULTS["albums"] = albums
-    SEARCH_RESULTS["artists"] = artists_dicts
+    playlists = DoSearch(query).search_playlists()
 
     return {
-        "data": [
-            {
-                "tracks": tracks[:5],
-                "more": len(tracks) > 5
-            },
-            {
-                "albums": albums[:6],
-                "more": len(albums) > 6
-            },
-            {
-                "artists": artists_dicts[:6],
-                "more": len(artists_dicts) > 6
-            },
-        ]
+        "playlists": playlists[:6],
+        "more": len(playlists) > 6,
+    }, 200
+
+
+@search_bp.route("/search/top", methods=["GET"])
+def get_top_results():
+    """
+    Returns the top results for the search query.
+    """
+
+    query = request.args.get("q")
+    if not query:
+        return {"error": "No query provided"}, 400
+
+    DoSearch(query).search_all()
+
+    max = 2
+    return {
+        "tracks": SearchResults.tracks[:max],
+        "albums": SearchResults.albums[:max],
+        "artists": SearchResults.artists[:max],
+        "playlists": SearchResults.playlists[:max],
     }
 
 
@@ -120,19 +195,22 @@ def search_load_more():
     index = int(request.args.get("index"))
 
     if type == "tracks":
+        t = SearchResults.tracks
         return {
-            "tracks": SEARCH_RESULTS["tracks"][index:index + 5],
-            "more": len(SEARCH_RESULTS["tracks"]) > index + 5,
+            "tracks": t[index:index + 5],
+            "more": len(t) > index + 5,
         }
 
     elif type == "albums":
+        a = SearchResults.albums
         return {
-            "albums": SEARCH_RESULTS["albums"][index:index + 6],
-            "more": len(SEARCH_RESULTS["albums"]) > index + 6,
+            "albums": a[index:index + 6],
+            "more": len(a) > index + 6,
         }
 
     elif type == "artists":
+        a = SearchResults.artists
         return {
-            "artists": SEARCH_RESULTS["artists"][index:index + 6],
-            "more": len(SEARCH_RESULTS["artists"]) > index + 6,
+            "artists": a[index:index + 6],
+            "more": len(a) > index + 6,
         }

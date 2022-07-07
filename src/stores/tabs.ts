@@ -3,8 +3,8 @@ import { focusElem } from "../composables/perks";
 
 const tablist = {
   home: "home",
-  search: "search",
   queue: "queue",
+  search: "search",
 };
 
 export default defineStore("tabs", {

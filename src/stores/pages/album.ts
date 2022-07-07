@@ -1,10 +1,21 @@
 import { defineStore } from "pinia";
+import { useNotifStore } from "../notification";
 import { Track, Artist, AlbumInfo } from "../../interfaces";
 import {
   getAlbumTracks,
   getAlbumArtists,
   getAlbumBio,
-} from "../../composables/album";
+} from "../../composables/pages/album";
+
+function sortTracks(tracks: Track[]) {
+  return tracks.sort((a, b) => {
+    if (a.tracknumber && b.tracknumber) {
+      return a.tracknumber - b.tracknumber;
+    }
+
+    return 0;
+  });
+}
 
 export default defineStore("album", {
   state: () => ({
@@ -17,25 +28,23 @@ export default defineStore("album", {
     /**
      * Fetches a single album information, artists and its tracks from the server
      * using the title and album-artist of the album.
-     * @param title title of the album
-     * @param albumartist artist of the album
+     * @param hash title of the album
      */
-    async fetchTracksAndArtists(title: string, albumartist: string) {
-      const tracks = await getAlbumTracks(title, albumartist);
-      const artists = await getAlbumArtists(title, albumartist);
+    async fetchTracksAndArtists(hash: string) {
+      const tracks = await getAlbumTracks(hash, useNotifStore);
+      const artists = await getAlbumArtists(hash);
 
-      this.tracks = tracks.tracks;
+      this.tracks = sortTracks(tracks.tracks);
       this.info = tracks.info;
       this.artists = artists;
     },
     /**
      * Fetches the album bio from the server
-     * @param title title of the album
-     * @param albumartist artist of the album
+     * @param {string} hash title of the album
      */
-    fetchBio(title: string, albumartist: string) {
+    fetchBio(hash: string) {
       this.bio = null;
-      getAlbumBio(title, albumartist).then((bio) => {
+      getAlbumBio(hash).then((bio) => {
         this.bio = bio;
       });
     },

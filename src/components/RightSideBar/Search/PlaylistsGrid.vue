@@ -1,7 +1,7 @@
 <template>
   <div class="albums-results border">
     <div class="grid">
-      <AlbumCard
+      <PCard
         v-for="album in search.albums.value"
         :key="`${album.artist}-${album.title}`"
         :album="album"
@@ -12,7 +12,7 @@
 </template>
 
 <script setup lang="ts">
-import AlbumCard from "../../shared/AlbumCard.vue";
+import PCard from "../../playlists/PlaylistCard.vue";
 import LoadMore from "./LoadMore.vue";
 import useSearchStore from "../../../stores/search";
 

@@ -7,7 +7,7 @@
     >
       <div class="nav-button" id="home-button" v-motion-slide-from-left-100>
         <div class="in">
-          <div class="nav-icon image" :id="`${menu.name}-icon`"></div>
+          <component :is="menu.icon"></component>
           <span>{{ menu.name }}</span>
         </div>
       </div>
@@ -16,39 +16,22 @@
 </template>
 
 <script setup lang="ts">
-import { useRouter } from "vue-router";
+import PlaylistSvg from "../../assets/icons/playlist.svg";
+import FolderSvg from "../../assets/icons/folder.svg";
 
 const menus = [
   {
-    name: "home",
-    route_name: "Home",
-  },
-  {
-    name: "albums",
-    route_name: "AlbumsView",
-  },
-  {
-    name: "artists",
-    route_name: "ArtistsView",
-  },
-  {
     name: "playlists",
     route_name: "Playlists",
+    icon: PlaylistSvg,
   },
   {
     name: "folders",
     route_name: "FolderView",
     params: { path: "$home" },
-  },
-  {
-    name: "tags",
-  },
-  {
-    name: "settings",
-    route_name: "SettingsView",
+    icon: FolderSvg,
   },
 ];
-
 </script>
 
 <style lang="scss">
@@ -84,36 +67,17 @@ const menus = [
         background-size: 1.5rem;
       }
     }
+  }
 
-    #home-icon {
-      background-image: url(../../assets/icons/home.svg);
-    }
+  svg {
+    width: 2rem;
+    height: 2rem;
+    margin: 0 $small 0 $small;
+    border-radius: $small;
+  }
 
-    #albums-icon {
-      background-image: url(../../assets/icons/album.svg);
-    }
-
-    #artists-icon {
-      background-image: url(../../assets/icons/artist.svg);
-    }
-
-    #playlists-icon {
-      background-image: url(../../assets/icons/playlist.svg);
-    }
-
-    #mixes-icon {
-      background-image: url(../../assets/icons/mix.svg);
-    }
-
-    #folders-icon {
-      background-image: url(../../assets/icons/folder.svg);
-    }
-    #settings-icon {
-      background-image: url(../../assets/icons/settings.svg);
-    }
-    #tags-icon {
-      background-image: url(../../assets/icons/tag.svg);
-    }
+  svg > path {
+    fill: $accent;
   }
 }
 </style>

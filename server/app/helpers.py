@@ -2,16 +2,15 @@
 This module contains mini functions for the server.
 """
 import os
-import random
 import threading
 from datetime import datetime
 from typing import Dict
 from typing import List
+from typing import Set
 
+import requests
+from app import instances
 from app import models
-from app import settings
-
-app_dir = settings.APP_DIR
 
 
 def background(func):
@@ -51,36 +50,16 @@ def run_fast_scandir(__dir: str, full=False) -> Dict[List[str], List[str]]:
     return subfolders, files
 
 
-def remove_duplicates(tracklist: List[models.Track]) -> List[models.Track]:
-    """
-    Removes duplicates from a list. Returns a list without duplicates.
-    """
+class RemoveDuplicates:
 
-    song_num = 0
+    def __init__(self, tracklist: List[models.Track]) -> None:
+        self.tracklist = tracklist
 
-    while song_num < len(tracklist) - 1:
-        for index, song in enumerate(tracklist):
-            if (
-                tracklist[song_num].title == song.title
-                and tracklist[song_num].album == song.album
-                and tracklist[song_num].artists == song.artists
-                and index != song_num
-            ):
-                tracklist.remove(song)
+    def __call__(self) -> List[models.Track]:
+        uniq_hashes = set(t.uniq_hash for t in self.tracklist)
+        tracks = UseBisection(self.tracklist, "uniq_hash", uniq_hashes)()
 
-        song_num += 1
-
-    return tracklist
-
-
-# def save_image(url: str, path: str) -> None:
-#     """
-#     Saves an image from an url to a path.
-#     """
-
-#     response = requests.get(url)
-#     img = Image.open(BytesIO(response.content))
-#     img.save(path, "JPEG")
+        return tracks
 
 
 def is_valid_file(filename: str) -> bool:
@@ -94,31 +73,13 @@ def is_valid_file(filename: str) -> bool:
         return False
 
 
-def use_memoji():
-    """
-    Returns a path to a random memoji image.
-    """
-    path = str(random.randint(0, 20)) + ".svg"
-    return "defaults/" + path
-
-
-def check_artist_image(image: str) -> str:
-    """
-    Checks if the artist image is valid.
-    """
-    img_name = image.replace("/", "::") + ".webp"
-
-    if not os.path.exists(os.path.join(app_dir, "images", "artists", img_name)):
-        return use_memoji()
-    else:
-        return img_name
-
-
 def create_album_hash(title: str, artist: str) -> str:
     """
     Creates a simple hash for an album
     """
-    return (title + artist).replace(" ", "").lower()
+    lower = (title + artist).replace(" ", "").lower()
+    hash = "".join([i for i in lower if i.isalnum()])
+    return hash
 
 
 def create_new_date():
@@ -131,33 +92,33 @@ def create_safe_name(name: str) -> str:
     """
     Creates a url-safe name from a name.
     """
-    return "".join([i for i in name if i not in '/\\:*?"<>|'])
+    return "".join([i for i in name if i.isalnum()])
 
 
 class UseBisection:
     """
-    Uses bisection to find a list of items in another list. 
+    Uses bisection to find a list of items in another list.
 
-    returns a list of found items with `None` items being not found 
+    returns a list of found items with `None` items being not found
     items.
     """
 
-    def __init__(self, source: List, search_from: str, queries: List[str]) -> None:
-        self.list = source
-        self.queries = queries
-        self.search_from = search_from
-        self.list.sort(key=lambda x: getattr(x, search_from))
+    def __init__(self, source: List, search_from: str,
+                 queries: List[str]) -> None:
+        self.source_list = source
+        self.queries_list = queries
+        self.attr = search_from
+        self.source_list.sort(key=lambda x: getattr(x, search_from))
 
     def find(self, query: str):
         left = 0
-        right = len(self.list) - 1
+        right = len(self.source_list) - 1
 
         while left <= right:
             mid = (left + right) // 2
-
-            if self.list[mid].__getattribute__(self.search_from) == query:
-                return self.list[mid]
-            elif self.list[mid].__getattribute__(self.search_from) > query:
+            if self.source_list[mid].__getattribute__(self.attr) == query:
+                return self.source_list[mid]
+            elif self.source_list[mid].__getattribute__(self.attr) > query:
                 right = mid - 1
             else:
                 left = mid + 1
@@ -165,4 +126,57 @@ class UseBisection:
         return None
 
     def __call__(self) -> List:
-        return [self.find(query) for query in self.queries]
+        if len(self.source_list) == 0:
+            print("🚀🚀🚀🚀🚀🚀🚀")
+            return [None]
+
+        return [self.find(query) for query in self.queries_list]
+
+
+class Get:
+
+    @staticmethod
+    def get_all_tracks() -> List[models.Track]:
+        """
+        Returns all tracks
+        """
+        t = instances.tracks_instance.get_all_tracks()
+        return [models.Track(t) for t in t]
+
+    def get_all_albums() -> List[models.Album]:
+        """
+        Returns all albums
+        """
+        a = instances.album_instance.get_all_albums()
+        return [models.Album(a) for a in a]
+
+    @classmethod
+    def get_all_artists(cls) -> Set[str]:
+        tracks = cls.get_all_tracks()
+        artists: Set[str] = set()
+
+        for track in tracks:
+            for artist in track.artists:
+                artists.add(artist.lower())
+
+        return artists
+
+    @staticmethod
+    def get_all_playlists() -> List[models.Playlist]:
+        """
+        Returns all playlists
+        """
+        p = instances.playlist_instance.get_all_playlists()
+        return [models.Playlist(p) for p in p]
+
+
+class Ping:
+    """Checks if there is a connection to the internet by pinging google.com"""
+
+    @staticmethod
+    def __call__() -> bool:
+        try:
+            requests.get("https://google.com", timeout=10)
+            return True
+        except (requests.exceptions.ConnectionError, requests.Timeout):
+            return False

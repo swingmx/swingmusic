@@ -19,7 +19,7 @@ import useSearchStore from "../../../stores/search";
 const search = useSearchStore();
 
 function loadMore() {
-  search.updateLoadCounter("artists", 6);
+  search.updateLoadCounter("artists");
   search.loadArtists(search.loadCounter.artists);
 }
 </script>

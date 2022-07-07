@@ -33,6 +33,7 @@ def extract_thumb(filepath: str, webp_path: str) -> bool:
     Extracts the thumbnail from an audio file. Returns the path to the thumbnail.
     """
     img_path = os.path.join(settings.THUMBS_PATH, webp_path)
+    tsize = settings.THUMB_SIZE
 
     if os.path.exists(img_path):
         return True
@@ -43,12 +44,12 @@ def extract_thumb(filepath: str, webp_path: str) -> bool:
         img = Image.open(BytesIO(album_art))
 
         try:
-            small_img = img.resize((250, 250), Image.ANTIALIAS)
+            small_img = img.resize((tsize, tsize), Image.ANTIALIAS)
             small_img.save(img_path, format="webp")
         except OSError:
             try:
                 png = img.convert("RGB")
-                small_img = png.resize((250, 250), Image.ANTIALIAS)
+                small_img = png.resize((tsize, tsize), Image.ANTIALIAS)
                 small_img.save(webp_path, format="webp")
             except:
                 return False
@@ -135,8 +136,8 @@ def parse_track_number(tags):
     Parses the track number from an audio file.
     """
     try:
-        track_number = tags["tracknumber"][0]
-    except (KeyError, IndexError):
+        track_number = int(tags["tracknumber"][0])
+    except (KeyError, IndexError, ValueError):
         track_number = 1
 
     return track_number
@@ -147,8 +148,8 @@ def parse_disk_number(tags):
     Parses the disk number from an audio file.
     """
     try:
-        disk_number = tags["disknumber"][0]
-    except (KeyError, IndexError):
+        disk_number = int(tags["disknumber"][0])
+    except (KeyError, IndexError, ValueError):
         disk_number = 1
 
     return disk_number

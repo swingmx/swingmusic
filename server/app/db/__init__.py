@@ -200,3 +200,15 @@ class TrackMethods:
         Removes a track from the database. Returns a boolean indicating success or failure of the operation.
         """
         pass
+
+    def find_tracks_by_hash():
+        """
+        Returns all the tracks matching the passed hash.
+        """
+        pass
+
+    def get_dir_t_count():
+        """
+        Returns a list of all the tracks matching the path in the query params.
+        """
+        pass

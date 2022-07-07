@@ -5,63 +5,46 @@ import os
 import random
 import string
 from datetime import datetime
+from typing import List
 
-from tqdm import tqdm
-
-from app import api
 from app import exceptions
 from app import instances
 from app import models
 from app import settings
+from app.helpers import Get
 from app.lib import trackslib
+from app.logger import get_logger
 from PIL import Image
 from PIL import ImageSequence
-from progress.bar import Bar
 from werkzeug import datastructures
 
 TrackExistsInPlaylist = exceptions.TrackExistsInPlaylist
 
+logg = get_logger()
+
 
 def add_track(playlistid: str, trackid: str):
     """
-    Adds a track to a playlist in the api.PLAYLISTS dict and to the database.
+    Adds a track to a playlist to the database.
     """
-    for playlist in api.PLAYLISTS:
-        if playlist.playlistid == playlistid:
-            tt = trackslib.get_track_by_id(trackid)
+    tt = instances.tracks_instance.get_track_by_id(trackid)
 
-            track = {
-                "title": tt.title,
-                "artists": tt.artists,
-                "album": tt.album,
-            }
+    if tt is None:
+        return
 
-            try:
-                playlist.add_track(track)
-                instances.playlist_instance.add_track_to_playlist(
-                    playlistid, track)
-                return
-            except TrackExistsInPlaylist as error:
-                raise error
+    track = models.Track(tt)
 
+    playlist = instances.playlist_instance.get_playlist_by_id(playlistid)
 
-def get_playlist_tracks(pid: str):
-    for p in api.PLAYLISTS:
-        if p.playlistid == pid:
-            return p.tracks
+    track = {
+        "title": track.title,
+        "artists": tt["artists"],
+        "album": track.album,
+    }
+    if track in playlist["pre_tracks"]:
+        raise TrackExistsInPlaylist
 
-
-def create_all_playlists():
-    """
-    Gets all playlists from the database.
-    """
-    playlists = instances.playlist_instance.get_all_playlists()
-
-
-    for playlist in tqdm(playlists, desc="Creating playlists"):
-        api.PLAYLISTS.append(models.Playlist(playlist))
-
-    validate_images()
+    instances.playlist_instance.add_track_to_playlist(playlistid, track)
 
 
 def create_thumbnail(image: any, img_path: str) -> str:
@@ -113,26 +96,47 @@ def save_p_image(file: datastructures.FileStorage, pid: str):
     return img_path, thumb_path
 
 
-def validate_images():
+class ValidatePlaylistThumbs:
     """
     Removes all unused images in the images/playlists folder.
     """
-    images = []
 
-    for playlist in api.PLAYLISTS:
-        if playlist.image:
-            img_path = playlist.image.split("/")[-1]
-            thumb_path = playlist.thumb.split("/")[-1]
+    def __init__(self) -> None:
+        images = []
+        playlists = Get.get_all_playlists()
 
-            images.append(img_path)
-            images.append(thumb_path)
+        logg.info("Validating playlist thumbnails")
+        for playlist in playlists:
+            if playlist.image:
+                img_path = playlist.image.split("/")[-1]
+                thumb_path = playlist.thumb.split("/")[-1]
 
-    p_path = os.path.join(settings.APP_DIR, "images", "playlists")
+                images.append(img_path)
+                images.append(thumb_path)
 
-    for image in os.listdir(p_path):
-        if image not in images:
-            os.remove(os.path.join(p_path, image))
+        p_path = os.path.join(settings.APP_DIR, "images", "playlists")
+
+        for image in os.listdir(p_path):
+            if image not in images:
+                os.remove(os.path.join(p_path, image))
+
+        logg.info("Validating playlist thumbnails ... ✅")
 
 
 def create_new_date():
     return datetime.now()
+
+
+def create_playlist_tracks(playlist_tracks: List) -> List[models.Track]:
+    """
+    Creates a list of model.Track objects from a list of playlist track dicts.
+    """
+    tracks: List[models.Track] = []
+
+    for t in playlist_tracks:
+        track = trackslib.get_p_track(t)
+
+        if track is not None:
+            tracks.append(models.Track(track))
+
+    return tracks

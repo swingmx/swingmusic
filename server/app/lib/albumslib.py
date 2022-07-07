@@ -1,89 +1,93 @@
 """
 This library contains all the functions related to albums.
 """
+import os
 import random
+from dataclasses import dataclass
 from typing import List
 
-from app import api
 from app import helpers
 from app import instances
 from app import models
 from app.lib import taglib
-from app.lib import trackslib
+from app.logger import logg
+from app.settings import THUMBS_PATH
 from tqdm import tqdm
 
 
-def get_all_albums() -> List[models.Album]:
+@dataclass
+class Thumbnail:
+    filename: str
+
+
+class RipAlbumImage:
     """
-    Returns a list of album objects for all albums in the database.
-    """
-    print("Getting all albums...")
-
-    albums: List[models.Album] = []
-
-    db_albums = instances.album_instance.get_all_albums()
-
-    for album in tqdm(db_albums, desc="Creating albums"):
-        aa = models.Album(album)
-        albums.append(aa)
-
-    return albums
-
-
-def create_everything() -> List[models.Track]:
-    """
-    Creates album objects for all albums and returns
-    a list of track objects
-    """
-    albums: list[models.Album] = get_all_albums()
-
-    api.ALBUMS = albums
-    api.ALBUMS.sort(key=lambda x: x.hash)
-
-    tracks = trackslib.create_all_tracks()
-
-    api.TRACKS.clear()
-    api.TRACKS.extend(tracks)
-    api.TRACKS.sort(key=lambda x: x.title)
-
-
-def find_album(albums: List[models.Album], hash: str) -> int | None:
-    """
-    Finds an album by album title and artist.
-
-    :param `albums`: List of album objects.
-    :param `hash`: Hash of album.
-    :return: Index of album in list.
+    Rips a thumbnail for the given album hash.
     """
 
-    left = 0
-    right = len(albums) - 1
+    def __init__(self, hash: str) -> None:
+        tracks = instances.tracks_instance.find_tracks_by_hash(hash)
+        tracks = [models.Track(track) for track in tracks]
 
-    while left <= right:
-        mid = (left + right) // 2
+        for track in tracks:
+            ripped = taglib.extract_thumb(track.filepath, hash + ".webp")
 
-        if albums[mid].hash == hash:
-            return mid
-
-        if albums[mid].hash < hash:
-            left = mid + 1
-        else:
-            right = mid - 1
-
-    return None
+            if ripped:
+                break
 
 
-def get_album_duration(album: List[models.Track]) -> int:
-    """
-    Gets the duration of an album.
-    """
+class ValidateAlbumThumbs:
 
-    album_duration = 0
+    @staticmethod
+    def remove_obsolete():
+        """
+        Removes unreferenced thumbnails from the thumbnails folder.
+        """
+        entries = os.scandir(THUMBS_PATH)
+        entries = [entry for entry in entries if entry.is_file()]
 
-    for track in album:
-        album_duration += track.length
+        albums = helpers.Get.get_all_albums()
+        thumbs = [Thumbnail(album.hash + ".webp") for album in albums]
 
-    return album_duration
+        for entry in tqdm(entries, desc="Validating thumbnails"):
+            e = helpers.UseBisection(thumbs, "filename", [entry.name])()
+
+            if e is None:
+                os.remove(entry.path)
+
+    @staticmethod
+    def find_lost_thumbnails():
+        """
+        Re-rip lost album thumbnails
+        """
+        entries = os.scandir(THUMBS_PATH)
+        entries = [
+            Thumbnail(entry.name) for entry in entries if entry.is_file()
+        ]
+
+        albums = helpers.Get.get_all_albums()
+        thumbs = [(album.hash + ".webp") for album in albums]
+
+        def rip_image(t_hash: str):
+            e = helpers.UseBisection(entries, "filename", [t_hash])()[0]
+
+            if e is None:
+                hash = t_hash.replace(".webp", "")
+                RipAlbumImage(hash)
+
+        logg.info("Ripping lost album thumbnails")
+        # with ThreadPoolExecutor() as pool:
+        #     i = pool.map(rip_image, thumbs)
+        #     [a for a in i]
+        # ⚠️ empty lists are sent to the useBisection function as the source list.
+        for thumb in thumbs:
+            rip_image(thumb)
+
+        logg.info("Ripping lost album thumbnails ... ✅")
+
+    def __init__(self) -> None:
+        self.remove_obsolete()
+        self.find_lost_thumbnails()
 
 
 def use_defaults() -> str:
@@ -94,31 +98,19 @@ def use_defaults() -> str:
     return path
 
 
-def gen_random_path() -> str:
-    """
-    Generates a random image file path for an album image.
-    """
-    choices = "abcdefghijklmnopqrstuvwxyz0123456789"
-    path = "".join(random.choice(choices) for i in range(20))
-    path += ".webp"
-
-    return path
-
-
-def get_album_image(album: list) -> str:
+def get_album_image(track: models.Track) -> str:
     """
     Gets the image of an album.
     """
 
-    for track in album:
-        img_p = gen_random_path()
+    img_p = track.albumhash + ".webp"
 
-        exists = taglib.extract_thumb(track["filepath"], webp_path=img_p)
+    success = taglib.extract_thumb(track.filepath, webp_path=img_p)
 
-        if exists:
-            return img_p
+    if success:
+        return img_p
 
-    return use_defaults()
+    return None
 
 
 class GetAlbumTracks:
@@ -127,66 +119,38 @@ class GetAlbumTracks:
     and album artist.
     """
 
-    def __init__(self, tracklist: list, albumhash: str) -> None:
+    def __init__(self, tracklist: List[models.Track], albumhash: str) -> None:
         self.hash = albumhash
         self.tracks = tracklist
-        self.tracks.sort(key=lambda x: x["albumhash"])
+        self.tracks.sort(key=lambda x: x.albumhash)
 
-    def find_tracks(self):
-        tracks = []
-        index = trackslib.find_track(self.tracks, self.hash)
+    def __call__(self):
+        tracks = helpers.UseBisection(self.tracks, "albumhash", [self.hash])()
 
-        while index is not None:
-            track = self.tracks[index]
-            tracks.append(track)
-            self.tracks.remove(track)
-            index = trackslib.find_track(self.tracks, self.hash)
-
-        # self.tracks.extend(tracks)
-        # self.tracks.sort(key=lambda x: x["albumhash"])
         return tracks
 
 
-def get_album_tracks(album: str, artist: str) -> List:
-    return GetAlbumTracks(album, artist).find_tracks()
+def get_album_tracks(tracklist: List[models.Track], hash: str) -> List:
+    return GetAlbumTracks(tracklist, hash)()
 
 
-def create_album(track: dict, tracklist: list) -> dict:
+def create_album(track: models.Track) -> dict:
     """
     Generates and returns an album object from a track object.
     """
     album = {
-        "title": track["album"],
-        "artist": track["albumartist"],
+        "title": track.album,
+        "artist": track.albumartist,
+        "hash": track.albumhash,
     }
 
-    albumhash = helpers.create_album_hash(album["title"], album["artist"])
-    album_tracks = get_album_tracks(tracklist, albumhash)
+    album["date"] = track.date
 
-    if len(album_tracks) == 0:
-        return None
+    img_p = get_album_image(track)
 
-    album["date"] = album_tracks[0]["date"]
+    if img_p is not None:
+        album["image"] = img_p
+        return album
 
-    album["image"] = get_album_image(album_tracks)
-    # album["image"] = "".join(x for x in albumhash if x not in "\/:*?<>|")
-
+    album["image"] = None
     return album
-
-
-def search_albums_by_name(query: str) -> List[models.Album]:
-    """
-    Searches albums by album name.
-    """
-    title_albums: List[models.Album] = []
-    artist_albums: List[models.Album] = []
-
-    for album in api.ALBUMS:
-        if query.lower() in album.title.lower():
-            title_albums.append(album)
-
-    for album in api.ALBUMS:
-        if query.lower() in album.artist.lower():
-            artist_albums.append(album)
-
-    return [*title_albums, *artist_albums]

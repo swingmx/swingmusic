@@ -38,11 +38,11 @@ defineProps<{
   cursor: pointer;
 
   .artist-image {
-    width: 7em;
-    height: 7em;
+    width: 8em;
+    height: 8em;
     border-radius: 60%;
     margin-bottom: $small;
-    background-size: 7rem 7rem;
+    background-size: 8rem 8rem;
     background-position: center;
     background-repeat: no-repeat;
     transition: all 0.5s ease-in-out;
@@ -63,6 +63,7 @@ defineProps<{
     font-size: 0.9rem;
     font-weight: 510;
     max-width: 7rem;
+    text-transform: capitalize;
   }
 }
 

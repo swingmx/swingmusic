@@ -1,5 +1,5 @@
 import { defineStore } from "pinia";
-import { getPlaylist } from "../../composables/playlists";
+import { getPlaylist } from "../../composables/pages/playlists";
 import { Track, Playlist } from "../../interfaces";
 
 export default defineStore("playlist-tracks", {

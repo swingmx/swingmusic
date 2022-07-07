@@ -3,81 +3,66 @@
     <div class="header">
       <div class="headin">Featured Artists</div>
       <div class="xcontrols">
-        <div class="prev" @click="scrollLeft"></div>
-        <div class="next" @click="scrollRight"></div>
+        <div class="prev icon" @click="scrollLeft()"><ArrowSvg /></div>
+        <div class="next icon" @click="scrollRight()"><ArrowSvg /></div>
       </div>
     </div>
     <div class="separator no-border"></div>
     <div class="artists" ref="artists_dom">
       <ArtistCard
         v-for="artist in artists"
-        :key="artist"
+        :key="artist.image"
         :artist="artist"
         :color="'ffffff00'"
       />
     </div>
   </div>
 </template>
-<script>
+<script setup lang="ts">
 import { ref } from "@vue/reactivity";
 import ArtistCard from "@/components/shared/ArtistCard.vue";
-import { computed, reactive } from "vue";
+import { Artist } from "@/interfaces";
+import ArrowSvg from "../../assets/icons/right-arrow.svg";
 
-export default {
-  props: ["artists"],
-  components: {
-    ArtistCard,
-  },
-  setup() {
-    const artists_dom = ref(null);
+defineProps<{
+  artists: Artist[];
+}>();
 
-    const scrollLeft = () => {
-      const dom = artists_dom.value;
-      dom.scrollBy({
-        left: -700,
-        behavior: "smooth",
-      });
-    };
+const artists_dom = ref(null);
 
-    const scrollRight = () => {
-      const dom = artists_dom.value;
-      dom.scrollBy({
-        left: 700,
-        behavior: "smooth",
-      });
-    };
+const scrollLeft = () => {
+  const dom = artists_dom.value;
+  dom.scrollBy({
+    left: -700,
+    behavior: "smooth",
+  });
+};
 
-    return {
-      artists_dom,
-      scrollLeft,
-      scrollRight,
-    };
-  },
+const scrollRight = () => {
+  const dom = artists_dom.value;
+  dom.scrollBy({
+    left: 700,
+    behavior: "smooth",
+  });
 };
 </script>
 
 <style lang="scss">
 .f-artists {
-  height: 14.5em;
-  width: calc(100%);
-  padding: $small;
-  padding-bottom: 0;
+  width: 100%;
+  padding: 0 $small;
   border-radius: $small;
   user-select: none;
-  background: linear-gradient(0deg, transparent, $black);
   position: relative;
-  background-color: #ffffff00;
 
   .header {
     display: flex;
-    height: 2.5rem;
     align-items: center;
     position: relative;
 
     .headin {
       font-size: 1.5rem;
       font-weight: 900;
-      // border: solid;
       margin-left: $small;
     }
   }
@@ -85,40 +70,31 @@ export default {
 
 .f-artists .xcontrols {
   z-index: 1;
-  width: 5rem;
-  height: 2rem;
   position: absolute;
   top: 0;
   right: 0;
   display: flex;
-  justify-content: space-between;
-
-  &:hover {
-    z-index: 1;
-  }
-
-  .next {
-    background: url(../../assets/icons/right-arrow.svg) no-repeat center;
-  }
+  gap: 1rem;
 
   .prev {
-    background: url(../../assets/icons/right-arrow.svg) no-repeat center;
     transform: rotate(180deg);
   }
-  .next,
-  .prev {
-    width: 2em;
-    height: 2em;
+
+  .icon {
     border-radius: $small;
     cursor: pointer;
     transition: all 0.5s ease;
     background-color: rgb(51, 51, 51);
-  }
+    padding: $smaller;
 
-  .next:hover,
-  .prev:hover {
-    background-color: $blue;
-    transition: all 0.5s ease;
+    svg {
+      display: flex;
+    }
+
+    &:hover {
+      background-color: $accent;
+      transition: all 0.5s ease;
+    }
   }
 }
 

@@ -1,7 +1,7 @@
 import { defineStore } from "pinia";
 import { Folder, Track } from "../../interfaces";
 
-import fetchThem from "../../composables/getFilesAndFolders";
+import fetchThem from "../../composables/pages/folders";
 
 export default defineStore("FolderDirs&Tracks", {
   state: () => ({
@@ -13,9 +13,7 @@ export default defineStore("FolderDirs&Tracks", {
     async fetchAll(path: string) {
       const { tracks, folders } = await fetchThem(path);
 
-      this.path = path;
-      this.dirs = folders;
-      this.tracks = tracks;
+      [this.path, this.dirs, this.tracks] = [path, folders, tracks];
     },
   },
 });

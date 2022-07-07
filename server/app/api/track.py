@@ -3,6 +3,7 @@ Contains all the track routes.
 """
 from app import api
 from app import instances
+from app import models
 from flask import Blueprint
 from flask import send_file
 
@@ -14,21 +15,19 @@ def send_track_file(trackid):
     """
     Returns an audio file that matches the passed id to the client.
     """
+    track = instances.tracks_instance.get_track_by_id(trackid)
+    msg = {"msg": "File Not Found"}
+
+    if track is None:
+        return msg, 404
+
+    track = models.Track(track)
+    type = track.filepath.split(".")[-1]
+
     try:
-        files = []
-        for f in api.DB_TRACKS:
-            try:
-                if f["_id"]["$oid"] == trackid:
-                    files.append(f["filepath"])
-            except KeyError:
-                # Bug: some albums are not found although they exist in `api.ALBUMS`. It has something to do with the bisection method used or sorting. Not sure yet.
-                pass
-
-        filepath = files[0]
-    except IndexError:
-        return "File not found", 404
-
-    return send_file(filepath, mimetype="audio/mp3")
+        return send_file(track.filepath, mimetype=f"audio/{type}")
+    except FileNotFoundError:
+        return msg, 404
 
 
 @track_bp.route("/sample")
@@ -37,6 +36,5 @@ def get_sample_track():
     Returns a sample track object.
     """
 
-    return instances.tracks_instance.get_song_by_album(
-        "Legends Never Die", "Juice WRLD"
-    )
+    return instances.tracks_instance.get_song_by_album("Legends Never Die",
+                                                       "Juice WRLD")

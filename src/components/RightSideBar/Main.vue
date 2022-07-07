@@ -8,9 +8,8 @@
         <div class="r-search" v-show="tabs.current === tabs.tabs.search">
           <Search />
         </div>
-
         <div class="r-queue" v-show="tabs.current === tabs.tabs.queue">
-          <UpNext />
+          <Queue />
         </div>
       </div>
     </div>
@@ -19,7 +18,7 @@
 
 <script setup lang="ts">
 import Search from "./Search/Main.vue";
-import UpNext from "./Queue.vue";
+import Queue from "./Queue.vue";
 import DashBoard from "./Home/Main.vue";
 import useTabStore from "../../stores/tabs";
 

@@ -39,12 +39,17 @@ $teal: rgb(64, 200, 224);
 
 
 $primary: $gray4;
-$accent: $darkblue;
+$accent: $red;
 $secondary: $gray5;
 $cta: $blue;
 $danger: $red;
 $track-hover: $gray4;
 $context: $gray5;
+
+// SVG COLORS
+$default: $accent;
+$track-btn-svg: $red;
+$side-nav-svg: $red;
 
 // media query mixins
 @mixin phone-only {

@@ -1,4 +1,4 @@
-import useQStore from "@/stores/queue"
+import useQStore from "@/stores/queue";
 
 let key_down_fired = false;
 
@@ -9,12 +9,12 @@ function focusSearchBox() {
 }
 
 export default function (queue: typeof useQStore) {
-  const q = queue()
-  window.addEventListener("keydown", (e: any) => {
-    let target = e.target;
+  const q = queue();
+  window.addEventListener("keydown", (e: KeyboardEvent) => {
+    const target = e.target as HTMLElement;
     let ctrlKey = e.ctrlKey;
 
-    function FocusedOnInput(target: any) {
+    function FocusedOnInput(target: HTMLElement) {
       return target.tagName === "INPUT" || target.tagName === "TEXTAREA";
     }
 
