@@ -4,7 +4,9 @@ This file contains the AllSongs class for interacting with track documents in Mo
 import re
 
 import pymongo
-from app.db.mongodb import MongoTracks, convert_many, convert_one
+from app.db.mongodb import convert_many
+from app.db.mongodb import convert_one
+from app.db.mongodb import MongoTracks
 from bson import ObjectId
 
 
