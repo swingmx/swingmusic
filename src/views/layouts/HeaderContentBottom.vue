@@ -151,6 +151,7 @@ function toggleBottom() {
   overflow: auto;
   display: grid;
   grid-template-rows: 18rem 1fr;
+  gap: 1rem;
 
   .ap-page-content {
     padding-bottom: 17rem;

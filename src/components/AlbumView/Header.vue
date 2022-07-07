@@ -1,45 +1,44 @@
 <template>
-  <div class="album-h" ref="albumheaderthing">
-    <div
-      class="a-header rounded"
-      :style="{
-        backgroundImage: `linear-gradient(
+  <div
+    class="a-header rounded"
+    ref="albumheaderthing"
+    :style="{
+      backgroundImage: `linear-gradient(
         37deg, ${props.album.colors[0]}, ${props.album.colors[3]}
       )`,
-      }"
-    >
-      <div class="art">
-        <img
-          :src="imguri + album.image"
-          alt=""
-          v-motion-slide-from-left
-          class="rounded shadow-lg"
-        />
+    }"
+  >
+    <div class="art">
+      <img
+        :src="imguri + album.image"
+        alt=""
+        v-motion-slide-from-left
+        class="rounded shadow-lg"
+      />
+    </div>
+    <div class="info" :class="{ nocontrast: isLight() }">
+      <div class="top" v-motion-slide-from-top>
+        <div class="h">
+          <span v-if="album.is_soundtrack">Soundtrack</span>
+          <span v-else-if="album.is_compilation">Compilation</span>
+          <span v-else-if="album.is_single">Single</span>
+          <span v-else>Album</span>
+        </div>
+        <div class="title ellip">
+          {{ album.title }}
+        </div>
       </div>
-      <div class="info" :class="{ nocontrast: isLight() }">
-        <div class="top" v-motion-slide-from-top>
-          <div class="h">
-            <span v-if="album.is_soundtrack">Soundtrack</span>
-            <span v-else-if="album.is_compilation">Compilation</span>
-            <span v-else-if="album.is_single">Single</span>
-            <span v-else>Album</span>
-          </div>
-          <div class="title ellip">
-            {{ album.title }}
-          </div>
+      <div class="bottom">
+        <div class="stats">
+          {{ album.count }} Tracks • {{ formatSeconds(album.duration, true) }} •
+          {{ album.date }} •
+          {{ album.artist }}
         </div>
-        <div class="bottom">
-          <div class="stats">
-            {{ album.count }} Tracks •
-            {{ formatSeconds(album.duration, true) }} • {{ album.date }} •
-            {{ album.artist }}
-          </div>
-          <PlayBtnRect
-            :source="playSources.album"
-            :store="useAlbumStore"
-            :background="getButtonColor()"
-          />
-        </div>
+        <PlayBtnRect
+          :source="playSources.album"
+          :store="useAlbumStore"
+          :background="getButtonColor()"
+        />
       </div>
     </div>
   </div>
@@ -181,20 +180,18 @@ function theyContrast(color1: string, color2: string) {
   grid-template-columns: max-content 1fr;
   gap: 1rem;
   padding: 1rem;
-  height: 100%;
+  height: 100% !important;
   background-color: $black;
   background-image: linear-gradient(37deg, $black 20%, $gray, $black 90%);
 
   .art {
-    width: 100%;
-    height: 100%;
-    left: 1rem;
     display: flex;
     align-items: flex-end;
 
     img {
-      width: 15rem;
-      height: 15rem;
+      height: 16rem;
+      aspect-ratio: 1;
+      object-fit: cover;
       transition: all 0.2s ease-in-out;
     }
   }

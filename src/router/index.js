@@ -9,7 +9,7 @@ import ArtistsExplorer from "@/views/ArtistsExplorer.vue";
 import FolderView from "@/views/FolderView.vue";
 import Home from "@/views/Home.vue";
 import Playlists from "@/views/Playlists.vue";
-import PlaylistView from "@/views/PlaylistView.vue";
+import PlaylistView from "@/views/playlist/index.vue";
 import SettingsView from "@/views/SettingsView.vue";
 import { createRouter, createWebHashHistory } from "vue-router";
 

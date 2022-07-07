@@ -1,7 +1,5 @@
 <template>
-  <div>
     <Header :album="album" />
-  </div>
 </template>
 
 <script setup lang="ts">
