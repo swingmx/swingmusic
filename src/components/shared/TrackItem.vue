@@ -99,6 +99,7 @@ const playThis = (track: Track) => {
   position: relative;
   height: 4rem;
   padding: 0.5rem 0.5rem 0.5rem 4rem;
+  text-transform: capitalize;
 
   &:hover {
     cursor: pointer;

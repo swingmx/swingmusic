@@ -126,6 +126,7 @@ function emitUpdate(track: Track) {
   text-align: left;
   gap: $small;
   user-select: none;
+  text-transform: capitalize;
 
   @include tablet-landscape {
     grid-template-columns: 1.5rem 1.5fr 1fr 1fr 2.5rem;
@@ -151,7 +152,6 @@ function emitUpdate(track: Track) {
 
   .song-album {
     word-break: break-all;
-    text-transform: capitalize;
     max-width: max-content;
     cursor: pointer;
 
