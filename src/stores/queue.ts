@@ -137,6 +137,7 @@ export default defineStore("Queue", {
       this.updateCurrent(readCurrent());
     },
     updateCurrent(index: number) {
+      this.setCurrent(index);
       this.updateNext(index);
       this.updatePrev(index);
 
@@ -157,6 +158,10 @@ export default defineStore("Queue", {
       }
 
       this.prev = index - 1;
+    },
+    setCurrent(index: number) {
+      this.current = index;
+      this.currentid = this.tracks[index].trackid;
     },
     setNewQueue(tracklist: Track[]) {
       if (this.tracks !== tracklist) {
