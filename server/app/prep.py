@@ -11,11 +11,13 @@ class CopyFiles:
     """Copies assets to the app directory."""
 
     def __init__(self) -> None:
-        files = [{
-            "src": "assets",
-            "dest": os.path.join(settings.APP_DIR, "assets"),
-            "is_dir": True,
-        }]
+        files = [
+            {
+                "src": "assets",
+                "dest": os.path.join(settings.APP_DIR, "assets"),
+                "is_dir": True,
+            }
+        ]
 
         for entry in files:
             src = os.path.join(os.getcwd(), entry["src"])
@@ -24,7 +26,9 @@ class CopyFiles:
                 shutil.copytree(
                     src,
                     entry["dest"],
-                    ignore=shutil.ignore_patterns("*.pyc", ),
+                    ignore=shutil.ignore_patterns(
+                        "*.pyc",
+                    ),
                     copy_function=shutil.copy2,
                     dirs_exist_ok=True,
                 )

@@ -51,7 +51,6 @@ def run_fast_scandir(__dir: str, full=False) -> Dict[List[str], List[str]]:
 
 
 class RemoveDuplicates:
-
     def __init__(self, tracklist: List[models.Track]) -> None:
         self.tracklist = tracklist
 
@@ -103,8 +102,7 @@ class UseBisection:
     items.
     """
 
-    def __init__(self, source: List, search_from: str,
-                 queries: List[str]) -> None:
+    def __init__(self, source: List, search_from: str, queries: List[str]) -> None:
         self.source_list = source
         self.queries_list = queries
         self.attr = search_from
@@ -134,7 +132,6 @@ class UseBisection:
 
 
 class Get:
-
     @staticmethod
     def get_all_tracks() -> List[models.Track]:
         """

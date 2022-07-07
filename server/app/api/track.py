@@ -36,5 +36,6 @@ def get_sample_track():
     Returns a sample track object.
     """
 
-    return instances.tracks_instance.get_song_by_album("Legends Never Die",
-                                                       "Juice WRLD")
+    return instances.tracks_instance.get_song_by_album(
+        "Legends Never Die", "Juice WRLD"
+    )
