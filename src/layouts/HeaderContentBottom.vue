@@ -28,14 +28,23 @@
 
 <script setup lang="ts">
 import { onMounted, ref } from "vue";
-import useVisibility from "../../composables/useVisibility";
-import useNavStore from "../../stores/nav";
+import useVisibility from "@/composables/useVisibility";
+import useNavStore from "@/stores/nav";
+import { onBeforeRouteUpdate, RouteParams, useRoute } from "vue-router";
 
 const nav = useNavStore();
+
+const props = defineProps<{
+  /**
+   *  Called when the bottom container is raised.
+   */
+  onBottomRaised?: (routeparams?: RouteParams) => void;
+}>();
 
 let elem: HTMLElement = null;
 let classlist: DOMTokenList = null;
 
+const route = useRoute();
 const apheader = ref<HTMLElement>(null);
 const apbottomcontainer = ref(null);
 const bottomContainerRaised = ref(false);
@@ -43,6 +52,12 @@ const bottomContainerRaised = ref(false);
 onMounted(() => {
   elem = document.getElementById("ap-page");
   classlist = elem.classList;
+});
+
+onBeforeRouteUpdate((to) => {
+  if (bottomContainerRaised.value) {
+    props.onBottomRaised(to.params);
+  }
 });
 
 function handleVisibilityState(state: boolean) {
@@ -59,14 +74,19 @@ function resetBottomPadding() {
   classlist.remove("addbottompadding");
 }
 
+let bottomRaisedCallbackExecuted = false;
+
 function toggleBottom() {
   bottomContainerRaised.value = !bottomContainerRaised.value;
 
   if (bottomContainerRaised.value) {
     classlist.add("addbottompadding");
+    if (!bottomRaisedCallbackExecuted) {
+      bottomRaisedCallbackExecuted = true;
+      props.onBottomRaised(route.params);
+    }
     return;
   }
-
   if (elem.scrollTop == 0) {
     classlist.remove("addbottompadding");
   }

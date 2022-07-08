@@ -28,22 +28,17 @@ def run_checks():
     Checks for new songs every 5 minutes.
     """
     ValidateAlbumThumbs()
+    ValidatePlaylistThumbs()
 
     while True:
         trackslib.validate_tracks()
 
         Populate()
         CreateAlbums()
+        ProcessAlbumColors()
 
         if helpers.Ping()():
             CheckArtistImages()()
-
-        @helpers.background
-        def process_album_colors():
-            ProcessAlbumColors()
-
-        ValidatePlaylistThumbs()
-        process_album_colors()
 
         time.sleep(300)
 
@@ -79,7 +74,6 @@ class getArtistImage:
 
 
 class useImageDownloader:
-
     def __init__(self, url: str, dest: str) -> None:
         self.url = url
         self.dest = dest
@@ -96,10 +90,8 @@ class useImageDownloader:
 
 
 class CheckArtistImages:
-
     def __init__(self):
         self.artists: list[str] = []
-        print("Checking for artist images")
         log.info("Checking artist images")
 
     @staticmethod
@@ -121,8 +113,12 @@ class CheckArtistImages:
         :param artistname: The artist name
         """
 
-        img_path = (settings.APP_DIR + "/images/artists/" +
-                    helpers.create_safe_name(artistname) + ".webp")
+        img_path = (
+            settings.APP_DIR
+            + "/images/artists/"
+            + helpers.create_safe_name(artistname)
+            + ".webp"
+        )
 
         if cls.check_if_exists(img_path):
             return "exists"
@@ -149,7 +145,8 @@ def fetch_album_bio(title: str, albumartist: str) -> str | None:
     Returns the album bio for a given album.
     """
     last_fm_url = "http://ws.audioscrobbler.com/2.0/?method=album.getinfo&api_key={}&artist={}&album={}&format=json".format(
-        settings.LAST_FM_API_KEY, albumartist, title)
+        settings.LAST_FM_API_KEY, albumartist, title
+    )
 
     try:
         response = requests.get(last_fm_url)
@@ -158,8 +155,7 @@ def fetch_album_bio(title: str, albumartist: str) -> str | None:
         return None
 
     try:
-        bio = data["album"]["wiki"]["summary"].split(
-            '<a href="https://www.last.fm/')[0]
+        bio = data["album"]["wiki"]["summary"].split('<a href="https://www.last.fm/')[0]
     except KeyError:
         bio = None
 

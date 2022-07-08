@@ -1,5 +1,5 @@
 <template>
-  <Page>
+  <Page :onBottomRaised="fetchAlbumBio">
     <template #header>
       <Header :album="album.info" />
     </template>
@@ -13,18 +13,22 @@
 </template>
 
 <script setup lang="ts">
-import { onBeforeRouteUpdate, RouteLocationNormalized } from "vue-router";
+import { onBeforeRouteUpdate, RouteLocationNormalized, RouteParams } from "vue-router";
 import useAStore from "@/stores/pages/album";
 
-import Page from "../layouts/HeaderContentBottom.vue";
+import Page from "@/layouts/HeaderContentBottom.vue";
 import Header from "./Header.vue";
 import Content from "./Content.vue";
 import Bottom from "./Bottom.vue";
+import { onBeforeUnmount } from "vue";
 
 const album = useAStore();
 
+function fetchAlbumBio(params: RouteParams) {
+  album.fetchBio(params.hash.toString());
+}
+
 onBeforeRouteUpdate(async (to: RouteLocationNormalized) => {
   await album.fetchTracksAndArtists(to.params.hash.toString());
-  album.fetchBio(to.params.hash.toString());
 });
 </script>

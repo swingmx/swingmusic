@@ -3,7 +3,6 @@ Contains all the playlist routes.
 """
 from datetime import datetime
 
-from app import api
 from app import exceptions
 from app import instances
 from app import models
@@ -17,8 +16,8 @@ from flask import request
 
 playlist_bp = Blueprint("playlist", __name__, url_prefix="/")
 
-PlaylistExists = exceptions.PlaylistExists
-TrackExistsInPlaylist = exceptions.TrackExistsInPlaylist
+PlaylistExists = exceptions.PlaylistExistsError
+TrackExistsInPlaylist = exceptions.TrackExistsInPlaylistError
 
 
 @playlist_bp.route("/playlists", methods=["GET"])
@@ -28,8 +27,7 @@ def get_all_playlists():
     dbplaylists = [models.Playlist(p) for p in dbplaylists]
 
     playlists = [
-        serializer.Playlist(p, construct_last_updated=False)
-        for p in dbplaylists
+        serializer.Playlist(p, construct_last_updated=False) for p in dbplaylists
     ]
     playlists.sort(
         key=lambda p: datetime.strptime(p.lastUpdated, "%Y-%m-%d %H:%M:%S"),
@@ -121,7 +119,6 @@ def update_playlist(playlistid: str):
             image_, thumb_ = playlistlib.save_p_image(image, playlistid)
             playlist["image"] = image_
             playlist["thumb"] = thumb_
-
         else:
             playlist["image"] = p.image.split("/")[-1]
             playlist["thumb"] = p.thumb.split("/")[-1]
@@ -136,7 +133,11 @@ def update_playlist(playlistid: str):
     return {"msg": "Something shady happened"}, 500
 
 
-# @playlist_bp.route("/playlist/<playlist_id>/info")
-# def get_playlist_track(playlist_id: str):
-#     tracks = playlistlib.get_playlist_tracks(playlist_id)
-#     return {"data": tracks}
+@playlist_bp.route("/playlist/artists", methods=["POST"])
+def get_playlist_artists():
+    data = request.get_json()
+
+    pid = data["pid"]
+    artists = playlistlib.GetPlaylistArtists(pid)()
+
+    return {"data": artists}

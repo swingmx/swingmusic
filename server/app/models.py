@@ -49,8 +49,9 @@ class Track:
         self.image = tags["albumhash"] + ".webp"
         self.tracknumber = int(tags["tracknumber"])
 
-        self.uniq_hash = self.create_unique_hash("".join(self.artists),
-                                                 self.album, self.title)
+        self.uniq_hash = helpers.create_hash(
+            "".join(self.artists), self.album, self.title
+        )
 
     @staticmethod
     def create_unique_hash(*args):
@@ -64,14 +65,12 @@ class Artist:
     Artist class
     """
 
-    artistid: str
     name: str
     image: str
 
-    def __init__(self, tags):
-        self.artistid = tags["_id"]["$oid"]
-        self.name = tags["name"]
-        self.image = tags["image"]
+    def __init__(self, name: str):
+        self.name = name
+        self.image = helpers.create_safe_name(name) + ".webp"
 
 
 @dataclass

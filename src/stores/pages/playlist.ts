@@ -1,11 +1,16 @@
+import { Artist } from "./../../interfaces";
 import { defineStore } from "pinia";
-import { getPlaylist } from "../../composables/pages/playlists";
+import {
+  getPlaylist,
+  getPlaylistArtists,
+} from "../../composables/pages/playlists";
 import { Track, Playlist } from "../../interfaces";
 
 export default defineStore("playlist-tracks", {
   state: () => ({
     info: <Playlist>{},
     tracks: <Track[]>[],
+    artists: <Artist[]>[],
   }),
   actions: {
     /**
@@ -17,6 +22,10 @@ export default defineStore("playlist-tracks", {
 
       this.info = playlist.info;
       this.tracks = playlist.tracks;
+    },
+
+    async fetchArtists(playlistid: string) {
+      this.artists = await getPlaylistArtists(playlistid);
     },
     /**
      * Updates the playlist header info. This is used when the playlist is

@@ -18,7 +18,8 @@ from PIL import Image
 from PIL import ImageSequence
 from werkzeug import datastructures
 
-TrackExistsInPlaylist = exceptions.TrackExistsInPlaylist
+
+TrackExistsInPlaylist = exceptions.TrackExistsInPlaylistError
 
 logg = get_logger()
 
@@ -52,8 +53,7 @@ def create_thumbnail(image: any, img_path: str) -> str:
     Creates a 250 x 250 thumbnail from a playlist image
     """
     thumb_path = "thumb_" + img_path
-    full_thumb_path = os.path.join(settings.APP_DIR, "images", "playlists",
-                                   thumb_path)
+    full_thumb_path = os.path.join(settings.APP_DIR, "images", "playlists", thumb_path)
 
     aspect_ratio = image.width / image.height
 
@@ -71,13 +71,11 @@ def save_p_image(file: datastructures.FileStorage, pid: str):
     """
     img = Image.open(file)
 
-    random_str = "".join(
-        random.choices(string.ascii_letters + string.digits, k=5))
+    random_str = "".join(random.choices(string.ascii_letters + string.digits, k=5))
 
     img_path = pid + str(random_str) + ".webp"
 
-    full_img_path = os.path.join(settings.APP_DIR, "images", "playlists",
-                                 img_path)
+    full_img_path = os.path.join(settings.APP_DIR, "images", "playlists", img_path)
 
     if file.content_type == "image/gif":
         frames = []
@@ -140,3 +138,23 @@ def create_playlist_tracks(playlist_tracks: List) -> List[models.Track]:
             tracks.append(models.Track(track))
 
     return tracks
+
+
+class GetPlaylistArtists:
+    """
+    Returns a list of artists from a list of playlist tracks.
+    """
+
+    def __init__(self, pid: str) -> None:
+        self.pid = pid
+        p = instances.playlist_instance.get_playlist_by_id(self.pid)
+        self.tracks = create_playlist_tracks(p["pre_tracks"])
+
+    def __call__(self):
+        artists = set()
+
+        for t in self.tracks:
+            for a in t.artists:
+                artists.add(a)
+
+        return [models.Artist(a) for a in artists]

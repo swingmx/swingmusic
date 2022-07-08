@@ -12,21 +12,29 @@
       />
     </template>
     <template #bottom>
-      <FeaturedArtists :artists="[]" />
+      <FeaturedArtists :artists="playlist.artists" />
     </template>
   </Page>
 </template>
 
 <script setup lang="ts">
-import Page from "../layouts/HeaderContentBottom.vue";
+import Page from "@/layouts/HeaderContentBottom.vue";
 
 import Header from "@/components/PlaylistView/Header.vue";
 import Content from "./Content.vue";
 import FeaturedArtists from "@/components/PlaylistView/FeaturedArtists.vue";
 
 import usePTrackStore from "@/stores/pages/playlist";
+import { onBeforeUnmount, onMounted } from "vue";
+import { useRoute } from "vue-router";
 
+const route = useRoute();
 const playlist = usePTrackStore();
+
+onMounted(() => {
+  playlist.fetchArtists(route.params.pid as string);
+});
+
 </script>
 
 <style lang="scss"></style>

@@ -5,7 +5,7 @@ from typing import List
 
 from app import instances
 from app import settings
-from app.helpers import create_album_hash
+from app.helpers import create_hash
 from app.helpers import Get
 from app.helpers import run_fast_scandir
 from app.helpers import UseBisection
@@ -51,7 +51,7 @@ class Populate:
         tags = get_tags(file)
 
         if tags is not None:
-            hash = create_album_hash(tags["album"], tags["albumartist"])
+            hash = create_hash(tags["album"], tags["albumartist"])
             tags["albumhash"] = hash
             self.tagged_tracks.append(tags)
 

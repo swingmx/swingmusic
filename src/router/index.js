@@ -66,7 +66,6 @@ const routes = [
       state.loading.value = true;
       await useAStore().fetchTracksAndArtists(to.params.hash);
       state.loading.value = false;
-      useAStore().fetchBio(to.params.hash);
     },
   },
   {

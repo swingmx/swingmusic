@@ -5,7 +5,7 @@ import os
 import time
 
 from app import instances
-from app.helpers import create_album_hash
+from app.helpers import create_hash
 from app.lib.taglib import get_tags
 from app.logger import get_logger
 from watchdog.events import PatternMatchingEventHandler
@@ -53,7 +53,7 @@ def add_track(filepath: str) -> None:
     tags = get_tags(filepath)
 
     if tags is not None:
-        hash = create_album_hash(tags["album"], tags["albumartist"])
+        hash = create_hash(tags["album"], tags["albumartist"])
         tags["albumhash"] = hash
         instances.tracks_instance.insert_song(tags)
 
@@ -82,21 +82,19 @@ class Handler(PatternMatchingEventHandler):
         """
         Fired when a supported file is created.
         """
-        print("🔵 created +++")
         self.files_to_process.append(event.src_path)
 
     def on_deleted(self, event):
         """
         Fired when a delete event occurs on a supported file.
         """
-        print("🔴 deleted ---")
+
         remove_track(event.src_path)
 
     def on_moved(self, event):
         """
         Fired when a move event occurs on a supported file.
         """
-        print("🔘 moved -->")
         tr = "share/Trash"
 
         if tr in event.dest_path:
@@ -114,7 +112,6 @@ class Handler(PatternMatchingEventHandler):
         """
         Fired when a created file is closed.
         """
-        print("⚫ closed ~~~")
         try:
             self.files_to_process.remove(event.src_path)
             add_track(event.src_path)

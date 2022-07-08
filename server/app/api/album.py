@@ -64,8 +64,12 @@ def get_album():
     except AttributeError:
         album.duration = 0
 
-    if (album.count == 1 and tracks[0].title == album.title
-            and tracks[0].tracknumber == 1 and tracks[0].disknumber == 1):
+    if (
+        album.count == 1
+        and tracks[0].title == album.title
+        and tracks[0].tracknumber == 1
+        and tracks[0].disknumber == 1
+    ):
         album.is_single = True
 
     return {"tracks": tracks, "info": album}
@@ -109,12 +113,6 @@ def get_albumartists():
             if artist not in artists:
                 artists.append(artist)
 
-    final_artists = []
-    for artist in artists:
-        artist_obj = {
-            "name": artist,
-            "image": helpers.create_safe_name(artist) + ".webp",
-        }
-        final_artists.append(artist_obj)
+    final_artists = [models.Artist(a) for a in artists]
 
     return {"artists": final_artists}

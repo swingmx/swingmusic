@@ -1,3 +1,4 @@
+import { Artist } from "./../../interfaces";
 import { Playlist, Track } from "../../interfaces";
 import { Notification, NotifType } from "../../stores/notification";
 import state from "../state";
@@ -118,6 +119,32 @@ async function updatePlaylist(pid: string, playlist: FormData, pStore: any) {
     pStore.updatePInfo(data.data);
     new Notification("Playlist updated!");
   }
+}
+
+/**
+ * Gets the artists in a playlist.
+ * @param pid The playlist id to fetch tracks for.
+ * @returns {Promise<Artist[]>} A promise that resolves to an array of artists.
+ */
+export async function getPlaylistArtists(pid: string): Promise<Artist[]> {
+  const uri = state.settings.uri + "/playlist/artists";
+
+  const { data, error } = await useAxios({
+    url: uri,
+    props: {
+      pid: pid,
+    },
+  });
+
+  if (error) {
+    new Notification("Something funny happened!", NotifType.Error);
+  }
+
+  if (data) {
+    return data.data as Artist[];
+  }
+
+  return [];
 }
 
 export {

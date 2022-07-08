@@ -1,4 +1,4 @@
-class TrackExistsInPlaylist(Exception):
+class TrackExistsInPlaylistError(Exception):
     """
     Exception raised when a track is already in a playlist.
     """
@@ -6,7 +6,7 @@ class TrackExistsInPlaylist(Exception):
     pass
 
 
-class PlaylistExists(Exception):
+class PlaylistExistsError(Exception):
     """
     Exception raised when a playlist already exists.
     """
