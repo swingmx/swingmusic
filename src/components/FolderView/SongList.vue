@@ -5,11 +5,12 @@
         <SongItem
           v-for="track in getTracks()"
           :key="track.trackid"
-          :song="track"
+          :track="track"
           :index="track.index"
           @updateQueue="updateQueue"
           :isPlaying="queue.playing"
           :isCurrent="queue.currentid == track.trackid"
+          :isHighlighted="highlightid == track.trackid"
         />
       </div>
     </div>
@@ -22,12 +23,14 @@
 </template>
 
 <script setup lang="ts">
-import { useRoute } from "vue-router";
+import { onBeforeRouteUpdate, useRoute } from "vue-router";
 
 import SongItem from "../shared/SongItem.vue";
 
-import useQStore from "../../stores/queue";
-import { Track } from "../../interfaces";
+import { focusElem } from "@/composables/perks";
+import { onMounted, onUpdated, ref } from "vue";
+import { Track } from "@/interfaces";
+import useQStore from "@/stores/queue";
 
 const queue = useQStore();
 
@@ -39,8 +42,34 @@ const props = defineProps<{
   on_album_page?: boolean;
 }>();
 
-let route = useRoute().name;
+const route = useRoute();
+const routename = route.name as string;
+const highlightid = ref(route.query.highlight as string);
 
+function highlightTrack(trackid: string) {
+  focusElem(`track-${trackid}`, 400, "center");
+}
+
+onBeforeRouteUpdate(async (to, from) => {
+  const hid = to.query.highlight as string;
+  highlightid.value = hid as string;
+
+  if (hid) {
+    highlightTrack(hid as string);
+  }
+});
+
+onUpdated(() => {
+  if (highlightid.value) {
+    highlightTrack(highlightid.value);
+  }
+});
+
+onMounted(() => {
+  if (highlightid.value) {
+    highlightTrack(highlightid.value);
+  }
+});
 /**
  * Plays a clicked track and updates the queue
  *
@@ -51,7 +80,7 @@ function updateQueue(track: Track) {
     (t: Track) => t.trackid === track.trackid
   );
 
-  switch (route) {
+  switch (routename) {
     case "FolderView":
       queue.playFromFolder(props.path, props.tracks);
       queue.play(index);
@@ -118,9 +147,29 @@ function getTracks() {
     &::-webkit-scrollbar {
       display: none;
     }
+
     .context-on {
       background-color: $gray4;
       color: $white !important;
+    }
+
+    .highlighted {
+      color: $white !important;
+      animation: blinker 1.5s ease 1s;
+    }
+
+    @keyframes blinker {
+      25% {
+        background-color: $gray4;
+      }
+
+      50% {
+        background-color: transparent;
+      }
+
+      75% {
+        background-color: $gray4;
+      }
     }
   }
 }

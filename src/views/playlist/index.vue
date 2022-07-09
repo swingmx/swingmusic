@@ -34,7 +34,6 @@ const playlist = usePTrackStore();
 onMounted(() => {
   playlist.fetchArtists(route.params.pid as string);
 });
-
 </script>
 
 <style lang="scss"></style>

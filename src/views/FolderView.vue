@@ -16,16 +16,21 @@ import FolderList from "@/components/FolderView/FolderList.vue";
 
 import useFStore from "../stores/pages/folder";
 import useLoaderStore from "../stores/loader";
+import { isSameRoute } from "@/composables/perks";
 
 const loader = useLoaderStore();
 const FStore = useFStore();
 
 const scrollable = ref(null);
 
-onBeforeRouteUpdate((to) => {
+onBeforeRouteUpdate((to, from) => {
+  if (isSameRoute(to, from)) return;
+
   loader.startLoading();
   FStore.fetchAll(to.params.path as string)
+
     .then(() => {
+      console.log("fetched");
       scrollable.value.scrollTop = 0;
     })
     .then(() => {

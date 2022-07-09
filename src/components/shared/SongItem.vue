@@ -1,39 +1,46 @@
 <template>
   <div
     class="songlist-item rounded"
-    :class="[{ current: props.isCurrent }, { 'context-on': context_on }]"
-    @dblclick="emitUpdate(props.song)"
+    :class="[
+      { current: isCurrent },
+      { 'context-on': context_on },
+      {
+        highlighted: isHighlighted,
+      },
+    ]"
+    v-bind:class="`track-${track.trackid}`"
+    @dblclick="emitUpdate(track)"
     @contextmenu="showContextMenu"
   >
-    <div class="index">{{ props.index }}</div>
+    <div class="index">{{ index }}</div>
     <div class="flex">
-      <div @click="emitUpdate(props.song)" class="thumbnail">
+      <div @click="emitUpdate(track)" class="thumbnail">
         <img
-          :src="imguri + props.song.image"
+          :src="imguri + track.image"
           alt=""
           class="album-art image rounded"
         />
         <div
           class="now-playing-track image"
-          v-if="props.isPlaying && props.isCurrent"
+          v-if="isPlaying && isCurrent"
           :class="{ active: isPlaying, not_active: !isPlaying }"
         ></div>
       </div>
-      <div @click="emitUpdate(props.song)">
-        <span class="ellip title">{{ props.song.title }}</span>
+      <div @click="emitUpdate(track)">
+        <span class="ellip title">{{ track.title }}</span>
       </div>
     </div>
     <div class="song-artists">
-      <div class="ellip" v-if="props.song.artists[0] !== ''">
+      <div class="ellip" v-if="track.artists[0] !== ''">
         <span
           class="artist"
-          v-for="artist in putCommas(props.song.artists)"
+          v-for="artist in putCommas(track.artists)"
           :key="artist"
           >{{ artist }}</span
         >
       </div>
       <div class="ellip" v-else>
-        <span class="artist">{{ props.song.albumartist }}</span>
+        <span class="artist">{{ track.albumartist }}</span>
       </div>
     </div>
     <router-link
@@ -41,14 +48,14 @@
       :to="{
         name: 'AlbumView',
         params: {
-          hash: props.song.albumhash,
+          hash: track.albumhash,
         },
       }"
     >
-      {{ props.song.album }}
+      {{ track.album }}
     </router-link>
     <div class="song-duration">
-      <div class="text">{{ formatSeconds(props.song.length) }}</div>
+      <div class="text">{{ formatSeconds(track.length) }}</div>
     </div>
     <div
       class="options-icon circular"
@@ -66,17 +73,17 @@
 </template>
 
 <script setup lang="ts">
-import { putCommas, formatSeconds } from "@/composables/perks";
+import OptionSvg from "@/assets/icons/more.svg";
+import { ContextSrc } from "@/composables/enums";
+import { formatSeconds, putCommas } from "@/composables/perks";
 import useContextStore from "@/stores/context";
 import useModalStore from "@/stores/modal";
 import useQueueStore from "@/stores/queue";
-import { ContextSrc } from "@/composables/enums";
-import OptionSvg from "@/assets/icons/more.svg";
 
-import { ref } from "vue";
+import { paths } from "@/config";
 import trackContext from "@/contexts/track_context";
 import { Track } from "@/interfaces";
-import { paths } from "@/config";
+import { ref } from "vue";
 
 const contextStore = useContextStore();
 
@@ -88,7 +95,7 @@ const showContextMenu = (e: Event) => {
   e.preventDefault();
   e.stopPropagation();
 
-  const menus = trackContext(props.song, useModalStore, useQueueStore);
+  const menus = trackContext(props.track, useModalStore, useQueueStore);
 
   contextStore.showContextMenu(e, menus, ContextSrc.Track);
   context_on.value = true;
@@ -102,10 +109,11 @@ const showContextMenu = (e: Event) => {
 };
 
 const props = defineProps<{
-  song: Track;
+  track: Track;
   index: Number;
   isPlaying: Boolean;
   isCurrent: Boolean;
+  isHighlighted: Boolean;
 }>();
 
 const emit = defineEmits<{

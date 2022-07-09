@@ -21,8 +21,10 @@
 </template>
 
 <script setup lang="ts">
-import Navigation from "@/components/LeftSidebar/Navigation.vue";
+import { useRouter, useRoute, RouteLocationNormalized } from "vue-router";
+import { onStartTyping } from "@vueuse/core";
 
+import Navigation from "@/components/LeftSidebar/Navigation.vue";
 import RightSideBar from "@/components/RightSideBar/Main.vue";
 import nowPlaying from "@/components/LeftSidebar/nowPlaying.vue";
 import NavBar from "@/components/nav/NavBar.vue";
@@ -33,14 +35,16 @@ import ContextMenu from "@/components/contextMenu.vue";
 import Modal from "@/components/modal.vue";
 import Notification from "@/components/Notification.vue";
 import useQStore from "@/stores/queue";
-import useShortcuts from "@/composables/useKeyboard";
 import Logo from "@/components/Logo.vue";
-import { useRouter } from "vue-router";
-import { onStartTyping } from "@vueuse/core";
+
+import useShortcuts from "@/composables/useKeyboard";
+import { isSameRoute } from "@/composables/perks";
 
 const context_store = useContextStore();
 const queue = useQStore();
 const app_dom = document.getElementById("app");
+const route = useRoute();
+const router = useRouter();
 
 queue.readQueue();
 useShortcuts(useQStore);
@@ -51,7 +55,18 @@ app_dom.addEventListener("click", (e) => {
   }
 });
 
-useRouter().afterEach(() => {
+function removeHighlight(route: RouteLocationNormalized) {
+  setTimeout(() => {
+    router.push({ name: route.name, params: route.params });
+  }, 5000);
+}
+
+router.afterEach((to, from) => {
+  const hid = to.query.highlight as string;
+
+  if (hid) removeHighlight(to);
+  if (isSameRoute(to, from)) return;
+
   document.getElementById("acontent")?.scrollTo(0, 0);
 });
 

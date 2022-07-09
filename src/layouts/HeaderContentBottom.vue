@@ -38,7 +38,7 @@ const props = defineProps<{
   /**
    *  Called when the bottom container is raised.
    */
-  onBottomRaised?: (routeparams?: RouteParams) => void;
+  bottomRaisedCallback?: (routeparams?: RouteParams) => void;
 }>();
 
 let elem: HTMLElement = null;
@@ -56,7 +56,8 @@ onMounted(() => {
 
 onBeforeRouteUpdate((to) => {
   if (bottomContainerRaised.value) {
-    props.onBottomRaised(to.params);
+    if (!props.bottomRaisedCallback) return;
+    props.bottomRaisedCallback(to.params);
   }
 });
 
@@ -83,7 +84,8 @@ function toggleBottom() {
     classlist.add("addbottompadding");
     if (!bottomRaisedCallbackExecuted) {
       bottomRaisedCallbackExecuted = true;
-      props.onBottomRaised(route.params);
+      if (!props.bottomRaisedCallback) return;
+      props.bottomRaisedCallback(route.params);
     }
     return;
   }

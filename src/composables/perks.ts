@@ -1,3 +1,5 @@
+import { RouteLocationNormalized } from "vue-router";
+
 const putCommas = (artists: string[]) => {
   let result = [];
 
@@ -12,14 +14,14 @@ const putCommas = (artists: string[]) => {
   return result;
 };
 
-function focusElem(className: string, delay?: number) {
+function focusElem(className: string, delay?: number, pos?: any) {
   const dom = document.getElementsByClassName(className)[0];
 
   setTimeout(() => {
     if (dom) {
       dom.scrollIntoView({
         behavior: "smooth",
-        block: "start",
+        block: `${pos ?? "start"}` as any,
         inline: "center",
       });
     }
@@ -35,6 +37,16 @@ function getElem(id: string, type: string) {
       return document.getElementById(id);
     }
   }
+}
+
+type r = RouteLocationNormalized;
+
+function isSameRoute(to: r, from: r) {
+  if (to.params.path == from.params.path) {
+    return true;
+  }
+
+  return false;
 }
 
 /**
@@ -80,4 +92,4 @@ function formatSeconds(seconds: number, long?: boolean) {
   }
 }
 
-export { putCommas, focusElem, formatSeconds, getElem };
+export { putCommas, focusElem, formatSeconds, getElem, isSameRoute };
