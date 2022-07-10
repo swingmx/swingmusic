@@ -98,7 +98,7 @@ function updateQueue(track: Track) {
 
 function getTracks() {
   if (props.on_album_page) {
-    let tracks = props.tracks.map((track, index) => {
+    let tracks = props.tracks.map((track) => {
       track.index = track.tracknumber;
       return track;
     });

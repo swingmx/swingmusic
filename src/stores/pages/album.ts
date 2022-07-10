@@ -22,7 +22,7 @@ export default defineStore("album", {
     info: <AlbumInfo>{},
     tracks: <Track[]>[],
     artists: <Artist[]>[],
-    bio: null,
+    bio: "HELLBOY is the fourth & final mixtape by Lil Peep, released on September 25, 2016. The mixtape caught people’s attention, pushing him into the mainstream light. The title HELLBOY is a reference to the animated movie Hellboy Animated: Blood and Iron, as Peep explains in a GQ interview. This album’s title was explained by Smokeasac, who produced many songs on this album: 'I remember when we made “Hellboy”. He explained to me why he chose the name. He explained that it was because he knew that “Hellboy” came off as intimidating and scary to some but it was because he ",
   }),
   actions: {
     /**

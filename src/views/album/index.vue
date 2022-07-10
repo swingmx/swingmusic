@@ -7,14 +7,22 @@
       <Content :tracks="album.tracks" />
     </template>
     <template #bottom>
-      <Bottom :artists="album.artists" :bio="album.bio" />
+      <Bottom
+        :artists="album.artists"
+        :bio="album.bio"
+        :image="album.info.image"
+      />
     </template>
   </Page>
 </template>
 
 <script setup lang="ts">
 import useAStore from "@/stores/pages/album";
-import { onBeforeRouteUpdate, RouteLocationNormalized, RouteParams } from "vue-router";
+import {
+  onBeforeRouteUpdate,
+  RouteLocationNormalized,
+  RouteParams,
+} from "vue-router";
 
 import Page from "@/layouts/HeaderContentBottom.vue";
 import Bottom from "./Bottom.vue";

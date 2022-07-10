@@ -51,7 +51,7 @@ import useAlbumStore from "@/stores/pages/album";
 import { ref } from "vue";
 import { playSources } from "../../composables/enums";
 import { formatSeconds } from "../../composables/perks";
-import { paths } from "../../config";
+import { paths } from "@/config";
 import { AlbumInfo } from "../../interfaces";
 import PlayBtnRect from "../shared/PlayBtnRect.vue";
 

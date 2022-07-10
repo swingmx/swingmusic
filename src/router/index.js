@@ -18,6 +18,7 @@ const routes = [
     path: "/",
     name: "Home",
     component: Home,
+    redirect: '/folder/$home'
   },
   {
     path: "/folder/:path",
