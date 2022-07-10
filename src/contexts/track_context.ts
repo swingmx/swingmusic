@@ -90,7 +90,7 @@ export default async (
       Router.push({
         name: "FolderView",
         params: { path: track.folder },
-        query: { highlight: track.trackid },
+        query: { highlight: track.uniq_hash },
       });
     },
     icon: "folder",

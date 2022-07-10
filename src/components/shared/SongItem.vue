@@ -8,7 +8,7 @@
         highlighted: isHighlighted,
       },
     ]"
-    v-bind:class="`track-${track.trackid}`"
+    v-bind:class="`track-${track.uniq_hash}`"
     @dblclick="emitUpdate(track)"
     @contextmenu="showContextMenu"
   >

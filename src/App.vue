@@ -62,9 +62,9 @@ function removeHighlight(route: RouteLocationNormalized) {
 }
 
 router.afterEach((to, from) => {
-  const hid = to.query.highlight as string;
+  const h_hash = to.query.highlight as string;
 
-  if (hid) removeHighlight(to);
+  if (h_hash) removeHighlight(to);
   if (isSameRoute(to, from)) return;
 
   document.getElementById("acontent")?.scrollTo(0, 0);

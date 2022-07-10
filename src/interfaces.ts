@@ -16,6 +16,7 @@ export interface Track {
   tracknumber?: number;
   disknumber?: number;
   index?: number;
+  uniq_hash: string;
 }
 
 export interface Folder {
@@ -64,7 +65,7 @@ export interface Playlist {
   count?: number;
   lastUpdated?: string;
   thumb?: string;
-  duration?: number
+  duration?: number;
 }
 
 export interface Notif {

@@ -10,7 +10,7 @@
           @updateQueue="updateQueue"
           :isPlaying="queue.playing"
           :isCurrent="queue.currentid == track.trackid"
-          :isHighlighted="highlightid == track.trackid"
+          :isHighlighted="highlightid == track.uniq_hash"
         />
       </div>
     </div>
@@ -46,16 +46,16 @@ const route = useRoute();
 const routename = route.name as string;
 const highlightid = ref(route.query.highlight as string);
 
-function highlightTrack(trackid: string) {
-  focusElem(`track-${trackid}`, 400, "center");
+function highlightTrack(t_hash: string) {
+  focusElem(`track-${t_hash}`, 500, "center");
 }
 
 onBeforeRouteUpdate(async (to, from) => {
-  const hid = to.query.highlight as string;
-  highlightid.value = hid as string;
+  const h_hash = to.query.highlight as string;
+  highlightid.value = h_hash as string;
 
-  if (hid) {
-    highlightTrack(hid as string);
+  if (h_hash) {
+    highlightTrack(h_hash);
   }
 });
 
