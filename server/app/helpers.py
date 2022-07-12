@@ -2,6 +2,7 @@
 This module contains mini functions for the server.
 """
 import os
+from pprint import pprint
 import threading
 from datetime import datetime
 from typing import Dict, List, Set
@@ -53,7 +54,13 @@ class RemoveDuplicates:
         self.tracklist = tracklist
 
     def __call__(self) -> List[models.Track]:
-        uniq_hashes = set(t.uniq_hash for t in self.tracklist)
+        uniq_hashes = []
+        [
+            uniq_hashes.append(t.uniq_hash)
+            for t in self.tracklist
+            if t.uniq_hash not in uniq_hashes
+        ]
+        pprint(uniq_hashes[:5])
         tracks = UseBisection(self.tracklist, "uniq_hash", uniq_hashes)()
 
         return tracks
