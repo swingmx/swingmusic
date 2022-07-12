@@ -3,10 +3,22 @@ import normalize from "../composables/normalizeContextMenu";
 import { Option } from "../interfaces";
 import { ContextSrc } from "../composables/enums";
 
+function getPlaceholders(length: number) {
+  let list: Option[] = [];
+
+  for (let index = 0; index < length; index++) {
+    list.push("" as Option);
+  }
+
+  return list;
+}
+
+getPlaceholders(5);
+
 export default defineStore("context-menu", {
   state: () => ({
     visible: false,
-    options: <Option[]>[],
+    options: getPlaceholders(5),
     x: 500,
     y: 500,
     normalizedX: false,

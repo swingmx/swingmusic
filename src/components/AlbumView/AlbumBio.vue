@@ -21,7 +21,7 @@
 import { paths } from "@/config";
 
 defineProps<{
-  bio: string;
+  bio: string | null;
   images: {
     artist: string;
     album: string;
@@ -65,12 +65,14 @@ defineProps<{
       width: 10rem;
     }
 
+    $rectpos: calc(50% - 5rem);
+
     .rect {
       width: 10rem;
       height: 10rem;
       position: absolute;
       bottom: 0rem;
-      left: 7rem;
+      left: $rectpos;
       transform: rotate(15deg) translate(-1rem, 1rem);
       z-index: 1;
       transition: all 0.5s ease-in-out;
@@ -85,8 +87,8 @@ defineProps<{
       position: absolute;
       width: 7rem;
       height: 7rem;
-      left: 15rem;
       bottom: 0;
+      left: calc($rectpos + 7rem);
       border-radius: 50%;
       box-shadow: 0 0 2rem rgb(0, 0, 0);
       transition: all 0.25s ease-in-out;
