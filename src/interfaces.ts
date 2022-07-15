@@ -74,23 +74,24 @@ export interface Notif {
 }
 
 export interface fromFolder {
-  type: FromOptions;
+  type: FromOptions.folder;
   path: string;
   name: string;
 }
 export interface fromAlbum {
-  type: FromOptions;
+  type: FromOptions.album;
   name: string;
+  hash: string;
   albumartist: string;
 }
 export interface fromPlaylist {
-  type: FromOptions;
+  type: FromOptions.playlist;
   name: string;
   playlistid: string;
 }
 
 export interface fromSearch {
-  type: FromOptions;
+  type: FromOptions.search;
   query: string;
 }
 

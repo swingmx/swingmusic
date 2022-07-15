@@ -29,9 +29,14 @@ export default function play(
       break;
     case playSources.album:
       store = store as typeof album;
-      const a = store();
+      const a_store = store();
 
-      useQueue.playFromAlbum(a.info.title, a.info.artist, a.tracks);
+      useQueue.playFromAlbum(
+        a_store.info.title,
+        a_store.info.artist,
+        a_store.info.hash,
+        a_store.tracks
+      );
       useQueue.play();
       break;
     case playSources.playlist:

@@ -3,7 +3,7 @@
     class="songlist-item rounded"
     :class="[
       { current: isCurrent },
-      { 'context-on': context_on },
+      { contexton: context_on },
       {
         highlighted: isHighlighted,
       },
@@ -134,7 +134,6 @@ function emitUpdate(track: Track) {
   text-align: left;
   gap: $small;
   user-select: none;
-  text-transform: capitalize;
 
   @include tablet-landscape {
     grid-template-columns: 1.5rem 1.5fr 1fr 1fr 2.5rem;

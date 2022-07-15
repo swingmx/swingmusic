@@ -86,7 +86,12 @@ function updateQueue(track: Track) {
       queue.play(index);
       break;
     case "AlbumView":
-      queue.playFromAlbum(track.album, track.albumartist, props.tracks);
+      queue.playFromAlbum(
+        track.album,
+        track.albumartist,
+        track.albumhash,
+        props.tracks
+      );
       queue.play(index);
       break;
     case "PlaylistView":
@@ -148,7 +153,7 @@ function getTracks() {
       display: none;
     }
 
-    .context-on {
+    .contexton {
       background-color: $gray4;
       color: $white !important;
     }

@@ -6,7 +6,7 @@
       {
         currentInQueue: props.isCurrent,
       },
-      { 'context-on': context_on },
+      { contexton: context_on },
     ]"
     @contextmenu="showContextMenu"
   >
@@ -87,7 +87,7 @@ const playThis = (track: Track) => {
   background-color: $gray3;
 }
 
-.context-on {
+.contexton {
   background-color: $gray4;
   color: $white !important;
 }

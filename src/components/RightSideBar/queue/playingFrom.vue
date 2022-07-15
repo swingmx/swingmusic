@@ -2,7 +2,7 @@
   <div id="playing-from" class="rounded" @click="goTo">
     <div class="h">
       <div class="icon image" :class="from.icon"></div>
-     Playing from
+      Playing from
     </div>
     <div class="name">
       <div id="to">
@@ -13,7 +13,12 @@
 </template>
 
 <script setup lang="ts">
-import { fromFolder, fromAlbum, fromPlaylist, fromSearch } from "../../../interfaces";
+import {
+  fromFolder,
+  fromAlbum,
+  fromPlaylist,
+  fromSearch,
+} from "../../../interfaces";
 import { FromOptions } from "../../../composables/enums";
 import { useRouter } from "vue-router";
 import { computed } from "@vue/reactivity";
@@ -42,7 +47,7 @@ const from = computed((): from => {
     case FromOptions.album:
       return {
         icon: "album",
-        text: props.from.name,
+        text: `${props.from.name} - ${props.from.albumartist}`,
       };
     case FromOptions.playlist:
       return {
@@ -52,37 +57,36 @@ const from = computed((): from => {
     case FromOptions.search:
       return {
         icon: "search",
-        text: `Search results for: "${props.from.query}"`
-      }
+        text: `Search results for: "${props.from.query}"`,
+      };
   }
 });
 
 const router = useRouter();
 
-function goToAlbum() {
+function goToAlbum(from: fromAlbum) {
   router.push({
     name: "AlbumView",
     params: {
-      album: props.from.name,
-      artist: props.from.albumartist,
+      hash: from.hash,
     },
   });
 }
 
-function goToFolder() {
+function goToFolder(from: fromFolder) {
   router.push({
     name: "FolderView",
     params: {
-      path: props.from.path,
+      path: from.path,
     },
   });
 }
 
-function goToPlaylist() {
+function goToPlaylist(from: fromPlaylist) {
   router.push({
     name: "PlaylistView",
     params: {
-      pid: props.from.playlistid,
+      pid: from.playlistid,
     },
   });
 }
@@ -90,13 +94,13 @@ function goToPlaylist() {
 function goTo() {
   switch (props.from.type) {
     case FromOptions.folder:
-      goToFolder();
+      goToFolder(props.from);
       break;
     case FromOptions.album:
-      goToAlbum();
+      goToAlbum(props.from);
       break;
     case FromOptions.playlist:
-      goToPlaylist();
+      goToPlaylist(props.from);
       break;
   }
 }
@@ -108,7 +112,7 @@ function goTo() {
   padding: 0.75rem;
   cursor: pointer;
   position: relative;
-  transition: all .2s ease;
+  transition: all 0.2s ease;
   background-color: $black;
 
   &:hover {
@@ -121,7 +125,7 @@ function goTo() {
   }
 
   .h {
-    font-size: .9rem;
+    font-size: 0.9rem;
     margin-bottom: $small;
     display: flex;
     align-items: center;

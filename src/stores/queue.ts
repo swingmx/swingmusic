@@ -46,6 +46,8 @@ const defaultTrack = <Track>{
   image: "",
 };
 
+type From = fromFolder | fromAlbum | fromPlaylist | fromSearch;
+
 export default defineStore("Queue", {
   state: () => ({
     progressElem: HTMLElement,
@@ -59,7 +61,7 @@ export default defineStore("Queue", {
     prev: 0,
     currentid: "",
     playing: false,
-    from: <fromFolder>{} || <fromAlbum>{} || <fromPlaylist>{},
+    from: <From>{},
     tracks: <Track[]>[defaultTrack],
   }),
   actions: {
@@ -178,10 +180,16 @@ export default defineStore("Queue", {
       };
       this.setNewQueue(tracks);
     },
-    playFromAlbum(aname: string, albumartist: string, tracks: Track[]) {
+    playFromAlbum(
+      aname: string,
+      albumartist: string,
+      albumhash: string,
+      tracks: Track[]
+    ) {
       this.from = <fromAlbum>{
         type: FromOptions.album,
         name: aname,
+        hash: albumhash,
         albumartist: albumartist,
       };
 

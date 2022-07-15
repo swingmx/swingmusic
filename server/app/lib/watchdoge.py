@@ -3,6 +3,7 @@ This library contains the classes and functions related to the watchdog file wat
 """
 import os
 import time
+from typing import List
 
 from app import instances
 from app.helpers import create_hash
@@ -19,29 +20,39 @@ class OnMyWatch:
     Contains the methods for initializing and starting watchdog.
     """
 
-    directory = os.path.expanduser("~")
+    home_dir = os.path.expanduser("~")
+    dirs = [home_dir]
+    observers: List[Observer] = []
 
     def __init__(self):
         self.observer = Observer()
 
     def run(self):
         event_handler = Handler()
-        self.observer.schedule(event_handler, self.directory, recursive=True)
+
+        for dir in self.dirs:
+            print("something")
+            self.observer.schedule(event_handler, os.path.realpath(dir), recursive=True)
+            self.observers.append(self.observer)
 
         try:
             self.observer.start()
+            print("something something")
         except OSError:
             log.error("Could not start watchdog.")
             return
 
         try:
             while True:
-                time.sleep(5)
-        except:
-            self.observer.stop()
+                time.sleep(1)
+        except KeyboardInterrupt:
+            for o in self.observers:
+                o.unschedule_all()
+                o.stop()
             print("Observer Stopped")
 
-        self.observer.join()
+        for o in self.observers:
+            o.join()
 
 
 def add_track(filepath: str) -> None:
@@ -82,6 +93,7 @@ class Handler(PatternMatchingEventHandler):
         """
         Fired when a supported file is created.
         """
+        print("💠 created file 💠")
         self.files_to_process.append(event.src_path)
 
     def on_deleted(self, event):

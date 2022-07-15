@@ -60,7 +60,6 @@ class RemoveDuplicates:
             for t in self.tracklist
             if t.uniq_hash not in uniq_hashes
         ]
-        pprint(uniq_hashes[:5])
         tracks = UseBisection(self.tracklist, "uniq_hash", uniq_hashes)()
 
         return tracks
