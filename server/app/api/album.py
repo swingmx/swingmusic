@@ -97,22 +97,17 @@ def get_album_bio():
 
 @album_bp.route("/album/artists", methods=["POST"])
 def get_albumartists():
-    """Returns a list of artists featured in a given album."""
-    data = request.get_json()
+    """
+    Returns a list of artists featured in a given album.
+    """
 
+    data = request.get_json()
     albumhash = data["hash"]
 
     tracks = instances.tracks_instance.find_tracks_by_hash(albumhash)
     tracks = [models.Track(t) for t in tracks]
 
-    artists = []
+    artists = [a for t in tracks for a in t.artists]
+    artists = helpers.get_normalized_artists(artists)
 
-    for track in tracks:
-        for artist in track.artists:
-            artist = artist.lower()
-            if artist not in artists:
-                artists.append(artist)
-
-    final_artists = [models.Artist(a) for a in artists]
-
-    return {"artists": final_artists}
+    return {"artists": artists}

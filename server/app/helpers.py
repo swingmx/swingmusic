@@ -180,3 +180,47 @@ class Ping:
             return True
         except (requests.exceptions.ConnectionError, requests.Timeout):
             return False
+
+
+def get_normal_artist_name(artists: List[str]) -> str:
+    """
+    Returns the artist name with most capital letters.
+    """
+    if len(artists) == 1:
+        return artists[0]
+
+    artists.sort()
+    return artists[0]
+
+
+def get_artist_lists(artists: List[str]) -> List[str]:
+    """
+    Takes in a list of artists and returns a list of lists of an artist's various name variations.
+
+    Example:
+    >>> get_artist_lists(['Juice WRLD', 'Juice Wrld', 'XXXtentacion', 'XXXTENTACION'])
+
+    >>> [['Juice WRLD', 'Juice Wrld'], ['XXXtentacion', 'XXXTENTACION']]
+    """
+    artist_lists: List[List[str]] = []
+
+    for artist in artists:
+        for list in artist_lists:
+            if artist.lower() == list[0].lower():
+                list.append(artist)
+                break
+        else:
+            artist_lists.append([artist])
+
+    return artist_lists
+
+
+def get_normalized_artists(names: List[str]) -> List[models.Artist]:
+    """
+    Takes in a list of artists and returns a list of models.Artist objects with normalized names.
+    """
+    names = [n.strip() for n in names]
+    names = get_artist_lists(names)
+    names = [get_normal_artist_name(a) for a in names]
+
+    return [models.Artist(a) for a in names]
