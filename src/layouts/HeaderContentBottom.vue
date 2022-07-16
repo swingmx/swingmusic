@@ -21,7 +21,9 @@
           <span>tap here</span>
         </div>
       </div>
-      <slot name="bottom"></slot>
+      <div class="bottom-content">
+        <slot name="bottom"></slot>
+      </div>
     </div>
   </div>
 </template>
