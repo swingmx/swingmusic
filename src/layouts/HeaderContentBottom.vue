@@ -174,11 +174,11 @@ function toggleBottom() {
   position: relative;
   overflow: auto;
   display: grid;
-  grid-template-rows: 18rem 1fr;
+  grid-template-rows: $banner-height 1fr;
   gap: 1rem;
 
   .ap-page-content {
-    padding-bottom: 17rem;
+    padding-bottom: calc($banner-height - 1rem);
   }
 }
 </style>

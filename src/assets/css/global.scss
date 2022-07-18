@@ -58,6 +58,22 @@ a {
   overflow: hidden;
 }
 
+.abs {
+  position: absolute;
+}
+
+.pad-small {
+  padding: $small;
+}
+
+.pad-medium {
+  padding: $medium;
+}
+
+.pad-large {
+  padding: 1rem;
+}
+
 .grid {
   display: grid;
 }
