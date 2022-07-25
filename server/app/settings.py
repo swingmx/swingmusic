@@ -33,3 +33,8 @@ The size of extracted in pixels
 """
 
 LOGGER_ENABLE: bool = True
+
+"""
+Can either be "sqlite" or "mongodb"
+"""
+DB_TYPE: str = "sqlite"

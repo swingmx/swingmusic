@@ -8,14 +8,18 @@ from app import helpers
 from app import prep
 
 
-@helpers.background
-def initialize() -> None:
-    """
-    Runs all the necessary setup functions.
-    """
-    functions.start_watchdog()
-    prep.create_config_dir()
-    functions.run_checks()
+# @helpers.background
+# def initialize() -> None:
+#     """
+#     Runs all the necessary setup functions.
+#     """
+#     functions.start_watchdog()
+#     prep.create_config_dir()
+#     functions.run_checks()
 
 
-initialize()
+# initialize()
+
+from app.db.sqlite import run
+
+run()
