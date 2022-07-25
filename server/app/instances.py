@@ -1,7 +1,10 @@
 """
 All the MongoDB instances are created here.
 """
-from app.db.mongodb import albums, artists, playlists, tracks
+from app.db.mongodb import albums
+from app.db.mongodb import artists
+from app.db.mongodb import playlists
+from app.db.mongodb import tracks
 from app.settings import DB_TYPE
 
 tracks_instance = None
