@@ -15,4 +15,3 @@ CREATE TABLE IF NOT EXISTS tracks (
         disknumber INTEGER,
         uniqhash TEXT
 );
-
