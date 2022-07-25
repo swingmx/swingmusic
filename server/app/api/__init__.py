@@ -17,8 +17,6 @@ from app.db.sqlite import run
 #     prep.create_config_dir()
 #     functions.run_checks()
 
-
 # initialize()
-
 
 run()
