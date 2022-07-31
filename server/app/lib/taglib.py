@@ -9,7 +9,7 @@ from mutagen.id3 import ID3
 from PIL import Image
 
 
-def return_album_art(filepath: str):
+def parse_album_art(filepath: str):
     """
     Returns the album art for a given audio file.
     """
@@ -36,9 +36,12 @@ def extract_thumb(filepath: str, webp_path: str) -> bool:
     tsize = settings.THUMB_SIZE
 
     if os.path.exists(img_path):
-        return True
+        img_size = os.path.getsize(filepath)
 
-    album_art = return_album_art(filepath)
+        if img_size > 0:
+            return True
+
+    album_art = parse_album_art(filepath)
 
     if album_art is not None:
         img = Image.open(BytesIO(album_art))
