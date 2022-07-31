@@ -1,5 +1,6 @@
 @import "../css/ProgressBar.scss";
 @import "mixins.scss";
+@import "./moz.scss";
 
 :root {
   --separator: #ffffff46;
@@ -85,11 +86,26 @@ a {
   max-width: 2720px;
   height: 100vh;
   margin: 0 auto;
+  gap: $small;
+}
+
+#acontent {
+  grid-area: content;
+  width: calc(100% + $small);
+  max-width: 1955px;
+  overflow: hidden auto;
+  margin: 0 auto;
+  padding-right: $medium;
+  margin-bottom: $small;
+
+  .nav {
+    margin: $small;
+    width: calc(100% - 1rem);
+  }
 }
 
 .tabs {
   grid-area: tabs;
-  border-left: solid 1px $gray3;
 
   @include tablet-landscape {
     display: none;
@@ -137,24 +153,9 @@ a {
   display: flex;
 }
 
-#acontent {
-  grid-area: content;
-  width: 100%;
-  max-width: 1955px;
-  padding: $small;
-  padding-left: 0;
-  overflow: auto;
-  margin: 0 auto;
-
-  .nav {
-    margin: $small;
-    width: calc(100% - 1rem);
-  }
-}
-
 .r-sidebar {
   grid-area: r-sidebar;
-  border-left: solid 1px $gray3;
+  // border-left: solid 1px $gray3;
 }
 
 .image {
@@ -187,7 +188,7 @@ a {
 /* width */
 
 ::-webkit-scrollbar {
-  width: 0.5rem;
+  width: 3px;
 }
 
 /* Track */

@@ -1,7 +1,7 @@
 <template>
   <div id="f-view-parent">
     <div id="scrollable" ref="scrollable">
-      <FolderList :folders="FStore.dirs" />
+      <FolderList :folders="FStore.dirs" v-if="FStore.dirs.length" />
       <SongList :tracks="FStore.tracks" :path="FStore.path" />
     </div>
   </div>
