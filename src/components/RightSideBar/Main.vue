@@ -27,9 +27,7 @@ const tabs = useTabStore();
 
 <style lang="scss">
 .r-sidebar {
-  width: 29em;
-  background-color: rgba(4, 12, 34, 0.103);
-  padding: 0 $small;
+
 
   @include phone-only {
     display: none;
@@ -63,18 +61,6 @@ const tabs = useTabStore();
       .r-queue {
         height: 100%;
       }
-    }
-
-    .tab-keys {
-      display: none;
-      width: 3rem;
-      right: 0;
-      height: 100%;
-      position: absolute;
-      grid-area: tabs;
-      border-radius: 0;
-      overflow: hidden;
-      border-left: solid 1px $gray;
     }
   }
 }

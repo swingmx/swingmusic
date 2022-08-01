@@ -8,8 +8,6 @@
 <style lang="scss">
 .r-home {
   height: calc(100% - 1rem);
-  padding: 0 $small $small 0;
-  margin-top: $small;
 }
 </style>
 

@@ -1,6 +1,6 @@
 @import "../css/ProgressBar.scss";
 @import "mixins.scss";
-@import "./moz.scss";
+// @import "./moz.scss";
 
 :root {
   --separator: #ffffff46;
@@ -71,32 +71,37 @@ a {
   display: none;
 }
 
+input[type="search"] {
+  height: 2.25rem;
+}
+
 .l-container {
   display: grid;
   grid-template-columns: min-content 1fr min-content;
-  grid-template-rows: 3.5rem 1fr 1fr;
-  grid-auto-flow: row;
+  grid-template-rows: 2.5rem 1fr 4rem;
   grid-template-areas:
     "l-sidebar nav search-input"
     "l-sidebar content r-sidebar"
     "l-sidebar content r-sidebar"
     "l-sidebar content tabs";
-  width: 100%;
   align-content: center;
   max-width: 2720px;
-  height: 100vh;
+  height: calc(100vh - 1rem);
   margin: 0 auto;
-  gap: $small;
+  gap: 1rem;
+  margin: $small;
+}
+
+#tabs {
+  grid-area: tabs;
+  height: 3.5rem;
 }
 
 #acontent {
   grid-area: content;
-  width: calc(100% + $small);
   max-width: 1955px;
   overflow: hidden auto;
-  margin: 0 auto;
-  padding-right: $medium;
-  margin-bottom: $small;
+  margin-top: -$small;
 
   .nav {
     margin: $small;
@@ -124,7 +129,6 @@ a {
   width: 17rem;
   grid-area: l-sidebar;
   background-color: $black;
-  margin: $small;
   padding: 1rem;
 }
 
@@ -155,7 +159,8 @@ a {
 
 .r-sidebar {
   grid-area: r-sidebar;
-  // border-left: solid 1px $gray3;
+  margin-top: -$small;
+  width: 29rem;
 }
 
 .image {
@@ -194,7 +199,7 @@ a {
 /* Track */
 
 ::-webkit-scrollbar-track {
-  background: rgba(51, 51, 51, 0.459);
+  background: transparent;
   border-radius: 1rem;
 }
 
@@ -244,6 +249,7 @@ a {
     background-position: 0 38%;
   }
 }
+
 @keyframes similarAlbums {
   0% {
     background-position: 0 38%;

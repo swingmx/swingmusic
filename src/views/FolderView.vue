@@ -51,7 +51,6 @@ onBeforeRouteUpdate((to, from) => {
 
 #scrollable {
   overflow-y: auto;
-  height: calc(100% - $small);
   scrollbar-color: grey transparent;
 
   @include phone-only {

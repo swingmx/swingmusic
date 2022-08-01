@@ -26,7 +26,7 @@ defineProps<{
   gap: $medium;
   border-bottom: 1px solid $gray3;
   padding: 1rem 0;
-  padding-top: $small;
+  padding-top: 0;
   margin-bottom: 1rem;
 }
 </style>

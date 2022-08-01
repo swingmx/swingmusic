@@ -32,9 +32,9 @@ function unfocusThis() {
 
 <style lang="scss">
 #gsearch-input {
-  padding: $small;
   display: flex;
-
+  margin-bottom: $small;
+  
   @include tablet-landscape {
     display: none;
   }
@@ -46,7 +46,6 @@ function unfocusThis() {
     display: flex;
     gap: $small;
     background-color: $gray4;
-    height: 2.25rem;
 
     .icon {
       width: 2rem;
