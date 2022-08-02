@@ -1,7 +1,7 @@
 <template>
   <div class="queue-actions">
     <div class="left">
-      <button class="clear-queue action">
+      <button class="clear-queue action" @click="queue.clearQueue">
         <ClearSvg />
         <span>Clear</span>
       </button>
@@ -19,9 +19,13 @@
 </template>
 
 <script setup lang="ts">
+import useQueueStore from "../../../stores/queue";
+
 import ClearSvg from "@/assets/icons/delete.svg";
 import SaveAsPlaylistSvg from "@/assets/icons/sdcard.svg";
 import MoreSvg from "@/assets/icons/more.svg";
+
+const queue = useQueueStore();
 </script>
 
 <style lang="scss">

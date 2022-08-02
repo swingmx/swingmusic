@@ -239,5 +239,14 @@ export default defineStore("Queue", {
       );
       writeQueue(this.from, this.tracks);
     },
+    clearQueue() {
+      this.tracks = [defaultTrack] as Track[];
+      this.current = 0;
+      this.currentid = "";
+      this.next = 0;
+      this.prev = 0;
+      this.from = <From>{};
+      console.log(this.current);
+    },
   },
 });
