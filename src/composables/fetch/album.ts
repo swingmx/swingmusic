@@ -1,6 +1,6 @@
 import state from "../state";
 import { AlbumInfo, Track } from "../../interfaces";
-import useAxios from "../useAxios";
+import useAxios from "./useAxios";
 import { NotifType, useNotifStore } from "@/stores/notification";
 
 const getAlbumData = async (hash: string, ToastStore: typeof useNotifStore) => {

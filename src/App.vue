@@ -37,16 +37,12 @@ import Tabs from "@/components/RightSideBar/Tabs.vue";
 import useContextStore from "@/stores/context";
 import useQStore from "@/stores/queue";
 
-import { isSameRoute } from "@/composables/perks";
 import useShortcuts from "@/composables/useKeyboard";
 
 const context_store = useContextStore();
 const queue = useQStore();
 const app_dom = document.getElementById("app");
-const route = useRoute();
 const router = useRouter();
-
-// function to add the
 
 queue.readQueue();
 useShortcuts(useQStore);
@@ -57,18 +53,7 @@ app_dom.addEventListener("click", (e) => {
   }
 });
 
-function removeHighlight(route: RouteLocationNormalized) {
-  setTimeout(() => {
-    router.push({ name: route.name, params: route.params });
-  }, 5000);
-}
-
-router.afterEach((to, from) => {
-  const h_hash = to.query.highlight as string;
-
-  if (h_hash) removeHighlight(to);
-  if (isSameRoute(to, from)) return;
-
+router.afterEach(() => {
   document.getElementById("acontent")?.scrollTo(0, 0);
 });
 

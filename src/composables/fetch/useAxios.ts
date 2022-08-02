@@ -1,4 +1,4 @@
-import { FetchProps } from "../interfaces";
+import { FetchProps } from "../../interfaces";
 import axios, { AxiosError, AxiosResponse } from "axios";
 
 export default async (args: FetchProps) => {

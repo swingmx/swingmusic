@@ -1,7 +1,7 @@
 <template>
   <div class="folder">
     <div class="table rounded" v-if="tracks.length">
-      <div class="header" v-if="disc">
+      <div class="header" v-if="disc && !album.info.is_single">
         <div class="disc-number">Disc {{ disc }}</div>
       </div>
       <div class="songlist">
@@ -37,6 +37,7 @@ import useQStore from "@/stores/queue";
 import useAlbumStore from "@/stores/pages/album";
 
 const queue = useQStore();
+const album = useAlbumStore();
 
 const props = defineProps<{
   tracks: Track[];
@@ -91,7 +92,6 @@ function updateQueue(track: Track) {
       queue.play(index);
       break;
     case "AlbumView":
-      const album = useAlbumStore();
       const tindex = album.tracks.findIndex((t) => t.trackid === track.trackid);
 
       queue.playFromAlbum(
