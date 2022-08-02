@@ -14,7 +14,7 @@ export interface Track {
   genre?: string;
   image: string;
   tracknumber?: number;
-  disknumber?: number;
+  discnumber?: number;
   index?: number;
   uniq_hash: string;
 }

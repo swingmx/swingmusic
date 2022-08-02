@@ -97,7 +97,7 @@ class CheckArtistImages:
     @staticmethod
     def check_if_exists(img_path: str):
         """
-        Checks if an image exists on disk.
+        Checks if an image exists on c.
         """
 
         if os.path.exists(img_path):

@@ -147,7 +147,7 @@ def parse_track_number(tags):
 
 def parse_disc_number(tags):
     """
-    Parses the disk number from an audio file.
+    Parses the disc number from an audio file.
     """
     try:
         disc_number = int(tags["discnumber"][0])
@@ -183,7 +183,7 @@ def get_tags(fullpath: str) -> dict | None:
         "genre": parse_genre_tag(tags),
         "date": parse_date_tag(tags)[:4],
         "tracknumber": parse_track_number(tags),
-        "disknumber": parse_disc_number(tags),
+        "discnumber": parse_disc_number(tags),
         "copyright": parse_copyright(tags),
         "length": round(tags.info.length),
         "bitrate": round(int(tags.info.bitrate) / 1000),

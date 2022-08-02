@@ -1,6 +1,9 @@
 <template>
   <div class="folder">
     <div class="table rounded" v-if="tracks.length">
+      <div class="header" v-if="disc">
+        <div class="disc-number">Disc {{ disc }}</div>
+      </div>
       <div class="songlist">
         <SongItem
           v-for="track in getTracks()"
@@ -40,6 +43,7 @@ const props = defineProps<{
   pname?: string;
   playlistid?: string;
   on_album_page?: boolean;
+  disc?: string | number;
 }>();
 
 const route = useRoute();
@@ -134,6 +138,17 @@ function getTracks() {
   overflow-y: hidden;
   background-color: $gray5;
   padding: $small 0;
+
+  .header {
+    margin: $small;
+
+    .disc-number {
+      font-size: small;
+      font-weight: bold;
+      margin: $small 1.5rem;
+      color: $gray1;
+    }
+  }
 
   .current {
     a {

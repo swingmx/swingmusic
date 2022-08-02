@@ -68,7 +68,7 @@ def get_album():
         album.count == 1
         and tracks[0].title == album.title
         and tracks[0].tracknumber == 1
-        and tracks[0].disknumber == 1
+        and tracks[0].discnumber == 1
     ):
         album.is_single = True
 

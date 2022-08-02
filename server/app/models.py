@@ -25,7 +25,7 @@ class Track:
     genre: str
     bitrate: int
     tracknumber: int
-    disknumber: int
+    discnumber: int
     albumhash: str
     date: str
     image: str
@@ -42,7 +42,7 @@ class Track:
         self.genre = tags["genre"]
         self.bitrate = int(tags["bitrate"])
         self.length = int(tags["length"])
-        self.disknumber = int(tags["disknumber"])
+        self.discnumber = int(tags["discnumber"])
         self.albumhash = tags["albumhash"]
         self.date = tags["date"]
         self.image = tags["albumhash"] + ".webp"
