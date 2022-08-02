@@ -3,11 +3,15 @@
     <div id="scrollable" ref="scrollable">
       <div class="banner shadow-lg">
         <div class="text abs rounded pad-medium">
-          <h1><FolderSvg /> {{ getFolderName($route) }}</h1>
+          <h3><FolderSvg /> {{ getFolderName($route) }}</h3>
         </div>
-        <img src="../assets/images/one.jpg" alt="" class="rounded" />
+        <img
+          src="../assets/images/one.jpg"
+          alt="folder page banner"
+          class="rounded"
+        />
       </div>
-      <FolderList :folders="FStore.dirs" />
+      <FolderList :folders="FStore.dirs" v-if="FStore.dirs.length" />
       <SongList :tracks="FStore.tracks" :path="FStore.path" />
     </div>
   </div>
@@ -62,23 +66,22 @@ onBeforeRouteUpdate((to, from) => {
 }
 
 #scrollable {
-  overflow-y: auto;
   scrollbar-color: grey transparent;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
 
   .banner {
-    margin-bottom: $small;
     position: relative;
-
-    svg {
-      transform: scale(1.5);
-    }
+    height: max-content;
+    height: $banner-height;
 
     .text {
       bottom: 1rem;
       left: 1rem;
       background-color: $black;
 
-      h1 {
+      h3 {
         margin: $small;
         display: flex;
         align-items: center;
@@ -88,7 +91,7 @@ onBeforeRouteUpdate((to, from) => {
     }
 
     img {
-      height: $banner-height;
+      height: 100%;
       width: 100%;
       object-fit: cover;
     }
