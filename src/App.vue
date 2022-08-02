@@ -11,7 +11,7 @@
       </div>
     </div>
     <NavBar />
-    <div id="acontent">
+    <div id="acontent" class="rounded">
       <router-view />
     </div>
     <SearchInput />

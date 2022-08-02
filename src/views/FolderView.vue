@@ -58,6 +58,7 @@ onBeforeRouteUpdate((to, from) => {
 <style lang="scss">
 #f-view-parent {
   position: relative;
+  overflow: hidden;
 
   .h {
     font-size: 2rem;

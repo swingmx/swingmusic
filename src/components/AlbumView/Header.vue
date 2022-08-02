@@ -8,14 +8,13 @@
       )`,
     }"
   >
-    <div class="art">
+    <div class="art rounded">
       <img
         :src="imguri + album.image"
         alt=""
         v-motion-slide-from-left
         class="rounded shadow-lg"
       />
-      <img class="filter rounded" src="../../assets/images/noise-texture.svg" alt="" />
     </div>
     <div class="info" :class="{ nocontrast: isLight() }">
       <div class="top" v-motion-slide-from-top>
@@ -189,17 +188,14 @@ function theyContrast(color1: string, color2: string) {
     display: flex;
     align-items: flex-end;
     position: relative;
+    overflow: hidden;
 
     img {
       height: 16rem;
       aspect-ratio: 1;
       object-fit: cover;
       transition: all 0.2s ease-in-out;
-    }
-
-    .filter {
-      position: absolute;
-      // display: none;
+      user-select: none;
     }
   }
 
