@@ -1,5 +1,5 @@
 <template>
-  <div class="r-now-playing t-center rounded">
+  <div class="now-playing-card t-center rounded">
     <div class="headin">Now Playing</div>
     <div
       class="button menu rounded"
@@ -11,6 +11,10 @@
     <div class="separator no-border"></div>
     <div>
       <SongCard :track="queue.tracks[queue.current]" />
+      <div class="l-track-time">
+        <span class="rounded">{{ formatSeconds(queue.duration.current) }}</span
+        ><span class="rounded">{{ formatSeconds(queue.duration.full) }}</span>
+      </div>
       <Progress />
       <HotKeys />
     </div>
@@ -18,16 +22,17 @@
 </template>
 
 <script setup lang="ts">
-import SongCard from "./SongCard.vue";
-import HotKeys from "./NP/HotKeys.vue";
-import Progress from "./NP/Progress.vue";
-import useQStore from "../../stores/queue";
-import MenuSvg from "../../assets/icons/more.svg";
+import { ContextSrc } from "@/composables/enums";
 import trackContext from "@/contexts/track_context";
 import useContextStore from "@/stores/context";
 import useModalStore from "@/stores/modal";
 import useQueueStore from "@/stores/queue";
-import { ContextSrc } from "@/composables/enums";
+import MenuSvg from "../../assets/icons/more.svg";
+import useQStore from "../../stores/queue";
+import HotKeys from "./NP/HotKeys.vue";
+import Progress from "./NP/Progress.vue";
+import SongCard from "./SongCard.vue";
+import { formatSeconds } from "@/composables/perks";
 
 import { ref } from "vue";
 
@@ -56,13 +61,24 @@ const showContextMenu = (e: Event) => {
 };
 </script>
 <style lang="scss">
-.r-now-playing {
+.now-playing-card {
   padding: 1rem;
   background-color: $primary;
   width: 100%;
   display: grid;
   position: relative;
   text-transform: capitalize;
+
+  .l-track-time {
+    display: flex;
+    justify-content: space-between;
+
+    span {
+      font-size: small;
+      // background-color: $gray;
+      padding: $smaller;
+    }
+  }
 
   &:hover {
     ::-moz-range-thumb {
