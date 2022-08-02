@@ -3,8 +3,7 @@ from io import BytesIO
 
 import mutagen
 from app import settings
-from mutagen.flac import FLAC
-from mutagen.flac import MutagenError
+from mutagen.flac import FLAC, MutagenError
 from mutagen.id3 import ID3
 from PIL import Image
 
@@ -146,16 +145,25 @@ def parse_track_number(tags):
     return track_number
 
 
-def parse_disk_number(tags):
+def parse_disc_number(tags):
     """
     Parses the disk number from an audio file.
     """
     try:
-        disk_number = int(tags["disknumber"][0])
+        disc_number = int(tags["discnumber"][0])
     except (KeyError, IndexError, ValueError):
-        disk_number = 1
+        disc_number = 1
 
-    return disk_number
+    return disc_number
+
+
+def parse_copyright(tags):
+    try:
+        copyright = str(tags["copyright"][0])
+    except (KeyError, IndexError, ValueError):
+        copyright = None
+
+    return copyright
 
 
 def get_tags(fullpath: str) -> dict | None:
@@ -175,7 +183,8 @@ def get_tags(fullpath: str) -> dict | None:
         "genre": parse_genre_tag(tags),
         "date": parse_date_tag(tags)[:4],
         "tracknumber": parse_track_number(tags),
-        "disknumber": parse_disk_number(tags),
+        "disknumber": parse_disc_number(tags),
+        "copyright": parse_copyright(tags),
         "length": round(tags.info.length),
         "bitrate": round(int(tags.info.bitrate) / 1000),
         "filepath": fullpath,
