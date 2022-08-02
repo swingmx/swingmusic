@@ -1,5 +1,4 @@
 <template>
-  <!-- v-show="context.visible" -->
   <div
     class="context-menu rounded shadow-lg"
     :class="[
@@ -60,7 +59,7 @@ const context = useContextStore();
   z-index: 10000 !important;
   transform: scale(0);
 
-  padding: $small;
+  padding: $small 0;
   background: $context;
   transform-origin: top left;
   font-size: 0.875rem;
@@ -71,7 +70,6 @@ const context = useContextStore();
     align-items: center;
     cursor: default;
     padding: $small;
-    border-radius: $small;
     position: relative;
     text-transform: capitalize;
 
@@ -90,7 +88,7 @@ const context = useContextStore();
       top: -0.5rem;
       max-height: 23.5rem;
 
-      padding: $small !important;
+      padding: $small 0 !important;
       background-color: $context;
       transform: scale(0);
       transform-origin: top left;
@@ -180,7 +178,6 @@ const context = useContextStore();
 
 .context-many-kids {
   .context-item > .children {
-    // top: -0.5rem;
     overflow-y: auto;
   }
 }
