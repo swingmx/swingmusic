@@ -2,18 +2,24 @@
   <div class="up-next">
     <div class="r-grid">
       <UpNext :next="queue.tracks[queue.next]" :playNext="queue.playNext" />
-      <div class="queue-actions rounded bg-black">
-        <div class="left">
-          <button class="clear-queue action">Clear</button>
-          <button class="shuffle-queue action">Shuffle</button>
-          <button class="shuffle-queue action">Shuffle</button>
-          <button class="shuffle-queue action">Go to Mix</button>
-        </div>
-        <div class="right">
-          <button class="shuffle-queue action">Save as Playlist</button>
-        </div>
-      </div>
       <div class="scrollable-r bg-black rounded">
+        <div class="queue-actions">
+          <div class="left">
+            <button class="clear-queue action">
+              <ClearSvg />
+              <span>Clear</span>
+            </button>
+            <button class="shuffle-queue action">
+              <SaveAsPlaylistSvg />
+              <span> Save As Playlist </span>
+            </button>
+          </div>
+          <div class="right">
+            <button class="more-action action">
+              <MoreSvg />
+            </button>
+          </div>
+        </div>
         <div
           class="inner"
           @mouseenter="setMouseOver(true)"
@@ -41,6 +47,10 @@ import PlayingFrom from "./Queue/playingFrom.vue";
 import UpNext from "./Queue/upNext.vue";
 import { onUpdated, ref } from "vue";
 import { focusElem } from "@/composables/perks";
+import ClearSvg from "../../assets/icons/delete.svg";
+import ShuffleSvg from "../../assets/icons/shuffle.svg";
+import SaveAsPlaylistSvg from "../../assets/icons/sdcard.svg";
+import MoreSvg from "../../assets/icons/more.svg";
 
 const queue = useQStore();
 const mouseover = ref(false);
@@ -70,31 +80,50 @@ onUpdated(() => {
     position: relative;
     height: 100%;
     display: grid;
-    grid-template-rows: max-content max-content 1fr max-content;
+    grid-template-rows: max-content 1fr max-content;
     gap: $small;
+
+    .left {
+      display: flex;
+      gap: $small;
+    }
 
     .queue-actions {
       display: flex;
       justify-content: space-between;
       gap: $small;
-      padding: $small;
+      margin-bottom: -1.25rem;
+      margin-top: $small;
 
       .action {
-        background-color: $accent;
         padding: $smaller;
-        border-radius: $smaller;
-        font-size: 0.8rem;
-        padding: inherit 1rem;
+        padding-right: $small;
+        background-image: linear-gradient(70deg, $gray3, $gray2);
+
+        svg {
+          transform: scale(0.8);
+        }
+      }
+
+      .more-action {
+        padding-right: $smaller;
+        svg {
+          transform: scale(1.25);
+        }
       }
     }
 
     .scrollable-r {
       height: 100%;
-      padding: $small 0 $small $small;
+      padding: $small;
       overflow: hidden;
+      display: grid;
+      grid-template-rows: max-content 1fr;
+      gap: $medium;
 
       .inner {
         height: 100%;
+        margin-right: -$small;
         overflow: scroll;
         margin-top: 1rem;
         padding-right: $small;

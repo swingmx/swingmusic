@@ -70,8 +70,6 @@ const menus = [
   }
 
   svg {
-    width: 2rem;
-    height: 2rem;
     margin: 0 $small 0 $small;
     border-radius: $small;
   }

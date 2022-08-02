@@ -50,6 +50,17 @@ a {
   color: #fff;
 }
 
+button {
+  border: none;
+  font-size: 0.9rem !important;
+  color: inherit;
+  border-radius: $small;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 2rem;
+}
+
 .separator {
   border-top: 0.1px $separator solid;
   color: transparent;
