@@ -1,4 +1,4 @@
-import { Artist } from "./../../interfaces";
+import { Artist } from "../../interfaces";
 import { Playlist, Track } from "../../interfaces";
 import { Notification, NotifType } from "../../stores/notification";
 import state from "../state";

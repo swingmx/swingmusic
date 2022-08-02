@@ -8,7 +8,7 @@ import {
   loadMoreTracks,
   loadMoreAlbums,
   loadMoreArtists,
-} from "../composables/searchMusic";
+} from "../composables/fetch/searchMusic";
 import { watch } from "vue";
 import useDebouncedRef from "../composables/useDebouncedRef";
 import useTabStore from "./tabs";

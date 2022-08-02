@@ -46,7 +46,7 @@ const app_dom = document.getElementById("app");
 const route = useRoute();
 const router = useRouter();
 
-// function to add the 
+// function to add the
 
 queue.readQueue();
 useShortcuts(useQStore);
@@ -73,7 +73,9 @@ router.afterEach((to, from) => {
 });
 
 onStartTyping(() => {
-  document.getElementById("globalsearch").focus();
+  const elem = document.getElementById("globalsearch") as HTMLInputElement;
+  elem.focus();
+  elem.value = "";
 });
 </script>
 

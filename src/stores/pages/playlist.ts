@@ -3,7 +3,7 @@ import { defineStore } from "pinia";
 import {
   getPlaylist,
   getPlaylistArtists,
-} from "../../composables/pages/playlists";
+} from "../../composables/fetch/playlists";
 import { Track, Playlist } from "../../interfaces";
 
 export default defineStore("playlist-tracks", {

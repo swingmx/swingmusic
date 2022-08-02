@@ -5,7 +5,7 @@ import {
   getAlbumTracks,
   getAlbumArtists,
   getAlbumBio,
-} from "../../composables/pages/album";
+} from "../../composables/fetch/album";
 
 function sortTracks(tracks: Track[]) {
   return tracks.sort((a, b) => {

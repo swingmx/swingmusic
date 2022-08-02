@@ -1,4 +1,4 @@
-import state from "./state";
+import state from "../state";
 import axios from "axios";
 
 const base_url = `${state.settings.uri}/search`;
