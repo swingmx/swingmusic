@@ -188,7 +188,6 @@ function theyContrast(color1: string, color2: string) {
     display: flex;
     align-items: flex-end;
     position: relative;
-    overflow: hidden;
 
     img {
       height: 16rem;
