@@ -17,10 +17,24 @@ function sortTracks(tracks: Track[]) {
   });
 }
 
+interface Discs {
+  [key: string]: Track[];
+}
+
+function createDiscs(tracks: Track[]): Discs {
+  return tracks.reduce((group, track) => {
+    const { discnumber } = track;
+    group[discnumber] = group[discnumber] ?? [];
+    group[discnumber].push(track);
+    return group;
+  }, {} as Discs);
+}
+
 export default defineStore("album", {
   state: () => ({
     info: <AlbumInfo>{},
     tracks: <Track[]>[],
+    discs: <Discs>{},
     artists: <Artist[]>[],
     bio: null,
   }),
@@ -31,11 +45,16 @@ export default defineStore("album", {
      * @param hash title of the album
      */
     async fetchTracksAndArtists(hash: string) {
-      const tracks = await getAlbumTracks(hash, useNotifStore);
+      this.tracks = [];
+      const album = await getAlbumTracks(hash, useNotifStore);
       const artists = await getAlbumArtists(hash);
 
-      this.tracks = sortTracks(tracks.tracks);
-      this.info = tracks.info;
+      this.discs = createDiscs(sortTracks(album.tracks));
+      Object.keys(this.discs).forEach((disc) => {
+        this.tracks.push(...this.discs[disc]);
+      });
+
+      this.info = album.info;
       this.artists = artists;
     },
     /**

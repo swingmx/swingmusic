@@ -1,7 +1,7 @@
 <template>
   <div class="album-tracks rounded">
     <div v-for="(disc, key) in discs" class="album-disc">
-      <SongList :key="key" :tracks="disc" :on_album_page="true" :c="key" />
+      <SongList :key="key" :tracks="disc" :on_album_page="true" :disc="key" />
     </div>
   </div>
 </template>

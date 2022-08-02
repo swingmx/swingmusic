@@ -72,10 +72,11 @@ const showContextMenu = (e: Event) => {
   .l-track-time {
     display: flex;
     justify-content: space-between;
+    opacity: 0.8;
+    margin-top: $small;
 
     span {
       font-size: small;
-      // background-color: $gray;
       padding: $smaller;
     }
   }

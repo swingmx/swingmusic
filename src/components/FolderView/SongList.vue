@@ -6,7 +6,7 @@
       </div>
       <div class="songlist">
         <SongItem
-          v-for="track in getTracks()"
+          v-for="track in getTrackList()"
           :key="track.trackid"
           :track="track"
           :index="track.index"
@@ -34,6 +34,7 @@ import { focusElem } from "@/composables/perks";
 import { onMounted, onUpdated, ref } from "vue";
 import { Track } from "@/interfaces";
 import useQStore from "@/stores/queue";
+import useAlbumStore from "@/stores/pages/album";
 
 const queue = useQStore();
 
@@ -90,13 +91,16 @@ function updateQueue(track: Track) {
       queue.play(index);
       break;
     case "AlbumView":
+      const album = useAlbumStore();
+      const tindex = album.tracks.findIndex((t) => t.trackid === track.trackid);
+
       queue.playFromAlbum(
         track.album,
         track.albumartist,
         track.albumhash,
-        props.tracks
+        album.tracks
       );
-      queue.play(index);
+      queue.play(tindex);
       break;
     case "PlaylistView":
       queue.playFromPlaylist(props.pname, props.playlistid, props.tracks);
@@ -105,7 +109,10 @@ function updateQueue(track: Track) {
   }
 }
 
-function getTracks() {
+/**
+ * Used to show track numbers as indexes in the album page.
+ */
+function getTrackList() {
   if (props.on_album_page) {
     let tracks = props.tracks.map((track) => {
       track.index = track.tracknumber;
@@ -115,7 +122,7 @@ function getTracks() {
     return tracks;
   }
 
-  let tracks = props.tracks.map((track, index) => {
+  const tracks = props.tracks.map((track, index) => {
     track.index = index + 1;
     return track;
   });
