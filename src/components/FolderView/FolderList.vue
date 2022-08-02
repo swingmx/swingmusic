@@ -1,6 +1,6 @@
 <template>
   <div class="f-container rounded">
-    <div id="f-items">
+    <div id="f-items" class="rounded">
       <FolderItem
         v-for="folder in folders"
         :key="JSON.stringify(folder)"
@@ -24,9 +24,8 @@ defineProps<{
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(13rem, 1fr));
   gap: $medium;
-  border-bottom: 1px solid $gray3;
-  padding: 1rem 0;
-  padding-top: 0;
+  padding: $small;
   margin-bottom: 1rem;
+  background-color: $gray5;
 }
 </style>

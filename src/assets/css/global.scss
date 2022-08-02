@@ -72,13 +72,13 @@ a {
 }
 
 input[type="search"] {
-  height: 2.25rem;
+  height: 2.25rem !important;
 }
 
 .l-container {
   display: grid;
   grid-template-columns: min-content 1fr min-content;
-  grid-template-rows: 2.5rem 1fr 4rem;
+  grid-template-rows: max-content 1fr max-content;
   grid-template-areas:
     "l-sidebar nav search-input"
     "l-sidebar content r-sidebar"
@@ -95,6 +95,7 @@ input[type="search"] {
 #tabs {
   grid-area: tabs;
   height: 3.5rem;
+  margin-top: -$small;
 }
 
 #acontent {

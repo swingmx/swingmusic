@@ -14,9 +14,13 @@
 
 <style lang="scss">
 #nav-search {
+  // border: solid 1px $gray2;
+
   form {
     display: flex;
     gap: $small;
+    padding: 0;
+    margin: 0;
 
     input[type="search"] {
       background-color: $gray5;
