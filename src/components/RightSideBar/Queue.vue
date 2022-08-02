@@ -3,23 +3,7 @@
     <div class="r-grid">
       <UpNext :next="queue.tracks[queue.next]" :playNext="queue.playNext" />
       <div class="scrollable-r bg-black rounded">
-        <div class="queue-actions">
-          <div class="left">
-            <button class="clear-queue action">
-              <ClearSvg />
-              <span>Clear</span>
-            </button>
-            <button class="shuffle-queue action">
-              <SaveAsPlaylistSvg />
-              <span> Save As Playlist </span>
-            </button>
-          </div>
-          <div class="right">
-            <button class="more-action action">
-              <MoreSvg />
-            </button>
-          </div>
-        </div>
+        <QueueActions />
         <div
           class="inner"
           @mouseenter="setMouseOver(true)"
@@ -47,10 +31,7 @@ import PlayingFrom from "./Queue/playingFrom.vue";
 import UpNext from "./Queue/upNext.vue";
 import { onUpdated, ref } from "vue";
 import { focusElem } from "@/composables/perks";
-import ClearSvg from "../../assets/icons/delete.svg";
-import ShuffleSvg from "../../assets/icons/shuffle.svg";
-import SaveAsPlaylistSvg from "../../assets/icons/sdcard.svg";
-import MoreSvg from "../../assets/icons/more.svg";
+import QueueActions from "./Queue/QueueActions.vue";
 
 const queue = useQStore();
 const mouseover = ref(false);
@@ -86,31 +67,6 @@ onUpdated(() => {
     .left {
       display: flex;
       gap: $small;
-    }
-
-    .queue-actions {
-      display: flex;
-      justify-content: space-between;
-      gap: $small;
-      margin-bottom: -1.25rem;
-      margin-top: $small;
-
-      .action {
-        padding: $smaller;
-        padding-right: $small;
-        background-image: linear-gradient(70deg, $gray3, $gray2);
-
-        svg {
-          transform: scale(0.8);
-        }
-      }
-
-      .more-action {
-        padding-right: $smaller;
-        svg {
-          transform: scale(1.25);
-        }
-      }
     }
 
     .scrollable-r {

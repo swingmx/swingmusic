@@ -1,0 +1,52 @@
+<template>
+  <div class="queue-actions">
+    <div class="left">
+      <button class="clear-queue action">
+        <ClearSvg />
+        <span>Clear</span>
+      </button>
+      <button class="shuffle-queue action">
+        <SaveAsPlaylistSvg />
+        <span> Save As Playlist </span>
+      </button>
+    </div>
+    <div class="right">
+      <button class="more-action action">
+        <MoreSvg />
+      </button>
+    </div>
+  </div>
+</template>
+
+<script setup lang="ts">
+import ClearSvg from "@/assets/icons/delete.svg";
+import SaveAsPlaylistSvg from "@/assets/icons/sdcard.svg";
+import MoreSvg from "@/assets/icons/more.svg";
+</script>
+
+<style lang="scss">
+.queue-actions {
+  display: flex;
+  justify-content: space-between;
+  gap: $small;
+  margin-bottom: -1.25rem;
+  margin-top: $small;
+
+  .action {
+    padding: $smaller;
+    padding-right: $small;
+    background-image: linear-gradient(70deg, $gray3, $gray2);
+
+    svg {
+      transform: scale(0.8);
+    }
+  }
+
+  .more-action {
+    padding-right: $smaller;
+    svg {
+      transform: scale(1.25);
+    }
+  }
+}
+</style>
