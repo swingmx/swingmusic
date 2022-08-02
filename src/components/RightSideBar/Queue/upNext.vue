@@ -1,5 +1,5 @@
 <template>
-  <div class="main-item border" @click="playNext">
+  <div class="main-item bg-black" @click="playNext">
     <div class="h">Up Next</div>
     <div class="itemx shadow">
       <div
@@ -22,12 +22,12 @@
 </template>
 
 <script setup lang="ts">
-import { Track } from "../../../interfaces";
-import {putCommas} from "../../../composables/perks";
-import { paths } from "../../../config";
-const imguri = paths.images.thumb;
+import { putCommas } from "@/composables/perks";
+import { paths } from "@/config";
+import { Track } from "@/interfaces";
 
-const props = defineProps<{
+const imguri = paths.images.thumb;
+defineProps<{
   next: Track;
   playNext: () => void;
 }>();

@@ -1,6 +1,6 @@
 <template>
   <div
-    class="track-item h-1"
+    class="track-item"
     @click="playThis(props.track)"
     :class="[
       {
@@ -17,9 +17,9 @@
       }"
     >
       <div
-        class="now-playing-track image"
+        class="now-playing-track-indicator image"
         v-if="props.isCurrent"
-        :class="{ active: props.isPlaying, not_active: !props.isPlaying }"
+        :class="{ last_played: !props.isPlaying }"
       ></div>
     </div>
     <div class="tags">
@@ -36,15 +36,15 @@
 
 <script setup lang="ts">
 import { ref } from "vue";
+import { ContextSrc } from "../../composables/enums";
 import { putCommas } from "../../composables/perks";
 import trackContext from "../../contexts/track_context";
 import { Track } from "../../interfaces";
-import { ContextSrc } from "../../composables/enums";
 
+import { paths } from "../../config";
 import useContextStore from "../../stores/context";
 import useModalStore from "../../stores/modal";
 import useQueueStore from "../../stores/queue";
-import { paths } from "../../config";
 
 const contextStore = useContextStore();
 const imguri = paths.images.thumb;

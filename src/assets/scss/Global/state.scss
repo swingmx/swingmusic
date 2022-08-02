@@ -1,0 +1,19 @@
+
+.now-playing-track-indicator {
+  background-image: url(../../assets/icons/playing.gif);
+  transition: all 0.3s ease-in-out;
+  height: 2rem;
+  width: 2rem;
+  border-radius: 50%;
+  background-color: $white;
+  background-size: 1.5rem !important;
+}
+
+.last_played {
+  background-image: url(../../assets/icons/playing.webp);
+  transition: all 0.3s ease-in-out;
+}
+
+.hidden {
+  display: none;
+}

@@ -1,5 +1,5 @@
 <template>
-  <div id="playing-from" class="rounded" @click="goTo">
+  <div id="playing-from" class="bg-black rounded" @click="goTo">
     <div class="h">
       <div class="icon image" :class="from.icon"></div>
       Playing from
@@ -18,8 +18,8 @@ import {
   fromAlbum,
   fromPlaylist,
   fromSearch,
-} from "../../../interfaces";
-import { FromOptions } from "../../../composables/enums";
+} from "@/interfaces";
+import { FromOptions } from "@/composables/enums";
 import { useRouter } from "vue-router";
 import { computed } from "@vue/reactivity";
 

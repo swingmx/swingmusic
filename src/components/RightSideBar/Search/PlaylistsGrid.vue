@@ -1,5 +1,5 @@
 <template>
-  <div class="albums-results border">
+  <div class="albums-results bg-black">
     <div class="grid">
       <PCard
         v-for="album in search.albums.value"
@@ -12,9 +12,9 @@
 </template>
 
 <script setup lang="ts">
+import useSearchStore from "../../../stores/search";
 import PCard from "../../playlists/PlaylistCard.vue";
 import LoadMore from "./LoadMore.vue";
-import useSearchStore from "../../../stores/search";
 
 const search = useSearchStore();
 

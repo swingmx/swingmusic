@@ -1,5 +1,5 @@
 <template>
-  <div class="artists-results border">
+  <div class="artists-results bg-black">
     <div class="grid">
       <ArtistCard
         v-for="artist in search.artists.value"
@@ -13,9 +13,9 @@
 </template>
 
 <script setup lang="ts">
+import useSearchStore from "../../../stores/search";
 import ArtistCard from "../../shared/ArtistCard.vue";
 import LoadMore from "./LoadMore.vue";
-import useSearchStore from "../../../stores/search";
 const search = useSearchStore();
 
 function loadMore() {

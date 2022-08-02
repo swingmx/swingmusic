@@ -11,8 +11,8 @@
         <div class="circle"></div>
         <img class="circle" :src="paths.images.artist + images.artist" alt="" />
       </div>
-      <div class="bio rounded border" v-html="bio" v-if="bio"></div>
-      <div class="bio rounded border" v-else>No bio found</div>
+      <div class="bio rounded bg-black" v-html="bio" v-if="bio"></div>
+      <div class="bio rounded bg-black" v-else>No bio found</div>
     </div>
   </div>
 </template>
@@ -54,7 +54,7 @@ defineProps<{
     width: 100%;
     margin-right: $small;
     overflow: hidden;
-    border: solid 1px $gray5;
+    bg-black: solid 1px $gray5;
     background-image: linear-gradient(37deg, $gray5 20%, $gray4);
 
     @include tablet-portrait {
@@ -89,7 +89,7 @@ defineProps<{
       height: 7rem;
       bottom: 0;
       left: calc($rectpos + 7rem);
-      border-radius: 50%;
+      bg-black-radius: 50%;
       box-shadow: 0 0 2rem rgb(0, 0, 0);
       transition: all 0.25s ease-in-out;
 
@@ -99,7 +99,7 @@ defineProps<{
     }
   }
   .bio {
-    border: solid 1px $gray5;
+    bg-black: solid 1px $gray5;
     padding: $small;
     line-height: 1.5rem;
 

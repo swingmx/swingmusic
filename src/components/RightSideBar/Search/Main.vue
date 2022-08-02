@@ -15,13 +15,11 @@
 </template>
 
 <script setup lang="ts">
-import TabsWrapper from "./TabsWrapper.vue";
-import Tab from "./Tab.vue";
-import TracksGrid from "./TracksGrid.vue";
 import AlbumGrid from "./AlbumGrid.vue";
 import ArtistGrid from "./ArtistGrid.vue";
-import "@/assets/css/Search/Search.scss";
-
+import Tab from "./Tab.vue";
+import TabsWrapper from "./TabsWrapper.vue";
+import TracksGrid from "./TracksGrid.vue";
 </script>
 
 <style lang="scss">
@@ -30,21 +28,6 @@ import "@/assets/css/Search/Search.scss";
   overflow: hidden;
   width: auto;
   height: 100%;
-
-  .no-res {
-    text-align: center;
-    display: grid;
-    height: calc(100% - $small);
-    place-items: center;
-    font-size: 2rem;
-    transition: all 0.3s ease;
-    line-height: 4rem !important;
-
-    .highlight {
-      padding: $small;
-      background-color: rgb(29, 26, 26);
-    }
-  }
 
   .heading {
     padding: $medium;

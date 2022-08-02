@@ -1,5 +1,5 @@
 <template>
-  <div class="l_ rounded">
+  <div class="r-now-playing t-center rounded">
     <div class="headin">Now Playing</div>
     <div
       class="button menu rounded"
@@ -56,10 +56,9 @@ const showContextMenu = (e: Event) => {
 };
 </script>
 <style lang="scss">
-.l_ {
+.r-now-playing {
   padding: 1rem;
   background-color: $primary;
-  text-align: center;
   width: 100%;
   display: grid;
   position: relative;

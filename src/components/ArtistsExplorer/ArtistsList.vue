@@ -9,7 +9,7 @@
     <div class="all-albums">
       <div class="item rounded" v-for="artist in artists" :key="artist">
         <div class="album-art image rounded"></div>
-        <div class="name ellip">{{ artist.name }}</div>
+        <div class="name t-center ellip">{{ artist.name }}</div>
       </div>
     </div>
   </div>
@@ -84,15 +84,7 @@ export default {
       }
 
       .name {
-        text-align: center;
         margin-top: $small;
-      }
-
-      .artist {
-        font-size: small;
-        font-weight: lighter;
-        text-align: center;
-        color: rgba(255, 255, 255, 0.699);
       }
     }
   }

@@ -2,7 +2,7 @@
   <ContextMenu />
   <Modal />
   <Notification />
-  <div class="l-container">
+  <div id="app-grid">
     <div class="l-sidebar rounded">
       <Logo />
       <Navigation />
@@ -21,24 +21,24 @@
 </template>
 
 <script setup lang="ts">
-import { useRouter, useRoute, RouteLocationNormalized } from "vue-router";
 import { onStartTyping } from "@vueuse/core";
+import { RouteLocationNormalized, useRoute, useRouter } from "vue-router";
 
-import Navigation from "@/components/LeftSidebar/Navigation.vue";
-import RightSideBar from "@/components/RightSideBar/Main.vue";
-import nowPlaying from "@/components/LeftSidebar/nowPlaying.vue";
-import NavBar from "@/components/nav/NavBar.vue";
-import Tabs from "@/components/RightSideBar/Tabs.vue";
-import SearchInput from "@/components/RightSideBar/SearchInput.vue";
-import useContextStore from "@/stores/context";
 import ContextMenu from "@/components/contextMenu.vue";
-import Modal from "@/components/modal.vue";
-import Notification from "@/components/Notification.vue";
-import useQStore from "@/stores/queue";
+import Navigation from "@/components/LeftSidebar/Navigation.vue";
+import nowPlaying from "@/components/LeftSidebar/nowPlaying.vue";
 import Logo from "@/components/Logo.vue";
+import Modal from "@/components/modal.vue";
+import NavBar from "@/components/nav/NavBar.vue";
+import Notification from "@/components/Notification.vue";
+import RightSideBar from "@/components/RightSideBar/Main.vue";
+import SearchInput from "@/components/RightSideBar/SearchInput.vue";
+import Tabs from "@/components/RightSideBar/Tabs.vue";
+import useContextStore from "@/stores/context";
+import useQStore from "@/stores/queue";
 
-import useShortcuts from "@/composables/useKeyboard";
 import { isSameRoute } from "@/composables/perks";
+import useShortcuts from "@/composables/useKeyboard";
 
 const context_store = useContextStore();
 const queue = useQStore();
@@ -78,7 +78,7 @@ onStartTyping(() => {
 </script>
 
 <style lang="scss">
-@import "./assets/css/mixins.scss";
+@import "./assets/scss/mixins.scss";
 
 .l-sidebar {
   position: relative;

@@ -12,7 +12,7 @@
     @dblclick="emitUpdate(track)"
     @contextmenu="showContextMenu"
   >
-    <div class="index">{{ index }}</div>
+    <div class="index t-center">{{ index }}</div>
     <div class="flex">
       <div @click="emitUpdate(track)" class="thumbnail">
         <img
@@ -21,9 +21,9 @@
           class="album-art image rounded"
         />
         <div
-          class="now-playing-track image"
-          v-if="isPlaying && isCurrent"
-          :class="{ active: isPlaying, not_active: !isPlaying }"
+          class="now-playing-track-indicator image"
+          v-if="isCurrent"
+          :class="{ last_played: !isPlaying }"
         ></div>
       </div>
       <div @click="emitUpdate(track)">
@@ -186,7 +186,6 @@ function emitUpdate(track: Track) {
   .index {
     color: grey;
     font-size: 0.8rem;
-    text-align: center;
     width: 2rem;
 
     @include phone-only {
@@ -245,7 +244,7 @@ function emitUpdate(track: Track) {
       cursor: pointer;
     }
 
-    .now-playing-track {
+    .now-playing-track-indicator {
       position: absolute;
       left: $small;
       top: $small;

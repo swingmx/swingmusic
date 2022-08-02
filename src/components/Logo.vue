@@ -8,7 +8,7 @@
 </template>
 
 <style lang="scss">
-@import "../assets/css/mixins.scss";
+@import "../assets/scss/mixins.scss";
 
 #logo-container {
   overflow: hidden;

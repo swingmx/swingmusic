@@ -1,0 +1,25 @@
+// paddings
+.pad-small {
+  padding: $small;
+}
+
+.pad-medium {
+  padding: $medium;
+}
+
+.pad-large {
+  padding: 1rem;
+}
+
+// shadows
+.shadow-sm {
+  box-shadow: 0 0 0.5rem rgba(0, 0, 0, 0.452);
+}
+
+.shadow-md {
+  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.075);
+}
+
+.shadow-lg {
+  box-shadow: 0 1rem 2rem rgba(0, 0, 0, 0.175);
+}

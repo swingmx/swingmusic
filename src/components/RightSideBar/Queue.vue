@@ -2,7 +2,18 @@
   <div class="up-next">
     <div class="r-grid">
       <UpNext :next="queue.tracks[queue.next]" :playNext="queue.playNext" />
-      <div class="scrollable-r border rounded">
+      <div class="queue-actions rounded bg-black">
+        <div class="left">
+          <button class="clear-queue action">Clear</button>
+          <button class="shuffle-queue action">Shuffle</button>
+          <button class="shuffle-queue action">Shuffle</button>
+          <button class="shuffle-queue action">Go to Mix</button>
+        </div>
+        <div class="right">
+          <button class="shuffle-queue action">Save as Playlist</button>
+        </div>
+      </div>
+      <div class="scrollable-r bg-black rounded">
         <div
           class="inner"
           @mouseenter="setMouseOver(true)"
@@ -25,9 +36,9 @@
 
 <script setup lang="ts">
 import TrackItem from "../shared/TrackItem.vue";
-import useQStore from "../../stores/queue";
-import PlayingFrom from "./queue/playingFrom.vue";
-import UpNext from "./queue/upNext.vue";
+import useQStore from "@/stores/queue";
+import PlayingFrom from "./Queue/playingFrom.vue";
+import UpNext from "./Queue/upNext.vue";
 import { onUpdated, ref } from "vue";
 import { focusElem } from "@/composables/perks";
 
@@ -59,8 +70,23 @@ onUpdated(() => {
     position: relative;
     height: 100%;
     display: grid;
-    grid-template-rows: max-content 1fr max-content;
+    grid-template-rows: max-content max-content 1fr max-content;
     gap: $small;
+
+    .queue-actions {
+      display: flex;
+      justify-content: space-between;
+      gap: $small;
+      padding: $small;
+
+      .action {
+        background-color: $accent;
+        padding: $smaller;
+        border-radius: $smaller;
+        font-size: 0.8rem;
+        padding: inherit 1rem;
+      }
+    }
 
     .scrollable-r {
       height: 100%;

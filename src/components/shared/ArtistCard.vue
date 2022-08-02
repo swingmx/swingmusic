@@ -1,11 +1,11 @@
 <template>
   <div class="xartist" :class="{ _is_on_sidebar: alt }">
     <div
-      class="artist-image image border-sm"
+      class="artist-image image bg-black-sm"
       :style="{ backgroundImage: `url('${imguri + artist.image}')` }"
     ></div>
     <div>
-      <p class="artist-name ellipsis">{{ artist.name }}</p>
+      <p class="artist-name t-center ellipsis">{{ artist.name }}</p>
     </div>
   </div>
 </template>
@@ -59,7 +59,6 @@ defineProps<{
 
   .artist-name {
     margin: 0;
-    text-align: center;
     font-size: 0.9rem;
     font-weight: 510;
     max-width: 7rem;
