@@ -31,7 +31,7 @@ defineProps<{
   grid-template-columns: max-content 1fr;
   padding-right: 1rem;
   align-items: center;
-  background-color: $gray4;
+  background-color: $gray3;
   transition: all 0.2s ease;
   border-radius: 0.75rem;
 

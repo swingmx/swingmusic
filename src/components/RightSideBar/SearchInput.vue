@@ -7,7 +7,7 @@
         class="rounded"
         v-model="search.query"
         placeholder="Search your library"
-        type="text"
+        type="search"
         @focus="focusThis()"
         @blur="unfocusThis()"
       />
@@ -32,8 +32,9 @@ function unfocusThis() {
 
 <style lang="scss">
 #gsearch-input {
-  padding: $small;
   display: flex;
+  height: max-content;
+  // margin-bottom: $smaller;
 
   @include tablet-landscape {
     display: none;
@@ -44,12 +45,12 @@ function unfocusThis() {
     border-radius: 0.4rem;
     position: relative;
     display: flex;
-    gap: $small;
+    background-color: $red;
     background-color: $gray4;
-    height: 2.25rem;
 
     .icon {
-      width: 2rem;
+      width: 2.25rem;
+      aspect-ratio: 1;
       background-image: url("../../assets/icons/search.svg");
       background-size: 1.5rem;
       margin-left: $smaller;

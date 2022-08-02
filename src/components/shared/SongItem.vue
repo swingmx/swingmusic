@@ -1,6 +1,6 @@
 <template>
   <div
-    class="songlist-item rounded"
+    class="songlist-item"
     :class="[
       { current: isCurrent },
       { contexton: context_on },

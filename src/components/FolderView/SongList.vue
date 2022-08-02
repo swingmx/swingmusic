@@ -130,9 +130,10 @@ function getTracks() {
 }
 
 .table {
-  width: 100%;
   height: 100%;
   overflow-y: hidden;
+  background-color: $gray5;
+  padding: $small 0;
 
   .current {
     a {

@@ -1,5 +1,5 @@
 <template>
-  <div class="ap-container noscroll">
+  <div class="ap-container noscroll rounded">
     <div id="ap-page">
       <header class="ap-page-header" ref="apheader">
         <slot name="header"></slot>
@@ -101,13 +101,28 @@ function toggleBottom() {
 .ap-container {
   height: 100%;
   position: relative;
-  margin-right: -$small;
+  width: calc(100% + 1rem);
+
+  #ap-page {
+    overflow: auto;
+    height: 100%;
+    position: relative;
+    display: grid;
+    grid-template-rows: 18rem 1fr;
+    gap: 1rem;
+    padding-right: $small;
+    width: calc(100% - $small);
+
+    .ap-page-content {
+      padding-bottom: 16rem;
+    }
+  }
 
   .ap-page-bottom-container {
     position: absolute;
     bottom: 0;
     height: 15rem;
-    width: calc(100% - $small);
+    width: calc(100% - 1.25rem);
     background-color: $gray;
     transition: all 0.5s ease !important;
     overscroll-behavior: contain;
@@ -164,21 +179,7 @@ function toggleBottom() {
   }
 
   .addbottompadding {
-    padding-bottom: 17rem;
-  }
-}
-
-#ap-page {
-  padding-right: $small;
-  height: 100%;
-  position: relative;
-  overflow: auto;
-  display: grid;
-  grid-template-rows: $banner-height 1fr;
-  gap: 1rem;
-
-  .ap-page-content {
-    padding-bottom: calc($banner-height - 1rem);
+    padding-bottom: 16rem;
   }
 }
 </style>

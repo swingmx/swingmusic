@@ -1,5 +1,5 @@
 <template>
-  <div class="tabs">
+  <div class="tabs" id="tabs">
     <div class="cont rounded">
       <div
         v-for="tab in tabs.tabs"
@@ -22,8 +22,8 @@ const tabs = useTabStore();
 
 <style lang="scss">
 .tabs {
-  padding: $small;
-  height: 4.25rem;
+  grid-area: tabs;
+  height: 100%;
 
   .cont {
     background-color: $black;
@@ -58,7 +58,6 @@ const tabs = useTabStore();
     .t-item {
       background-color: transparent;
     }
-
   }
 
   .search {

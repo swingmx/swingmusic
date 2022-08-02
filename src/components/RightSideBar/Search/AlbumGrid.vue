@@ -36,7 +36,6 @@ function loadMore() {
   }
 
   .grid {
-    display: grid;
     grid-template-columns: repeat(auto-fill, minmax(8rem, 1fr));
     flex-wrap: wrap;
     gap: 0.75rem;

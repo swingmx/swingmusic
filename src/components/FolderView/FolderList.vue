@@ -1,37 +1,31 @@
 <template>
-  <div class="f-container rounded" :class="{ no_f: !props.folders.length }">
-    <div id="f-items" v-if="props.folders.length">
+  <div class="f-container rounded">
+    <div id="f-items" class="rounded">
       <FolderItem
-        v-for="folder in props.folders"
-        :key="folder"
+        v-for="folder in folders"
+        :key="JSON.stringify(folder)"
         :folder="folder"
       />
     </div>
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
+import { Folder } from "@/interfaces";
 import FolderItem from "./FolderItem.vue";
 
-const props = defineProps({
-  folders: {
-    type: Array,
-    required: true,
-  },
-});
+defineProps<{
+  folders: Folder[];
+}>();
 </script>
 
 <style lang="scss">
-
-.no_f {
-  display: none;
-}
-
 #f-items {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(13rem, 1fr));
   gap: $medium;
-  border-bottom: 1px solid $gray3;
-  padding-bottom: .55rem;
+  padding: $small;
+  margin-bottom: 1rem;
+  background-color: $gray5;
 }
 </style>

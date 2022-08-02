@@ -16,7 +16,6 @@
       <Loader />
     </div>
     <div class="right">
-      <div class="more image"></div>
       <Search />
     </div>
   </div>
@@ -78,16 +77,12 @@ watch(
 );
 </script>
 
-<!-- !!use nav store to sync the title component!! -->
-
 <style lang="scss">
 .topnav {
   display: grid;
   grid-template-columns: 1fr min-content max-content;
-  padding-bottom: 1rem;
-  margin: $small $small 0 0;
-  border-bottom: 1px solid $gray3;
-  height: 3rem;
+  // border-bottom: 1px solid $gray3;
+  // padding-bottom: $small;
 
   .left {
     display: grid;
@@ -115,16 +110,6 @@ watch(
     width: 100%;
     display: flex;
     gap: $small;
-
-    .more {
-      width: 2.25rem;
-      aspect-ratio: 1;
-      height: 100%;
-      background-color: $gray5;
-      background-image: url("../../assets/icons/more.svg");
-      transform: rotate(90deg);
-      border-radius: $small;
-    }
   }
 }
 </style>

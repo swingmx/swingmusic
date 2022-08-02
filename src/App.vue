@@ -96,11 +96,4 @@ onStartTyping(() => {
     display: none;
   }
 }
-
-.content {
-  padding: 0 $small;
-  margin-top: $small;
-  overflow: auto;
-  padding-right: $small !important;
-}
 </style>
