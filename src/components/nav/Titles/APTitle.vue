@@ -1,5 +1,5 @@
 <template>
-  <div class="title albumnavtitle" v-motion-slide-from-left-100>
+  <div class="title albumnavtitle">
     <PlayBtn :source="things.source" :store="things.store" />
     <div class="ellip">
       {{ things.text }}
@@ -44,14 +44,8 @@ const things = computed(() => {
 
 <style lang="scss">
 .albumnavtitle {
-  padding-left: 3rem;
-
-  .play-btn {
-    position: absolute;
-    left: $smaller;
-    top: -$smaller;
-    height: 2.25rem;
-    aspect-ratio: 1;
-  }
+  display: flex;
+  align-items: center;
+  gap: $small;
 }
 </style>

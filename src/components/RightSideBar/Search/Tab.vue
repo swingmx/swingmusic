@@ -1,5 +1,5 @@
 <template>
-  <div v-show="name == s.currentTab" v-motion-slide-visible-top>
+  <div v-show="name == s.currentTab">
     <slot />
   </div>
 </template>

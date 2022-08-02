@@ -81,8 +81,6 @@ watch(
 .topnav {
   display: grid;
   grid-template-columns: 1fr min-content max-content;
-  // border-bottom: 1px solid $gray3;
-  // padding-bottom: $small;
 
   .left {
     display: grid;
@@ -94,7 +92,6 @@ watch(
       .title {
         font-size: 1.5rem;
         font-weight: bold;
-        margin-top: $smaller;
         display: flex;
       }
     }

@@ -12,12 +12,11 @@
       <img
         :src="imguri + album.image"
         alt=""
-        v-motion-slide-from-left
         class="rounded shadow-lg"
       />
     </div>
     <div class="info" :class="{ nocontrast: isLight() }">
-      <div class="top" v-motion-slide-from-top>
+      <div class="top">
         <div class="h">
           <span v-if="album.is_soundtrack">Soundtrack</span>
           <span v-else-if="album.is_compilation">Compilation</span>

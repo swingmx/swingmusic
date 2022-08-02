@@ -1,6 +1,6 @@
 <template>
   <div id="folder-nav-title">
-    <div class="folder" v-motion-slide-from-left-100>
+    <div class="folder">
       <div class="fname">
         <div class="icon image"></div>
         <div class="paths">
@@ -9,7 +9,6 @@
             v-for="path in subPaths"
             :key="path.path"
             :class="{ inthisfolder: path.active }"
-            v-motion-slide-from-left-100
             @click="
               $router.push({ name: 'FolderView', params: { path: path.path } })
             "
