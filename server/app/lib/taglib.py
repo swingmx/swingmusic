@@ -3,7 +3,8 @@ from io import BytesIO
 
 import mutagen
 from app import settings
-from mutagen.flac import FLAC, MutagenError
+from mutagen.flac import FLAC
+from mutagen.flac import MutagenError
 from mutagen.id3 import ID3
 from PIL import Image
 

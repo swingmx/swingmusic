@@ -3,7 +3,8 @@ Contains all the folder routes.
 """
 from app import settings
 from app.lib.folderslib import getFnF
-from flask import Blueprint, request
+from flask import Blueprint
+from flask import request
 
 folder_bp = Blueprint("folder", __name__, url_prefix="/")
 
