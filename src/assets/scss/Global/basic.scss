@@ -1,0 +1,104 @@
+.t-center {
+  text-align: center;
+}
+
+.image {
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  transition: transform 0.3s ease-in-out;
+}
+
+.ellipsis {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ellip {
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.cap-first {
+  display: inline-block;
+  &::first-letter {
+    text-transform: uppercase;
+  }
+}
+
+.rounded {
+  border-radius: $small;
+}
+
+.circular {
+  border-radius: 20px;
+}
+
+.flex {
+  display: flex;
+}
+
+.bg-black {
+  background-color: $black;
+  box-shadow: 0 0 1rem rgba(0, 0, 0, 0.1);
+}
+
+.heading {
+  font-size: 2rem;
+  font-weight: bold;
+}
+
+a {
+  text-decoration: none;
+  color: #fff;
+}
+
+button {
+  border: none;
+  font-size: 0.9rem !important;
+  color: inherit;
+  border-radius: $small;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 2rem;
+  background-image: linear-gradient(70deg, $gray3, $gray2);
+
+  &:hover {
+    background-image: linear-gradient(70deg, #234ece, $darkblue);
+  }
+}
+
+.btn-active {
+  background-image: linear-gradient(70deg, #234ece, $darkblue);
+}
+
+.separator {
+  border-top: 0.1px $separator solid;
+  color: transparent;
+  margin: $small 0 $small 0;
+}
+
+.no-border {
+  border: none;
+}
+
+.noscroll {
+  overflow: hidden;
+}
+
+.abs {
+  position: absolute;
+}
+
+.grid {
+  display: grid;
+}
+
+.card-dark {
+  background-color: #fff;
+}

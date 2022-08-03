@@ -101,7 +101,6 @@ function toggleBottom() {
 .ap-container {
   height: 100%;
   position: relative;
-  width: calc(100% + 1rem);
 
   #ap-page {
     overflow: auto;
@@ -110,8 +109,6 @@ function toggleBottom() {
     display: grid;
     grid-template-rows: 18rem 1fr;
     gap: 1rem;
-    padding-right: $small;
-    width: calc(100% - $small);
 
     .ap-page-content {
       padding-bottom: 16rem;
@@ -122,7 +119,7 @@ function toggleBottom() {
     position: absolute;
     bottom: 0;
     height: 15rem;
-    width: calc(100% - 1.25rem);
+    width: 100%;
     background-color: $gray;
     transition: all 0.5s ease !important;
     overscroll-behavior: contain;

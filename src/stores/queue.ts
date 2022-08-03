@@ -52,9 +52,9 @@ export default defineStore("Queue", {
   state: () => ({
     progressElem: HTMLElement,
     audio: new Audio(),
-    track: {
-      current_time: 0,
-      duration: 0,
+    duration: {
+      current: 0,
+      full: 0,
     },
     current: 0,
     next: 0,
@@ -80,15 +80,16 @@ export default defineStore("Queue", {
         this.audio.onerror = reject;
       })
         .then(() => {
-          this.track.duration = this.audio.duration;
+          this.duration.full = this.audio.duration;
           this.audio.play().then(() => {
             this.playing = true;
             notif(track, this.playPause, this.playNext, this.playPrev);
 
             this.audio.ontimeupdate = () => {
-              this.track.current_time =
+              this.duration.current = this.audio.currentTime;
+              const bg_size =
                 (this.audio.currentTime / this.audio.duration) * 100;
-              elem.style.backgroundSize = `${this.track.current_time}% 100%`;
+              elem.style.backgroundSize = `${bg_size}% 100%`;
             };
 
             this.audio.onended = () => {
@@ -162,8 +163,11 @@ export default defineStore("Queue", {
       this.prev = index - 1;
     },
     setCurrent(index: number) {
+      const track = this.tracks[index];
+
       this.current = index;
-      this.currentid = this.tracks[index].trackid;
+      this.currentid = track.trackid;
+      this.duration.full = track.length;
     },
     setNewQueue(tracklist: Track[]) {
       if (this.tracks !== tracklist) {
@@ -238,6 +242,15 @@ export default defineStore("Queue", {
         NotifType.Success
       );
       writeQueue(this.from, this.tracks);
+    },
+    clearQueue() {
+      this.tracks = [defaultTrack] as Track[];
+      this.current = 0;
+      this.currentid = "";
+      this.next = 0;
+      this.prev = 0;
+      this.from = <From>{};
+      console.log(this.current);
     },
   },
 });

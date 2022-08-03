@@ -1,5 +1,5 @@
 <template>
-  <div class="home">
+  <div class="home t-center">
     <home />
   </div>
 </template>
@@ -10,6 +10,5 @@ import Home from "@/components/Home.vue";
 <style>
 .home {
   padding-left: 20px;
-  text-align: center;
 }
 </style>

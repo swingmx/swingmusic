@@ -1,6 +1,6 @@
 <template>
-  <div class="artists-results border">
-    <div class="grid">
+  <div class="artists-results" v-if="search.artists.value.length">
+    <div class="search-results-grid">
       <ArtistCard
         v-for="artist in search.artists.value"
         :key="artist.image"
@@ -13,9 +13,9 @@
 </template>
 
 <script setup lang="ts">
+import useSearchStore from "../../../stores/search";
 import ArtistCard from "../../shared/ArtistCard.vue";
 import LoadMore from "./LoadMore.vue";
-import useSearchStore from "../../../stores/search";
 const search = useSearchStore();
 
 function loadMore() {
@@ -26,17 +26,17 @@ function loadMore() {
 
 <style lang="scss">
 .right-search .artists-results {
-  border-radius: 0.5rem;
-  padding: $small;
-  margin-bottom: $small;
+  display: grid;
+  margin: 0 1rem;
 
   .xartist {
     background-color: $gray;
-  }
 
-  .grid {
-    grid-template-columns: repeat(3, 1fr);
-    gap: 0.75rem;
+    .artist-image {
+      width: 7rem;
+      height: 7rem;
+      object-fit: cover;
+    }
   }
 }
 </style>

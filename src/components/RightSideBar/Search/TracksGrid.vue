@@ -19,7 +19,6 @@
 import LoadMore from "./LoadMore.vue";
 import TrackItem from "../../shared/TrackItem.vue";
 import useQStore from "../../../stores/queue";
-import { Track } from "../../../interfaces";
 import useSearchStore from "../../../stores/search";
 
 const queue = useQStore();
@@ -38,8 +37,6 @@ function updateQueue(index: number) {
 
 <style lang="scss">
 .right-search #tracks-results {
-  border-radius: 0.5rem;
-  padding: $small;
   height: 100% !important;
   overflow: hidden;
 

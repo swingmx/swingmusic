@@ -21,9 +21,9 @@
           <span v-else>MP3</span>
           • {{ track.bitrate }}
         </div>
-        <div class="title ellip">{{ props.track.title }}</div>
+        <div class="title ellip cap-first">{{ props.track.title }}</div>
         <div class="separator no-border"></div>
-        <div class="artists ellip" v-if="props.track.artists[0] !== ''">
+        <div class="artists ellip cap-first" v-if="props.track.artists[0] !== ''">
           <span
             v-for="artist in putCommas(props.track.artists)"
             :key="artist"

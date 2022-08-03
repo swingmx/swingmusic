@@ -1,0 +1,64 @@
+#app-grid {
+  display: grid;
+  grid-template-columns: min-content 1fr min-content;
+  grid-template-rows: max-content 1fr max-content;
+  grid-template-areas:
+    "l-sidebar nav search-input"
+    "l-sidebar content r-sidebar"
+    "l-sidebar content r-sidebar"
+    "l-sidebar content tabs";
+  align-content: center;
+  max-width: 2720px;
+  height: calc(100vh - 1rem);
+  margin: 0 auto;
+  gap: 1rem;
+  margin: $small;
+}
+
+#acontent {
+  grid-area: content;
+  max-width: 1955px;
+  overflow: hidden scroll;
+  margin-top: -$small;
+
+  .nav {
+    margin: $small;
+    width: calc(100% - 1rem);
+  }
+}
+
+#tabs {
+  grid-area: tabs;
+  height: 3.5rem;
+  margin-top: -$small;
+
+  @include tablet-landscape {
+    display: none;
+  }
+}
+
+.r-sidebar {
+  grid-area: r-sidebar;
+  margin-top: -$small;
+  width: 29rem;
+}
+
+#gsearch-input {
+  grid-area: search-input;
+}
+
+.topnav {
+  grid-area: nav;
+}
+
+.l-sidebar {
+  width: 17rem;
+  grid-area: l-sidebar;
+  background-color: $black;
+  padding: 1rem;
+}
+
+.bottom-bar {
+  grid-area: bottom-bar;
+  height: 4rem;
+}

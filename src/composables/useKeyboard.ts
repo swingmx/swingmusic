@@ -3,7 +3,7 @@ import useQStore from "@/stores/queue";
 let key_down_fired = false;
 
 function focusSearchBox() {
-  const elem = document.getElementById("search");
+  const elem = document.getElementById("globalsearch");
 
   elem.focus();
 }

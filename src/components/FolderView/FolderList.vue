@@ -25,7 +25,6 @@ defineProps<{
   grid-template-columns: repeat(auto-fill, minmax(13rem, 1fr));
   gap: $medium;
   padding: $small;
-  margin-bottom: 1rem;
   background-color: $gray5;
 }
 </style>

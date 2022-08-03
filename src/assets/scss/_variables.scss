@@ -13,6 +13,8 @@ $medium: 0.75rem;
 $large: 1.5rem;
 $larger: 2rem;
 
+$banner-height: 18rem;
+
 // apple human design guideline colors
 $black: #181a1c;
 $white: #ffffffde;
@@ -24,9 +26,8 @@ $gray3: rgb(72, 72, 74);
 $gray4: rgb(58, 58, 60);
 $gray5: rgb(44, 44, 46);
 
-
-$red: #FF453A;
-$blue: #0A84FF;
+$red: #ff453a;
+$blue: #0a84ff;
 $darkblue: #055ee2;
 $green: rgb(20, 160, 55);
 $yellow: rgb(255, 214, 10);
@@ -34,9 +35,8 @@ $orange: rgb(255, 159, 10);
 $pink: rgb(255, 55, 95);
 $purple: #bf5af2;
 $brown: rgb(172, 142, 104);
-$indigo: #5E5CE6;
+$indigo: #5e5ce6;
 $teal: rgb(64, 200, 224);
-
 
 $primary: $gray4;
 $accent: $red;

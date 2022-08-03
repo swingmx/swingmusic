@@ -37,7 +37,7 @@
         <div class="type">Playlist</div>
       </div>
     </div>
-    <div class="last-updated" v-motion-slide-from-right>
+    <div class="last-updated">
       <span class="status"
         >Last updated {{ props.info.lastUpdated }} &#160;|&#160;&#160;</span
       >

@@ -1,16 +1,16 @@
 <template>
-  <div class="now-playing border shadow-lg">
+  <div class="now-playing bg-black shadow-lg">
     <div class="art-tags">
       <div class="duration">{{ formatSeconds(current.length) }}</div>
       <div
           :style="{
           backgroundImage: `url(&quot;${current.image}&quot;)`,
         }"
-          class="album-art image border"
+          class="album-art image bg-black"
       ></div>
       <div class="t-a">
         <p id="title" class="ellipsis">{{ current.title }}</p>
-        <div class="separator no-border"></div>
+        <div class="separator no-bg-black"></div>
         <div v-if="current.artists[0] !== ''" id="artist" class="ellip">
           <span v-for="artist in putCommas(current.artists)" :key="artist">{{
               artist

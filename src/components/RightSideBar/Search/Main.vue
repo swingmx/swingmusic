@@ -1,6 +1,9 @@
 <template>
   <div class="right-search">
     <TabsWrapper>
+      <Tab name="Top Results">
+        <ArtistGrid />
+      </Tab>
       <Tab name="tracks">
         <TracksGrid />
       </Tab>
@@ -10,18 +13,19 @@
       <Tab name="artists">
         <ArtistGrid />
       </Tab>
+      <Tab name="Playlists">
+        <ArtistGrid />
+      </Tab>
     </TabsWrapper>
   </div>
 </template>
 
 <script setup lang="ts">
-import TabsWrapper from "./TabsWrapper.vue";
-import Tab from "./Tab.vue";
-import TracksGrid from "./TracksGrid.vue";
 import AlbumGrid from "./AlbumGrid.vue";
 import ArtistGrid from "./ArtistGrid.vue";
-import "@/assets/css/Search/Search.scss";
-
+import Tab from "./Tab.vue";
+import TabsWrapper from "./TabsWrapper.vue";
+import TracksGrid from "./TracksGrid.vue";
 </script>
 
 <style lang="scss">
@@ -31,21 +35,6 @@ import "@/assets/css/Search/Search.scss";
   width: auto;
   height: 100%;
 
-  .no-res {
-    text-align: center;
-    display: grid;
-    height: calc(100% - $small);
-    place-items: center;
-    font-size: 2rem;
-    transition: all 0.3s ease;
-    line-height: 4rem !important;
-
-    .highlight {
-      padding: $small;
-      background-color: rgb(29, 26, 26);
-    }
-  }
-
   .heading {
     padding: $medium;
     border-radius: $small;
@@ -53,20 +42,16 @@ import "@/assets/css/Search/Search.scss";
     font-size: 2rem;
     color: $white;
   }
+  .search-results-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.75rem;
+  }
 
   .input {
     display: flex;
     align-items: center;
     position: relative;
-  }
-}
-
-.right-search .scrollable {
-  overflow-y: auto;
-  scrollbar-width: none;
-
-  &::-webkit-scrollbar {
-    display: none;
   }
 }
 </style>

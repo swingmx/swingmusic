@@ -1,7 +1,7 @@
 import { defineStore } from "pinia";
 import { Folder, Track } from "../../interfaces";
 
-import fetchThem from "../../composables/pages/folders";
+import fetchThem from "../../composables/fetch/folders";
 
 export default defineStore("FolderDirs&Tracks", {
   state: () => ({

@@ -22,10 +22,10 @@
 </template>
 
 <script setup lang="ts">
-import "@/assets/css/BottomBar/BottomBar.scss";
-import Progress from "../LeftSidebar/NP/Progress.vue";
-import HotKeys from "../LeftSidebar/NP/HotKeys.vue";
+import "@/assets/scss/BottomBar/BottomBar.scss";
 import { formatSeconds } from "@/composables/perks";
+import HotKeys from "../LeftSidebar/NP/HotKeys.vue";
+import Progress from "../LeftSidebar/NP/Progress.vue";
 
 import useQStore from "@/stores/queue";
 

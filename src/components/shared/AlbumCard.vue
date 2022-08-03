@@ -41,6 +41,7 @@ defineProps<{
   background-color: $gray4;
   color: #ffffffde !important;
   transition: all 0.5s ease;
+  min-width: 8.5rem;
 
   .img {
     position: relative;

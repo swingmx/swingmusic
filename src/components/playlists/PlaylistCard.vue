@@ -11,7 +11,7 @@
       }"
     ></div>
     <div class="bottom">
-      <div class="name ellip">{{ props.playlist.name }}</div>
+      <div class="name ellip cap-first">{{ props.playlist.name }}</div>
       <div class="count">
         <span v-if="props.playlist.count == 0">No Tracks</span>
         <span v-else-if="props.playlist.count == 1"
@@ -85,7 +85,6 @@ const props = defineProps<{
     margin-top: 1rem;
 
     .name {
-      text-transform: capitalize;
       font-weight: 900;
     }
 

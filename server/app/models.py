@@ -3,6 +3,7 @@ Contains all the models for objects generation and typing.
 """
 from dataclasses import dataclass
 from dataclasses import field
+from operator import itemgetter
 from typing import List
 
 from app import helpers
@@ -25,26 +26,42 @@ class Track:
     genre: str
     bitrate: int
     tracknumber: int
-    disknumber: int
+    discnumber: int
     albumhash: str
     date: str
     image: str
     uniq_hash: str
+    copyright: str
 
     def __init__(self, tags):
+        (
+            self.title,
+            self.album,
+            self.albumartist,
+            self.genre,
+            self.albumhash,
+            self.date,
+            self.folder,
+            self.filepath,
+            self.copyright,
+        ) = itemgetter(
+            "title",
+            "album",
+            "albumartist",
+            "genre",
+            "albumhash",
+            "date",
+            "folder",
+            "filepath",
+            "copyright",
+        )(
+            tags
+        )
         self.trackid = tags["_id"]["$oid"]
-        self.title = tags["title"]
         self.artists = tags["artists"].split(", ")
-        self.albumartist = tags["albumartist"]
-        self.album = tags["album"]
-        self.folder = tags["folder"]
-        self.filepath = tags["filepath"]
-        self.genre = tags["genre"]
         self.bitrate = int(tags["bitrate"])
         self.length = int(tags["length"])
-        self.disknumber = int(tags["disknumber"])
-        self.albumhash = tags["albumhash"]
-        self.date = tags["date"]
+        self.discnumber = int(tags["discnumber"])
         self.image = tags["albumhash"] + ".webp"
         self.tracknumber = int(tags["tracknumber"])
 
@@ -85,17 +102,21 @@ class Album:
     image: str
     count: int = 0
     duration: int = 0
+    copyright: str = field(default="")
     is_soundtrack: bool = False
     is_compilation: bool = False
     is_single: bool = False
     colors: List[str] = field(default_factory=list)
 
     def __init__(self, tags):
-        self.title = tags["title"]
-        self.artist = tags["artist"]
-        self.date = tags["date"]
-        self.image = tags["image"]
-        self.hash = tags["hash"]
+        (
+            self.title,
+            self.artist,
+            self.date,
+            self.image,
+            self.hash,
+            self.copyright,
+        ) = itemgetter("title", "artist", "date", "image", "hash", "copyright")(tags)
 
         try:
             self.colors = tags["colors"]

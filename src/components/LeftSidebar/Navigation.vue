@@ -5,7 +5,7 @@
       :key="menu.name"
       :to="{ name: menu.route_name, params: menu.params }"
     >
-      <div class="nav-button" id="home-button" v-motion-slide-from-left-100>
+      <div class="nav-button" id="home-button">
         <div class="in">
           <component :is="menu.icon"></component>
           <span>{{ menu.name }}</span>
@@ -70,8 +70,6 @@ const menus = [
   }
 
   svg {
-    width: 2rem;
-    height: 2rem;
     margin: 0 $small 0 $small;
     border-radius: $small;
   }

@@ -2,9 +2,9 @@
   <input
     id="progress"
     type="range"
-    :value="q.track.current_time"
+    :value="q.duration.current"
     min="0"
-    max="100"
+    :max="q.duration.full"
     step="0.1"
     @change="seek()"
   />

@@ -1,4 +1,5 @@
 <template>
+  
   <div class="hotkeys">
     <div class="image ctrl-btn" id="previous" @click="q.playPrev"></div>
     <div
@@ -17,6 +18,7 @@ const q = useQStore();
 </script>
 
 <style lang="scss">
+
 .hotkeys {
   display: grid;
   grid-template-columns: repeat(3, 1fr);

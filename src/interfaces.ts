@@ -14,9 +14,10 @@ export interface Track {
   genre?: string;
   image: string;
   tracknumber?: number;
-  disknumber?: number;
+  discnumber?: number;
   index?: number;
   uniq_hash: string;
+  copyright?: string;
 }
 
 export interface Folder {
@@ -40,6 +41,7 @@ export interface AlbumInfo {
   is_single: boolean;
   hash: string;
   colors: string[];
+  copyright?: string;
 }
 
 export interface Artist {

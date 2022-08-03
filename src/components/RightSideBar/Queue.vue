@@ -2,7 +2,8 @@
   <div class="up-next">
     <div class="r-grid">
       <UpNext :next="queue.tracks[queue.next]" :playNext="queue.playNext" />
-      <div class="scrollable-r border rounded">
+      <div class="scrollable-r bg-black rounded">
+        <QueueActions />
         <div
           class="inner"
           @mouseenter="setMouseOver(true)"
@@ -25,11 +26,12 @@
 
 <script setup lang="ts">
 import TrackItem from "../shared/TrackItem.vue";
-import useQStore from "../../stores/queue";
-import PlayingFrom from "./queue/playingFrom.vue";
-import UpNext from "./queue/upNext.vue";
+import useQStore from "@/stores/queue";
+import PlayingFrom from "./Queue/playingFrom.vue";
+import UpNext from "./Queue/upNext.vue";
 import { onUpdated, ref } from "vue";
 import { focusElem } from "@/composables/perks";
+import QueueActions from "./Queue/QueueActions.vue";
 
 const queue = useQStore();
 const mouseover = ref(false);
@@ -62,18 +64,22 @@ onUpdated(() => {
     grid-template-rows: max-content 1fr max-content;
     gap: $small;
 
+    .left {
+      display: flex;
+      gap: $small;
+    }
+
     .scrollable-r {
       height: 100%;
-      padding: $small 0 $small $small;
       overflow: hidden;
+      display: grid;
+      grid-template-rows: max-content 1fr;
 
       .inner {
-        height: 100%;
         overflow: scroll;
-        margin-top: 1rem;
-        padding-right: $small;
         overflow-x: hidden;
         scrollbar-color: grey transparent;
+        margin: 1rem 0;
       }
     }
   }

@@ -1,8 +1,8 @@
-import { Artist } from "./../../interfaces";
+import { Artist } from "../../interfaces";
 import { Playlist, Track } from "../../interfaces";
 import { Notification, NotifType } from "../../stores/notification";
 import state from "../state";
-import useAxios from "../useAxios";
+import useAxios from "./useAxios";
 /**
  * Creates a new playlist on the server.
  * @param playlist_name The name of the playlist to create.
