@@ -22,6 +22,9 @@
         <div class="text">No tracks here</div>
       </div>
     </div>
+    <div class="copyright" v-if="copyright">
+      {{ copyright() }}
+    </div>
   </div>
 </template>
 
@@ -46,6 +49,7 @@ const props = defineProps<{
   playlistid?: string;
   on_album_page?: boolean;
   disc?: string | number;
+  copyright?: () => string;
 }>();
 
 const route = useRoute();
@@ -138,6 +142,13 @@ function getTrackList() {
   justify-content: center;
   flex-direction: column;
   padding: 1rem;
+}
+
+.copyright {
+  font-size: 0.8rem;
+  margin-top: 1rem;
+  text-align: center;
+  opacity: 0.5;
 }
 
 .table {

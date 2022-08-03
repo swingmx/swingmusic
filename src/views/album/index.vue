@@ -4,7 +4,7 @@
       <Header :album="album.info" />
     </template>
     <template #content>
-      <Content :discs="album.discs" />
+      <Content :discs="album.discs" :copyright="album.info.copyright" />
     </template>
     <template #bottom>
       <Bottom
