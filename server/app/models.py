@@ -1,8 +1,7 @@
 """
 Contains all the models for objects generation and typing.
 """
-from dataclasses import dataclass
-from dataclasses import field
+from dataclasses import dataclass, field
 from operator import itemgetter
 from typing import List
 
