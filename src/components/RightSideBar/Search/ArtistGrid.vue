@@ -1,6 +1,6 @@
 <template>
   <div class="artists-results" v-if="search.artists.value.length">
-    <div class="grid">
+    <div class="search-results-grid">
       <ArtistCard
         v-for="artist in search.artists.value"
         :key="artist.image"
@@ -35,15 +35,8 @@ function loadMore() {
     .artist-image {
       width: 7rem;
       height: 7rem;
-      aspect-ratio: 1 !important;
       object-fit: cover;
     }
-  }
-
-  .grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 0.75rem;
   }
 }
 </style>

@@ -42,20 +42,16 @@ import TracksGrid from "./TracksGrid.vue";
     font-size: 2rem;
     color: $white;
   }
+  .search-results-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.75rem;
+  }
 
   .input {
     display: flex;
     align-items: center;
     position: relative;
-  }
-}
-
-.right-search .scrollable {
-  overflow-y: auto;
-  scrollbar-width: none;
-
-  &::-webkit-scrollbar {
-    display: none;
   }
 }
 </style>

@@ -77,8 +77,6 @@ const s = useSearchStore();
     overflow: auto;
     overflow-x: hidden;
     padding-bottom: 1rem;
-
-    // overflow: hidden;
   }
 }
 </style>

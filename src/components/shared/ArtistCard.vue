@@ -25,7 +25,7 @@ defineProps<{
   overflow: hidden;
   position: relative;
 
-  min-width: 8.25em;
+  min-width: 8.5em;
   height: 11em;
   border-radius: 0.75rem;
   display: flex;

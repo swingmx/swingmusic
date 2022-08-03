@@ -39,7 +39,6 @@ const queue = useQueueStore();
   .action {
     padding: $smaller;
     padding-right: $small;
-    background-image: linear-gradient(70deg, $gray3, $gray2);
 
     svg {
       transform: scale(0.8);
