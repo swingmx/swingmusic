@@ -54,9 +54,7 @@ class Track:
             "folder",
             "filepath",
             "copyright",
-        )(
-            tags
-        )
+        )(tags)
         self.trackid = tags["_id"]["$oid"]
         self.artists = tags["artists"].split(", ")
         self.bitrate = int(tags["bitrate"])
@@ -65,9 +63,8 @@ class Track:
         self.image = tags["albumhash"] + ".webp"
         self.tracknumber = int(tags["tracknumber"])
 
-        self.uniq_hash = helpers.create_hash(
-            "".join(self.artists), self.album, self.title
-        )
+        self.uniq_hash = helpers.create_hash("".join(self.artists), self.album,
+                                             self.title)
 
     @staticmethod
     def create_unique_hash(*args):
@@ -116,7 +113,8 @@ class Album:
             self.image,
             self.hash,
             self.copyright,
-        ) = itemgetter("title", "artist", "date", "image", "hash", "copyright")(tags)
+        ) = itemgetter("title", "artist", "date", "image", "hash",
+                       "copyright")(tags)
 
         try:
             self.colors = tags["colors"]
