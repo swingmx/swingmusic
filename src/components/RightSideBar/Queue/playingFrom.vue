@@ -4,7 +4,7 @@
       <div class="icon image" :class="from.icon"></div>
       Playing from
     </div>
-    <div class="name">
+    <div class="name cap-first">
       <div id="to">
         {{ from.text }}
       </div>
@@ -120,7 +120,6 @@ function goTo() {
   }
 
   .name {
-    text-transform: capitalize;
     font-weight: bolder;
   }
 
@@ -130,7 +129,6 @@ function goTo() {
     display: flex;
     align-items: center;
     gap: $small;
-    text-transform: capitalize;
     color: rgba(255, 255, 255, 0.849);
 
     .icon {

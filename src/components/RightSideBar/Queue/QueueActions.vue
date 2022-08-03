@@ -7,7 +7,7 @@
       </button>
       <button class="shuffle-queue action">
         <SaveAsPlaylistSvg />
-        <span> Save As Playlist </span>
+        <span> Save as Playlist </span>
       </button>
     </div>
     <div class="right">

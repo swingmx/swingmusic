@@ -23,6 +23,13 @@
   text-overflow: ellipsis;
 }
 
+.cap-first {
+  display: inline-block;
+  &::first-letter {
+    text-transform: uppercase;
+  }
+}
+
 .rounded {
   border-radius: $small;
 }

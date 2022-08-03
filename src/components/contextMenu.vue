@@ -25,7 +25,7 @@
       @click="option.action()"
     >
       <div class="icon image" :class="option.icon"></div>
-      <div class="label ellip">{{ option.label }}</div>
+      <div class="label ellip cap-first">{{ option.label }}</div>
       <div class="more image" v-if="option.children"></div>
       <div class="children rounded shadow-sm" v-if="option.children">
         <div
@@ -35,7 +35,7 @@
           :class="[{ critical: child.critical }, child.type]"
           @click="child.action()"
         >
-          <div class="label ellip">
+          <div class="label ellip cap-first">
             {{ child.label }}
           </div>
         </div>
@@ -71,7 +71,6 @@ const context = useContextStore();
     cursor: default;
     padding: $small;
     position: relative;
-    text-transform: capitalize;
 
     .more {
       height: 1.5rem;

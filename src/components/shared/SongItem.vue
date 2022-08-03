@@ -27,10 +27,10 @@
         ></div>
       </div>
       <div @click="emitUpdate(track)">
-        <span class="ellip title">{{ track.title }}</span>
+        <span class="ellip title cap-first">{{ track.title }}</span>
       </div>
     </div>
-    <div class="song-artists">
+    <div class="song-artists cap-first">
       <div class="ellip" v-if="track.artists[0] !== ''">
         <span
           class="artist"
@@ -44,7 +44,7 @@
       </div>
     </div>
     <router-link
-      class="song-album ellip"
+      class="song-album ellip cap-first"
       :to="{
         name: 'AlbumView',
         params: {

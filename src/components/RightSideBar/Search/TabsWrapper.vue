@@ -3,7 +3,7 @@
     <div class="tab-buttons-wrapper">
       <div id="tabheaders" class="rounded noscroll">
         <div
-          class="tab"
+          class="tab cap-first"
           v-for="slot in $slots.default()"
           :key="slot.key"
           @click="s.changeTab(slot.props.name)"
@@ -55,7 +55,7 @@ const s = useSearchStore();
       display: flex;
       align-items: center;
       justify-content: center;
-      text-transform: capitalize;
+
       cursor: pointer;
       transition: all 0.3s ease;
       padding: 0 $small;

@@ -23,9 +23,11 @@
       ></div>
     </div>
     <div class="tags">
-      <div class="title ellip">{{ props.track.title }}</div>
+      <div class="title ellip cap-first">
+       {{ props.track.title }}
+      </div>
       <hr />
-      <div class="artist ellip">
+      <div class="artist ellip cap-first">
         <span v-for="artist in putCommas(props.track.artists)" :key="artist">{{
           artist
         }}</span>
@@ -97,7 +99,6 @@ const playThis = (track: Track) => {
   grid-template-columns: min-content 1fr;
   align-items: center;
   padding: $small 1rem;
-  // text-transform: capitalize;
 
   &:hover {
     cursor: pointer;

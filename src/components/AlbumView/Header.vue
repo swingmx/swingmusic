@@ -19,7 +19,7 @@
           <span v-else-if="album.is_single">Single</span>
           <span v-else>Album</span>
         </div>
-        <div class="title ellip">
+        <div class="title ellip cap-first">
           {{ album.title }}
         </div>
       </div>
@@ -118,7 +118,6 @@ useVisibility(albumheaderthing, handleVisibilityState);
       .title {
         font-size: 2.5rem;
         font-weight: 600;
-        text-transform: capitalize;
       }
 
       .artist {

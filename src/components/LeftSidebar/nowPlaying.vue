@@ -1,6 +1,6 @@
 <template>
   <div class="now-playing-card t-center rounded">
-    <div class="headin">Now Playing</div>
+    <div class="headin">Now playing</div>
     <div
       class="button menu rounded"
       @click="showContextMenu"
@@ -67,7 +67,6 @@ const showContextMenu = (e: Event) => {
   width: 100%;
   display: grid;
   position: relative;
-  text-transform: capitalize;
 
   .l-track-time {
     display: flex;
