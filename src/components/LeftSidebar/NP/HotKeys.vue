@@ -1,5 +1,5 @@
 <template>
-  
+
   <div class="hotkeys">
     <div class="image ctrl-btn" id="previous" @click="q.playPrev"></div>
     <div
