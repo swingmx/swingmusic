@@ -1,9 +1,6 @@
 <template>
   <div class="xartist" :class="{ _is_on_sidebar: alt }">
-    <div
-      class="artist-image image bg-black-sm"
-      :style="{ backgroundImage: `url('${imguri + artist.image}')` }"
-    ></div>
+    <img class="artist-image shadow-sm" :src="imguri + artist.image" alt="" />
     <div>
       <p class="artist-name t-center ellipsis">{{ artist.name }}</p>
     </div>
@@ -38,22 +35,18 @@ defineProps<{
   cursor: pointer;
 
   .artist-image {
-    width: 8em;
-    height: 8em;
+    width: 8rem;
+    height: 8rem;
     border-radius: 60%;
     margin-bottom: $small;
-    background-size: 8rem 8rem;
-    background-position: center;
-    background-repeat: no-repeat;
     transition: all 0.5s ease-in-out;
     transition-delay: 0.25s;
+    object-fit: cover;
   }
 
   &:hover {
     .artist-image {
-      background-position: 50% 20%;
       border-radius: 20%;
-      background-size: 10rem 10rem;
     }
   }
 

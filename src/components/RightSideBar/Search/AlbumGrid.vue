@@ -1,5 +1,5 @@
 <template>
-  <div class="albums-results border">
+  <div class="albums-results">
     <div class="grid">
       <AlbumCard
         v-for="album in search.albums.value"
@@ -27,9 +27,8 @@ function loadMore() {
 <style lang="scss">
 .right-search .albums-results {
   border-radius: 0.5rem;
-  margin-top: $small;
-  padding: $small;
   overflow-x: hidden;
+  margin: 0 1rem;
 
   .result-item:hover {
     background-color: $gray4;
@@ -38,6 +37,7 @@ function loadMore() {
   .grid {
     grid-template-columns: repeat(auto-fill, minmax(8rem, 1fr));
     flex-wrap: wrap;
+    justify-content: flex-start;
     gap: 0.75rem;
   }
 }

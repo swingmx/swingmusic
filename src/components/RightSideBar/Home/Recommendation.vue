@@ -3,7 +3,7 @@
     <div class="heading">Similar tracks</div>
     <div class="tracks">
       <div class="song-item" v-for="song in songs" :key="song.artist">
-        <img src="../../../assets/images/null.webp" class="rounded" />
+        <img src="" class="rounded" />
         <div class="tags">
           <div class="title">{{ song.title }}</div>
           <div class="artist">{{ song.artist }}</div>

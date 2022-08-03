@@ -1,4 +1,4 @@
-@import
+@import 
 "./mixins.scss",
 "./variables",
 "./moz.scss",
@@ -6,3 +6,9 @@
 "./BottomBar/BottomBar.scss",
 "./Global"
 ;
+
+
+@font-face {
+    font-family: "SF Compact Display";
+    src: url("../sf-compact.woff") format("woff");
+}

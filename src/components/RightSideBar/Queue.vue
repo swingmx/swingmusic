@@ -71,20 +71,15 @@ onUpdated(() => {
 
     .scrollable-r {
       height: 100%;
-      padding: $small;
       overflow: hidden;
       display: grid;
       grid-template-rows: max-content 1fr;
-      gap: $medium;
 
       .inner {
-        height: 100%;
-        margin-right: -$small;
         overflow: scroll;
-        margin-top: 1rem;
-        padding-right: $small;
         overflow-x: hidden;
         scrollbar-color: grey transparent;
+        margin: 1rem 0;
       }
     }
   }

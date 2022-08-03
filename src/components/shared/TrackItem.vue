@@ -36,15 +36,15 @@
 
 <script setup lang="ts">
 import { ref } from "vue";
-import { ContextSrc } from "../../composables/enums";
-import { putCommas } from "../../composables/perks";
-import trackContext from "../../contexts/track_context";
-import { Track } from "../../interfaces";
+import { ContextSrc } from "@/composables/enums";
+import { putCommas } from "@/composables/perks";
+import trackContext from "@/contexts/track_context";
+import { Track } from "@/interfaces";
 
-import { paths } from "../../config";
-import useContextStore from "../../stores/context";
-import useModalStore from "../../stores/modal";
-import useQueueStore from "../../stores/queue";
+import { paths } from "@/config";
+import useContextStore from "@/stores/context";
+import useModalStore from "@/stores/modal";
+import useQueueStore from "@/stores/queue";
 
 const contextStore = useContextStore();
 const imguri = paths.images.thumb;
@@ -84,7 +84,7 @@ const playThis = (track: Track) => {
 
 <style lang="scss">
 .currentInQueue {
-  background-color: $gray3;
+  background: linear-gradient(37deg, $gray4, $gray3, $gray3);
 }
 
 .contexton {
@@ -93,17 +93,15 @@ const playThis = (track: Track) => {
 }
 
 .track-item {
-  display: flex;
+  display: grid;
+  grid-template-columns: min-content 1fr;
   align-items: center;
-  border-radius: 0.5rem;
-  position: relative;
-  height: 4rem;
-  padding: 0.5rem 0.5rem 0.5rem 4rem;
-  text-transform: capitalize;
+  padding: $small 1rem;
+  // text-transform: capitalize;
 
   &:hover {
     cursor: pointer;
-    background-color: $gray4 !important;
+    background: linear-gradient(37deg, $gray4, $gray3, $gray3);
   }
 
   hr {
@@ -111,9 +109,11 @@ const playThis = (track: Track) => {
     margin: 0.1rem;
   }
 
+  // .tags {
+  //   border: solid 1px;
+  // }
+
   .album-art {
-    position: absolute;
-    left: $small;
     display: flex;
     align-items: center;
     justify-content: center;

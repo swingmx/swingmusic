@@ -1,6 +1,9 @@
 <template>
   <div class="right-search">
     <TabsWrapper>
+      <Tab name="Top Results">
+        <ArtistGrid />
+      </Tab>
       <Tab name="tracks">
         <TracksGrid />
       </Tab>
@@ -8,6 +11,9 @@
         <AlbumGrid />
       </Tab>
       <Tab name="artists">
+        <ArtistGrid />
+      </Tab>
+      <Tab name="Playlists">
         <ArtistGrid />
       </Tab>
     </TabsWrapper>

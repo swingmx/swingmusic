@@ -33,8 +33,8 @@ const queue = useQueueStore();
   display: flex;
   justify-content: space-between;
   gap: $small;
-  margin-bottom: -1.25rem;
-  margin-top: $small;
+  margin: 1rem;
+  margin-bottom: 0;
 
   .action {
     padding: $smaller;

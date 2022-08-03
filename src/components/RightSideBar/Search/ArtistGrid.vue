@@ -1,5 +1,5 @@
 <template>
-  <div class="artists-results bg-black">
+  <div class="artists-results" v-if="search.artists.value.length">
     <div class="grid">
       <ArtistCard
         v-for="artist in search.artists.value"
@@ -26,15 +26,22 @@ function loadMore() {
 
 <style lang="scss">
 .right-search .artists-results {
-  border-radius: 0.5rem;
-  padding: $small;
-  margin-bottom: $small;
+  display: grid;
+  margin: 0 1rem;
 
   .xartist {
     background-color: $gray;
+
+    .artist-image {
+      width: 7rem;
+      height: 7rem;
+      aspect-ratio: 1 !important;
+      object-fit: cover;
+    }
   }
 
   .grid {
+    display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: 0.75rem;
   }

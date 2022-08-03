@@ -18,7 +18,7 @@
 #acontent {
   grid-area: content;
   max-width: 1955px;
-  overflow: hidden auto;
+  overflow: hidden scroll;
   margin-top: -$small;
 
   .nav {

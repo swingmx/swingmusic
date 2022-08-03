@@ -1,16 +1,19 @@
 <template>
-  <div id="right-tabs">
-    <div id="tabheaders">
-      <div
-        class="tab rounded"
-        v-for="slot in $slots.default()"
-        :key="slot.key"
-        @click="s.changeTab(slot.props.name)"
-        :class="{ activetab: slot.props.name === s.currentTab }"
-      >
-        {{ slot.props.name }}
+  <div id="right-tabs" class="bg-black rounded">
+    <div class="tab-buttons-wrapper">
+      <div id="tabheaders" class="rounded noscroll">
+        <div
+          class="tab"
+          v-for="slot in $slots.default()"
+          :key="slot.key"
+          @click="s.changeTab(slot.props.name)"
+          :class="{ activetab: slot.props.name === s.currentTab }"
+        >
+          {{ slot.props.name }}
+        </div>
       </div>
     </div>
+
     <div id="tab-content">
       <slot />
     </div>
@@ -26,30 +29,46 @@ const s = useSearchStore();
 <style lang="scss">
 #right-tabs {
   height: 100%;
-  margin-right: $small;
   display: grid;
   grid-template-rows: min-content 1fr;
 
-  #tabheaders {
+  .tab-buttons-wrapper {
     display: flex;
-    gap: $small;
-    margin: $small 0;
+    justify-content: center;
+    align-items: center;
+  }
+
+  #tabheaders {
+    display: grid;
+    grid-template-columns: repeat(5, max-content);
+    justify-content: space-around;
+    margin: 1rem;
+    width: max-content;
+    background: linear-gradient(37deg, $gray3, $gray4, $gray3);
+    height: 2rem;
+
+    & > * {
+      border-left: solid 1px $gray3;
+    }
 
     .tab {
-      background-color: $gray3;
-      padding: $small;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       text-transform: capitalize;
       cursor: pointer;
-      display: flex;
-      justify-content: center;
       transition: all 0.3s ease;
-      width: 4rem;
+      padding: 0 $small;
+
+      &:first-child {
+        border-left: solid 1px transparent;
+      }
     }
 
     .activetab {
-      background-color: $accent;
-      width: 6rem;
+      background-color: $darkblue;
       transition: all 0.3s ease;
+      border-left: solid 1px transparent;
     }
   }
 
@@ -57,8 +76,8 @@ const s = useSearchStore();
     height: 100%;
     overflow: auto;
     overflow-x: hidden;
-    border-radius: $small;
-    background-color: $gray;
+    padding-bottom: 1rem;
+
     // overflow: hidden;
   }
 }
