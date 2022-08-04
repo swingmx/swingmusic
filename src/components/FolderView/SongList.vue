@@ -22,7 +22,7 @@
         <div class="text">No tracks here</div>
       </div>
     </div>
-    <div class="copyright" v-if="copyright">
+    <div class="copyright" v-if="copyright()">
       {{ copyright() }}
     </div>
   </div>

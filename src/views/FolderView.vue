@@ -6,13 +6,17 @@
           <h3><FolderSvg /> {{ getFolderName($route) }}</h3>
         </div>
         <img
-          src="../assets/images/one.jpg"
+          src="../assets/images/folder.webp"
           alt="folder page banner"
           class="rounded"
         />
       </div>
       <FolderList :folders="FStore.dirs" v-if="FStore.dirs.length" />
-      <SongList :tracks="FStore.tracks" :path="FStore.path" />
+      <SongList
+        :tracks="FStore.tracks"
+        :path="FStore.path"
+        :copyright="() => null"
+      />
     </div>
   </div>
 </template>
