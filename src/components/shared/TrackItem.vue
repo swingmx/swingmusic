@@ -23,11 +23,11 @@
       ></div>
     </div>
     <div class="tags">
-      <div class="title ellip cap-first">
+      <div class="title ellip">
        {{ props.track.title }}
       </div>
       <hr />
-      <div class="artist ellip cap-first">
+      <div class="artist ellip">
         <span v-for="artist in putCommas(props.track.artists)" :key="artist">{{
           artist
         }}</span>
@@ -37,11 +37,11 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
 import { ContextSrc } from "@/composables/enums";
 import { putCommas } from "@/composables/perks";
 import trackContext from "@/contexts/track_context";
 import { Track } from "@/interfaces";
+import { ref } from "vue";
 
 import { paths } from "@/config";
 import useContextStore from "@/stores/context";

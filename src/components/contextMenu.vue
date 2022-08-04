@@ -25,7 +25,7 @@
       @click="option.action()"
     >
       <div class="icon image" :class="option.icon"></div>
-      <div class="label ellip cap-first">{{ option.label }}</div>
+      <div class="label ellip">{{ option.label }}</div>
       <div class="more image" v-if="option.children"></div>
       <div class="children rounded shadow-sm" v-if="option.children">
         <div
@@ -35,7 +35,7 @@
           :class="[{ critical: child.critical }, child.type]"
           @click="child.action()"
         >
-          <div class="label ellip cap-first">
+          <div class="label ellip">
             {{ child.label }}
           </div>
         </div>
@@ -91,6 +91,10 @@ const context = useContextStore();
       background-color: $context;
       transform: scale(0);
       transform-origin: top left;
+
+      .context-item {
+        padding: $small 1rem;
+      }
     }
 
     .icon {

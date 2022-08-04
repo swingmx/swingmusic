@@ -19,7 +19,7 @@
           <span v-else-if="album.is_single">Single</span>
           <span v-else>Album</span>
         </div>
-        <div class="title ellip cap-first">
+        <div class="title ellip">
           {{ album.title }}
         </div>
       </div>
@@ -41,15 +41,15 @@
 
 <script setup lang="ts">
 import useVisibility from "@/composables/useVisibility";
+import { paths } from "@/config";
 import useNavStore from "@/stores/nav";
 import useAlbumStore from "@/stores/pages/album";
 import { ref } from "vue";
+import { getButtonColor, isLight } from "../../composables/colors/album";
 import { playSources } from "../../composables/enums";
 import { formatSeconds } from "../../composables/perks";
-import { paths } from "@/config";
 import { AlbumInfo } from "../../interfaces";
 import PlayBtnRect from "../shared/PlayBtnRect.vue";
-import { getButtonColor, isLight } from "../../composables/colors/album";
 
 const props = defineProps<{
   album: AlbumInfo;

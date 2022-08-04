@@ -3,7 +3,7 @@
     <div class="tab-buttons-wrapper">
       <div id="tabheaders" class="rounded noscroll">
         <div
-          class="tab cap-first"
+          class="tab"
           v-for="slot in $slots.default()"
           :key="slot.key"
           @click="s.changeTab(slot.props.name)"

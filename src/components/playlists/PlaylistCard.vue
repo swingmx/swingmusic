@@ -11,7 +11,7 @@
       }"
     ></div>
     <div class="bottom">
-      <div class="name ellip cap-first">{{ props.playlist.name }}</div>
+      <div class="name ellip">{{ props.playlist.name }}</div>
       <div class="count">
         <span v-if="props.playlist.count == 0">No Tracks</span>
         <span v-else-if="props.playlist.count == 1"
@@ -24,8 +24,8 @@
 </template>
 
 <script setup lang="ts">
-import { Playlist } from "../../interfaces";
 import { paths } from "../../config";
+import { Playlist } from "../../interfaces";
 
 const imguri = paths.images.playlist;
 

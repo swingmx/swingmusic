@@ -4,7 +4,7 @@
       <div class="icon image" :class="from.icon"></div>
       Playing from
     </div>
-    <div class="name cap-first">
+    <div class="name">
       <div id="to">
         {{ from.text }}
       </div>
@@ -13,15 +13,13 @@
 </template>
 
 <script setup lang="ts">
-import {
-  fromFolder,
-  fromAlbum,
-  fromPlaylist,
-  fromSearch,
-} from "@/interfaces";
 import { FromOptions } from "@/composables/enums";
-import { useRouter } from "vue-router";
+import {
+fromAlbum, fromFolder, fromPlaylist,
+fromSearch
+} from "@/interfaces";
 import { computed } from "@vue/reactivity";
+import { useRouter } from "vue-router";
 
 const props = defineProps<{
   from: fromFolder | fromAlbum | fromPlaylist | fromSearch;
