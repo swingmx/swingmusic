@@ -25,12 +25,14 @@
 </template>
 
 <script setup lang="ts">
-import TrackItem from "../shared/TrackItem.vue";
-import useQStore from "@/stores/queue";
-import PlayingFrom from "./Queue/playingFrom.vue";
-import UpNext from "./Queue/upNext.vue";
 import { onUpdated, ref } from "vue";
-import { focusElem } from "@/composables/perks";
+
+import { focusElem } from "@/utils";
+import useQStore from "@/stores/queue";
+
+import UpNext from "./Queue/upNext.vue";
+import TrackItem from "../shared/TrackItem.vue";
+import PlayingFrom from "./Queue/playingFrom.vue";
 import QueueActions from "./Queue/QueueActions.vue";
 
 const queue = useQStore();

@@ -15,7 +15,6 @@
       <SongList
         :tracks="FStore.tracks"
         :path="FStore.path"
-        :copyright="null"
       />
     </div>
   </div>

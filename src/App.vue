@@ -21,25 +21,27 @@
 </template>
 
 <script setup lang="ts">
-import { onStartTyping } from "@vueuse/core";
+import { onMounted } from "vue";
 import { useRouter } from "vue-router";
+import { onStartTyping } from "@vueuse/core";
 
-import useContextStore from "@/stores/context";
 import useQStore from "@/stores/queue";
 import useModalStore from "@/stores/modal";
-import useShortcuts from "@/composables/useKeyboard";
+import useContextStore from "@/stores/context";
+import handleShortcuts from "@/composables/useKeyboard";
 
-import ContextMenu from "@/components/contextMenu.vue";
-import Navigation from "@/components/LeftSidebar/Navigation.vue";
-import nowPlaying from "@/components/LeftSidebar/nowPlaying.vue";
 import Logo from "@/components/Logo.vue";
 import Modal from "@/components/modal.vue";
 import NavBar from "@/components/nav/NavBar.vue";
+import Tabs from "@/components/RightSideBar/Tabs.vue";
+import ContextMenu from "@/components/contextMenu.vue";
 import Notification from "@/components/Notification.vue";
+import Navigation from "@/components/LeftSidebar/Navigation.vue";
+import nowPlaying from "@/components/LeftSidebar/nowPlaying.vue";
 import RightSideBar from "@/components/RightSideBar/Main.vue";
 import SearchInput from "@/components/RightSideBar/SearchInput.vue";
-import Tabs from "@/components/RightSideBar/Tabs.vue";
-import { onMounted } from "vue";
+
+import { readLocalStorage, writeLocalStorage } from "@/utils";
 
 const queue = useQStore();
 const router = useRouter();
@@ -48,7 +50,7 @@ const context_store = useContextStore();
 const app_dom = document.getElementById("app");
 
 queue.readQueue();
-useShortcuts(useQStore);
+handleShortcuts(useQStore);
 
 app_dom.addEventListener("click", (e) => {
   if (context_store.visible) {
@@ -66,8 +68,21 @@ onStartTyping(() => {
   elem.value = "";
 });
 
+function handleWelcomeModal() {
+  let welcomeShowCount = readLocalStorage("shown-welcome-message");
+
+  if (!welcomeShowCount) {
+    welcomeShowCount = 0;
+  }
+
+  if (welcomeShowCount < 2) {
+    modal.showWelcomeModal();
+    writeLocalStorage("shown-welcome-message", welcomeShowCount + 1);
+  }
+}
+
 onMounted(() => {
-  modal.showWelcomeModal();
+  handleWelcomeModal();
 });
 </script>
 

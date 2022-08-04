@@ -3,25 +3,25 @@
     <div class="art-tags">
       <div class="duration">{{ formatSeconds(current.length) }}</div>
       <div
-          :style="{
+        :style="{
           backgroundImage: `url(&quot;${current.image}&quot;)`,
         }"
-          class="album-art image bg-black"
+        class="album-art image bg-black"
       ></div>
       <div class="t-a">
         <p id="title" class="ellipsis">{{ current.title }}</p>
         <div class="separator no-bg-black"></div>
         <div v-if="current.artists[0] !== ''" id="artist" class="ellip">
           <span v-for="artist in putCommas(current.artists)" :key="artist">{{
-              artist
-            }}</span>
+            artist
+          }}</span>
         </div>
         <div v-else id="artist">
           <span>{{ current.albumartist }}</span>
         </div>
         <div id="type">
           <span v-if="current.bitrate > 330"
-          >FLAC • {{ current.bitrate }} Kbps</span
+            >FLAC • {{ current.bitrate }} Kbps</span
           >
           <span v-else>MP3 | {{ current.bitrate }} Kbps</span>
         </div>
@@ -29,7 +29,7 @@
     </div>
     <div class="progress">
       <div class="prog">
-        <Progress/>
+        <Progress />
       </div>
     </div>
     <div class="c-wrapper rounded">
@@ -38,7 +38,7 @@
           <div class="image"></div>
           <div class="image"></div>
         </div>
-        <HotKeys/>
+        <HotKeys />
         <div class="fav">
           <div class="image"></div>
           <div class="image"></div>
@@ -49,9 +49,11 @@
 </template>
 
 <script>
+import { ref } from "@vue/reactivity";
+
 import playAudio from "@/composables/playAudio.js";
-import {ref} from "@vue/reactivity";
-import {putCommas, formatSeconds} from "../../composables/perks.js";
+import { formatSeconds, putCommas } from "@/utils";
+
 import HotKeys from "../shared/HotKeys.vue";
 import Progress from "../shared/Progress.vue";
 
@@ -60,9 +62,9 @@ export default {
     const current = ref(perks.current);
     const putCommas = perks.putCommas;
 
-    const {playNext} = playAudio;
-    const {playPrev} = playAudio;
-    const {playPause} = playAudio;
+    const { playNext } = playAudio;
+    const { playPrev } = playAudio;
+    const { playPause } = playAudio;
     const isPlaying = playAudio.playing;
 
     const seek = () => {
@@ -80,7 +82,7 @@ export default {
       formatSeconds: perks.formatSeconds,
     };
   },
-  components: {Progress, HotKeys},
+  components: { Progress, HotKeys },
 };
 </script>
 

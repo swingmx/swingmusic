@@ -28,7 +28,7 @@ import Search from "./Search.vue";
 import { useRoute } from "vue-router";
 import { ref, watch } from "vue";
 import { Routes } from "@/composables/enums";
-import createSubPaths from "@/composables/createSubPaths";
+import { createSubPaths } from "@/utils";
 import { subPath } from "@/interfaces";
 import Folder from "./Titles/Folder.vue";
 import Playlists from "./Titles/Playlists.vue";

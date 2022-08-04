@@ -40,15 +40,16 @@
 </template>
 
 <script setup lang="ts">
-import useVisibility from "@/composables/useVisibility";
+import { ref } from "vue";
+
 import { paths } from "@/config";
 import useNavStore from "@/stores/nav";
-import useAlbumStore from "@/stores/pages/album";
-import { ref } from "vue";
-import { getButtonColor, isLight } from "../../composables/colors/album";
-import { playSources } from "../../composables/enums";
-import { formatSeconds } from "../../composables/perks";
 import { AlbumInfo } from "../../interfaces";
+import useAlbumStore from "@/stores/pages/album";
+import { playSources } from "../../composables/enums";
+import { useVisibility, formatSeconds } from "@/utils";
+import { getButtonColor, isLight } from "../../composables/colors/album";
+
 import PlayBtnRect from "../shared/PlayBtnRect.vue";
 
 const props = defineProps<{

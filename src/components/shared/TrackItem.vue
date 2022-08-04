@@ -24,7 +24,7 @@
     </div>
     <div class="tags">
       <div class="title ellip">
-       {{ props.track.title }}
+        {{ props.track.title }}
       </div>
       <hr />
       <div class="artist ellip">
@@ -37,16 +37,17 @@
 </template>
 
 <script setup lang="ts">
-import { ContextSrc } from "@/composables/enums";
-import { putCommas } from "@/composables/perks";
-import trackContext from "@/contexts/track_context";
-import { Track } from "@/interfaces";
 import { ref } from "vue";
 
-import { paths } from "@/config";
-import useContextStore from "@/stores/context";
 import useModalStore from "@/stores/modal";
 import useQueueStore from "@/stores/queue";
+import useContextStore from "@/stores/context";
+import trackContext from "@/contexts/track_context";
+
+import { paths } from "@/config";
+import { putCommas } from "@/utils";
+import { Track } from "@/interfaces";
+import { ContextSrc } from "@/composables/enums";
 
 const contextStore = useContextStore();
 const imguri = paths.images.thumb;

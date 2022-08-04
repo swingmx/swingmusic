@@ -39,7 +39,7 @@
 </template>
 
 <script setup lang="ts">
-import { putCommas } from "../../composables/perks";
+import { putCommas } from "@/utils";
 import { paths } from "../../config";
 import { Track } from "../../interfaces";
 const imguri = paths.images.thumb;

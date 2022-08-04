@@ -22,19 +22,21 @@
 </template>
 
 <script setup lang="ts">
-import { ContextSrc } from "@/composables/enums";
-import trackContext from "@/contexts/track_context";
-import useContextStore from "@/stores/context";
+import { ref } from "vue";
+
 import useModalStore from "@/stores/modal";
 import useQueueStore from "@/stores/queue";
-import MenuSvg from "../../assets/icons/more.svg";
 import useQStore from "../../stores/queue";
+import useContextStore from "@/stores/context";
+import MenuSvg from "../../assets/icons/more.svg";
+import trackContext from "@/contexts/track_context";
+
+import { ContextSrc } from "@/composables/enums";
+import { formatSeconds } from "@/utils";
+
 import HotKeys from "./NP/HotKeys.vue";
 import Progress from "./NP/Progress.vue";
 import SongCard from "./SongCard.vue";
-import { formatSeconds } from "@/composables/perks";
-
-import { ref } from "vue";
 
 const queue = useQStore();
 const contextStore = useContextStore();

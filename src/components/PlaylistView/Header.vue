@@ -47,19 +47,21 @@
 </template>
 
 <script setup lang="ts">
-import useVisibility from "@/composables/useVisibility";
-import useNavStore from "@/stores/nav";
-import usePStore from "@/stores/pages/playlist";
 import { ref } from "vue";
-import { ContextSrc, playSources } from "../../composables/enums";
-import { paths } from "../../config";
-import pContext from "../../contexts/playlist";
-import { Playlist } from "../../interfaces";
-import useContextStore from "../../stores/context";
+
+import useNavStore from "@/stores/nav";
 import useModalStore from "../../stores/modal";
+import pContext from "../../contexts/playlist";
+import usePStore from "@/stores/pages/playlist";
+import useContextStore from "../../stores/context";
+
+import { paths } from "../../config";
+import { Playlist } from "../../interfaces";
+import { useVisibility, formatSeconds } from "@/utils";
+import { ContextSrc, playSources } from "@/composables/enums";
+
 import Option from "../shared/Option.vue";
 import PlayBtnRect from "../shared/PlayBtnRect.vue";
-import { formatSeconds } from "@/composables/perks";
 
 const imguri = paths.images.playlist;
 const context = useContextStore();

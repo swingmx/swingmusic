@@ -10,7 +10,7 @@ import {
   loadMoreArtists,
 } from "../composables/fetch/searchMusic";
 import { watch } from "vue";
-import useDebouncedRef from "../composables/useDebouncedRef";
+import useDebouncedRef from "../utils/useDebouncedRef";
 import useTabStore from "./tabs";
 /**
  *

@@ -1,4 +1,4 @@
-import { customRef, ref } from "vue";
+import { customRef, Ref, ref } from "vue";
 
 /**
  * Debounces a function
@@ -6,11 +6,14 @@ import { customRef, ref } from "vue";
  * @param {*} fn The function to debounce
  * @param {*} delay The delay in milliseconds
  * @param {*} immediate whether to debounce immediately
- * @returns {Function} The debounced function
  */
-const debounce = (fn, delay = 0, immediate = false) => {
-  let timeout;
-  return (...args) => {
+const debounce = (
+  fn: (...params: any) => void,
+  delay: number = 0,
+  immediate: any = false
+) => {
+  let timeout: any;
+  return (...args: any) => {
     if (immediate && !timeout) fn(...args);
     clearTimeout(timeout);
 
@@ -28,7 +31,11 @@ const debounce = (fn, delay = 0, immediate = false) => {
  * @param {*} immediate Whether to call the function immediately
  * @returns {Object} The ref and a function to call to update the ref
  */
-const useDebouncedRef = (initialValue, delay, immediate = false) => {
+const useDebouncedRef = (
+  initialValue: string,
+  delay: number,
+  immediate = false
+) => {
   const state = ref(initialValue);
   return customRef((track, trigger) => ({
     get() {

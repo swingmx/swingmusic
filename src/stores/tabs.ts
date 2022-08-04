@@ -1,5 +1,5 @@
 import { defineStore } from "pinia";
-import { focusElem } from "../composables/perks";
+import { focusElem } from "@/utils";
 
 const tablist = {
   home: "home",

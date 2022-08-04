@@ -30,7 +30,7 @@
 
 <script setup lang="ts">
 import { onMounted, ref } from "vue";
-import useVisibility from "@/composables/useVisibility";
+import { useVisibility } from "@/utils";
 import useNavStore from "@/stores/nav";
 import { onBeforeRouteUpdate, RouteParams, useRoute } from "vue-router";
 

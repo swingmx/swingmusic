@@ -23,7 +23,7 @@
 
 <script setup lang="ts">
 import "@/assets/scss/BottomBar/BottomBar.scss";
-import { formatSeconds } from "@/composables/perks";
+import { formatSeconds } from "@/utils";
 import HotKeys from "../LeftSidebar/NP/HotKeys.vue";
 import Progress from "../LeftSidebar/NP/Progress.vue";
 

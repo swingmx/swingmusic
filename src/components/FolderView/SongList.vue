@@ -33,7 +33,7 @@ import { onBeforeRouteUpdate, useRoute } from "vue-router";
 
 import SongItem from "../shared/SongItem.vue";
 
-import { focusElem } from "@/composables/perks";
+import { focusElem } from "@/utils";
 import { onMounted, onUpdated, ref } from "vue";
 import { Track } from "@/interfaces";
 import useQStore from "@/stores/queue";

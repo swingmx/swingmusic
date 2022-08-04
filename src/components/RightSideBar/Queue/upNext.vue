@@ -22,8 +22,8 @@
 </template>
 
 <script setup lang="ts">
-import { putCommas } from "@/composables/perks";
 import { paths } from "@/config";
+import { putCommas } from "@/utils";
 import { Track } from "@/interfaces";
 
 const imguri = paths.images.thumb;

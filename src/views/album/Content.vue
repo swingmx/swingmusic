@@ -20,7 +20,7 @@ const props = defineProps<{
   discs: {
     [key: string]: Track[];
   };
-  copyright: string;
+  copyright?: string;
 }>();
 
 // check if the disc is the last disc

@@ -1,7 +1,7 @@
 <template>
   <div class="songlist rounded">
     <div v-if="tracks.length">
-      <SongList :tracks="tracks" :pname="name" :playlistid="playlistid" />
+      <SongList :tracks="tracks" :pname="name" :playlistid="playlistid"/>
     </div>
     <div v-else-if="tracks.length === 0 && count > 0">
       <div class="no-results">

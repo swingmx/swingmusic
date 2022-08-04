@@ -22,7 +22,7 @@
 </template>
 
 <script setup lang="ts">
-import { focusElem } from "@/composables/perks";
+import { focusElem } from "@/utils";
 import { subPath } from "@/interfaces";
 import { onUpdated } from "vue";
 
