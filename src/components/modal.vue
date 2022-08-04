@@ -16,6 +16,7 @@
         @hideModal="hideModal"
         @title="title"
       />
+      <WelcomeModal v-if="modal.component == modal.options.welcome" />
     </div>
   </div>
 </template>
@@ -24,6 +25,7 @@
 import useModalStore from "../stores/modal";
 import NewPlaylist from "./modals/NewPlaylist.vue";
 import UpdatePlaylist from "./modals/updatePlaylist.vue";
+import WelcomeModal from "./WelcomeModal.vue";
 
 const modal = useModalStore();
 

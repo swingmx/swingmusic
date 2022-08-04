@@ -22,7 +22,12 @@
 
 <script setup lang="ts">
 import { onStartTyping } from "@vueuse/core";
-import { RouteLocationNormalized, useRoute, useRouter } from "vue-router";
+import { useRouter } from "vue-router";
+
+import useContextStore from "@/stores/context";
+import useQStore from "@/stores/queue";
+import useModalStore from "@/stores/modal";
+import useShortcuts from "@/composables/useKeyboard";
 
 import ContextMenu from "@/components/contextMenu.vue";
 import Navigation from "@/components/LeftSidebar/Navigation.vue";
@@ -34,15 +39,13 @@ import Notification from "@/components/Notification.vue";
 import RightSideBar from "@/components/RightSideBar/Main.vue";
 import SearchInput from "@/components/RightSideBar/SearchInput.vue";
 import Tabs from "@/components/RightSideBar/Tabs.vue";
-import useContextStore from "@/stores/context";
-import useQStore from "@/stores/queue";
+import { onMounted } from "vue";
 
-import useShortcuts from "@/composables/useKeyboard";
-
-const context_store = useContextStore();
 const queue = useQStore();
-const app_dom = document.getElementById("app");
 const router = useRouter();
+const modal = useModalStore();
+const context_store = useContextStore();
+const app_dom = document.getElementById("app");
 
 queue.readQueue();
 useShortcuts(useQStore);
@@ -61,6 +64,10 @@ onStartTyping(() => {
   const elem = document.getElementById("globalsearch") as HTMLInputElement;
   elem.focus();
   elem.value = "";
+});
+
+onMounted(() => {
+  modal.showWelcomeModal();
 });
 </script>
 

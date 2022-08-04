@@ -4,6 +4,7 @@ import { Playlist, Track } from "../interfaces";
 enum ModalOptions {
   newPlaylist = "newPlaylist",
   updatePlaylist = "editPlaylist",
+  welcome = "welcome",
 }
 
 export default defineStore("newModal", {
@@ -25,12 +26,16 @@ export default defineStore("newModal", {
       if (track) {
         this.props.track = track;
       }
-      
+
       this.visible = true;
     },
     showEditPlaylistModal(playlist: Playlist) {
       this.component = ModalOptions.updatePlaylist;
       this.props = playlist;
+      this.visible = true;
+    },
+    showWelcomeModal() {
+      this.component = ModalOptions.welcome;
       this.visible = true;
     },
     hideModal() {
