@@ -6,13 +6,7 @@
         :tracks="disc"
         :on_album_page="true"
         :disc="key"
-        :copyright="
-          () => {
-            if (isLastDisc(key)) {
-              return copyright;
-            }
-          }
-        "
+        :copyright="isLastDisc(key) ? () => copyright : null"
       />
     </div>
   </div>

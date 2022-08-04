@@ -43,7 +43,7 @@ const defaultTrack = <Track>{
   albumhash: " ",
   artists: ["Alice"],
   trackid: "",
-  image: "",
+  image: "meh",
 };
 
 type From = fromFolder | fromAlbum | fromPlaylist | fromSearch;

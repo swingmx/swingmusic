@@ -55,6 +55,10 @@ function isSameRoute(to: r, from: r) {
  * @param long Whether to provide the time in the long format
  */
 function formatSeconds(seconds: number, long?: boolean) {
+  if (seconds == undefined) {
+    return "00:00";
+  }
+
   const date = new Date(seconds * 1000);
 
   const hh = date.getUTCHours();

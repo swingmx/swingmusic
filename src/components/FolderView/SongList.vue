@@ -22,7 +22,7 @@
         <div class="text">No tracks here</div>
       </div>
     </div>
-    <div class="copyright" v-if="copyright()">
+    <div class="copyright" v-if="copyright">
       {{ copyright() }}
     </div>
   </div>
@@ -49,7 +49,7 @@ const props = defineProps<{
   playlistid?: string;
   on_album_page?: boolean;
   disc?: string | number;
-  copyright?: () => string;
+  copyright?: (() => string) | null;
 }>();
 
 const route = useRoute();
