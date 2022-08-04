@@ -95,6 +95,10 @@ const context = useContextStore();
       .context-item {
         padding: $small 1rem;
       }
+
+      .separator {
+        padding: 0;
+      }
     }
 
     .icon {
