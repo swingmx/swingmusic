@@ -3,7 +3,7 @@
     <h3 class="t-center">
       Welcome to
       <span class="app-name">Alice</span>
-      <span class="release">alpha</span>
+      <span class="release">0.1.0</span>
     </h3>
     <p>
       Alice is a web based music player that is designed to provide a home 🏡 for
@@ -31,7 +31,7 @@
       <div class="t-center">How to enable loading mixed content in</div>
       <div class="button-group">
         <a
-          href="https://support.mozilla.org/en-US/kb/enable-javascript-to-load-mixed-content-sites-like-https-and-http"
+          href="https://support.mozilla.org/en-US/kb/mixed-content-blocking-firefox"
           target="_blank"
         >
           <button>🦊 Firefox</button>
