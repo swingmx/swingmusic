@@ -9,10 +9,10 @@
     "l-sidebar content tabs";
   align-content: center;
   max-width: 2720px;
-  height: calc(100vh - 1rem);
+  height: 100vh;
   margin: 0 auto;
   gap: 1rem;
-  margin: $small;
+  padding: $small;
 }
 
 #acontent {

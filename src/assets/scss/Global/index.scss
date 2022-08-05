@@ -1,5 +1,6 @@
 @import "./app-grid.scss", "./controls.scss", "./inputs.scss",
-  "./scrollbars.scss", "./state.scss", "./variants.scss", "./basic.scss";
+  "./scrollbars.scss", "./state.scss", "./variants.scss", "./basic.scss",
+  "./light-mode.scss";
 
 :root {
   --separator: #ffffff46;
@@ -12,12 +13,15 @@
 
 body {
   margin: 0;
-  background-color: $body;
   color: #fff;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica,
     Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
-  font-family: "SF Compact Display" !important;
+  font-family: "SF Compact Display";
   font-size: 1rem;
   overflow: hidden;
   image-rendering: -webkit-optimize-contrast;
+}
+
+#app {
+  background-color: $body;
 }

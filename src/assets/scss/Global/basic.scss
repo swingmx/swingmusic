@@ -50,6 +50,11 @@ a {
   color: #fff;
 }
 
+::selection {
+  background: $blue;
+  color: $white;
+}
+
 button {
   border: none;
   font-size: 0.9rem !important;
@@ -64,6 +69,11 @@ button {
   &:hover {
     background-image: linear-gradient(70deg, #234ece, $darkblue);
   }
+}
+
+img {
+  pointer-events: none;
+  user-select: none;
 }
 
 .btn-active {

@@ -1,6 +1,6 @@
 <template>
   <div
-    class="a-header rounded"
+    class="a-header rounded ignore-lm"
     ref="albumheaderthing"
     :style="{
       backgroundImage: `linear-gradient(

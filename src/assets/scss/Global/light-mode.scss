@@ -1,0 +1,47 @@
+$invertcontextblue: #dcb131;
+
+#app {
+  filter: invert(100%);
+
+  ::selection {
+    background: $invertblue;
+    color: $black;
+  }
+
+  img {
+    filter: invert(100%);
+  }
+
+  .context-menu {
+    background-color: $black;
+    color: $white;
+
+    .children {
+      background-color: $black;
+    }
+
+    .context-item {
+      color: $white;
+
+      &:hover {
+        background-color: $invertcontextblue;
+        color: $black;
+      }
+    }
+  }
+
+  background-color: $light;
+}
+
+.force-lm {
+  filter: invert(0%) !important;
+}
+
+.ignore-lm {
+  filter: invert(100%) !important;
+
+  ::selection {
+    background: $blue !important;
+    color: $white !important;
+  }
+}
