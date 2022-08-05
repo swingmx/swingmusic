@@ -10,7 +10,7 @@
     </div>
     <div class="separator no-border"></div>
     <div>
-      <SongCard :track="queue.tracks[queue.current]" />
+      <SongCard :track="queue.currenttrack" />
       <div class="l-track-time">
         <span class="rounded">{{ formatSeconds(queue.duration.current) }}</span
         ><span class="rounded">{{ formatSeconds(queue.duration.full) }}</span>
@@ -36,7 +36,7 @@ import { formatSeconds } from "@/utils";
 
 import HotKeys from "./NP/HotKeys.vue";
 import Progress from "./NP/Progress.vue";
-import SongCard from "./SongCard.vue";
+import SongCard from "./NP/SongCard.vue";
 
 const queue = useQStore();
 const contextStore = useContextStore();

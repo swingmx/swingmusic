@@ -1,7 +1,5 @@
 import { RouteLocationNormalized } from "vue-router";
 
-
-
 function getElem(id: string, type: string) {
   switch (type) {
     case "class": {

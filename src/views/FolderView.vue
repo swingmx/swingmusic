@@ -12,10 +12,7 @@
         />
       </div>
       <FolderList :folders="FStore.dirs" v-if="FStore.dirs.length" />
-      <SongList
-        :tracks="FStore.tracks"
-        :path="FStore.path"
-      />
+      <SongList :tracks="FStore.tracks" :path="FStore.path" />
     </div>
   </div>
 </template>
@@ -79,6 +76,8 @@ onBeforeRouteUpdate((to, from) => {
     position: relative;
     height: max-content;
     height: $banner-height;
+    pointer-events: none;
+    user-select: none;
 
     .text {
       bottom: 1rem;

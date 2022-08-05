@@ -1,16 +1,16 @@
 import { defineStore } from "pinia";
 import state from "../composables/state";
-import { useNotifStore, NotifType } from "./notification";
+import { NotifType, useNotifStore } from "./notification";
 
+import { FromOptions } from "../composables/enums";
+import notif from "../composables/mediaNotification";
 import {
-  Track,
-  fromFolder,
   fromAlbum,
+  fromFolder,
   fromPlaylist,
   fromSearch,
+  Track,
 } from "../interfaces";
-import notif from "../composables/mediaNotification";
-import { FromOptions } from "../composables/enums";
 
 function writeQueue(
   from: fromFolder | fromAlbum | fromPlaylist,
@@ -61,13 +61,14 @@ export default defineStore("Queue", {
     prev: 0,
     currentid: "",
     playing: false,
-    from: <From>{},
-    tracks: <Track[]>[defaultTrack],
+    from: {} as From,
+    currenttrack: {} as Track,
+    tracks: [defaultTrack] as Track[],
   }),
   actions: {
     play(index: number = 0) {
-      const track = this.tracks[index];
       this.current = index;
+      const track = this.tracks[index];
       this.currentid = track.trackid;
       const uri = state.settings.uri + "/file/" + track.trackid;
       const elem = document.getElementById("progress");
@@ -165,6 +166,7 @@ export default defineStore("Queue", {
     setCurrent(index: number) {
       const track = this.tracks[index];
 
+      this.currenttrack = track;
       this.current = index;
       this.currentid = track.trackid;
       this.duration.full = track.length;
@@ -250,7 +252,9 @@ export default defineStore("Queue", {
       this.next = 0;
       this.prev = 0;
       this.from = <From>{};
-      console.log(this.current);
+
+      writeQueue(this.from, [defaultTrack] as Track[]);
+      writeCurrent(0);
     },
   },
 });

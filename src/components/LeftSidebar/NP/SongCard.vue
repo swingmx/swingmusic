@@ -11,11 +11,15 @@
           }"
         >
           <div class="art">
-            <img :src="imguri + track.image" alt="" class="l-image rounded" />
+            <img
+              :src="imguri + track.image"
+              alt=""
+              class="l-image rounded force-lm"
+            />
           </div>
         </router-link>
 
-        <div id="bitrate">
+        <div id="bitrate" v-if="track.bitrate">
           <span v-if="track.bitrate > 1500">MASTER</span>
           <span v-else-if="track.bitrate > 330">FLAC</span>
           <span v-else>MP3</span>
@@ -40,8 +44,8 @@
 
 <script setup lang="ts">
 import { putCommas } from "@/utils";
-import { paths } from "../../config";
-import { Track } from "../../interfaces";
+import { paths } from "../../../config";
+import { Track } from "../../../interfaces";
 const imguri = paths.images.thumb;
 
 const props = defineProps<{
