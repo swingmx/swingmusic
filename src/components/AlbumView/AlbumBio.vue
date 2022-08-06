@@ -7,9 +7,15 @@
           class="rect rounded"
           :src="paths.images.thumb + images.album"
           alt=""
+          loading="lazy"
         />
         <div class="circle"></div>
-        <img class="circle" :src="paths.images.artist + images.artist" alt="" />
+        <img
+          class="circle"
+          :src="paths.images.artist + images.artist"
+          alt=""
+          loading="lazy"
+        />
       </div>
       <div class="bio rounded bg-black" v-html="bio" v-if="bio"></div>
       <div class="bio rounded bg-black" v-else>No bio found</div>

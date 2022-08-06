@@ -16,6 +16,7 @@
     <div class="flex">
       <div @click="emitUpdate(track)" class="thumbnail">
         <img
+          loading="lazy"
           :src="imguri + track.image"
           alt=""
           class="album-art image rounded"

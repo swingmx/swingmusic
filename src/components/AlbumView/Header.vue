@@ -9,7 +9,12 @@
     }"
   >
     <div class="art rounded">
-      <img :src="imguri + album.image" alt="" class="rounded shadow-lg" />
+      <img
+        :src="imguri + album.image"
+        alt=""
+        class="rounded shadow-lg"
+        loading="lazy"
+      />
     </div>
     <div class="info" :class="{ nocontrast: isLight(album.colors[0]) }">
       <div class="top">

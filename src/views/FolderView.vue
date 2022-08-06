@@ -7,8 +7,9 @@
         </div>
         <img
           src="../assets/images/folder.webp"
-          alt="folder page banner"
+          alt=""
           class="rounded"
+          loading="lazy"
         />
       </div>
       <FolderList :folders="FStore.dirs" v-if="FStore.dirs.length" />

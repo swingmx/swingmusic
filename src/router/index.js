@@ -18,7 +18,7 @@ const routes = [
     path: "/",
     name: "Home",
     component: Home,
-    redirect: '/folder/$home'
+    redirect: "/folder/$home",
   },
   {
     path: "/folder/:path",
@@ -26,8 +26,11 @@ const routes = [
     component: FolderView,
     beforeEnter: async (to) => {
       state.loading.value = true;
-      await useFStore().fetchAll(to.params.path);
-      state.loading.value = false;
+      await useFStore()
+        .fetchAll(to.params.path)
+        .then(() => {
+          state.loading.value = false;
+        });
     },
   },
   {
@@ -40,8 +43,11 @@ const routes = [
     component: Playlists,
     beforeEnter: async () => {
       state.loading.value = true;
-      await usePStore().fetchAll();
-      state.loading.value = false;
+      await usePStore()
+        .fetchAll()
+        .then(() => {
+          state.loading.value = false;
+        });
     },
   },
   {
@@ -50,8 +56,11 @@ const routes = [
     component: PlaylistView,
     beforeEnter: async (to) => {
       state.loading.value = true;
-      await usePTrackStore().fetchAll(to.params.pid);
-      state.loading.value = false;
+      await usePTrackStore()
+        .fetchAll(to.params.pid)
+        .then(() => {
+          state.loading.value = false;
+        });
     },
   },
   {
@@ -65,8 +74,11 @@ const routes = [
     component: AlbumView,
     beforeEnter: async (to) => {
       state.loading.value = true;
-      await useAStore().fetchTracksAndArtists(to.params.hash);
-      state.loading.value = false;
+      await useAStore()
+        .fetchTracksAndArtists(to.params.hash)
+        .then(() => {
+          state.loading.value = false;
+        });
     },
   },
   {

@@ -1,6 +1,11 @@
 <template>
   <div class="xartist" :class="{ _is_on_sidebar: alt }">
-    <img class="artist-image shadow-sm" :src="imguri + artist.image" alt="" />
+    <img
+      class="artist-image shadow-sm"
+      :src="imguri + artist.image"
+      alt=""
+      loading="lazy"
+    />
     <div>
       <p class="artist-name t-center ellipsis">{{ artist.name }}</p>
     </div>

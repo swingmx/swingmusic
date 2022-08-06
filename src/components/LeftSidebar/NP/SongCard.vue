@@ -15,6 +15,7 @@
               :src="imguri + track.image"
               alt=""
               class="l-image rounded force-lm"
+              loading="lazy"
             />
           </div>
         </router-link>
