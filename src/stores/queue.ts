@@ -121,8 +121,7 @@ export default defineStore("Queue", {
     },
     seek(pos: number) {
       try {
-        const a = (pos / 100) * this.audio.duration;
-        this.audio.currentTime = a;
+        this.audio.currentTime = pos;
       } catch (error) {
         if (error instanceof TypeError) {
           console.error("Seek error: no audio");
