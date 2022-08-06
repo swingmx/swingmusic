@@ -6,8 +6,8 @@
       <span class="release">0.1.0</span>
     </h3>
     <p>
-      Alice is a web based music player that is designed to provide a home 🏡 for
-      all your local music files 💿️.
+      Alice is a web based music player that is designed to provide a home 🏡
+      for all your local music files 💿️.
     </p>
     <hr />
     <p>
@@ -22,8 +22,8 @@
     </p>
     <p>
       On top of that, you need to enable loading mixed content in your browser
-      to to load local images 🖼️. Firefox usually supports this by default, but you
-      may need to enable it in Chrome.
+      to to load local images 🖼️. Firefox usually supports this by default, but
+      you may need to enable it in Chrome.
     </p>
     <hr />
     <br />
@@ -89,7 +89,7 @@
   .bottom-banner {
     font-size: small;
     margin-top: 1rem;
-    opacity: 0.25;
+    opacity: 0.4;
 
     a {
       color: $red;
