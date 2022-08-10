@@ -1,6 +1,6 @@
 <template>
   <div class="r-home">
-    <UpNext :next="queue.tracks[queue.next]" :playNext="queue.playNext" />
+    <UpNext :next="queue.tracklist[queue.next]" :playNext="queue.playNext" />
     <Recommendations />
   </div>
 </template>

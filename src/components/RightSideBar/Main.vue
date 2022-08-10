@@ -27,7 +27,7 @@ const tabs = useTabStore();
 
 <style lang="scss">
 .r-sidebar {
-
+  width: 100%;
 
   @include phone-only {
     display: none;
@@ -38,13 +38,14 @@ const tabs = useTabStore();
   }
 
   .grid {
-    height: 100%;
     display: flex;
     position: relative;
+    height: 100%;
 
     .r-content {
       grid-area: content;
-      width: 29rem;
+      // width: 29rem;
+      width: 100%;
 
       // @include tablet-landscape {
       //   display: none;

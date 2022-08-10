@@ -47,7 +47,7 @@ const showContextMenu = (e: Event) => {
   e.stopPropagation();
 
   const menus = trackContext(
-    queue.tracks[queue.current],
+    queue.tracklist[queue.current],
     useModalStore,
     useQueueStore
   );

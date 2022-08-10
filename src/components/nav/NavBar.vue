@@ -81,14 +81,15 @@ watch(
 .topnav {
   display: grid;
   grid-template-columns: 1fr min-content max-content;
+  width: 100%;
 
   .left {
     display: grid;
     grid-template-columns: max-content 1fr;
+    width: min-content;
+    overflow: scroll;
 
     .info {
-      min-width: 15rem;
-
       .title {
         font-size: 1.5rem;
         font-weight: bold;

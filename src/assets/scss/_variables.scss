@@ -67,8 +67,8 @@ $side-nav-svg: $red;
     @content;
   }
 }
-@mixin for-desktop-up {
-  @media (min-width: 1200px) {
+@mixin for-desktop-down {
+  @media (max-width: 1280px) {
     @content;
   }
 }

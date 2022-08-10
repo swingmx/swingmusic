@@ -63,7 +63,10 @@ onUpdated(() => {
       margin-left: $smaller;
       overflow: auto;
       padding-right: $smaller;
-      color: rgba(255, 255, 255, 0.678);
+
+      @include for-desktop-down {
+        max-width: 9rem;
+      }
 
       .icon {
         height: 2rem;

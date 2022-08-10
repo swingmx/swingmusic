@@ -1,7 +1,7 @@
 <template>
   <div class="up-next">
     <div class="r-grid">
-      <UpNext :next="queue.tracks[queue.next]" :playNext="queue.playNext" />
+      <UpNext :next="queue.tracklist[queue.next]" :playNext="queue.playNext" />
       <div class="scrollable-r bg-black rounded">
         <QueueActions />
         <div
@@ -10,7 +10,7 @@
           @mouseleave="setMouseOver(false)"
         >
           <TrackItem
-            v-for="(t, index) in queue.tracks"
+            v-for="(t, index) in queue.tracklist"
             :key="t.trackid"
             :track="t"
             @playThis="queue.play(index)"

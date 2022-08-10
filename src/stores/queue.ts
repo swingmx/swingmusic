@@ -56,6 +56,11 @@ export default defineStore("Queue", {
       current: 0,
       full: 0,
     },
+    indexes: {
+      current: 0,
+      next: 0,
+      previous: 0,
+    },
     current: 0,
     next: 0,
     prev: 0,
@@ -63,12 +68,12 @@ export default defineStore("Queue", {
     playing: false,
     from: {} as From,
     currenttrack: {} as Track,
-    tracks: [defaultTrack] as Track[],
+    tracklist: [defaultTrack] as Track[],
   }),
   actions: {
     play(index: number = 0) {
       this.current = index;
-      const track = this.tracks[index];
+      const track = this.tracklist[index];
       this.currentid = track.trackid;
       const uri = state.settings.uri + "/file/" + track.trackid;
       const elem = document.getElementById("progress");
@@ -134,7 +139,7 @@ export default defineStore("Queue", {
       if (queue) {
         const parsed = JSON.parse(queue);
         this.from = parsed.from;
-        this.tracks = parsed.tracks;
+        this.tracklist = parsed.tracks;
       }
 
       this.updateCurrent(readCurrent());
@@ -147,7 +152,7 @@ export default defineStore("Queue", {
       writeCurrent(index);
     },
     updateNext(index: number) {
-      if (index == this.tracks.length - 1) {
+      if (index == this.tracklist.length - 1) {
         this.next = 0;
         return;
       }
@@ -156,14 +161,14 @@ export default defineStore("Queue", {
     },
     updatePrev(index: number) {
       if (index === 0) {
-        this.prev = this.tracks.length - 1;
+        this.prev = this.tracklist.length - 1;
         return;
       }
 
       this.prev = index - 1;
     },
     setCurrent(index: number) {
-      const track = this.tracks[index];
+      const track = this.tracklist[index];
 
       this.currenttrack = track;
       this.current = index;
@@ -171,10 +176,10 @@ export default defineStore("Queue", {
       this.duration.full = track.length;
     },
     setNewQueue(tracklist: Track[]) {
-      if (this.tracks !== tracklist) {
-        this.tracks = [];
-        this.tracks.push(...tracklist);
-        writeQueue(this.from, this.tracks);
+      if (this.tracklist !== tracklist) {
+        this.tracklist = [];
+        this.tracklist.push(...tracklist);
+        writeQueue(this.from, this.tracklist);
       }
     },
     playFromFolder(fpath: string, tracks: Track[]) {
@@ -218,17 +223,17 @@ export default defineStore("Queue", {
       this.setNewQueue(tracks);
     },
     addTrackToQueue(track: Track) {
-      this.tracks.push(track);
-      writeQueue(this.from, this.tracks);
+      this.tracklist.push(track);
+      writeQueue(this.from, this.tracklist);
       this.updateNext(this.current);
     },
     playTrackNext(track: Track) {
       const Toast = useNotifStore();
-      if (this.current == this.tracks.length - 1) {
-        this.tracks.push(track);
+      if (this.current == this.tracklist.length - 1) {
+        this.tracklist.push(track);
       } else {
         const nextindex = this.current + 1;
-        const next: Track = this.tracks[nextindex];
+        const next: Track = this.tracklist[nextindex];
 
         if (next.trackid === track.trackid) {
           Toast.showNotification("Track is already queued", NotifType.Info);
@@ -236,16 +241,16 @@ export default defineStore("Queue", {
         }
       }
 
-      this.tracks.splice(this.current + 1, 0, track);
+      this.tracklist.splice(this.current + 1, 0, track);
       this.updateNext(this.current);
       Toast.showNotification(
         `Added ${track.title} to queue`,
         NotifType.Success
       );
-      writeQueue(this.from, this.tracks);
+      writeQueue(this.from, this.tracklist);
     },
     clearQueue() {
-      this.tracks = [defaultTrack] as Track[];
+      this.tracklist = [defaultTrack] as Track[];
       this.current = 0;
       this.currentid = "";
       this.next = 0;

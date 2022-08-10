@@ -79,11 +79,16 @@ onBeforeRouteUpdate((to, from) => {
     height: $banner-height;
     pointer-events: none;
     user-select: none;
+    width: 100%;
 
     .text {
       bottom: 1rem;
       left: 1rem;
       background-color: $black;
+
+      @include for-desktop-down {
+        max-width: 31rem;
+      }
 
       h3 {
         margin: $small;
