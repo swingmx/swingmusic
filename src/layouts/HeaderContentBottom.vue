@@ -1,5 +1,5 @@
 <template>
-  <div class="ap-container noscroll rounded">
+  <div class="ap-container rounded">
     <div id="ap-page">
       <header class="ap-page-header" ref="apheader">
         <slot name="header"></slot>
@@ -43,8 +43,8 @@ const props = defineProps<{
   bottomRaisedCallback?: (routeparams?: RouteParams) => void;
 }>();
 
-let elem: HTMLElement = null;
-let classlist: DOMTokenList = null;
+let elem: HTMLElement;
+let classlist: DOMTokenList;
 
 const route = useRoute();
 const apheader = ref<HTMLElement>(null);
@@ -52,8 +52,8 @@ const apbottomcontainer = ref(null);
 const bottomContainerRaised = ref(false);
 
 onMounted(() => {
-  elem = document.getElementById("ap-page");
-  classlist = elem.classList;
+  elem = document.getElementById("ap-page") as HTMLElement;
+  classlist = elem.classList as DOMTokenList;
 });
 
 onBeforeRouteUpdate((to) => {
@@ -101,6 +101,7 @@ function toggleBottom() {
 .ap-container {
   height: 100%;
   position: relative;
+  overflow: hidden;
 
   #ap-page {
     overflow: auto;
@@ -110,9 +111,9 @@ function toggleBottom() {
     grid-template-rows: 18rem 1fr;
     gap: 1rem;
 
-    .ap-page-content {
-      padding-bottom: 16rem;
-    }
+    // .ap-page-content {
+    //   padding-bottom: 16rem;
+    // }
   }
 
   .ap-page-bottom-container {
@@ -158,8 +159,7 @@ function toggleBottom() {
   }
 
   .bottomexpanded {
-    height: 32rem !important;
-    scroll-behavior: contain;
+    height: 33rem !important;
 
     .arrow {
       transform: rotate(180deg) !important;
@@ -177,6 +177,23 @@ function toggleBottom() {
 
   .addbottompadding {
     padding-bottom: 16rem;
+  }
+
+  @include for-desktop-down {
+    overflow: auto;
+
+    #ap-page {
+      height: max-content;
+    }
+
+    .ap-page-bottom-container {
+      position: relative;
+      margin-top: 1rem;
+    }
+
+    .addbottompadding {
+      padding-bottom: 0;
+    }
   }
 }
 </style>
