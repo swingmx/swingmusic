@@ -44,8 +44,8 @@ const tabs = useTabStore();
 
     .r-content {
       grid-area: content;
-      // width: 29rem;
-      width: 100%;
+      width: 29rem;
+      // width: 100%;
 
       // @include tablet-landscape {
       //   display: none;

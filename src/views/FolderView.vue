@@ -80,19 +80,27 @@ onBeforeRouteUpdate((to, from) => {
     pointer-events: none;
     user-select: none;
     width: 100%;
+    // display: table-cell;
+    // vertical-align: bottom;
 
     .text {
       bottom: 1rem;
+      // height: 100%;
       left: 1rem;
+      // right: 1rem;
+      // width: min-content;
+      max-width: calc(100% - 2rem);
       background-color: $black;
 
       @include for-desktop-down {
         max-width: 31rem;
+        right: 1rem;
       }
 
       h3 {
         margin: $small;
-        display: flex;
+        display: grid;
+        grid-template-columns: max-content 1fr;
         align-items: center;
         justify-content: center;
         gap: $small;

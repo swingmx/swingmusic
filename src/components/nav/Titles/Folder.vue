@@ -37,6 +37,8 @@ onUpdated(() => {
 
 <style lang="scss">
 #folder-nav-title {
+  width: 100%;
+
   .folder {
     display: flex;
     gap: $small;
@@ -64,9 +66,9 @@ onUpdated(() => {
       overflow: auto;
       padding-right: $smaller;
 
-      @include for-desktop-down {
-        max-width: 9rem;
-      }
+      // @include for-desktop-down {
+      //   max-width: 9rem;
+      // }
 
       .icon {
         height: 2rem;

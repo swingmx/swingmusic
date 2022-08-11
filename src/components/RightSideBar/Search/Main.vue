@@ -26,7 +26,6 @@ import TracksGrid from "./TracksGrid.vue";
 .right-search {
   position: relative;
   overflow: hidden;
-  width: auto;
   height: 100%;
 
   .heading {

@@ -12,10 +12,7 @@ import {
   Track,
 } from "../interfaces";
 
-function writeQueue(
-  from: fromFolder | fromAlbum | fromPlaylist,
-  tracks: Track[]
-) {
+function writeQueue(from: From, tracks: Track[]) {
   localStorage.setItem(
     "queue",
     JSON.stringify({
@@ -45,6 +42,15 @@ const defaultTrack = <Track>{
   trackid: "",
   image: "meh",
 };
+
+function shuffle(tracks: Track[]) {
+  const shuffled = tracks.slice();
+  for (let i = shuffled.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+  }
+  return shuffled;
+}
 
 type From = fromFolder | fromAlbum | fromPlaylist | fromSearch;
 
@@ -76,7 +82,7 @@ export default defineStore("Queue", {
       const track = this.tracklist[index];
       this.currentid = track.trackid;
       const uri = state.settings.uri + "/file/" + track.trackid;
-      const elem = document.getElementById("progress");
+      const elem = document.getElementById("progress") as HTMLElement;
       this.updateCurrent(index);
 
       new Promise((resolve, reject) => {
@@ -173,7 +179,7 @@ export default defineStore("Queue", {
       this.currenttrack = track;
       this.current = index;
       this.currentid = track.trackid;
-      this.duration.full = track.length;
+      this.duration.full = track.length || 0;
     },
     setNewQueue(tracklist: Track[]) {
       if (this.tracklist !== tracklist) {
@@ -258,6 +264,26 @@ export default defineStore("Queue", {
       this.from = <From>{};
 
       writeQueue(this.from, [defaultTrack] as Track[]);
+      writeCurrent(0);
+    },
+    shuffleQueue() {
+      const Toast = useNotifStore();
+      if (this.tracklist.length < 2) {
+        Toast.showNotification("Queue is too short", NotifType.Info);
+        return;
+      }
+
+      const shuffled = shuffle(this.tracklist);
+      this.tracklist = shuffled;
+
+      this.current = 0;
+      this.play(this.current);
+
+      this.currentid = shuffled[0].trackid;
+      this.next = 1;
+      this.prev = this.tracklist.length - 1;
+
+      writeQueue(this.from, shuffled);
       writeCurrent(0);
     },
   },

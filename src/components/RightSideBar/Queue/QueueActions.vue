@@ -5,9 +5,9 @@
         <ClearSvg />
         <span>Clear</span>
       </button>
-      <button class="shuffle-queue action">
-        <SaveAsPlaylistSvg />
-        <span> Save as Playlist </span>
+      <button class="shuffle-queue action" @click="queue.shuffleQueue">
+        <ShuffleSvg />
+        <span>Shuffle</span>
       </button>
     </div>
     <div class="right">
@@ -22,7 +22,7 @@
 import useQueueStore from "../../../stores/queue";
 
 import ClearSvg from "@/assets/icons/delete.svg";
-import SaveAsPlaylistSvg from "@/assets/icons/sdcard.svg";
+import ShuffleSvg from "@/assets/icons/shuffle.svg";
 import MoreSvg from "@/assets/icons/more.svg";
 
 const queue = useQueueStore();

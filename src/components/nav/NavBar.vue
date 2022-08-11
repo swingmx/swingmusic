@@ -15,16 +15,16 @@
     <div class="center rounded">
       <Loader />
     </div>
-    <div class="right">
+    <!-- <div class="right">
       <Search />
-    </div>
+    </div> -->
   </div>
 </template>
 
 <script setup lang="ts">
 import NavButtons from "./NavButtons.vue";
 import Loader from "../shared/Loader.vue";
-import Search from "./Search.vue";
+// import Search from "./Search.vue";
 import { useRoute } from "vue-router";
 import { ref, watch } from "vue";
 import { Routes } from "@/composables/enums";
@@ -80,16 +80,19 @@ watch(
 <style lang="scss">
 .topnav {
   display: grid;
-  grid-template-columns: 1fr min-content max-content;
+  grid-template-columns: 1fr min-content;
   width: 100%;
+  gap: 1rem;
+  overflow: hidden;
 
   .left {
     display: grid;
     grid-template-columns: max-content 1fr;
-    width: min-content;
-    overflow: scroll;
+    overflow: hidden;
 
     .info {
+      overflow: hidden;
+
       .title {
         font-size: 1.5rem;
         font-weight: bold;
