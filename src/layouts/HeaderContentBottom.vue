@@ -47,7 +47,7 @@ let elem: HTMLElement;
 let classlist: DOMTokenList;
 
 const route = useRoute();
-const apheader = ref<HTMLElement>(null);
+const apheader = ref<any>(null);
 const apbottomcontainer = ref(null);
 const bottomContainerRaised = ref(false);
 
@@ -111,9 +111,9 @@ function toggleBottom() {
     grid-template-rows: 18rem 1fr;
     gap: 1rem;
 
-    // .ap-page-content {
-    //   padding-bottom: 16rem;
-    // }
+    .ap-page-content {
+      padding-bottom: 16rem;
+    }
   }
 
   .ap-page-bottom-container {
@@ -184,6 +184,10 @@ function toggleBottom() {
 
     #ap-page {
       height: max-content;
+
+      .ap-page-content {
+        padding-bottom: 0;
+      }
     }
 
     .ap-page-bottom-container {
