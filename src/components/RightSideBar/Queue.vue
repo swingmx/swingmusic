@@ -4,19 +4,21 @@
       <UpNext :next="queue.tracklist[queue.next]" :playNext="queue.playNext" />
       <div class="scrollable-r bg-black rounded">
         <QueueActions />
-        <div
-          class="inner"
-          @mouseenter="setMouseOver(true)"
-          @mouseleave="setMouseOver(false)"
-        >
-          <TrackItem
-            v-for="(t, index) in queue.tracklist"
-            :key="t.trackid"
-            :track="t"
-            @playThis="queue.play(index)"
-            :isCurrent="index === queue.current"
-            :isPlaying="queue.playing"
-          />
+        <div class="inner">
+          <TransitionGroup
+            name="queuelist"
+            @mouseenter="setMouseOver(true)"
+            @mouseleave="setMouseOver(false)"
+          >
+            <TrackItem
+              v-for="(t, index) in queue.tracklist"
+              :key="t.trackid"
+              :track="t"
+              @playThis="queue.play(index)"
+              :isCurrent="index === queue.current"
+              :isPlaying="queue.playing"
+            />
+          </TransitionGroup>
         </div>
       </div>
       <PlayingFrom :from="queue.from" />
@@ -45,11 +47,30 @@ function setMouseOver(val: boolean) {
 onUpdated(() => {
   if (mouseover.value) return;
 
-  focusElem("currentInQueue");
+  setTimeout(() => {
+    focusElem("currentInQueue");
+  }, 1000);
 });
 </script>
 
 <style lang="scss">
+.queuelist-move, /* apply transition to moving elements */
+.queuelist-enter-active {
+  transition: all 0.5s ease-in-out;
+}
+
+.queuelist-enter-from,
+.queuelist-leave-to {
+  opacity: 0;
+}
+
+/* ensure leaving items are taken out of layout flow so that moving
+   animations can be calculated correctly. */
+.queuelist-leave-active {
+  transition: none;
+  position: absolute;
+}
+
 .up-next {
   overflow: hidden;
   height: 100%;

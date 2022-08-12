@@ -3,8 +3,11 @@
  * @param seconds The seconds to convert
  * @param long Whether to provide the time in the long format
  */
-export default function formatSeconds(seconds: number, long?: boolean) {
-  if (seconds == undefined) {
+export default function formatSeconds(
+  seconds: number | undefined,
+  long?: boolean
+) {
+  if (seconds === undefined) {
     return "00:00";
   }
 

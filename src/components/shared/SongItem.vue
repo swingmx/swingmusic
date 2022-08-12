@@ -114,7 +114,7 @@ const showContextMenu = (e: Event) => {
 
 const props = defineProps<{
   track: Track;
-  index: Number;
+  index?: number;
   isPlaying: Boolean;
   isCurrent: Boolean;
   isHighlighted: Boolean;

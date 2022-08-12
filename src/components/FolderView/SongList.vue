@@ -92,22 +92,26 @@ function updateQueue(track: Track) {
 
   switch (routename) {
     case "FolderView":
-      queue.playFromFolder(props.path, props.tracks);
+      queue.playFromFolder(props.path || "", props.tracks);
       queue.play(index);
       break;
     case "AlbumView":
       const tindex = album.tracks.findIndex((t) => t.trackid === track.trackid);
 
       queue.playFromAlbum(
-        track.album,
-        track.albumartist,
-        track.albumhash,
+        track.album || "",
+        track.albumartist || "",
+        track.albumhash || "",
         album.tracks
       );
       queue.play(tindex);
       break;
     case "PlaylistView":
-      queue.playFromPlaylist(props.pname, props.playlistid, props.tracks);
+      queue.playFromPlaylist(
+        props.pname || "",
+        props.playlistid || "",
+        props.tracks
+      );
       queue.play(index);
       break;
   }

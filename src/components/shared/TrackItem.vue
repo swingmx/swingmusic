@@ -10,12 +10,8 @@
     ]"
     @contextmenu="showContextMenu"
   >
-    <div
-      class="album-art image rounded"
-      :style="{
-        backgroundImage: `url(&quot;${imguri + props.track.image}&quot;)`,
-      }"
-    >
+    <div class="album-art">
+      <img :src="paths.images.thumb + track.image" alt="" class="rounded" />
       <div
         class="now-playing-track-indicator image"
         v-if="props.isCurrent"
@@ -120,10 +116,17 @@ const playThis = (track: Track) => {
     align-items: center;
     justify-content: center;
 
+    margin-right: $small;
+    position: relative;
+
+    .now-playing-track-indicator {
+      position: absolute;
+    }
+  }
+
+  img {
     width: 3rem;
     height: 3rem;
-    margin: 0 0.5rem 0 0;
-    background-image: url(../../assets/images/null.webp);
   }
 
   .title {
