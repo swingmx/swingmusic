@@ -8,7 +8,7 @@
       },
       { contexton: context_on },
     ]"
-    @contextmenu="showContextMenu"
+    @contextmenu.prevent="showMenu"
   >
     <div class="album-art">
       <img :src="paths.images.thumb + track.image" alt="" class="rounded" />
@@ -35,18 +35,10 @@
 <script setup lang="ts">
 import { ref } from "vue";
 
-import useModalStore from "@/stores/modal";
-import useQueueStore from "@/stores/queue";
-import useContextStore from "@/stores/context";
-import trackContext from "@/contexts/track_context";
-
 import { paths } from "@/config";
 import { putCommas } from "@/utils";
 import { Track } from "@/interfaces";
-import { ContextSrc } from "@/composables/enums";
-
-const contextStore = useContextStore();
-const imguri = paths.images.thumb;
+import { showTrackContextMenu as showContext } from "@/composables/context";
 
 const props = defineProps<{
   track: Track;
@@ -56,21 +48,9 @@ const props = defineProps<{
 
 const context_on = ref(false);
 
-const showContextMenu = (e: Event) => {
-  e.preventDefault();
-  e.stopPropagation();
-
-  const menus = trackContext(props.track, useModalStore, useQueueStore);
-
-  contextStore.showContextMenu(e, menus, ContextSrc.Track);
-  context_on.value = true;
-
-  contextStore.$subscribe((mutation, state) => {
-    if (!state.visible) {
-      context_on.value = false;
-    }
-  });
-};
+function showMenu(e: Event) {
+  showContext(e, props.track, context_on);
+}
 
 const emit = defineEmits<{
   (e: "PlayThis"): void;

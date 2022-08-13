@@ -1,21 +1,18 @@
 <template>
-  <div class="main-item bg-black" @click="playNext">
-    <div class="h">Up Next</div>
-    <div class="itemx shadow">
-      <div
-        class="album-art image"
-        :style="{
-          backgroundImage: `url(&quot;${imguri + next.image}&quot;)`,
-        }"
-      ></div>
-      <div class="tags">
-        <p class="title ellip">{{ next.title }}</p>
-        <hr />
-        <p class="artist ellip">
-          <span v-for="artist in putCommas(next.artists)" :key="artist">{{
-            artist
-          }}</span>
-        </p>
+  <div
+    class="next-track bg-black"
+    :class="{ contexton: context_on }"
+    @click="playNext"
+    @contextmenu.prevent="showMenu"
+  >
+    <div class="nextup abs">next up</div>
+    <img :src="paths.images.thumb + track.image" class="rounded" />
+    <div class="tags">
+      <div class="title ellip">{{ track.title }}</div>
+      <div class="artist ellip">
+        <span v-for="artist in putCommas(track.artists)" :key="artist">{{
+          artist
+        }}</span>
       </div>
     </div>
   </div>
@@ -23,67 +20,68 @@
 
 <script setup lang="ts">
 import { paths } from "@/config";
-import { putCommas } from "@/utils";
 import { Track } from "@/interfaces";
+import { putCommas } from "@/utils";
 
-const imguri = paths.images.thumb;
-defineProps<{
-  next: Track;
+import { showTrackContextMenu as showContext } from "@/composables/context";
+import { ref } from "vue";
+
+const props = defineProps<{
+  track: Track;
   playNext: () => void;
 }>();
+
+const context_on = ref(false);
+
+function showMenu(e: Event) {
+  showContext(e, props.track, context_on);
+}
 </script>
 
 <style lang="scss">
-.main-item {
+.next-track {
   border-radius: 0.5rem;
   position: relative;
 
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: 1rem;
+  padding: $small;
+  width: 100%;
+  cursor: pointer;
+
   &:hover {
-    background-color: $accent;
+    background-color: $gray4;
 
     .h {
       background-color: $black;
     }
   }
 
-  .h {
-    position: absolute;
+  .nextup {
     right: $small;
-    bottom: $small;
-    font-size: 0.9rem;
-    background-color: $accent;
+    top: 0;
+    font-size: 0.8rem;
     padding: $smaller;
     border-radius: 0.25rem;
+    font-style: oblique;
+    opacity: 0.5;
   }
 
-  .itemx {
-    display: flex;
-    align-items: center;
-    border-radius: 0.5rem;
-    padding: 0.75rem;
-    cursor: pointer;
-  }
-
-  .album-art {
+  img {
     width: 4.5rem;
-    height: 4.5rem;
-    background-image: url(../../assets/images/null.webp);
-    margin: 0 0.5rem 0 0;
-    border-radius: 0.5rem;
+    aspect-ratio: 1;
+    object-fit: contain;
   }
 
   .tags {
-    hr {
-      border: none;
-      margin: 0.3rem;
-    }
-    .title {
-      width: 20rem;
-      margin: 0;
-    }
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+    gap: $small;
+
     .artist {
-      width: 20rem;
-      margin: 0;
       font-size: small;
     }
   }

@@ -22,7 +22,7 @@
       v-for="option in context.options"
       :key="option.label"
       :class="[{ critical: option.critical }, option.type]"
-      @click="option.action()"
+      @click="() => option.action && option.action()"
     >
       <div class="icon image" :class="option.icon"></div>
       <div class="label ellip">{{ option.label }}</div>
@@ -33,7 +33,7 @@
           v-for="child in option.children"
           :key="child.label"
           :class="[{ critical: child.critical }, child.type]"
-          @click="child.action()"
+          @click="child.action && child.action()"
         >
           <div class="label ellip">
             {{ child.label }}
@@ -69,14 +69,14 @@ const context = useContextStore();
     display: flex;
     align-items: center;
     cursor: default;
-    padding: $small;
+    padding: $small 1rem;
     position: relative;
 
     .more {
       height: 1.5rem;
       width: 1.5rem;
       position: absolute;
-      right: 0;
+      right: $small;
       background-image: url("../assets/icons/expand.svg");
     }
 

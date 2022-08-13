@@ -1,0 +1,34 @@
+@mixin ximage {
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
+}
+
+// media query mixins
+@mixin phone-only {
+  @media (max-width: 599px) {
+    @content;
+  }
+}
+@mixin tablet-portrait {
+  @media (max-width: 810) {
+    @content;
+  }
+}
+
+@mixin tablet-landscape {
+  @media (max-width: 1080px) {
+    @content;
+  }
+}
+@mixin for-desktop-down {
+  @media (max-width: 1600px) {
+    @content;
+  }
+}
+
+@mixin for-big-desktop-up {
+  @media (min-width: 1800px) {
+    @content;
+  }
+}

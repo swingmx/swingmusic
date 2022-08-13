@@ -36,6 +36,11 @@ const queue = useQueueStore();
   margin: 1rem;
   margin-bottom: 0;
 
+  .left {
+    display: flex;
+    gap: $small;
+  }
+
   .action {
     padding: $smaller;
     padding-right: $small;

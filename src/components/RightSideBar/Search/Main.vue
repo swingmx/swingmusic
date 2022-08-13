@@ -27,6 +27,7 @@ import TracksGrid from "./TracksGrid.vue";
   position: relative;
   overflow: hidden;
   height: 100%;
+  width: 100%;
 
   .heading {
     padding: $medium;

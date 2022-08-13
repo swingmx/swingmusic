@@ -24,7 +24,5 @@ defineProps<{
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(13rem, 1fr));
   gap: $medium;
-  padding: $small;
-  background-color: $gray5;
 }
 </style>

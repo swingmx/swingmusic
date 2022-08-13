@@ -44,14 +44,14 @@ defineProps<{
     grid-template-columns: 1fr 1fr;
     gap: $small;
     min-height: 15rem;
-  }
 
-  @include tablet-portrait {
-    grid-template-columns: 1fr;
-  }
+    @include for-desktop-down {
+      grid-template-columns: 1fr !important;
 
-  @include tablet-landscape {
-    grid-template-columns: 1fr auto;
+      .left {
+        display: none;
+      }
+    }
   }
 
   .left {
@@ -60,16 +60,12 @@ defineProps<{
     width: 100%;
     margin-right: $small;
     overflow: hidden;
-    bg-black: solid 1px $gray5;
+    border: solid 1px $gray5;
     background-image: linear-gradient(37deg, $gray5 20%, $gray4);
 
-    @include tablet-portrait {
-      display: none;
-    }
-
-    @include tablet-landscape {
-      width: 10rem;
-    }
+    // @include for-desktop-down {
+    //   display: none;
+    // }
 
     $rectpos: calc(50% - 5rem);
 
@@ -95,7 +91,7 @@ defineProps<{
       height: 7rem;
       bottom: 0;
       left: calc($rectpos + 7rem);
-      bg-black-radius: 50%;
+      border-radius: 50%;
       box-shadow: 0 0 2rem rgb(0, 0, 0);
       transition: all 0.25s ease-in-out;
 
@@ -105,7 +101,7 @@ defineProps<{
     }
   }
   .bio {
-    bg-black: solid 1px $gray5;
+    border: solid 1px $gray5;
     padding: $small;
     line-height: 1.5rem;
 

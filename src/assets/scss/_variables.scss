@@ -44,36 +44,11 @@ $secondary: $gray5;
 $cta: $blue;
 $danger: $red;
 $track-hover: $gray4;
-$context: $gray5;
+$context: $gray;
 
 // SVG COLORS
 $default: $accent;
 $track-btn-svg: $red;
 $side-nav-svg: $red;
 
-// media query mixins
-@mixin phone-only {
-  @media (max-width: 599px) {
-    @content;
-  }
-}
-@mixin tablet-portrait {
-  @media (max-width: 900px) {
-    @content;
-  }
-}
-@mixin tablet-landscape {
-  @media (max-width: 1200px) {
-    @content;
-  }
-}
-@mixin for-desktop-down {
-  @media (max-width: 1280px) {
-    @content;
-  }
-}
-@mixin for-big-desktop-up {
-  @media (min-width: 1800px) {
-    @content;
-  }
-}
+

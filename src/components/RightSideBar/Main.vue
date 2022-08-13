@@ -29,14 +29,6 @@ const tabs = useTabStore();
 .r-sidebar {
   width: 100%;
 
-  @include phone-only {
-    display: none;
-  }
-
-  @include tablet-landscape {
-    display: none;
-  }
-
   .grid {
     display: flex;
     position: relative;
@@ -44,12 +36,8 @@ const tabs = useTabStore();
 
     .r-content {
       grid-area: content;
-      width: 29rem;
-      // width: 100%;
-
-      // @include tablet-landscape {
-      //   display: none;
-      // }
+      overflow: hidden;
+      width: 100%;
 
       .r-search {
         height: 100%;

@@ -10,9 +10,9 @@
     ]"
     v-bind:class="`track-${track.uniq_hash}`"
     @dblclick="emitUpdate(track)"
-    @contextmenu="showContextMenu"
+    @contextmenu.prevent="showMenu"
   >
-    <div class="index t-center">{{ index }}</div>
+    <div class="index t-center ellip">{{ index }}</div>
     <div class="flex">
       <div @click="emitUpdate(track)" class="thumbnail">
         <img
@@ -58,17 +58,12 @@
       {{ track.album }}
     </router-link>
     <div class="song-duration">
-      <div class="text">{{ formatSeconds(track.length) }}</div>
+      <div class="text ellip">{{ formatSeconds(track.length) }}</div>
     </div>
     <div
       class="options-icon circular"
       :class="{ options_button_clicked }"
-      @click="
-        (e) => {
-          showContextMenu(e);
-          options_button_clicked = true;
-        }
-      "
+      @click.stop="showMenu"
     >
       <OptionSvg />
     </div>
@@ -78,39 +73,16 @@
 <script setup lang="ts">
 import { ref } from "vue";
 
-import useModalStore from "@/stores/modal";
-import useQueueStore from "@/stores/queue";
-import useContextStore from "@/stores/context";
-import trackContext from "@/contexts/track_context";
 import OptionSvg from "@/assets/icons/more.svg";
 
 import { paths } from "@/config";
 import { Track } from "@/interfaces";
-import { ContextSrc } from "@/composables/enums";
 import { formatSeconds, putCommas } from "@/utils";
-
-const contextStore = useContextStore();
+import { showTrackContextMenu as showContext } from "@/composables/context";
 
 const context_on = ref(false);
 const imguri = paths.images.thumb;
 const options_button_clicked = ref(false);
-
-const showContextMenu = (e: Event) => {
-  e.preventDefault();
-  e.stopPropagation();
-
-  const menus = trackContext(props.track, useModalStore, useQueueStore);
-
-  contextStore.showContextMenu(e, menus, ContextSrc.Track);
-  context_on.value = true;
-
-  contextStore.$subscribe((mutation, state) => {
-    if (!state.visible) {
-      context_on.value = false;
-      options_button_clicked.value = false;
-    }
-  });
-};
 
 const props = defineProps<{
   track: Track;
@@ -127,20 +99,32 @@ const emit = defineEmits<{
 function emitUpdate(track: Track) {
   emit("updateQueue", track);
 }
+
+function showMenu(e: Event) {
+  showContext(e, props.track, options_button_clicked);
+}
 </script>
 
 <style lang="scss">
 .songlist-item {
   display: grid;
-  align-items: center;
   grid-template-columns: 1.5rem 1.5fr 1fr 1.5fr 2rem 2.5rem;
+  align-items: center;
+  justify-items: flex-start;
   height: 3.75rem;
-  text-align: left;
-  gap: $small;
+  gap: 1rem;
   user-select: none;
 
-  @include tablet-landscape {
-    grid-template-columns: 1.5rem 1.5fr 1fr 1fr 2.5rem;
+  @include for-desktop-down {
+    grid-template-columns: 1.5rem 1.5fr 1fr 2.5rem;
+
+    .song-album {
+      display: none !important;
+    }
+
+    .song-duration {
+      display: none !important;
+    }
   }
 
   @include tablet-portrait {
@@ -155,12 +139,6 @@ function emitUpdate(track: Track) {
     }
   }
 
-  .song-duration {
-    @include tablet-landscape {
-      display: none !important;
-    }
-  }
-
   .song-album {
     word-break: break-all;
     max-width: max-content;
@@ -168,10 +146,6 @@ function emitUpdate(track: Track) {
 
     &:hover {
       text-decoration: underline;
-    }
-
-    @include tablet-portrait {
-      display: none;
     }
   }
 
@@ -181,26 +155,17 @@ function emitUpdate(track: Track) {
     .artist {
       cursor: pointer;
     }
-
-    @include phone-only {
-      display: none;
-    }
   }
 
   .index {
-    color: grey;
+    opacity: 0.5;
     font-size: 0.8rem;
-    width: 2rem;
-
-    @include phone-only {
-      display: none;
-    }
+    width: 100%;
+    margin-left: $small;
   }
 
   .song-duration {
     font-size: 0.9rem;
-    width: 5rem !important;
-
     text-align: left;
   }
 
@@ -211,7 +176,6 @@ function emitUpdate(track: Track) {
     justify-content: center;
     aspect-ratio: 1;
     width: 2rem;
-    margin-right: 1rem;
 
     svg {
       transition: all 0.2s ease-in;

@@ -65,7 +65,7 @@ const emit = defineEmits<{
   (event: "resetBottomPadding"): void;
 }>();
 
-const albumheaderthing = ref<HTMLElement>(null);
+const albumheaderthing = ref<any>(null);
 const imguri = paths.images.thumb;
 const nav = useNavStore();
 
@@ -121,6 +121,9 @@ useVisibility(albumheaderthing, handleVisibilityState);
     justify-content: flex-end;
 
     .top {
+      .h {
+        opacity: 0.75;
+      }
       .title {
         font-size: 2.5rem;
         font-weight: 600;
@@ -144,6 +147,19 @@ useVisibility(albumheaderthing, handleVisibilityState);
         font-size: 0.8rem;
         margin-bottom: 0.75rem;
       }
+    }
+  }
+
+  @include for-desktop-down {
+    grid-template-columns: 1fr;
+
+    .art > img {
+      height: 6rem;
+      box-shadow: 0 0 1rem $black;
+    }
+
+    .info > .top > .title {
+      font-size: 2rem;
     }
   }
 }

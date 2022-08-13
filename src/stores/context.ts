@@ -23,7 +23,7 @@ export default defineStore("context-menu", {
     y: 500,
     normalizedX: false,
     normalizedY: false,
-    src: "",
+    src: <null | string>"",
   }),
   actions: {
     showContextMenu(
@@ -41,13 +41,13 @@ export default defineStore("context-menu", {
         this.options = options;
       });
 
-      const yo = normalize(e.clientX, e.clientY);
+      const xy = normalize(e.clientX, e.clientY);
 
-      this.x = yo.normalX;
-      this.y = yo.normalY;
+      this.x = xy.normalX;
+      this.y = xy.normalY;
 
-      this.normalizedX = yo.normalizedX;
-      this.normalizedY = yo.normalizedY;
+      this.normalizedX = xy.normalizedX;
+      this.normalizedY = xy.normalizedY;
       this.src = src;
     },
     hideContextMenu() {

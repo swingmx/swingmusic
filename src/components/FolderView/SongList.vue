@@ -1,8 +1,14 @@
 <template>
   <div class="folder">
     <div class="table rounded" v-if="tracks.length">
-      <div class="header" v-if="disc && !album.info.is_single">
-        <div class="disc-number">Disc {{ disc }}</div>
+      <div class="header">
+        <div class="disc-number" v-if="disc">Disc {{ disc }}</div>
+        <div class="disc-number" v-if="$route.name === Routes.folder">
+          In this folder
+        </div>
+        <div class="disc-number" v-if="$route.name === Routes.playlist">
+          &nbsp;
+        </div>
       </div>
       <div class="songlist">
         <SongItem
@@ -13,7 +19,7 @@
           @updateQueue="updateQueue"
           :isPlaying="queue.playing"
           :isCurrent="queue.currentid == track.trackid"
-          :isHighlighted="highlightid == track.uniq_hash"
+          :isHighlighted="($route.query.highlight as string) == track.uniq_hash"
         />
       </div>
     </div>
@@ -38,6 +44,7 @@ import { onMounted, onUpdated, ref } from "vue";
 import { Track } from "@/interfaces";
 import useQStore from "@/stores/queue";
 import useAlbumStore from "@/stores/pages/album";
+import { Routes } from "@/composables/enums";
 
 const queue = useQStore();
 const album = useAlbumStore();
@@ -54,10 +61,16 @@ const props = defineProps<{
 
 const route = useRoute();
 const routename = route.name as string;
-const highlightid = ref(route.query.highlight as string);
+const highlightid = ref(route.query.highlight as string | null);
 
 function highlightTrack(t_hash: string) {
   focusElem(`track-${t_hash}`, 500, "center");
+}
+
+function resetHighlight() {
+  setTimeout(() => {
+    highlightid.value = null;
+  }, 1000);
 }
 
 onBeforeRouteUpdate(async (to, from) => {
@@ -72,12 +85,14 @@ onBeforeRouteUpdate(async (to, from) => {
 onUpdated(() => {
   if (highlightid.value) {
     highlightTrack(highlightid.value);
+    resetHighlight();
   }
 });
 
 onMounted(() => {
   if (highlightid.value) {
     highlightTrack(highlightid.value);
+    resetHighlight();
   }
 });
 /**
@@ -187,6 +202,7 @@ function getTrackList() {
 
   .songlist {
     scrollbar-width: none;
+
     &::-webkit-scrollbar {
       display: none;
     }

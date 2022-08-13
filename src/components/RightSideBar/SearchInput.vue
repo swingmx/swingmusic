@@ -16,17 +16,22 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
+import { onMounted } from "vue";
 import useSearchStore from "../../stores/search";
 
 const search = useSearchStore();
+let input: HTMLInputElement;
+
+onMounted(() => {
+  input = document.getElementById("ginner") as HTMLInputElement;
+});
 
 function focusThis() {
-  document.getElementById("ginner").classList.add("focused");
+  input.classList.add("focused");
 }
 
 function unfocusThis() {
-  document.getElementById("ginner").classList.remove("focused");
+  input.classList.remove("focused");
 }
 </script>
 
@@ -34,11 +39,6 @@ function unfocusThis() {
 #gsearch-input {
   display: flex;
   height: max-content;
-  // margin-bottom: $smaller;
-
-  @include tablet-landscape {
-    display: none;
-  }
 
   #ginner {
     width: 100%;

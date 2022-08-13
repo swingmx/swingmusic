@@ -1,18 +1,18 @@
 <template>
   <div class="up-next">
     <div class="r-grid">
-      <UpNext :next="queue.tracklist[queue.next]" :playNext="queue.playNext" />
+      <UpNext :track="queue.tracklist[queue.next]" :playNext="queue.playNext" />
       <div class="scrollable-r bg-black rounded">
         <QueueActions />
-        <div class="inner">
-          <TransitionGroup
-            name="queuelist"
-            @mouseenter="setMouseOver(true)"
-            @mouseleave="setMouseOver(false)"
-          >
+        <div
+          class="inner"
+          @mouseenter="setMouseOver(true)"
+          @mouseleave="setMouseOver(false)"
+        >
+          <TransitionGroup name="queuelist">
             <TrackItem
               v-for="(t, index) in queue.tracklist"
-              :key="t.trackid"
+              :key="index"
               :track="t"
               @playThis="queue.play(index)"
               :isCurrent="index === queue.current"
@@ -29,13 +29,13 @@
 <script setup lang="ts">
 import { onUpdated, ref } from "vue";
 
-import { focusElem } from "@/utils";
 import useQStore from "@/stores/queue";
+import { focusElem } from "@/utils";
 
-import UpNext from "./Queue/upNext.vue";
 import TrackItem from "../shared/TrackItem.vue";
 import PlayingFrom from "./Queue/playingFrom.vue";
 import QueueActions from "./Queue/QueueActions.vue";
+import UpNext from "./Queue/upNext.vue";
 
 const queue = useQStore();
 const mouseover = ref(false);
@@ -84,13 +84,10 @@ onUpdated(() => {
     position: relative;
     height: 100%;
     display: grid;
+    grid-template-columns: 1fr;
     grid-template-rows: max-content 1fr max-content;
     gap: $small;
 
-    .left {
-      display: flex;
-      gap: $small;
-    }
 
     .scrollable-r {
       height: 100%;
