@@ -1,10 +1,10 @@
 <template>
   <div
     class="track-item"
-    @click="playThis(props.track)"
+    @click="playThis(track)"
     :class="[
       {
-        currentInQueue: props.isCurrent,
+        currentInQueue: isCurrent,
       },
       { contexton: context_on },
     ]"
@@ -14,20 +14,32 @@
       <img :src="paths.images.thumb + track.image" alt="" class="rounded" />
       <div
         class="now-playing-track-indicator image"
-        v-if="props.isCurrent"
-        :class="{ last_played: !props.isPlaying }"
+        v-if="isCurrent"
+        :class="{ last_played: !isPlaying }"
       ></div>
     </div>
     <div class="tags">
       <div class="title ellip">
-        {{ props.track.title }}
+        {{ track.title }}
       </div>
       <hr />
-      <div class="artist ellip">
-        <span v-for="artist in putCommas(props.track.artists)" :key="artist">{{
-          artist
-        }}</span>
+      <div class="artist">
+        <div class="ellip" v-if="track.artists[0] !== ''">
+          <span v-for="artist in putCommas(track.artists)" :key="artist">{{
+            artist
+          }}</span>
+        </div>
+        <div class="ellip" v-else>
+          <span>{{ track.albumartist }}</span>
+        </div>
       </div>
+    </div>
+    <div
+      class="remove-track flex"
+      @click.stop="queue.removeFromQueue(index)"
+      v-if="isQueueTrack"
+    >
+      <DelSvg />
     </div>
   </div>
 </template>
@@ -39,13 +51,18 @@ import { paths } from "@/config";
 import { putCommas } from "@/utils";
 import { Track } from "@/interfaces";
 import { showTrackContextMenu as showContext } from "@/composables/context";
+import DelSvg from "@/assets/icons/plus.svg";
+import useQueueStore from "@/stores/queue";
 
 const props = defineProps<{
   track: Track;
   isCurrent: boolean;
   isPlaying: boolean;
+  isQueueTrack?: boolean;
+  index?: number;
 }>();
 
+const queue = useQueueStore();
 const context_on = ref(false);
 
 function showMenu(e: Event) {
@@ -73,11 +90,26 @@ const playThis = (track: Track) => {
 
 .track-item {
   display: grid;
-  grid-template-columns: min-content 1fr;
+  grid-template-columns: min-content 1fr max-content;
   align-items: center;
   padding: $small 1rem;
 
+  .remove-track {
+    opacity: 0;
+    transition: all 0.25s ease;
+    transform: translateX(1rem) rotate(45deg);
+
+    &:hover {
+      opacity: 1 !important;
+    }
+  }
+
   &:hover {
+    .remove-track {
+      opacity: 0.5;
+      transform: translateX(0) rotate(45deg);
+    }
+
     cursor: pointer;
     background: linear-gradient(37deg, $gray4, $gray3, $gray3);
   }
@@ -86,10 +118,6 @@ const playThis = (track: Track) => {
     border: none;
     margin: 0.1rem;
   }
-
-  // .tags {
-  //   border: solid 1px;
-  // }
 
   .album-art {
     display: flex;

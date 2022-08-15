@@ -6,7 +6,7 @@
     <template #content>
       <Content
         :tracks="playlist.tracks"
-        :count="playlist.info.count"
+        :count="playlist.info?.count"
         :name="playlist.info.name"
         :playlistid="playlist.info.playlistid"
       />
@@ -25,7 +25,7 @@ import Content from "./Content.vue";
 import FeaturedArtists from "@/components/PlaylistView/FeaturedArtists.vue";
 
 import usePTrackStore from "@/stores/pages/playlist";
-import { onBeforeUnmount, onMounted } from "vue";
+import { onMounted, onUnmounted } from "vue";
 import { useRoute } from "vue-router";
 
 const route = useRoute();
@@ -34,6 +34,8 @@ const playlist = usePTrackStore();
 onMounted(() => {
   playlist.fetchArtists(route.params.pid as string);
 });
+
+onUnmounted(() => playlist.reset());
 </script>
 
 <style lang="scss"></style>

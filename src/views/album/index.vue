@@ -10,7 +10,7 @@
       <Bottom
         :artists="album.artists"
         :bio="album.bio"
-        :image="album.info.image"
+        :image="album.info?.image"
       />
     </template>
   </Page>

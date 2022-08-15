@@ -8,7 +8,7 @@
         highlighted: isHighlighted,
       },
     ]"
-    v-bind:class="`track-${track.uniq_hash}`"
+    v-bind:class="`track-${track.hash}`"
     @dblclick="emitUpdate(track)"
     @contextmenu.prevent="showMenu"
   >
@@ -75,10 +75,10 @@ import { ref } from "vue";
 
 import OptionSvg from "@/assets/icons/more.svg";
 
+import { showTrackContextMenu as showContext } from "@/composables/context";
 import { paths } from "@/config";
 import { Track } from "@/interfaces";
 import { formatSeconds, putCommas } from "@/utils";
-import { showTrackContextMenu as showContext } from "@/composables/context";
 
 const context_on = ref(false);
 const imguri = paths.images.thumb;

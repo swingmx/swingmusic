@@ -2,7 +2,10 @@
   <div class="bottom-content">
     <FeaturedArtists :artists="artists" />
 
-    <AlbumBio :bio="bio" :images="{ album: image, artist: artists[0].image }" />
+    <AlbumBio
+      :bio="bio"
+      :images="{ album: image, artist: artists[0]?.image }"
+    />
   </div>
 </template>
 

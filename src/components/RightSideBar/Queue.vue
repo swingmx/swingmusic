@@ -17,6 +17,8 @@
               @playThis="queue.play(index)"
               :isCurrent="index === queue.current"
               :isPlaying="queue.playing"
+              :isQueueTrack="true"
+              :index="index"
             />
           </TransitionGroup>
         </div>
@@ -87,7 +89,6 @@ onUpdated(() => {
     grid-template-columns: 1fr;
     grid-template-rows: max-content 1fr max-content;
     gap: $small;
-
 
     .scrollable-r {
       height: 100%;

@@ -35,14 +35,6 @@ function readCurrent(): number {
   return 0;
 }
 
-const defaultTrack = <Track>{
-  title: "Nothing played yet",
-  albumhash: " ",
-  artists: ["Alice"],
-  trackid: "",
-  image: "meh",
-};
-
 function shuffle(tracks: Track[]) {
   const shuffled = tracks.slice();
   for (let i = shuffled.length - 1; i > 0; i--) {
@@ -70,18 +62,19 @@ export default defineStore("Queue", {
     current: 0,
     next: 0,
     prev: 0,
-    currentid: "",
+    currentid: <string | null>"",
     playing: false,
     from: {} as From,
     currenttrack: {} as Track,
-    tracklist: [defaultTrack] as Track[],
+    tracklist: [] as Track[],
   }),
   actions: {
     play(index: number = 0) {
+      if (this.tracklist.length === 0) return;
       this.current = index;
       const track = this.tracklist[index];
       this.currentid = track.trackid;
-      const uri = state.settings.uri + "/file/" + track.trackid;
+      const uri = state.settings.uri + "/file/" + track.hash;
       const elem = document.getElementById("progress") as HTMLElement;
       this.updateCurrent(index);
 
@@ -178,8 +171,8 @@ export default defineStore("Queue", {
 
       this.currenttrack = track;
       this.current = index;
-      this.currentid = track.trackid;
-      this.duration.full = track.length || 0;
+      this.currentid = track?.trackid || null;
+      this.duration.full = track?.length || 0;
     },
     setNewQueue(tracklist: Track[]) {
       if (this.tracklist !== tracklist) {
@@ -256,15 +249,13 @@ export default defineStore("Queue", {
       writeQueue(this.from, this.tracklist);
     },
     clearQueue() {
-      this.tracklist = [defaultTrack] as Track[];
-      this.current = 0;
+      this.tracklist = [] as Track[];
       this.currentid = "";
-      this.next = 0;
-      this.prev = 0;
+      this.current, this.next, (this.prev = 0);
       this.from = <From>{};
 
-      writeQueue(this.from, [defaultTrack] as Track[]);
       writeCurrent(0);
+      writeQueue(this.from, [] as Track[]);
     },
     shuffleQueue() {
       const Toast = useNotifStore();
@@ -285,6 +276,9 @@ export default defineStore("Queue", {
 
       writeQueue(this.from, shuffled);
       writeCurrent(0);
+    },
+    removeFromQueue(index: number = 0) {
+      this.tracklist.splice(index, 1);
     },
   },
 });

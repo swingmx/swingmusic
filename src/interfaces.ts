@@ -16,7 +16,7 @@ export interface Track {
   tracknumber?: number;
   discnumber?: number;
   index?: number;
-  uniq_hash: string;
+  hash: string;
   copyright?: string;
 }
 
@@ -62,12 +62,12 @@ export interface Playlist {
   playlistid: string;
   name: string;
   description?: string;
-  image?: string | FormData;
-  tracks?: Track[];
-  count?: number;
-  lastUpdated?: string;
-  thumb?: string;
-  duration?: number;
+  image: string | FormData;
+  tracks: Track[];
+  count: number;
+  lastUpdated: string;
+  thumb: string;
+  duration: number;
 }
 
 export interface Notif {

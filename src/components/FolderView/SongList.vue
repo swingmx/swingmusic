@@ -19,7 +19,7 @@
           @updateQueue="updateQueue"
           :isPlaying="queue.playing"
           :isCurrent="queue.currentid == track.trackid"
-          :isHighlighted="($route.query.highlight as string) == track.uniq_hash"
+          :isHighlighted="($route.query.highlight as string) == track.hash"
         />
       </div>
     </div>
@@ -39,12 +39,12 @@ import { onBeforeRouteUpdate, useRoute } from "vue-router";
 
 import SongItem from "../shared/SongItem.vue";
 
+import { Routes } from "@/composables/enums";
+import { Track } from "@/interfaces";
+import useAlbumStore from "@/stores/pages/album";
+import useQStore from "@/stores/queue";
 import { focusElem } from "@/utils";
 import { onMounted, onUpdated, ref } from "vue";
-import { Track } from "@/interfaces";
-import useQStore from "@/stores/queue";
-import useAlbumStore from "@/stores/pages/album";
-import { Routes } from "@/composables/enums";
 
 const queue = useQStore();
 const album = useAlbumStore();

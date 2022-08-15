@@ -20,8 +20,8 @@ export default defineStore("playlist-tracks", {
     async fetchAll(playlistid: string) {
       const playlist = await getPlaylist(playlistid);
 
-      this.info = playlist.info;
-      this.tracks = playlist.tracks;
+      this.info = playlist?.info || ({} as Playlist);
+      this.tracks = playlist?.tracks || [];
     },
 
     async fetchArtists(playlistid: string) {
@@ -34,6 +34,9 @@ export default defineStore("playlist-tracks", {
      */
     updatePInfo(info: Playlist) {
       this.info = info;
+    },
+    resetArtists() {
+      this.artists = [];
     },
   },
 });

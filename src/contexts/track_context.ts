@@ -1,13 +1,15 @@
 import { Playlist, Track } from "../interfaces";
-import Router from "../router";
+
+// @ts-ignore
 import { Option } from "../interfaces";
+import Router from "../router";
+
 import {
-  getAllPlaylists,
-  addTrackToPlaylist,
+  addTrackToPlaylist, getAllPlaylists
 } from "../composables/fetch/playlists";
 
-import useQueueStore from "../stores/queue";
 import useModalStore from "../stores/modal";
+import useQueueStore from "../stores/queue";
 /**
  * Returns a list of context menu items for a track.
  * @param  {any} track a track object.
@@ -90,7 +92,7 @@ export default async (
       Router.push({
         name: "FolderView",
         params: { path: track.folder },
-        query: { highlight: track.uniq_hash },
+        query: { highlight: track.hash },
       });
     },
     icon: "folder",

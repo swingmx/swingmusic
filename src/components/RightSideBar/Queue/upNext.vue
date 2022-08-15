@@ -6,14 +6,15 @@
     @contextmenu.prevent="showMenu"
   >
     <div class="nextup abs">next up</div>
-    <img :src="paths.images.thumb + track.image" class="rounded" />
+    <img :src="paths.images.thumb + track?.image" class="rounded" />
     <div class="tags">
-      <div class="title ellip">{{ track.title }}</div>
-      <div class="artist ellip">
+      <div class="title ellip">{{ track?.title || "Don't click here" }}</div>
+      <div class="artist ellip" v-if="track">
         <span v-for="artist in putCommas(track.artists)" :key="artist">{{
           artist
         }}</span>
       </div>
+      <span v-else class="artist">nothing will happen</span>
     </div>
   </div>
 </template>
@@ -27,14 +28,16 @@ import { showTrackContextMenu as showContext } from "@/composables/context";
 import { ref } from "vue";
 
 const props = defineProps<{
-  track: Track;
+  track: Track | null;
   playNext: () => void;
 }>();
 
 const context_on = ref(false);
 
 function showMenu(e: Event) {
-  showContext(e, props.track, context_on);
+  if (props.track) {
+    showContext(e, props.track, context_on);
+  }
 }
 </script>
 

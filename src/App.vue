@@ -47,7 +47,7 @@ const queue = useQStore();
 const router = useRouter();
 const modal = useModalStore();
 const context_store = useContextStore();
-const app_dom = document.getElementById("app");
+const app_dom = document.getElementById("app") as HTMLElement;
 
 queue.readQueue();
 handleShortcuts(useQStore);
@@ -59,7 +59,7 @@ app_dom.addEventListener("click", (e) => {
 });
 
 router.afterEach(() => {
-  document.getElementById("acontent")?.scrollTo(0, 0);
+  (document.getElementById("acontent") as HTMLElement).scrollTo(0, 0);
 });
 
 onStartTyping(() => {

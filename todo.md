@@ -16,3 +16,5 @@
 - using square image on playlist
 - Use bottom bar
 - Fix search album and artist grid on 720p
+- Use persisted pinia for queue store
+- Introduce stores (pinia-ish) for the server

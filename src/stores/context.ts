@@ -53,6 +53,7 @@ export default defineStore("context-menu", {
     hideContextMenu() {
       this.visible = false;
       this.src = null;
+      this.options = [];
     },
     hasManyChildren() {
       let result = false;

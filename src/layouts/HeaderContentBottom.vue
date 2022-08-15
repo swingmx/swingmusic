@@ -40,7 +40,7 @@ const props = defineProps<{
   /**
    *  Called when the bottom container is raised.
    */
-  bottomRaisedCallback?: (routeparams?: RouteParams) => void;
+  bottomRaisedCallback?: (routeparams: RouteParams) => void;
 }>();
 
 let elem: HTMLElement;
