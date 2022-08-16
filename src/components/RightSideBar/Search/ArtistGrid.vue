@@ -1,6 +1,9 @@
 <template>
-  <div class="artists-results" v-if="search.artists.value.length">
-    <div class="search-results-grid">
+  <div class="artists-results">
+    <div class="search-results-grid" v-if="album_grid == true">
+      <AlbumCard v-for="a in search.albums.value" :key="a.albumid" :album="a" />
+    </div>
+    <div class="search-results-grid" v-else>
       <ArtistCard
         v-for="artist in search.artists.value"
         :key="artist.image"
@@ -14,9 +17,16 @@
 
 <script setup lang="ts">
 import useSearchStore from "../../../stores/search";
+
+import AlbumCard from "@/components/shared/AlbumCard.vue";
 import ArtistCard from "../../shared/ArtistCard.vue";
 import LoadMore from "./LoadMore.vue";
+
 const search = useSearchStore();
+
+defineProps<{
+  album_grid?: boolean;
+}>();
 
 function loadMore() {
   search.updateLoadCounter("artists");
@@ -25,18 +35,14 @@ function loadMore() {
 </script>
 
 <style lang="scss">
-.right-search .artists-results {
+.artists-results {
   display: grid;
   margin: 0 1rem;
+}
 
-  .xartist {
-    background-color: $gray;
-
-    .artist-image {
-      width: 7rem;
-      height: 7rem;
-      object-fit: cover;
-    }
-  }
+.search-results-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.75rem;
 }
 </style>

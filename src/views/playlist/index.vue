@@ -35,7 +35,7 @@ onMounted(() => {
   playlist.fetchArtists(route.params.pid as string);
 });
 
-onUnmounted(() => playlist.reset());
+onUnmounted(() => playlist.resetArtists());
 </script>
 
 <style lang="scss"></style>

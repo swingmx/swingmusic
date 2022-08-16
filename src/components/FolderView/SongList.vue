@@ -6,9 +6,6 @@
         <div class="disc-number" v-if="$route.name === Routes.folder">
           In this folder
         </div>
-        <div class="disc-number" v-if="$route.name === Routes.playlist">
-          &nbsp;
-        </div>
       </div>
       <div class="songlist">
         <SongItem

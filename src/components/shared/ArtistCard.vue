@@ -3,7 +3,6 @@
     <img
       class="artist-image shadow-sm"
       :src="imguri + artist.image"
-      alt=""
       loading="lazy"
     />
     <div>
@@ -30,13 +29,10 @@ defineProps<{
   overflow: hidden;
   position: relative;
 
-  min-width: 8.5em;
-  height: 11em;
   border-radius: 0.75rem;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+  display: grid;
   justify-content: center;
+  padding: 1rem $small;
   cursor: pointer;
 
   .artist-image {
@@ -66,5 +62,15 @@ defineProps<{
 
 ._is_on_sidebar {
   background-color: $gray4 !important;
+
+  .artist-image {
+    width: 7rem;
+    height: 7rem;
+
+    @include for-desktop-down {
+      width: 6rem;
+      height: 6rem;
+    }
+  }
 }
 </style>

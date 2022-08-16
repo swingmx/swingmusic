@@ -5,7 +5,7 @@
         <TracksGrid />
       </Tab>
       <Tab name="albums">
-        <AlbumGrid />
+        <ArtistGrid :album_grid="true" />
       </Tab>
       <Tab name="artists">
         <ArtistGrid />
@@ -15,7 +15,6 @@
 </template>
 
 <script setup lang="ts">
-import AlbumGrid from "./AlbumGrid.vue";
 import ArtistGrid from "./ArtistGrid.vue";
 import Tab from "./Tab.vue";
 import TabsWrapper from "./TabsWrapper.vue";
@@ -36,11 +35,7 @@ import TracksGrid from "./TracksGrid.vue";
     font-size: 2rem;
     color: $white;
   }
-  .search-results-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 0.75rem;
-  }
+
 
   .input {
     display: flex;

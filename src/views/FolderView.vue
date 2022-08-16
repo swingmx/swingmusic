@@ -33,7 +33,7 @@ import { isSameRoute } from "@/composables/perks";
 const loader = useLoaderStore();
 const FStore = useFStore();
 
-const scrollable = ref(null);
+const scrollable = ref<any>(null);
 
 function getFolderName(route: RouteLocationNormalized) {
   const path = route.params.path as string;
@@ -47,7 +47,6 @@ onBeforeRouteUpdate((to, from) => {
   FStore.fetchAll(to.params.path as string)
 
     .then(() => {
-      console.log("fetched");
       scrollable.value.scrollTop = 0;
     })
     .then(() => {

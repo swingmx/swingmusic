@@ -113,6 +113,10 @@ function toggleBottom() {
 
     .ap-page-content {
       padding-bottom: 16rem;
+      
+      @include for-desktop-down {
+        min-height: calc(100vh - 38.75rem);
+      }
     }
   }
 
