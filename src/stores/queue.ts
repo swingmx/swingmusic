@@ -1,3 +1,5 @@
+// @ts-strict
+
 import { defineStore } from "pinia";
 import state from "../composables/state";
 import { NotifType, useNotifStore } from "./notification";
@@ -102,8 +104,18 @@ export default defineStore("Queue", {
             };
           });
         })
-        .catch((err) => {
-          console.error(err);
+        .catch((err: ErrorEvent) => {
+          err.stopImmediatePropagation();
+          useNotifStore().showNotification(
+            "Can't play: " + track.title,
+            NotifType.Error
+          );
+
+          if (this.current !== this.tracklist.length - 1) {
+            setTimeout(() => {
+              this.playNext();
+            }, 1000);
+          }
         });
     },
     playPause() {

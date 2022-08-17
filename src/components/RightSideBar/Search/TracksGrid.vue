@@ -11,7 +11,7 @@
         @PlayThis="updateQueue(index)"
       />
     </TransitionGroup>
-    <LoadMore v-if="search.tracks.more" @loadMore="loadMore" />
+    <LoadMore v-if="search.tracks.more" :loader="search.loadTracks" />
   </div>
 </template>
 
@@ -23,11 +23,6 @@ import useSearchStore from "../../../stores/search";
 
 const queue = useQStore();
 const search = useSearchStore();
-
-function loadMore() {
-  search.updateLoadCounter("tracks");
-  search.loadTracks(search.loadCounter.tracks);
-}
 
 function updateQueue(index: number) {
   queue.playFromSearch(search.query, search.tracks.value);

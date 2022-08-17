@@ -11,7 +11,14 @@
         :alt="true"
       />
     </div>
-    <LoadMore v-if="search.artists.more" @loadMore="loadMore" />
+    <LoadMore
+      v-if="album_grid && search.albums.more"
+      :loader="search.loadAlbums"
+    />
+    <LoadMore
+      v-if="!album_grid && search.artists.more"
+      :loader="search.loadArtists"
+    />
   </div>
 </template>
 
@@ -28,10 +35,10 @@ defineProps<{
   album_grid?: boolean;
 }>();
 
-function loadMore() {
-  search.updateLoadCounter("artists");
-  search.loadArtists(search.loadCounter.artists);
-}
+// function loadMore() {
+//   search.updateLoadCounter("artists");
+//   search.loadArtists(search.loadCounter.artists);
+// }
 </script>
 
 <style lang="scss">

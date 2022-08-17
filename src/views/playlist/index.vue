@@ -11,9 +11,6 @@
         :playlistid="playlist.info.playlistid"
       />
     </template>
-    <template #bottom>
-      <FeaturedArtists :artists="playlist.artists" />
-    </template>
   </Page>
 </template>
 
@@ -22,7 +19,6 @@ import Page from "@/layouts/HeaderContentBottom.vue";
 
 import Header from "@/components/PlaylistView/Header.vue";
 import Content from "./Content.vue";
-import FeaturedArtists from "@/components/PlaylistView/FeaturedArtists.vue";
 
 import usePTrackStore from "@/stores/pages/playlist";
 import { onMounted, onUnmounted } from "vue";

@@ -1,19 +1,17 @@
 <template>
   <div class="morexx">
-    <button @click="loadMore" class="btn">
+    <button class="btn" @click="loader">
       <div class="text">Load More</div>
     </button>
   </div>
 </template>
 
 <script setup lang="ts">
-const emit = defineEmits<{
-  (e: "loadMore"): void;
+defineProps<{
+  loader: () => void;
 }>();
 
-function loadMore() {
-  emit("loadMore");
-}
+
 </script>
 
 <style lang="scss">

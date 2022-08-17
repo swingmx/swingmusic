@@ -74,8 +74,11 @@ const routes = [
     component: AlbumView,
     beforeEnter: async (to) => {
       state.loading.value = true;
-      await useAStore()
+      const store = useAStore();
+
+      await store
         .fetchTracksAndArtists(to.params.hash)
+        .then(() => store.fetchBio(to.params.hash))
         .then(() => {
           state.loading.value = false;
         });

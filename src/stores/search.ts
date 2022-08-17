@@ -17,7 +17,7 @@ import useTabStore from "./tabs";
  * Scrolls on clicking the loadmore button
  */
 function scrollOnLoad() {
-  const elem = document.getElementById("tab-content");
+  const elem = document.getElementById("tab-content") as HTMLElement;
 
   elem.scroll({
     top: elem.scrollHeight,
@@ -88,13 +88,10 @@ export default defineStore("search", () => {
     });
   }
 
-  /**
-   * Loads more search tracks results
-   *
-   * @param index The starting index of the tracks to load
-   */
-  function loadTracks(index: number) {
-    loadMoreTracks(index)
+  function loadTracks() {
+    loadCounter.tracks += 6;
+
+    loadMoreTracks(loadCounter.tracks)
       .then((res) => {
         tracks.value = [...tracks.value, ...res.tracks];
         tracks.more = res.more;
@@ -102,48 +99,30 @@ export default defineStore("search", () => {
       .then(() => scrollOnLoad());
   }
 
-  /**
-   * Loads more search albums results
-   *
-   * @param index The starting index of the albums to load
-   */
-  function loadAlbums(index: number) {
-    loadMoreAlbums(index)
+  function loadAlbums() {
+    loadCounter.albums += 6;
+
+    loadMoreAlbums(loadCounter.albums)
       .then((res) => {
         albums.value = [...albums.value, ...res.albums];
         albums.more = res.more;
       })
-      .then(() => scrollOnLoad());
+      .then(() => {
+        setTimeout(() => {
+          scrollOnLoad();
+        }, 500);
+      });
   }
 
-  /**
-   * Loads more search artists results
-   *
-   * @param index The starting index of the artists to load
-   */
-  function loadArtists(index: number) {
-    loadMoreArtists(index)
+  function loadArtists() {
+    loadCounter.artists += 6;
+
+    loadMoreArtists(loadCounter.artists)
       .then((res) => {
         artists.value = [...artists.value, ...res.artists];
         artists.more = res.more;
       })
       .then(() => scrollOnLoad());
-  }
-
-  type loadType = "tracks" | "albums" | "artists" | "playlists";
-
-  function updateLoadCounter(type: loadType) {
-    switch (type) {
-      case "tracks":
-        loadCounter.tracks += 6;
-        break;
-      case "albums":
-        loadCounter.albums += 6;
-        break;
-      case "artists":
-        loadCounter.artists += 6;
-        break;
-    }
   }
 
   watch(
@@ -217,7 +196,6 @@ export default defineStore("search", () => {
     query,
     currentTab,
     loadCounter,
-    updateLoadCounter,
     loadTracks,
     loadAlbums,
     loadArtists,

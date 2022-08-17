@@ -30,9 +30,9 @@
       </div>
       <div class="bottom">
         <div class="stats">
-          {{ album.count }} Tracks • {{ formatSeconds(album.duration, true) }} •
+          {{ album.artist }} •
           {{ album.date }} •
-          {{ album.artist }}
+          {{ album.count }} Tracks • {{ formatSeconds(album.duration, true) }}
         </div>
         <PlayBtnRect
           :source="playSources.album"
@@ -59,6 +59,7 @@ import PlayBtnRect from "../shared/PlayBtnRect.vue";
 
 const props = defineProps<{
   album: AlbumInfo;
+  bio: string | null;
 }>();
 
 const emit = defineEmits<{
@@ -89,7 +90,7 @@ useVisibility(albumheaderthing, handleVisibilityState);
 <style lang="scss">
 .a-header {
   display: grid;
-  grid-template-columns: max-content 1fr;
+  grid-template-columns: 1fr;
   gap: 1rem;
   padding: 1rem;
   height: 100% !important;
@@ -102,7 +103,7 @@ useVisibility(albumheaderthing, handleVisibilityState);
     position: relative;
 
     img {
-      height: 16rem;
+      height: 6rem;
       aspect-ratio: 1;
       object-fit: cover;
       transition: all 0.2s ease-in-out;
@@ -122,7 +123,7 @@ useVisibility(albumheaderthing, handleVisibilityState);
 
     .top {
       .h {
-        opacity: 0.75;
+        opacity: 0.5;
       }
       .title {
         font-size: 2.5rem;
@@ -150,9 +151,8 @@ useVisibility(albumheaderthing, handleVisibilityState);
     }
   }
 
+  // grid-template-columns: 1fr !important;
   @include for-desktop-down {
-    grid-template-columns: 1fr;
-
     .art > img {
       height: 6rem;
       box-shadow: 0 0 1rem $black;

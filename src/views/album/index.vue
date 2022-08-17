@@ -1,17 +1,10 @@
 <template>
-  <Page :bottomRaisedCallback="fetchAlbumBio">
+  <Page>
     <template #header>
-      <Header :album="album.info" />
+      <Header :album="album.info" :bio="album.bio" />
     </template>
     <template #content>
       <Content :discs="album.discs" :copyright="album.info.copyright" />
-    </template>
-    <template #bottom>
-      <Bottom
-        :artists="album.artists"
-        :bio="album.bio"
-        :image="album.info?.image"
-      />
     </template>
   </Page>
 </template>
@@ -25,7 +18,6 @@ import {
 } from "vue-router";
 
 import Page from "@/layouts/HeaderContentBottom.vue";
-import Bottom from "./Bottom.vue";
 import Content from "./Content.vue";
 import Header from "./Header.vue";
 
@@ -36,6 +28,8 @@ function fetchAlbumBio(params: RouteParams) {
 }
 
 onBeforeRouteUpdate(async (to: RouteLocationNormalized) => {
-  await album.fetchTracksAndArtists(to.params.hash.toString());
+  await album
+    .fetchTracksAndArtists(to.params.hash.toString())
+    .then(() => album.fetchBio(to.params.hash.toString()));
 });
 </script>

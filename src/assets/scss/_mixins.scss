@@ -10,17 +10,19 @@
     @content;
   }
 }
-@mixin tablet-portrait {
-  @media (max-width: 810) {
-    @content;
-  }
-}
 
 @mixin tablet-landscape {
   @media (max-width: 1080px) {
     @content;
   }
 }
+
+@mixin tablet-portrait {
+  @media (max-width: 810) {
+    @content;
+  }
+}
+
 @mixin for-desktop-down {
   @media (max-width: 1600px) {
     @content;

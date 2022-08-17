@@ -8,23 +8,6 @@
         <slot name="content"></slot>
       </main>
     </div>
-    <div
-      class="ap-page-bottom-container rounded"
-      ref="apbottomcontainer"
-      :class="{
-        bottomexpanded: bottomContainerRaised,
-      }"
-    >
-      <div class="click-to-expand" @click="toggleBottom">
-        <div>
-          <div class="arrow">↑</div>
-          <span>tap here</span>
-        </div>
-      </div>
-      <div class="bottom-content">
-        <slot name="bottom"></slot>
-      </div>
-    </div>
   </div>
 </template>
 
@@ -112,7 +95,7 @@ function toggleBottom() {
     gap: 1rem;
 
     .ap-page-content {
-      padding-bottom: 16rem;
+      // padding-bottom: 16rem;
       
       @include for-desktop-down {
         min-height: calc(100vh - 38.75rem);
