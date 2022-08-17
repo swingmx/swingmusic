@@ -19,7 +19,7 @@
           loading="lazy"
           :src="imguri + track.image"
           alt=""
-          class="album-art image rounded"
+          class="album-art image rounded-sm"
         />
         <div
           class="now-playing-track-indicator image"

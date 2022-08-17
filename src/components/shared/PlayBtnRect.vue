@@ -1,15 +1,15 @@
 <template>
-  <div
-    class="playbtnrect rounded"
+  <button
+    class="playbtnrect"
     @click="usePlayFrom(source, useQStore, store)"
     :style="{
-      backgroundColor: background.color,
+      background: background?.color,
     }"
-    :class="{ playbtnrectdark: background.isDark }"
+    :class="{ playbtnrectdark: background?.isDark }"
   >
     <playBtnSvg />
     <div class="text">Play</div>
-  </div>
+  </button>
 </template>
 
 <script setup lang="ts">
@@ -40,24 +40,9 @@ defineProps<{
   width: 6rem;
   display: flex;
   align-items: center;
-  height: 2.5rem;
-  padding-left: 0.75rem;
-  cursor: pointer;
-  user-select: none;
-  color: $white;
+  justify-content: center;
   transition: all 0.5s ease-in-out;
-
-  .icon {
-    height: 2rem;
-    width: 2rem;
-    background-image: url("../../assets/icons/play.svg");
-  }
-
-  &:hover {
-    .icon {
-      transform: rotate(120deg);
-    }
-  }
+  color: $white;
 }
 
 .playbtnrectdark {

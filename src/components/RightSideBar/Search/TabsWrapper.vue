@@ -1,7 +1,7 @@
 <template>
   <div id="right-tabs" class="bg-black rounded">
     <div class="tab-buttons-wrapper">
-      <div id="tabheaders" class="rounded noscroll">
+      <div id="tabheaders" class="rounded-sm noscroll">
         <div
           class="tab"
           v-for="slot in $slots.default()"
@@ -44,7 +44,7 @@ const s = useSearchStore();
     justify-content: space-around;
     margin: 1rem;
     width: max-content;
-    background: linear-gradient(37deg, $gray3, $gray4, $gray3);
+    background: linear-gradient(37deg, $gray1, $gray2, $gray1);
     height: 2rem;
 
     & > * {
@@ -55,6 +55,7 @@ const s = useSearchStore();
       display: flex;
       align-items: center;
       justify-content: center;
+      user-select: none;
 
       cursor: pointer;
       transition: all 0.3s ease;

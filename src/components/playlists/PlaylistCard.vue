@@ -2,7 +2,7 @@
   <router-link
     :to="{ name: 'PlaylistView', params: { pid: props.playlist.playlistid } }"
     :playlist="props.playlist"
-    class="p-card rounded"
+    class="p-card rounded bg-black"
   >
     <div
       class="image p-image rounded shadow-sm"
@@ -37,10 +37,9 @@ const props = defineProps<{
 <style lang="scss">
 .p-card {
   width: 100%;
-  padding: 0.75rem;
+  padding: 1rem;
   transition: all 0.25s ease;
   position: relative;
-  background-color: #1c1c1e80;
 
   .p-image {
     min-width: 100%;
@@ -72,7 +71,7 @@ const props = defineProps<{
   }
 
   &:hover {
-    background-color: $gray5;
+    background-color: $gray2;
 
     .drop {
       transition-delay: 0.75s;

@@ -29,7 +29,6 @@ defineProps<{
   display: grid;
   gap: $small;
   padding: $small;
-  background-color: $gray4;
   transition: all 0.5s ease;
   border-radius: .7rem;
 

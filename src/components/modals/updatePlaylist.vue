@@ -65,15 +65,15 @@ const props = defineProps<{
 }>();
 
 onMounted(() => {
-  document.getElementById("modal-playlist-name-input").focus();
+  (document.getElementById("modal-playlist-name-input") as HTMLElement).focus();
 });
 
 const emit = defineEmits<{
-  (e: "title", title: string): void;
+  (e: "setTitle", title: string): void;
   (e: "hideModal"): void;
 }>();
 
-emit("title", "Update Playlist");
+emit("setTitle", "Update Playlist");
 
 function selectFiles() {
   const input = document.getElementById(

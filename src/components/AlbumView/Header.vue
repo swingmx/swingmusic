@@ -4,7 +4,7 @@
     ref="albumheaderthing"
     :style="{
       backgroundImage: `linear-gradient(
-        37deg, ${props.album.colors[0]}, ${props.album.colors[3]}
+        37deg, ${album.colors[0]}, ${album.colors[3]}
       )`,
     }"
   >

@@ -1,33 +1,72 @@
 <template>
-  <div class="b-bar">
-    <div class="grid rounded">
-      <div class="controlsx rounded">
-        <div class="controls-bottom">
-          <HotKeys />
+  <div class="b-bar bg-black pad-medium rounded">
+    <div class="info">
+      <img
+        :src="paths.images.thumb + queue.currenttrack?.image"
+        alt=""
+        class="rounded"
+      />
+      <div class="tags">
+        <div class="np-artist ellip">
+          <span v-for="artist in putCommas(queue.currenttrack?.artists || ['Artist'])">
+            {{ artist }}
+          </span>
         </div>
-        <div class="progress progress-bottom">
-          <span class="durationx">{{ formatSeconds(q.track.current_time) }}</span>
-          <Progress />
-          <span class="durationx">{{ formatSeconds(q.length) }}</span>
-        </div>
-        <div class="r-group">
-          <div id="heart" class="image ctrl-btn"></div>
-          <div id="add-to" class="image ctrl-btn"></div>
-          <div id="repeat" class="image ctrl-btn"></div>
+        <div class="np-title ellip">
+          {{ queue.currenttrack?.title || "Track title" }}
         </div>
       </div>
-      <div class="volume-group"></div>
     </div>
+    <Progress />
   </div>
 </template>
 
 <script setup lang="ts">
 import "@/assets/scss/BottomBar/BottomBar.scss";
-import { formatSeconds } from "@/utils";
-import HotKeys from "../LeftSidebar/NP/HotKeys.vue";
+import { formatSeconds, putCommas } from "@/utils";
 import Progress from "../LeftSidebar/NP/Progress.vue";
 
 import useQStore from "@/stores/queue";
+import { paths } from "@/config";
 
-const q = useQStore();
+const queue = useQStore();
 </script>
+
+<style lang="scss">
+.b-bar {
+  display: grid;
+  grid-template-rows: 1fr max-content;
+  border-radius: 1rem;
+  gap: 1rem;
+  padding: 1rem;
+  padding-bottom: 2rem;
+
+  .info {
+    display: grid;
+    grid-template-columns: max-content 1fr;
+    gap: 1rem;
+
+    img {
+      height: 6rem;
+      width: auto;
+    }
+
+    .tags {
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+
+      .np-title {
+        font-size: 1.15rem;
+        font-weight: bold;
+        margin-bottom: $small;
+      }
+
+      .np-artist {
+        opacity: 0.75;
+        font-size: 0.9rem;
+      }
+    }
+  }
+}
+</style>

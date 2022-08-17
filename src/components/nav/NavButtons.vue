@@ -1,40 +1,41 @@
 <template>
-  <div id="back-forward">
-    <div class="back image" @click="$router.back()"></div>
-    <div class="forward image" @click="$router.forward()"></div>
+  <div id="back-forward" class="">
+    <button class="back" @click="$router.back()">
+      <ArrowSvg />
+    </button>
+    <button class="forward" @click="$router.forward()">
+      <ArrowSvg />
+    </button>
   </div>
 </template>
+
+<script setup lang="ts">
+import ArrowSvg from "../../assets/icons/right-arrow.svg";
+</script>
 
 <style lang="scss">
 #back-forward {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 1rem;
-  padding-right: 1rem;
-  margin-right: $small;
+  padding-right: 1.25rem;
   border-right: 1px solid $gray3;
+  width: 100%;
 
-  & > div {
-    background-color: $gray4;
-    border-radius: $small;
-    height: 2.25rem;
-    width: 2.25rem;
-    cursor: pointer;
-    background-size: 2rem;
-    transition: all .25s ease-in-out;
+  & > * {
+    background-color: $gray3;
+    padding: $small;
+    height: 100%;
+    aspect-ratio: 1;
+    border-radius: $medium;
 
-    &:hover {
-      background-color: $accent;
+    svg {
+      margin: auto;
     }
   }
 
   .back {
-    background-image: url("../../assets/icons/right-arrow.svg");
     transform: rotate(180deg);
-  }
-
-  .forward {
-    background-image: url("../../assets/icons/right-arrow.svg");
   }
 }
 </style>

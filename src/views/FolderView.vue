@@ -1,12 +1,12 @@
 <template>
   <div id="f-view-parent">
     <div id="scrollable" ref="scrollable">
-      <div class="banner shadow-lg">
+      <div class="banner shadow-lg rounded">
         <div class="text abs rounded pad-medium">
           <h3><FolderSvg /> {{ getFolderName($route) }}</h3>
         </div>
         <img
-          src="../assets/images/folder.webp"
+          src="@/assets/images/folderbg.webp"
           alt=""
           class="rounded"
           loading="lazy"
@@ -79,20 +79,16 @@ onBeforeRouteUpdate((to, from) => {
     pointer-events: none;
     user-select: none;
     width: 100%;
-    // display: table-cell;
-    // vertical-align: bottom;
+    background-color: $accent;
 
     .text {
       bottom: 1rem;
-      // height: 100%;
       left: 1rem;
-      // right: 1rem;
-      // width: min-content;
+      width: max-content;
       max-width: calc(100% - 2rem);
       background-color: $black;
 
       @include for-desktop-down {
-        max-width: 31rem;
         right: 1rem;
       }
 
@@ -110,6 +106,7 @@ onBeforeRouteUpdate((to, from) => {
       height: 100%;
       width: 100%;
       object-fit: cover;
+      object-position: bottom;
     }
   }
 

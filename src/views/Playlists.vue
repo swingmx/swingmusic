@@ -25,11 +25,11 @@ const pStore = usePStore();
   scrollbar-color: $gray2 transparent;
 
   .grid {
-    grid-template-columns: repeat(auto-fill, minmax(10rem, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(13rem, 1fr));
     gap: 1rem;
 
     @include for-desktop-down {
-      grid-template-columns: repeat(auto-fill, minmax(8rem, 1fr));
+      grid-template-columns: repeat(auto-fill, minmax(10rem, 1fr));
 
       .name {
         font-size: 0.9rem;

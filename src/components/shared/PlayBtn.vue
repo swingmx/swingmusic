@@ -1,8 +1,10 @@
 <template>
-  <div
-    class="play-btn rounded shadow-sm"
+  <button
+    class="play-btn rounded-md"
     @click="usePlayFrom(source, useQStore, store)"
-  ></div>
+  >
+    <PlaySvg />
+  </button>
 </template>
 
 <script setup lang="ts">
@@ -12,24 +14,19 @@ import usePlaylistStore from "@/stores/pages/playlist";
 import usePlayFrom from "@/composables/usePlayFrom";
 import useQStore from "@/stores/queue";
 
+import PlaySvg from "../../assets/icons/play.svg";
+
 defineProps<{
   source: playSources;
   store: typeof useAlbumStore | typeof usePlaylistStore;
 }>();
 </script>
+
 <style lang="scss">
 .play-btn {
-  height: 2.25rem;
-  background-color: $gray3;
-  background-image: url("../../assets/icons/play.svg");
-  background-size: 1.75rem;
-  background-repeat: no-repeat;
-  background-position: 50% 50%;
-  transition: all 0.25s ease-in-out;
+  height: 100%;
   aspect-ratio: 1;
-
-  &:hover {
-    background-color: $accent;
-  }
+  display: grid;
+  place-items: center;
 }
 </style>

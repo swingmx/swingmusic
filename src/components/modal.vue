@@ -8,13 +8,13 @@
         v-if="modal.component == modal.options.newPlaylist"
         :track="modal.props.track"
         @hideModal="hideModal"
-        @title="title"
+        @setTitle="setTitle"
       />
       <UpdatePlaylist
         :playlist="modal.props"
         v-if="modal.component == modal.options.updatePlaylist"
         @hideModal="hideModal"
-        @title="title"
+        @setTitle="setTitle"
       />
       <WelcomeModal v-if="modal.component == modal.options.welcome" />
     </div>
@@ -33,7 +33,7 @@ const modal = useModalStore();
  * Sets the modal title
  * @param title
  */
-function title(title: string) {
+function setTitle(title: string) {
   console.log(title);
   modal.setTitle(title);
 }

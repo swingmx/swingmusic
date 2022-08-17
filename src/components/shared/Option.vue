@@ -1,21 +1,12 @@
 <template>
-  <div
-    class="drop-btn rounded shadow-sm"
-    id="option-drop"
-    @click="showDropdown"
-  >
-    <div
-      class="image drop-icon"
-      :class="{ clicked: clicked && src == ContextSrc.PHeader }"
-    ></div>
-  </div>
+  <button id="option-drop" @click.stop.prevent="showDropdown">
+    <MoreSvg />
+  </button>
 </template>
 <script setup lang="ts">
-import { onMounted, ref } from "vue";
-import { ContextSrc } from "../../composables/enums";
-
+import { onMounted } from "vue";
+import MoreSvg from "../../assets/icons/more.svg";
 let elem: DOMRect;
-const clicked = ref(false);
 
 defineProps<{
   src?: string;
@@ -26,47 +17,24 @@ const emit = defineEmits<{
 }>();
 
 onMounted(() => {
-  elem = document.getElementById("option-drop").getBoundingClientRect();
+  const el = document.getElementById("option-drop") as HTMLElement;
+  elem = el.getBoundingClientRect();
 });
 
 function showDropdown(e: Event) {
-  e.preventDefault();
-  e.stopImmediatePropagation();
-
   emit("showDropdown", {
-    clientX: elem.left + 45,
+    clientX: elem.left + 35,
     clientY: elem.top,
   });
-
-  clicked.value = true;
 }
 </script>
 <style lang="scss">
-.drop-btn {
-  width: 2.5rem;
-  background-color: $accent;
-  transition: all 0.5s ease-in-out;
-  cursor: pointer;
+#option-drop {
+  display: flex;
+  align-items: center;
 
-  .drop-icon {
-    transition: all 0.25s;
-    padding: $small;
-    height: 2.5rem;
-    width: 2.5rem;
-    background-image: url("../../assets/icons/right-arrow.svg");
-    background-size: 1.75rem;
-    transform: rotate(90deg);
-  }
-
-  .clicked {
-    transform: rotate(0deg);
-  }
-
-  &:hover {
-    background-color: $green;
-    .image {
-      transform: rotate(0deg);
-    }
+  svg {
+    transform: scale(1.25);
   }
 }
 </style>

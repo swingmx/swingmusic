@@ -23,7 +23,7 @@
           </TransitionGroup>
         </div>
       </div>
-      <PlayingFrom :from="queue.from" />
+      <!-- <PlayingFrom :from="queue.from" /> -->
     </div>
   </div>
 </template>
@@ -87,8 +87,8 @@ onUpdated(() => {
     height: 100%;
     display: grid;
     grid-template-columns: 1fr;
-    grid-template-rows: max-content 1fr max-content;
-    gap: $small;
+    grid-template-rows: max-content 1fr;
+    gap: 1rem;
 
     .scrollable-r {
       height: 100%;

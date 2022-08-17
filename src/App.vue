@@ -14,9 +14,10 @@
     <div id="acontent" class="rounded">
       <router-view />
     </div>
+    <BottomBar />
     <SearchInput />
     <RightSideBar />
-    <Tabs />
+    <!-- <Tabs /> -->
   </div>
 </template>
 
@@ -33,13 +34,14 @@ import handleShortcuts from "@/composables/useKeyboard";
 import Logo from "@/components/Logo.vue";
 import Modal from "@/components/modal.vue";
 import NavBar from "@/components/nav/NavBar.vue";
-import Tabs from "@/components/RightSideBar/Tabs.vue";
+// import Tabs from "@/components/RightSideBar/Tabs.vue";
 import ContextMenu from "@/components/contextMenu.vue";
 import Notification from "@/components/Notification.vue";
 import Navigation from "@/components/LeftSidebar/Navigation.vue";
 import nowPlaying from "@/components/LeftSidebar/nowPlaying.vue";
 import RightSideBar from "@/components/RightSideBar/Main.vue";
 import SearchInput from "@/components/RightSideBar/SearchInput.vue";
+import BottomBar from "@/components/BottomBar/BottomBar.vue";
 
 import { readLocalStorage, writeLocalStorage } from "@/utils";
 

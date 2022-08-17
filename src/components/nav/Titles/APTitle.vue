@@ -47,5 +47,7 @@ const things = computed(() => {
   display: flex;
   align-items: center;
   gap: $small;
+  outline: solid 1px $gray3;
+  height: 100%;
 }
 </style>

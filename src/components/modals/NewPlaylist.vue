@@ -30,15 +30,15 @@ const route = useRoute();
 const playlistStore = usePlaylistStore();
 
 onMounted(() => {
-  document.getElementById("modal-playlist-name-input").focus();
+  (document.getElementById("modal-playlist-name-input") as HTMLElement).focus();
 });
 
 const emit = defineEmits<{
-  (e: "title", title: string): void;
+  (e: "setTitle", title: string): void;
   (e: "hideModal"): void;
 }>();
 
-emit("title", "New Playlist");
+emit("setTitle", "New Playlist");
 
 /**
  * Create a new playlist. If this modal is called with a track,

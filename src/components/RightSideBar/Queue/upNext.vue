@@ -1,12 +1,12 @@
 <template>
   <div
-    class="next-track bg-black"
+    class="next-track bg-black rounded"
     :class="{ contexton: context_on }"
     @click="playNext"
     @contextmenu.prevent="showMenu"
   >
     <div class="nextup abs">next up</div>
-    <img :src="paths.images.thumb + track?.image" class="rounded" />
+    <img :src="paths.images.thumb + track?.image" class="rounded-sm" />
     <div class="tags">
       <div class="title ellip">{{ track?.title || "Don't click here" }}</div>
       <div class="artist ellip" v-if="track">
@@ -43,13 +43,12 @@ function showMenu(e: Event) {
 
 <style lang="scss">
 .next-track {
-  border-radius: 0.5rem;
   position: relative;
 
   display: grid;
   grid-template-columns: max-content 1fr;
   gap: 1rem;
-  padding: $small;
+  padding: 1rem;
   width: 100%;
   cursor: pointer;
 

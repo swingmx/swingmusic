@@ -32,44 +32,19 @@ defineProps<{
   border-radius: 0.75rem;
   display: grid;
   justify-content: center;
-  padding: 1rem $small;
   cursor: pointer;
 
   .artist-image {
-    width: 8rem;
-    height: 8rem;
+    width: 100%;
     border-radius: 60%;
     margin-bottom: $small;
     transition: all 0.5s ease-in-out;
-    transition-delay: 0.25s;
     object-fit: cover;
   }
 
   &:hover {
     .artist-image {
       border-radius: 20%;
-    }
-  }
-
-  .artist-name {
-    margin: 0;
-    font-size: 0.9rem;
-    font-weight: 510;
-    max-width: 7rem;
-    text-transform: capitalize;
-  }
-}
-
-._is_on_sidebar {
-  background-color: $gray4 !important;
-
-  .artist-image {
-    width: 7rem;
-    height: 7rem;
-
-    @include for-desktop-down {
-      width: 6rem;
-      height: 6rem;
     }
   }
 }

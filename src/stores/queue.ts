@@ -240,19 +240,25 @@ export default defineStore("Queue", {
     },
     playTrackNext(track: Track) {
       const Toast = useNotifStore();
+
+      const nextindex = this.current + 1;
+      const next: Track = this.tracklist[nextindex];
+
+      // if track is already next, skip
+      if (next?.trackid === track.trackid) {
+        Toast.showNotification("Track is already queued", NotifType.Info);
+        return;
+      }
+
+      // if tracklist is empty or current track is last, push track
+      // else insert track after current track
       if (this.current == this.tracklist.length - 1) {
         this.tracklist.push(track);
       } else {
-        const nextindex = this.current + 1;
-        const next: Track = this.tracklist[nextindex];
-
-        if (next.trackid === track.trackid) {
-          Toast.showNotification("Track is already queued", NotifType.Info);
-          return;
-        }
+        this.tracklist.splice(this.current + 1, 0, track);
       }
 
-      this.tracklist.splice(this.current + 1, 0, track);
+      // save queue
       this.updateNext(this.current);
       Toast.showNotification(
         `Added ${track.title} to queue`,

@@ -1,76 +1,55 @@
 <template>
-  <div id="gsearch-input">
+  <div
+    id="gsearch-input"
+    class="bg-black rounded"
+    :class="{ 'search-focused': focused }"
+  >
     <div id="ginner" tabindex="0">
-      <div class="icon image"></div>
+      <SearchSvg />
       <input
         id="globalsearch"
-        class="rounded"
         v-model="search.query"
         placeholder="Search your library"
         type="search"
-        @focus="focusThis()"
-        @blur="unfocusThis()"
+        @focus="focused = true"
+        @blur="focused = false"
       />
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { onMounted } from "vue";
+import { ref } from "vue";
 import useSearchStore from "../../stores/search";
+import SearchSvg from "../../assets/icons/search.svg";
 
 const search = useSearchStore();
-let input: HTMLInputElement;
-
-onMounted(() => {
-  input = document.getElementById("ginner") as HTMLInputElement;
-});
-
-function focusThis() {
-  input.classList.add("focused");
-}
-
-function unfocusThis() {
-  input.classList.remove("focused");
-}
+const focused = ref(false);
 </script>
 
 <style lang="scss">
 #gsearch-input {
-  display: flex;
-  height: max-content;
+  padding: $smaller;
 
   #ginner {
     width: 100%;
-    border-radius: 0.4rem;
-    position: relative;
     display: flex;
-    background-color: $red;
-    background-color: $gray4;
-
-    .icon {
-      width: 2.25rem;
-      aspect-ratio: 1;
-      background-image: url("../../assets/icons/search.svg");
-      background-size: 1.5rem;
-      margin-left: $smaller;
-    }
+    align-items: center;
+    gap: $smaller;
+    margin-left: $small;
 
     input {
-      display: flex;
-      align-items: center;
       width: 100%;
       border: none;
       line-height: 2.25rem;
       color: inherit;
       font-size: 1rem;
       background-color: transparent;
-      outline: 2px solid transparent;
+      outline: none;
     }
   }
-
-  .focused {
-    outline: solid $accent;
-  }
+}
+.search-focused {
+  outline: solid $accent;
 }
 </style>

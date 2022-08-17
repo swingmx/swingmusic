@@ -1,10 +1,7 @@
 <template>
   <div class="topnav">
     <div class="left">
-      <div class="btn">
-        <NavButtons />
-      </div>
-
+      <NavButtons />
       <div class="info">
         <APTitle v-show="showAPTitle" />
         <Playlists v-show="$route.name == Routes.playlists" />
@@ -15,16 +12,12 @@
     <div class="center rounded">
       <Loader />
     </div>
-    <!-- <div class="right">
-      <Search />
-    </div> -->
   </div>
 </template>
 
 <script setup lang="ts">
 import NavButtons from "./NavButtons.vue";
 import Loader from "../shared/Loader.vue";
-// import Search from "./Search.vue";
 import { useRoute } from "vue-router";
 import { ref, watch } from "vue";
 import { Routes } from "@/composables/enums";
@@ -82,13 +75,11 @@ watch(
   display: grid;
   grid-template-columns: 1fr min-content;
   width: 100%;
-  gap: 1rem;
-  overflow: hidden;
 
   .left {
     display: grid;
     grid-template-columns: max-content 1fr;
-    overflow: hidden;
+    gap: 1rem;
 
     .info {
       overflow: hidden;
@@ -105,12 +96,6 @@ watch(
     display: grid;
     place-items: center;
     margin-right: 1rem;
-  }
-
-  .right {
-    width: 100%;
-    display: flex;
-    gap: $small;
   }
 }
 </style>

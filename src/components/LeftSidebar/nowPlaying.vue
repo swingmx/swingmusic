@@ -141,8 +141,8 @@ const showContextMenu = (e: Event) => {
     font-size: 0.75rem;
     width: max-content;
     padding: 0.2rem 0.35rem;
-    top: 14.25rem;
-    left: 1.5rem;
+    top: 14rem;
+    left: 2rem;
     background-color: $black;
     border-radius: $smaller;
     box-shadow: 0rem 0rem 1rem rgba(0, 0, 0, 0.438);

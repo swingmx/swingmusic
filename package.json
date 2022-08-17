@@ -12,6 +12,7 @@
     "@vueuse/core": "^8.5.0",
     "axios": "^0.26.1",
     "pinia": "^2.0.17",
+    "pinia-plugin-persistedstate": "^2.1.1",
     "sass": "^1.49.0",
     "sass-loader": "^10",
     "vite-svg-loader": "^3.4.0",
