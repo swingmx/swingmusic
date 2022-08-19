@@ -1,9 +1,5 @@
 <template>
-  <div
-    class="switch rounded"
-    @click="toggled = !toggled"
-    :class="{ toggled: toggled }"
-  >
+  <div class="switch rounded" :class="{ toggled: state }">
     <div class="circle circular"></div>
   </div>
 </template>
@@ -11,7 +7,9 @@
 <script setup lang="ts">
 import { ref } from "vue";
 
-const toggled = ref(false);
+defineProps<{
+  state: boolean;
+}>();
 </script>
 
 <style lang="scss">

@@ -9,14 +9,20 @@
         <div class="title">
           {{ setting.title }}
         </div>
-        <div class="options"><Switch /></div>
+        <div class="options">
+          <Switch
+            v-if="setting.type == SettingType.switch"
+            @click="setting.action()"
+            :state="setting.source()"
+          />
+        </div>
       </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { SettingGroup } from "@/interfaces/settings";
+import { SettingGroup, SettingType } from "@/interfaces/settings";
 import Switch from "./Components/Switch.vue";
 
 defineProps<{
@@ -30,6 +36,10 @@ defineProps<{
   gap: $small;
   margin-top: 2rem;
 
+  &:first-child {
+    margin-top: 0;
+  }
+
   h4 {
     margin: $small auto;
   }
@@ -37,6 +47,11 @@ defineProps<{
   .desc {
     opacity: 0.5;
     font-size: 0.9rem;
+  }
+
+  .setting {
+    display: grid;
+    gap: 1rem;
   }
 
   .setting > * {

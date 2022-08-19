@@ -4,15 +4,12 @@
       id="ginner"
       tabindex="0"
       class="bg-black rounded"
-      :class="{ 'search-focused': focused }"
     >
       <input
         id="globalsearch"
         v-model="search.query"
         placeholder="Search your library"
         type="search"
-        @focus="focused = true"
-        @blur="focused = false"
       />
       <SearchSvg />
     </div>
@@ -24,7 +21,6 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
 import useSearchStore from "../../stores/search";
 import SearchSvg from "../../assets/icons/search.svg";
 import QueueSvg from "../../assets/icons/queue.svg";
@@ -32,7 +28,6 @@ import useTabStore from "../../stores/tabs";
 
 const search = useSearchStore();
 const tabs = useTabStore();
-const focused = ref(false);
 </script>
 
 <style lang="scss">

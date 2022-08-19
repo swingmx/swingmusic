@@ -1,7 +1,19 @@
 import { SettingType } from "@/interfaces/settings";
+import useSettingsStore from "@/stores/settings";
 
-export default () => ({
-  title: "Use Sidebar now playing card",
-  type: SettingType.switch,
-  action: () => console.log("should toggle something"),
-});
+const settings = useSettingsStore;
+
+export default [
+  {
+    title: "Use left now playing card",
+    type: SettingType.switch,
+    source: () => settings().use_side_np,
+    action: () => settings().toggleUseSideNP(),
+  },
+  {
+    title: "Use right bottom now playing card",
+    type: SettingType.switch,
+    source: () => settings().use_right_np,
+    action: () => settings().toggleUseRightNP(),
+  },
+];

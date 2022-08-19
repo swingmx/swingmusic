@@ -3,15 +3,7 @@
   <Modal />
   <Notification />
   <div id="app-grid">
-    <div class="l-sidebar rounded">
-      <div class="withlogo">
-        <Logo />
-        <Navigation />
-      </div>
-
-      <nowPlaying />
-      <!-- <Playlists /> -->
-    </div>
+    <LeftSidebar />
     <NavBar />
     <div id="acontent" class="rounded">
       <router-view />
@@ -33,20 +25,18 @@ import useModalStore from "@/stores/modal";
 import useContextStore from "@/stores/context";
 import handleShortcuts from "@/composables/useKeyboard";
 
-import Logo from "@/components/Logo.vue";
 import Modal from "@/components/modal.vue";
 import NavBar from "@/components/nav/NavBar.vue";
 // import Tabs from "@/components/RightSideBar/Tabs.vue";
 import ContextMenu from "@/components/contextMenu.vue";
 import Notification from "@/components/Notification.vue";
-import Navigation from "@/components/LeftSidebar/Navigation.vue";
-import nowPlaying from "@/components/LeftSidebar/nowPlaying.vue";
+
 import RightSideBar from "@/components/RightSideBar/Main.vue";
 import SearchInput from "@/components/RightSideBar/SearchInput.vue";
 import BottomBar from "@/components/BottomBar/BottomBar.vue";
+import LeftSidebar from "./components/LeftSidebar/index.vue";
 
 import { readLocalStorage, writeLocalStorage } from "@/utils";
-import Playlists from "./components/LeftSidebar/Playlists.vue";
 
 const queue = useQStore();
 const router = useRouter();
@@ -71,6 +61,7 @@ onStartTyping(() => {
   const elem = document.getElementById("globalsearch") as HTMLInputElement;
   elem.focus();
   elem.value = "";
+  document.getElementById("ginner")?.classList.add("search-focused");
 });
 
 function handleWelcomeModal() {
@@ -96,7 +87,6 @@ onMounted(() => {
 
 .l-sidebar {
   position: relative;
-
 
   .withlogo {
     padding: 1rem;

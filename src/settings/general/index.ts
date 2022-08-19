@@ -1,15 +1,11 @@
 import { SettingCategory } from "@/interfaces/settings";
-import setNowPlayingComponent from "./now-playing";
-
-console.log(setNowPlayingComponent);
+import nowPlaying from "./now-playing";
 
 export default {
   title: "General",
   groups: [
     {
-      title: "Repeat queue",
-      desc: "Do you want to do that?",
-      settings: [setNowPlayingComponent()],
+      settings: [...nowPlaying],
     },
   ],
 } as SettingCategory;

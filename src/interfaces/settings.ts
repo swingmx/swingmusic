@@ -13,8 +13,9 @@ export interface SettingOption {
 export interface Setting {
   title: string;
   type: SettingType;
-  options: SettingOption[];
-  action: (arg0?: SettingOption) => void;
+  options?: SettingOption[];
+  action: (arg0?: any) => void;
+  source: () => any;
 }
 
 export interface SettingGroup {

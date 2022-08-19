@@ -4,46 +4,6 @@
       v-for="(group, index) in settingGroups[current].groups"
       :key="index"
       :group="group"
-    /><Group
-      v-for="(group, index) in settingGroups[current].groups"
-      :key="index"
-      :group="group"
-    /><Group
-      v-for="(group, index) in settingGroups[current].groups"
-      :key="index"
-      :group="group"
-    /><Group
-      v-for="(group, index) in settingGroups[current].groups"
-      :key="index"
-      :group="group"
-    /><Group
-      v-for="(group, index) in settingGroups[current].groups"
-      :key="index"
-      :group="group"
-    /><Group
-      v-for="(group, index) in settingGroups[current].groups"
-      :key="index"
-      :group="group"
-    /><Group
-      v-for="(group, index) in settingGroups[current].groups"
-      :key="index"
-      :group="group"
-    /><Group
-      v-for="(group, index) in settingGroups[current].groups"
-      :key="index"
-      :group="group"
-    /><Group
-      v-for="(group, index) in settingGroups[current].groups"
-      :key="index"
-      :group="group"
-    /><Group
-      v-for="(group, index) in settingGroups[current].groups"
-      :key="index"
-      :group="group"
-    /><Group
-      v-for="(group, index) in settingGroups[current].groups"
-      :key="index"
-      :group="group"
     />
   </div>
 </template>
@@ -61,9 +21,6 @@ defineProps<{
 .settingscontent {
   width: 100%;
   max-width: 40rem;
-  padding-right: 1rem;
   margin: 0 auto;
-
-
 }
 </style>

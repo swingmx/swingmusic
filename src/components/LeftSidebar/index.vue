@@ -1,0 +1,24 @@
+<template>
+  <div class="l-sidebar rounded">
+    <div class="withlogo">
+      <Logo />
+      <Navigation />
+    </div>
+
+    <nowPlaying v-if="settings.use_side_np" />
+    <!-- <Playlists /> -->
+  </div>
+</template>
+
+<script setup lang="ts">
+import Logo from "@/components/Logo.vue";
+import Navigation from "@/components/LeftSidebar/Navigation.vue";
+import nowPlaying from "@/components/LeftSidebar/nowPlaying.vue";
+// import Playlists from "./components/LeftSidebar/Playlists.vue";
+
+import useSettingsStore from "@/stores/settings";
+
+const settings = useSettingsStore();
+</script>
+
+<style lang="scss"></style>

@@ -3,7 +3,8 @@ import state from "../composables/state";
 import { NotifType, useNotifStore } from "./notification";
 
 import { FromOptions } from "../composables/enums";
-import notif from "../composables/mediaNotification";
+import updateMediaNotif from "../composables/mediaNotification";
+
 import {
   fromAlbum,
   fromFolder,
@@ -24,10 +25,10 @@ function shuffle(tracks: Track[]) {
 type From = fromFolder | fromAlbum | fromPlaylist | fromSearch;
 
 let audio = new Audio();
+let elem: HTMLElement;
 
 export default defineStore("Queue", {
   state: () => ({
-    progressElem: HTMLElement,
     duration: {
       current: 0,
       full: 0,
@@ -42,14 +43,17 @@ export default defineStore("Queue", {
     tracklist: [] as Track[],
   }),
   actions: {
+    bindProgressElem() {
+      elem = document.getElementById("progress");
+    },
     play(index: number = 0) {
       if (this.tracklist.length === 0) return;
       this.current = index;
       const track = this.tracklist[index];
       this.currentid = track.trackid;
       const uri = state.settings.uri + "/file/" + track.hash;
-      const elem = document.getElementById("progress") as HTMLElement;
       this.updateCurrent(index);
+      this.bindProgressElem();
 
       new Promise((resolve, reject) => {
         audio.autoplay = true;
@@ -61,12 +65,10 @@ export default defineStore("Queue", {
           this.duration.full = audio.duration;
           audio.play().then(() => {
             this.playing = true;
-            notif(track, this.playPause, this.playNext, this.playPrev);
+            updateMediaNotif();
 
             audio.ontimeupdate = () => {
               this.duration.current = audio.currentTime;
-              const bg_size = (audio.currentTime / audio.duration) * 100;
-              elem.style.backgroundSize = `${bg_size}% 100%`;
             };
 
             audio.onended = () => {
