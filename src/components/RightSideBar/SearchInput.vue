@@ -1,11 +1,11 @@
 <template>
-  <div
-    id="gsearch-input"
-    class="bg-black rounded"
-    :class="{ 'search-focused': focused }"
-  >
-    <div id="ginner" tabindex="0">
-      <SearchSvg />
+  <div id="gsearch-input" class="rounded">
+    <div
+      id="ginner"
+      tabindex="0"
+      class="bg-black rounded"
+      :class="{ 'search-focused': focused }"
+    >
       <input
         id="globalsearch"
         v-model="search.query"
@@ -14,6 +14,11 @@
         @focus="focused = true"
         @blur="focused = false"
       />
+      <SearchSvg />
+    </div>
+    <div class="buttons rounded bg-black">
+      <button @click="tabs.switchToQueue"><QueueSvg /></button>
+      <button @click="tabs.switchToSearch"><SearchSvg /></button>
     </div>
   </div>
 </template>
@@ -22,21 +27,38 @@
 import { ref } from "vue";
 import useSearchStore from "../../stores/search";
 import SearchSvg from "../../assets/icons/search.svg";
+import QueueSvg from "../../assets/icons/queue.svg";
+import useTabStore from "../../stores/tabs";
 
 const search = useSearchStore();
+const tabs = useTabStore();
 const focused = ref(false);
 </script>
 
 <style lang="scss">
 #gsearch-input {
-  padding: $smaller;
+  display: grid;
+  grid-template-columns: 1fr 7rem;
+  gap: 1rem;
+
+  .buttons {
+    display: grid;
+    grid-auto-flow: column;
+    overflow: hidden;
+
+    button {
+      padding: 0 $small;
+      height: 100%;
+      border-radius: 0;
+    }
+  }
 
   #ginner {
     width: 100%;
     display: flex;
     align-items: center;
     gap: $smaller;
-    margin-left: $small;
+    padding: 0 1rem;
 
     input {
       width: 100%;

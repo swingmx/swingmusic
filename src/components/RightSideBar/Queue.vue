@@ -79,9 +79,7 @@ onUpdated(() => {
   .r-grid {
     position: relative;
     height: 100%;
-    // display: grid;
 
-    // gap: 1rem;
 
     .scrollable-r {
       height: 100%;
