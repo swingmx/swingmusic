@@ -1,14 +1,5 @@
 <template>
   <div class="now-playing-card t-center rounded">
-    <div class="headin">Now playing</div>
-    <div
-      class="button menu rounded"
-      @click="showContextMenu"
-      :class="{ context_on: context_on }"
-    >
-      <MenuSvg />
-    </div>
-    <div class="separator no-border"></div>
     <div>
       <SongCard :track="queue.currenttrack" />
       <div class="l-track-time">
@@ -16,8 +7,8 @@
         ><span class="rounded">{{ formatSeconds(queue.duration.full) }}</span>
       </div>
       <Progress />
-      <HotKeys />
     </div>
+    <HotKeys />
   </div>
 </template>
 
@@ -65,10 +56,11 @@ const showContextMenu = (e: Event) => {
 <style lang="scss">
 .now-playing-card {
   padding: 1rem;
-  background-color: $primary;
   width: 100%;
   display: grid;
+  grid-template-rows: 1fr max-content;
   position: relative;
+  gap: 1rem;
 
   .l-track-time {
     display: flex;
@@ -96,24 +88,6 @@ const showContextMenu = (e: Event) => {
     }
   }
 
-  .headin {
-    font-weight: bold;
-    font-size: 0.9rem;
-  }
-
-  .button {
-    position: absolute;
-    top: $small;
-    cursor: pointer;
-    transition: all 200ms;
-    display: flex;
-    align-items: center;
-    padding: $smaller;
-
-    &:hover {
-      background-color: $accent;
-    }
-  }
 
   .context_on {
     background-color: $accent;
@@ -122,44 +96,6 @@ const showContextMenu = (e: Event) => {
   .menu {
     right: $small;
     transform: rotate(90deg);
-  }
-
-  .art {
-    width: 100%;
-    aspect-ratio: 1;
-    place-items: center;
-    margin-bottom: $small;
-
-    .l-image {
-      height: 100%;
-      width: 100%;
-    }
-  }
-
-  #bitrate {
-    position: absolute;
-    font-size: 0.75rem;
-    width: max-content;
-    padding: 0.2rem 0.35rem;
-    top: 14rem;
-    left: 2rem;
-    background-color: $black;
-    border-radius: $smaller;
-    box-shadow: 0rem 0rem 1rem rgba(0, 0, 0, 0.438);
-  }
-
-  .title {
-    font-weight: 900;
-    word-break: break-all;
-  }
-
-  .artists {
-    font-size: 0.85rem;
-    color: rgba(255, 255, 255, 0.808);
-
-    &:hover {
-      text-decoration: underline 1px !important;
-    }
   }
 }
 </style>

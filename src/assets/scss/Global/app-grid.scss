@@ -62,10 +62,12 @@
 }
 
 .l-sidebar {
-  width: 17rem;
+  width: 15rem;
   grid-area: l-sidebar;
+  display: grid;
+  grid-template-rows: 1fr max-content;
+  gap: 1rem;
   background-color: $black;
-  padding: 1rem;
 }
 
 .b-bar {

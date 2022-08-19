@@ -106,7 +106,8 @@ onBeforeRouteUpdate((to, from) => {
       height: 100%;
       width: 100%;
       object-fit: cover;
-      object-position: bottom;
+      object-position: bottom right;
+      transition: all .25s ease;
     }
   }
 

@@ -4,11 +4,13 @@
   <Notification />
   <div id="app-grid">
     <div class="l-sidebar rounded">
-      <Logo />
-      <Navigation />
-      <div class="l-album-art">
-        <nowPlaying />
+      <div class="withlogo">
+        <Logo />
+        <Navigation />
       </div>
+
+      <nowPlaying />
+      <!-- <Playlists /> -->
     </div>
     <NavBar />
     <div id="acontent" class="rounded">
@@ -44,6 +46,7 @@ import SearchInput from "@/components/RightSideBar/SearchInput.vue";
 import BottomBar from "@/components/BottomBar/BottomBar.vue";
 
 import { readLocalStorage, writeLocalStorage } from "@/utils";
+import Playlists from "./components/LeftSidebar/Playlists.vue";
 
 const queue = useQStore();
 const router = useRouter();
@@ -93,6 +96,11 @@ onMounted(() => {
 
 .l-sidebar {
   position: relative;
+
+
+  .withlogo {
+    padding: 1rem;
+  }
 
   .l-album-art {
     width: calc(100% - 2rem);

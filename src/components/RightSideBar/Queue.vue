@@ -1,7 +1,6 @@
 <template>
   <div class="up-next">
     <div class="r-grid">
-      <UpNext :track="queue.tracklist[queue.next]" :playNext="queue.playNext" />
       <div class="scrollable-r bg-black rounded">
         <QueueActions />
         <div
@@ -23,7 +22,6 @@
           </TransitionGroup>
         </div>
       </div>
-      <!-- <PlayingFrom :from="queue.from" /> -->
     </div>
   </div>
 </template>
@@ -35,9 +33,7 @@ import useQStore from "@/stores/queue";
 import { focusElem } from "@/utils";
 
 import TrackItem from "../shared/TrackItem.vue";
-import PlayingFrom from "./Queue/playingFrom.vue";
 import QueueActions from "./Queue/QueueActions.vue";
-import UpNext from "./Queue/upNext.vue";
 
 const queue = useQStore();
 const mouseover = ref(false);
@@ -66,8 +62,6 @@ onUpdated(() => {
   opacity: 0;
 }
 
-/* ensure leaving items are taken out of layout flow so that moving
-   animations can be calculated correctly. */
 .queuelist-leave-active {
   transition: none;
   position: absolute;
@@ -85,10 +79,9 @@ onUpdated(() => {
   .r-grid {
     position: relative;
     height: 100%;
-    display: grid;
-    grid-template-columns: 1fr;
-    grid-template-rows: max-content 1fr;
-    gap: 1rem;
+    // display: grid;
+
+    // gap: 1rem;
 
     .scrollable-r {
       height: 100%;

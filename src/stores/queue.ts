@@ -1,5 +1,3 @@
-// @ts-strict
-
 import { defineStore } from "pinia";
 import state from "../composables/state";
 import { NotifType, useNotifStore } from "./notification";
@@ -14,29 +12,6 @@ import {
   Track,
 } from "../interfaces";
 
-function writeQueue(from: From, tracks: Track[]) {
-  localStorage.setItem(
-    "queue",
-    JSON.stringify({
-      from: from,
-      tracks: tracks,
-    })
-  );
-}
-
-function writeCurrent(index: number) {
-  localStorage.setItem("current", JSON.stringify(index));
-}
-
-function readCurrent(): number {
-  const current = localStorage.getItem("current");
-
-  if (current) {
-    return JSON.parse(current);
-  }
-  return 0;
-}
-
 function shuffle(tracks: Track[]) {
   const shuffled = tracks.slice();
   for (let i = shuffled.length - 1; i > 0; i--) {
@@ -48,18 +23,14 @@ function shuffle(tracks: Track[]) {
 
 type From = fromFolder | fromAlbum | fromPlaylist | fromSearch;
 
+let audio = new Audio();
+
 export default defineStore("Queue", {
   state: () => ({
     progressElem: HTMLElement,
-    audio: new Audio(),
     duration: {
       current: 0,
       full: 0,
-    },
-    indexes: {
-      current: 0,
-      next: 0,
-      previous: 0,
     },
     current: 0,
     next: 0,
@@ -81,25 +52,24 @@ export default defineStore("Queue", {
       this.updateCurrent(index);
 
       new Promise((resolve, reject) => {
-        this.audio.autoplay = true;
-        this.audio.src = uri;
-        this.audio.oncanplaythrough = resolve;
-        this.audio.onerror = reject;
+        audio.autoplay = true;
+        audio.src = uri;
+        audio.oncanplaythrough = resolve;
+        audio.onerror = reject;
       })
         .then(() => {
-          this.duration.full = this.audio.duration;
-          this.audio.play().then(() => {
+          this.duration.full = audio.duration;
+          audio.play().then(() => {
             this.playing = true;
             notif(track, this.playPause, this.playNext, this.playPrev);
 
-            this.audio.ontimeupdate = () => {
-              this.duration.current = this.audio.currentTime;
-              const bg_size =
-                (this.audio.currentTime / this.audio.duration) * 100;
+            audio.ontimeupdate = () => {
+              this.duration.current = audio.currentTime;
+              const bg_size = (audio.currentTime / audio.duration) * 100;
               elem.style.backgroundSize = `${bg_size}% 100%`;
             };
 
-            this.audio.onended = () => {
+            audio.onended = () => {
               this.playNext();
             };
           });
@@ -119,13 +89,13 @@ export default defineStore("Queue", {
         });
     },
     playPause() {
-      if (this.audio.src === "") {
+      if (audio.src === "") {
         this.play(this.current);
-      } else if (this.audio.paused) {
-        this.audio.play();
+      } else if (audio.paused) {
+        audio.play();
         this.playing = true;
       } else {
-        this.audio.pause();
+        audio.pause();
         this.playing = false;
       }
     },
@@ -137,7 +107,7 @@ export default defineStore("Queue", {
     },
     seek(pos: number) {
       try {
-        this.audio.currentTime = pos;
+        audio.currentTime = pos;
       } catch (error) {
         if (error instanceof TypeError) {
           console.error("Seek error: no audio");
@@ -152,15 +122,11 @@ export default defineStore("Queue", {
         this.from = parsed.from;
         this.tracklist = parsed.tracks;
       }
-
-      this.updateCurrent(readCurrent());
     },
     updateCurrent(index: number) {
       this.setCurrent(index);
       this.updateNext(index);
       this.updatePrev(index);
-
-      writeCurrent(index);
     },
     updateNext(index: number) {
       if (index == this.tracklist.length - 1) {
@@ -190,7 +156,6 @@ export default defineStore("Queue", {
       if (this.tracklist !== tracklist) {
         this.tracklist = [];
         this.tracklist.push(...tracklist);
-        writeQueue(this.from, this.tracklist);
       }
     },
     playFromFolder(fpath: string, tracks: Track[]) {
@@ -235,7 +200,7 @@ export default defineStore("Queue", {
     },
     addTrackToQueue(track: Track) {
       this.tracklist.push(track);
-      writeQueue(this.from, this.tracklist);
+      // writeQueue(this.from, this.tracklist);
       this.updateNext(this.current);
     },
     playTrackNext(track: Track) {
@@ -264,16 +229,12 @@ export default defineStore("Queue", {
         `Added ${track.title} to queue`,
         NotifType.Success
       );
-      writeQueue(this.from, this.tracklist);
     },
     clearQueue() {
       this.tracklist = [] as Track[];
       this.currentid = "";
       this.current, this.next, (this.prev = 0);
       this.from = <From>{};
-
-      writeCurrent(0);
-      writeQueue(this.from, [] as Track[]);
     },
     shuffleQueue() {
       const Toast = useNotifStore();
@@ -291,12 +252,38 @@ export default defineStore("Queue", {
       this.currentid = shuffled[0].trackid;
       this.next = 1;
       this.prev = this.tracklist.length - 1;
-
-      writeQueue(this.from, shuffled);
-      writeCurrent(0);
     },
     removeFromQueue(index: number = 0) {
       this.tracklist.splice(index, 1);
     },
   },
+  getters: {
+    getNextTrack() {
+      if (this.current == this.tracklist.length - 1) {
+        return this.tracklist[0];
+      } else {
+        return this.tracklist[this.current + 1];
+      }
+    },
+    getPrevTrack() {
+      if (this.current === 0) {
+        return this.tracklist[this.tracklist.length - 1];
+      } else {
+        return this.tracklist[this.current - 1];
+      }
+    },
+    fullTime() {
+      return audio.duration;
+    },
+    currentTime() {
+      return audio.currentTime;
+    },
+    getCurrentTrack() {
+      return this.tracklist[this.current];
+    },
+    getIsplaying() {
+      return audio.paused ? false : true;
+    },
+  },
+  persist: true,
 });

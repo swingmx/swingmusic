@@ -16,7 +16,6 @@
 
 #logo {
   height: 4.5rem !important;
-  width: 15rem;
   background-image: url(./../assets/images/logo.webp);
   background-size: contain;
   @include ximage;

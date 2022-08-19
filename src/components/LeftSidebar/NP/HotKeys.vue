@@ -1,6 +1,6 @@
 <template>
   
-  <div class="hotkeys">
+  <div class="hotkeys rounded noscroll">
     <div class="image ctrl-btn" id="previous" @click="q.playPrev"></div>
     <div
       class="image ctrl-btn play-pause"
@@ -28,13 +28,13 @@ const q = useQStore();
   justify-content: center;
   place-content: flex-end;
   width: 100%;
+  background-color: $gray2;
 
   .ctrl-btn {
     height: 2.5rem;
     width: 100%;
     background-size: 1.5rem !important;
     cursor: pointer;
-    border-radius: 0.5rem;
 
     &:hover {
       background-color: $accent;
