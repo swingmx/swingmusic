@@ -10,9 +10,9 @@
   >
     <div class="art rounded">
       <img
-        :src="imguri + album.image"
+        :src="imguri.artist + album.artistimg"
         alt=""
-        class="rounded shadow-lg"
+        class="circular shadow-lg"
         loading="lazy"
       />
     </div>
@@ -30,9 +30,8 @@
       </div>
       <div class="bottom">
         <div class="stats">
-          {{ album.artist }} •
-          {{ album.date }} •
-          {{ album.count }} Tracks • {{ formatSeconds(album.duration, true) }}
+          {{ album.artist }} • {{ album.date }} • {{ album.count }} Tracks •
+          {{ formatSeconds(album.duration, true) }}
         </div>
         <PlayBtnRect
           :source="playSources.album"
@@ -40,6 +39,9 @@
           :background="getButtonColor(album.colors)"
         />
       </div>
+    </div>
+    <div class="bigimg">
+      <img class="rounded" :src="imguri.thumb + album.image" alt="" />
     </div>
   </div>
 </template>
@@ -67,7 +69,7 @@ const emit = defineEmits<{
 }>();
 
 const albumheaderthing = ref<any>(null);
-const imguri = paths.images.thumb;
+const imguri = paths.images;
 const nav = useNavStore();
 
 /**
@@ -90,14 +92,26 @@ useVisibility(albumheaderthing, handleVisibilityState);
 <style lang="scss">
 .a-header {
   display: grid;
-  grid-template-columns: 1fr;
+  grid-template-columns: 1fr min-content;
+  grid-template-rows: 1fr 1fr;
+  grid-template-areas: "artist thumbnail" "tags thumbnail";
   gap: 1rem;
   padding: 1rem;
   height: 100% !important;
   background-color: $black;
   background-image: linear-gradient(37deg, $black 20%, $gray, $black 90%);
 
+  .bigimg {
+    grid-area: thumbnail;
+    width: 16rem;
+
+    img {
+      height: 100%;
+    }
+  }
+
   .art {
+    grid-area: artist;
     display: flex;
     align-items: flex-end;
     position: relative;
@@ -116,6 +130,7 @@ useVisibility(albumheaderthing, handleVisibilityState);
   }
 
   .info {
+    grid-area: tags;
     width: 100%;
     display: flex;
     flex-direction: column;

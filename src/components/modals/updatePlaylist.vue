@@ -8,19 +8,11 @@
     <br />
     <input
       type="text"
-      class="rounded"
+      class="rounded-sm"
       name="name"
       id="modal-playlist-name-input"
       :value="props.playlist.name"
     />
-    <label for="name">Description</label>
-    <br />
-    <textarea
-      name="description"
-      id=""
-      class="rounded"
-      :value="props.playlist.description"
-    ></textarea>
     <br />
     <input
       type="file"
@@ -30,8 +22,8 @@
       style="display: none"
       @change="handleUpload"
     />
-    <div id="upload" class="rounded" @click="selectFiles">
-      <div>Click to upload image</div>
+    <div id="upload" class="rounded-sm" @click="selectFiles">
+      <div>Click to upload cover image</div>
       <div
         id="update-pl-img-preview"
         class="image"
@@ -40,15 +32,7 @@
         }"
       />
     </div>
-    <div class="submit">
-      <input
-        type="submit"
-        id="updateplaylistsubmit"
-        class="rounded"
-        value="Update"
-        @click=""
-      />
-    </div>
+    <button type="submit" id="updateplaylistsubmit">Update</button>
   </form>
 </template>
 
@@ -89,7 +73,9 @@ function handleUpload() {
     "update-pl-image-upload"
   ) as HTMLInputElement;
 
-  handleFile(input.files[0]);
+  if (input.files) {
+    handleFile(input.files[0]);
+  }
 }
 
 function handleFile(file: File) {
@@ -99,7 +85,10 @@ function handleFile(file: File) {
 
   const preview = document.getElementById("update-pl-img-preview");
   const obj_url = URL.createObjectURL(file);
-  preview.style.backgroundImage = `url(${obj_url})`;
+
+  if (preview) {
+    preview.style.backgroundImage = `url(${obj_url})`;
+  }
 
   image = file;
 }
@@ -113,8 +102,8 @@ function update_playlist(e: Event) {
     clicked = true;
     const elem = document.getElementById(
       "updateplaylistsubmit"
-    ) as HTMLFormElement;
-    elem.value = "Updating";
+    ) as HTMLButtonElement;
+    elem.innerText = "Updating";
   } else {
     return;
   }
@@ -159,15 +148,14 @@ function update_playlist(e: Event) {
     max-width: 28rem;
     max-height: 5rem;
     color: $white;
-    background-color: transparent;
-    border: solid 2px $gray3;
+    background-color: $gray2;
+    border: none;
     font-family: inherit;
     padding: $small;
     outline: none;
     margin: $small 0;
 
     &:focus {
-      border: 2px solid transparent;
       outline: solid 2px $gray1;
     }
   }

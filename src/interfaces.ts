@@ -36,6 +36,7 @@ export interface AlbumInfo {
   duration: number;
   date: string;
   image: string;
+  artistimg: string;
   is_compilation: boolean;
   is_soundtrack: boolean;
   is_single: boolean;
@@ -61,7 +62,6 @@ export interface Option {
 export interface Playlist {
   playlistid: string;
   name: string;
-  description?: string;
   image: string | FormData;
   tracks: Track[];
   count: number;

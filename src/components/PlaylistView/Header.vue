@@ -26,9 +26,6 @@
           <span v-else>{{ props.info.count }} Tracks</span> •
           {{ formatSeconds(props.info.duration, true) }}
         </div>
-        <div class="desc">
-          {{ props.info.description }}
-        </div>
         <div class="title ellip">{{ props.info.name }}</div>
         <div class="type">Playlist</div>
       </div>
@@ -88,7 +85,6 @@ function showDropdown(e: any) {
   position: relative;
   color: $white;
   background-color: transparent;
-  z-index: 0;
 
   .gradient {
     position: absolute;
@@ -97,10 +93,10 @@ function showDropdown(e: any) {
     width: 100%;
     height: 100%;
     background-image: linear-gradient(
-      37deg,
-      $black 20%,
-      transparent,
-      $black 90%
+      20deg,
+      rgba(0, 0, 0, 0.25) 40%,
+      rgba(0, 0, 0, 0.1),
+      rgba(0, 0, 0, 0.1) 70%
     );
   }
 

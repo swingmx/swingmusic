@@ -33,7 +33,9 @@ export default defineStore("playlist-tracks", {
      * @param info Playlist info
      */
     updatePInfo(info: Playlist) {
+      const duration = this.info.duration;
       this.info = info;
+      this.info.duration = duration;
     },
     resetArtists() {
       this.artists = [];

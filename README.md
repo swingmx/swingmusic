@@ -26,7 +26,7 @@ This page lists all the playlists you have created. More features will be added 
 ### 4. The Playlist page
 
 ![](./images/2.png)
-This page shows the details of the playlist. It includes the playlist name, description, and the songs in the playlist. You can update your playlist details from this page.
+This page shows the details of the playlist. It includes the playlist name, and the songs in the playlist. You can update your playlist details from this page.
 
 ### A little narration
 
