@@ -18,6 +18,7 @@
 <script setup lang="ts">
 import PlaylistSvg from "../../assets/icons/playlist.svg";
 import FolderSvg from "../../assets/icons/folder.svg";
+import SettingsSvg from "../../assets/icons/settings.svg";
 
 const menus = [
   {
@@ -30,6 +31,11 @@ const menus = [
     route_name: "FolderView",
     params: { path: "$home" },
     icon: FolderSvg,
+  },
+  {
+    name: "settings",
+    route_name: "SettingsView",
+    icon: SettingsSvg,
   },
 ];
 </script>

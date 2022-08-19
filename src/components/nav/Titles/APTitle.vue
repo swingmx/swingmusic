@@ -15,7 +15,6 @@ import usePStore from "@/stores/pages/playlist";
 import { computed } from "@vue/reactivity";
 import { useRoute } from "vue-router";
 
-
 const things = computed(() => {
   const route = useRoute();
   let thing = {
@@ -24,18 +23,22 @@ const things = computed(() => {
     source: playSources.album,
   };
 
-  if (route.name == Routes.album) {
-    thing = {
-      source: playSources.album,
-      text: useAlbumStore().info.title,
-      store: useAlbumStore,
-    };
-  } else if (route.name == Routes.playlist) {
-    thing = {
-      source: playSources.playlist,
-      text: usePStore().info.name,
-      store: usePStore,
-    };
+  switch (route.name) {
+    case Routes.album:
+      thing = {
+        source: playSources.album,
+        text: useAlbumStore().info.title,
+        store: useAlbumStore,
+      };
+      break;
+    case Routes.playlist:
+      thing = {
+        source: playSources.playlist,
+        text: usePStore().info.name,
+        store: usePStore,
+      };
+      break;
+      break;
   }
 
   return thing;

@@ -62,13 +62,8 @@ onUpdated(() => {
       height: 2.25rem;
       display: flex;
       align-items: center;
-      margin-left: $smaller;
       overflow: auto;
       padding-right: $smaller;
-
-      // @include for-desktop-down {
-      //   max-width: 9rem;
-      // }
 
       .icon {
         height: 2rem;

@@ -20,21 +20,8 @@
   "include": [
     "src/**/*.ts",
     "src/**/*.d.ts",
-    "src/**/*.tsx",
     "src/**/*.vue",
     "src/**/*.svg"
   ],
   "references": [{ "path": "./tsconfig.node.json" }]
 }
-
-// {
-//   "compilerOptions": {
-//     "strict": false,
-//     "jsx": "preserve",
-//     "paths": {
-//       "baseUrl": ["./"],
-//       "@/*": ["./src/*"]
-//     }
-//   },
-//   "include": ["src/**/*"]
-// }

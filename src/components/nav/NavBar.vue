@@ -4,7 +4,14 @@
       <NavButtons />
       <div class="info">
         <APTitle v-show="showAPTitle" />
-        <Playlists v-show="$route.name == Routes.playlists" />
+        <SimpleTitle
+          v-show="$route.name == Routes.playlists"
+          :text="'Playlists'"
+        />
+        <SimpleTitle
+          v-show="$route.name == Routes.settings"
+          :text="'Settings'"
+        />
         <Folder v-show="$route.name == Routes.folder" :subPaths="subPaths" />
       </div>
     </div>
@@ -24,7 +31,7 @@ import { Routes } from "@/composables/enums";
 import { createSubPaths } from "@/utils";
 import { subPath } from "@/interfaces";
 import Folder from "./Titles/Folder.vue";
-import Playlists from "./Titles/Playlists.vue";
+import SimpleTitle from "./Titles/SimpleTitle.vue";
 import APTitle from "./Titles/APTitle.vue";
 import useNavStore from "@/stores/nav";
 
@@ -83,11 +90,13 @@ watch(
 
     .info {
       overflow: hidden;
+      margin: auto 0;
 
       .title {
         font-size: 1.5rem;
         font-weight: bold;
         display: flex;
+        align-items: center;
       }
     }
   }

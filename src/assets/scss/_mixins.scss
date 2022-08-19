@@ -29,7 +29,7 @@
   }
 }
 
-@mixin for-big-desktop-up {
+@mixin for-desktop-up {
   @media (min-width: 1800px) {
     @content;
   }
