@@ -1,6 +1,6 @@
 <template>
   <div
-    class="next-track bg-black rounded"
+    class="next-track bg-primary rounded"
     :class="{ contexton: context_on }"
     @click="playNext"
     @contextmenu.prevent="showMenu"

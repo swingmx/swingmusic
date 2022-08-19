@@ -1,5 +1,5 @@
 <template>
-  <div id="playing-from" class="bg-black rounded" @click="goTo">
+  <div id="playing-from" class="bg-primary rounded" @click="goTo">
     <div class="h">
       <div class="icon image" :class="from.icon"></div>
       Playing from

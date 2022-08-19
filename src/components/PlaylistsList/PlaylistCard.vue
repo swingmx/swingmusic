@@ -2,7 +2,7 @@
   <router-link
     :to="{ name: 'PlaylistView', params: { pid: props.playlist.playlistid } }"
     :playlist="props.playlist"
-    class="p-card rounded bg-black"
+    class="p-card rounded bg-primary"
   >
     <div
       class="image p-image rounded shadow-sm"

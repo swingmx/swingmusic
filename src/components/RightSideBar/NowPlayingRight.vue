@@ -1,5 +1,5 @@
 <template>
-  <div class="b-bar bg-black pad-medium rounded" v-if="settings.use_right_np">
+  <div class="b-bar bg-primary pad-medium rounded" v-if="settings.use_right_np">
     <div class="info">
       <img
         :src="paths.images.thumb + queue.currenttrack?.image"
@@ -32,10 +32,10 @@
 
 <script setup lang="ts">
 import "@/assets/scss/BottomBar/BottomBar.scss";
+import useSettingsStore from "@/stores/settings";
 import { formatSeconds, putCommas } from "@/utils";
 import HotKeys from "../LeftSidebar/NP/HotKeys.vue";
 import Progress from "../LeftSidebar/NP/Progress.vue";
-import useSettingsStore from "@/stores/settings";
 
 import { paths } from "@/config";
 import useQStore from "@/stores/queue";

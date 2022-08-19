@@ -23,11 +23,6 @@ import Content from "../components/SettingsView/Content.vue";
 
   .scrollable {
     overflow: auto;
-    margin-top: 1rem;
-
-    @include for-desktop-down {
-      margin-top: 0;
-    }
   }
 }
 </style>

@@ -17,8 +17,8 @@
           loading="lazy"
         />
       </div>
-      <div class="bio rounded bg-black" v-html="bio" v-if="bio"></div>
-      <div class="bio rounded bg-black" v-else>No bio found</div>
+      <div class="bio rounded bg-primary" v-html="bio" v-if="bio"></div>
+      <div class="bio rounded bg-primary" v-else>No bio found</div>
     </div>
   </div>
 </template>

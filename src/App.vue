@@ -8,7 +8,7 @@
     <div id="acontent" class="rounded">
       <router-view />
     </div>
-    <BottomBar />
+    <NowPlayingRight />
     <SearchInput />
     <RightSideBar />
     <!-- <Tabs /> -->
@@ -33,7 +33,7 @@ import Notification from "@/components/Notification.vue";
 
 import RightSideBar from "@/components/RightSideBar/Main.vue";
 import SearchInput from "@/components/RightSideBar/SearchInput.vue";
-import BottomBar from "@/components/BottomBar/BottomBar.vue";
+import NowPlayingRight from "@/components/RightSideBar/NowPlayingRight.vue";
 import LeftSidebar from "./components/LeftSidebar/index.vue";
 
 import { readLocalStorage, writeLocalStorage } from "@/utils";

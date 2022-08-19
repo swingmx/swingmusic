@@ -8,7 +8,7 @@ import AlbumView from "@/views/album/index.vue";
 import ArtistsExplorer from "@/views/ArtistsExplorer.vue";
 import FolderView from "@/views/FolderView.vue";
 import Home from "@/views/Home.vue";
-import Playlists from "@/views/Playlists.vue";
+import PlaylistList from "@/views/PlaylistList.vue";
 import PlaylistView from "@/views/playlist/index.vue";
 import SettingsView from "@/views/SettingsView.vue";
 import { createRouter, createWebHashHistory } from "vue-router";
@@ -24,7 +24,7 @@ const routes = [
     path: "/folder/:path",
     name: "FolderView",
     component: FolderView,
-    beforeEnter: async (to) => {
+    beforeEnter: async (to: any) => {
       state.loading.value = true;
       await useFStore()
         .fetchAll(to.params.path)
@@ -39,8 +39,8 @@ const routes = [
   },
   {
     path: "/playlists",
-    name: "Playlists",
-    component: Playlists,
+    name: "PlaylistList",
+    component: PlaylistList,
     beforeEnter: async () => {
       state.loading.value = true;
       await usePStore()
@@ -54,7 +54,7 @@ const routes = [
     path: "/playlist/:pid",
     name: "PlaylistView",
     component: PlaylistView,
-    beforeEnter: async (to) => {
+    beforeEnter: async (to: any) => {
       state.loading.value = true;
       await usePTrackStore()
         .fetchAll(to.params.pid)
@@ -72,7 +72,7 @@ const routes = [
     path: "/albums/:hash",
     name: "AlbumView",
     component: AlbumView,
-    beforeEnter: async (to) => {
+    beforeEnter: async (to: any) => {
       state.loading.value = true;
       const store = useAStore();
 

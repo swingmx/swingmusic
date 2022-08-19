@@ -1,5 +1,5 @@
 <template>
-  <div class="albums-results bg-black">
+  <div class="albums-results bg-primary">
     <div class="grid">
       <PCard
         v-for="album in search.albums.value"

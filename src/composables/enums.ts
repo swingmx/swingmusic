@@ -28,7 +28,7 @@ export enum ContextSrc {
 export enum Routes {
   home = "Home",
   folder = "FolderView",
-  playlists = "Playlists",
+  playlists = "PlaylistList",
   playlist = "PlaylistView",
   albums = "AlbumsView",
   album = "AlbumView",

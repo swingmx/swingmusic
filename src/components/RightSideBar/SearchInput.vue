@@ -3,7 +3,7 @@
     <div
       id="ginner"
       tabindex="0"
-      class="bg-black rounded"
+      class="bg-primary rounded"
     >
       <input
         id="globalsearch"
@@ -13,7 +13,7 @@
       />
       <SearchSvg />
     </div>
-    <div class="buttons rounded bg-black">
+    <div class="buttons rounded bg-primary">
       <button @click="tabs.switchToQueue"><QueueSvg /></button>
       <button @click="tabs.switchToSearch"><SearchSvg /></button>
     </div>
@@ -21,9 +21,9 @@
 </template>
 
 <script setup lang="ts">
-import useSearchStore from "../../stores/search";
-import SearchSvg from "../../assets/icons/search.svg";
 import QueueSvg from "../../assets/icons/queue.svg";
+import SearchSvg from "../../assets/icons/search.svg";
+import useSearchStore from "../../stores/search";
 import useTabStore from "../../stores/tabs";
 
 const search = useSearchStore();

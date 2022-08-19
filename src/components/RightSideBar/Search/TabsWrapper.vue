@@ -1,5 +1,5 @@
 <template>
-  <div id="right-tabs" class="bg-black rounded">
+  <div id="right-tabs" class="bg-primary rounded">
     <div class="tab-buttons-wrapper">
       <div id="tabheaders" class="rounded-sm noscroll">
         <div

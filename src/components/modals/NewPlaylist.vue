@@ -22,6 +22,7 @@ import { createNewPlaylist } from "../../composables/fetch/playlists";
 import { Track } from "../../interfaces";
 import { Notification, NotifType } from "../../stores/notification";
 import usePlaylistStore from "@/stores/pages/playlists";
+import { Routes } from "@/composables/enums";
 
 const props = defineProps<{
   track?: Track;
@@ -47,7 +48,7 @@ emit("setTitle", "New Playlist");
  */
 function create(e: Event) {
   e.preventDefault();
-  const name = (e.target as HTMLFormElement).elements["name"].value;
+  const name = (e.target as any).elements["name"].value;
 
   if (name.trim()) {
     createNewPlaylist(name, props.track).then(({ success, playlist }) => {
@@ -55,7 +56,7 @@ function create(e: Event) {
 
       if (!success) return;
 
-      if (route.name !== "Playlists") return;
+      if (route.name !== Routes.playlists) return;
 
       setTimeout(() => {
         playlistStore.addPlaylist(playlist);

@@ -1,6 +1,6 @@
 <template>
   <div
-    class="p-card new-playlist-card rounded bg-black"
+    class="p-card new-playlist-card rounded bg-primary"
     @click="Modal.showNewPlaylistModal()"
   >
     <PlusSvg />
@@ -8,8 +8,8 @@
 </template>
 
 <script setup lang="ts">
-import useModalStore from "../../stores/modal";
 import PlusSvg from "../../assets/icons/plus.svg";
+import useModalStore from "../../stores/modal";
 
 const Modal = useModalStore();
 </script>

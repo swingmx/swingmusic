@@ -1,5 +1,5 @@
 <template>
-  <div class="r-tracks rounded bg-black">
+  <div class="r-tracks rounded bg-primary">
     <div class="heading">Similar tracks</div>
     <div class="tracks">
       <div class="song-item" v-for="song in songs" :key="song.artist">

@@ -1,10 +1,10 @@
 <template>
   <div class="settingsgroup">
     <div>
-      <h4>{{ group.title }}</h4>
-      <div class="desc">{{ group.desc }}</div>
+      <h4 v-if="group.title">{{ group.title }}</h4>
+      <div class="desc" v-if="group.desc">{{ group.desc }}</div>
     </div>
-    <div class="setting rounded bg-black pad-lg">
+    <div class="setting rounded bg-primary pad-lg">
       <div v-for="(setting, index) in group.settings" :key="index">
         <div class="title">
           {{ setting.title }}

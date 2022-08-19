@@ -1,6 +1,6 @@
 <template>
   <div
-    class="p-header image"
+    class="p-header image rounded noscroll"
     ref="playlistheader"
     :style="[
       {
@@ -13,7 +13,10 @@
       <div class="info">
         <div class="btns">
           <PlayBtnRect :source="playSources.playlist" :store="usePStore" />
-          <Option @showDropdown="showDropdown" :src="context.src" />
+          <Option
+            @showDropdown="showDropdown"
+            :src="context?.src || undefined"
+          />
         </div>
         <div class="duration">
           <span v-if="props.info.count == 0">No Tracks</span>
@@ -60,7 +63,7 @@ const imguri = paths.images.playlist;
 const context = useContextStore();
 const modal = useModalStore();
 const nav = useNavStore();
-const playlistheader = ref(null);
+const playlistheader = ref<HTMLElement | null>(null);
 
 useVisibility(playlistheader, nav.toggleShowPlay);
 
@@ -83,7 +86,6 @@ function showDropdown(e: any) {
   grid-template-columns: 1fr;
   height: 100%;
   position: relative;
-  border-radius: 0.75rem;
   color: $white;
   background-color: transparent;
   z-index: 0;
@@ -100,7 +102,6 @@ function showDropdown(e: any) {
       transparent,
       $black 90%
     );
-    border-radius: 0.5rem;
   }
 
   .last-updated {

@@ -3,7 +3,7 @@
     <router-link
       v-for="menu in menus"
       :key="menu.name"
-      :to="{ name: menu.route_name, params: menu.params }"
+      :to="{ name: menu.route_name, params: menu?.params }"
     >
       <div class="nav-button" id="home-button">
         <div class="in">
@@ -19,11 +19,12 @@
 import PlaylistSvg from "../../assets/icons/playlist.svg";
 import FolderSvg from "../../assets/icons/folder.svg";
 import SettingsSvg from "../../assets/icons/settings.svg";
+import { Routes } from "@/composables/enums";
 
 const menus = [
   {
     name: "playlists",
-    route_name: "Playlists",
+    route_name: Routes.playlists,
     icon: PlaylistSvg,
   },
   {
@@ -34,7 +35,7 @@ const menus = [
   },
   {
     name: "settings",
-    route_name: "SettingsView",
+    route_name: Routes.settings,
     icon: SettingsSvg,
   },
 ];
