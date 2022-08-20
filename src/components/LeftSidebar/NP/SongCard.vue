@@ -91,7 +91,6 @@ const props = defineProps<{
 
   .title {
     font-weight: 900;
-    word-break: break-all;
   }
 
   .artists {

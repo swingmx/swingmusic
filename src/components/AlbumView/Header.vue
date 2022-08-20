@@ -40,8 +40,8 @@
         />
       </div>
     </div>
-    <div class="bigimg">
-      <img class="rounded" :src="imguri.thumb + album.image" alt="" />
+    <div class="bigimg ">
+      <img class="rounded shadow-lg" :src="imguri.thumb + album.image" alt="" />
     </div>
   </div>
 </template>

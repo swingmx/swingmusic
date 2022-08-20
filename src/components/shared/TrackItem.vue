@@ -137,12 +137,7 @@ const playThis = (track: Track) => {
     height: 3rem;
   }
 
-  .title {
-    word-break: break-all;
-  }
-
   .artist {
-    word-break: break-all;
     font-size: small;
     color: rgba(255, 255, 255, 0.637);
   }

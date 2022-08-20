@@ -140,7 +140,6 @@ function showMenu(e: Event) {
   }
 
   .song-album {
-    word-break: break-all;
     max-width: max-content;
     cursor: pointer;
 
@@ -150,8 +149,6 @@ function showMenu(e: Event) {
   }
 
   .song-artists {
-    word-break: break-all;
-
     .artist {
       cursor: pointer;
     }
@@ -167,6 +164,10 @@ function showMenu(e: Event) {
   .song-duration {
     font-size: 0.9rem;
     text-align: left;
+
+    .ellip {
+      word-break: keep-all !important;
+    }
   }
 
   .options-icon {
@@ -220,7 +221,6 @@ function showMenu(e: Event) {
 
     .title {
       cursor: pointer;
-      word-break: break-all;
     }
   }
 
