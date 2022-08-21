@@ -19,5 +19,5 @@ export default function focusElem(
         inline: "center",
       });
     }
-  }, delay | 300);
+  }, delay || 300);
 }

@@ -1,5 +1,5 @@
 <template>
-  <div class="b-bar bg-primary pad-medium rounded" v-if="settings.use_right_np">
+  <div class="b-bar bg-primary pad-medium rounded" v-if="settings.use_alt_np">
     <div class="info">
       <img
         :src="paths.images.thumb + queue.currenttrack?.image"

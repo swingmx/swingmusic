@@ -61,7 +61,6 @@ onStartTyping(() => {
   const elem = document.getElementById("globalsearch") as HTMLInputElement;
   elem.focus();
   elem.value = "";
-  document.getElementById("ginner")?.classList.add("search-focused");
 });
 
 function handleWelcomeModal() {

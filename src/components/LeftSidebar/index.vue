@@ -5,15 +5,15 @@
       <Navigation />
     </div>
 
-    <nowPlaying v-if="settings.use_side_np" />
+    <nowPlaying v-if="!settings.use_alt_np" />
     <!-- <Playlists /> -->
   </div>
 </template>
 
 <script setup lang="ts">
-import Logo from "@/components/Logo.vue";
 import Navigation from "@/components/LeftSidebar/Navigation.vue";
 import nowPlaying from "@/components/LeftSidebar/nowPlaying.vue";
+import Logo from "@/components/Logo.vue";
 // import Playlists from "./components/LeftSidebar/Playlists.vue";
 
 import useSettingsStore from "@/stores/settings";

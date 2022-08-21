@@ -53,7 +53,7 @@ export interface Artist {
 export interface Option {
   type?: string;
   label?: string;
-  action?: () => void;
+  action: () => void;
   children?: Option[] | false;
   icon?: string;
   critical?: Boolean;

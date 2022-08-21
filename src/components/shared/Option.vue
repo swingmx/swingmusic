@@ -1,5 +1,5 @@
 <template>
-  <button id="option-drop" @click.stop.prevent="showDropdown">
+  <button id="option-drop" @click.stop.prevent="showDropdown" class="btn-more">
     <MoreSvg />
   </button>
 </template>
@@ -8,7 +8,7 @@ import { onMounted } from "vue";
 import MoreSvg from "../../assets/icons/more.svg";
 let elem: DOMRect;
 
-defineProps<{
+const props = defineProps<{
   src?: string;
 }>();
 
@@ -22,19 +22,11 @@ onMounted(() => {
 });
 
 function showDropdown(e: Event) {
+  if (!props.src) return;
+
   emit("showDropdown", {
     clientX: elem.left + 35,
     clientY: elem.top,
   });
 }
 </script>
-<style lang="scss">
-#option-drop {
-  display: flex;
-  align-items: center;
-
-  svg {
-    transform: scale(1.25);
-  }
-}
-</style>

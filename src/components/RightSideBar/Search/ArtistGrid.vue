@@ -1,9 +1,15 @@
 <template>
   <div class="artists-results">
-    <div class="search-results-grid" v-if="album_grid == true">
+    <div
+      class="search-results-grid"
+      v-if="album_grid == true && search.albums.value.length"
+    >
       <AlbumCard v-for="a in search.albums.value" :key="a.albumid" :album="a" />
     </div>
-    <div class="search-results-grid" v-else>
+    <div
+      class="search-results-grid"
+      v-else-if="!album_grid && search.artists.value.length"
+    >
       <ArtistCard
         v-for="artist in search.artists.value"
         :key="artist.image"
@@ -11,6 +17,7 @@
         :alt="true"
       />
     </div>
+    <div v-else class="t-center"><h5>🤷</h5></div>
     <LoadMore
       v-if="album_grid && search.albums.more"
       :loader="search.loadAlbums"

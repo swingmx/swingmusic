@@ -11,9 +11,7 @@
       </button>
     </div>
     <div class="right">
-      <button class="more-action action">
-        <MoreSvg />
-      </button>
+      <Option />
     </div>
   </div>
 </template>
@@ -23,7 +21,7 @@ import useQueueStore from "../../../stores/queue";
 
 import ClearSvg from "@/assets/icons/delete.svg";
 import ShuffleSvg from "@/assets/icons/shuffle.svg";
-import MoreSvg from "@/assets/icons/more.svg";
+import Option from "@/components/shared/Option.vue";
 
 const queue = useQueueStore();
 </script>
@@ -50,8 +48,9 @@ const queue = useQueueStore();
     }
   }
 
-  .more-action {
+  .btn-more {
     padding-right: $smaller;
+
     svg {
       transform: scale(1.25);
     }

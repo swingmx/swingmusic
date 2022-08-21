@@ -3,20 +3,12 @@ import useQueueStore from "../queue";
 
 export default defineStore("settings", {
   state: () => ({
-    use_side_np: false,
-    use_right_np: true,
+    use_alt_np: false,
   }),
   actions: {
-    toggleNPs() {
-      this.use_side_np = !this.use_side_np;
-      this.use_right_np = !this.use_right_np;
-      useQueueStore().bindProgressElem();
-    },
-    toggleUseSideNP() {
-      this.toggleNPs();
-    },
     toggleUseRightNP() {
-      this.toggleNPs();
+      this.use_alt_np = !this.use_alt_np;
+      useQueueStore();
     },
   },
   getters: {},

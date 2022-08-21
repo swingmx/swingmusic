@@ -1,5 +1,10 @@
 <template>
-  <div class="r-sidebar">
+  <div
+    class="r-sidebar"
+    :style="{
+      marginBottom: !settings.use_alt_np ? '-1rem' : '',
+    }"
+  >
     <div class="grid">
       <div class="r-content">
         <div class="r-dash" v-show="tabs.current === tabs.tabs.home">
@@ -21,8 +26,10 @@ import Search from "./Search/Main.vue";
 import Queue from "./Queue.vue";
 import DashBoard from "./Home/Main.vue";
 import useTabStore from "../../stores/tabs";
+import useSettingsStore from "@/stores/settings";
 
 const tabs = useTabStore();
+const settings = useSettingsStore();
 </script>
 
 <style lang="scss">

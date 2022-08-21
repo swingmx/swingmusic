@@ -25,7 +25,6 @@ function shuffle(tracks: Track[]) {
 type From = fromFolder | fromAlbum | fromPlaylist | fromSearch;
 
 let audio = new Audio();
-let elem: HTMLElement;
 
 export default defineStore("Queue", {
   state: () => ({
@@ -43,9 +42,6 @@ export default defineStore("Queue", {
     tracklist: [] as Track[],
   }),
   actions: {
-    bindProgressElem() {
-      elem = document.getElementById("progress");
-    },
     play(index: number = 0) {
       if (this.tracklist.length === 0) return;
       this.current = index;
@@ -53,7 +49,6 @@ export default defineStore("Queue", {
       this.currentid = track.trackid;
       const uri = state.settings.uri + "/file/" + track.hash;
       this.updateCurrent(index);
-      this.bindProgressElem();
 
       new Promise((resolve, reject) => {
         audio.autoplay = true;
@@ -260,32 +255,29 @@ export default defineStore("Queue", {
     },
   },
   getters: {
-    getNextTrack() {
+    getNextTrack(): Track {
       if (this.current == this.tracklist.length - 1) {
         return this.tracklist[0];
       } else {
         return this.tracklist[this.current + 1];
       }
     },
-    getPrevTrack() {
+    getPrevTrack(): Track {
       if (this.current === 0) {
         return this.tracklist[this.tracklist.length - 1];
       } else {
         return this.tracklist[this.current - 1];
       }
     },
-    fullTime() {
-      return audio.duration;
-    },
-    currentTime() {
-      return audio.currentTime;
-    },
-    getCurrentTrack() {
+    getCurrentTrack(): Track {
       return this.tracklist[this.current];
     },
-    getIsplaying() {
-      return audio.paused ? false : true;
+  },
+  persist: {
+    afterRestore: (context) => {
+      let store = context.store;
+      store.duration.current = 0;
+      store.playing = false;
     },
   },
-  persist: true,
 });

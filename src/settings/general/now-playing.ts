@@ -5,15 +5,9 @@ const settings = useSettingsStore;
 
 export default [
   {
-    title: "Use right bottom now playing card",
+    title: "Use alternate now playing card",
     type: SettingType.switch,
-    source: () => settings().use_right_np,
+    source: () => settings().use_alt_np,
     action: () => settings().toggleUseRightNP(),
-  },
-  {
-    title: "Use left now playing card",
-    type: SettingType.switch,
-    source: () => settings().use_side_np,
-    action: () => settings().toggleUseSideNP(),
   },
 ];

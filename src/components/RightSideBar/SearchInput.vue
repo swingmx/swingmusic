@@ -1,15 +1,13 @@
 <template>
   <div id="gsearch-input" class="rounded">
-    <div
-      id="ginner"
-      tabindex="0"
-      class="bg-primary rounded"
-    >
+    <div id="ginner" tabindex="0" class="bg-primary rounded">
       <input
         id="globalsearch"
         v-model="search.query"
         placeholder="Search your library"
         type="search"
+        @blur.prevent="removeFocusedClass"
+        @focus.prevent="addFocusedClass"
       />
       <SearchSvg />
     </div>
@@ -21,6 +19,7 @@
 </template>
 
 <script setup lang="ts">
+import { onMounted, ref } from "vue";
 import QueueSvg from "../../assets/icons/queue.svg";
 import SearchSvg from "../../assets/icons/search.svg";
 import useSearchStore from "../../stores/search";
@@ -28,6 +27,20 @@ import useTabStore from "../../stores/tabs";
 
 const search = useSearchStore();
 const tabs = useTabStore();
+const focused = ref(false);
+let classList: DOMTokenList | undefined;
+
+onMounted(() => {
+  classList = document.getElementById("ginner")?.classList;
+});
+
+function addFocusedClass() {
+  classList?.add("search-focused");
+}
+
+function removeFocusedClass() {
+  classList?.remove("search-focused");
+}
 </script>
 
 <style lang="scss">

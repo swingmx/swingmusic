@@ -1,9 +1,9 @@
 <template>
-  <div id="tracks-results" v-if="search.tracks.value">
-    <TransitionGroup name="list">
+  <div id="tracks-results">
+    <TransitionGroup name="list"  v-if="search.tracks.value.length">
       <TrackItem
         v-for="(track, index) in search.tracks.value"
-        :key="track.trackid"
+        :key="track?.trackid"
         :track="track"
         :isPlaying="queue.playing"
         :isCurrent="queue.currentid == track.trackid"
@@ -11,6 +11,7 @@
         @PlayThis="updateQueue(index)"
       />
     </TransitionGroup>
+    <div v-else class="t-center"><h5>🤷</h5></div>
     <LoadMore v-if="search.tracks.more" :loader="search.loadTracks" />
   </div>
 </template>

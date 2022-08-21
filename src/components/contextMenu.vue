@@ -17,35 +17,20 @@
       top: context.y + 'px',
     }"
   >
-    <div
+    <ContextItem
       class="context-item"
       v-for="option in context.options"
       :key="option.label"
       :class="[{ critical: option.critical }, option.type]"
-      @click="() => option.action && option.action()"
-    >
-      <div class="icon image" :class="option.icon"></div>
-      <div class="label ellip">{{ option.label }}</div>
-      <div class="more image" v-if="option.children"></div>
-      <div class="children rounded shadow-sm" v-if="option.children">
-        <div
-          class="context-item"
-          v-for="child in option.children"
-          :key="child.label"
-          :class="[{ critical: child.critical }, child.type]"
-          @click="child.action && child.action()"
-        >
-          <div class="label ellip">
-            {{ child.label }}
-          </div>
-        </div>
-      </div>
-    </div>
+      :option="option"
+      @click="option.action()"
+    />
   </div>
 </template>
 
 <script setup lang="ts">
 import useContextStore from "../stores/context";
+import ContextItem from "./Contextmenu/ContextItem.vue";
 
 const context = useContextStore();
 </script>
@@ -63,91 +48,6 @@ const context = useContextStore();
   background: $context;
   transform-origin: top left;
   font-size: 0.875rem;
-
-  .context-item {
-    width: 100%;
-    display: flex;
-    align-items: center;
-    cursor: default;
-    padding: $small 1rem;
-    position: relative;
-
-    .more {
-      height: 1.5rem;
-      width: 1.5rem;
-      position: absolute;
-      right: $small;
-      background-image: url("../assets/icons/expand.svg");
-    }
-
-    .children {
-      position: absolute;
-      right: -13rem;
-      width: 13rem;
-      top: -0.5rem;
-      max-height: 23.5rem;
-
-      padding: $small 0 !important;
-      background-color: $context;
-      transform: scale(0);
-      transform-origin: top left;
-
-      .context-item {
-        padding: $small 1rem;
-      }
-
-      .separator {
-        padding: 0;
-      }
-    }
-
-    .icon {
-      height: 1.25rem;
-      width: 1.25rem;
-      margin-right: $small;
-    }
-
-    .label {
-      width: 9rem;
-    }
-
-    .folder {
-      background-image: url("../assets/icons/folder.svg");
-    }
-
-    .artist {
-      background-image: url("../assets/icons/artist.svg");
-    }
-
-    .album {
-      background-image: url("../assets/icons/album.svg");
-    }
-
-    .delete {
-      background-image: url("../assets/icons/delete.svg");
-    }
-
-    .plus {
-      background-image: url("../assets/icons/plus.svg");
-    }
-
-    .add_to_queue {
-      background-image: url("../assets/icons/add_to_queue.svg");
-    }
-
-    .heart {
-      background-image: url("../assets/icons/heart.svg");
-    }
-
-    &:hover {
-      background: #234ece;
-
-      .children {
-        transform: scale(1);
-        transition: transform 0.1s ease-in-out;
-      }
-    }
-  }
 
   .separator {
     height: 1px;
