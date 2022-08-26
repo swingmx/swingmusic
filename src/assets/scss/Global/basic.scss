@@ -9,12 +9,6 @@
   transition: transform 0.3s ease-in-out;
 }
 
-.ellipsis {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
 .ellip {
   display: -webkit-box;
   -webkit-line-clamp: 1;

@@ -6,7 +6,7 @@
       loading="lazy"
     />
     <div>
-      <p class="artist-name t-center ellipsis">{{ artist.name }}</p>
+      <p class="artist-name t-center">{{ artist.name }}</p>
     </div>
   </div>
 </template>
