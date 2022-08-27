@@ -2,14 +2,14 @@
   <input
     id="progress"
     type="range"
-    :value="q.duration.current"
+    :value="time.current"
     min="0"
-    :max="q.duration.full"
+    :max="time.full"
     step="0.1"
     @change="seek()"
     :style="{
       backgroundSize: `${
-        (q.duration.current / (q.currenttrack.length || 0)) * 100
+        (time.current / (q.currenttrack?.length || 0)) * 100
       }% 100%`,
     }"
   />
@@ -19,6 +19,8 @@
 import useQStore from "../../../stores/queue";
 
 const q = useQStore();
+
+const { duration: time } = q;
 const seek = () => {
   const elem = document.getElementById("progress") as HTMLInputElement;
   const value = elem.value;

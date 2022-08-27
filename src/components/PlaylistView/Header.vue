@@ -4,7 +4,7 @@
     ref="playlistheader"
     :style="[
       {
-        backgroundImage: `url(${imguri + props.info.image})`,
+        backgroundImage: `url(${imguri + info.image})`,
       },
     ]"
   >
@@ -13,26 +13,20 @@
       <div class="info">
         <div class="btns">
           <PlayBtnRect :source="playSources.playlist" :store="usePStore" />
-          <Option
-            @showDropdown="showDropdown"
-            :src="context?.src || undefined"
-          />
         </div>
         <div class="duration">
-          <span v-if="props.info.count == 0">No Tracks</span>
-          <span v-else-if="props.info.count == 1"
-            >{{ props.info.count }} Track</span
-          >
-          <span v-else>{{ props.info.count }} Tracks</span> •
-          {{ formatSeconds(props.info.duration, true) }}
+          <span v-if="info.count == 0">No Tracks</span>
+          <span v-else-if="info.count == 1">{{ info.count }} Track</span>
+          <span v-else>{{ info.count }} Tracks</span> •
+          {{ formatSeconds(info.duration, true) }}
         </div>
-        <div class="title ellip">{{ props.info.name }}</div>
+        <div class="title ellip">{{ info.name }}</div>
         <div class="type">Playlist</div>
       </div>
     </div>
     <div class="last-updated">
       <span class="status"
-        >Last updated {{ props.info.lastUpdated }} &#160;|&#160;&#160;</span
+        >Last updated {{ info.lastUpdated }} &#160;|&#160;&#160;</span
       >
       <span class="edit" @click="editPlaylist">Edit</span>
     </div>
@@ -53,7 +47,6 @@ import { Playlist } from "../../interfaces";
 import { useVisibility, formatSeconds } from "@/utils";
 import { ContextSrc, playSources } from "@/composables/enums";
 
-import Option from "../shared/Option.vue";
 import PlayBtnRect from "../shared/PlayBtnRect.vue";
 
 const imguri = paths.images.playlist;

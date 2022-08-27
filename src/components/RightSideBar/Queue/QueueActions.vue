@@ -10,9 +10,7 @@
         <span>Shuffle</span>
       </button>
     </div>
-    <div class="right">
-      <Option />
-    </div>
+    <div class="right"></div>
   </div>
 </template>
 
@@ -21,7 +19,6 @@ import useQueueStore from "../../../stores/queue";
 
 import ClearSvg from "@/assets/icons/delete.svg";
 import ShuffleSvg from "@/assets/icons/shuffle.svg";
-import Option from "@/components/shared/Option.vue";
 
 const queue = useQueueStore();
 </script>
