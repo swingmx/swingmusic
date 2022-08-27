@@ -37,7 +37,7 @@ const q = useQStore();
     cursor: pointer;
 
     &:hover {
-      background-color: $accent;
+      background-color: $darkestblue;
     }
   }
 

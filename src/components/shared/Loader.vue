@@ -2,7 +2,6 @@
   <div
     class="loaderx"
     :class="{ loader: loader.loading, not_loader: !loader.loading }"
-    @click="modal.showSearchModal"
   >
     <div v-if="!loader.loading">🦋</div>
   </div>
@@ -10,10 +9,8 @@
 
 <script setup lang="ts">
 import useLoaderStore from "@/stores/loader";
-import useModalStore from "@/stores/modal";
 
 const loader = useLoaderStore();
-const modal = useModalStore();
 </script>
 
 <style lang="scss">

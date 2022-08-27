@@ -66,7 +66,7 @@ defineProps<{
   }
 
   &:hover {
-    background: #234ece;
+    background: $darkestblue;
 
     .children {
       transform: scale(1);

@@ -32,7 +32,7 @@ defineProps<{
 }
 
 .toggled {
-  background-color: $darkblue;
+  background-color: $darkestblue;
   transition-delay: 0.15s;
 
   .circle {

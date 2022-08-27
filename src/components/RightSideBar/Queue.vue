@@ -1,7 +1,7 @@
 <template>
   <div class="up-next">
     <div class="r-grid">
-      <div class="scrollable-r bg-primary rounded">
+      <div class="scrollable-r rounded">
         <QueueActions />
         <div
           class="inner"

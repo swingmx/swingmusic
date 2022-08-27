@@ -65,12 +65,12 @@ button {
   background: linear-gradient(70deg, $gray3, $gray2);
 
   &:hover {
-    background-image: linear-gradient(70deg, #234ece, $darkblue);
+    background-image: linear-gradient(70deg, $darkestblue, $darkblue);
   }
 }
 
 .btn-active {
-  background-image: linear-gradient(70deg, #234ece, $darkblue);
+  background-image: linear-gradient(70deg, $darkestblue, $darkblue);
 }
 
 .btn-more {
