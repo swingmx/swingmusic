@@ -8,18 +8,16 @@
           @mouseenter="setMouseOver(true)"
           @mouseleave="setMouseOver(false)"
         >
-          <TransitionGroup name="queuelist">
-            <TrackItem
-              v-for="(t, index) in queue.tracklist"
-              :key="index"
-              :track="t"
-              @playThis="queue.play(index)"
-              :isCurrent="index === queue.current"
-              :isPlaying="queue.playing"
-              :isQueueTrack="true"
-              :index="index"
-            />
-          </TransitionGroup>
+          <TrackItem
+            v-for="(t, index) in queue.tracklist"
+            :key="index"
+            :track="t"
+            @playThis="queue.play(index)"
+            :isCurrent="index === queue.currentindex"
+            :isPlaying="queue.playing"
+            :isQueueTrack="true"
+            :index="index"
+          />
         </div>
       </div>
     </div>
@@ -52,21 +50,6 @@ onUpdated(() => {
 </script>
 
 <style lang="scss">
-.queuelist-move, /* apply transition to moving elements */
-.queuelist-enter-active {
-  transition: all 0.5s ease-in-out;
-}
-
-.queuelist-enter-from,
-.queuelist-leave-to {
-  opacity: 0;
-}
-
-.queuelist-leave-active {
-  transition: none;
-  position: absolute;
-}
-
 .up-next {
   overflow: hidden;
   height: 100%;
@@ -79,7 +62,6 @@ onUpdated(() => {
   .r-grid {
     position: relative;
     height: 100%;
-
 
     .scrollable-r {
       height: 100%;

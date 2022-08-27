@@ -48,8 +48,6 @@ const props = defineProps<{
 
   .bottom {
     margin-top: $smaller;
-    display: grid;
-    justify-items: center;
 
     .name {
       font-weight: 900;

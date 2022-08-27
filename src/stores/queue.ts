@@ -32,23 +32,19 @@ export default defineStore("Queue", {
       current: 0,
       full: 0,
     },
-    current: 0,
-    next: 0,
-    prev: 0,
+    currentindex: 0,
     currentid: <string | null>"",
     playing: false,
     from: {} as From,
-    currenttrack: {} as Track,
     tracklist: [] as Track[],
   }),
   actions: {
     play(index: number = 0) {
       if (this.tracklist.length === 0) return;
-      this.current = index;
+      this.currentindex = index;
       const track = this.tracklist[index];
       this.currentid = track.trackid;
       const uri = state.settings.uri + "/file/" + track.hash;
-      this.updateCurrent(index);
 
       new Promise((resolve, reject) => {
         audio.autoplay = true;
@@ -78,7 +74,7 @@ export default defineStore("Queue", {
             NotifType.Error
           );
 
-          if (this.current !== this.tracklist.length - 1) {
+          if (this.currentindex !== this.tracklist.length - 1) {
             setTimeout(() => {
               this.playNext();
             }, 1000);
@@ -87,7 +83,7 @@ export default defineStore("Queue", {
     },
     playPause() {
       if (audio.src === "") {
-        this.play(this.current);
+        this.play(this.currentindex);
       } else if (audio.paused) {
         audio.play();
         this.playing = true;
@@ -97,10 +93,10 @@ export default defineStore("Queue", {
       }
     },
     playNext() {
-      this.play(this.next);
+      this.play(this.nextindex);
     },
     playPrev() {
-      this.play(this.prev);
+      this.play(this.previndex);
     },
     seek(pos: number) {
       try {
@@ -119,35 +115,6 @@ export default defineStore("Queue", {
         this.from = parsed.from;
         this.tracklist = parsed.tracks;
       }
-    },
-    updateCurrent(index: number) {
-      this.setCurrent(index);
-      this.updateNext(index);
-      this.updatePrev(index);
-    },
-    updateNext(index: number) {
-      if (index == this.tracklist.length - 1) {
-        this.next = 0;
-        return;
-      }
-
-      this.next = index + 1;
-    },
-    updatePrev(index: number) {
-      if (index === 0) {
-        this.prev = this.tracklist.length - 1;
-        return;
-      }
-
-      this.prev = index - 1;
-    },
-    setCurrent(index: number) {
-      const track = this.tracklist[index];
-
-      this.currenttrack = track;
-      this.current = index;
-      this.currentid = track?.trackid || null;
-      this.duration.full = track?.length || 0;
     },
     setNewQueue(tracklist: Track[]) {
       if (this.tracklist !== tracklist) {
@@ -197,13 +164,11 @@ export default defineStore("Queue", {
     },
     addTrackToQueue(track: Track) {
       this.tracklist.push(track);
-      // writeQueue(this.from, this.tracklist);
-      this.updateNext(this.current);
     },
     playTrackNext(track: Track) {
       const Toast = useNotifStore();
 
-      const nextindex = this.current + 1;
+      const nextindex = this.currentindex + 1;
       const next: Track = this.tracklist[nextindex];
 
       // if track is already next, skip
@@ -214,14 +179,13 @@ export default defineStore("Queue", {
 
       // if tracklist is empty or current track is last, push track
       // else insert track after current track
-      if (this.current == this.tracklist.length - 1) {
+      if (this.currentindex == this.tracklist.length - 1) {
         this.tracklist.push(track);
       } else {
-        this.tracklist.splice(this.current + 1, 0, track);
+        this.tracklist.splice(this.currentindex + 1, 0, track);
       }
 
       // save queue
-      this.updateNext(this.current);
       Toast.showNotification(
         `Added ${track.title} to queue`,
         NotifType.Success
@@ -230,7 +194,7 @@ export default defineStore("Queue", {
     clearQueue() {
       this.tracklist = [] as Track[];
       this.currentid = "";
-      this.current, this.next, (this.prev = 0);
+      this.currentindex = 0;
       this.from = <From>{};
     },
     shuffleQueue() {
@@ -243,34 +207,42 @@ export default defineStore("Queue", {
       const shuffled = shuffle(this.tracklist);
       this.tracklist = shuffled;
 
-      this.current = 0;
-      this.play(this.current);
+      this.currentindex = 0;
+      this.play(this.currentindex);
 
       this.currentid = shuffled[0].trackid;
-      this.next = 1;
-      this.prev = this.tracklist.length - 1;
     },
     removeFromQueue(index: number = 0) {
       this.tracklist.splice(index, 1);
     },
   },
   getters: {
-    getNextTrack(): Track {
-      if (this.current == this.tracklist.length - 1) {
+    next(): Track {
+      if (this.currentindex == this.tracklist.length - 1) {
         return this.tracklist[0];
       } else {
-        return this.tracklist[this.current + 1];
+        return this.tracklist[this.currentindex + 1];
       }
     },
-    getPrevTrack(): Track {
-      if (this.current === 0) {
+    prev(): Track {
+      if (this.currentindex === 0) {
         return this.tracklist[this.tracklist.length - 1];
       } else {
-        return this.tracklist[this.current - 1];
+        return this.tracklist[this.currentindex - 1];
       }
     },
-    getCurrentTrack(): Track {
-      return this.tracklist[this.current];
+    currenttrack(): Track {
+      return this.tracklist[this.currentindex];
+    },
+    previndex(): number {
+      return this.currentindex === 0
+        ? this.tracklist.length - 1
+        : this.currentindex - 1;
+    },
+    nextindex(): number {
+      return this.currentindex === this.tracklist.length - 1
+        ? 0
+        : this.currentindex + 1;
     },
   },
   persist: {

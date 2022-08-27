@@ -1,4 +1,3 @@
-import { Track } from "../interfaces.js";
 import { paths } from "../config";
 
 import useQueueStore from "../stores/queue";
@@ -6,54 +5,55 @@ import useQueueStore from "../stores/queue";
 export default () => {
   if ("mediaSession" in navigator) {
     const queue = useQueueStore();
+    const { currenttrack: track } = queue;
 
     navigator.mediaSession.metadata = new window.MediaMetadata({
-      title: queue.currenttrack.title,
-      artist: queue.currenttrack.artists.join(", "),
+      title: track.title,
+      artist: track.artists.join(", "),
       artwork: [
         {
-          src: paths.images.thumb + queue.currenttrack.image,
+          src: paths.images.thumb + track.image,
           sizes: "96x96",
           type: "image/jpeg",
         },
         {
-          src: paths.images.thumb + queue.currenttrack.image,
+          src: paths.images.thumb + track.image,
           sizes: "128x128",
           type: "image/webp",
         },
         {
-          src: paths.images.thumb + queue.currenttrack.image,
+          src: paths.images.thumb + track.image,
           sizes: "192x192",
           type: "image/webp",
         },
         {
-          src: paths.images.thumb + queue.currenttrack.image,
+          src: paths.images.thumb + track.image,
           sizes: "256x256",
           type: "image/webp",
         },
         {
-          src: paths.images.thumb + queue.currenttrack.image,
+          src: paths.images.thumb + track.image,
           sizes: "384x384",
           type: "image/webp",
         },
         {
-          src: paths.images.thumb + queue.currenttrack.image,
+          src: paths.images.thumb + track.image,
           sizes: "512x512",
           type: "image/webp",
         },
       ],
     });
 
-    navigator.mediaSession.setActionHandler("play", function () {
+    navigator.mediaSession.setActionHandler("play", () => {
       queue.playPause();
     });
-    navigator.mediaSession.setActionHandler("pause", function () {
+    navigator.mediaSession.setActionHandler("pause", () => {
       queue.playPause();
     });
-    navigator.mediaSession.setActionHandler("previoustrack", function () {
+    navigator.mediaSession.setActionHandler("previoustrack", () => {
       queue.playPrev();
     });
-    navigator.mediaSession.setActionHandler("nexttrack", function () {
+    navigator.mediaSession.setActionHandler("nexttrack", () => {
       queue.playNext();
     });
   }

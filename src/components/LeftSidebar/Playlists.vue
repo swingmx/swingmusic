@@ -32,7 +32,6 @@ onMounted(() => {
 
 <style lang="scss">
 .sidebar-playlists {
-  //   outline: solid 1px;
   display: grid;
   grid-template-rows: max-content 1fr;
 

@@ -7,13 +7,13 @@
   >
     <div class="grid">
       <div class="r-content">
-        <div class="r-dash" v-show="tabs.current === tabs.tabs.home">
+        <div class="r-dash" v-if="tabs.current === tabs.tabs.home">
           <DashBoard />
         </div>
-        <div class="r-search" v-show="tabs.current === tabs.tabs.search">
+        <div class="r-search" v-if="tabs.current === tabs.tabs.search">
           <Search />
         </div>
-        <div class="r-queue" v-show="tabs.current === tabs.tabs.queue">
+        <div class="r-queue" v-if="tabs.current === tabs.tabs.queue">
           <Queue />
         </div>
       </div>
