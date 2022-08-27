@@ -5,13 +5,18 @@
   <div id="app-grid">
     <LeftSidebar />
     <NavBar />
-    <div id="acontent" class="rounded">
+    <div
+      id="acontent"
+      class="rounded"
+      :style="{
+        marginBottom: !settings.use_alt_np ? '-1rem' : '0',
+      }"
+    >
       <router-view />
     </div>
     <NowPlayingRight />
     <SearchInput />
     <RightSideBar />
-    <!-- <Tabs /> -->
   </div>
 </template>
 
@@ -27,7 +32,6 @@ import handleShortcuts from "@/composables/useKeyboard";
 
 import Modal from "@/components/modal.vue";
 import NavBar from "@/components/nav/NavBar.vue";
-// import Tabs from "@/components/RightSideBar/Tabs.vue";
 import ContextMenu from "@/components/contextMenu.vue";
 import Notification from "@/components/Notification.vue";
 
@@ -35,6 +39,7 @@ import RightSideBar from "@/components/RightSideBar/Main.vue";
 import SearchInput from "@/components/RightSideBar/SearchInput.vue";
 import NowPlayingRight from "@/components/RightSideBar/NowPlayingRight.vue";
 import LeftSidebar from "./components/LeftSidebar/index.vue";
+import useSettingsStore from "@/stores/settings";
 
 import { readLocalStorage, writeLocalStorage } from "@/utils";
 
@@ -42,6 +47,7 @@ const queue = useQStore();
 const router = useRouter();
 const modal = useModalStore();
 const context_store = useContextStore();
+const settings = useSettingsStore();
 const app_dom = document.getElementById("app") as HTMLElement;
 
 queue.readQueue();

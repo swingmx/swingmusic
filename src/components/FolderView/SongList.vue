@@ -1,38 +1,46 @@
 <template>
-  <div class="folder">
-    <div class="table rounded" v-if="tracks.length">
-      <div class="header">
-        <div class="disc-number" v-if="disc">Disc {{ disc }}</div>
-        <div class="disc-number" v-if="$route.name === Routes.folder">
-          In this folder
-        </div>
-      </div>
-      <div class="songlist">
-        <SongItem
-          v-for="track in getTrackList()"
-          :key="track.trackid"
-          :track="track"
-          :index="track.index"
-          @updateQueue="updateQueue"
-          :isPlaying="queue.playing"
-          :isCurrent="queue.currentid == track.trackid"
-          :isHighlighted="($route.query.highlight as string) == track.hash"
-        />
+  <div
+    class="table rounded"
+    v-if="tracks.length"
+    ref="tracklistElem"
+    :class="{
+      isSmall: isSmall,
+      isMedium: isMedium,
+    }"
+  >
+    <div class="header">
+      <div class="disc-number" v-if="disc">Disc {{ disc }}</div>
+      <div class="disc-number" v-if="$route.name === Routes.folder">
+        In this folder
       </div>
     </div>
-    <div v-else-if="tracks.length === 0">
-      <div class="no-results">
-        <div class="text">No tracks here</div>
-      </div>
+    <div class="songlist">
+      <SongItem
+        v-for="track in getTrackList()"
+        :key="track.trackid"
+        :track="track"
+        :index="track.index"
+        @updateQueue="updateQueue"
+        :isPlaying="queue.playing"
+        :isCurrent="queue.currentid == track.trackid"
+        :isHighlighted="($route.query.highlight as string) == track.hash"
+      />
     </div>
     <div class="copyright" v-if="copyright && copyright()">
       {{ copyright() }}
     </div>
   </div>
+  <div v-else-if="tracks.length === 0">
+    <div class="no-results">
+      <div class="text">No tracks here</div>
+    </div>
+  </div>
 </template>
 
 <script setup lang="ts">
+import { onMounted, onUpdated, ref } from "vue";
 import { onBeforeRouteUpdate, useRoute } from "vue-router";
+import { useElementSize } from "@vueuse/core";
 
 import SongItem from "../shared/SongItem.vue";
 
@@ -41,7 +49,7 @@ import { Track } from "@/interfaces";
 import useAlbumStore from "@/stores/pages/album";
 import useQStore from "@/stores/queue";
 import { focusElem } from "@/utils";
-import { onMounted, onUpdated, ref } from "vue";
+import { computed } from "@vue/reactivity";
 
 const queue = useQStore();
 const album = useAlbumStore();
@@ -59,6 +67,17 @@ const props = defineProps<{
 const route = useRoute();
 const routename = route.name as string;
 const highlightid = ref(route.query.highlight as string | null);
+
+const tracklistElem = ref<HTMLElement | null>(null);
+const { width, height } = useElementSize(tracklistElem);
+
+const brk = {
+  sm: 500,
+  md: 800,
+};
+
+const isSmall = computed(() => width.value < brk.sm);
+const isMedium = computed(() => width.value > brk.sm && width.value < brk.md);
 
 function highlightTrack(t_hash: string) {
   focusElem(`track-${t_hash}`, 500, "center");
@@ -229,4 +248,37 @@ function getTrackList() {
     }
   }
 }
+
+.table.isSmall {
+  .songlist-item {
+    grid-template-columns: 1.5rem 1.5fr 2rem 2.5rem;
+  }
+
+  .song-artists,
+  .song-album {
+    display: none !important;
+  }
+
+  .isSmallArtists {
+    display: unset !important;
+    font-size: small;
+    opacity: 0.7;
+  }
+}
+
+.table.isMedium {
+  .songlist-item {
+    grid-template-columns: 1.5rem 1.5fr 1fr 2rem 2.5rem;
+  }
+
+  .song-album {
+    display: none !important;
+  }
+}
+
+// .table.isLarge {
+//   .songlist-item {
+//     grid-template-columns: 1.5rem 1.5fr 1fr 1fr 2rem 2.5rem;
+//   }
+// }
 </style>

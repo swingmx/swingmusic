@@ -27,24 +27,20 @@
           :class="{ last_played: !isPlaying }"
         ></div>
       </div>
-      <div @click="emitUpdate(track)">
-        <div class="title ellip">
+      <div>
+        <div class="title ellip" @click="emitUpdate(track)">
           {{ track.title }}
+        </div>
+        <div class="isSmallArtists" style="display: none;">
+          <ArtistName
+            :artists="track.artists"
+            :albumartist="track.albumartist"
+          />
         </div>
       </div>
     </div>
     <div class="song-artists">
-      <div class="ellip" v-if="track.artists[0] !== ''">
-        <span
-          class="artist"
-          v-for="artist in putCommas(track.artists)"
-          :key="artist"
-          >{{ artist }}</span
-        >
-      </div>
-      <div class="ellip" v-else>
-        <span class="artist">{{ track.albumartist }}</span>
-      </div>
+      <ArtistName :artists="track.artists" :albumartist="track.albumartist" />
     </div>
     <router-link
       class="song-album ellip"
@@ -78,7 +74,8 @@ import OptionSvg from "@/assets/icons/more.svg";
 import { showTrackContextMenu as showContext } from "@/composables/context";
 import { paths } from "@/config";
 import { Track } from "@/interfaces";
-import { formatSeconds, putCommas } from "@/utils";
+import { formatSeconds } from "@/utils";
+import ArtistName from "./ArtistName.vue";
 
 const context_on = ref(false);
 const imguri = paths.images.thumb;
@@ -110,26 +107,26 @@ function showMenu(e: Event) {
   display: grid;
   grid-template-columns: 1.5rem 1.5fr 1fr 1.5fr 2rem 2.5rem;
   align-items: center;
-  justify-items: flex-start;
+  justify-content: flex-start;
   height: 3.75rem;
   gap: 1rem;
   user-select: none;
 
-  @include for-desktop-down {
-    grid-template-columns: 1.5rem 1.5fr 1fr 2.5rem;
+  // @include for-desktop-down {
+  //   grid-template-columns: 1.5rem 1.5fr 1fr 2.5rem;
 
-    .song-album {
-      display: none !important;
-    }
+  //   .song-album {
+  //     display: none !important;
+  //   }
 
-    .song-duration {
-      display: none !important;
-    }
-  }
+  //   .song-duration {
+  //     display: none !important;
+  //   }
+  // }
 
-  @include tablet-portrait {
-    grid-template-columns: 1.5rem 1.5fr 1fr 2.5rem;
-  }
+  // @include tablet-portrait {
+  //   grid-template-columns: 1.5rem 1.5fr 1fr 2.5rem;
+  // }
 
   &:hover {
     background-color: $gray4;
@@ -162,7 +159,7 @@ function showMenu(e: Event) {
   }
 
   .song-duration {
-    font-size: 0.9rem;
+    font-size: small;
     text-align: left;
 
     .ellip {
@@ -236,9 +233,9 @@ function showMenu(e: Event) {
   td:nth-child(2) {
     border-radius: 0 $small $small 0;
 
-    @include phone-only {
-      border-radius: $small;
-    }
+    // @include phone-only {
+    //   border-radius: $small;
+    // }
   }
 }
 </style>
