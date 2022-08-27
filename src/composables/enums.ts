@@ -34,4 +34,5 @@ export enum Routes {
   album = "AlbumView",
   artists = "ArtistsView",
   settings = "SettingsView",
+  search = "SearchView"
 }

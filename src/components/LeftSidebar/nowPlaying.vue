@@ -1,13 +1,11 @@
 <template>
   <div class="now-playing-card t-center rounded">
-    <div>
-      <SongCard :track="currenttrack" />
-      <div class="l-track-time">
-        <span class="rounded">{{ formatSeconds(duration.current) }}</span
-        ><span class="rounded">{{ formatSeconds(duration.full) }}</span>
-      </div>
-      <Progress />
+    <SongCard :track="queue.currenttrack" />
+    <div class="l-track-time">
+      <span class="rounded">{{ formatSeconds(duration.current) }}</span
+      ><span class="rounded">{{ formatSeconds(duration.full) }}</span>
     </div>
+    <Progress />
     <HotKeys />
   </div>
 </template>
@@ -21,22 +19,20 @@ import Progress from "./NP/Progress.vue";
 import SongCard from "./NP/SongCard.vue";
 
 const queue = useQStore();
-const { currenttrack, duration } = queue;
+const { duration } = queue;
 </script>
 <style lang="scss">
 .now-playing-card {
   padding: 1rem;
   width: 100%;
   display: grid;
-  grid-template-rows: 1fr max-content;
-  position: relative;
+  grid-template-rows: 1fr max-content max-content max-content;
   gap: 1rem;
 
   .l-track-time {
     display: flex;
     justify-content: space-between;
     opacity: 0.8;
-    margin-top: $small;
 
     span {
       font-size: small;

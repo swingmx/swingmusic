@@ -189,7 +189,7 @@ function getTrackList() {
 .table {
   height: 100%;
   overflow-y: hidden;
-  background-color: $gray5;
+  background-color: $black;
   padding: $small 0;
 
   .header {
@@ -262,7 +262,8 @@ function getTrackList() {
   .isSmallArtists {
     display: unset !important;
     font-size: small;
-    opacity: 0.7;
+    color: $white;
+    opacity: 0.67;
   }
 }
 
@@ -275,10 +276,4 @@ function getTrackList() {
     display: none !important;
   }
 }
-
-// .table.isLarge {
-//   .songlist-item {
-//     grid-template-columns: 1.5rem 1.5fr 1fr 1fr 2rem 2.5rem;
-//   }
-// }
 </style>

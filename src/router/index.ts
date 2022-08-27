@@ -11,6 +11,8 @@ import Home from "@/views/Home.vue";
 import PlaylistList from "@/views/PlaylistList.vue";
 import PlaylistView from "@/views/playlist/index.vue";
 import SettingsView from "@/views/SettingsView.vue";
+import SearchView from "@/views/Search.vue";
+
 import { createRouter, createWebHashHistory } from "vue-router";
 
 const routes = [
@@ -93,6 +95,11 @@ const routes = [
     path: "/settings",
     name: "SettingsView",
     component: SettingsView,
+  },
+  {
+    path: "/search",
+    name: "SearchView",
+    component: SearchView,
   },
   {
     path: "/:pathMatch(.*)",

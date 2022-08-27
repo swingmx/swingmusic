@@ -112,22 +112,6 @@ function showMenu(e: Event) {
   gap: 1rem;
   user-select: none;
 
-  // @include for-desktop-down {
-  //   grid-template-columns: 1.5rem 1.5fr 1fr 2.5rem;
-
-  //   .song-album {
-  //     display: none !important;
-  //   }
-
-  //   .song-duration {
-  //     display: none !important;
-  //   }
-  // }
-
-  // @include tablet-portrait {
-  //   grid-template-columns: 1.5rem 1.5fr 1fr 2.5rem;
-  // }
-
   &:hover {
     background-color: $gray4;
 
@@ -232,10 +216,6 @@ function showMenu(e: Event) {
 
   td:nth-child(2) {
     border-radius: 0 $small $small 0;
-
-    // @include phone-only {
-    //   border-radius: $small;
-    // }
   }
 }
 </style>

@@ -37,11 +37,13 @@ onUpdated(() => {
 
 <style lang="scss">
 #folder-nav-title {
+  overflow: hidden;
   width: 100%;
 
   .folder {
     display: flex;
     gap: $small;
+    width: inherit;
 
     .playbtnrect {
       height: 2.25rem;
@@ -62,6 +64,7 @@ onUpdated(() => {
       height: 2.25rem;
       display: flex;
       align-items: center;
+      width: 100%;
       overflow: auto;
       padding-right: $smaller;
 
@@ -87,8 +90,7 @@ onUpdated(() => {
 
         .path {
           white-space: nowrap;
-          display: flex;
-          align-items: center;
+          margin: auto 0;
           cursor: default;
 
           .text {
@@ -97,11 +99,10 @@ onUpdated(() => {
           }
 
           &::before {
-            content: "";
-            height: $medium;
+            content: "/";
+            font-size: small;
             margin-right: $smaller;
-            border-right: solid 1px $white;
-            transform: rotate(20deg);
+            opacity: .25;
           }
 
           &:first-child {

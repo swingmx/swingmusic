@@ -139,7 +139,7 @@ const playThis = (track: Track) => {
 
   .artist {
     font-size: small;
-    color: rgba(255, 255, 255, 0.637);
+    opacity: .67;
   }
 }
 </style>

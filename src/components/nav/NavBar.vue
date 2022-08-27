@@ -2,7 +2,12 @@
   <div class="topnav">
     <div class="left">
       <NavButtons />
-      <div class="info">
+      <div
+        class="info"
+        :style="{
+          overflow: $route.name === Routes.search ? 'visible' : 'hidden',
+        }"
+      >
         <APTitle v-show="showAPTitle" />
         <SimpleTitle
           v-show="$route.name == Routes.playlists"
@@ -13,6 +18,7 @@
           :text="'Settings'"
         />
         <Folder v-show="$route.name == Routes.folder" :subPaths="subPaths" />
+        <SearchTitle v-show="$route.name == Routes.search" />
       </div>
     </div>
 
@@ -36,6 +42,7 @@ import APTitle from "./Titles/APTitle.vue";
 import useNavStore from "@/stores/nav";
 
 import { computed } from "@vue/reactivity";
+import SearchTitle from "./Titles/SearchTitle.vue";
 
 const route = useRoute();
 const nav = useNavStore();
@@ -89,8 +96,8 @@ watch(
     gap: 1rem;
 
     .info {
-      overflow: hidden;
       margin: auto 0;
+      // overflow: hidden;
 
       .title {
         font-size: 1.5rem;

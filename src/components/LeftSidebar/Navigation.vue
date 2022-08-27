@@ -5,7 +5,8 @@
       :key="menu.name"
       :to="{ name: menu.route_name, params: menu?.params }"
     >
-      <div class="nav-button" id="home-button">
+      <div v-if="menu.separator" :class="{ separator: menu.separator }"></div>
+      <div class="nav-button" id="home-button" v-else>
         <div class="in">
           <component :is="menu.icon"></component>
           <span>{{ menu.name }}</span>
@@ -19,6 +20,8 @@
 import PlaylistSvg from "../../assets/icons/playlist.svg";
 import FolderSvg from "../../assets/icons/folder.svg";
 import SettingsSvg from "../../assets/icons/settings.svg";
+import SearchSvg from "../../assets/icons/search.svg";
+
 import { Routes } from "@/composables/enums";
 
 const menus = [
@@ -34,6 +37,14 @@ const menus = [
     icon: FolderSvg,
   },
   {
+    name: "search",
+    route_name: Routes.search,
+    icon: SearchSvg,
+  },
+  {
+    separator: true,
+  },
+  {
     name: "settings",
     route_name: Routes.settings,
     icon: SettingsSvg,
@@ -44,8 +55,8 @@ const menus = [
 <style lang="scss">
 .side-nav-container {
   color: #fff;
-  margin: 1rem 0;
   text-transform: capitalize;
+  margin-top: 1rem;
 
   .nav-button {
     border-radius: $small;

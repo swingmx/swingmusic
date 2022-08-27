@@ -29,7 +29,7 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref } from "vue";
+import { onMounted } from "vue";
 import QueueSvg from "../../assets/icons/queue.svg";
 import SearchSvg from "../../assets/icons/search.svg";
 import useSearchStore from "../../stores/search";

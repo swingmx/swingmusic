@@ -8,15 +8,15 @@
       )`,
     }"
   >
-    <div class="art rounded">
-      <img
-        :src="imguri.artist + album.artistimg"
-        alt=""
-        class="circular shadow-lg"
-        loading="lazy"
-      />
-    </div>
     <div class="info" :class="{ nocontrast: isLight(album.colors[0]) }">
+      <div class="art rounded">
+        <img
+          :src="imguri.artist + album.artistimg"
+          alt=""
+          class="circular shadow-lg"
+          loading="lazy"
+        />
+      </div>
       <div class="top">
         <div class="h">
           <span v-if="album.is_soundtrack">Soundtrack</span>
@@ -40,8 +40,8 @@
         />
       </div>
     </div>
-    <div class="bigimg ">
-      <img class="rounded shadow-lg" :src="imguri.thumb + album.image" alt="" />
+    <div class="rounded shadow-lg bigimg">
+      <img :src="imguri.thumb + album.image" />
     </div>
   </div>
 </template>
@@ -92,21 +92,23 @@ useVisibility(albumheaderthing, handleVisibilityState);
 <style lang="scss">
 .a-header {
   display: grid;
-  grid-template-columns: 1fr min-content;
-  grid-template-rows: 1fr 1fr;
-  grid-template-areas: "artist thumbnail" "tags thumbnail";
+  grid-template-columns: 1fr auto;
   gap: 1rem;
   padding: 1rem;
   height: 100% !important;
   background-color: $black;
   background-image: linear-gradient(37deg, $black 20%, $gray, $black 90%);
+  overflow: hidden;
 
   .bigimg {
-    grid-area: thumbnail;
-    width: 16rem;
+    height: 100%;
+    word-break: break-all;
+    overflow: hidden;
 
     img {
-      height: 100%;
+      width: 100%;
+      aspect-ratio: 1;
+      object-fit: cover;
     }
   }
 
@@ -130,7 +132,6 @@ useVisibility(albumheaderthing, handleVisibilityState);
   }
 
   .info {
-    grid-area: tags;
     width: 100%;
     display: flex;
     flex-direction: column;
