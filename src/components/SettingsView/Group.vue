@@ -5,7 +5,11 @@
       <div class="desc" v-if="group.desc">{{ group.desc }}</div>
     </div>
     <div class="setting rounded bg-primary pad-lg">
-      <div v-for="(setting, index) in group.settings" :key="index">
+      <div
+        v-for="(setting, index) in group.settings"
+        :key="index"
+        :class="{ inactive: setting.inactive && setting.inactive() }"
+      >
         <div class="title">
           {{ setting.title }}
         </div>
@@ -52,6 +56,11 @@ defineProps<{
   .setting {
     display: grid;
     gap: 1rem;
+
+    .inactive {
+      opacity: 0.5;
+      pointer-events: none;
+    }
   }
 
   .setting > * {

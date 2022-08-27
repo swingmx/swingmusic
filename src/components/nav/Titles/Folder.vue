@@ -2,18 +2,24 @@
   <div id="folder-nav-title">
     <div class="folder">
       <div class="fname">
-        <div class="icon image"></div>
+        <div
+          class="icon image"
+          @click="
+            $router.push({ name: Routes.folder, params: { path: '$home' } })
+          "
+        ></div>
         <div class="paths">
           <div
             class="path"
-            v-for="path in subPaths"
+            v-for="path in subPaths.slice(1)"
             :key="path.path"
             :class="{ inthisfolder: path.active }"
-            @click="
-              $router.push({ name: 'FolderView', params: { path: path.path } })
-            "
           >
-            <span class="text">{{ path.name }}</span>
+            <router-link
+              class="text"
+              :to="{ name: Routes.folder, params: { path: path.path } }"
+              >{{ path.name }}</router-link
+            >
           </div>
         </div>
       </div>
@@ -25,6 +31,7 @@
 import { focusElem } from "@/utils";
 import { subPath } from "@/interfaces";
 import { onUpdated } from "vue";
+import { Routes } from "@/composables/enums";
 
 defineProps<{
   subPaths: subPath[];
@@ -43,7 +50,6 @@ onUpdated(() => {
   .folder {
     display: flex;
     gap: $small;
-    width: inherit;
 
     .playbtnrect {
       height: 2.25rem;
@@ -64,7 +70,6 @@ onUpdated(() => {
       height: 2.25rem;
       display: flex;
       align-items: center;
-      width: 100%;
       overflow: auto;
       padding-right: $smaller;
 
@@ -74,7 +79,7 @@ onUpdated(() => {
         background-image: url("../../../assets/icons/folder.fill.svg");
         background-size: 1.5rem;
         margin-left: $smaller;
-        background-position: 65% 50%;
+        cursor: pointer;
       }
 
       .paths {
@@ -91,7 +96,10 @@ onUpdated(() => {
         .path {
           white-space: nowrap;
           margin: auto 0;
-          cursor: default;
+
+          a {
+            cursor: default;
+          }
 
           .text {
             padding: $smaller;
@@ -102,13 +110,11 @@ onUpdated(() => {
             content: "/";
             font-size: small;
             margin-right: $smaller;
-            opacity: .25;
+            opacity: 0.25;
           }
 
           &:first-child {
-            &::before {
-              display: none;
-            }
+            display: none;
           }
 
           &:last-child {

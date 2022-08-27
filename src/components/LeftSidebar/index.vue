@@ -5,7 +5,7 @@
       <Navigation />
     </div>
 
-    <nowPlaying v-if="!settings.use_alt_np" />
+    <nowPlaying v-if="settings.show_default_np" />
   </div>
 </template>
 

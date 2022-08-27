@@ -42,6 +42,15 @@
   }
 }
 
+#app-grid.disableSidebar {
+  grid-template-columns: min-content 1fr;
+  grid-template-areas:
+    "l-sidebar nav"
+    "l-sidebar content"
+    "l-sidebar content"
+    "l-sidebar content";
+}
+
 #acontent {
   grid-area: content;
   max-width: 1955px;

@@ -8,17 +8,14 @@
           overflow: $route.name === Routes.search ? 'visible' : 'hidden',
         }"
       >
-        <APTitle v-show="showAPTitle" />
+        <APTitle v-if="showAPTitle" />
         <SimpleTitle
-          v-show="$route.name == Routes.playlists"
+          v-if="$route.name == Routes.playlists"
           :text="'Playlists'"
         />
-        <SimpleTitle
-          v-show="$route.name == Routes.settings"
-          :text="'Settings'"
-        />
-        <Folder v-show="$route.name == Routes.folder" :subPaths="subPaths" />
-        <SearchTitle v-show="$route.name == Routes.search" />
+        <SimpleTitle v-if="$route.name == Routes.settings" :text="'Settings'" />
+        <Folder v-if="$route.name == Routes.folder" :subPaths="subPaths" />
+        <SearchTitle v-if="$route.name == Routes.search" />
       </div>
     </div>
 
@@ -89,6 +86,7 @@ watch(
   display: grid;
   grid-template-columns: 1fr min-content;
   width: 100%;
+  gap: $small;
 
   .left {
     display: grid;
@@ -97,7 +95,6 @@ watch(
 
     .info {
       margin: auto 0;
-      // overflow: hidden;
 
       .title {
         font-size: 1.5rem;

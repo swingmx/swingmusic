@@ -5,7 +5,8 @@
   <div
     id="app-grid"
     :class="{
-      showAltNP: settings.use_alt_np,
+      showAltNP: settings.use_sidebar && settings.use_alt_np,
+      disableSidebar: !settings.use_sidebar,
     }"
   >
     <LeftSidebar />
@@ -14,8 +15,8 @@
       <router-view />
     </div>
     <NowPlayingRight />
-    <SearchInput />
-    <RightSideBar />
+    <SearchInput v-if="settings.use_sidebar" />
+    <RightSideBar v-if="settings.use_sidebar" />
   </div>
 </template>
 

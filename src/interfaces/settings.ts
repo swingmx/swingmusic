@@ -14,6 +14,7 @@ export interface Setting {
   title: string;
   type: SettingType;
   options?: SettingOption[];
+  inactive?: () => boolean;
   action: (arg0?: any) => void;
   source: () => any;
 }
