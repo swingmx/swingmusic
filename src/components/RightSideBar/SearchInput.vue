@@ -1,6 +1,6 @@
 <template>
-  <div id="gsearch-input" class="rounded">
-    <div id="ginner" tabindex="0" class="bg-primary rounded">
+  <div id="gsearch-input">
+    <div id="ginner" tabindex="0" class="bg-primary rounded-sm">
       <input
         id="globalsearch"
         v-model="search.query"
@@ -11,9 +11,19 @@
       />
       <SearchSvg />
     </div>
-    <div class="buttons rounded bg-primary">
-      <button @click="tabs.switchToQueue"><QueueSvg /></button>
-      <button @click="tabs.switchToSearch"><SearchSvg /></button>
+    <div class="buttons rounded-sm bg-primary">
+      <button
+        @click="tabs.switchToQueue"
+        v-if="tabs.current !== tabs.tabs.queue"
+      >
+        <QueueSvg />
+      </button>
+      <button
+        @click="tabs.switchToSearch"
+        v-if="tabs.current !== tabs.tabs.search"
+      >
+        <SearchSvg />
+      </button>
     </div>
   </div>
 </template>
@@ -27,7 +37,6 @@ import useTabStore from "../../stores/tabs";
 
 const search = useSearchStore();
 const tabs = useTabStore();
-const focused = ref(false);
 let classList: DOMTokenList | undefined;
 
 onMounted(() => {
@@ -46,7 +55,7 @@ function removeFocusedClass() {
 <style lang="scss">
 #gsearch-input {
   display: grid;
-  grid-template-columns: 1fr 7rem;
+  grid-template-columns: 1fr max-content;
   gap: 1rem;
 
   .buttons {

@@ -6,7 +6,6 @@
     </div>
 
     <nowPlaying v-if="!settings.use_alt_np" />
-    <!-- <Playlists /> -->
   </div>
 </template>
 
@@ -14,7 +13,6 @@
 import Navigation from "@/components/LeftSidebar/Navigation.vue";
 import nowPlaying from "@/components/LeftSidebar/nowPlaying.vue";
 import Logo from "@/components/Logo.vue";
-// import Playlists from "./components/LeftSidebar/Playlists.vue";
 
 import useSettingsStore from "@/stores/settings";
 

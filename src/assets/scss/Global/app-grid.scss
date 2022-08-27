@@ -23,12 +23,22 @@
       "l-sidebar nav"
       "l-sidebar content"
       "l-sidebar content"
-      "l-sidebar bottombar";
+      "l-sidebar content";
     .r-sidebar,
     #tabs,
     #gsearch-input {
       display: none;
     }
+  }
+}
+
+#app-grid.showAltNP {
+  @include tablet-landscape {
+    grid-template-areas:
+      "l-sidebar nav"
+      "l-sidebar content"
+      "l-sidebar content"
+      "l-sidebar bottombar";
   }
 }
 

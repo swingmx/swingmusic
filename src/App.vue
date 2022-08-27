@@ -2,16 +2,15 @@
   <ContextMenu />
   <Modal />
   <Notification />
-  <div id="app-grid">
+  <div
+    id="app-grid"
+    :class="{
+      showAltNP: settings.use_alt_np,
+    }"
+  >
     <LeftSidebar />
     <NavBar />
-    <div
-      id="acontent"
-      class="rounded"
-      :style="{
-        marginBottom: !settings.use_alt_np ? '-1rem' : '0',
-      }"
-    >
+    <div id="acontent" class="rounded">
       <router-view />
     </div>
     <NowPlayingRight />
