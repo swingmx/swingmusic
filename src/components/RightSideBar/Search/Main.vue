@@ -2,7 +2,7 @@
   <div class="right-search">
     <TabsWrapper>
       <Tab name="tracks">
-        <TracksGrid />
+        <TracksGrid :isOnSearchPage="isOnSearchPage" />
       </Tab>
       <Tab name="albums">
         <ArtistGrid :album_grid="true" />
@@ -19,6 +19,10 @@ import ArtistGrid from "./ArtistGrid.vue";
 import Tab from "./Tab.vue";
 import TabsWrapper from "./TabsWrapper.vue";
 import TracksGrid from "./TracksGrid.vue";
+
+const props = defineProps<{
+  isOnSearchPage?: boolean;
+}>();
 </script>
 
 <style lang="scss">
@@ -35,7 +39,6 @@ import TracksGrid from "./TracksGrid.vue";
     font-size: 2rem;
     color: $white;
   }
-
 
   .input {
     display: flex;

@@ -40,8 +40,11 @@
         />
       </div>
     </div>
-    <div class="rounded shadow-lg bigimg">
-      <img :src="imguri.thumb + album.image" />
+    <div
+      class="rounded shadow-lg image bigimg"
+      :style="{ backgroundImage: `url(${imguri.thumb + album.image})` }"
+    >
+      <!-- <img :src="imguri.thumb + album.image" /> -->
     </div>
   </div>
 </template>
@@ -92,7 +95,7 @@ useVisibility(albumheaderthing, handleVisibilityState);
 <style lang="scss">
 .a-header {
   display: grid;
-  grid-template-columns: 1fr auto;
+  grid-template-columns: 1fr max-content;
   gap: 1rem;
   padding: 1rem;
   height: 100% !important;
@@ -102,13 +105,15 @@ useVisibility(albumheaderthing, handleVisibilityState);
 
   .bigimg {
     height: 100%;
-    word-break: break-all;
+    width: 16rem;
     overflow: hidden;
 
     img {
-      width: 100%;
+      height: 100%;
       aspect-ratio: 1;
+
       object-fit: cover;
+      object-position: bottom;
     }
   }
 

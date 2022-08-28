@@ -89,7 +89,7 @@ export default defineStore("search", () => {
   }
 
   function loadTracks() {
-    loadCounter.tracks += 6;
+    loadCounter.tracks += 12;
 
     loadMoreTracks(loadCounter.tracks)
       .then((res) => {
@@ -100,7 +100,7 @@ export default defineStore("search", () => {
   }
 
   function loadAlbums() {
-    loadCounter.albums += 6;
+    loadCounter.albums += 12;
 
     loadMoreAlbums(loadCounter.albums)
       .then((res) => {
@@ -115,7 +115,7 @@ export default defineStore("search", () => {
   }
 
   function loadArtists() {
-    loadCounter.artists += 6;
+    loadCounter.artists += 12;
 
     loadMoreArtists(loadCounter.artists)
       .then((res) => {
@@ -185,8 +185,6 @@ export default defineStore("search", () => {
   function changeTab(tab: string) {
     currentTab.value = tab;
   }
-
-  setTimeout(() => {}, 3000);
 
   return {
     tracks,
