@@ -5,8 +5,18 @@
       :key="menu.name"
       :to="{ name: menu.route_name, params: menu?.params }"
     >
-      <div v-if="menu.separator" :class="{ separator: menu.separator }"></div>
-      <div class="nav-button" id="home-button" v-else>
+      <div
+        v-if="menu.separator"
+        :class="{
+          separator: menu.separator,
+        }"
+      ></div>
+      <div
+        class="nav-button"
+        id="home-button"
+        :class="{ active: menu.route_name === $route.name }"
+        v-else
+      >
         <div class="in">
           <component :is="menu.icon"></component>
           <span>{{ menu.name }}</span>
@@ -36,6 +46,15 @@ const menus = [
     params: { path: "$home" },
     icon: FolderSvg,
   },
+
+  {
+    separator: true,
+  },
+  {
+    name: "queue",
+    route_name: Routes.queue,
+    icon: PlaylistSvg,
+  },
   {
     name: "search",
     route_name: Routes.search,
@@ -54,27 +73,23 @@ const menus = [
 
 <style lang="scss">
 .side-nav-container {
-  color: #fff;
   text-transform: capitalize;
   margin-top: 1rem;
+  font-size: 0.85rem;
+
+  .active {
+    background-color: $gray4;
+  }
 
   .nav-button {
     border-radius: $small;
     display: flex;
     align-items: flex-start;
     justify-content: flex-start;
-    padding: 0.6rem 0;
+    padding: $smaller 0;
 
     &:hover {
       background-color: $gray3;
-    }
-
-    .nav-icon {
-      height: 2rem;
-      width: 2rem;
-      margin: 0 $small 0 $small;
-      border-radius: $small;
-      background-color: rgb(26, 24, 24);
     }
 
     .in {
@@ -90,6 +105,7 @@ const menus = [
   svg {
     margin: 0 $small 0 $small;
     border-radius: $small;
+    transform: scale(0.9);
   }
 
   svg > path {

@@ -82,9 +82,10 @@ button {
 }
 
 .separator {
-  border-top: 0.1px $separator solid;
+  border-top: 1px $separator solid;
   color: transparent;
   margin: $small 0 $small 0;
+  opacity: 0.5;
 }
 
 .no-border {

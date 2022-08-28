@@ -18,5 +18,3 @@ import useSettingsStore from "@/stores/settings";
 
 const settings = useSettingsStore();
 </script>
-
-<style lang="scss"></style>

@@ -22,7 +22,7 @@ export enum ContextSrc {
   PHeader = "PHeader",
   Track = "Track",
   AHeader = "AHeader",
-  FHeader = "FHeader"
+  FHeader = "FHeader",
 }
 
 export enum Routes {
@@ -34,5 +34,6 @@ export enum Routes {
   album = "AlbumView",
   artists = "ArtistsView",
   settings = "SettingsView",
-  search = "SearchView"
+  search = "SearchView",
+  queue = "QueueView",
 }
