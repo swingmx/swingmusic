@@ -12,6 +12,7 @@ import {
 import { watch } from "vue";
 import useDebouncedRef from "../utils/useDebouncedRef";
 import useTabStore from "./tabs";
+import useLoaderStore from "./loader";
 /**
  *
  * Scrolls on clicking the loadmore button
@@ -28,6 +29,8 @@ function scrollOnLoad() {
 
 export default defineStore("search", () => {
   const query = useDebouncedRef(null, 600);
+  const { startLoading, stopLoading } = useLoaderStore();
+
   const currentTab = ref("tracks");
   const loadCounter = reactive({
     tracks: 0,
@@ -62,51 +65,67 @@ export default defineStore("search", () => {
 
   /**
    * Searches for tracks, albums and artists
-   * @param newquery query to search for
+   * @param query query to search for
    */
-  function fetchTracks(newquery: string) {
-    searchTracks(newquery).then((res) => {
+  function fetchTracks(query: string) {
+    if (!query) return;
+
+    searchTracks(query).then((res) => {
       tracks.value = res.tracks;
       tracks.more = res.more;
-      tracks.query = newquery;
+      tracks.query = query;
     });
   }
 
   function fetchAlbums(query: string) {
-    searchAlbums(query).then((res) => {
-      albums.value = res.albums;
-      albums.more = res.more;
-      albums.query = query;
-    });
+    if (!query) return;
+
+    startLoading();
+    searchAlbums(query)
+      .then((res) => {
+        albums.value = res.albums;
+        albums.more = res.more;
+        albums.query = query;
+      })
+      .then(() => stopLoading());
   }
 
   function fetchArtists(query: string) {
-    searchArtists(query).then((res) => {
-      artists.value = res.artists;
-      artists.more = res.more;
-      artists.query = query;
-    });
+    if (!query) return;
+
+    startLoading();
+    searchArtists(query)
+      .then((res) => {
+        artists.value = res.artists;
+        artists.more = res.more;
+        artists.query = query;
+      })
+      .then(() => stopLoading());
   }
 
   function loadTracks() {
     loadCounter.tracks += 12;
 
+    startLoading();
     loadMoreTracks(loadCounter.tracks)
       .then((res) => {
         tracks.value = [...tracks.value, ...res.tracks];
         tracks.more = res.more;
       })
+      .then(() => stopLoading())
       .then(() => scrollOnLoad());
   }
 
   function loadAlbums() {
     loadCounter.albums += 12;
 
+    startLoading();
     loadMoreAlbums(loadCounter.albums)
       .then((res) => {
         albums.value = [...albums.value, ...res.albums];
         albums.more = res.more;
       })
+      .then(() => stopLoading())
       .then(() => {
         setTimeout(() => {
           scrollOnLoad();
@@ -117,11 +136,13 @@ export default defineStore("search", () => {
   function loadArtists() {
     loadCounter.artists += 12;
 
+    startLoading();
     loadMoreArtists(loadCounter.artists)
       .then((res) => {
         artists.value = [...artists.value, ...res.artists];
         artists.more = res.more;
       })
+      .then(() => stopLoading())
       .then(() => scrollOnLoad());
   }
 

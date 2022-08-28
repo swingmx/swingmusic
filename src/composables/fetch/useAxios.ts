@@ -1,10 +1,11 @@
 import { FetchProps } from "../../interfaces";
 import axios, { AxiosError, AxiosResponse } from "axios";
+import useLoaderStore from "@/stores/loader";
 
 export default async (args: FetchProps) => {
   let data: any = null;
-  let error: string = null;
-  let status: number = null;
+  let error: string | null = null;
+  let status: number | null = null;
 
   function getAxios() {
     if (args.get) {
@@ -18,6 +19,8 @@ export default async (args: FetchProps) => {
     return axios.post(args.url, args.props);
   }
 
+  const { startLoading, stopLoading } = useLoaderStore();
+  startLoading();
   await getAxios()
     .then((res: AxiosResponse) => {
       data = res.data;
@@ -25,8 +28,9 @@ export default async (args: FetchProps) => {
     })
     .catch((err: AxiosError) => {
       error = err.message as string;
-      status = err.response.status as number;
-    });
+      status = err.response?.status as number;
+    })
+    .then(() => stopLoading());
 
   return { data, error, status };
 };

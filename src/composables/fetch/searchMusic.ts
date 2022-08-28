@@ -1,5 +1,6 @@
 import state from "../state";
 import axios from "axios";
+import useAxios from "./useAxios";
 
 const base_url = `${state.settings.uri}/search`;
 
@@ -9,39 +10,39 @@ const uris = {
   artists: `${base_url}/artists?q=`,
 };
 
-async function searchTracks(query: string) {
-  const url = uris.tracks + encodeURIComponent(query.trim());
-
-  const res = await fetch(url);
-
-  if (!res.ok) {
-    const message = `An error has occured: ${res.status}`;
-    throw new Error(message);
-  }
-
-  const data = await res.json();
+/**
+ * Fetch data from url
+ * @param url url to fetch json from
+ * @returns promise that resolves to the JSON
+ */
+async function fetchData(url: string) {
+  const { data } = await useAxios({
+    url: url,
+    get: true,
+  });
 
   return data;
 }
 
+async function searchTracks(query: string) {
+  const url = uris.tracks + encodeURIComponent(query.trim());
+  return await fetchData(url);
+}
+
 async function searchAlbums(query: string) {
   const url = uris.albums + encodeURIComponent(query.trim());
-
-  const res = await axios.get(url);
-  return res.data;
+  return await fetchData(url);
 }
 
 async function searchArtists(query: string) {
   const url = uris.artists + encodeURIComponent(query.trim());
-
-  const res = await axios.get(url);
-  return res.data;
+  return await fetchData(url);
 }
 
-const url = state.settings.uri + "/search/loadmore";
+const loadmore_url = state.settings.uri + "/search/loadmore";
 
 async function loadMoreTracks(index: number) {
-  const response = await axios.get(url, {
+  const response = await axios.get(loadmore_url, {
     params: {
       type: "tracks",
       index: index,
@@ -52,7 +53,7 @@ async function loadMoreTracks(index: number) {
 }
 
 async function loadMoreAlbums(index: number) {
-  const response = await axios.get(url, {
+  const response = await axios.get(loadmore_url, {
     params: {
       type: "albums",
       index: index,
@@ -63,7 +64,7 @@ async function loadMoreAlbums(index: number) {
 }
 
 async function loadMoreArtists(index: number) {
-  const response = await axios.get(url, {
+  const response = await axios.get(loadmore_url, {
     params: {
       type: "artists",
       index: index,
