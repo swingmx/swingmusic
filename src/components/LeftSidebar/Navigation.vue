@@ -1,7 +1,7 @@
 <template>
   <div class="side-nav-container">
     <router-link
-      v-for="menu in menus"
+      v-for="menu in filtered_menus"
       :key="menu.name"
       :to="{ name: menu.route_name, params: menu?.params }"
     >
@@ -22,12 +22,17 @@
 </template>
 
 <script setup lang="ts">
+import { computed } from "@vue/reactivity";
+
+import { Routes } from "@/composables/enums";
+import useSettingsStore from "@/stores/settings";
+
 import PlaylistSvg from "../../assets/icons/playlist.svg";
 import FolderSvg from "../../assets/icons/folder.svg";
 import SettingsSvg from "../../assets/icons/settings.svg";
 import SearchSvg from "../../assets/icons/search.svg";
 
-import { Routes } from "@/composables/enums";
+const settings = useSettingsStore();
 
 const menus = [
   {
@@ -64,6 +69,14 @@ const menus = [
     icon: SettingsSvg,
   },
 ];
+
+const filtered_menus = computed(() => {
+  if (settings.hide_queue_page) {
+    return menus.filter((menu) => menu.route_name !== Routes.queue);
+  }
+
+  return menus;
+});
 </script>
 
 <style lang="scss">

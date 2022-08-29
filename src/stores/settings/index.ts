@@ -24,6 +24,9 @@ export default defineStore("settings", {
     disable_show_alt_np(): boolean {
       return !this.use_sidebar;
     },
+    hide_queue_page(): boolean {
+      return this.use_sidebar;
+    },
   },
   persist: true,
 });

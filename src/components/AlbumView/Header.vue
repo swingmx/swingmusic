@@ -9,7 +9,7 @@
     }"
   >
     <div class="info" :class="{ nocontrast: isLight(album.colors[0]) }">
-      <div class="art rounded">
+      <div class="art">
         <img
           :src="imguri.artist + album.artistimg"
           alt=""
@@ -17,35 +17,35 @@
           loading="lazy"
         />
       </div>
-      <div class="top">
-        <div class="h">
-          <span v-if="album.is_soundtrack">Soundtrack</span>
-          <span v-else-if="album.is_compilation">Compilation</span>
-          <span v-else-if="album.is_single">Single</span>
-          <span v-else>Album</span>
+      <div>
+        <div class="top">
+          <div class="h">
+            <span v-if="album.is_soundtrack">Soundtrack</span>
+            <span v-else-if="album.is_compilation">Compilation</span>
+            <span v-else-if="album.is_single">Single</span>
+            <span v-else>Album</span>
+          </div>
+          <div class="title ellip">
+            {{ album.title }}
+          </div>
         </div>
-        <div class="title ellip">
-          {{ album.title }}
+        <div class="bottom">
+          <div class="stats">
+            {{ album.artist }} • {{ album.date }} • {{ album.count }} Tracks •
+            {{ formatSeconds(album.duration, true) }}
+          </div>
+          <PlayBtnRect
+            :source="playSources.album"
+            :store="useAlbumStore"
+            :background="getButtonColor(album.colors)"
+          />
         </div>
-      </div>
-      <div class="bottom">
-        <div class="stats">
-          {{ album.artist }} • {{ album.date }} • {{ album.count }} Tracks •
-          {{ formatSeconds(album.duration, true) }}
-        </div>
-        <PlayBtnRect
-          :source="playSources.album"
-          :store="useAlbumStore"
-          :background="getButtonColor(album.colors)"
-        />
       </div>
     </div>
     <div
       class="rounded shadow-lg image bigimg"
       :style="{ backgroundImage: `url(${imguri.thumb + album.image})` }"
-    >
-      <!-- <img :src="imguri.thumb + album.image" /> -->
-    </div>
+    ></div>
   </div>
 </template>
 
@@ -117,21 +117,6 @@ useVisibility(albumheaderthing, handleVisibilityState);
     }
   }
 
-  .art {
-    grid-area: artist;
-    display: flex;
-    align-items: flex-end;
-    position: relative;
-
-    img {
-      height: 6rem;
-      aspect-ratio: 1;
-      object-fit: cover;
-      transition: all 0.2s ease-in-out;
-      user-select: none;
-    }
-  }
-
   .nocontrast {
     color: $black;
   }
@@ -140,7 +125,14 @@ useVisibility(albumheaderthing, handleVisibilityState);
     width: 100%;
     display: flex;
     flex-direction: column;
-    justify-content: flex-end;
+    justify-content: space-between;
+
+    img {
+      height: 6rem;
+      aspect-ratio: 1;
+      object-fit: cover;
+      user-select: none;
+    }
 
     .top {
       .h {
