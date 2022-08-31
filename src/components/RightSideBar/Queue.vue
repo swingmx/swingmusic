@@ -3,20 +3,15 @@
     <div class="r-grid">
       <div class="scrollable-r rounded">
         <QueueActions />
-        <div
-          class="inner"
-          @mouseenter="setMouseOver(true)"
-          @mouseleave="setMouseOver(false)"
-        >
-          <TrackItem
+        <div class="inner">
+          <TrackComponent
             v-for="(t, index) in queue.tracklist"
             :key="index"
             :track="t"
-            @playThis="queue.play(index)"
-            :isCurrent="index === queue.currentindex"
+            :index="index + 1"
             :isPlaying="queue.playing"
-            :isQueueTrack="true"
-            :index="index"
+            :isHighlighted="false"
+            :isCurrent="index === queue.currentindex"
           />
         </div>
       </div>
@@ -25,13 +20,26 @@
 </template>
 
 <script setup lang="ts">
-import { onUpdated, ref } from "vue";
+import { computed, onUpdated, ref } from "vue";
 
 import useQStore from "@/stores/queue";
 import { focusElem } from "@/utils";
 
 import TrackItem from "../shared/TrackItem.vue";
+import SongItem from "../shared/SongItem.vue";
 import QueueActions from "./Queue/QueueActions.vue";
+
+const props = defineProps<{
+  isOnQueuePage?: boolean;
+}>();
+
+const TrackComponent = computed(() => {
+  if (props.isOnQueuePage) {
+    return SongItem;
+  }
+
+  return TrackItem;
+});
 
 const queue = useQStore();
 const mouseover = ref(false);

@@ -1,6 +1,6 @@
 <template>
   <div class="queue-view">
-    <Queue />
+    <Queue :isOnQueuePage="true" />
   </div>
 </template>
 

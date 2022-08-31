@@ -122,11 +122,11 @@ function updateQueue(track: Track) {
   );
 
   switch (routename) {
-    case "FolderView":
+    case Routes.folder:
       queue.playFromFolder(props.path || "", props.tracks);
       queue.play(index);
       break;
-    case "AlbumView":
+    case Routes.album:
       const tindex = album.tracks.findIndex((t) => t.trackid === track.trackid);
 
       queue.playFromAlbum(
@@ -137,7 +137,7 @@ function updateQueue(track: Track) {
       );
       queue.play(tindex);
       break;
-    case "PlaylistView":
+    case Routes.playlist:
       queue.playFromPlaylist(
         props.pname || "",
         props.playlistid || "",
