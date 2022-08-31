@@ -42,11 +42,7 @@ const notifStore = useNotifStore();
   place-items: center;
   align-items: center;
   box-shadow: 0px 0px 2rem rgb(0, 0, 0);
-
-  .link {
-    font-weight: bold;
-    text-decoration: underline;
-  }
+  font-size: .85rem;
 }
 
 .notif-error {

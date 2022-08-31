@@ -81,7 +81,7 @@ const menus = [
     display: flex;
     align-items: flex-start;
     justify-content: flex-start;
-    padding: $smaller 0;
+    padding: $small 0;
 
     &:hover {
       background-color: $gray3;

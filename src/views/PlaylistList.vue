@@ -25,7 +25,7 @@ const pStore = usePStore();
   scrollbar-color: $gray2 transparent;
 
   .grid {
-    grid-template-columns: repeat(auto-fill, minmax(13rem, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(11rem, 1fr));
     gap: 1rem;
 
     @include for-desktop-down {

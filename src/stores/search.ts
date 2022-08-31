@@ -80,27 +80,21 @@ export default defineStore("search", () => {
   function fetchAlbums(query: string) {
     if (!query) return;
 
-    startLoading();
-    searchAlbums(query)
-      .then((res) => {
-        albums.value = res.albums;
-        albums.more = res.more;
-        albums.query = query;
-      })
-      .then(() => stopLoading());
+    searchAlbums(query).then((res) => {
+      albums.value = res.albums;
+      albums.more = res.more;
+      albums.query = query;
+    });
   }
 
   function fetchArtists(query: string) {
     if (!query) return;
 
-    startLoading();
-    searchArtists(query)
-      .then((res) => {
-        artists.value = res.artists;
-        artists.more = res.more;
-        artists.query = query;
-      })
-      .then(() => stopLoading());
+    searchArtists(query).then((res) => {
+      artists.value = res.artists;
+      artists.more = res.more;
+      artists.query = query;
+    });
   }
 
   function loadTracks() {
