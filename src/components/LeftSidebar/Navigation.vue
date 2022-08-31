@@ -1,7 +1,7 @@
 <template>
   <div class="side-nav-container">
     <router-link
-      v-for="menu in filtered_menus"
+      v-for="menu in menus"
       :key="menu.name"
       :to="{ name: menu.route_name, params: menu?.params }"
     >
@@ -69,14 +69,6 @@ const menus = [
     icon: SettingsSvg,
   },
 ];
-
-const filtered_menus = computed(() => {
-  if (settings.hide_queue_page) {
-    return menus.filter((menu) => menu.route_name !== Routes.queue);
-  }
-
-  return menus;
-});
 </script>
 
 <style lang="scss">
