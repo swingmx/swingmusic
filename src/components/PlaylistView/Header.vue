@@ -4,11 +4,12 @@
     ref="playlistheader"
     :style="[
       {
-        backgroundImage: `url(${imguri + info.image})`,
+        backgroundImage: info.image ? `url(${imguri + info.image})` : '',
       },
     ]"
+    :class="{ border: !info.image }"
   >
-    <div class="gradient"></div>
+    <div class="gradient" v-if="info.image"></div>
     <div class="carddd">
       <div class="info">
         <div class="btns">
@@ -76,8 +77,7 @@ function showDropdown(e: any) {
   grid-template-columns: 1fr;
   height: 100%;
   position: relative;
-  color: $white;
-  background-color: transparent;
+
 
   .gradient {
     position: absolute;

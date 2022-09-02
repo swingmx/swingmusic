@@ -101,10 +101,7 @@ const menus = [
     margin: 0 $small 0 $small;
     border-radius: $small;
     transform: scale(0.9);
-  }
-
-  svg > path {
-    fill: $accent;
+    opacity: .75;
   }
 }
 </style>

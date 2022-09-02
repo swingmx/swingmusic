@@ -96,20 +96,5 @@ function create(e: Event) {
     margin: 0 auto;
     width: 6rem;
   }
-
-  // input[type="submit"] {
-  //   margin: $small 0;
-  //   background-color: rgba(40, 132, 252, 0.884) !important;
-  //   color: $white;
-  //   padding: $small 1rem;
-  //   font-size: 1rem;
-  //   border: solid 2px transparent !important;
-  //   outline: none;
-  //   cursor: pointer;
-
-  //   &:focus {
-  //     border: 2px solid $gray1 !important;
-  //   }
-  // }
 }
 </style>

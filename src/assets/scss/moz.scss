@@ -1,5 +1,8 @@
-// Styles that only apply on our dear Firefox 
+// Styles that only apply on our dear Firefox
 
-// @-moz-document url-prefix() {
-
-// }
+@-moz-document url-prefix() {
+  #acontent {
+    margin-right: -1rem;
+    padding-right: 1rem;
+  }
+}
