@@ -208,9 +208,11 @@ export default defineStore("Queue", {
       this.tracklist = shuffled;
 
       this.currentindex = 0;
-      this.play(this.currentindex);
-
       this.currentid = shuffled[0].trackid;
+
+      if (this.playing) {
+        this.play(this.currentindex);
+      }
     },
     removeFromQueue(index: number = 0) {
       this.tracklist.splice(index, 1);

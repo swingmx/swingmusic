@@ -5,7 +5,7 @@
     class="p-card rounded noscroll"
   >
     <img :src="imguri + props.playlist.thumb" />
-    <div class="overlay pad-lg">
+    <div class="overlay rounded pad-lg">
       <div class="p-name ellip">{{ playlist.name }}</div>
       <div class="p-count">
         {{ playlist.count + ` ${playlist.count == 1 ? "Track" : "Tracks"}` }}
@@ -38,7 +38,7 @@ const props = defineProps<{
     height: 100%;
     aspect-ratio: 1/1.2;
     object-fit: cover;
-    border-radius: $medium;
+    transition: all 0.25s ease;
   }
 
   .overlay {
@@ -46,7 +46,7 @@ const props = defineProps<{
     top: 0;
     background-image: linear-gradient(
       to top,
-      rgba(0, 0, 0, 0.753),
+      rgba(0, 0, 0, 0.55),
       transparent 60%
     );
     height: 100%;
@@ -54,6 +54,7 @@ const props = defineProps<{
     display: flex;
     flex-direction: column;
     justify-content: flex-end;
+    transition: all 0.25s ease;
 
     .p-count {
       opacity: 0.75;
@@ -62,7 +63,9 @@ const props = defineProps<{
   }
 
   &:hover {
-    background-color: $darkestblue;
+    img {
+      transform: scale(1.1);
+    }
   }
 
   .bottom {
