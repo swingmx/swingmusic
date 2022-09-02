@@ -1,14 +1,7 @@
 <template>
   <div
     class="songlist-item"
-    :class="[
-      { current: isCurrent },
-      { contexton: context_on },
-      {
-        highlighted: isHighlighted,
-      },
-    ]"
-    v-bind:class="`track-${track.hash}`"
+    :class="[{ current: isCurrent }, { contexton: context_on }]"
     @dblclick="emitUpdate(track)"
     @contextmenu.prevent="showMenu"
   >
@@ -31,7 +24,7 @@
         <div class="title ellip" @click="emitUpdate(track)">
           {{ track.title }}
         </div>
-        <div class="isSmallArtists" style="display: none;">
+        <div class="isSmallArtists" style="display: none">
           <ArtistName
             :artists="track.artists"
             :albumartist="track.albumartist"
@@ -86,7 +79,6 @@ const props = defineProps<{
   index?: number;
   isPlaying: Boolean;
   isCurrent: Boolean;
-  isHighlighted: Boolean;
 }>();
 
 const emit = defineEmits<{

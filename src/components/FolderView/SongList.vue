@@ -23,7 +23,6 @@
         @updateQueue="updateQueue"
         :isPlaying="queue.playing"
         :isCurrent="queue.currentid == track.trackid"
-        :isHighlighted="($route.query.highlight as string) == track.hash"
       />
     </div>
     <div class="copyright" v-if="copyright && copyright()">
@@ -38,8 +37,8 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, onUpdated, ref } from "vue";
-import { onBeforeRouteUpdate, useRoute } from "vue-router";
+import { ref } from "vue";
+import { useRoute } from "vue-router";
 import { useElementSize } from "@vueuse/core";
 
 import SongItem from "../shared/SongItem.vue";
@@ -48,7 +47,6 @@ import { Routes } from "@/composables/enums";
 import { Track } from "@/interfaces";
 import useAlbumStore from "@/stores/pages/album";
 import useQStore from "@/stores/queue";
-import { focusElem } from "@/utils";
 import { computed } from "@vue/reactivity";
 
 const queue = useQStore();
@@ -66,7 +64,6 @@ const props = defineProps<{
 
 const route = useRoute();
 const routename = route.name as string;
-const highlightid = ref(route.query.highlight as string | null);
 
 const tracklistElem = ref<HTMLElement | null>(null);
 const { width, height } = useElementSize(tracklistElem);
@@ -79,38 +76,6 @@ const brk = {
 const isSmall = computed(() => width.value < brk.sm);
 const isMedium = computed(() => width.value > brk.sm && width.value < brk.md);
 
-function highlightTrack(t_hash: string) {
-  focusElem(`track-${t_hash}`, 500, "center");
-}
-
-function resetHighlight() {
-  setTimeout(() => {
-    highlightid.value = null;
-  }, 1000);
-}
-
-onBeforeRouteUpdate(async (to, from) => {
-  const h_hash = to.query.highlight as string;
-  highlightid.value = h_hash as string;
-
-  if (h_hash) {
-    highlightTrack(h_hash);
-  }
-});
-
-onUpdated(() => {
-  if (highlightid.value) {
-    highlightTrack(highlightid.value);
-    resetHighlight();
-  }
-});
-
-onMounted(() => {
-  if (highlightid.value) {
-    highlightTrack(highlightid.value);
-    resetHighlight();
-  }
-});
 /**
  * Plays a clicked track and updates the queue
  *

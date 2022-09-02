@@ -54,8 +54,8 @@ const props = defineProps<{
     top: 0;
     background-image: linear-gradient(
       to top,
-      rgba(22, 22, 22, 0.507),
-      transparent 50%
+      rgba(0, 0, 0, 0.753),
+      transparent 60%
     );
     height: 100%;
     width: 100%;

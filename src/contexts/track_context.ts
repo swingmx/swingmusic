@@ -5,7 +5,8 @@ import { Option } from "../interfaces";
 import Router from "../router";
 
 import {
-  addTrackToPlaylist, getAllPlaylists
+  addTrackToPlaylist,
+  getAllPlaylists,
 } from "../composables/fetch/playlists";
 
 import useModalStore from "../stores/modal";
@@ -92,7 +93,6 @@ export default async (
       Router.push({
         name: "FolderView",
         params: { path: track.folder },
-        query: { highlight: track.hash },
       });
     },
     icon: "folder",
