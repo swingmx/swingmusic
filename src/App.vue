@@ -11,7 +11,7 @@
   >
     <LeftSidebar />
     <NavBar />
-    <div id="acontent" class="rounded">
+    <div id="acontent">
       <router-view />
     </div>
     <NowPlayingRight />

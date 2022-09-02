@@ -1,6 +1,6 @@
 <template>
   <div
-    class="r-sidebar rounded"
+    class="r-sidebar rounded border"
     :style="{
       marginBottom: !settings.use_alt_np ? '-1rem' : '',
     }"
@@ -35,7 +35,6 @@ const settings = useSettingsStore();
 <style lang="scss">
 .r-sidebar {
   width: 100%;
-  background-color: $black;
 
   .grid {
     display: flex;

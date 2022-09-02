@@ -1,6 +1,6 @@
 <template>
   <div
-    class="table rounded"
+    class="table rounded border"
     v-if="tracks.length"
     ref="tracklistElem"
     :class="{
@@ -189,7 +189,6 @@ function getTrackList() {
 .table {
   height: 100%;
   overflow-y: hidden;
-  background-color: $black;
   padding: $small 0;
 
   .header {

@@ -2,7 +2,7 @@
   <div id="logo-container"
   >
     <router-link :to="{ name: 'Home' }">
-      <div id="logo" class="rounded"></div
+      <div id="logo"></div
     ></router-link>
   </div>
 </template>
@@ -19,5 +19,6 @@
   background-image: url(./../assets/images/logo.webp);
   background-size: contain;
   @include ximage;
+  border-radius: $medium;
 }
 </style>

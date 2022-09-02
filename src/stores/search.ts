@@ -28,10 +28,13 @@ function scrollOnLoad() {
 }
 
 export default defineStore("search", () => {
+  // @ts-ignore
   const query = useDebouncedRef(null, 600);
   const { startLoading, stopLoading } = useLoaderStore();
 
   const currentTab = ref("tracks");
+  const RESULT_COUNT = 6;
+
   const loadCounter = reactive({
     tracks: 0,
     albums: 0,
@@ -98,7 +101,7 @@ export default defineStore("search", () => {
   }
 
   function loadTracks() {
-    loadCounter.tracks += 12;
+    loadCounter.tracks += RESULT_COUNT;
 
     startLoading();
     loadMoreTracks(loadCounter.tracks)
@@ -111,7 +114,7 @@ export default defineStore("search", () => {
   }
 
   function loadAlbums() {
-    loadCounter.albums += 12;
+    loadCounter.albums += RESULT_COUNT;
 
     startLoading();
     loadMoreAlbums(loadCounter.albums)
@@ -128,7 +131,7 @@ export default defineStore("search", () => {
   }
 
   function loadArtists() {
-    loadCounter.artists += 12;
+    loadCounter.artists += RESULT_COUNT;
 
     startLoading();
     loadMoreArtists(loadCounter.artists)
@@ -143,7 +146,9 @@ export default defineStore("search", () => {
   watch(
     () => query.value,
     (newQuery) => {
+      // reset all counters
       for (const key in loadCounter) {
+        // @ts-ignore
         loadCounter[key] = 0;
       }
 

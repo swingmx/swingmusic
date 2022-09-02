@@ -1,6 +1,6 @@
 <template>
   <div
-    class="p-card new-playlist-card rounded bg-primary"
+    class="p-card new-playlist-card rounded"
     @click="Modal.showNewPlaylistModal()"
   >
     <PlusSvg />

@@ -1,5 +1,5 @@
 <template>
-  <div class="l-sidebar rounded">
+  <div class="l-sidebar rounded border">
     <div class="withlogo">
       <Logo />
       <Navigation />

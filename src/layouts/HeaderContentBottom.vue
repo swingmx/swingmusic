@@ -1,5 +1,5 @@
 <template>
-  <div class="ap-container rounded">
+  <div class="ap-container">
     <div id="ap-page">
       <header class="ap-page-header" ref="apheader">
         <slot name="header"></slot>

@@ -2,9 +2,9 @@
   <router-link
     :to="{ name: 'PlaylistView', params: { pid: props.playlist.playlistid } }"
     :playlist="props.playlist"
-    class="p-card rounded bg-primary"
+    class="p-card rounded"
   >
-    <img :src="imguri + props.playlist.thumb" class="rounded" />
+    <img :src="imguri + props.playlist.thumb"/>
     <div class="bottom">
       <div class="name ellip">{{ props.playlist.name }}</div>
       <div class="count">
@@ -32,14 +32,16 @@ const props = defineProps<{
 <style lang="scss">
 .p-card {
   width: 100%;
-  padding: 1rem;
+  padding: $medium;
   transition: all 0.25s ease;
   position: relative;
+  background-color: $playlist-card-bg;
 
   img {
     width: 100%;
     aspect-ratio: 1;
     object-fit: cover;
+    border-radius: $medium;
   }
 
   &:hover {
