@@ -23,7 +23,7 @@
       :key="option.label"
       :class="[{ critical: option.critical }, option.type]"
       :option="option"
-      @click="option.action()"
+      @click="option.action && option.action()"
     />
   </div>
 </template>

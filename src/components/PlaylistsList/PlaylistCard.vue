@@ -6,19 +6,11 @@
   >
     <img :src="imguri + props.playlist.thumb" />
     <div class="overlay pad-lg">
-      <div class="p-name">{{ playlist.name }}</div>
-      <div class="p-count">{{ playlist.count }} Tracks</div>
-    </div>
-    <!-- <div class="bottom">
-      <div class="name ellip">{{ props.playlist.name }}</div>
-      <div class="count">
-        <span v-if="props.playlist.count == 0">No Tracks</span>
-        <span v-else-if="props.playlist.count == 1"
-          >{{ props.playlist.count }} Track</span
-        >
-        <span v-else>{{ props.playlist.count }} Tracks</span>
+      <div class="p-name ellip">{{ playlist.name }}</div>
+      <div class="p-count">
+        {{ playlist.count + ` ${playlist.count == 1 ? "Track" : "Tracks"}` }}
       </div>
-    </div> -->
+    </div>
   </router-link>
 </template>
 

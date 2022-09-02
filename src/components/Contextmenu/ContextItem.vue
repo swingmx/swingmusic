@@ -9,7 +9,7 @@
         v-for="child in option.children"
         :key="child.label"
         :class="[{ critical: child.critical }, child.type]"
-        @click="child.action()"
+        @click="child.action && child.action()"
       >
         <div class="label ellip">
           {{ child.label }}

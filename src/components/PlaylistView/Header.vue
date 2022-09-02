@@ -4,7 +4,7 @@
     ref="playlistheader"
     :style="[
       {
-        backgroundImage: info.image ? `url(${imguri + info.image})` : '',
+        backgroundImage: info.image ? `url(${imguri + info.image})` : undefined,
       },
     ]"
     :class="{ border: !info.image }"
@@ -16,16 +16,15 @@
           <PlayBtnRect :source="playSources.playlist" :store="usePStore" />
         </div>
         <div class="duration">
-          <span v-if="info.count == 0">No Tracks</span>
-          <span v-else-if="info.count == 1">{{ info.count }} Track</span>
-          <span v-else>{{ info.count }} Tracks</span> •
+          {{ info.count + ` ${info.count == 1 ? "Track" : "Tracks"}` }}
+          •
           {{ formatSeconds(info.duration, true) }}
         </div>
         <div class="title ellip">{{ info.name }}</div>
         <div class="type">Playlist</div>
       </div>
     </div>
-    <div class="last-updated">
+    <div class="last-updated" :class="{ lightbg: !info.image }">
       <span class="status"
         >Last updated {{ info.lastUpdated }} &#160;|&#160;&#160;</span
       >
@@ -77,7 +76,7 @@ function showDropdown(e: any) {
   grid-template-columns: 1fr;
   height: 100%;
   position: relative;
-
+  background-color: $gray5;
 
   .gradient {
     position: absolute;
@@ -118,6 +117,10 @@ function showDropdown(e: any) {
     .edit {
       cursor: pointer;
     }
+  }
+
+  .last-updated.lightbg {
+    background-color: $gray2;
   }
 
   .carddd {
