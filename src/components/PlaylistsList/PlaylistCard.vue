@@ -2,10 +2,14 @@
   <router-link
     :to="{ name: 'PlaylistView', params: { pid: props.playlist.playlistid } }"
     :playlist="props.playlist"
-    class="p-card rounded"
+    class="p-card rounded noscroll"
   >
-    <img :src="imguri + props.playlist.thumb"/>
-    <div class="bottom">
+    <img :src="imguri + props.playlist.thumb" />
+    <div class="overlay pad-lg">
+      <div class="p-name">{{ playlist.name }}</div>
+      <div class="p-count">{{ playlist.count }} Tracks</div>
+    </div>
+    <!-- <div class="bottom">
       <div class="name ellip">{{ props.playlist.name }}</div>
       <div class="count">
         <span v-if="props.playlist.count == 0">No Tracks</span>
@@ -14,11 +18,12 @@
         >
         <span v-else>{{ props.playlist.count }} Tracks</span>
       </div>
-    </div>
+    </div> -->
   </router-link>
 </template>
 
 <script setup lang="ts">
+import play from "@/composables/usePlayFrom";
 import { paths } from "../../config";
 import { Playlist } from "../../interfaces";
 
@@ -31,17 +36,37 @@ const props = defineProps<{
 
 <style lang="scss">
 .p-card {
-  width: 100%;
-  padding: $medium;
   transition: all 0.25s ease;
   position: relative;
   background-color: $playlist-card-bg;
+  height: 10rem;
 
   img {
     width: 100%;
-    aspect-ratio: 1;
+    height: 100%;
+    aspect-ratio: 1/1.2;
     object-fit: cover;
     border-radius: $medium;
+  }
+
+  .overlay {
+    position: absolute;
+    top: 0;
+    background-image: linear-gradient(
+      to top,
+      rgba(22, 22, 22, 0.507),
+      transparent 50%
+    );
+    height: 100%;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+
+    .p-count {
+      opacity: 0.75;
+      font-size: 0.75rem;
+    }
   }
 
   &:hover {
@@ -57,7 +82,7 @@ const props = defineProps<{
 
     .count {
       font-size: $medium;
-      opacity: .5;
+      opacity: 0.5;
     }
   }
 }
