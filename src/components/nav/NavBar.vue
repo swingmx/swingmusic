@@ -9,19 +9,16 @@
         }"
       >
         <APTitle v-if="showAPTitle" />
-        <SimpleTitle
-          v-if="$route.name == Routes.playlists"
-          :text="'Playlists'"
-        />
         <SimpleTitle v-if="$route.name == Routes.settings" :text="'Settings'" />
         <Folder v-if="$route.name == Routes.folder" :subPaths="subPaths" />
         <SearchTitle v-if="$route.name == Routes.search" />
+        <PlaylistsTitle v-if="$route.name == Routes.playlists" />
       </div>
     </div>
-
+<!-- 
     <div class="center rounded">
       <Loader />
-    </div>
+    </div> -->
   </div>
 </template>
 
@@ -40,6 +37,7 @@ import useNavStore from "@/stores/nav";
 
 import { computed } from "@vue/reactivity";
 import SearchTitle from "./Titles/SearchTitle.vue";
+import PlaylistsTitle from "./Titles/PlaylistsTitle.vue";
 
 const route = useRoute();
 const nav = useNavStore();
@@ -86,7 +84,7 @@ watch(
   display: grid;
   grid-template-columns: 1fr min-content;
   width: 100%;
-  gap: $small;
+  // gap: $small;
 
   .left {
     display: grid;
