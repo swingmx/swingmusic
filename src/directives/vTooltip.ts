@@ -14,7 +14,7 @@ export default {
       setTimeout(() => {
         if (isHovered) {
           tooltip.innerText = binding.value;
-          tooltip.style.display = "unset";
+          tooltip.style.visibility = "visible";
 
           createPopper(el, tooltip, {
             placement: "top",
@@ -25,6 +25,10 @@ export default {
                   offset: [0, 10],
                 },
               },
+              {
+                name: "hide",
+                enabled: true,
+              },
             ],
           });
         }
@@ -33,14 +37,15 @@ export default {
 
     el.addEventListener("mouseout", () => {
       isHovered = false;
-      tooltip.style.display = "none";
+      tooltip.style.visibility = "hidden";
     });
   },
   beforeUnmount(el: HTMLElement) {
     const tooltip = document.getElementById("tooltip") as HTMLElement;
-    tooltip.style.display = "none";
+    tooltip.style.visibility = "hidden";
 
     el.removeEventListener("mouseover", () => {});
     el.removeEventListener("mouseout", () => {});
+    
   },
 } as Directive;

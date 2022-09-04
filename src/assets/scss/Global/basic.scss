@@ -117,7 +117,12 @@ button {
   border-radius: $smaller;
   padding: $smaller;
   font-size: 0.85rem;
-  display: none;
+  visibility: hidden;
   position: absolute;
   z-index: 300;
+}
+
+#tooltip[data-popper-reference-hidden] {
+  visibility: hidden !important;
+  pointer-events: none;
 }
