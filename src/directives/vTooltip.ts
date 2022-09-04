@@ -1,18 +1,19 @@
 import { Directive } from "vue";
 import { createPopper } from "@popperjs/core";
 
+let tooltip: HTMLElement;
+
 export default {
   mounted(el, binding) {
     let isHovered = false;
     const tooltip = document.getElementById("tooltip") as HTMLElement;
 
-    el.addEventListener("mouseenter", () => {
+    el.addEventListener("mouseover", () => {
       isHovered = true;
 
       setTimeout(() => {
-        tooltip.innerText = binding.value;
-
         if (isHovered) {
+          tooltip.innerText = binding.value;
           tooltip.style.display = "unset";
 
           createPopper(el, tooltip, {
@@ -27,16 +28,19 @@ export default {
             ],
           });
         }
-      }, 1000);
+      }, 1500);
     });
 
-    el.addEventListener("mouseleave", () => {
+    el.addEventListener("mouseout", () => {
       isHovered = false;
       tooltip.style.display = "none";
     });
   },
   beforeUnmount(el: HTMLElement) {
-    el.removeEventListener("mouseenter", () => {});
-    el.removeEventListener("mouseleave", () => {});
+    const tooltip = document.getElementById("tooltip") as HTMLElement;
+    tooltip.style.display = "none";
+
+    el.removeEventListener("mouseover", () => {});
+    el.removeEventListener("mouseout", () => {});
   },
 } as Directive;

@@ -1,6 +1,7 @@
 <template>
   <div class="nav-search-input">
     <SearchInput />
+    <div id="nav-tab-headers"></div>
   </div>
 </template>
 
@@ -10,6 +11,12 @@ import SearchInput from "@/components/RightSideBar/SearchInput.vue";
 
 <style lang="scss">
 .nav-search-input {
+  display: flex;
+  grid-template-columns: repeat(3, 1fr);
+  align-items: center;
+  justify-content: space-between;
+  height: 2rem;
+
   #gsearch-input {
     display: unset;
 
@@ -21,6 +28,10 @@ import SearchInput from "@/components/RightSideBar/SearchInput.vue";
     .buttons {
       display: none;
     }
+  }
+
+  .tabheaders {
+    margin: 0;
   }
 }
 </style>

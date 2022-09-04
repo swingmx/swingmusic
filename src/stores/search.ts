@@ -1,3 +1,4 @@
+import { Routes } from "./../composables/enums";
 import { ref, reactive } from "@vue/reactivity";
 import { defineStore } from "pinia";
 import { AlbumInfo, Artist, Playlist, Track } from "../interfaces";
@@ -13,6 +14,7 @@ import { watch } from "vue";
 import useDebouncedRef from "../utils/useDebouncedRef";
 import useTabStore from "./tabs";
 import useLoaderStore from "./loader";
+import { useRoute } from "vue-router";
 /**
  *
  * Scrolls on clicking the loadmore button
@@ -31,6 +33,7 @@ export default defineStore("search", () => {
   // @ts-ignore
   const query = useDebouncedRef(null, 600);
   const { startLoading, stopLoading } = useLoaderStore();
+  const route = useRoute();
 
   const currentTab = ref("tracks");
   const RESULT_COUNT = 6;
@@ -154,7 +157,7 @@ export default defineStore("search", () => {
 
       const tabs = useTabStore();
 
-      if (tabs.current !== "search") {
+      if (route.name !== Routes.search && tabs.current !== "search") {
         tabs.switchToSearch();
       }
 
@@ -202,7 +205,7 @@ export default defineStore("search", () => {
     }
   );
 
-  function changeTab(tab: string) {
+  function switchTab(tab: string) {
     currentTab.value = tab;
   }
 
@@ -217,6 +220,6 @@ export default defineStore("search", () => {
     loadTracks,
     loadAlbums,
     loadArtists,
-    changeTab,
+    switchTab,
   };
 });

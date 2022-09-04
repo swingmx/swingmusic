@@ -13,7 +13,6 @@ import Main from "@/components/RightSideBar/Search/Main.vue";
 <style lang="scss">
 .search-view {
   height: 100%;
-  // background-color: $black;
   padding-top: 0;
   margin-right: -1rem;
 
@@ -22,8 +21,22 @@ import Main from "@/components/RightSideBar/Search/Main.vue";
     overflow: auto;
   }
 
+  .artists-results {
+    margin-right: $small;
+    margin-left: -$small;
+  }
+
   .search-results-grid {
-    grid-template-columns: repeat(auto-fill, minmax(10rem, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(11rem, 1fr));
+
+    .artist-card {
+      padding: 0 1rem;
+    }
+  }
+
+  #tracks-results {
+    margin-right: 1rem;
+    margin-left: -2.25rem;
   }
 }
 </style>

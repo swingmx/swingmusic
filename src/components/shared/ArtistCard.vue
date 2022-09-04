@@ -1,5 +1,5 @@
 <template>
-  <div class="xartist" :class="{ _is_on_sidebar: alt }">
+  <div class="artist-card" :class="{ _is_on_sidebar: alt }">
     <img
       class="artist-image shadow-sm"
       :src="imguri + artist.image"
@@ -24,7 +24,7 @@ defineProps<{
 </script>
 
 <style lang="scss">
-.xartist {
+.artist-card {
   flex: 0 0 auto;
   overflow: hidden;
   position: relative;
@@ -41,11 +41,5 @@ defineProps<{
     transition: all 0.5s ease-in-out;
     object-fit: cover;
   }
-
-  // &:hover {
-  //   .artist-image {
-  //     border-radius: 10%;
-  //   }
-  // }
 }
 </style>

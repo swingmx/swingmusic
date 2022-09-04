@@ -1,17 +1,19 @@
 <template>
   <div id="right-tabs" class="rounded">
     <div class="tab-buttons-wrapper">
-      <div id="tabheaders" class="rounded-sm noscroll">
-        <div
-          class="tab"
-          v-for="slot in $slots.default()"
-          :key="slot.key"
-          @click="s.changeTab(slot.props.name)"
-          :class="{ activetab: slot.props.name === s.currentTab }"
-        >
-          {{ slot.props.name }}
+      <Teleport :disabled="!isOnSearchPage" to="#nav-tab-headers">
+        <div class="tabheaders rounded-sm noscroll">
+          <div
+            class="tab"
+            v-for="tab in tabs"
+            :key="tab"
+            @click="switchTab(tab)"
+            :class="{ activetab: tab === currentTab }"
+          >
+            {{ tab }}
+          </div>
         </div>
-      </div>
+      </Teleport>
     </div>
 
     <div id="tab-content">
@@ -21,9 +23,19 @@
 </template>
 
 <script setup lang="ts">
-import useSearchStore from "@/stores/search";
+defineProps<{
+  isOnSearchPage?: boolean;
+  tabs: string[];
+  currentTab: string;
+}>();
 
-const s = useSearchStore();
+const emit = defineEmits<{
+  (e: "switchTab", tab: string): void;
+}>();
+
+function switchTab(tab: string) {
+  emit("switchTab", tab);
+}
 </script>
 
 <style lang="scss">
@@ -38,44 +50,9 @@ const s = useSearchStore();
     align-items: center;
   }
 
-  #tabheaders {
-    display: grid;
-    grid-template-columns: repeat(5, max-content);
-    justify-content: space-around;
-    margin: 1rem;
-    width: max-content;
-    background: linear-gradient(37deg, $gray1, $gray2, $gray1);
-    height: 2rem;
-
-    & > * {
-      border-left: solid 1px $gray3;
-    }
-
-    .tab {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      user-select: none;
-
-      cursor: pointer;
-      transition: all 0.3s ease;
-      padding: 0 $small;
-
-      &:first-child {
-        border-left: solid 1px transparent;
-      }
-    }
-
-    .activetab {
-      background-color: $darkblue;
-      transition: all 0.3s ease;
-      border-left: solid 1px transparent;
-    }
-  }
-
   #tab-content {
     height: 100%;
-    overflow: auto;
+    overflow: scroll;
     overflow-x: hidden;
     padding-bottom: 1rem;
   }

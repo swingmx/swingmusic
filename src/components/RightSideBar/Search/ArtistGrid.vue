@@ -38,9 +38,11 @@ import LoadMore from "./LoadMore.vue";
 
 const search = useSearchStore();
 
-defineProps<{
+const props = defineProps<{
   album_grid?: boolean;
 }>();
+
+console.log(search.albums);
 </script>
 
 <style lang="scss">

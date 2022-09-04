@@ -1,17 +1,15 @@
 <template>
-  <div id="tracks-results">
+  <div id="tracks-results" class="noscroll">
     <div v-if="search.tracks.value.length">
-      <div>
-        <TrackComponent
-          v-for="(track, index) in search.tracks.value"
-          :key="track.trackid"
-          :isCurrent="queue.currentid == track.trackid"
-          :isHighlighted="false"
-          :isPlaying="queue.playing"
-          :track="track"
-          @PlayThis="updateQueue(index)"
-        />
-      </div>
+      <TrackComponent
+        v-for="(track, index) in search.tracks.value"
+        :key="track.trackid"
+        :isCurrent="queue.currentid == track.trackid"
+        :isHighlighted="false"
+        :isPlaying="queue.playing"
+        :track="track"
+        @PlayThis="updateQueue(index)"
+      />
     </div>
     <div v-else class="t-center"><h5>🤷</h5></div>
     <LoadMore v-if="search.tracks.more" :loader="search.loadTracks" />
@@ -52,10 +50,3 @@ if (props.isOnSearchPage) {
   use_song_item = true;
 }
 </script>
-
-<style lang="scss">
-.right-search #tracks-results {
-  height: 100% !important;
-  overflow: hidden;
-}
-</style>

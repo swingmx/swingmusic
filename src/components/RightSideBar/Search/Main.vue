@@ -1,28 +1,36 @@
 <template>
   <div class="right-search">
-    <TabsWrapper>
-      <Tab name="tracks">
-        <TracksGrid :isOnSearchPage="isOnSearchPage" />
-      </Tab>
-      <Tab name="albums">
-        <ArtistGrid :album_grid="true" />
-      </Tab>
-      <Tab name="artists">
-        <ArtistGrid />
-      </Tab>
+    <TabsWrapper
+      :isOnSearchPage="isOnSearchPage"
+      :tabs="tabs"
+      @switchTab="switchTab"
+      :currentTab="currentTab"
+    >
+      <Tab :name="currentTab" :isOnSearchPage="isOnSearchPage" />
     </TabsWrapper>
   </div>
 </template>
 
 <script setup lang="ts">
-import ArtistGrid from "./ArtistGrid.vue";
+import { ref } from "vue";
+
 import Tab from "./Tab.vue";
 import TabsWrapper from "./TabsWrapper.vue";
-import TracksGrid from "./TracksGrid.vue";
+import useSearchStore from "@/stores/search";
 
-const props = defineProps<{
+const search = useSearchStore();
+defineProps<{
   isOnSearchPage?: boolean;
 }>();
+
+const tabs = ["tracks", "albums", "artists"];
+
+const currentTab = ref("tracks");
+
+function switchTab(tab: string) {
+  currentTab.value = tab;
+  search.switchTab(tab);
+}
 </script>
 
 <style lang="scss">
