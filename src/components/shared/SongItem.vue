@@ -20,7 +20,7 @@
           :class="{ last_played: !isPlaying }"
         ></div>
       </div>
-      <div @mouseover="showToolTip" @mouseleave="hideToolTip">
+      <div v-tooltip="track.title">
         <div class="title ellip" @click="emitUpdate(track)" ref="artisttitle">
           {{ track.title }}
         </div>
@@ -30,9 +30,6 @@
             :albumartist="track.albumartist"
           />
         </div>
-        <div class="tooltip" ref="tooltip">
-          {{ track.title }}
-        </div>
       </div>
     </div>
     <div class="song-artists">
@@ -40,6 +37,7 @@
     </div>
     <router-link
       class="song-album ellip"
+      v-tooltip="track.album"
       :to="{
         name: 'AlbumView',
         params: {
@@ -64,7 +62,6 @@
 
 <script setup lang="ts">
 import { ref } from "vue";
-import { createPopper } from "@popperjs/core";
 
 import OptionSvg from "@/assets/icons/more.svg";
 
@@ -99,38 +96,6 @@ function emitUpdate(track: Track) {
 function showMenu(e: Event) {
   showContext(e, props.track, options_button_clicked);
 }
-
-let isHovering = false;
-
-function showToolTip() {
-  isHovering = true;
-
-  setTimeout(() => {
-    if (isHovering) {
-      const ttip = tooltip.value as HTMLElement;
-      const atitle = artisttitle.value as HTMLElement;
-
-      ttip.style.display = "unset";
-
-      createPopper(atitle, ttip, {
-        placement: "top",
-        modifiers: [
-          {
-            name: "offset",
-            options: {
-              offset: [10, 10],
-            },
-          },
-        ],
-      });
-    }
-  }, 500);
-}
-
-function hideToolTip() {
-  (tooltip.value as HTMLElement).style.display = "none";
-  isHovering = false;
-}
 </script>
 
 <style lang="scss">
@@ -142,17 +107,6 @@ function hideToolTip() {
   height: 3.75rem;
   gap: 1rem;
   user-select: none;
-
-  .tooltip {
-    background-color: $darkestblue;
-    border-radius: $smaller;
-    padding: $smaller;
-    font-size: 0.85rem;
-    display: none;
-    position: absolute;
-    margin: 1rem;
-    z-index: 300;
-  }
 
   &:hover {
     background-color: $gray4;
@@ -172,6 +126,9 @@ function hideToolTip() {
   }
 
   .song-artists {
+    width: fit-content;
+    max-width: 100%;
+
     .artist {
       cursor: pointer;
     }
@@ -181,7 +138,7 @@ function hideToolTip() {
     opacity: 0.5;
     font-size: 0.8rem;
     width: 100%;
-    margin-left: $small;
+    // margin-left: $small;
   }
 
   .song-duration {

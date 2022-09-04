@@ -111,3 +111,13 @@ button {
 .card-dark {
   background-color: #fff;
 }
+
+#tooltip {
+  background-color: $darkestblue;
+  border-radius: $smaller;
+  padding: $smaller;
+  font-size: 0.85rem;
+  display: none;
+  position: absolute;
+  z-index: 300;
+}

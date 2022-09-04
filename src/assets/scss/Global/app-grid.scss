@@ -87,7 +87,10 @@
   grid-area: l-sidebar;
   display: grid;
   grid-template-rows: 1fr max-content;
-  gap: 1rem;
+  background-color: $gray;
+  height: 100vh;
+  margin-top: -$small;
+  margin-left: -$small;
 }
 
 .b-bar {

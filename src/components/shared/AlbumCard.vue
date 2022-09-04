@@ -8,7 +8,7 @@
   >
     <img class="rounded" :src="imguri + album.image" alt="" />
     <div>
-      <h4 class="title ellip">{{ album.title }}</h4>
+      <h4 class="title ellip" v-tooltip="album.title">{{ album.title }}</h4>
       <div class="artist ellip">{{ album.artist }}</div>
     </div>
   </router-link>
@@ -30,7 +30,7 @@ defineProps<{
   gap: $small;
   padding: $small;
   transition: all 0.5s ease;
-  border-radius: .7rem;
+  border-radius: 0.7rem;
 
   img {
     width: 100%;
@@ -44,12 +44,13 @@ defineProps<{
   .title {
     margin-bottom: $smaller;
     font-size: 0.9rem;
+    width: fit-content;
   }
 
   .artist {
     font-size: 0.8rem;
     text-align: left;
-    opacity: .75;
+    opacity: 0.75;
   }
 }
 </style>

@@ -19,7 +19,7 @@
       ></div>
     </div>
     <div class="tags">
-      <div class="title ellip">
+      <div class="title ellip" v-tooltip="track.title">
         {{ track.title }}
       </div>
       <hr />
@@ -94,6 +94,12 @@ const playThis = (track: Track) => {
   align-items: center;
   padding: $small 1rem;
 
+  .tags {
+    .title {
+      width: fit-content;
+    }
+  }
+
   .remove-track {
     opacity: 0;
     transition: all 0.25s ease;
@@ -139,7 +145,7 @@ const playThis = (track: Track) => {
 
   .artist {
     font-size: small;
-    opacity: .67;
+    opacity: 0.67;
   }
 }
 </style>

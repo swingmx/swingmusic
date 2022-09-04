@@ -2,6 +2,7 @@
   <ContextMenu />
   <Modal />
   <Notification />
+  <div id="tooltip"></div>
   <div
     id="app-grid"
     :class="{

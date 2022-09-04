@@ -42,10 +42,10 @@ defineProps<{
     object-fit: cover;
   }
 
-  &:hover {
-    .artist-image {
-      border-radius: 20%;
-    }
-  }
+  // &:hover {
+  //   .artist-image {
+  //     border-radius: 10%;
+  //   }
+  // }
 }
 </style>
