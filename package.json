@@ -9,6 +9,7 @@
     "lint": "eslint --ext .js,.vue --ignore-path .gitignore --fix src"
   },
   "dependencies": {
+    "@popperjs/core": "^2.11.6",
     "@vueuse/core": "^8.5.0",
     "axios": "^0.26.1",
     "pinia": "^2.0.17",

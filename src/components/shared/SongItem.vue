@@ -20,8 +20,8 @@
           :class="{ last_played: !isPlaying }"
         ></div>
       </div>
-      <div>
-        <div class="title ellip" @click="emitUpdate(track)">
+      <div @mouseover="showToolTip" @mouseleave="hideToolTip">
+        <div class="title ellip" @click="emitUpdate(track)" ref="artisttitle">
           {{ track.title }}
         </div>
         <div class="isSmallArtists" style="display: none">
@@ -29,6 +29,9 @@
             :artists="track.artists"
             :albumartist="track.albumartist"
           />
+        </div>
+        <div class="tooltip" ref="tooltip">
+          {{ track.title }}
         </div>
       </div>
     </div>
@@ -61,6 +64,7 @@
 
 <script setup lang="ts">
 import { ref } from "vue";
+import { createPopper } from "@popperjs/core";
 
 import OptionSvg from "@/assets/icons/more.svg";
 
@@ -73,6 +77,9 @@ import ArtistName from "./ArtistName.vue";
 const context_on = ref(false);
 const imguri = paths.images.thumb;
 const options_button_clicked = ref(false);
+
+const artisttitle = ref<HTMLElement | null>(null);
+const tooltip = ref<HTMLElement | null>(null);
 
 const props = defineProps<{
   track: Track;
@@ -92,6 +99,38 @@ function emitUpdate(track: Track) {
 function showMenu(e: Event) {
   showContext(e, props.track, options_button_clicked);
 }
+
+let isHovering = false;
+
+function showToolTip() {
+  isHovering = true;
+
+  setTimeout(() => {
+    if (isHovering) {
+      const ttip = tooltip.value as HTMLElement;
+      const atitle = artisttitle.value as HTMLElement;
+
+      ttip.style.display = "unset";
+
+      createPopper(atitle, ttip, {
+        placement: "top",
+        modifiers: [
+          {
+            name: "offset",
+            options: {
+              offset: [10, 10],
+            },
+          },
+        ],
+      });
+    }
+  }, 500);
+}
+
+function hideToolTip() {
+  (tooltip.value as HTMLElement).style.display = "none";
+  isHovering = false;
+}
 </script>
 
 <style lang="scss">
@@ -103,6 +142,17 @@ function showMenu(e: Event) {
   height: 3.75rem;
   gap: 1rem;
   user-select: none;
+
+  .tooltip {
+    background-color: $darkestblue;
+    border-radius: $smaller;
+    padding: $smaller;
+    font-size: 0.85rem;
+    display: none;
+    position: absolute;
+    margin: 1rem;
+    z-index: 300;
+  }
 
   &:hover {
     background-color: $gray4;

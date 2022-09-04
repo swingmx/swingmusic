@@ -14,7 +14,7 @@
 <script setup lang="ts">
 import PlaylistCard from "@/components/PlaylistsList/PlaylistCard.vue";
 
-import NewPlaylistCard from "@/components/PlaylistsList/NewPlaylistCard.vue";
+// import NewPlaylistCard from "@/components/PlaylistsList/NewPlaylistCard.vue";
 import usePStore from "@/stores/pages/playlists";
 const pStore = usePStore();
 </script>
