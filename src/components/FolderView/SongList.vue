@@ -1,6 +1,6 @@
 <template>
   <div
-    class="table rounded"
+    class="table"
     v-if="tracks.length"
     ref="tracklistElem"
     :class="{

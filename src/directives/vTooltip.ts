@@ -3,10 +3,21 @@ import { createPopper } from "@popperjs/core";
 
 let tooltip: HTMLElement;
 
+function getTooltip() {
+  return document.getElementById("tooltip") as HTMLElement;
+}
+
+function hideTooltip() {
+  tooltip.style.visibility = "hidden";
+}
+
 export default {
-  mounted(el, binding) {
+  updated(el, binding) {
     let isHovered = false;
-    const tooltip = document.getElementById("tooltip") as HTMLElement;
+
+    if (tooltip === undefined) {
+      tooltip = getTooltip();
+    }
 
     el.addEventListener("mouseover", () => {
       isHovered = true;
@@ -37,15 +48,13 @@ export default {
 
     el.addEventListener("mouseout", () => {
       isHovered = false;
-      tooltip.style.visibility = "hidden";
+      hideTooltip();
     });
   },
   beforeUnmount(el: HTMLElement) {
-    const tooltip = document.getElementById("tooltip") as HTMLElement;
-    tooltip.style.visibility = "hidden";
+    hideTooltip();
 
     el.removeEventListener("mouseover", () => {});
     el.removeEventListener("mouseout", () => {});
-    
   },
 } as Directive;
