@@ -1,4 +1,4 @@
-import { Directive } from "vue";
+import { Directive, Ref, ref } from "vue";
 import { createPopper } from "@popperjs/core";
 
 let tooltip: HTMLElement;
@@ -11,45 +11,54 @@ function hideTooltip() {
   tooltip.style.visibility = "hidden";
 }
 
-export default {
-  updated(el, binding) {
-    let isHovered = false;
+function handleHover(el: HTMLElement, text: string, isHovered: Ref<boolean>) {
+  el.addEventListener("mouseover", () => {
+    isHovered.value = true;
+    tooltip.innerText = text;
 
+    setTimeout(() => {
+      if (isHovered.value) {
+        tooltip.style.visibility = "visible";
+
+        createPopper(el, tooltip, {
+          placement: "top",
+          modifiers: [
+            {
+              name: "offset",
+              options: {
+                offset: [0, 10],
+              },
+            },
+            {
+              name: "hide",
+              enabled: true,
+            },
+          ],
+        });
+      }
+    }, 2000);
+  });
+}
+let isHovered = ref(false);
+
+export default {
+  state: {},
+  mounted(el: HTMLElement, binding) {
     if (tooltip === undefined) {
       tooltip = getTooltip();
     }
 
-    el.addEventListener("mouseover", () => {
-      isHovered = true;
-
-      setTimeout(() => {
-        if (isHovered) {
-          tooltip.innerText = binding.value;
-          tooltip.style.visibility = "visible";
-
-          createPopper(el, tooltip, {
-            placement: "top",
-            modifiers: [
-              {
-                name: "offset",
-                options: {
-                  offset: [0, 10],
-                },
-              },
-              {
-                name: "hide",
-                enabled: true,
-              },
-            ],
-          });
-        }
-      }, 1500);
+    handleHover(el, binding.value, isHovered);
+    ["mouseout", "click"].forEach((event) => {
+      el.addEventListener(event, () => {
+        isHovered.value = false;
+        hideTooltip();
+      });
     });
-
-    el.addEventListener("mouseout", () => {
-      isHovered = false;
-      hideTooltip();
-    });
+  },
+  updated(el, binding) {
+    el.removeEventListener("mouseover", () => {});
+    handleHover(el, binding.value, isHovered);
   },
   beforeUnmount(el: HTMLElement) {
     hideTooltip();
