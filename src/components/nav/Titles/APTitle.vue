@@ -19,7 +19,7 @@ const things = computed(() => {
   const route = useRoute();
   let thing = {
     text: "",
-    store: null,
+    store: null as any,
     source: playSources.album,
   };
 
@@ -37,7 +37,6 @@ const things = computed(() => {
         text: usePStore().info.name,
         store: usePStore,
       };
-      break;
       break;
   }
 

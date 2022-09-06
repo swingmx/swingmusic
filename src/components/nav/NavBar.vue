@@ -13,9 +13,10 @@
         <Folder v-if="$route.name == Routes.folder" :subPaths="subPaths" />
         <SearchTitle v-if="$route.name == Routes.search" />
         <PlaylistsTitle v-if="$route.name == Routes.playlists" />
+        <QueueTitle v-if="$route.name == Routes.queue" />
       </div>
     </div>
-<!-- 
+    <!-- 
     <div class="center rounded">
       <Loader />
     </div> -->
@@ -23,21 +24,24 @@
 </template>
 
 <script setup lang="ts">
-import NavButtons from "./NavButtons.vue";
-import Loader from "../shared/Loader.vue";
-import { useRoute } from "vue-router";
 import { ref, watch } from "vue";
-import { Routes } from "@/composables/enums";
-import { createSubPaths } from "@/utils";
+import { useRoute } from "vue-router";
+import { computed } from "@vue/reactivity";
+
 import { subPath } from "@/interfaces";
+import useNavStore from "@/stores/nav";
+import { createSubPaths } from "@/utils";
+import { Routes } from "@/composables/enums";
+
+import NavButtons from "./NavButtons.vue";
+// import Loader from "../shared/Loader.vue";
+
 import Folder from "./Titles/Folder.vue";
 import SimpleTitle from "./Titles/SimpleTitle.vue";
 import APTitle from "./Titles/APTitle.vue";
-import useNavStore from "@/stores/nav";
-
-import { computed } from "@vue/reactivity";
 import SearchTitle from "./Titles/SearchTitle.vue";
 import PlaylistsTitle from "./Titles/PlaylistsTitle.vue";
+import QueueTitle from "./Titles/QueueTitle.vue";
 
 const route = useRoute();
 const nav = useNavStore();
@@ -53,7 +57,7 @@ const showAPTitle = computed(() => {
 
 watch(
   () => route.name,
-  (newRoute: string) => {
+  (newRoute) => {
     switch (newRoute) {
       case Routes.folder:
         let oldpath = "";
@@ -90,6 +94,7 @@ watch(
     display: grid;
     grid-template-columns: max-content 1fr;
     gap: 1rem;
+    height: 2.25rem;
 
     .info {
       margin: auto 0;

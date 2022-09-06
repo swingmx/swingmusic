@@ -1,6 +1,6 @@
 <template>
   <div
-    class="table"
+    class="table border rounded"
     v-if="tracks.length"
     ref="tracklistElem"
     :class="{
@@ -39,13 +39,13 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import { useElementSize } from "@vueuse/core";
+import { computed } from "@vue/reactivity";
 
 import SongItem from "../shared/SongItem.vue";
 
 import { Routes } from "@/composables/enums";
 import { Track } from "@/interfaces";
 import useQStore from "@/stores/queue";
-import { computed } from "@vue/reactivity";
 
 const queue = useQStore();
 

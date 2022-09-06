@@ -24,9 +24,7 @@ defineProps<{
 
 <style lang="scss">
 .play-btn {
-  height: 100%;
   aspect-ratio: 1;
-  display: grid;
-  place-items: center;
+  padding: 0;
 }
 </style>

@@ -10,7 +10,6 @@
         <span>Shuffle</span>
       </button>
     </div>
-    <div class="right"></div>
   </div>
 </template>
 
@@ -37,19 +36,10 @@ const queue = useQueueStore();
   }
 
   .action {
-    padding: $smaller;
-    padding-right: $small;
+    padding-left: $smaller;
 
     svg {
       transform: scale(0.8);
-    }
-  }
-
-  .btn-more {
-    padding-right: $smaller;
-
-    svg {
-      transform: scale(1.25);
     }
   }
 }

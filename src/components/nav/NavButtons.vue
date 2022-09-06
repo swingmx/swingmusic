@@ -20,18 +20,17 @@ import ArrowSvg from "../../assets/icons/right-arrow.svg";
   gap: 1rem;
   padding-right: 1.25rem;
   border-right: 1px solid $gray3;
-  width: 100%;
+  width: max-content;
+  height: 100%;
 
   & > * {
+    width: 2.25rem;
     background-color: $gray3;
-    padding: $small;
-    height: 100%;
     aspect-ratio: 1;
-    border-radius: $medium;
-
-    svg {
-      margin: auto;
-    }
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 0;
   }
 
   .back {

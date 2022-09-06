@@ -76,7 +76,6 @@ const imguri = paths.images.thumb;
 const options_button_clicked = ref(false);
 
 const artisttitle = ref<HTMLElement | null>(null);
-const tooltip = ref<HTMLElement | null>(null);
 
 const props = defineProps<{
   track: Track;
@@ -107,13 +106,14 @@ function showMenu(e: Event) {
   height: 3.75rem;
   gap: 1rem;
   user-select: none;
+  // background-color: $gray;
+
+  // &:nth-child(odd) {
+  //   background-color: rgba(26, 26, 26, 0.068);
+  // }
 
   &:hover {
     background-color: $gray4;
-
-    .options-icon {
-      opacity: 1 !important;
-    }
   }
 
   .song-album {
@@ -138,7 +138,6 @@ function showMenu(e: Event) {
     opacity: 0.5;
     font-size: 0.8rem;
     width: 100%;
-    // margin-left: $small;
   }
 
   .song-duration {
@@ -151,7 +150,6 @@ function showMenu(e: Event) {
   }
 
   .options-icon {
-    opacity: 0;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -160,7 +158,7 @@ function showMenu(e: Event) {
 
     svg {
       transition: all 0.2s ease-in;
-      transform: rotate(90deg);
+      // transform: rotate(90deg);
       stroke: $track-btn-svg;
 
       circle {

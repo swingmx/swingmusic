@@ -1,16 +1,32 @@
 <template>
   <div class="queue-view">
-    <Queue :isOnQueuePage="true" />
+    <SongList :tracks="queue.tracklist" @playFromPage="playFromQueuePage" />
   </div>
 </template>
 
 <script setup lang="ts">
-import Queue from "@/components/RightSideBar/Queue.vue";
+import useQStore from "@/stores/queue";
+import { focusElem } from "@/utils";
+import SongList from "@/components/FolderView/SongList.vue";
+import { onMounted } from "vue";
+
+const queue = useQStore();
+
+function playFromQueuePage(index: number) {
+  queue.play(index);
+}
+
+onMounted(() => {
+  setTimeout(() => {
+    focusElem("current");
+  }, 1000);
+});
 </script>
 
-<style lang="scss">
+<!-- <style lang="scss">
 .queue-view {
-  background-color: $black;
-  height: 100%;
+  .table {
+    margin-top: -1rem;
+  }
 }
-</style>
+</style> -->
