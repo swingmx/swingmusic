@@ -16,17 +16,17 @@
     </div>
     <div class="songlist">
       <SongItem
-        v-for="track in getTrackList()"
+        v-for="(track, index) in getTrackList()"
         :key="track.trackid"
         :track="track"
         :index="track.index"
-        @updateQueue="updateQueue"
+        @updateQueue="updateQueue(index)"
         :isPlaying="queue.playing"
         :isCurrent="queue.currentid == track.trackid"
       />
     </div>
-    <div class="copyright" v-if="copyright && copyright()">
-      {{ copyright() }}
+    <div class="copyright" v-if="copyright && copyright">
+      {{ copyright }}
     </div>
   </div>
   <div v-else-if="tracks.length === 0">
@@ -38,19 +38,16 @@
 
 <script setup lang="ts">
 import { ref } from "vue";
-import { useRoute } from "vue-router";
 import { useElementSize } from "@vueuse/core";
 
 import SongItem from "../shared/SongItem.vue";
 
 import { Routes } from "@/composables/enums";
 import { Track } from "@/interfaces";
-import useAlbumStore from "@/stores/pages/album";
 import useQStore from "@/stores/queue";
 import { computed } from "@vue/reactivity";
 
 const queue = useQStore();
-const album = useAlbumStore();
 
 const props = defineProps<{
   tracks: Track[];
@@ -59,14 +56,15 @@ const props = defineProps<{
   playlistid?: string;
   on_album_page?: boolean;
   disc?: string | number;
-  copyright?: (() => string) | null;
+  copyright?: string | null;
 }>();
 
-const route = useRoute();
-const routename = route.name as string;
+const emit = defineEmits<{
+  (e: "playFromPage", index: number): void;
+}>();
 
 const tracklistElem = ref<HTMLElement | null>(null);
-const { width, height } = useElementSize(tracklistElem);
+const { width } = useElementSize(tracklistElem);
 
 const brk = {
   sm: 500,
@@ -76,41 +74,8 @@ const brk = {
 const isSmall = computed(() => width.value < brk.sm);
 const isMedium = computed(() => width.value > brk.sm && width.value < brk.md);
 
-/**
- * Plays a clicked track and updates the queue
- *
- * @param track Track object
- */
-function updateQueue(track: Track) {
-  const index = props.tracks.findIndex(
-    (t: Track) => t.trackid === track.trackid
-  );
-
-  switch (routename) {
-    case Routes.folder:
-      queue.playFromFolder(props.path || "", props.tracks);
-      queue.play(index);
-      break;
-    case Routes.album:
-      const tindex = album.tracks.findIndex((t) => t.trackid === track.trackid);
-
-      queue.playFromAlbum(
-        track.album || "",
-        track.albumartist || "",
-        track.albumhash || "",
-        album.tracks
-      );
-      queue.play(tindex);
-      break;
-    case Routes.playlist:
-      queue.playFromPlaylist(
-        props.pname || "",
-        props.playlistid || "",
-        props.tracks
-      );
-      queue.play(index);
-      break;
-  }
+function updateQueue(index: number) {
+  emit("playFromPage", index);
 }
 
 /**

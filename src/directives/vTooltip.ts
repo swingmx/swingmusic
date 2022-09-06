@@ -11,13 +11,15 @@ function hideTooltip() {
   tooltip.style.visibility = "hidden";
 }
 
-function handleHover(el: HTMLElement, text: string, isHovered: Ref<boolean>) {
+function handleHover(el: HTMLElement, text: string, handleOthers = true) {
+  let isHovered = false;
+
   el.addEventListener("mouseover", () => {
-    isHovered.value = true;
+    isHovered = true;
     tooltip.innerText = text;
 
     setTimeout(() => {
-      if (isHovered.value) {
+      if (isHovered) {
         tooltip.style.visibility = "visible";
 
         createPopper(el, tooltip, {
@@ -37,28 +39,32 @@ function handleHover(el: HTMLElement, text: string, isHovered: Ref<boolean>) {
         });
       }
     }, 2000);
+
+    function handleHide() {
+      ["mouseout", "click"].forEach((event) => {
+        el.addEventListener(event, () => {
+          isHovered = false;
+          hideTooltip();
+        });
+      });
+    }
+
+    handleOthers ? handleHide() : null;
   });
 }
 let isHovered = ref(false);
 
 export default {
-  state: {},
   mounted(el: HTMLElement, binding) {
     if (tooltip === undefined) {
       tooltip = getTooltip();
     }
 
-    handleHover(el, binding.value, isHovered);
-    ["mouseout", "click"].forEach((event) => {
-      el.addEventListener(event, () => {
-        isHovered.value = false;
-        hideTooltip();
-      });
-    });
+    handleHover(el, binding.value);
   },
   updated(el, binding) {
     el.removeEventListener("mouseover", () => {});
-    handleHover(el, binding.value, isHovered);
+    handleHover(el, binding.value, false);
   },
   beforeUnmount(el: HTMLElement) {
     hideTooltip();

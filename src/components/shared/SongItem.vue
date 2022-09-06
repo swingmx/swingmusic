@@ -86,11 +86,11 @@ const props = defineProps<{
 }>();
 
 const emit = defineEmits<{
-  (e: "updateQueue", song: Track): void;
+  (e: "updateQueue"): void;
 }>();
 
 function emitUpdate(track: Track) {
-  emit("updateQueue", track);
+  emit("updateQueue");
 }
 
 function showMenu(e: Event) {

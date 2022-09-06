@@ -1,7 +1,12 @@
 <template>
   <div class="songlist rounded">
     <div v-if="tracks.length">
-      <SongList :tracks="tracks" :pname="name" :playlistid="playlistid"/>
+      <SongList
+        :tracks="tracks"
+        :pname="name"
+        :playlistid="playlistid"
+        @playFromPage="playFromPlaylistPage"
+      />
     </div>
     <div v-else-if="tracks.length === 0 && count > 0">
       <div class="no-results">
@@ -17,6 +22,9 @@
 </template>
 
 <script setup lang="ts">
+import useQueueStore from "@/stores/queue";
+import usePlaylistStore from "@/stores/pages/playlist";
+
 import SongList from "@/components/FolderView/SongList.vue";
 import { Track } from "@/interfaces";
 
@@ -26,4 +34,13 @@ defineProps<{
   name: string;
   playlistid: string;
 }>();
+
+const queue = useQueueStore();
+const playlist = usePlaylistStore();
+
+function playFromPlaylistPage(index: number) {
+  const { name, playlistid } = playlist.info;
+  queue.playFromPlaylist(name, playlistid, playlist.tracks);
+  queue.play(index);
+}
 </script>

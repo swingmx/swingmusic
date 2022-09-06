@@ -12,8 +12,12 @@
           loading="lazy"
         />
       </div>
-      <FolderList :folders="FStore.dirs" v-if="FStore.dirs.length" />
-      <SongList :tracks="FStore.tracks" :path="FStore.path" />
+      <FolderList :folders="folder.dirs" v-if="folder.dirs.length" />
+      <SongList
+        :tracks="folder.tracks"
+        :path="folder.path"
+        @playFromPage="playFromPage"
+      />
     </div>
   </div>
 </template>
@@ -26,12 +30,14 @@ import SongList from "@/components/FolderView/SongList.vue";
 import FolderList from "@/components/FolderView/FolderList.vue";
 import FolderSvg from "@/assets/icons/folder.svg";
 
-import useFStore from "../stores/pages/folder";
-import useLoaderStore from "../stores/loader";
+import useFolderStore from "@/stores/pages/folder";
+import useQueueStore from "@/stores/queue";
+import useLoaderStore from "@/stores/loader";
 import { isSameRoute } from "@/composables/perks";
 
 const loader = useLoaderStore();
-const FStore = useFStore();
+const folder = useFolderStore();
+const queue = useQueueStore();
 
 const scrollable = ref<any>(null);
 
@@ -40,11 +46,17 @@ function getFolderName(route: RouteLocationNormalized) {
   return path.split("/").pop();
 }
 
+function playFromPage(index: number) {
+  queue.playFromFolder(folder.path, folder.tracks);
+  queue.play(index);
+}
+
 onBeforeRouteUpdate((to, from) => {
   if (isSameRoute(to, from)) return;
 
   loader.startLoading();
-  FStore.fetchAll(to.params.path as string)
+  folder
+    .fetchAll(to.params.path as string)
 
     .then(() => {
       scrollable.value.scrollTop = 0;
@@ -107,7 +119,7 @@ onBeforeRouteUpdate((to, from) => {
       width: 100%;
       object-fit: cover;
       object-position: bottom right;
-      transition: all .25s ease;
+      transition: all 0.25s ease;
     }
   }
 
