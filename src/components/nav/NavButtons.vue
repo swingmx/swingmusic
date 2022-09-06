@@ -18,19 +18,27 @@ import ArrowSvg from "../../assets/icons/right-arrow.svg";
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 1rem;
-  padding-right: 1.25rem;
+  padding-right: 1rem;
   border-right: 1px solid $gray3;
-  width: max-content;
   height: 100%;
 
   & > * {
     width: 2.25rem;
-    background-color: $gray3;
     aspect-ratio: 1;
     display: flex;
     justify-content: center;
     align-items: center;
     padding: 0;
+    border-radius: 0.65rem;
+
+    svg {
+      transform: scale(1.25);
+      transition: all .2s;
+
+      &:active {
+        transform: scale(1);
+      }
+    }
   }
 
   .back {

@@ -1,6 +1,6 @@
 <template>
   <button
-    class="play-btn rounded-md"
+    class="play-btn"
     @click="usePlayFrom(source, useQStore, store)"
   >
     <PlaySvg />
@@ -26,5 +26,6 @@ defineProps<{
 .play-btn {
   aspect-ratio: 1;
   padding: 0;
+  border-radius: 0.65rem;
 }
 </style>

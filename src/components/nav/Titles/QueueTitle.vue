@@ -1,12 +1,13 @@
 <template>
   <div class="nav-queue-title">
     <div class="first noscroll">
-      <router-link :to="(getSourceUrlParams())">
+      <router-link :to="(location as RouteLocationRaw)">
         <button>Go to source</button>
       </router-link>
       <div class="playing-from">
         <div class="border rounded-sm pad-sm">
-          <b class="ellip">{{ getSourceName() }}</b>
+          <source-icon />
+          <b class="ellip">{{ name }}</b>
         </div>
       </div>
     </div>
@@ -18,67 +19,74 @@
 import QueueActions from "@/components/RightSideBar/Queue/QueueActions.vue";
 import { FromOptions, Routes } from "@/composables/enums";
 import useQueueStore from "@/stores/queue";
-import { RouteLocationRaw, RouteRecordRaw } from "vue-router";
+
+import FolderSvg from "@/assets/icons/folder.svg";
+import SearchSvg from "@/assets/icons/search.svg";
+import AlbumSvg from "@/assets/icons/album.svg";
+import PlaylistSvg from "@/assets/icons/playlist.svg";
+
+import { RouteLocationRaw } from "vue-router";
 
 const queue = useQueueStore();
 
 const { from: source } = queue;
 
-function getSourceName(): RouteLocationRaw {
-  switch (source.type) {
-    case FromOptions.album:
-      return source.name;
-
-    case FromOptions.folder:
-      return source.name;
-
-    case FromOptions.playlist:
-      return source.name;
-
-    case FromOptions.search:
-      return `Search for: "${source.query}"`;
-
-    default:
-      return "Ghost source";
-  }
-}
-
-function getSourceUrlParams() {
+function getSource() {
   switch (source.type) {
     case FromOptions.album:
       return {
-        name: Routes.album,
-        params: {
-          hash: source.hash,
+        name: source.name,
+        icon: AlbumSvg,
+        location: {
+          name: Routes.album,
+          params: {
+            hash: source.hash,
+          },
         },
       };
+
     case FromOptions.folder:
       return {
-        name: Routes.folder,
-        params: {
-          path: source.path,
+        name: source.name,
+        icon: FolderSvg,
+        location: {
+          name: Routes.folder,
+          params: {
+            path: source.path,
+          },
         },
       };
+
     case FromOptions.playlist:
       return {
-        name: Routes.playlist,
-        params: {
-          pid: source.playlistid,
+        name: source.name,
+        icon: PlaylistSvg,
+        location: {
+          name: Routes.playlist,
+          params: {
+            pid: source.playlistid,
+          },
         },
       };
+
     case FromOptions.search:
       return {
-        name: Routes.search,
-        params: {
-          query: source.query,
+        name: `Search for: "${source.query}"`,
+        icon: SearchSvg,
+        location: {
+          name: Routes.search,
+          params: {
+            query: source.query,
+          },
         },
       };
 
     default:
-      return "/";
+      return { name: "Ghost source" };
   }
 }
 
+const { name, icon: SourceIcon, location } = getSource();
 </script>
 
 <style lang="scss">
@@ -99,6 +107,17 @@ function getSourceUrlParams() {
       align-items: center;
       gap: $small;
       opacity: 0.75;
+
+      .border {
+        display: grid;
+        grid-template-columns: max-content 1fr;
+        align-items: center;
+        padding: $smaller $small;
+      }
+
+      svg {
+        transform: scale(0.9);
+      }
     }
 
     button {
