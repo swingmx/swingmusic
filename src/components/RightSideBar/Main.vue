@@ -51,6 +51,7 @@ const settings = useSettingsStore();
       height: 100%;
       overflow: hidden;
       display: grid;
+      gap: $small;
       grid-template-rows: max-content 1fr;
     }
   }

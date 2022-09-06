@@ -1,47 +1,39 @@
 <template>
-    <QueueActions />
-    <div class="scrollable-r">
-      <div class="inner">
-        <TrackComponent
-          v-for="(t, index) in queue.tracklist"
-          :key="index"
-          :track="t"
-          :index="index + 1"
-          :isPlaying="queue.playing"
-          :isHighlighted="false"
-          :isCurrent="index === queue.currentindex"
-        />
+  <QueueActions />
+  <div
+    class="scrollable-r"
+    @mouseover="mouseover = true"
+    @mouseout="mouseover = false"
+  >
+    <div class="inner">
+      <TrackItem
+        v-for="(t, index) in queue.tracklist"
+        :key="index"
+        :track="t"
+        :index="index + 1"
+        :isPlaying="queue.playing"
+        :isHighlighted="false"
+        :isCurrent="index === queue.currentindex"
+        @PlayThis="playFromQueue(index)"
+      />
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { computed, onUpdated, ref } from "vue";
+import { onUpdated, ref } from "vue";
 
 import useQStore from "@/stores/queue";
 import { focusElem } from "@/utils";
 
 import TrackItem from "../shared/TrackItem.vue";
-import SongItem from "../shared/SongItem.vue";
 import QueueActions from "./Queue/QueueActions.vue";
-
-const props = defineProps<{
-  isOnQueuePage?: boolean;
-}>();
-
-const TrackComponent = computed(() => {
-  if (props.isOnQueuePage) {
-    return SongItem;
-  }
-
-  return TrackItem;
-});
 
 const queue = useQStore();
 const mouseover = ref(false);
 
-function setMouseOver(val: boolean) {
-  mouseover.value = val;
+function playFromQueue(index: number) {
+  queue.play(index);
 }
 
 onUpdated(() => {
@@ -59,8 +51,8 @@ onUpdated(() => {
   overflow: auto;
 
   .inner {
-    scrollbar-color: grey transparent;
-    margin: 1rem 0;
+    // scrollbar-color: grey transparent;
+    margin-bottom: 1rem;
   }
 }
 </style>
