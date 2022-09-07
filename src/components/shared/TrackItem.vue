@@ -24,14 +24,7 @@
       </div>
       <hr />
       <div class="artist">
-        <div class="ellip" v-if="track.artists[0] !== ''">
-          <span v-for="artist in putCommas(track.artists)" :key="artist">{{
-            artist
-          }}</span>
-        </div>
-        <div class="ellip" v-else>
-          <span>{{ track.albumartist }}</span>
-        </div>
+        <ArtistName :artists="track.artists" :albumartist="track.albumartist" />
       </div>
     </div>
     <div
@@ -48,11 +41,11 @@
 import { ref } from "vue";
 
 import { paths } from "@/config";
-import { putCommas } from "@/utils";
 import { Track } from "@/interfaces";
 import { showTrackContextMenu as showContext } from "@/composables/context";
-import DelSvg from "@/assets/icons/plus.svg";
+import DelSvg from "@/assets/icons/delete.svg";
 import useQueueStore from "@/stores/queue";
+import ArtistName from "./ArtistName.vue";
 
 const props = defineProps<{
   track: Track;
@@ -103,7 +96,7 @@ const playThis = (track: Track) => {
   .remove-track {
     opacity: 0;
     transition: all 0.25s ease;
-    transform: translateX(1rem) rotate(45deg);
+    transform: scale(0.75) translateY(1rem);
 
     &:hover {
       opacity: 1 !important;
@@ -113,7 +106,7 @@ const playThis = (track: Track) => {
   &:hover {
     .remove-track {
       opacity: 0.5;
-      transform: translateX(0) rotate(45deg);
+      transform: scale(1) translateY(0);
     }
 
     cursor: pointer;
@@ -146,6 +139,7 @@ const playThis = (track: Track) => {
   .artist {
     font-size: small;
     opacity: 0.67;
+    width: fit-content;
   }
 }
 </style>
