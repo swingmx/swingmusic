@@ -1,15 +1,21 @@
-import { Artist } from "./../../interfaces";
+import { computed, ComputedRef, ref } from "vue";
+import { useFuse } from "@vueuse/integrations/useFuse";
 import { defineStore } from "pinia";
-import {
-  getPlaylist,
-  getPlaylistArtists,
-} from "../../composables/fetch/playlists";
-import { Track, Playlist } from "../../interfaces";
+
+import { getPlaylist } from "../../composables/fetch/playlists";
+import { Playlist, Track } from "../../interfaces";
+import { Artist } from "./../../interfaces";
+
+interface FussResult {
+  item: string;
+  refIndex: number;
+}
 
 export default defineStore("playlist-tracks", {
   state: () => ({
     info: <Playlist>{},
-    tracks: <Track[]>[],
+    query: "a",
+    allTracks: <Track[]>[],
     artists: <Artist[]>[],
   }),
   actions: {
@@ -21,12 +27,12 @@ export default defineStore("playlist-tracks", {
       const playlist = await getPlaylist(playlistid);
 
       this.info = playlist?.info || ({} as Playlist);
-      this.tracks = playlist?.tracks || [];
+      this.allTracks = playlist?.tracks || [];
     },
 
-    async fetchArtists(playlistid: string) {
-      this.artists = await getPlaylistArtists(playlistid);
-    },
+    // async fetchArtists(playlistid: string) {
+    //   this.artists = await getPlaylistArtists(playlistid);
+    // },
     /**
      * Updates the playlist header info. This is used when the playlist is
      * updated.
@@ -39,6 +45,25 @@ export default defineStore("playlist-tracks", {
     },
     resetArtists() {
       this.artists = [];
+    },
+  },
+  getters: {
+    allHashes(): string[] {
+      return this.allTracks.map((t) => {
+        return t.hash;
+      });
+    },
+    filteredHashes(): ComputedRef<FussResult[]> {
+      const { results } = useFuse(this.query, this.allHashes, {
+        matchAllWhenSearchEmpty: true,
+      });
+      return results as any;
+    },
+
+    tracks() {
+      return this.filteredHashes.value.map((result: FussResult) => {
+        return this.allTracks[result.refIndex];
+      });
     },
   },
 });

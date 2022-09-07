@@ -2,13 +2,17 @@
   <div class="topnav">
     <div class="left">
       <NavButtons />
+
       <div
         class="info"
         :style="{
-          overflow: $route.name === Routes.search ? 'visible' : 'hidden',
+          overflow: hideOverflow() ? 'visible' : 'hidden',
         }"
       >
-        <APTitle v-if="showAPTitle" />
+        <APTitle
+          v-if="$route.name == Routes.album || $route.name == Routes.playlist"
+          :header_shown="nav.h_visible"
+        />
         <SimpleTitle v-if="$route.name == Routes.settings" :text="'Settings'" />
         <Folder v-if="$route.name == Routes.folder" :subPaths="subPaths" />
         <SearchTitle v-if="$route.name == Routes.search" />
@@ -48,12 +52,11 @@ const nav = useNavStore();
 
 const subPaths = ref<subPath[]>([]);
 
-const showAPTitle = computed(() => {
-  return (
-    (route.name == Routes.album || route.name == Routes.playlist) &&
-    !nav.h_visible
-  );
-});
+function hideOverflow() {
+  const { name } = route;
+  const { album, playlist, search } = Routes;
+  return (album + playlist + search).includes(name as string);
+}
 
 watch(
   () => route.name,
@@ -88,7 +91,6 @@ watch(
   display: grid;
   grid-template-columns: 1fr min-content;
   width: 100%;
-  // gap: $small;
 
   .left {
     display: grid;
