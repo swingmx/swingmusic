@@ -1,12 +1,12 @@
 <template>
-  <div v-tooltip="returnArtists()" style="width: auto;">
-    <div class="ellip" v-if="artists[0] !== '' && artists.length > 1">
+  <div v-tooltip="returnArtists()" style="width: auto">
+    <div class="ellip" v-if="artists[0] === '' && artists.length === 1">
+      <span>{{ albumartist }}</span>
+    </div>
+    <div class="ellip" v-else>
       <span v-for="artist in putCommas(artists)" :key="artist">{{
         artist
       }}</span>
-    </div>
-    <div class="ellip" v-else>
-      <span>{{ albumartist }}</span>
     </div>
   </div>
 </template>

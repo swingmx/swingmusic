@@ -14,7 +14,7 @@ interface FussResult {
 export default defineStore("playlist-tracks", {
   state: () => ({
     info: <Playlist>{},
-    query: "a",
+    query: "",
     allTracks: <Track[]>[],
     artists: <Artist[]>[],
   }),

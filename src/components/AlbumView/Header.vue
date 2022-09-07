@@ -31,8 +31,11 @@
         </div>
         <div class="bottom">
           <div class="stats">
-            {{ album.artist }} • {{ album.date }} • {{ album.count }} Tracks •
-            {{ formatSeconds(album.duration, true) }}
+            <div class="border rounded-sm pad-sm">
+              {{ album.artist }} • {{ album.date }} • {{ album.count }}
+              {{ album.count === 1 ? "Track" : "Tracks" }} •
+              {{ formatSeconds(album.duration, true) }}
+            </div>
           </div>
           <PlayBtnRect
             :source="playSources.album"
@@ -62,7 +65,7 @@ import { getButtonColor, isLight } from "../../composables/colors/album";
 
 import PlayBtnRect from "../shared/PlayBtnRect.vue";
 
-const props = defineProps<{
+defineProps<{
   album: AlbumInfo;
   bio: string | null;
 }>();
@@ -136,6 +139,7 @@ useVisibility(albumheaderthing, handleVisibilityState);
 
     .top {
       .h {
+        font-size: 14px;
         opacity: 0.5;
       }
       .title {
@@ -157,10 +161,13 @@ useVisibility(albumheaderthing, handleVisibilityState);
       margin-top: $smaller;
 
       .stats {
-        border-radius: $small;
         font-weight: bold;
         font-size: 0.8rem;
         margin-bottom: 0.75rem;
+
+        div {
+          width: fit-content;
+        }
       }
     }
   }

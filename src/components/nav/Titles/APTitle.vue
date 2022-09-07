@@ -11,7 +11,6 @@
         {{ things.text }}
       </div>
     </div>
-    {{ usePStore().query }}
     <Input :ref_value="usePStore().query" />
   </div>
 </template>
