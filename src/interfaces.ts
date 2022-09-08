@@ -13,8 +13,8 @@ export interface Track {
   bitrate?: number;
   genre?: string;
   image: string;
-  tracknumber?: number;
-  discnumber?: number;
+  tracknumber: number;
+  discnumber: number;
   index: number;
   hash: string;
   copyright?: string;

@@ -19,6 +19,7 @@
         v-for="(track, index) in getTrackList()"
         :key="track.trackid"
         :track="track"
+        :index="track.index !== undefined ? track.index + 1 : index + 1"
         @updateQueue="updateQueue(track.index)"
         :isPlaying="queue.playing"
         :isCurrent="queue.currentid == track.trackid"
@@ -82,7 +83,7 @@ function updateQueue(index: number) {
 }
 
 /**
- * Used to show track numbers as indexes in the album page.
+ * Used to show handle track indexes.
  */
 function getTrackList() {
   if (props.on_album_page) {

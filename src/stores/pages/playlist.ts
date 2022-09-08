@@ -1,13 +1,14 @@
 import { computed, ComputedRef, ref } from "vue";
-import { useFuse } from "@vueuse/integrations/useFuse";
+// import { useFuse } from "@vueuse/integrations/useFuse";
 import { defineStore } from "pinia";
 
 import { getPlaylist } from "../../composables/fetch/playlists";
 import { Playlist, Track } from "../../interfaces";
 import { Artist } from "./../../interfaces";
+import { useFuse } from "@/utils";
 
 interface FussResult {
-  item: string;
+  item: Track;
   refIndex: number;
 }
 
@@ -46,32 +47,32 @@ export default defineStore("playlist-tracks", {
     resetArtists() {
       this.artists = [];
     },
-    resetQuery(){
+    resetQuery() {
       this.query = "";
-    }
+    },
   },
   getters: {
-    allHashes(): string[] {
-      return this.allTracks.map((t) => {
-        return t.hash;
+    filteredTracks(): ComputedRef<FussResult[]> {
+      return useFuse(this.query, this.allTracks, {
+        keys: [
+          { name: "title", weight: 1 },
+          { name: "album", weight: 0.7 },
+          { name: "artists", weight: 0.5 },
+          { name: "albumartist", weight: 0.25 },
+        ],
       });
-    },
-    filteredHashes(): ComputedRef<FussResult[]> {
-      const { results } = useFuse(this.query, this.allHashes, {
-        matchAllWhenSearchEmpty: true,
-      });
-      return results as any;
     },
 
     tracks(): Track[] {
-      const tracks = this.filteredHashes.value.map((result: FussResult) => {
+      const tracks = this.filteredTracks.value.map((result: FussResult) => {
         const t = {
-          ...this.allTracks[result.refIndex],
+          ...result.item,
           index: result.refIndex,
         };
 
         return t;
       });
+
       return tracks;
     },
   },

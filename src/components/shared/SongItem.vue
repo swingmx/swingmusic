@@ -6,7 +6,7 @@
     @contextmenu.prevent="showMenu"
   >
     <div class="index t-center ellip">
-      {{ track.index + 1 ? track.index + 1 : "🎵" }}
+      {{ index }}
     </div>
     <div class="flex">
       <div @click="emitUpdate(track)" class="thumbnail">
@@ -81,7 +81,7 @@ const artisttitle = ref<HTMLElement | null>(null);
 
 const props = defineProps<{
   track: Track;
-  index?: number;
+  index: number;
   isPlaying: Boolean;
   isCurrent: Boolean;
 }>();
@@ -160,7 +160,6 @@ function showMenu(e: Event) {
 
     svg {
       transition: all 0.2s ease-in;
-      // transform: rotate(90deg);
       stroke: $track-btn-svg;
 
       circle {
