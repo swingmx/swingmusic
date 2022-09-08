@@ -21,9 +21,9 @@ import Header from "@/components/PlaylistView/Header.vue";
 import Content from "./Content.vue";
 
 import usePTrackStore from "@/stores/pages/playlist";
-import { onUnmounted } from "vue";
+import { storeToRefs } from "pinia";
 
-const { info: playlist, tracks } = usePTrackStore();
+const { info: playlist, tracks } = storeToRefs(usePTrackStore());
 </script>
 
 <style lang="scss"></style>

@@ -14,7 +14,7 @@ interface FussResult {
 export default defineStore("playlist-tracks", {
   state: () => ({
     info: <Playlist>{},
-    query: "",
+    query: "aa",
     allTracks: <Track[]>[],
     artists: <Artist[]>[],
   }),
@@ -60,10 +60,15 @@ export default defineStore("playlist-tracks", {
       return results as any;
     },
 
-    tracks() {
-      return this.filteredHashes.value.map((result: FussResult) => {
-        return this.allTracks[result.refIndex];
+    tracks(): Track[] {
+      const tracks = this.filteredHashes.value.map((result: FussResult) => {
+        const t = this.allTracks[result.refIndex];
+        t.index = result.refIndex;
+        return t;
       });
+
+
+      return tracks;
     },
   },
 });

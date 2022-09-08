@@ -43,9 +43,9 @@ export default function play(
       store = store as typeof playlist;
       const p = store();
 
-      if (p.allTracks.length === 0) return;
+      if (p.tracks.length === 0) return;
 
-      useQueue.playFromPlaylist(p.info.name, p.info.playlistid, p.allTracks);
+      useQueue.playFromPlaylist(p.info.name, p.info.playlistid, p.tracks);
       useQueue.play();
       break;
   }

@@ -3,16 +3,35 @@
     type="search"
     class="header-input rounded-sm pad-sm"
     placeholder="search here"
-    v-model="ref_value"
+    v-model.trim="source"
   />
 </template>
 
 <script setup lang="ts">
-import { ref, Ref } from "vue";
+import usePStore from "@/stores/pages/playlist";
+import { storeToRefs } from "pinia";
+import { Routes } from "@/composables/enums";
 
-defineProps<{
-  ref_value?: Ref<string> | undefined;
+const { query } = storeToRefs(usePStore());
+
+const props = defineProps<{
+  page: Routes;
 }>();
+
+function getRef() {
+  switch (props.page) {
+    case Routes.playlist:
+      return query;
+
+    case Routes.album:
+      return query;
+
+    default:
+      return null;
+  }
+}
+
+const source = getRef();
 </script>
 
 <style lang="scss">

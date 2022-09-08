@@ -38,19 +38,16 @@ import { ref } from "vue";
 
 import useNavStore from "@/stores/nav";
 import useModalStore from "../../stores/modal";
-import pContext from "../../contexts/playlist";
 import usePStore from "@/stores/pages/playlist";
-import useContextStore from "../../stores/context";
 
 import { paths } from "../../config";
 import { Playlist } from "../../interfaces";
 import { useVisibility, formatSeconds } from "@/utils";
-import { ContextSrc, playSources } from "@/composables/enums";
+import { playSources } from "@/composables/enums";
 
 import PlayBtnRect from "../shared/PlayBtnRect.vue";
 
 const imguri = paths.images.playlist;
-const context = useContextStore();
 const modal = useModalStore();
 const nav = useNavStore();
 const playlistheader = ref<HTMLElement | null>(null);
@@ -63,10 +60,6 @@ const props = defineProps<{
 
 function editPlaylist() {
   modal.showEditPlaylistModal(props.info);
-}
-
-function showDropdown(e: any) {
-  context.showContextMenu(e, pContext(), ContextSrc.PHeader);
 }
 </script>
 

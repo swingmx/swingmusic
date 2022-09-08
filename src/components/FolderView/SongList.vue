@@ -20,7 +20,7 @@
         :key="track.trackid"
         :track="track"
         :index="track.index"
-        @updateQueue="updateQueue(index)"
+        @updateQueue="updateQueue(track.index)"
         :isPlaying="queue.playing"
         :isCurrent="queue.currentid == track.trackid"
       />
@@ -37,7 +37,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
+import { onUpdated, ref } from "vue";
 import { useElementSize } from "@vueuse/core";
 import { computed } from "@vue/reactivity";
 
@@ -58,6 +58,10 @@ const props = defineProps<{
   disc?: string | number;
   copyright?: string | null;
 }>();
+
+onUpdated(() => {
+  console.log(props.tracks[0].index)
+})
 
 const emit = defineEmits<{
   (e: "playFromPage", index: number): void;
