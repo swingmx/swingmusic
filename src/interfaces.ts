@@ -15,7 +15,7 @@ export interface Track {
   image: string;
   tracknumber?: number;
   discnumber?: number;
-  index?: number;
+  index: number;
   hash: string;
   copyright?: string;
 }

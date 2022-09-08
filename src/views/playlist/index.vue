@@ -15,15 +15,23 @@
 </template>
 
 <script setup lang="ts">
+import { storeToRefs } from "pinia";
 import Page from "@/layouts/HeaderContentBottom.vue";
 
 import Header from "@/components/PlaylistView/Header.vue";
 import Content from "./Content.vue";
 
-import usePTrackStore from "@/stores/pages/playlist";
-import { storeToRefs } from "pinia";
+import usePlaylistStore from "@/stores/pages/playlist";
+import { onBeforeRouteLeave } from "vue-router";
 
-const { info: playlist, tracks } = storeToRefs(usePTrackStore());
+const store = usePlaylistStore();
+const { info: playlist, tracks } = storeToRefs(store);
+
+onBeforeRouteLeave(() => {
+  setTimeout(() => {
+    store.resetQuery();
+  }, 500);
+});
 </script>
 
 <style lang="scss"></style>

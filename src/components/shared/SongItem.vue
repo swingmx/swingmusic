@@ -5,7 +5,9 @@
     @dblclick="emitUpdate(track)"
     @contextmenu.prevent="showMenu"
   >
-    <div class="index t-center ellip">{{ index }}</div>
+    <div class="index t-center ellip">
+      {{ track.index + 1 ? track.index + 1 : "🎵" }}
+    </div>
     <div class="flex">
       <div @click="emitUpdate(track)" class="thumbnail">
         <img

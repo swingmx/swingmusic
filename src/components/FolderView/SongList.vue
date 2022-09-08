@@ -19,7 +19,6 @@
         v-for="(track, index) in getTrackList()"
         :key="track.trackid"
         :track="track"
-        :index="track.index"
         @updateQueue="updateQueue(track.index)"
         :isPlaying="queue.playing"
         :isCurrent="queue.currentid == track.trackid"
@@ -59,9 +58,9 @@ const props = defineProps<{
   copyright?: string | null;
 }>();
 
-onUpdated(() => {
-  console.log(props.tracks[0].index)
-})
+// onUpdated(() => {
+//   console.log(props.tracks[1].index);
+// });
 
 const emit = defineEmits<{
   (e: "playFromPage", index: number): void;
@@ -87,7 +86,7 @@ function updateQueue(index: number) {
  */
 function getTrackList() {
   if (props.on_album_page) {
-    let tracks = props.tracks.map((track) => {
+    const tracks = props.tracks.map((track) => {
       track.index = track.tracknumber;
       return track;
     });
@@ -95,12 +94,7 @@ function getTrackList() {
     return tracks;
   }
 
-  const tracks = props.tracks.map((track, index) => {
-    track.index = index + 1;
-    return track;
-  });
-
-  return tracks;
+  return props.tracks;
 }
 </script>
 
