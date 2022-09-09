@@ -4,6 +4,7 @@
     class="header-input rounded-sm pad-sm"
     placeholder="search here"
     v-model.trim="source"
+    id="page-search"
   />
 </template>
 
