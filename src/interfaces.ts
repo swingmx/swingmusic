@@ -110,3 +110,10 @@ export interface FetchProps {
   put?: boolean;
   headers?: {};
 }
+
+export interface FussResult {
+  item: Track;
+  refIndex: number;
+}
+
+

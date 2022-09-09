@@ -20,7 +20,9 @@
         :key="track.trackid"
         :track="track"
         :index="track.index !== undefined ? track.index + 1 : index + 1"
-        @updateQueue="updateQueue(track.index)"
+        @updateQueue="
+          updateQueue(track.index !== undefined ? track.index : index)
+        "
         :isPlaying="queue.playing"
         :isCurrent="queue.currentid == track.trackid"
       />

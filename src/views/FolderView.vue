@@ -47,7 +47,7 @@ function getFolderName(route: RouteLocationNormalized) {
 }
 
 function playFromPage(index: number) {
-  queue.playFromFolder(folder.path, folder.tracks);
+  queue.playFromFolder(folder.path, folder.allTracks);
   queue.play(index);
 }
 

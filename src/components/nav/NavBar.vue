@@ -4,10 +4,10 @@
       <NavButtons />
 
       <div
-        class="info"
         :style="{
-          overflow: hideOverflow() ? 'visible' : 'hidden',
+          overflowY: hideOverflow() ? 'visible' : 'hidden',
         }"
+        class="info"
       >
         <APTitle
           v-if="$route.name == Routes.album || $route.name == Routes.playlist"
@@ -38,7 +38,6 @@ import { createSubPaths } from "@/utils";
 import { Routes } from "@/composables/enums";
 
 import NavButtons from "./NavButtons.vue";
-// import Loader from "../shared/Loader.vue";
 
 import Folder from "./Titles/Folder.vue";
 import SimpleTitle from "./Titles/SimpleTitle.vue";
@@ -54,8 +53,9 @@ const subPaths = ref<subPath[]>([]);
 
 function hideOverflow() {
   const { name } = route;
-  const { album, playlist, search } = Routes;
-  return (album + playlist + search).includes(name as string);
+  const { album, playlist, search, folder } = Routes;
+
+  return (album + playlist + search + folder).includes(name as string);
 }
 
 watch(
