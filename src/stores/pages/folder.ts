@@ -11,14 +11,14 @@ export default defineStore("FolderDirs&Tracks", {
   state: () => ({
     query: "",
     path: <string>{},
-    dirs: <Folder[]>[],
+    allDirs: <Folder[]>[],
     allTracks: <Track[]>[],
   }),
   actions: {
     async fetchAll(path: string) {
       const { tracks, folders } = await fetchThem(path);
 
-      [this.path, this.dirs, this.allTracks] = [path, folders, tracks];
+      [this.path, this.allDirs, this.allTracks] = [path, folders, tracks];
     },
   },
   getters: {
@@ -36,6 +36,15 @@ export default defineStore("FolderDirs&Tracks", {
       });
 
       return tracks;
+    },
+    dirs(): Folder[] {
+      const dirs = useFuse(this.query, this.allDirs, {
+        keys: ["name"],
+      });
+
+      return dirs.value.map((result) => {
+        return result.item;
+      });
     },
   },
 });
