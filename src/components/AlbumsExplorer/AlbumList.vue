@@ -135,7 +135,7 @@ export default {
       padding: $small 0.95rem $small 0.95rem;
       margin: $smaller;
       transition: all 0.2s ease-in-out;
-      cursor: pointer;
+      cursor: default;
       float: left;
 
       .play {
@@ -146,7 +146,7 @@ export default {
         width: 3rem;
         background: url(../../assets/icons/play.svg) no-repeat center;
         background-size: 60%;
-        cursor: pointer;
+        cursor: default;
         opacity: 0;
         transition: all 0.5s ease-in-out;
       }
@@ -208,7 +208,7 @@ export default {
       input::-webkit-search-cancel-button {
         position: relative;
         right: 20px;
-        cursor: pointer;
+        cursor: default;
         width: 50px;
         height: 50px;
       }

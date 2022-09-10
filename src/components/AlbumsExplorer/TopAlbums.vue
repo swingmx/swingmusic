@@ -74,7 +74,7 @@ export default {
       align-items: center;
       grid-template-columns: 7.5rem 1fr;
       padding: $small;
-      cursor: pointer;
+      cursor: default;
       transition: all 0.2s ease-in-out;
 
       &:hover {

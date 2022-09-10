@@ -37,13 +37,13 @@
 import { ref } from "vue";
 
 import useNavStore from "@/stores/nav";
-import useModalStore from "../../stores/modal";
 import usePStore from "@/stores/pages/playlist";
+import useModalStore from "../../stores/modal";
 
+import { playSources } from "@/composables/enums";
+import { formatSeconds, useVisibility } from "@/utils";
 import { paths } from "../../config";
 import { Playlist } from "../../interfaces";
-import { useVisibility, formatSeconds } from "@/utils";
-import { playSources } from "@/composables/enums";
 
 import PlayBtnRect from "../shared/PlayBtnRect.vue";
 

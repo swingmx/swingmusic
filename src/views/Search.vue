@@ -36,7 +36,7 @@ import Main from "@/components/RightSideBar/Search/Main.vue";
 
   #tracks-results {
     margin-right: 1rem;
-    margin-left: -2.25rem;
+    // margin-left: -2.25rem;
   }
 }
 </style>

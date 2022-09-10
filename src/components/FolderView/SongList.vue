@@ -19,10 +19,14 @@
         v-for="(track, index) in tracks"
         :key="track.trackid"
         :track="track"
-        :index="on_album_page ? track.tracknumber : (track.index !== undefined ? track.index + 1 : index + 1)"
-        @updateQueue="
-          updateQueue(track.index !== undefined ? track.index : index)
+        :index="
+          on_album_page
+            ? track.tracknumber
+            : track.index !== undefined
+            ? track.index + 1
+            : index + 1
         "
+        @playThis="updateQueue(track.index !== undefined ? track.index : index)"
         :isPlaying="queue.playing"
         :isCurrent="queue.currentid == track.trackid"
       />

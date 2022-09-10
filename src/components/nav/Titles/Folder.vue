@@ -33,11 +33,11 @@
 </template>
 
 <script setup lang="ts">
-import { focusElem } from "@/utils";
-import { subPath } from "@/interfaces";
-import { onUpdated } from "vue";
-import { Routes } from "@/composables/enums";
 import Input from "@/components/shared/Input.vue";
+import { Routes } from "@/composables/enums";
+import { subPath } from "@/interfaces";
+import { focusElem } from "@/utils";
+import { onUpdated } from "vue";
 
 defineProps<{
   subPaths: subPath[];
@@ -78,7 +78,6 @@ onUpdated(() => {
         background-image: url("../../../assets/icons/folder.fill.svg");
         background-size: 1.5rem;
         margin-left: $smaller;
-        cursor: pointer;
       }
 
       .paths {
@@ -95,10 +94,6 @@ onUpdated(() => {
         .path {
           white-space: nowrap;
           margin: auto 0;
-
-          a {
-            cursor: default;
-          }
 
           .text {
             padding: $smaller;

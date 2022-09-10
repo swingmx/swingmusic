@@ -25,7 +25,7 @@
     </router-link>
 
     <div class="bottom">
-      <div class="title ellip">{{ props.track?.title }}</div>
+      <div class="title ellip t-center">{{ props.track?.title }}</div>
       <ArtistName
         :artists="track?.artists || ['Artist']"
         :albumartist="track?.albumartist"
@@ -83,11 +83,13 @@ const imguri = paths.images.thumb;
 
   .title {
     font-weight: 900;
+    margin: 0 auto;
   }
 
   .artists {
     font-size: 0.85rem;
     opacity: 0.75;
+    margin: 0 auto;
 
     &:hover {
       text-decoration: underline 1px !important;

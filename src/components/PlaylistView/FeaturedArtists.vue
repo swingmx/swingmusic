@@ -19,9 +19,9 @@
   </div>
 </template>
 <script setup lang="ts">
-import { ref } from "@vue/reactivity";
 import ArtistCard from "@/components/shared/ArtistCard.vue";
 import { Artist } from "@/interfaces";
+import { ref } from "@vue/reactivity";
 import ArrowSvg from "../../assets/icons/right-arrow.svg";
 
 defineProps<{
@@ -82,7 +82,6 @@ const scrollRight = () => {
 
   .icon {
     border-radius: $small;
-    cursor: pointer;
     transition: all 0.5s ease;
     background-color: rgb(51, 51, 51);
     padding: $smaller;

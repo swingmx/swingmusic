@@ -32,7 +32,6 @@ defineProps<{
   border-radius: 0.75rem;
   display: grid;
   justify-content: center;
-  cursor: pointer;
 
   .artist-image {
     width: 100%;

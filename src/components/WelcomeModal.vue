@@ -108,7 +108,6 @@
 
       button {
         padding: 0 $medium;
-        cursor: pointer;
       }
     }
   }

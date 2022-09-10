@@ -56,6 +56,7 @@
       class="options-icon circular"
       :class="{ options_button_clicked }"
       @click.stop="showMenu"
+      @dblclick.stop="() => {}"
     >
       <OptionSvg />
     </div>
@@ -87,11 +88,11 @@ const props = defineProps<{
 }>();
 
 const emit = defineEmits<{
-  (e: "updateQueue"): void;
+  (e: "playThis"): void;
 }>();
 
 function emitUpdate(track: Track) {
-  emit("updateQueue");
+  emit("playThis");
 }
 
 function showMenu(e: Event) {
@@ -120,7 +121,7 @@ function showMenu(e: Event) {
 
   .song-album {
     max-width: max-content;
-    cursor: pointer;
+    cursor: pointer !important;
 
     &:hover {
       text-decoration: underline;
@@ -130,10 +131,6 @@ function showMenu(e: Event) {
   .song-artists {
     width: fit-content;
     max-width: 100%;
-
-    .artist {
-      cursor: pointer;
-    }
   }
 
   .index {
@@ -196,10 +193,6 @@ function showMenu(e: Event) {
       position: absolute;
       left: $small;
       top: $small;
-    }
-
-    .title {
-      cursor: pointer;
     }
   }
 

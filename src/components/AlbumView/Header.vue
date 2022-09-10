@@ -150,6 +150,7 @@ useVisibility(albumheaderthing, handleVisibilityState);
         font-size: 2.5rem;
         font-weight: 600;
         width: fit-content;
+        // cursor: text;
       }
 
       .artist {
@@ -176,7 +177,6 @@ useVisibility(albumheaderthing, handleVisibilityState);
     }
   }
 
-  // grid-template-columns: 1fr !important;
   @include for-desktop-down {
     .art > img {
       height: 6rem;

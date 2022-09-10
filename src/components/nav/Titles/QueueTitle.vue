@@ -20,10 +20,10 @@ import QueueActions from "@/components/RightSideBar/Queue/QueueActions.vue";
 import { FromOptions, Routes } from "@/composables/enums";
 import useQueueStore from "@/stores/queue";
 
-import FolderSvg from "@/assets/icons/folder.svg";
-import SearchSvg from "@/assets/icons/search.svg";
 import AlbumSvg from "@/assets/icons/album.svg";
+import FolderSvg from "@/assets/icons/folder.svg";
 import PlaylistSvg from "@/assets/icons/playlist.svg";
+import SearchSvg from "@/assets/icons/search.svg";
 
 import { RouteLocationRaw } from "vue-router";
 
@@ -120,9 +120,6 @@ const { name, icon: SourceIcon, location } = getSource();
       }
     }
 
-    button {
-      cursor: pointer;
-    }
   }
 
   .queue-actions {

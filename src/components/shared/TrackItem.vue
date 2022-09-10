@@ -40,10 +40,10 @@
 <script setup lang="ts">
 import { ref } from "vue";
 
+import DelSvg from "@/assets/icons/delete.svg";
+import { showTrackContextMenu as showContext } from "@/composables/context";
 import { paths } from "@/config";
 import { Track } from "@/interfaces";
-import { showTrackContextMenu as showContext } from "@/composables/context";
-import DelSvg from "@/assets/icons/delete.svg";
 import useQueueStore from "@/stores/queue";
 import ArtistName from "./ArtistName.vue";
 
@@ -63,11 +63,11 @@ function showMenu(e: Event) {
 }
 
 const emit = defineEmits<{
-  (e: "PlayThis"): void;
+  (e: "playThis"): void;
 }>();
 
 const playThis = (track: Track) => {
-  emit("PlayThis");
+  emit("playThis");
 };
 </script>
 

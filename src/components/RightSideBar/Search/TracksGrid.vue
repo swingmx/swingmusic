@@ -8,7 +8,8 @@
         :isHighlighted="false"
         :isPlaying="queue.playing"
         :track="track"
-        @PlayThis="updateQueue(index)"
+        @playThis="updateQueue(index)"
+        :index="index + 1"
       />
     </div>
     <div v-else class="t-center"><h5>🤷</h5></div>
@@ -17,12 +18,13 @@
 </template>
 
 <script setup lang="ts">
+  import { computed } from "vue";
+  
 import LoadMore from "./LoadMore.vue";
 import TrackItem from "@/components/shared/TrackItem.vue";
 import SongItem from "@/components/shared/SongItem.vue";
-import useQStore from "../../../stores/queue";
-import useSearchStore from "../../../stores/search";
-import { computed } from "vue";
+import useQStore from "@/stores/queue";
+import useSearchStore from "@/stores/search";
 
 const queue = useQStore();
 const search = useSearchStore();

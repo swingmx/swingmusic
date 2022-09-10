@@ -23,6 +23,7 @@ import SearchInput from "@/components/RightSideBar/SearchInput.vue";
     #ginner {
       max-width: 30rem;
       margin: 0 auto;
+      border-radius: $small;
     }
 
     .buttons {
