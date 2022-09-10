@@ -35,7 +35,7 @@ export default function play(
         a_store.info.title,
         a_store.info.artist,
         a_store.info.hash,
-        a_store.tracks
+        a_store.allTracks
       );
       useQueue.play();
       break;

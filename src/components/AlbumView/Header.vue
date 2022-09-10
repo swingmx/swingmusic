@@ -3,12 +3,17 @@
     class="a-header rounded"
     ref="albumheaderthing"
     :style="{
-      backgroundImage: `linear-gradient(
+      backgroundImage: album.colors
+        ? `linear-gradient(
         37deg, ${album.colors[0]}, ${album.colors[3]}
-      )`,
+      )`
+        : '',
     }"
   >
-    <div class="info" :class="{ nocontrast: isLight(album.colors[0]) }">
+    <div
+      class="info"
+      :class="{ nocontrast: album.colors ? isLight(album.colors[0]) : false }"
+    >
       <div class="art">
         <img
           :src="imguri.artist + album.artistimg"
@@ -67,7 +72,6 @@ import PlayBtnRect from "../shared/PlayBtnRect.vue";
 
 defineProps<{
   album: AlbumInfo;
-  bio: string | null;
 }>();
 
 const emit = defineEmits<{

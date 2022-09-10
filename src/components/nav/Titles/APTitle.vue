@@ -11,7 +11,7 @@
         {{ things.text }}
       </div>
     </div>
-    <Input :page="Routes.playlist" />
+    <Input :page="($route.name as string)" />
   </div>
 </template>
 
@@ -24,13 +24,10 @@ import { playSources, Routes } from "@/composables/enums";
 import useAlbumStore from "@/stores/pages/album";
 import usePStore from "@/stores/pages/playlist";
 import Input from "@/components/shared/Input.vue";
-import { storeToRefs } from "pinia";
 
 defineProps<{
   header_shown: boolean;
 }>();
-
-const { query } = storeToRefs(usePStore());
 
 const things = computed(() => {
   const route = useRoute();

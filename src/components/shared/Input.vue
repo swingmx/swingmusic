@@ -11,15 +11,17 @@
 <script setup lang="ts">
 import usePStore from "@/stores/pages/playlist";
 import useFolderStore from "@/stores/pages/folder";
+import useAlbumStore from "@/stores/pages/album";
 
 import { storeToRefs } from "pinia";
 import { Routes } from "@/composables/enums";
 
 const { query: playlistQuery } = storeToRefs(usePStore());
 const { query: folderQuery } = storeToRefs(useFolderStore());
+const { query: albumQuery } = storeToRefs(useAlbumStore());
 
 const props = defineProps<{
-  page: Routes;
+  page: Routes | string;
 }>();
 
 function getRef() {
@@ -29,6 +31,9 @@ function getRef() {
 
     case Routes.folder:
       return folderQuery;
+
+    case Routes.album:
+      return albumQuery;
 
     default:
       return null;

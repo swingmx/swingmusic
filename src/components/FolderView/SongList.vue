@@ -16,10 +16,10 @@
     </div>
     <div class="songlist">
       <SongItem
-        v-for="(track, index) in getTrackList()"
+        v-for="(track, index) in tracks"
         :key="track.trackid"
         :track="track"
-        :index="track.index !== undefined ? track.index + 1 : index + 1"
+        :index="on_album_page ? track.tracknumber : (track.index !== undefined ? track.index + 1 : index + 1)"
         @updateQueue="
           updateQueue(track.index !== undefined ? track.index : index)
         "

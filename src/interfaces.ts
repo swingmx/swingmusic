@@ -111,7 +111,7 @@ export interface FetchProps {
   headers?: {};
 }
 
-export interface FussResult {
+export interface FuseResult {
   item: Track;
   refIndex: number;
 }

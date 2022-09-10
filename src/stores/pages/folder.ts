@@ -1,11 +1,11 @@
-import { ComputedRef } from "vue";
 import { defineStore } from "pinia";
+import { ComputedRef } from "vue";
 
 import { useFuse } from "@/utils";
 
-import fetchThem from "@/composables/fetch/folders";
 import { FuseTrackOptions } from "@/composables/enums";
-import { Folder, Track, FussResult } from "@/interfaces";
+import fetchThem from "@/composables/fetch/folders";
+import { Folder, FuseResult, Track } from "@/interfaces";
 
 export default defineStore("FolderDirs&Tracks", {
   state: () => ({
@@ -22,11 +22,11 @@ export default defineStore("FolderDirs&Tracks", {
     },
   },
   getters: {
-    filteredTracks(): ComputedRef<FussResult[]> {
+    filteredTracks(): ComputedRef<FuseResult[]> {
       return useFuse(this.query, this.allTracks, FuseTrackOptions);
     },
     tracks(): Track[] {
-      const tracks = this.filteredTracks.value.map((result: FussResult) => {
+      const tracks = this.filteredTracks.value.map((result: FuseResult) => {
         const t = {
           ...result.item,
           index: result.refIndex,

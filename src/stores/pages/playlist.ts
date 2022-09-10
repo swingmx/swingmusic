@@ -1,11 +1,11 @@
-import { ComputedRef } from "vue";
 import { defineStore } from "pinia";
+import { ComputedRef } from "vue";
 
 import { useFuse } from "@/utils";
 
 import { FuseTrackOptions } from "@/composables/enums";
 import { getPlaylist } from "@/composables/fetch/playlists";
-import { FussResult, Artist, Playlist, Track } from "@/interfaces";
+import { Artist, FuseResult, Playlist, Track } from "@/interfaces";
 
 export default defineStore("playlist-tracks", {
   state: () => ({
@@ -47,12 +47,12 @@ export default defineStore("playlist-tracks", {
     },
   },
   getters: {
-    filteredTracks(): ComputedRef<FussResult[]> {
+    filteredTracks(): ComputedRef<FuseResult[]> {
       return useFuse(this.query, this.allTracks, FuseTrackOptions);
     },
 
     tracks(): Track[] {
-      const tracks = this.filteredTracks.value.map((result: FussResult) => {
+      const tracks = this.filteredTracks.value.map((result: FuseResult) => {
         const t = {
           ...result.item,
           index: result.refIndex,
