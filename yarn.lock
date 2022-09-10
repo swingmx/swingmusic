@@ -192,6 +192,15 @@
   resolved "https://registry.yarnpkg.com/@vue/shared/-/shared-3.2.37.tgz#8e6adc3f2759af52f0e85863dfb0b711ecc5c702"
   integrity sha512-4rSJemR2NQIo9Klm1vabqWjD8rs/ZaJSzMxkMNeJS6lHiUjjUeYFbooN19NgFjztubEKh3WlZUeOLVdbbUWHsw==
 
+"@vueuse/components@^9.2.0":
+  version "9.2.0"
+  resolved "https://registry.yarnpkg.com/@vueuse/components/-/components-9.2.0.tgz#606e926c3ac0291f0fd7e58b29d4023afcfd0578"
+  integrity sha512-NgQRhq5v1LRZsQq21rJlY8VjEqYg5xWiGErBftY+HaBhHsLAn4PxJxtvbe9uZNdOQlRdWM3UPUF6NO/sWfnyWw==
+  dependencies:
+    "@vueuse/core" "9.2.0"
+    "@vueuse/shared" "9.2.0"
+    vue-demi "*"
+
 "@vueuse/core@9.2.0":
   version "9.2.0"
   resolved "https://registry.yarnpkg.com/@vueuse/core/-/core-9.2.0.tgz#58e3588b9bc5a69010aa9104b00056ee9ebff738"

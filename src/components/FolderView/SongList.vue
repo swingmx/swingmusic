@@ -43,7 +43,7 @@
 </template>
 
 <script setup lang="ts">
-import { onUpdated, ref } from "vue";
+import {  ref } from "vue";
 import { useElementSize } from "@vueuse/core";
 import { computed } from "@vue/reactivity";
 

@@ -1,9 +1,9 @@
 <template>
   <div id="gsearch-input">
-    <div id="ginner" tabindex="0" class="bg-primary">
+    <div id="ginner" tabindex="0" class="bg-primary rounded-sm">
       <input
         id="globalsearch"
-        v-model="search.query"
+        v-model.trim="search.query"
         placeholder="Search your library"
         type="search"
         @blur.prevent="removeFocusedClass"
@@ -11,7 +11,7 @@
       />
       <SearchSvg />
     </div>
-    <div class="buttons bg-primary">
+    <div class="buttons rounded-sm bg-primary">
       <button
         @click="tabs.switchToQueue"
         v-if="tabs.current !== tabs.tabs.queue"
@@ -58,10 +58,6 @@ function removeFocusedClass() {
   grid-template-columns: 1fr max-content;
   gap: 1rem;
 
-  & > * {
-    border-radius: $medium;
-  }
-
   .buttons {
     display: grid;
     grid-auto-flow: column;
@@ -79,7 +75,7 @@ function removeFocusedClass() {
     display: flex;
     align-items: center;
     gap: $smaller;
-    padding: 0 1rem;
+    padding: 0 $small;
 
     input {
       width: 100%;

@@ -13,7 +13,7 @@
   >
     <LeftSidebar />
     <NavBar />
-    <div id="acontent">
+    <div id="acontent" v-element-size="updateContentElemSize">
       <router-view />
     </div>
     <NowPlayingRight />
@@ -26,11 +26,15 @@
 import { onMounted } from "vue";
 import { useRouter } from "vue-router";
 import { onStartTyping } from "@vueuse/core";
+import { vElementSize } from "@vueuse/components";
 
 import useQStore from "@/stores/queue";
 import useModalStore from "@/stores/modal";
 import useContextStore from "@/stores/context";
+import useSettingsStore from "@/stores/settings";
+import { xl } from "./composables/useBreakpoints";
 import handleShortcuts from "@/composables/useKeyboard";
+import { readLocalStorage, writeLocalStorage } from "@/utils";
 
 import Modal from "@/components/modal.vue";
 import NavBar from "@/components/nav/NavBar.vue";
@@ -41,10 +45,7 @@ import RightSideBar from "@/components/RightSideBar/Main.vue";
 import SearchInput from "@/components/RightSideBar/SearchInput.vue";
 import NowPlayingRight from "@/components/RightSideBar/NowPlayingRight.vue";
 import LeftSidebar from "./components/LeftSidebar/index.vue";
-import useSettingsStore from "@/stores/settings";
-
-import { readLocalStorage, writeLocalStorage } from "@/utils";
-import { xl } from "./stores/breakpoints";
+import { content_width } from "@/stores/content-width";
 
 const queue = useQStore();
 const router = useRouter();
@@ -67,7 +68,6 @@ router.afterEach(() => {
 });
 
 onStartTyping((e) => {
-  // if control is pressed return
   if (e.ctrlKey) {
     console.log("ctrl pressed");
   }
@@ -76,6 +76,16 @@ onStartTyping((e) => {
   elem.focus();
   elem.value = "";
 });
+
+function updateContentElemSize({
+  width,
+  height,
+}: {
+  width: number;
+  height: number;
+}) {
+  content_width.value = width;
+}
 
 function handleWelcomeModal() {
   let welcomeShowCount = readLocalStorage("shown-welcome-message");

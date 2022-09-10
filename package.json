@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@popperjs/core": "^2.11.6",
+    "@vueuse/components": "^9.2.0",
     "@vueuse/core": "^8.5.0",
     "@vueuse/integrations": "^9.2.0",
     "axios": "^0.26.1",

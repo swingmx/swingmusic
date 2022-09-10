@@ -16,10 +16,14 @@
     >
       <div class="art">
         <img
-          :src="imguri.artist + album.artistimg"
-          alt=""
-          class="circular shadow-lg"
+          :src="
+            widthIsSmall
+              ? imguri.thumb + album.image
+              : imguri.artist + album.artistimg
+          "
+          class="shadow-lg"
           loading="lazy"
+          :class="`${widthIsSmall ? 'rounded' : 'circular'}`"
         />
       </div>
       <div>
@@ -35,7 +39,7 @@
           </div>
         </div>
         <div class="bottom">
-          <div class="stats">
+          <div class="stats ellip">
             <div class="border rounded-sm pad-sm">
               {{ album.artist }} • {{ album.date }} • {{ album.count }}
               {{ album.count === 1 ? "Track" : "Tracks" }} •
@@ -50,10 +54,9 @@
         </div>
       </div>
     </div>
-    <div
-      class="rounded shadow-lg image bigimg"
-      :style="{ backgroundImage: `url(${imguri.thumb + album.image})` }"
-    ></div>
+    <div class="big-img noscroll" v-if="!widthIsSmall">
+      <img :src="imguri.thumb + album.image" class="rounded" />
+    </div>
   </div>
 </template>
 
@@ -67,6 +70,7 @@ import useAlbumStore from "@/stores/pages/album";
 import { playSources } from "../../composables/enums";
 import { useVisibility, formatSeconds } from "@/utils";
 import { getButtonColor, isLight } from "../../composables/colors/album";
+import { isSmall as widthIsSmall } from "@/stores/content-width";
 
 import PlayBtnRect from "../shared/PlayBtnRect.vue";
 
@@ -107,20 +111,16 @@ useVisibility(albumheaderthing, handleVisibilityState);
   padding: 1rem;
   height: 100% !important;
   background-color: $black;
-  background-image: linear-gradient(37deg, $black 20%, $gray, $black 90%);
   overflow: hidden;
 
-  .bigimg {
-    height: 100%;
+  .big-img {
+    height: calc(100%);
     width: 16rem;
-    overflow: hidden;
+    margin: auto 0;
 
     img {
       height: 100%;
       aspect-ratio: 1;
-
-      object-fit: cover;
-      object-position: bottom;
     }
   }
 
@@ -169,24 +169,12 @@ useVisibility(albumheaderthing, handleVisibilityState);
         font-weight: bold;
         font-size: 0.8rem;
         margin-bottom: 0.75rem;
-        cursor: text;
-
 
         div {
           width: fit-content;
+          cursor: text;
         }
       }
-    }
-  }
-
-  @include for-desktop-down {
-    .art > img {
-      height: 6rem;
-      box-shadow: 0 0 1rem $black;
-    }
-
-    .info > .top > .title {
-      font-size: 2rem;
     }
   }
 }
