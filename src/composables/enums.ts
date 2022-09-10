@@ -37,3 +37,12 @@ export enum Routes {
   search = "SearchView",
   queue = "QueueView",
 }
+
+export const FuseTrackOptions = {
+  keys: [
+    { name: "title", weight: 1 },
+    { name: "album", weight: 0.7 },
+    { name: "artists", weight: 0.5 },
+    { name: "albumartist", weight: 0.25 },
+  ],
+};

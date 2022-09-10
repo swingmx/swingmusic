@@ -5,7 +5,9 @@
     @dblclick="emitUpdate(track)"
     @contextmenu.prevent="showMenu"
   >
-    <div class="index t-center ellip">{{ index }}</div>
+    <div class="index t-center ellip">
+      {{ index }}
+    </div>
     <div class="flex">
       <div @click="emitUpdate(track)" class="thumbnail">
         <img
@@ -54,6 +56,7 @@
       class="options-icon circular"
       :class="{ options_button_clicked }"
       @click.stop="showMenu"
+      @dblclick.stop="() => {}"
     >
       <OptionSvg />
     </div>
@@ -79,17 +82,17 @@ const artisttitle = ref<HTMLElement | null>(null);
 
 const props = defineProps<{
   track: Track;
-  index?: number;
+  index: number;
   isPlaying: Boolean;
   isCurrent: Boolean;
 }>();
 
 const emit = defineEmits<{
-  (e: "updateQueue"): void;
+  (e: "playThis"): void;
 }>();
 
 function emitUpdate(track: Track) {
-  emit("updateQueue");
+  emit("playThis");
 }
 
 function showMenu(e: Event) {
@@ -118,7 +121,7 @@ function showMenu(e: Event) {
 
   .song-album {
     max-width: max-content;
-    cursor: pointer;
+    cursor: pointer !important;
 
     &:hover {
       text-decoration: underline;
@@ -128,10 +131,6 @@ function showMenu(e: Event) {
   .song-artists {
     width: fit-content;
     max-width: 100%;
-
-    .artist {
-      cursor: pointer;
-    }
   }
 
   .index {
@@ -158,7 +157,6 @@ function showMenu(e: Event) {
 
     svg {
       transition: all 0.2s ease-in;
-      // transform: rotate(90deg);
       stroke: $track-btn-svg;
 
       circle {
@@ -195,10 +193,6 @@ function showMenu(e: Event) {
       position: absolute;
       left: $small;
       top: $small;
-    }
-
-    .title {
-      cursor: pointer;
     }
   }
 

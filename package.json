@@ -11,7 +11,9 @@
   "dependencies": {
     "@popperjs/core": "^2.11.6",
     "@vueuse/core": "^8.5.0",
+    "@vueuse/integrations": "^9.2.0",
     "axios": "^0.26.1",
+    "fuse.js": "^6.6.2",
     "pinia": "^2.0.17",
     "pinia-plugin-persistedstate": "^2.1.1",
     "sass": "^1.49.0",

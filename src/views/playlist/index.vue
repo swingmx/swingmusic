@@ -1,37 +1,37 @@
 <template>
   <Page>
     <template #header>
-      <Header :info="playlist.info" />
+      <Header :info="playlist" />
     </template>
     <template #content>
       <Content
-        :tracks="playlist.tracks"
-        :count="playlist.info?.count"
-        :name="playlist.info.name"
-        :playlistid="playlist.info.playlistid"
+        :tracks="tracks"
+        :count="playlist.count"
+        :name="playlist.name"
+        :playlistid="playlist.playlistid"
       />
     </template>
   </Page>
 </template>
 
 <script setup lang="ts">
+import { storeToRefs } from "pinia";
 import Page from "@/layouts/HeaderContentBottom.vue";
 
 import Header from "@/components/PlaylistView/Header.vue";
 import Content from "./Content.vue";
 
-import usePTrackStore from "@/stores/pages/playlist";
-import { onMounted, onUnmounted } from "vue";
-import { useRoute } from "vue-router";
+import usePlaylistStore from "@/stores/pages/playlist";
+import { onBeforeRouteLeave } from "vue-router";
 
-const route = useRoute();
-const playlist = usePTrackStore();
+const store = usePlaylistStore();
+const { info: playlist, tracks } = storeToRefs(store);
 
-onMounted(() => {
-  playlist.fetchArtists(route.params.pid as string);
+onBeforeRouteLeave(() => {
+  setTimeout(() => {
+    store.resetQuery();
+  }, 500);
 });
-
-onUnmounted(() => playlist.resetArtists());
 </script>
 
 <style lang="scss"></style>

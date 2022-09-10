@@ -11,6 +11,15 @@
   box-sizing: border-box;
 }
 
+html {
+  cursor: default !important;
+}
+
+html.loading,
+html.loading * {
+  cursor: progress !important;
+}
+
 body {
   background-color: $body;
   color: $white;
@@ -26,5 +35,9 @@ body {
   #app {
     width: 100%;
     margin: 0 auto;
+  }
+
+  a {
+    cursor: default !important;
   }
 }

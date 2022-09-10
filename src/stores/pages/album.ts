@@ -1,11 +1,12 @@
+import { useFuse } from "@/utils";
 import { defineStore } from "pinia";
+import { ComputedRef } from "vue";
+
+import { FuseTrackOptions } from "@/composables/enums";
+
+import { getAlbumBio, getAlbumTracks } from "../../composables/fetch/album";
+import { AlbumInfo, Artist, FuseResult, Track } from "../../interfaces";
 import { useNotifStore } from "../notification";
-import { Track, Artist, AlbumInfo } from "../../interfaces";
-import {
-  getAlbumTracks,
-  getAlbumArtists,
-  getAlbumBio,
-} from "../../composables/fetch/album";
 
 function sortTracks(tracks: Track[]) {
   return tracks.sort((a, b) => {
@@ -32,9 +33,9 @@ function createDiscs(tracks: Track[]): Discs {
 
 export default defineStore("album", {
   state: () => ({
+    query: "",
     info: <AlbumInfo>{},
-    tracks: <Track[]>[],
-    discs: <Discs>{},
+    allTracks: <Track[]>[],
     artists: <Artist[]>[],
     bio: null,
   }),
@@ -45,27 +46,38 @@ export default defineStore("album", {
      * @param hash title of the album
      */
     async fetchTracksAndArtists(hash: string) {
-      this.tracks = [];
+      this.allTracks = [];
       const album = await getAlbumTracks(hash, useNotifStore);
-      const artists = await getAlbumArtists(hash);
 
-      this.discs = createDiscs(sortTracks(album.tracks));
-      Object.keys(this.discs).forEach((disc) => {
-        this.tracks.push(...this.discs[disc]);
+      const discs = createDiscs(sortTracks(album.tracks));
+      Object.keys(discs).forEach((disc) => {
+        this.allTracks.push(...discs[disc]);
       });
 
       this.info = album.info;
-      this.artists = artists;
     },
-    /**
-     * Fetches the album bio from the server
-     * @param {string} hash title of the album
-     */
-    fetchBio(hash: string) {
-      this.bio = null;
-      getAlbumBio(hash).then((bio) => {
-        this.bio = bio;
+    resetQuery() {
+      this.query = "";
+    },
+  },
+  getters: {
+    filteredTracks(): ComputedRef<FuseResult[]> {
+      return useFuse(this.query, this.allTracks, FuseTrackOptions);
+    },
+    tracks(): Track[] {
+      const tracks = this.filteredTracks.value.map((result: FuseResult) => {
+        const t = {
+          ...result.item,
+          index: result.refIndex,
+        };
+
+        return t;
       });
+
+      return tracks;
+    },
+    discs(): Discs {
+      return createDiscs(this.tracks);
     },
   },
 });

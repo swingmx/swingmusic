@@ -5,6 +5,7 @@ import formatSeconds from "./useFormatSeconds";
 import useDebouncedRef from "./useDebouncedRef";
 import createSubPaths from "./useCreateSubPaths";
 import { readLocalStorage, writeLocalStorage } from "./useLocalStorage";
+import useFuse from "./useFuse";
 
 export {
   readLocalStorage,
@@ -15,4 +16,5 @@ export {
   useVisibility,
   formatSeconds,
   putCommas,
+  useFuse,
 };

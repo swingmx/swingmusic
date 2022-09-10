@@ -34,7 +34,6 @@ const q = useQStore();
     height: 2.5rem;
     width: 100%;
     background-size: 1.5rem !important;
-    cursor: pointer;
 
     &:hover {
       background-color: $darkestblue;

@@ -2,8 +2,8 @@ import useQStore from "@/stores/queue";
 
 let key_down_fired = false;
 
-function focusSearchBox() {
-  const elem = document.getElementById("globalsearch");
+function focusPageSearchBox() {
+  const elem = document.getElementById("page-search") as HTMLInputElement;
 
   elem.focus();
 }
@@ -66,14 +66,9 @@ export default function (queue: typeof useQStore) {
         if (!key_down_fired) {
           if (!ctrlKey) return;
           e.preventDefault();
+          focusPageSearchBox();
 
           key_down_fired = true;
-        }
-      }
-      case "/": {
-        {
-          e.preventDefault();
-          focusSearchBox();
         }
       }
     }

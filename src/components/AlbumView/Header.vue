@@ -3,12 +3,17 @@
     class="a-header rounded"
     ref="albumheaderthing"
     :style="{
-      backgroundImage: `linear-gradient(
+      backgroundImage: album.colors
+        ? `linear-gradient(
         37deg, ${album.colors[0]}, ${album.colors[3]}
-      )`,
+      )`
+        : '',
     }"
   >
-    <div class="info" :class="{ nocontrast: isLight(album.colors[0]) }">
+    <div
+      class="info"
+      :class="{ nocontrast: album.colors ? isLight(album.colors[0]) : false }"
+    >
       <div class="art">
         <img
           :src="imguri.artist + album.artistimg"
@@ -31,8 +36,11 @@
         </div>
         <div class="bottom">
           <div class="stats">
-            {{ album.artist }} • {{ album.date }} • {{ album.count }} Tracks •
-            {{ formatSeconds(album.duration, true) }}
+            <div class="border rounded-sm pad-sm">
+              {{ album.artist }} • {{ album.date }} • {{ album.count }}
+              {{ album.count === 1 ? "Track" : "Tracks" }} •
+              {{ formatSeconds(album.duration, true) }}
+            </div>
           </div>
           <PlayBtnRect
             :source="playSources.album"
@@ -62,9 +70,8 @@ import { getButtonColor, isLight } from "../../composables/colors/album";
 
 import PlayBtnRect from "../shared/PlayBtnRect.vue";
 
-const props = defineProps<{
+defineProps<{
   album: AlbumInfo;
-  bio: string | null;
 }>();
 
 const emit = defineEmits<{
@@ -136,12 +143,14 @@ useVisibility(albumheaderthing, handleVisibilityState);
 
     .top {
       .h {
+        font-size: 14px;
         opacity: 0.5;
       }
       .title {
         font-size: 2.5rem;
         font-weight: 600;
         width: fit-content;
+        cursor: text;
       }
 
       .artist {
@@ -157,15 +166,19 @@ useVisibility(albumheaderthing, handleVisibilityState);
       margin-top: $smaller;
 
       .stats {
-        border-radius: $small;
         font-weight: bold;
         font-size: 0.8rem;
         margin-bottom: 0.75rem;
+        cursor: text;
+
+
+        div {
+          width: fit-content;
+        }
       }
     }
   }
 
-  // grid-template-columns: 1fr !important;
   @include for-desktop-down {
     .art > img {
       height: 6rem;

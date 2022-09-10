@@ -64,7 +64,12 @@ router.afterEach(() => {
   (document.getElementById("acontent") as HTMLElement).scrollTo(0, 0);
 });
 
-onStartTyping(() => {
+onStartTyping((e) => {
+  // if control is pressed return
+  if (e.ctrlKey) {
+    console.log("ctrl pressed");
+  };
+
   const elem = document.getElementById("globalsearch") as HTMLInputElement;
   elem.focus();
   elem.value = "";

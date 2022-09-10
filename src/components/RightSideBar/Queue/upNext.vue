@@ -50,7 +50,6 @@ function showMenu(e: Event) {
   gap: 1rem;
   padding: 1rem;
   width: 100%;
-  cursor: pointer;
 
   &:hover {
     background-color: $gray4;

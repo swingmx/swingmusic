@@ -16,11 +16,17 @@
     </div>
     <div class="songlist">
       <SongItem
-        v-for="(track, index) in getTrackList()"
+        v-for="(track, index) in tracks"
         :key="track.trackid"
         :track="track"
-        :index="track.index"
-        @updateQueue="updateQueue(index)"
+        :index="
+          on_album_page
+            ? track.tracknumber
+            : track.index !== undefined
+            ? track.index + 1
+            : index + 1
+        "
+        @playThis="updateQueue(track.index !== undefined ? track.index : index)"
         :isPlaying="queue.playing"
         :isCurrent="queue.currentid == track.trackid"
       />
@@ -37,7 +43,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
+import { onUpdated, ref } from "vue";
 import { useElementSize } from "@vueuse/core";
 import { computed } from "@vue/reactivity";
 
@@ -59,6 +65,10 @@ const props = defineProps<{
   copyright?: string | null;
 }>();
 
+// onUpdated(() => {
+//   console.log(props.tracks[1].index);
+// });
+
 const emit = defineEmits<{
   (e: "playFromPage", index: number): void;
 }>();
@@ -79,11 +89,11 @@ function updateQueue(index: number) {
 }
 
 /**
- * Used to show track numbers as indexes in the album page.
+ * Used to show handle track indexes.
  */
 function getTrackList() {
   if (props.on_album_page) {
-    let tracks = props.tracks.map((track) => {
+    const tracks = props.tracks.map((track) => {
       track.index = track.tracknumber;
       return track;
     });
@@ -91,12 +101,7 @@ function getTrackList() {
     return tracks;
   }
 
-  const tracks = props.tracks.map((track, index) => {
-    track.index = index + 1;
-    return track;
-  });
-
-  return tracks;
+  return props.tracks;
 }
 </script>
 

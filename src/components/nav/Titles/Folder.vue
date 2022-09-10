@@ -1,37 +1,43 @@
 <template>
   <div id="folder-nav-title">
     <div class="folder">
-      <div class="fname">
-        <div
-          class="icon image"
-          @click="
-            $router.push({ name: Routes.folder, params: { path: '$home' } })
-          "
-        ></div>
-        <div class="paths">
+      <div class="fname-wrapper">
+        <div class="fname">
           <div
-            class="path"
-            v-for="path in subPaths.slice(1)"
-            :key="path.path"
-            :class="{ inthisfolder: path.active }"
-          >
-            <router-link
-              class="text"
-              :to="{ name: Routes.folder, params: { path: path.path } }"
-              >{{ path.name }}</router-link
+            class="icon image"
+            @click="
+              $router.push({ name: Routes.folder, params: { path: '$home' } })
+            "
+          ></div>
+          <div class="paths">
+            <div
+              class="path"
+              v-for="path in subPaths.slice(1)"
+              :key="path.path"
+              :class="{ inthisfolder: path.active }"
             >
+              <router-link
+                class="text"
+                :to="{ name: Routes.folder, params: { path: path.path } }"
+                >{{ path.name }}</router-link
+              >
+            </div>
           </div>
         </div>
+      </div>
+      <div>
+        <Input :page="Routes.folder" />
       </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { focusElem } from "@/utils";
-import { subPath } from "@/interfaces";
-import { onUpdated } from "vue";
+import Input from "@/components/shared/Input.vue";
 import { Routes } from "@/composables/enums";
+import { subPath } from "@/interfaces";
+import { focusElem } from "@/utils";
+import { onUpdated } from "vue";
 
 defineProps<{
   subPaths: subPath[];
@@ -44,24 +50,16 @@ onUpdated(() => {
 
 <style lang="scss">
 #folder-nav-title {
-  overflow: hidden;
   width: 100%;
 
   .folder {
-    display: flex;
+    display: grid;
+    grid-template-columns: 1fr max-content;
     gap: $small;
 
-    .playbtnrect {
-      height: 2.25rem;
-    }
-
-    .drop-btn {
-      width: 2.25rem;
-
-      .drop-icon {
-        height: 2.25rem;
-        width: 2.25rem;
-      }
+    .fname-wrapper {
+      width: 100%;
+      overflow: auto;
     }
 
     .fname {
@@ -70,8 +68,9 @@ onUpdated(() => {
       height: 2.25rem;
       display: flex;
       align-items: center;
-      overflow: auto;
       padding-right: $smaller;
+      width: fit-content;
+      max-width: 100%;
 
       .icon {
         height: 2rem;
@@ -79,7 +78,6 @@ onUpdated(() => {
         background-image: url("../../../assets/icons/folder.fill.svg");
         background-size: 1.5rem;
         margin-left: $smaller;
-        cursor: pointer;
       }
 
       .paths {
@@ -96,10 +94,6 @@ onUpdated(() => {
         .path {
           white-space: nowrap;
           margin: auto 0;
-
-          a {
-            cursor: default;
-          }
 
           .text {
             padding: $smaller;

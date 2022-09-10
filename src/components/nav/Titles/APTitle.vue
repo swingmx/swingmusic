@@ -1,19 +1,33 @@
 <template>
-  <div class="title albumnavtitle">
-    <PlayBtn :source="things.source" :store="things.store" />
-    <div class="ellip">
-      {{ things.text }}
+  <div
+    class="title grid albumnavtitle"
+    :class="{
+      hide_play: header_shown,
+    }"
+  >
+    <div class="first grid">
+      <PlayBtn :source="things.source" :store="things.store" />
+      <div class="ellip">
+        {{ things.text }}
+      </div>
     </div>
+    <Input :page="($route.name as string)" />
   </div>
 </template>
 
 <script setup lang="ts">
+import { useRoute } from "vue-router";
+import { computed } from "@vue/reactivity";
+
 import PlayBtn from "@/components/shared/PlayBtn.vue";
 import { playSources, Routes } from "@/composables/enums";
 import useAlbumStore from "@/stores/pages/album";
 import usePStore from "@/stores/pages/playlist";
-import { computed } from "@vue/reactivity";
-import { useRoute } from "vue-router";
+import Input from "@/components/shared/Input.vue";
+
+defineProps<{
+  header_shown: boolean;
+}>();
 
 const things = computed(() => {
   const route = useRoute();
@@ -46,10 +60,22 @@ const things = computed(() => {
 
 <style lang="scss">
 .albumnavtitle {
-  display: flex;
+  grid-template-columns: max-content 1fr;
   align-items: center;
+  justify-content: space-between;
   gap: $small;
-  outline: solid 1px $gray3;
   height: 100%;
+
+  .first {
+    grid-template-columns: max-content 1fr;
+    gap: $small;
+    align-items: center;
+  }
+}
+
+.albumnavtitle.hide_play {
+  .first {
+    visibility: hidden;
+  }
 }
 </style>

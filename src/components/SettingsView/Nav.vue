@@ -1,6 +1,6 @@
 <template>
   <div class="settingsnav">
-    <div class="buttongroup rounded bg-primary">
+    <div class="buttongroup rounded-sm bg-primary">
       <button v-for="(group, index) in settingGroups" :key="index">
         {{ group.title }}
       </button>

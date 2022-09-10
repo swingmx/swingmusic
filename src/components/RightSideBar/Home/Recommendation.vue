@@ -60,7 +60,6 @@ const songs = [
 
     &:hover {
       background-color: #3a39393d;
-      cursor: pointer;
     }
   }
 }

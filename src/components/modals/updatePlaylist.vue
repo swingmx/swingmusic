@@ -37,10 +37,10 @@
 </template>
 
 <script setup lang="ts">
-import usePStore from "@/stores/pages/playlist";
-import { onMounted } from "vue";
 import { updatePlaylist } from "@/composables/fetch/playlists";
 import { Playlist } from "@/interfaces";
+import usePStore from "@/stores/pages/playlist";
+import { onMounted } from "vue";
 
 const pStore = usePStore();
 
@@ -132,7 +132,6 @@ function update_playlist(e: Event) {
     place-items: center;
     color: $gray1;
     margin: $small 0;
-    cursor: pointer;
 
     #update-pl-img-preview {
       width: 4.5rem;

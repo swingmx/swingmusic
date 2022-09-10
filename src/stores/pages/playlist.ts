@@ -1,15 +1,17 @@
-import { Artist } from "./../../interfaces";
 import { defineStore } from "pinia";
-import {
-  getPlaylist,
-  getPlaylistArtists,
-} from "../../composables/fetch/playlists";
-import { Track, Playlist } from "../../interfaces";
+import { ComputedRef } from "vue";
+
+import { useFuse } from "@/utils";
+
+import { FuseTrackOptions } from "@/composables/enums";
+import { getPlaylist } from "@/composables/fetch/playlists";
+import { Artist, FuseResult, Playlist, Track } from "@/interfaces";
 
 export default defineStore("playlist-tracks", {
   state: () => ({
     info: <Playlist>{},
-    tracks: <Track[]>[],
+    query: "",
+    allTracks: <Track[]>[],
     artists: <Artist[]>[],
   }),
   actions: {
@@ -21,12 +23,12 @@ export default defineStore("playlist-tracks", {
       const playlist = await getPlaylist(playlistid);
 
       this.info = playlist?.info || ({} as Playlist);
-      this.tracks = playlist?.tracks || [];
+      this.allTracks = playlist?.tracks || [];
     },
 
-    async fetchArtists(playlistid: string) {
-      this.artists = await getPlaylistArtists(playlistid);
-    },
+    // async fetchArtists(playlistid: string) {
+    //   this.artists = await getPlaylistArtists(playlistid);
+    // },
     /**
      * Updates the playlist header info. This is used when the playlist is
      * updated.
@@ -39,6 +41,27 @@ export default defineStore("playlist-tracks", {
     },
     resetArtists() {
       this.artists = [];
+    },
+    resetQuery() {
+      this.query = "";
+    },
+  },
+  getters: {
+    filteredTracks(): ComputedRef<FuseResult[]> {
+      return useFuse(this.query, this.allTracks, FuseTrackOptions);
+    },
+
+    tracks(): Track[] {
+      const tracks = this.filteredTracks.value.map((result: FuseResult) => {
+        const t = {
+          ...result.item,
+          index: result.refIndex,
+        };
+
+        return t;
+      });
+
+      return tracks;
     },
   },
 });

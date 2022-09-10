@@ -13,9 +13,9 @@ export interface Track {
   bitrate?: number;
   genre?: string;
   image: string;
-  tracknumber?: number;
-  discnumber?: number;
-  index?: number;
+  tracknumber: number;
+  discnumber: number;
+  index: number;
   hash: string;
   copyright?: string;
 }
@@ -110,3 +110,10 @@ export interface FetchProps {
   put?: boolean;
   headers?: {};
 }
+
+export interface FuseResult {
+  item: Track;
+  refIndex: number;
+}
+
+

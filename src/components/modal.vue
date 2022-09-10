@@ -80,7 +80,6 @@ function hideModal() {
       transform: rotate(45deg);
 
       &:hover {
-        cursor: pointer;
         transform: rotate(135deg);
       }
     }

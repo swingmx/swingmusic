@@ -37,7 +37,7 @@ const isLastDisc = (disc: string | number) => {
 
 function playFromAlbumPage(index: number) {
   const { title, artist, hash } = album.info;
-  queue.playFromAlbum(title, artist, hash, album.tracks);
+  queue.playFromAlbum(title, artist, hash, album.allTracks);
   queue.play(index);
 }
 </script>

@@ -24,7 +24,7 @@ export default function play(
       store = store as typeof folder;
       const f = store();
 
-      useQueue.playFromFolder(f.path, f.tracks);
+      useQueue.playFromFolder(f.path, f.allTracks);
       useQueue.play();
       break;
     case playSources.album:
@@ -35,7 +35,7 @@ export default function play(
         a_store.info.title,
         a_store.info.artist,
         a_store.info.hash,
-        a_store.tracks
+        a_store.allTracks
       );
       useQueue.play();
       break;

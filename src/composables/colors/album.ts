@@ -25,8 +25,14 @@ interface BtnColor {
  * @returns {BtnColor} A color to use as the play button background
  */
 export function getButtonColor(colors: string[]): BtnColor {
+  const def = {
+    color: "#fff",
+    isDark: true,
+  };
+
+  if (!colors || colors.length === 0) return def;
+
   const base_color = colors[0];
-  if (colors.length === 0) return { color: "#fff", isDark: true };
 
   for (let i = 0; i < colors.length; i++) {
     if (theyContrast(base_color, colors[i])) {
@@ -37,10 +43,7 @@ export function getButtonColor(colors: string[]): BtnColor {
     }
   }
 
-  return {
-    color: "#fff",
-    isDark: true,
-  };
+  return def;
 }
 
 /**

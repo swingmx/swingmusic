@@ -81,7 +81,6 @@ const routes = [
 
       await store
         .fetchTracksAndArtists(to.params.hash)
-        .then(() => store.fetchBio(to.params.hash))
         .then(() => {
           state.loading.value = false;
         });

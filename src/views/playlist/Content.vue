@@ -27,8 +27,9 @@ import usePlaylistStore from "@/stores/pages/playlist";
 
 import SongList from "@/components/FolderView/SongList.vue";
 import { Track } from "@/interfaces";
+import { onUpdated } from "vue";
 
-defineProps<{
+const props = defineProps<{
   tracks: Track[];
   count: number;
   name: string;
@@ -40,7 +41,7 @@ const playlist = usePlaylistStore();
 
 function playFromPlaylistPage(index: number) {
   const { name, playlistid } = playlist.info;
-  queue.playFromPlaylist(name, playlistid, playlist.tracks);
+  queue.playFromPlaylist(name, playlistid, playlist.allTracks);
   queue.play(index);
 }
 </script>

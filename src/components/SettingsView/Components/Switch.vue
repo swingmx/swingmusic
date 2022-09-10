@@ -5,8 +5,6 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
-
 defineProps<{
   state: boolean;
 }>();
@@ -14,16 +12,16 @@ defineProps<{
 
 <style lang="scss">
 .switch {
-  height: 2rem;
+  height: 1.5rem;
   background-color: $gray;
-  width: 3.75rem;
+  width: 2.5rem;
   padding: $smaller;
   position: relative;
   transition: all 0.25s ease;
 
   .circle {
     transition: all 0.25s ease;
-    height: 1.5rem;
+    height: 1rem;
     aspect-ratio: 1;
     background-color: $gray1;
     position: absolute;
@@ -37,7 +35,7 @@ defineProps<{
 
   .circle {
     background-color: $white;
-    left: calc((100% - ($smaller + 1.5rem)));
+    left: calc((100% - ($smaller + 1rem)));
   }
 }
 </style>

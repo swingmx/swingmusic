@@ -10,10 +10,11 @@
         v-for="(t, index) in queue.tracklist"
         :key="index"
         :track="t"
-        :index="index + 1"
+        :index="index"
         :isPlaying="queue.playing"
         :isHighlighted="false"
         :isCurrent="index === queue.currentindex"
+        :isQueueTrack="true"
         @PlayThis="playFromQueue(index)"
       />
     </div>

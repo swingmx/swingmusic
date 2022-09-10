@@ -32,7 +32,6 @@ defineProps<{
   width: 100%;
   display: flex;
   align-items: center;
-  cursor: default;
   padding: 0.4rem 1rem;
   position: relative;
 

@@ -37,20 +37,17 @@
 import { ref } from "vue";
 
 import useNavStore from "@/stores/nav";
-import useModalStore from "../../stores/modal";
-import pContext from "../../contexts/playlist";
 import usePStore from "@/stores/pages/playlist";
-import useContextStore from "../../stores/context";
+import useModalStore from "../../stores/modal";
 
+import { playSources } from "@/composables/enums";
+import { formatSeconds, useVisibility } from "@/utils";
 import { paths } from "../../config";
 import { Playlist } from "../../interfaces";
-import { useVisibility, formatSeconds } from "@/utils";
-import { ContextSrc, playSources } from "@/composables/enums";
 
 import PlayBtnRect from "../shared/PlayBtnRect.vue";
 
 const imguri = paths.images.playlist;
-const context = useContextStore();
 const modal = useModalStore();
 const nav = useNavStore();
 const playlistheader = ref<HTMLElement | null>(null);
@@ -63,10 +60,6 @@ const props = defineProps<{
 
 function editPlaylist() {
   modal.showEditPlaylistModal(props.info);
-}
-
-function showDropdown(e: any) {
-  context.showContextMenu(e, pContext(), ContextSrc.PHeader);
 }
 </script>
 
@@ -155,16 +148,7 @@ function showDropdown(e: any) {
       font-size: 2.5rem;
       font-weight: 900;
       text-transform: capitalize;
-    }
-
-    .desc {
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: initial;
-      display: -webkit-box;
-      -webkit-line-clamp: 2;
-      -webkit-box-orient: vertical;
-      max-width: 50%;
+      cursor: text;
     }
 
     .duration {
@@ -173,6 +157,7 @@ function showDropdown(e: any) {
       padding: $smaller;
       padding-left: 0;
       font-weight: 900;
+      cursor: text;
     }
 
     .btns {

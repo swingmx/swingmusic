@@ -25,34 +25,26 @@
     </router-link>
 
     <div class="bottom">
-      <div class="title ellip">{{ props.track?.title }}</div>
-      <div
-        class="artists ellip"
-        v-if="track?.artists && track?.artists[0] !== ''"
-      >
-        <span v-for="artist in putCommas(track.artists)" :key="artist">{{
-          artist
-        }}</span>
-      </div>
-      <div class="artists" v-else-if="track?.artists">
-        <span>{{ track.albumartist }}</span>
-      </div>
-      <div class="artists" v-else>
-        <span>Meh</span>
-      </div>
+      <div class="title ellip t-center">{{ props.track?.title }}</div>
+      <ArtistName
+        :artists="track?.artists || ['Artist']"
+        :albumartist="track?.albumartist"
+        class="artists"
+      />
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { putCommas } from "@/utils";
 import { paths } from "../../../config";
 import { Track } from "../../../interfaces";
-const imguri = paths.images.thumb;
+import ArtistName from "@/components/shared/ArtistName.vue";
 
 const props = defineProps<{
   track: Track | null;
 }>();
+
+const imguri = paths.images.thumb;
 </script>
 
 <style lang="scss">
@@ -91,12 +83,14 @@ const props = defineProps<{
 
   .title {
     font-weight: 900;
+    margin: 0 auto;
   }
 
   .artists {
     font-size: 0.85rem;
     opacity: 0.75;
-    
+    margin: 0 auto;
+
     &:hover {
       text-decoration: underline 1px !important;
     }
