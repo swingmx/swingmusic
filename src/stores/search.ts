@@ -11,10 +11,10 @@ import {
   loadMoreArtists,
 } from "../composables/fetch/searchMusic";
 import { watch } from "vue";
-import useDebouncedRef from "../utils/useDebouncedRef";
 import useTabStore from "./tabs";
 import useLoaderStore from "./loader";
 import { useRoute } from "vue-router";
+import { useDebounce } from "@vueuse/core";
 /**
  *
  * Scrolls on clicking the loadmore button
@@ -31,7 +31,8 @@ function scrollOnLoad() {
 
 export default defineStore("search", () => {
   // @ts-ignore
-  const query = useDebouncedRef(null, 600);
+  const query = ref("");
+  const debouncedQuery = useDebounce(query)
   const { startLoading, stopLoading } = useLoaderStore();
   const route = useRoute();
 
@@ -147,7 +148,7 @@ export default defineStore("search", () => {
   }
 
   watch(
-    () => query.value,
+    () => debouncedQuery.value,
     (newQuery) => {
       // reset all counters
       for (const key in loadCounter) {
