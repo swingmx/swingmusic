@@ -20,7 +20,7 @@ export interface Setting {
 }
 
 export interface SettingGroup {
-  title?: string;
+  name?: string;
   desc?: string;
   settings: Setting[];
 }

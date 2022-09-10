@@ -1,16 +1,16 @@
 <template>
   <div class="settingsgroup">
-    <div>
-      <h4 v-if="group.title">{{ group.title }}</h4>
+    <div v-if="group.name || group.desc">
+      <h4 v-if="group.name">{{ group.name }}</h4>
       <div class="desc" v-if="group.desc">{{ group.desc }}</div>
     </div>
-    <div class="setting rounded bg-primary pad-lg">
+    <div class="setting rounded border pad-lg">
       <div
         v-for="(setting, index) in group.settings"
         :key="index"
         :class="{ inactive: setting.inactive && setting.inactive() }"
       >
-        <div class="title">
+        <div class="title ellip" @click="setting.action()">
           {{ setting.title }}
         </div>
         <div class="options">
@@ -69,6 +69,7 @@ defineProps<{
 
     .title {
       margin: auto 0;
+      user-select: none;
     }
   }
 }

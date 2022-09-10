@@ -10,11 +10,5 @@ const use_alt_np: Setting = {
   inactive: () => settings().disable_show_alt_np,
   action: () => settings().toggleUseRightNP(),
 };
-const use_sidebar: Setting = {
-  title: "Use right sidebar",
-  type: SettingType.switch,
-  source: () => settings().use_sidebar,
-  action: () => settings().toggleDisableSidebar(),
-};
 
-export default [use_sidebar, use_alt_np];
+export default [use_alt_np];

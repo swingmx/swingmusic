@@ -16,6 +16,8 @@
   overflow: hidden;
   text-overflow: ellipsis;
   word-break: break-all;
+  width: fit-content;
+  max-width: 100%;
 }
 
 .rounded {
