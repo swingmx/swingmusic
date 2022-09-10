@@ -148,16 +148,7 @@ function editPlaylist() {
       font-size: 2.5rem;
       font-weight: 900;
       text-transform: capitalize;
-    }
-
-    .desc {
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: initial;
-      display: -webkit-box;
-      -webkit-line-clamp: 2;
-      -webkit-box-orient: vertical;
-      max-width: 50%;
+      cursor: text;
     }
 
     .duration {
@@ -166,6 +157,7 @@ function editPlaylist() {
       padding: $smaller;
       padding-left: 0;
       font-weight: 900;
+      cursor: text;
     }
 
     .btns {

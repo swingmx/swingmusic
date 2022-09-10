@@ -109,7 +109,6 @@ const playThis = (track: Track) => {
       transform: scale(1) translateY(0);
     }
 
-    cursor: pointer;
     background: linear-gradient(37deg, $gray4, $gray3, $gray3);
   }
 

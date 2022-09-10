@@ -150,7 +150,7 @@ useVisibility(albumheaderthing, handleVisibilityState);
         font-size: 2.5rem;
         font-weight: 600;
         width: fit-content;
-        // cursor: text;
+        cursor: text;
       }
 
       .artist {
@@ -169,6 +169,8 @@ useVisibility(albumheaderthing, handleVisibilityState);
         font-weight: bold;
         font-size: 0.8rem;
         margin-bottom: 0.75rem;
+        cursor: text;
+
 
         div {
           width: fit-content;
