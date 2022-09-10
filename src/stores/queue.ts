@@ -204,15 +204,27 @@ export default defineStore("Queue", {
         return;
       }
 
-      const shuffled = shuffle(this.tracklist);
-      this.tracklist = shuffled;
+      const current = this.currenttrack;
+      const current_hash = current.hash;
 
-      this.currentindex = 0;
-      this.currentid = shuffled[0].trackid;
+      this.tracklist = shuffle(this.tracklist);
+      // find current track after shuffle
 
       if (this.playing) {
-        this.play(this.currentindex);
+        const newindex = this.tracklist.findIndex(
+          (track) => track.hash === current_hash
+        );
+
+        // remove current track from queue
+        this.tracklist.splice(newindex, 1);
+        // insert current track at beginning of queue
+        this.tracklist.unshift(current);
+        this.currentindex = 0;
+        return;
       }
+
+      this.currentindex = 0;
+      this.play(this.currentindex);
     },
     removeFromQueue(index: number = 0) {
       this.tracklist.splice(index, 1);

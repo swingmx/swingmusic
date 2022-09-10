@@ -6,7 +6,7 @@
       </router-link>
       <div class="playing-from">
         <div class="border rounded-sm pad-sm">
-          <source-icon />
+          <SourceIcon v-if="SourceIcon" />
           <b class="ellip">{{ name }}</b>
         </div>
       </div>

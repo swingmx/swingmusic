@@ -4,9 +4,6 @@
       <NavButtons />
 
       <div
-        :style="{
-          overflowY: hideOverflow() ? 'visible' : 'hidden',
-        }"
         class="info"
       >
         <APTitle
@@ -20,10 +17,6 @@
         <QueueTitle v-if="$route.name == Routes.queue" />
       </div>
     </div>
-    <!-- 
-    <div class="center rounded">
-      <Loader />
-    </div> -->
   </div>
 </template>
 
@@ -39,7 +32,6 @@ import { Routes } from "@/composables/enums";
 import NavButtons from "./NavButtons.vue";
 
 import FolderTitle from "./Titles/Folder.vue";
-import SimpleTitle from "./Titles/SimpleTitle.vue";
 import APTitle from "./Titles/APTitle.vue";
 import SearchTitle from "./Titles/SearchTitle.vue";
 import PlaylistsTitle from "./Titles/PlaylistsTitle.vue";
@@ -51,12 +43,6 @@ const nav = useNavStore();
 
 const subPaths = ref<subPath[]>([]);
 
-function hideOverflow() {
-  const { name } = route;
-  const { album, playlist, search, folder } = Routes;
-
-  return (album + playlist + search + folder).includes(name as string);
-}
 
 watch(
   () => route.name,
