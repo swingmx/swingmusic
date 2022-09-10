@@ -19,7 +19,7 @@
 
 <script setup lang="ts">
   import { computed } from "vue";
-  
+
 import LoadMore from "./LoadMore.vue";
 import TrackItem from "@/components/shared/TrackItem.vue";
 import SongItem from "@/components/shared/SongItem.vue";

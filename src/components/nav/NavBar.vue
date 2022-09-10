@@ -20,7 +20,7 @@
         <QueueTitle v-if="$route.name == Routes.queue" />
       </div>
     </div>
-    <!-- 
+    <!--
     <div class="center rounded">
       <Loader />
     </div> -->
