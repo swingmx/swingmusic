@@ -20,6 +20,9 @@ export default defineStore("FolderDirs&Tracks", {
 
       [this.path, this.allDirs, this.allTracks] = [path, folders, tracks];
     },
+    resetQuery() {
+      this.query = "";
+    },
   },
   getters: {
     filteredTracks(): ComputedRef<FuseResult[]> {

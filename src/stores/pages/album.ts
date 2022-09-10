@@ -56,15 +56,8 @@ export default defineStore("album", {
 
       this.info = album.info;
     },
-    /**
-     * Fetches the album bio from the server
-     * @param {string} hash title of the album
-     */
-    fetchBio(hash: string) {
-      this.bio = null;
-      getAlbumBio(hash).then((bio) => {
-        this.bio = bio;
-      });
+    resetQuery() {
+      this.query = "";
     },
   },
   getters: {
@@ -73,7 +66,6 @@ export default defineStore("album", {
     },
     tracks(): Track[] {
       const tracks = this.filteredTracks.value.map((result: FuseResult) => {
-        console.log(result.refIndex);
         const t = {
           ...result.item,
           index: result.refIndex,

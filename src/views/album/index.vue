@@ -11,7 +11,11 @@
 
 <script setup lang="ts">
 import useAStore from "@/stores/pages/album";
-import { onBeforeRouteUpdate, RouteLocationNormalized } from "vue-router";
+import {
+  onBeforeRouteLeave,
+  onBeforeRouteUpdate,
+  RouteLocationNormalized,
+} from "vue-router";
 
 import Header from "./Header.vue";
 import Content from "./Content.vue";
@@ -22,6 +26,12 @@ const album = useAStore();
 onBeforeRouteUpdate(async (to: RouteLocationNormalized) => {
   await album
     .fetchTracksAndArtists(to.params.hash.toString())
-    .then(() => album.fetchBio(to.params.hash.toString()));
+    .then(() => album.resetQuery());
+});
+
+onBeforeRouteLeave(() => {
+  setTimeout(() => {
+    album.resetQuery();
+  }, 500);
 });
 </script>

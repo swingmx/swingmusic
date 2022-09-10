@@ -24,7 +24,11 @@
 
 <script setup lang="ts">
 import { ref } from "@vue/reactivity";
-import { onBeforeRouteUpdate, RouteLocationNormalized } from "vue-router";
+import {
+  onBeforeRouteLeave,
+  onBeforeRouteUpdate,
+  RouteLocationNormalized,
+} from "vue-router";
 
 import SongList from "@/components/FolderView/SongList.vue";
 import FolderList from "@/components/FolderView/FolderList.vue";
@@ -52,18 +56,21 @@ function playFromPage(index: number) {
 }
 
 onBeforeRouteUpdate((to, from) => {
-  if (isSameRoute(to, from)) return;
-
   loader.startLoading();
   folder
     .fetchAll(to.params.path as string)
 
     .then(() => {
       scrollable.value.scrollTop = 0;
+      folder.resetQuery();
     })
     .then(() => {
       loader.stopLoading();
     });
+});
+
+onBeforeRouteLeave(() => {
+  setTimeout(() => folder.resetQuery(), 500);
 });
 </script>
 
