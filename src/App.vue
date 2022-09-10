@@ -8,6 +8,7 @@
     :class="{
       showAltNP: settings.use_sidebar && settings.use_alt_np,
       disableSidebar: !settings.use_sidebar,
+      isSmall: !xl,
     }"
   >
     <LeftSidebar />
@@ -16,8 +17,8 @@
       <router-view />
     </div>
     <NowPlayingRight />
-    <SearchInput v-if="settings.use_sidebar" />
-    <RightSideBar v-if="settings.use_sidebar" />
+    <SearchInput v-if="settings.use_sidebar && xl" />
+    <RightSideBar v-if="settings.use_sidebar && xl" />
   </div>
 </template>
 
@@ -43,6 +44,7 @@ import LeftSidebar from "./components/LeftSidebar/index.vue";
 import useSettingsStore from "@/stores/settings";
 
 import { readLocalStorage, writeLocalStorage } from "@/utils";
+import { xl } from "./stores/breakpoints";
 
 const queue = useQStore();
 const router = useRouter();
@@ -68,7 +70,7 @@ onStartTyping((e) => {
   // if control is pressed return
   if (e.ctrlKey) {
     console.log("ctrl pressed");
-  };
+  }
 
   const elem = document.getElementById("globalsearch") as HTMLInputElement;
   elem.focus();

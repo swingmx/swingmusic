@@ -82,7 +82,7 @@ function getSource() {
       };
 
     default:
-      return { name: "Ghost source" };
+      return { name: "👻 Ghost source", location: {} };
   }
 }
 
@@ -113,13 +113,13 @@ const { name, icon: SourceIcon, location } = getSource();
         grid-template-columns: max-content 1fr;
         align-items: center;
         padding: $smaller $small;
+        height: 100%;
       }
 
       svg {
         transform: scale(0.9);
       }
     }
-
   }
 
   .queue-actions {

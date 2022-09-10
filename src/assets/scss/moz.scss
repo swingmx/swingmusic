@@ -5,4 +5,22 @@
     margin-right: -1rem;
     padding-right: 1rem;
   }
+
+  #app-grid.isSmall #acontent {
+    margin-right: -$small;
+    padding-right: $medium;
+  }
+
+  #app-grid.isSmall #page-search {
+    margin-right: $smaller;
+  }
+
+  #app-grid.disableSidebar #acontent {
+    margin-right: -$small;
+    padding-right: $medium;
+  }
+
+  #app-grid.disableSidebar #page-search {
+    margin-right: $smaller;
+  }
 }

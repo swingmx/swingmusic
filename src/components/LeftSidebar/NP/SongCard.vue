@@ -25,10 +25,10 @@
     </router-link>
 
     <div class="bottom">
-      <div class="title ellip t-center">{{ props.track?.title }}</div>
+      <div class="title ellip t-center">{{ props.track?.title || '♥ Hello ♥' }}</div>
       <ArtistName
-        :artists="track?.artists || ['Artist']"
-        :albumartist="track?.albumartist"
+        :artists="track?.artists || []"
+        :albumartist="track?.albumartist || 'Play something'"
         class="artists"
       />
     </div>

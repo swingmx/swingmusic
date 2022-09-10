@@ -1,6 +1,9 @@
 <template>
   <div v-tooltip="returnArtists()" style="width: auto">
-    <div class="ellip" v-if="artists[0] === '' && artists.length === 1">
+    <div
+      class="ellip"
+      v-if="artists.length === 0 || (artists[0] === '' && artists.length === 1)"
+    >
       <span>{{ albumartist }}</span>
     </div>
     <div class="ellip" v-else>

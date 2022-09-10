@@ -13,23 +13,32 @@
   gap: 1rem;
   margin: $small auto;
 
-  @include for-desktop-down {
-    grid-template-columns: min-content 1fr 26rem;
-  }
+  // @include for-desktop-down {
+  //   grid-template-columns: min-content 1fr 26rem;
+  // }
 
-  @include tablet-landscape {
-    grid-template-columns: min-content 1fr;
-    grid-template-areas:
-      "l-sidebar nav"
-      "l-sidebar content"
-      "l-sidebar content"
-      "l-sidebar content";
-    .r-sidebar,
-    #tabs,
-    #gsearch-input {
-      display: none;
-    }
-  }
+  // @include tablet-landscape {
+  //   grid-template-columns: min-content 1fr;
+  //   grid-template-areas:
+  //     "l-sidebar nav"
+  //     "l-sidebar content"
+  //     "l-sidebar content"
+  //     "l-sidebar content";
+  //   .r-sidebar,
+  //   #tabs,
+  //   #gsearch-input {
+  //     display: none;
+  //   }
+  // }
+}
+
+#app-grid.isSmall {
+  grid-template-columns: min-content 1fr;
+  grid-template-areas:
+    "l-sidebar nav"
+    "l-sidebar content"
+    "l-sidebar content"
+    "l-sidebar content";
 }
 
 #app-grid.showAltNP {
@@ -61,6 +70,16 @@
     margin: $small;
     width: calc(100% - 1rem);
   }
+}
+
+#app-grid.isSmall #acontent {
+  margin-right: -$small;
+  padding-right: calc($small - 1px);
+}
+
+#app-grid.disableSidebar #acontent {
+  margin-right: -$small;
+  padding-right: calc($small - 1px);
 }
 
 #tabs {
