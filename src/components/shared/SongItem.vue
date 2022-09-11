@@ -22,7 +22,7 @@
           :class="{ last_played: !isPlaying }"
         ></div>
       </div>
-      <div v-tooltip="track.title">
+      <div v-tooltip="track.title" class="song-title">
         <div class="title ellip" @click="emitUpdate(track)" ref="artisttitle">
           {{ track.title }}
         </div>
@@ -109,11 +109,10 @@ function showMenu(e: Event) {
   height: 3.75rem;
   gap: 1rem;
   user-select: none;
-  // background-color: $gray;
 
-  // &:nth-child(odd) {
-  //   background-color: rgba(26, 26, 26, 0.068);
-  // }
+  .song-title {
+    cursor: pointer;
+  }
 
   &:hover {
     background-color: $gray4;

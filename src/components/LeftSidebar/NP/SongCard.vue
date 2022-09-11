@@ -61,6 +61,7 @@ const imguri = paths.images.thumb;
       height: auto;
       aspect-ratio: 1;
       object-fit: cover;
+      cursor: pointer;
     }
 
     #bitrate {

@@ -28,7 +28,6 @@ const props = defineProps<{
 
 <style lang="scss">
 .p-card {
-  transition: all 0.25s ease;
   position: relative;
   background-color: $playlist-card-bg;
   height: 10rem;
@@ -38,7 +37,7 @@ const props = defineProps<{
     height: 100%;
     aspect-ratio: 1/1.2;
     object-fit: cover;
-    transition: all 0.25s ease;
+    transition: all 0.5s ease;
   }
 
   .overlay {
@@ -63,8 +62,8 @@ const props = defineProps<{
   }
 
   &:hover {
-    img {
-      transform: scale(1.1);
+    .p-name {
+      text-decoration: underline;
     }
   }
 

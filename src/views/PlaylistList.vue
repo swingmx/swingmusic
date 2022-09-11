@@ -19,7 +19,6 @@ const pStore = usePStore();
 
 <style lang="scss">
 #p-view {
-  overflow: auto;
   scrollbar-color: $gray2 transparent;
 
   .grid {
