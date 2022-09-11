@@ -9,7 +9,7 @@ export default () => {
 
     navigator.mediaSession.metadata = new window.MediaMetadata({
       title: track.title,
-      artist: track.artists.join(", "),
+      artist: track.artist.join(", "),
       artwork: [
         {
           src: paths.images.thumb + track.image,

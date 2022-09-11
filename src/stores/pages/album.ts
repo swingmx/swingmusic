@@ -4,14 +4,14 @@ import { ComputedRef } from "vue";
 
 import { FuseTrackOptions } from "@/composables/enums";
 
-import { getAlbumBio, getAlbumTracks } from "../../composables/fetch/album";
+import { getAlbumTracks } from "../../composables/fetch/album";
 import { AlbumInfo, Artist, FuseResult, Track } from "../../interfaces";
 import { useNotifStore } from "../notification";
 
 function sortTracks(tracks: Track[]) {
   return tracks.sort((a, b) => {
-    if (a.tracknumber && b.tracknumber) {
-      return a.tracknumber - b.tracknumber;
+    if (a.track && b.track) {
+      return a.track - b.track;
     }
 
     return 0;
@@ -24,9 +24,9 @@ interface Discs {
 
 function createDiscs(tracks: Track[]): Discs {
   return tracks.reduce((group, track) => {
-    const { discnumber } = track;
-    group[discnumber] = group[discnumber] ?? [];
-    group[discnumber].push(track);
+    const { disc } = track;
+    group[disc] = group[disc] ?? [];
+    group[disc].push(track);
     return group;
   }, {} as Discs);
 }

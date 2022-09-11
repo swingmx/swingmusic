@@ -21,7 +21,7 @@
         :track="track"
         :index="
           on_album_page
-            ? track.tracknumber
+            ? track.track
             : track.index !== undefined
             ? track.index + 1
             : index + 1
@@ -43,9 +43,9 @@
 </template>
 
 <script setup lang="ts">
-import {  ref } from "vue";
-import { useElementSize } from "@vueuse/core";
 import { computed } from "@vue/reactivity";
+import { useElementSize } from "@vueuse/core";
+import { ref } from "vue";
 
 import SongItem from "../shared/SongItem.vue";
 
@@ -90,7 +90,7 @@ function updateQueue(index: number) {
 function getTrackList() {
   if (props.on_album_page) {
     const tracks = props.tracks.map((track) => {
-      track.index = track.tracknumber;
+      track.index = track.track;
       return track;
     });
 

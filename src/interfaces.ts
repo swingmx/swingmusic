@@ -4,20 +4,21 @@ export interface Track {
   trackid: string;
   title: string;
   album?: string;
-  artists: string[];
+  artist: string[];
   albumartist?: string;
   albumhash?: string;
   folder?: string;
   filepath?: string;
-  length?: number;
+  duration?: number;
   bitrate?: number;
   genre?: string;
   image: string;
-  tracknumber: number;
-  discnumber: number;
+  track: string;
+  disc: string;
   index: number;
   hash: string;
   copyright?: string;
+  filetype: string
 }
 
 export interface Folder {

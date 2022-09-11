@@ -5,8 +5,8 @@ import { Option } from "../interfaces";
 import Router from "../router";
 
 import {
-  addTrackToPlaylist,
-  getAllPlaylists,
+    addTrackToPlaylist,
+    getAllPlaylists
 } from "../composables/fetch/playlists";
 
 import useModalStore from "../stores/modal";
@@ -27,7 +27,7 @@ export default async (
     type: "separator",
   };
 
-  const single_artist = track.artists.length === 1;
+  const single_artist = track.artist.length === 1;
 
   let playlists = <Option[]>[];
   const p = await getAllPlaylists();
@@ -46,7 +46,7 @@ export default async (
       return false;
     }
 
-    return track.artists.map((artist) => {
+    return track.artist.map((artist) => {
       return <Option>{
         label: artist,
         action: () => console.log("artist"),

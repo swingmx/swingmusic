@@ -10,7 +10,7 @@
     <div class="tags">
       <div class="title ellip">{{ track?.title || "Don't click here" }}</div>
       <div class="artist ellip" v-if="track">
-        <span v-for="artist in putCommas(track.artists)" :key="artist">{{
+        <span v-for="artist in putCommas(track.artist)" :key="artist">{{
           artist
         }}</span>
       </div>

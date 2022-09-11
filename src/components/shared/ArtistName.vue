@@ -2,7 +2,11 @@
   <div v-tooltip="returnArtists()" style="width: auto">
     <div
       class="ellip"
-      v-if="artists.length === 0 || (artists[0] === '' && artists.length === 1)"
+      v-if="
+        artists === null ||
+        artists.length === 0 ||
+        (artists[0] === '' && artists.length === 1)
+      "
     >
       <span>{{ albumartist }}</span>
     </div>
@@ -18,15 +22,17 @@
 import { putCommas } from "@/utils";
 
 const props = defineProps<{
-  artists: string[];
+  artists: string[] | null;
   albumartist: string | undefined;
 }>();
 
 function returnArtists() {
+  if (props.artists === null) return props.albumartist;
+
   if (props.artists[0] !== "" && props.artists.length > 1) {
     return props.artists.join(", ");
-  } else {
-    return props.albumartist;
   }
+
+  return props.albumartist;
 }
 </script>

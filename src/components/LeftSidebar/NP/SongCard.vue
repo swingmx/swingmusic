@@ -16,18 +16,17 @@
           loading="lazy"
         />
         <div id="bitrate" v-if="track?.bitrate">
-          <span v-if="track.bitrate > 1500">MASTER</span>
-          <span v-else-if="track.bitrate > 330">FLAC</span>
-          <span v-else>MP3</span>
-          • {{ track.bitrate }}
+          {{ track.filetype }}• {{ track.bitrate }}
         </div>
       </div>
     </router-link>
 
     <div class="bottom">
-      <div class="title ellip t-center">{{ props.track?.title || '♥ Hello ♥' }}</div>
+      <div class="title ellip t-center">
+        {{ props.track?.title || "♥ Hello ♥" }}
+      </div>
       <ArtistName
-        :artists="track?.artists || []"
+        :artists="track?.artist || []"
         :albumartist="track?.albumartist || 'Play something'"
         class="artists"
       />
@@ -74,6 +73,7 @@ const imguri = paths.images.thumb;
       background-color: $black;
       border-radius: $smaller;
       box-shadow: 0rem 0rem 1rem rgba(0, 0, 0, 0.438);
+      text-transform: uppercase;
     }
   }
 

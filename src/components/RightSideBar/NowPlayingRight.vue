@@ -10,7 +10,7 @@
         <div class="np-artist ellip">
           <span
             v-for="artist in putCommas(
-              queue.currenttrack?.artists || ['♥ Hello ♥']
+              queue.currenttrack?.artist || ['♥ Hello ♥']
             )"
           >
             {{ artist }}

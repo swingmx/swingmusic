@@ -24,7 +24,7 @@
       </div>
       <hr />
       <div class="artist">
-        <ArtistName :artists="track.artists" :albumartist="track.albumartist" />
+        <ArtistName :artists="track.artist" :albumartist="track.albumartist" />
       </div>
     </div>
     <div

@@ -30,10 +30,10 @@
 
 <script setup lang="ts">
 import { onMounted } from "vue";
-import QueueSvg from "../../assets/icons/queue.svg";
-import SearchSvg from "../../assets/icons/search.svg";
-import useSearchStore from "../../stores/search";
-import useTabStore from "../../stores/tabs";
+import QueueSvg from "@/assets/icons/queue.svg";
+import SearchSvg from "@/assets/icons/search.svg";
+import useSearchStore from "@/stores/search";
+import useTabStore from "@/stores/tabs";
 
 const search = useSearchStore();
 const tabs = useTabStore();

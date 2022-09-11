@@ -28,14 +28,14 @@
         </div>
         <div class="isSmallArtists" style="display: none">
           <ArtistName
-            :artists="track.artists"
+            :artists="track.artist"
             :albumartist="track.albumartist"
           />
         </div>
       </div>
     </div>
     <div class="song-artists">
-      <ArtistName :artists="track.artists" :albumartist="track.albumartist" />
+      <ArtistName :artists="track.artist" :albumartist="track.albumartist" />
     </div>
     <router-link
       class="song-album ellip"
@@ -43,14 +43,14 @@
       :to="{
         name: 'AlbumView',
         params: {
-          hash: track.albumhash,
+          hash: track.albumhash || 'Unknown',
         },
       }"
     >
       {{ track.album }}
     </router-link>
     <div class="song-duration">
-      <div class="text ellip">{{ formatSeconds(track.length) }}</div>
+      <div class="text ellip">{{ formatSeconds(track.duration) }}</div>
     </div>
     <div
       class="options-icon circular"
@@ -82,7 +82,7 @@ const artisttitle = ref<HTMLElement | null>(null);
 
 const props = defineProps<{
   track: Track;
-  index: number;
+  index: number | string;
   isPlaying: Boolean;
   isCurrent: Boolean;
 }>();

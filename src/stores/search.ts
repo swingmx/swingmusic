@@ -32,7 +32,7 @@ function scrollOnLoad() {
 export default defineStore("search", () => {
   // @ts-ignore
   const query = ref("");
-  const debouncedQuery = useDebounce(query);
+  const debouncedQuery = useDebounce(query, 500);
   const { startLoading, stopLoading } = useLoaderStore();
   const route = useRoute();
 
