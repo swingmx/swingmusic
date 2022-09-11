@@ -65,10 +65,6 @@ const props = defineProps<{
   copyright?: string | null;
 }>();
 
-// onUpdated(() => {
-//   console.log(props.tracks[1].index);
-// });
-
 const emit = defineEmits<{
   (e: "playFromPage", index: number): void;
 }>();

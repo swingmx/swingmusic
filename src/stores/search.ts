@@ -32,7 +32,7 @@ function scrollOnLoad() {
 export default defineStore("search", () => {
   // @ts-ignore
   const query = ref("");
-  const debouncedQuery = useDebounce(query)
+  const debouncedQuery = useDebounce(query);
   const { startLoading, stopLoading } = useLoaderStore();
   const route = useRoute();
 
@@ -144,7 +144,11 @@ export default defineStore("search", () => {
         artists.more = res.more;
       })
       .then(() => stopLoading())
-      .then(() => scrollOnLoad());
+      .then(() =>
+        setTimeout(() => {
+          scrollOnLoad();
+        }, 500)
+      );
   }
 
   watch(

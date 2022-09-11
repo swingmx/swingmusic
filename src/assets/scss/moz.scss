@@ -1,4 +1,4 @@
-// Styles that only apply on our dear Firefox
+// Styles that only apply to our dear Firefox
 
 @-moz-document url-prefix() {
   #acontent {
@@ -6,18 +6,20 @@
     padding-right: 1rem;
   }
 
-  #app-grid.isSmall #acontent {
-    margin-right: -$small;
-    padding-right: $medium;
+  #app-grid.isSmall,
+  #app-grid.disableSidebar {
+    #acontent {
+      margin-right: -$small;
+      padding-right: $medium;
+
+      .search-view {
+        margin-right: -0.8rem;
+      }
+    }
   }
 
   #app-grid.isSmall #page-search {
     margin-right: $smaller;
-  }
-
-  #app-grid.disableSidebar #acontent {
-    margin-right: -$small;
-    padding-right: $medium;
   }
 
   #app-grid.disableSidebar #page-search {

@@ -10,14 +10,14 @@
         <div class="np-artist ellip">
           <span
             v-for="artist in putCommas(
-              queue.currenttrack?.artists || ['Artist']
+              queue.currenttrack?.artists || ['♥ Hello ♥']
             )"
           >
             {{ artist }}
           </span>
         </div>
         <div class="np-title ellip">
-          {{ queue.currenttrack?.title || "Track title" }}
+          {{ queue.currenttrack?.title || "Play something"}}
         </div>
       </div>
     </div>
@@ -25,7 +25,9 @@
     <div class="time">
       <span class="current">{{ formatSeconds(queue.duration.current) }}</span>
       <HotKeys />
-      <span class="full">{{ formatSeconds(queue.currenttrack.length) }}</span>
+      <span class="full">{{
+        formatSeconds(queue.currenttrack ? queue.currenttrack.length : 0)
+      }}</span>
     </div>
   </div>
 </template>

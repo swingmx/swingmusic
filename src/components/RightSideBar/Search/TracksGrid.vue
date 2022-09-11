@@ -12,7 +12,7 @@
         :index="index + 1"
       />
     </div>
-    <div v-else class="t-center"><h5>🤷</h5></div>
+    <div v-else class="t-center"><h5>💔 No results 💔</h5></div>
     <LoadMore v-if="search.tracks.more" :loader="search.loadTracks" />
   </div>
 </template>

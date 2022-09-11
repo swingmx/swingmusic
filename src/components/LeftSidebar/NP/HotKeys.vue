@@ -1,6 +1,6 @@
 <template>
   
-  <div class="hotkeys rounded noscroll">
+  <div class="hotkeys rounded-sm noscroll">
     <div class="image ctrl-btn" id="previous" @click="q.playPrev"></div>
     <div
       class="image ctrl-btn play-pause"

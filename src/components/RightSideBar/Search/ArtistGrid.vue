@@ -17,7 +17,7 @@
         :alt="true"
       />
     </div>
-    <div v-else class="t-center"><h5>🤷</h5></div>
+    <div v-else class="t-center"><h5>💔 No results 💔</h5></div>
     <LoadMore
       v-if="album_grid && search.albums.more"
       :loader="search.loadAlbums"

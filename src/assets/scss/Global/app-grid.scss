@@ -12,24 +12,6 @@
   margin: 0 auto;
   gap: 1rem;
   margin: $small auto;
-
-  // @include for-desktop-down {
-  //   grid-template-columns: min-content 1fr 26rem;
-  // }
-
-  // @include tablet-landscape {
-  //   grid-template-columns: min-content 1fr;
-  //   grid-template-areas:
-  //     "l-sidebar nav"
-  //     "l-sidebar content"
-  //     "l-sidebar content"
-  //     "l-sidebar content";
-  //   .r-sidebar,
-  //   #tabs,
-  //   #gsearch-input {
-  //     display: none;
-  //   }
-  // }
 }
 
 #app-grid.isSmall {
@@ -72,14 +54,16 @@
   }
 }
 
-#app-grid.isSmall #acontent {
-  margin-right: -$small;
-  padding-right: calc($small - 1px);
-}
+#app-grid.isSmall,
+#app-grid.disableSidebar {
+  #acontent {
+    margin-right: -$small;
+    padding-right: calc($small - 1px);
 
-#app-grid.disableSidebar #acontent {
-  margin-right: -$small;
-  padding-right: calc($small - 1px);
+    .search-view {
+      margin-right: -0.8rem;
+    }
+  }
 }
 
 #tabs {
