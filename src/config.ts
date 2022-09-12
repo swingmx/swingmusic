@@ -1,9 +1,12 @@
+const baseImgUrl = "http://0.0.0.0:1971"
+
 const paths = {
   api: "",
   images: {
-    thumb: "http://0.0.0.0:1971/t/",
-    artist: "http://0.0.0.0:1971/a/",
-    playlist: "http://0.0.0.0:1971/p/"
+    thumb: `${baseImgUrl}/t/`,
+    artist: `${baseImgUrl}/a/`,
+    playlist: `${baseImgUrl}/p/`,
+    raw: `${baseImgUrl}/raw/`
   },
 };
 

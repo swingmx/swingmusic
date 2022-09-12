@@ -76,20 +76,27 @@ export default defineStore("Queue", {
 
           if (this.currentindex !== this.tracklist.length - 1) {
             setTimeout(() => {
+              if (!this.playing) return;
               this.playNext();
-            }, 1000);
+            }, 5000);
           }
         });
     },
     playPause() {
       if (audio.src === "") {
         this.play(this.currentindex);
-      } else if (audio.paused) {
+      }
+
+      if (audio.paused) {
         audio.play();
-        this.playing = true;
       } else {
         audio.pause();
+      }
+
+      if (this.playing) {
         this.playing = false;
+      } else {
+        this.playing = true;
       }
     },
     playNext() {

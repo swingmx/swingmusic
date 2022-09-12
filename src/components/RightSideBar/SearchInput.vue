@@ -15,12 +15,15 @@
       <button
         @click="tabs.switchToQueue"
         v-if="tabs.current !== tabs.tabs.queue"
+        name="switch to queue tab"
       >
         <QueueSvg />
       </button>
       <button
         @click="tabs.switchToSearch"
         v-if="tabs.current !== tabs.tabs.search"
+        name="switch to search tab"
+
       >
         <SearchSvg />
       </button>

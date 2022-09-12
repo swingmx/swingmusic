@@ -1,6 +1,5 @@
 // colors
 
-$body: #202124;
 $separator: #ffffff2f;
 $highlight-blue: #006eff;
 $darkestblue: #234ece;
@@ -26,6 +25,7 @@ $gray2: rgb(99, 99, 102);
 $gray3: rgb(72, 72, 74);
 $gray4: rgb(58, 58, 60);
 $gray5: rgb(44, 44, 46);
+$body: $gray;
 
 $red: #ff453a;
 $blue: #0a84ff;
@@ -44,7 +44,7 @@ $accent: $gray1;
 $secondary: $gray5;
 $danger: $red;
 $track-hover: $gray4;
-$context: $gray;
+$context: black;
 $playlist-card-bg: #46474C;
 
 // SVG COLORS

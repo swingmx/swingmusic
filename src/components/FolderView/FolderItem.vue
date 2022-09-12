@@ -46,7 +46,7 @@ defineProps<{
   .info {
     .f-item-count {
       font-size: 0.8rem;
-      color: rgba(219, 217, 217, 0.63);
+      color: rgb(219, 217, 217);
     }
 
     .f-item-text {

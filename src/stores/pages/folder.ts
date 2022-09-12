@@ -19,6 +19,7 @@ export default defineStore("FolderDirs&Tracks", {
       const { tracks, folders } = await fetchThem(path);
 
       [this.path, this.allDirs, this.allTracks] = [path, folders, tracks];
+
     },
     resetQuery() {
       this.query = "";
