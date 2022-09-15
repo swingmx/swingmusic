@@ -1,3 +1,6 @@
+// "local" | "remote"
+let mode = "remote";
+
 export interface D<T = string> {
   [key: string]: T;
 }
@@ -19,19 +22,15 @@ const imageRoutes = {
   raw: "/raw/",
 };
 
-let mode: string = "remote";
-
 function toggleMode() {
   mode = mode === "local" ? "remote" : "local";
 }
 
-function getDomain() {
-  return domains[mode];
-}
+const domain = () => domains[mode];
 
-const baseImgUrl = getDomain() + ports.images;
+const baseImgUrl = domain() + ports.images;
 
-const baseApiUrl = getDomain() + ports.api;
+const baseApiUrl = domain() + ports.api;
 
 const paths = {
   api: {

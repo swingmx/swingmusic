@@ -37,7 +37,7 @@ export default defineStore("search", () => {
   const route = useRoute();
 
   const currentTab = ref("tracks");
-  const RESULT_COUNT = 6;
+  const RESULT_COUNT = 10;
 
   const loadCounter = reactive({
     tracks: 0,

@@ -4,7 +4,7 @@
     <br />
     <input
       type="text"
-      class="rounded"
+      class="rounded-sm"
       name="name"
       id="modal-playlist-name-input"
     />

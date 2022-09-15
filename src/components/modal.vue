@@ -1,5 +1,5 @@
 <template>
-  <div class="new-playlist-modal" v-if="modal.visible">
+  <div class="modal" v-if="modal.visible">
     <div class="bg" @click="modal.hideModal"></div>
     <div class="m-content rounded">
       <div class="heading">{{ modal.title }}</div>
@@ -34,7 +34,6 @@ const modal = useModalStore();
  * @param title
  */
 function setTitle(title: string) {
-  console.log(title);
   modal.setTitle(title);
 }
 
@@ -47,7 +46,7 @@ function hideModal() {
 </script>
 
 <style lang="scss">
-.new-playlist-modal {
+.modal {
   position: fixed;
   z-index: 20;
   height: 100vh;
@@ -65,10 +64,11 @@ function hideModal() {
   }
 
   .m-content {
-    width: 30rem;
-    background-color: $black;
+    width: 100%;
+    max-width: 35rem;
     padding: 1rem;
     position: relative;
+    background-color: $gray;
 
     .cancel {
       width: 2rem;
@@ -78,9 +78,10 @@ function hideModal() {
       right: 1rem;
       background-image: url("../assets/icons/plus.svg");
       transform: rotate(45deg);
+      cursor: pointer;
 
       &:hover {
-        transform: rotate(135deg);
+        transform: rotate(45deg) scale(1.2);
       }
     }
   }

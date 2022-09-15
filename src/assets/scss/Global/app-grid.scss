@@ -11,10 +11,10 @@
   height: calc(100vh);
   margin: 0 auto;
   gap: 1rem;
-  padding: $small;
   padding-right: $medium;
   border-right: solid 1px $gray4;
   margin-top: -$small;
+  padding-top: $small;
 }
 
 #app-grid.isSmall {
