@@ -4,6 +4,7 @@ export default defineStore("settings", {
   state: () => ({
     use_alt_np: false,
     use_sidebar: true,
+    extend_width: false,
   }),
   actions: {
     toggleUseRightNP() {
@@ -12,6 +13,9 @@ export default defineStore("settings", {
     },
     toggleDisableSidebar() {
       this.use_sidebar = !this.use_sidebar;
+    },
+    toggleExtendWidth() {
+      this.extend_width = !this.extend_width;
     },
   },
   getters: {

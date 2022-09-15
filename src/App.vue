@@ -8,6 +8,7 @@
     :class="{
       showAltNP: settings.use_sidebar && settings.use_alt_np,
       disableSidebar: !settings.use_sidebar,
+      extendWidth: settings.extend_width,
       isSmall: !xl,
     }"
   >

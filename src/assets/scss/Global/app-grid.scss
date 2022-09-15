@@ -7,13 +7,17 @@
     "l-sidebar content r-sidebar"
     "l-sidebar content r-sidebar"
     "l-sidebar content bottombar";
-  max-width: 1720px;
   height: calc(100vh);
-  margin: 0 auto;
   gap: 1rem;
+  padding: $small 0;
+  margin: 0 auto;
+  margin-top: -$small;
+  max-width: 1720px;
+}
+
+#app-grid.extendWidth {
   padding-right: $medium;
   border-right: solid 1px $gray4;
-  margin-top: -$small;
   padding-top: $small;
 }
 

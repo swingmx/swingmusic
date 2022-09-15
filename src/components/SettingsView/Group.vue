@@ -70,6 +70,7 @@ defineProps<{
     .title {
       margin: auto 0;
       user-select: none;
+      cursor: pointer;
     }
   }
 }
