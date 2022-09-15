@@ -3,7 +3,7 @@
   <Modal />
   <Notification />
   <div id="tooltip"></div>
-  <div
+  <section
     id="app-grid"
     :class="{
       showAltNP: settings.use_sidebar && settings.use_alt_np,
@@ -19,7 +19,7 @@
     <NowPlayingRight />
     <SearchInput v-if="settings.use_sidebar && xl" />
     <RightSideBar v-if="settings.use_sidebar && xl" />
-  </div>
+  </section>
 </template>
 
 <script setup lang="ts">

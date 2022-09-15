@@ -1,10 +1,9 @@
 import { ref } from "@vue/reactivity";
-import { reactive } from "vue";
 
 const loading = ref(false);
-const settings = reactive({
-  uri: "http://127.0.0.1:1970",
-});
+const settings = {
+  uri: "http://10.5.8.81:1970",
+};
 
 export default {
   loading,

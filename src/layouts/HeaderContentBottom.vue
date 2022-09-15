@@ -27,7 +27,7 @@ useVisibility(apheader, handleVisibilityState);
 <style lang="scss">
 #ap-page {
   display: grid;
-  grid-template-rows: 18rem 1fr;
+  grid-template-rows: 23rem 1fr;
   gap: 1rem;
 }
 </style>

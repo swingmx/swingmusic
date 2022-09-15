@@ -15,6 +15,8 @@ import PlaylistCard from "@/components/PlaylistsList/PlaylistCard.vue";
 
 import usePStore from "@/stores/pages/playlists";
 const pStore = usePStore();
+
+// TODO: When you add a song to playlist when you are in this page, increase the count on the card.
 </script>
 
 <style lang="scss">

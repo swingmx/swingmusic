@@ -1,6 +1,10 @@
 import { FetchProps } from "../../interfaces";
 import axios, { AxiosError, AxiosResponse } from "axios";
+
 import useLoaderStore from "@/stores/loader";
+import { paths } from "@/config";
+
+const url = paths.api
 
 export default async (args: FetchProps) => {
   let data: any = null;

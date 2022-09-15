@@ -1,5 +1,5 @@
+import { paths } from "@/config";
 import { Folder, Track } from "@/interfaces";
-import state from "../state";
 import useAxios from "./useAxios";
 
 export default async function (path: string) {
@@ -9,7 +9,7 @@ export default async function (path: string) {
   }
 
   const { data, error } = await useAxios({
-    url: `${state.settings.uri}/folder`,
+    url: paths.api.folder,
     props: {
       folder: path,
     },

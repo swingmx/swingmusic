@@ -1,14 +1,14 @@
+import { paths } from "@/config";
 import state from "../state";
 import axios from "axios";
 import useAxios from "./useAxios";
 
-const base_url = `${state.settings.uri}/search`;
-
-const uris = {
-  tracks: `${base_url}/tracks?q=`,
-  albums: `${base_url}/albums?q=`,
-  artists: `${base_url}/artists?q=`,
-};
+const {
+  tracks: searchTracksUrl,
+  albums: searchAlbumsUrl,
+  artists: searchArtistsUrl,
+  load: loadMoreUrl,
+} = paths.api.search;
 
 /**
  * Fetch data from url
@@ -25,24 +25,22 @@ async function fetchData(url: string) {
 }
 
 async function searchTracks(query: string) {
-  const url = uris.tracks + encodeURIComponent(query.trim());
+  const url = searchTracksUrl + encodeURIComponent(query.trim());
   return await fetchData(url);
 }
 
 async function searchAlbums(query: string) {
-  const url = uris.albums + encodeURIComponent(query.trim());
+  const url = searchAlbumsUrl + encodeURIComponent(query.trim());
   return await fetchData(url);
 }
 
 async function searchArtists(query: string) {
-  const url = uris.artists + encodeURIComponent(query.trim());
+  const url = searchArtistsUrl + encodeURIComponent(query.trim());
   return await fetchData(url);
 }
 
-const loadmore_url = state.settings.uri + "/search/loadmore";
-
 async function loadMoreTracks(index: number) {
-  const response = await axios.get(loadmore_url, {
+  const response = await axios.get(loadMoreUrl, {
     params: {
       type: "tracks",
       index: index,
@@ -53,7 +51,7 @@ async function loadMoreTracks(index: number) {
 }
 
 async function loadMoreAlbums(index: number) {
-  const response = await axios.get(loadmore_url, {
+  const response = await axios.get(loadMoreUrl, {
     params: {
       type: "albums",
       index: index,
@@ -64,7 +62,7 @@ async function loadMoreAlbums(index: number) {
 }
 
 async function loadMoreArtists(index: number) {
-  const response = await axios.get(loadmore_url, {
+  const response = await axios.get(loadMoreUrl, {
     params: {
       type: "artists",
       index: index,

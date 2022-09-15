@@ -103,7 +103,7 @@ function showMenu(e: Event) {
 <style lang="scss">
 .songlist-item {
   display: grid;
-  grid-template-columns: 1.5rem 1.5fr 1fr 1.5fr 2rem 2.5rem;
+  grid-template-columns: 1.5rem 2fr 1fr 1.5fr 2rem 2.5rem;
   align-items: center;
   justify-content: flex-start;
   height: 3.75rem;

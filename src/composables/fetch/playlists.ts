@@ -1,15 +1,24 @@
+import { paths } from "@/config";
 import { Artist } from "../../interfaces";
 import { Playlist, Track } from "../../interfaces";
 import { Notification, NotifType } from "../../stores/notification";
 import state from "../state";
 import useAxios from "./useAxios";
+
+const {
+  new: newPlaylistUrl,
+  all: allPlaylistsUrl,
+  base: basePlaylistUrl,
+  artists: playlistArtistsUrl
+} = paths.api.playlist;
+
 /**
  * Creates a new playlist on the server.
  * @param playlist_name The name of the playlist to create.
  */
 async function createNewPlaylist(playlist_name: string, track?: Track) {
   const { data, status } = await useAxios({
-    url: state.settings.uri + "/playlist/new",
+    url: newPlaylistUrl,
     props: {
       name: playlist_name,
     },
@@ -44,7 +53,7 @@ async function createNewPlaylist(playlist_name: string, track?: Track) {
  */
 async function getAllPlaylists(): Promise<Playlist[]> {
   const { data, error } = await useAxios({
-    url: state.settings.uri + "/playlists",
+    url: allPlaylistsUrl,
     get: true,
   });
 
@@ -58,7 +67,7 @@ async function getAllPlaylists(): Promise<Playlist[]> {
 }
 
 async function addTrackToPlaylist(playlist: Playlist, track: Track) {
-  const uri = `${state.settings.uri}/playlist/${playlist.playlistid}/add`;
+  const uri = `${basePlaylistUrl}/${playlist.playlistid}/add`;
 
   const { status } = await useAxios({
     url: uri,
@@ -76,7 +85,7 @@ async function addTrackToPlaylist(playlist: Playlist, track: Track) {
 }
 
 async function getPlaylist(pid: string) {
-  const uri = state.settings.uri + "/playlist/" + pid;
+  const uri = `${basePlaylistUrl}/${pid}`;
 
   interface PlaylistData {
     info: Playlist;
@@ -100,7 +109,7 @@ async function getPlaylist(pid: string) {
 }
 
 async function updatePlaylist(pid: string, playlist: FormData, pStore: any) {
-  const uri = state.settings.uri + "/playlist/" + pid + "/update";
+  const uri = `${basePlaylistUrl}/${pid}/update`;
 
   const { data, error } = await useAxios({
     url: uri,
@@ -127,10 +136,8 @@ async function updatePlaylist(pid: string, playlist: FormData, pStore: any) {
  * @returns {Promise<Artist[]>} A promise that resolves to an array of artists.
  */
 export async function getPlaylistArtists(pid: string): Promise<Artist[]> {
-  const uri = state.settings.uri + "/playlist/artists";
-
   const { data, error } = await useAxios({
-    url: uri,
+    url: playlistArtistsUrl,
     props: {
       pid: pid,
     },

@@ -7,11 +7,14 @@
     "l-sidebar content r-sidebar"
     "l-sidebar content r-sidebar"
     "l-sidebar content bottombar";
-  max-width: 2720px;
-  height: calc(100vh - 1rem);
+  max-width: 1720px;
+  height: calc(100vh);
   margin: 0 auto;
   gap: 1rem;
-  margin: $small auto;
+  padding: $small;
+  padding-right: $medium;
+  border-right: solid 1px $gray4;
+  margin-top: -$small;
 }
 
 #app-grid.isSmall {
@@ -89,7 +92,7 @@
   grid-area: l-sidebar;
   display: grid;
   grid-template-rows: 1fr max-content;
-  background-color: $gray;
+  background-color: rgb(22, 22, 22);
   height: 100vh;
   margin-top: -$small;
   margin-left: -$small;

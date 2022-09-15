@@ -49,5 +49,4 @@ export default function createSubPaths(
   }
 }
 
-// function that takes 2 strings as parameters and returns a string
-// that is the concatenation of the two strings
+// TODO: Fix the includes issue.

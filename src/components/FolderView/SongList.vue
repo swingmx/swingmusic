@@ -1,6 +1,6 @@
 <template>
   <div
-    class="table border rounded"
+    class="table"
     v-if="tracks.length"
     ref="tracklistElem"
     :class="{
@@ -181,7 +181,7 @@ function getTrackList() {
 
 .table.isSmall {
   .songlist-item {
-    grid-template-columns: 1.5rem 1.5fr 2rem 2.5rem;
+    grid-template-columns: 1.5rem 2fr 2rem 2.5rem;
   }
 
   .song-artists,
@@ -199,7 +199,7 @@ function getTrackList() {
 
 .table.isMedium {
   .songlist-item {
-    grid-template-columns: 1.5rem 1.5fr 1fr 2rem 2.5rem;
+    grid-template-columns: 1.5rem 2fr 1fr 2rem 2.5rem;
   }
 
   .song-album {

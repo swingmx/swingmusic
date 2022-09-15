@@ -2,7 +2,7 @@
   <input
     type="search"
     class="header-input rounded-sm pad-sm"
-    placeholder="search here"
+    placeholder="Search here"
     v-model.trim="source"
     id="page-search"
   />

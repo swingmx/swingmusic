@@ -1,3 +1,4 @@
+import { paths } from "@/config";
 import { defineStore } from "pinia";
 import state from "../composables/state";
 import { NotifType, useNotifStore } from "./notification";
@@ -44,7 +45,7 @@ export default defineStore("Queue", {
       this.currentindex = index;
       const track = this.tracklist[index];
       this.currentid = track.trackid;
-      const uri = state.settings.uri + "/file/" + track.hash;
+      const uri = `${paths.api.files}/${track.hash}`;
 
       new Promise((resolve, reject) => {
         audio.autoplay = true;

@@ -10,23 +10,14 @@
         : '',
     }"
   >
+    <div class="big-img noscroll" :class="{ imgSmall: widthIsSmall }">
+      <img :src="imguri.thumb + album.image" class="rounded" />
+    </div>
     <div
       class="info"
       :class="{ nocontrast: album.colors ? isLight(album.colors[0]) : false }"
     >
-      <div class="art">
-        <img
-          :src="
-            widthIsSmall
-              ? imguri.thumb + album.image
-              : imguri.artist + album.artistimg
-          "
-          class="shadow-lg"
-          loading="lazy"
-          :class="`${widthIsSmall ? 'rounded' : 'circular'}`"
-        />
-      </div>
-      <div>
+      <div class="album-info">
         <div class="top">
           <div class="h">
             <span v-if="album.is_soundtrack">Soundtrack</span>
@@ -53,9 +44,13 @@
           />
         </div>
       </div>
-    </div>
-    <div class="big-img noscroll" v-if="!widthIsSmall">
-      <img :src="imguri.thumb + album.image" class="rounded" />
+      <div class="art" v-if="!widthIsSmall">
+        <img
+          :src="imguri.artist + album.artistimg"
+          class="shadow-lg circular"
+          loading="lazy"
+        />
+      </div>
     </div>
   </div>
 </template>
@@ -106,7 +101,7 @@ useVisibility(albumheaderthing, handleVisibilityState);
 <style lang="scss">
 .a-header {
   display: grid;
-  grid-template-columns: 1fr max-content;
+  grid-template-columns: max-content 1fr;
   gap: 1rem;
   padding: 1rem;
   height: 100% !important;
@@ -116,11 +111,20 @@ useVisibility(albumheaderthing, handleVisibilityState);
   .big-img {
     height: calc(100%);
     width: 16rem;
-    margin: auto 0;
+    display: flex;
+    align-items: flex-end;
 
     img {
-      height: 100%;
+      height: 16rem;
       aspect-ratio: 1;
+    }
+  }
+
+  .big-img.imgSmall {
+    width: 12rem;
+
+    img {
+      height: 12rem;
     }
   }
 
@@ -130,9 +134,15 @@ useVisibility(albumheaderthing, handleVisibilityState);
 
   .info {
     width: 100%;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
+    display: grid;
+    grid-template-columns: 1fr max-content;
+    height: 100%;
+    align-items: flex-end;
+
+    .art {
+      display: flex;
+      align-items: flex-end;
+    }
 
     img {
       height: 6rem;
@@ -146,6 +156,7 @@ useVisibility(albumheaderthing, handleVisibilityState);
         font-size: 14px;
         opacity: 0.5;
       }
+
       .title {
         font-size: 2.5rem;
         font-weight: 600;
@@ -156,10 +167,6 @@ useVisibility(albumheaderthing, handleVisibilityState);
       .artist {
         font-size: 1.15rem;
       }
-    }
-
-    .separator {
-      width: 20rem;
     }
 
     .bottom {
