@@ -1,5 +1,5 @@
 // "local" | "remote"
-let mode = "remote";
+let mode = "local";
 
 export interface D<T = string> {
   [key: string]: T;
@@ -16,7 +16,10 @@ const ports = {
 };
 
 const imageRoutes = {
-  thumb: "/t/",
+  thumb: {
+    large: "/t/",
+    small: "/t/s/",
+  },
   artist: "/a/",
   playlist: "/p/",
   raw: "/raw/",
@@ -72,7 +75,10 @@ const paths = {
     files: baseApiUrl + "/file",
   },
   images: {
-    thumb: baseImgUrl + imageRoutes.thumb,
+    thumb: {
+      small: baseImgUrl + imageRoutes.thumb.small,
+      large: baseImgUrl + imageRoutes.thumb.large,
+    },
     artist: baseImgUrl + imageRoutes.artist,
     playlist: baseImgUrl + imageRoutes.playlist,
     raw: baseImgUrl + imageRoutes.raw,

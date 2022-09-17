@@ -43,7 +43,7 @@ const props = defineProps<{
   track: Track | null;
 }>();
 
-const imguri = paths.images.thumb;
+const imguri = paths.images.thumb.large;
 </script>
 
 <style lang="scss">

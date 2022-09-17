@@ -75,7 +75,7 @@ import { formatSeconds } from "@/utils";
 import ArtistName from "./ArtistName.vue";
 
 const context_on = ref(false);
-const imguri = paths.images.thumb;
+const imguri = paths.images.thumb.small;
 const options_button_clicked = ref(false);
 
 const artisttitle = ref<HTMLElement | null>(null);

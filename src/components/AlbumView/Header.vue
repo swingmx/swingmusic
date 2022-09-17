@@ -11,7 +11,7 @@
     }"
   >
     <div class="big-img noscroll" :class="{ imgSmall: widthIsSmall }">
-      <img :src="imguri.thumb + album.image" class="rounded" />
+      <img :src="imguri.thumb.large + album.image" class="rounded" />
     </div>
     <div
       class="info"

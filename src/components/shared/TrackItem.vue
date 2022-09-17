@@ -11,7 +11,7 @@
     @contextmenu.prevent="showMenu"
   >
     <div class="album-art">
-      <img :src="paths.images.thumb + track.image" alt="" class="rounded-sm" />
+      <img :src="paths.images.thumb.small + track.image" alt="" class="rounded-sm" />
       <div
         class="now-playing-track-indicator image"
         v-if="isCurrent"

@@ -2,7 +2,7 @@
   <div class="b-bar bg-primary pad-medium rounded" v-if="settings.show_alt_np">
     <div class="info">
       <img
-        :src="paths.images.thumb + queue.currenttrack?.image"
+        :src="paths.images.thumb.large + queue.currenttrack?.image"
         alt=""
         class="rounded shadow-lg"
       />
@@ -26,7 +26,7 @@
       <span class="current">{{ formatSeconds(queue.duration.current) }}</span>
       <HotKeys />
       <span class="full">{{
-        formatSeconds(queue.currenttrack ? queue.currenttrack.length : 0)
+        formatSeconds(queue.currenttrack ? queue.currenttrack.duration : 0)
       }}</span>
     </div>
   </div>

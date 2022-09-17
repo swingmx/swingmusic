@@ -10,7 +10,7 @@
       disableSidebar: !settings.use_sidebar,
       extendWidth: settings.extend_width && settings.extend_width_enabled,
       isSmall: !xl,
-      addBorderRight: xxl,
+      addBorderRight: xxl && !settings.extend_width,
     }"
   >
     <LeftSidebar />
