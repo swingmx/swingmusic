@@ -13,12 +13,15 @@
   margin: 0 auto;
   margin-top: -$small;
   max-width: 1720px;
-}
-
-#app-grid.extendWidth {
   padding-right: $medium;
   border-right: solid 1px $gray4;
   padding-top: $small;
+}
+
+#app-grid.extendWidth {
+  padding-right: 0;
+  border-right: none;
+  max-width: 100%;
 }
 
 #app-grid.isSmall {

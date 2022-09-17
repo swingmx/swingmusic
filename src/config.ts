@@ -7,7 +7,7 @@ export interface D<T = string> {
 
 const domains: D = {
   local: "http://localhost:",
-  remote: "http://10.5.86.154:",
+  remote: "http://10.5.71.115:",
 };
 
 const ports = {
