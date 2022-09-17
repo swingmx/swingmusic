@@ -15,7 +15,7 @@
         </div>
         <div class="options">
           <Switch
-            v-if="setting.type == SettingType.switch"
+            v-if="setting.type == SettingType.binary"
             @click="setting.action()"
             :state="setting.source()"
           />

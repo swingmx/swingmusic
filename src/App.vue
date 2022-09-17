@@ -8,8 +8,9 @@
     :class="{
       showAltNP: settings.use_sidebar && settings.use_alt_np,
       disableSidebar: !settings.use_sidebar,
-      extendWidth: settings.extend_width,
+      extendWidth: settings.extend_width && settings.extend_width_enabled,
       isSmall: !xl,
+      addBorderRight: xxl,
     }"
   >
     <LeftSidebar />
@@ -33,7 +34,7 @@ import useQStore from "@/stores/queue";
 import useModalStore from "@/stores/modal";
 import useContextStore from "@/stores/context";
 import useSettingsStore from "@/stores/settings";
-import { xl } from "./composables/useBreakpoints";
+import { xl, xxl } from "./composables/useBreakpoints";
 import handleShortcuts from "@/composables/useKeyboard";
 import { readLocalStorage, writeLocalStorage } from "@/utils";
 

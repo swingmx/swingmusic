@@ -13,8 +13,8 @@
   margin: 0 auto;
   margin-top: -$small;
   max-width: 1720px;
-  padding-right: $medium;
-  border-right: solid 1px $gray4;
+  // padding-right: $medium;
+  // border-right: solid 1px $gray4;
   padding-top: $small;
 }
 
@@ -22,6 +22,11 @@
   padding-right: 0;
   border-right: none;
   max-width: 100%;
+}
+
+#app-grid.addBorderRight {
+  border-right: solid 1px $gray4;
+  padding-right: $medium;
 }
 
 #app-grid.isSmall {

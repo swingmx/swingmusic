@@ -5,7 +5,7 @@ const settings = useSettingsStore;
 
 const use_alt_np: Setting = {
   title: "Use alternate now playing card",
-  type: SettingType.switch,
+  type: SettingType.binary,
   source: () => settings().use_alt_np,
   inactive: () => settings().disable_show_alt_np,
   action: () => settings().toggleUseRightNP(),

@@ -1,7 +1,11 @@
-import { useBreakpoints, breakpointsTailwind } from "@vueuse/core";
+import { useBreakpoints } from "@vueuse/core";
 
-const breakpoints = useBreakpoints(breakpointsTailwind);
+const breakpoints = useBreakpoints({
+  xl: 1536,
+  xxl: 1720,
+});
 
 const xl = breakpoints.greater("xl");
+const xxl = breakpoints.greater("xxl");
 
-export { xl };
+export { xl, xxl };

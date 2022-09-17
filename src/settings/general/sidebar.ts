@@ -5,7 +5,7 @@ const settings = useSettingsStore;
 
 const use_sidebar: Setting = {
   title: "Use right sidebar",
-  type: SettingType.switch,
+  type: SettingType.binary,
   source: () => settings().use_sidebar,
   action: () => settings().toggleDisableSidebar(),
 };

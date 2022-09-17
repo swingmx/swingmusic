@@ -2,7 +2,7 @@ export enum SettingType {
   text,
   select,
   multiselect,
-  switch,
+  binary,
 }
 
 export interface SettingOption {

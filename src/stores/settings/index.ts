@@ -1,3 +1,4 @@
+import { xxl, xl } from "@/composables/useBreakpoints";
 import { defineStore } from "pinia";
 
 export default defineStore("settings", {
@@ -20,16 +21,19 @@ export default defineStore("settings", {
   },
   getters: {
     show_alt_np(): boolean {
-      return this.use_sidebar && this.use_alt_np;
+      return xl.value && this.use_sidebar && this.use_alt_np;
     },
     show_default_np(): boolean {
       return !this.show_alt_np;
     },
     disable_show_alt_np(): boolean {
-      return !this.use_sidebar;
+      return !xl.value || !this.use_sidebar;
     },
     hide_queue_page(): boolean {
       return this.use_sidebar;
+    },
+    extend_width_enabled(): boolean {
+     return xxl.value
     },
   },
   persist: true,

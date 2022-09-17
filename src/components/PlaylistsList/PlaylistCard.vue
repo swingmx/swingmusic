@@ -1,21 +1,23 @@
 <template>
   <router-link
-    :to="{ name: 'PlaylistView', params: { pid: props.playlist.playlistid } }"
-    :playlist="props.playlist"
+    :to="{ name: 'PlaylistView', params: { pid: playlist.playlistid } }"
     class="p-card rounded noscroll"
   >
-    <img :src="imguri + props.playlist.thumb" />
-    <div class="overlay rounded pad-lg">
+    <img
+      :src="imguri + playlist.thumb"
+      class="rounded border"
+      :class="{ noimg: !playlist.thumb }"
+    />
+    <div class="overlay rounded">
       <div class="p-name ellip">{{ playlist.name }}</div>
       <div class="p-count">
-        {{ playlist.count + ` ${playlist.count == 1 ? "Track" : "Tracks"}` }}
+        {{ playlist.count + ` ${playlist.count === 1 ? "Track" : "Tracks"}` }}
       </div>
     </div>
   </router-link>
 </template>
 
 <script setup lang="ts">
-import play from "@/composables/usePlayFrom";
 import { paths } from "../../config";
 import { Playlist } from "../../interfaces";
 
@@ -28,28 +30,24 @@ const props = defineProps<{
 
 <style lang="scss">
 .p-card {
-  position: relative;
   background-color: $playlist-card-bg;
-  height: 10rem;
+  display: grid;
+  grid-template-rows: 1fr max-content;
+  padding: 1rem;
+  gap: $small;
 
   img {
     width: 100%;
-    height: 100%;
-    aspect-ratio: 1/1.2;
+    aspect-ratio: 1;
     object-fit: cover;
     transition: all 0.5s ease;
   }
 
+  img.noimg {
+    outline: 1px solid $gray2;
+  }
+
   .overlay {
-    position: absolute;
-    top: 0;
-    background-image: linear-gradient(
-      to top,
-      rgba(0, 0, 0, 0.55),
-      transparent 60%
-    );
-    height: 100%;
-    width: 100%;
     display: flex;
     flex-direction: column;
     justify-content: flex-end;
