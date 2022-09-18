@@ -1,5 +1,4 @@
 import { paths } from "@/config";
-import state from "../state";
 import axios from "axios";
 import useAxios from "./useAxios";
 
@@ -81,5 +80,4 @@ export {
   loadMoreArtists,
 };
 
-// TODO:
-// Rewrite this module using `useAxios` hook
+// TODO: Rewrite this module using `useAxios` hook

@@ -13,7 +13,6 @@
           :src="imguri + track?.image"
           alt=""
           class="l-image rounded force-lm"
-          loading="lazy"
         />
         <div id="bitrate" v-if="track?.bitrate">
           {{ track.filetype }}• {{ track.bitrate }}

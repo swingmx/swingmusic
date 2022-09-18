@@ -1,5 +1,5 @@
 <template>
-  <router-link :to="{ name: 'FolderView', params: { path: folder.path } }">
+  <router-link :to="{ name: Routes.folder, params: { path: folder.path } }">
     <div class="f-item">
       <div class="icon">
         <FolderSvg v-if="!folder.is_sym" />
@@ -16,8 +16,10 @@
 
 <script setup lang="ts">
 import { Folder } from "@/interfaces";
-import FolderSvg from "../../assets/icons/folder.svg";
-import SymLinkSvg from "../../assets/icons/symlink.svg";
+import { Routes } from "@/composables/enums";
+
+import FolderSvg from "@/assets/icons/folder.svg";
+import SymLinkSvg from "@/assets/icons/symlink.svg";
 
 defineProps<{
   folder: Folder;

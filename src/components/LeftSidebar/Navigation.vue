@@ -22,17 +22,11 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from "@vue/reactivity";
-
 import { Routes } from "@/composables/enums";
-import useSettingsStore from "@/stores/settings";
-
 import PlaylistSvg from "../../assets/icons/playlist.svg";
 import FolderSvg from "../../assets/icons/folder.svg";
 import SettingsSvg from "../../assets/icons/settings.svg";
 import SearchSvg from "../../assets/icons/search.svg";
-
-const settings = useSettingsStore();
 
 const menus = [
   {
@@ -101,7 +95,7 @@ const menus = [
     margin: 0 $small 0 $small;
     border-radius: $small;
     transform: scale(0.9);
-    opacity: .75;
+    opacity: 0.75;
   }
 }
 </style>

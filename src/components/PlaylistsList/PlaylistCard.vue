@@ -5,8 +5,8 @@
   >
     <img
       :src="imguri + playlist.thumb"
-      class="rounded border"
-      :class="{ noimg: !playlist.thumb }"
+      class="rounded"
+      :class="{ border: !playlist.thumb }"
     />
     <div class="overlay rounded">
       <div class="p-name ellip">{{ playlist.name }}</div>
@@ -42,11 +42,6 @@ const props = defineProps<{
     object-fit: cover;
     transition: all 0.5s ease;
   }
-
-  img.noimg {
-    outline: 1px solid $gray2;
-  }
-
   .overlay {
     display: flex;
     flex-direction: column;

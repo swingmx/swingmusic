@@ -1,6 +1,6 @@
 <template>
   <form
-    @submit="update_playlist"
+    @submit.prevent="update_playlist"
     class="new-p-form"
     enctype="multipart/form-data"
   >
@@ -34,7 +34,9 @@
         }"
       />
     </div>
-    <button type="submit" id="updateplaylistsubmit">Update</button>
+    <button>
+      {{ clicked ? "Updating" : "Update" }}
+    </button>
   </form>
 </template>
 
@@ -42,7 +44,7 @@
 import { updatePlaylist } from "@/composables/fetch/playlists";
 import { Playlist } from "@/interfaces";
 import usePStore from "@/stores/pages/playlist";
-import { onMounted } from "vue";
+import { onMounted, ref } from "vue";
 import { paths } from "@/config";
 
 const pStore = usePStore();
@@ -96,27 +98,27 @@ function handleFile(file: File) {
   image = file;
 }
 
-let clicked = false;
+let clicked = ref(false);
 
 function update_playlist(e: Event) {
-  e.preventDefault();
-
-  if (!clicked) {
-    clicked = true;
-    const elem = document.getElementById(
-      "updateplaylistsubmit"
-    ) as HTMLButtonElement;
-    elem.innerText = "Updating";
-  } else {
-    return;
-  }
-
   const form = e.target as HTMLFormElement;
   const formData = new FormData(form);
 
+  const name = formData.get("name") as string;
+
+  const nameChanged = name !== props.playlist.name;
+  const imgChanged = image !== undefined;
+
+  if (!nameChanged && !imgChanged) {
+    emit("hideModal");
+    return;
+  }
+
+  clicked.value = true;
+
   formData.append("image", image);
 
-  if (formData.get("name").toString().trim() !== "") {
+  if (name && name.toString().trim() !== "") {
     updatePlaylist(props.playlist.playlistid, formData, pStore).then(() => {
       emit("hideModal");
     });

@@ -86,5 +86,3 @@ const paths = {
 };
 
 export { paths, toggleMode };
-
-// TODO: Add setting to toggle between extending to edges or not

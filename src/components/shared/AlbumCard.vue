@@ -18,7 +18,7 @@
 import { AlbumInfo } from "../../interfaces";
 import { paths } from "../../config";
 
-const imguri = paths.images.thumb;
+const imguri = paths.images.thumb.large;
 defineProps<{
   album: AlbumInfo;
 }>();
