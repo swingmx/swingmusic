@@ -1,12 +1,15 @@
 <template>
   <div
-    class="songlist-item"
+    class="songlist-item rounded-sm"
     :class="[{ current: isCurrent }, { contexton: context_on }]"
     @dblclick="emitUpdate(track)"
     @contextmenu.prevent="showMenu"
   >
-    <div class="index t-center ellip">
-      {{ index }}
+    <div class="index t-center ellip" @dblclick.prevent.stop="() => {}">
+      <span class="text">
+        {{ index }}
+      </span>
+      <HeartSvg />
     </div>
     <div class="flex">
       <div @click="emitUpdate(track)" class="thumbnail">
@@ -66,13 +69,14 @@
 <script setup lang="ts">
 import { ref } from "vue";
 
-import OptionSvg from "@/assets/icons/more.svg";
-
-import { showTrackContextMenu as showContext } from "@/composables/context";
 import { paths } from "@/config";
 import { Track } from "@/interfaces";
 import { formatSeconds } from "@/utils";
+import { showTrackContextMenu as showContext } from "@/composables/context";
+
 import ArtistName from "./ArtistName.vue";
+import HeartSvg from "@/assets/icons/heart.svg";
+import OptionSvg from "@/assets/icons/more.svg";
 
 const context_on = ref(false);
 const imguri = paths.images.thumb.small;
@@ -109,6 +113,7 @@ function showMenu(e: Event) {
   height: 3.75rem;
   gap: 1rem;
   user-select: none;
+  padding-left: $small;
 
   .song-title {
     cursor: pointer;
@@ -116,6 +121,18 @@ function showMenu(e: Event) {
 
   &:hover {
     background-color: $gray4;
+
+    .index {
+      .text {
+        transform: translateX($smaller);
+        opacity: 0;
+      }
+
+      svg {
+        transform: translateX(0);
+        opacity: 1;
+      }
+    }
   }
 
   .song-album {
@@ -136,6 +153,27 @@ function showMenu(e: Event) {
     opacity: 0.5;
     font-size: 0.8rem;
     width: 100%;
+    position: relative;
+    height: 3rem;
+    // border: solid 1px;
+
+    .text {
+      opacity: 1;
+      display: block;
+      margin: auto 0;
+      transition: all 0.25s;
+      transform: translateX(0);
+    }
+
+    svg {
+      position: absolute;
+      left: 0;
+      transition: all 0.2s;
+      top: $medium;
+      opacity: 0;
+      transform: translateX(-1rem);
+      cursor: pointer;
+    }
   }
 
   .song-duration {

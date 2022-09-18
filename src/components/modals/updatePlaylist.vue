@@ -21,6 +21,7 @@
       id="update-pl-image-upload"
       style="display: none"
       @change="handleUpload"
+      ref="dropZoneRef"
     />
     <div id="upload" class="rounded-sm" @click="selectFiles">
       <div>Click to upload cover image</div>
@@ -41,17 +42,22 @@
 </template>
 
 <script setup lang="ts">
-import { updatePlaylist } from "@/composables/fetch/playlists";
+import { onMounted, ref } from "vue";
+// import { useDropZone } from "@vueuse/core";
+
+import { paths } from "@/config";
 import { Playlist } from "@/interfaces";
 import usePStore from "@/stores/pages/playlist";
-import { onMounted, ref } from "vue";
-import { paths } from "@/config";
+import { updatePlaylist } from "@/composables/fetch/playlists";
 
 const pStore = usePStore();
 
 const props = defineProps<{
   playlist: Playlist;
 }>();
+
+// const dropZoneRef = ref<HTMLDivElement>();
+// const { isOverDropZone } = useDropZone(dropZoneRef, handleDrop);
 
 onMounted(() => {
   (document.getElementById("modal-playlist-name-input") as HTMLElement).focus();
@@ -82,6 +88,12 @@ function handleUpload() {
     handleFile(input.files[0]);
   }
 }
+
+// function handleDrop(files: File[] | null) {
+//   if (files) {
+//     handleFile(files[0]);
+//   }
+// }
 
 function handleFile(file: File) {
   if (!file || !file.type.startsWith("image/")) {
