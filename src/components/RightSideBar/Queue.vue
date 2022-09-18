@@ -24,7 +24,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, onMounted } from "vue";
+import { computed, ref, onMounted, onBeforeUnmount } from "vue";
 import { useVirtualList } from "@vueuse/core";
 
 // import { focusElem } from "@/utils";
@@ -53,6 +53,11 @@ const {
 
 onMounted(() => {
   scrollTo(queue.currentindex);
+  queue.setQueueFunction(scrollTo, mouseover);
+});
+
+onBeforeUnmount(() => {
+  queue.setQueueFunction(() => {}, null);
 });
 
 // TODO: Handle focusing current track on song end
@@ -64,7 +69,6 @@ onMounted(() => {
   overflow: auto;
 
   .inner {
-    // scrollbar-color: grey transparent;
     margin-bottom: 1rem;
   }
 }

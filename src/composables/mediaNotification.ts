@@ -6,38 +6,39 @@ export default () => {
   if ("mediaSession" in navigator) {
     const queue = useQueueStore();
     const { currenttrack: track } = queue;
+    const url = paths.images.thumb.large
 
     navigator.mediaSession.metadata = new window.MediaMetadata({
       title: track.title,
       artist: track.artist.join(", "),
       artwork: [
         {
-          src: paths.images.thumb + track.image,
+          src: url + track.image,
           sizes: "96x96",
           type: "image/jpeg",
         },
         {
-          src: paths.images.thumb + track.image,
+          src: url + track.image,
           sizes: "128x128",
           type: "image/webp",
         },
         {
-          src: paths.images.thumb + track.image,
+          src: url + track.image,
           sizes: "192x192",
           type: "image/webp",
         },
         {
-          src: paths.images.thumb + track.image,
+          src: url + track.image,
           sizes: "256x256",
           type: "image/webp",
         },
         {
-          src: paths.images.thumb + track.image,
+          src: url + track.image,
           sizes: "384x384",
           type: "image/webp",
         },
         {
-          src: paths.images.thumb + track.image,
+          src: url + track.image,
           sizes: "512x512",
           type: "image/webp",
         },

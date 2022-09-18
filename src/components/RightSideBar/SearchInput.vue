@@ -4,7 +4,7 @@
       <input
         id="globalsearch"
         v-model.trim="search.query"
-        placeholder="Search your library"
+        placeholder="Type to search"
         type="search"
         @blur.prevent="removeFocusedClass"
         @focus.prevent="addFocusedClass"

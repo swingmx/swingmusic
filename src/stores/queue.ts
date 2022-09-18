@@ -1,3 +1,4 @@
+import { Ref } from "vue";
 import { focusElem } from "@/utils";
 import { paths } from "@/config";
 import { defineStore } from "pinia";
@@ -38,11 +39,18 @@ export default defineStore("Queue", {
     playing: false,
     from: {} as From,
     tracklist: [] as Track[],
+    queueScrollFunction: (index: number) => {},
+    mousover: <Ref | null>null,
   }),
   actions: {
     play(index: number = 0) {
       if (this.tracklist.length === 0) return;
       this.currentindex = index;
+
+      if (!this.mousover) {
+        this.queueScrollFunction(this.currentindex - 1);
+      }
+
       const track = this.tracklist[index];
       this.currentid = track.trackid;
       const uri = `${paths.api.files}/${track.hash}`;
@@ -236,6 +244,13 @@ export default defineStore("Queue", {
     },
     removeFromQueue(index: number = 0) {
       this.tracklist.splice(index, 1);
+    },
+    setQueueFunction(
+      cb: (index: number) => void,
+      mousover: Ref<boolean> | null
+    ) {
+      this.queueScrollFunction = cb;
+      this.mousover = mousover;
     },
   },
   getters: {
