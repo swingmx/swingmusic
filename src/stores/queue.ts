@@ -1,6 +1,6 @@
+import { focusElem } from "@/utils";
 import { paths } from "@/config";
 import { defineStore } from "pinia";
-import state from "../composables/state";
 import { NotifType, useNotifStore } from "./notification";
 
 import { FromOptions } from "../composables/enums";

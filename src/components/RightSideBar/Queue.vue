@@ -10,14 +10,14 @@
     <div class="inner" v-bind="wrapperProps">
       <TrackItem
         style="height: 64px"
-        v-for="(t, index) in tracks"
+        v-for="t in tracks"
         :key="t.index"
         :track="t.data"
-        :index="index"
+        :index="t.index"
         :isPlaying="queue.playing"
         :isCurrent="t.index === queue.currentindex"
         :isQueueTrack="true"
-        @PlayThis="playFromQueue(index)"
+        @PlayThis="playFromQueue(t.index)"
       />
     </div>
   </div>
@@ -49,7 +49,6 @@ const {
   scrollTo,
 } = useVirtualList(source, {
   itemHeight: 64,
-  overscan: 10,
 });
 
 onMounted(() => {
