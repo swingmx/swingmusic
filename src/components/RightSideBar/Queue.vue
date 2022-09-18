@@ -2,18 +2,20 @@
   <QueueActions />
   <div
     class="scrollable-r"
+    v-bind="containerProps"
+    style="height: 100%"
     @mouseover="mouseover = true"
     @mouseout="mouseover = false"
   >
-    <div class="inner">
+    <div class="inner" v-bind="wrapperProps">
       <TrackItem
-        v-for="(t, index) in queue.tracklist"
-        :key="index"
-        :track="t"
+        style="height: 64px"
+        v-for="(t, index) in tracks"
+        :key="t.index"
+        :track="t.data"
         :index="index"
         :isPlaying="queue.playing"
-        :isHighlighted="false"
-        :isCurrent="index === queue.currentindex"
+        :isCurrent="t.index === queue.currentindex"
         :isQueueTrack="true"
         @PlayThis="playFromQueue(index)"
       />
@@ -22,10 +24,11 @@
 </template>
 
 <script setup lang="ts">
-import { onUpdated, ref } from "vue";
+import { computed, ref, onMounted } from "vue";
+import { useVirtualList } from "@vueuse/core";
 
+// import { focusElem } from "@/utils";
 import useQStore from "@/stores/queue";
-import { focusElem } from "@/utils";
 
 import TrackItem from "../shared/TrackItem.vue";
 import QueueActions from "./Queue/QueueActions.vue";
@@ -37,13 +40,23 @@ function playFromQueue(index: number) {
   queue.play(index);
 }
 
-onUpdated(() => {
-  if (mouseover.value) return;
+const source = computed(() => queue.tracklist);
 
-  setTimeout(() => {
-    focusElem("currentInQueue");
-  }, 1000);
+const {
+  list: tracks,
+  containerProps,
+  wrapperProps,
+  scrollTo,
+} = useVirtualList(source, {
+  itemHeight: 64,
+  overscan: 10,
 });
+
+onMounted(() => {
+  scrollTo(queue.currentindex);
+});
+
+// TODO: Handle focusing current track on song end
 </script>
 
 <style lang="scss">

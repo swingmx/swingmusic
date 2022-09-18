@@ -11,7 +11,11 @@
     @contextmenu.prevent="showMenu"
   >
     <div class="album-art">
-      <img :src="paths.images.thumb.small + track.image" alt="" class="rounded-sm" />
+      <img
+        :src="paths.images.thumb.small + track.image"
+        alt=""
+        class="rounded-sm"
+      />
       <div
         class="now-playing-track-indicator image"
         v-if="isCurrent"
@@ -73,7 +77,7 @@ const playThis = (track: Track) => {
 
 <style lang="scss">
 .currentInQueue {
-  background: linear-gradient(37deg, $gray4, $gray3, $gray3);
+  background-color: $gray4;
 }
 
 .contexton {
@@ -109,7 +113,7 @@ const playThis = (track: Track) => {
       transform: scale(1) translateY(0);
     }
 
-    background: linear-gradient(37deg, $gray4, $gray3, $gray3);
+    background-color: $gray5;
   }
 
   hr {
