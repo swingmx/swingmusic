@@ -2,8 +2,9 @@
   <div class="now-playing-card t-center rounded">
     <SongCard :track="queue.currenttrack" />
     <div class="l-track-time">
-      <span class="rounded">{{ formatSeconds(duration.current) }}</span
-      ><span class="rounded">{{ formatSeconds(duration.full) }}</span>
+      <span class="rounded">{{ formatSeconds(duration.current) }}</span>
+      <!-- <HeartSvg /> -->
+      <span class="rounded">{{ formatSeconds(duration.full) }}</span>
     </div>
     <Progress />
     <HotKeys />
