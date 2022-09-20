@@ -1,5 +1,5 @@
 <template>
-  <div v-tooltip="returnArtists()" style="width: auto">
+  <div v-tooltip style="width: auto">
     <div class="ellip" v-if="artists === null || artists.length === 0">
       <span>{{ albumartist }}</span>
     </div>
@@ -18,11 +18,4 @@ const props = defineProps<{
   artists: string[] | null;
   albumartist: string | undefined;
 }>();
-
-function returnArtists() {
-  if (props.artists === null || props.artists.length === 0)
-    return props.albumartist;
-
-  return props.artists.join(", ");
-}
 </script>

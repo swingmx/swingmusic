@@ -8,7 +8,7 @@
   >
     <img class="rounded" :src="imguri + album.image" alt="" />
     <div>
-      <h4 class="title ellip" v-tooltip="album.title">{{ album.title }}</h4>
+      <h4 class="title ellip" v-tooltip>{{ album.title }}</h4>
       <div class="artist ellip">{{ album.artist }}</div>
     </div>
   </router-link>

@@ -25,7 +25,7 @@
           :class="{ last_played: !isPlaying }"
         ></div>
       </div>
-      <div v-tooltip="track.title" class="song-title">
+      <div v-tooltip class="song-title">
         <div class="title ellip" @click="emitUpdate(track)" ref="artisttitle">
           {{ track.title }}
         </div>
@@ -42,7 +42,7 @@
     </div>
     <router-link
       class="song-album ellip"
-      v-tooltip="track.album"
+      v-tooltip
       :to="{
         name: 'AlbumView',
         params: {

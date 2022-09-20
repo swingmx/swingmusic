@@ -1,10 +1,45 @@
 import { Directive } from "vue";
-import { createPopper } from "@popperjs/core";
+import { createPopper, Instance, VirtualElement } from "@popperjs/core";
 
 let tooltip: HTMLElement;
+let popperInstance: Instance;
+let store: any;
 
-function getTooltip() {
-  return document.getElementById("tooltip") as HTMLElement;
+// @ts-ignore
+const virtualEl = {
+  getBoundingClientRect: () => null,
+} as VirtualElement;
+
+const getTooltip = () => document.getElementById("tooltip") as HTMLElement;
+
+function getInstance() {
+  if (tooltip && virtualEl) {
+    return createPopper(virtualEl, getTooltip(), {
+      placement: "top",
+      modifiers: [
+        {
+          name: "offset",
+          options: {
+            offset: [0, 10],
+          },
+        },
+        {
+          name: "hide",
+          enabled: true,
+        },
+        {
+          name: "eventListeners",
+          enabled: false,
+        },
+      ],
+    });
+  }
+
+  return null;
+}
+
+function showTooltip() {
+  tooltip.style.visibility = "visible";
 }
 
 function hideTooltip() {
@@ -12,37 +47,26 @@ function hideTooltip() {
 }
 
 export default {
-  mounted(el, binding) {
-    let isHovered = false;
-
-    if (tooltip === undefined) {
+  mounted(el: HTMLElement, binding) {
+    if (!tooltip) {
       tooltip = getTooltip();
     }
+
+    if (!popperInstance) {
+      popperInstance = getInstance() as Instance;
+    }
+
+    let isHovered = false;
 
     el.addEventListener("mouseover", () => {
       isHovered = true;
 
       setTimeout(() => {
-        if (isHovered) {
-          tooltip.innerText = binding.value;
-          tooltip.style.visibility = "visible";
+        if (!isHovered) return;
+        tooltip.innerText = el.innerText;
 
-          createPopper(el, tooltip, {
-            placement: "top",
-            modifiers: [
-              {
-                name: "offset",
-                options: {
-                  offset: [0, 10],
-                },
-              },
-              {
-                name: "hide",
-                enabled: true,
-              },
-            ],
-          });
-        }
+        virtualEl.getBoundingClientRect = () => el.getBoundingClientRect();
+        popperInstance.update().then(showTooltip);
       }, 1500);
     });
 

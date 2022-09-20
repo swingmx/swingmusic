@@ -25,7 +25,7 @@
             <span v-else-if="album.is_single">Single</span>
             <span v-else>Album</span>
           </div>
-          <div class="title ellip" v-tooltip="album.title">
+          <div class="title ellip" v-tooltip>
             {{ album.title }}
           </div>
         </div>

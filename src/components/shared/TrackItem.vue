@@ -23,7 +23,7 @@
       ></div>
     </div>
     <div class="tags">
-      <div class="title ellip" v-tooltip="track.title">
+      <div class="title ellip" v-tooltip>
         {{ track.title }}
       </div>
       <hr />

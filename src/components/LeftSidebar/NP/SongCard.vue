@@ -25,7 +25,7 @@
     </div>
 
     <div class="bottom">
-      <div class="title ellip t-center" v-tooltip="track?.title">
+      <div class="title ellip t-center" v-tooltip>
         {{ track?.title || "♥ Hello ♥" }}
       </div>
       <ArtistName
