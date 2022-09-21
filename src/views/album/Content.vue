@@ -14,10 +14,17 @@
 </template>
 
 <script setup lang="ts">
-import { Track } from "@/interfaces";
-import SongList from "@/components/FolderView/SongList.vue";
+// @stores
 import useQueueStore from "@/stores/queue";
 import useAlbumStore from "@/stores/pages/album";
+
+// @utils
+import { Track } from "@/interfaces";
+
+// @components
+import SongList from "@/components/FolderView/SongList.vue";
+
+// @setup
 
 const props = defineProps<{
   discs: {

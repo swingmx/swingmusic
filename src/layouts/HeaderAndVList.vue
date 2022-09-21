@@ -40,11 +40,12 @@
 </template>
 
 <script setup lang="ts">
-import { useElementSize, useVirtualList } from "@vueuse/core";
 import { computed, ref } from "vue";
+import { useElementSize, useVirtualList } from "@vueuse/core";
 
 import { Track } from "@/interfaces";
 import useQStore from "@/stores/queue";
+
 import SongItem from "@/components/shared/SongItem.vue";
 
 const props = defineProps<{
