@@ -7,7 +7,7 @@ let store: any;
 
 // @ts-ignore
 const virtualEl = {
-  getBoundingClientRect: () => null,
+  getBoundingClientRect: () => new DOMRect(),
 } as VirtualElement;
 
 const getTooltip = () => document.getElementById("tooltip") as HTMLElement;
