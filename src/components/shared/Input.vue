@@ -1,6 +1,6 @@
 <template>
   <div class="header-input-wrapper rounded-sm" :class="{ showInput: clicked }">
-    <div class="search-svg" @click="clicked = !clicked">
+    <div class="search-svg" @click="handleFocus">
       <SearchSvg />
     </div>
     <input
@@ -8,8 +8,9 @@
       class="header-input rounded-sm pad-sm"
       :class="{ showInput: clicked }"
       placeholder="Search here"
-      v-model.trim="source"
+      v-model.trim="query"
       id="page-search"
+      ref="inputRef"
     />
   </div>
 </template>
@@ -25,26 +26,44 @@ import useFolderStore from "@/stores/pages/folder";
 import { Routes } from "@/composables/enums";
 import SearchSvg from "@/assets/icons/search.svg";
 
-const clicked = ref(false);
+const clicked = ref(true);
+const [playlist, album, folder] = [
+  usePStore(),
+  useAlbumStore(),
+  useFolderStore(),
+];
 
-const { query: playlistQuery } = storeToRefs(usePStore());
-const { query: folderQuery } = storeToRefs(useFolderStore());
-const { query: albumQuery } = storeToRefs(useAlbumStore());
+const { query: playlistQuery } = storeToRefs(playlist);
+const { query: folderQuery } = storeToRefs(folder);
+const { query: albumQuery } = storeToRefs(album);
 
 const props = defineProps<{
   page: Routes | string;
 }>();
+const inputRef = ref<HTMLElement>();
+
+function handleFocus() {
+  // if input is not focused, focus it
+  // if input is focused, blur it
+  clicked.value = !clicked.value;
+  if (clicked.value) {
+    inputRef.value?.focus();
+  } else {
+    inputRef.value?.blur();
+    resetQuery();
+  }
+}
 
 function getRef() {
   switch (props.page) {
     case Routes.playlist:
-      return playlistQuery;
+      return [playlistQuery, playlist.resetQuery];
 
     case Routes.folder:
-      return folderQuery;
+      return [folderQuery, folder.resetQuery];
 
     case Routes.album:
-      return albumQuery;
+      return [albumQuery, album.resetQuery];
 
     default:
       return null;
@@ -52,6 +71,13 @@ function getRef() {
 }
 
 const source = getRef();
+let query: any;
+let resetQuery: any;
+
+if (source) {
+  query = source[0];
+  resetQuery = source[1];
+}
 </script>
 
 <style lang="scss">
@@ -66,7 +92,6 @@ const source = getRef();
   }
 }
 
-
 .header-input {
   background-color: $gray3;
   outline: none;
@@ -77,32 +102,28 @@ const source = getRef();
   transition: all 0.25s $overshoot;
   opacity: 0;
   transform: translateY(-1rem);
-  
+
   &:focus {
     outline: solid;
   }
-  
+
   &.showInput {
     opacity: 1;
     transform: translateY(0);
-    transition-delay: .1s;
+    transition-delay: 0.1s;
   }
 }
 
 .search-svg {
-  // outline: solid;
   margin-top: $smaller;
   cursor: pointer;
-  // padding-left: ;
   width: 2.25rem;
   height: 2rem;
-  // aspect-ratio: 1;
   z-index: 100;
 
   svg {
     display: block;
     margin: 0 auto;
-    // outline: solid;
   }
 }
 </style>

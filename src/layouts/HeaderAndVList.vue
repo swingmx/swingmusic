@@ -1,0 +1,80 @@
+<template>
+  <div class="header-list-layout">
+    <div
+      v-bind="containerProps"
+      style="height: calc(100vh - 4.25rem)"
+      :style="{ paddingTop: headerHeight - 64 + 16 + 'px' }"
+      @scroll="handleScroll"
+    >
+      <div v-bind="wrapperProps">
+        <div class="header rounded pad-sm" style="height: 64px">
+          <div
+            ref="header"
+            :style="{ top: -headerHeight + 64 - 16 + 'px' }"
+            class="header-content"
+          >
+            <slot name="header"></slot>
+          </div>
+        </div>
+        <SongItem
+          style="height: 60px"
+          v-for="(t, index) in tracks"
+          :key="t.data.trackid"
+          :track="t.data"
+          :index="0"
+          :isPlaying="queue.playing"
+          :isCurrent="queue.currentid == t.data.trackid"
+        />
+      </div>
+    </div>
+  </div>
+</template>
+
+<script setup lang="ts">
+import { useElementSize, useVirtualList } from "@vueuse/core";
+import { computed, ref } from "vue";
+
+import { Track } from "@/interfaces";
+import useQStore from "@/stores/queue";
+import SongItem from "@/components/shared/SongItem.vue";
+
+const props = defineProps<{
+  tracks: Track[];
+}>();
+
+const queue = useQStore();
+const header = ref<HTMLElement>();
+const source = computed(() => props.tracks);
+const { height: headerHeight } = useElementSize(header);
+
+const {
+  list: tracks,
+  containerProps,
+  wrapperProps,
+} = useVirtualList(source, {
+  itemHeight: 60,
+  overscan: 15,
+});
+
+function handleScroll(e: Event) {
+  const scrollTop = (e.target as HTMLElement).scrollTop;
+
+  if (scrollTop > headerHeight.value) {
+    header.value ? (header.value.style.opacity = "0") : null;
+  } else {
+    header.value ? (header.value.style.opacity = "1") : null;
+  }
+}
+</script>
+
+<style lang="scss">
+.header-list-layout {
+  .header {
+    position: relative;
+
+    .header-content {
+      position: absolute;
+    }
+  }
+}
+</style>
