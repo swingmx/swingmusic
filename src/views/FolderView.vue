@@ -1,29 +1,22 @@
 <template>
-  <div id="f-view-parent">
-    <div id="scrollable" ref="scrollable">
+  <Layout :tracks="folder.tracks" @playFromPage="playFromPage">
+    <template #header>
       <FolderList :folders="folder.dirs" v-if="folder.dirs.length" />
-      <SongList
-        :tracks="folder.tracks"
-        :path="folder.path"
-        @playFromPage="playFromPage"
-      />
-    </div>
-  </div>
+    </template>
+  </Layout>
 </template>
 
 <script setup lang="ts">
 import { ref } from "@vue/reactivity";
-import {
-  onBeforeRouteLeave,
-  onBeforeRouteUpdate,
-} from "vue-router";
+import { onBeforeRouteLeave, onBeforeRouteUpdate } from "vue-router";
 
-import SongList from "@/components/FolderView/SongList.vue";
-import FolderList from "@/components/FolderView/FolderList.vue";
-
-import useFolderStore from "@/stores/pages/folder";
 import useQueueStore from "@/stores/queue";
 import useLoaderStore from "@/stores/loader";
+import useFolderStore from "@/stores/pages/folder";
+
+import Layout from "@/layouts/HeaderAndVList.vue";
+import SongList from "@/components/FolderView/SongList.vue";
+import FolderList from "@/components/FolderView/FolderList.vue";
 
 const loader = useLoaderStore();
 const folder = useFolderStore();
@@ -54,15 +47,3 @@ onBeforeRouteLeave(() => {
   setTimeout(() => folder.resetQuery(), 500);
 });
 </script>
-
-<style lang="scss">
-#f-view-parent {
-  position: relative;
-  overflow: hidden;
-}
-
-#scrollable {
-  display: grid;
-  gap: 1rem;
-}
-</style>
