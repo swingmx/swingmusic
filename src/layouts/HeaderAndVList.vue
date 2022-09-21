@@ -6,7 +6,7 @@
       :style="{ paddingTop: headerHeight - 64 + 16 + 'px' }"
       @scroll="handleScroll"
     >
-      <div v-bind="wrapperProps">
+      <div v-bind="wrapperProps" class="scrollable">
         <div class="header rounded" style="height: 64px">
           <div
             ref="header"
@@ -88,6 +88,13 @@ function handleScroll(e: Event) {
 
 <style lang="scss">
 .header-list-layout {
+  margin-right: calc(0rem - ($medium));
+
+  .scrollable {
+    padding-right: calc(1rem - $small + 2px);
+    scrollbar-width: thin;
+  }
+
   .header {
     position: relative;
 

@@ -59,9 +59,9 @@
 
 #acontent {
   grid-area: content;
-  overflow: hidden scroll;
-  margin-right: -1rem;
-  padding-right: calc($medium - 1px);
+  overflow: hidden auto;
+  margin-right: calc(0rem - ($medium + 2px));
+  padding-right: calc($medium);
 
   .nav {
     margin: $small;

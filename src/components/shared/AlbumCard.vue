@@ -28,9 +28,12 @@ defineProps<{
 .result-item {
   display: grid;
   gap: $small;
-  padding: $small;
-  transition: all 0.5s ease;
-  border-radius: 0.7rem;
+  padding: $medium;
+  border-radius: 1rem;
+
+  &:hover {
+    background-color: $gray4;
+  }
 
   img {
     width: 100%;
