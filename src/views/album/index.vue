@@ -7,20 +7,33 @@
 </template>
 
 <script setup lang="ts">
-import useAStore from "@/stores/pages/album";
+// @libs
 import {
   onBeforeRouteLeave,
   onBeforeRouteUpdate,
   RouteLocationNormalized,
 } from "vue-router";
 
+// @stores
+import useQueueStore from "@/stores/queue";
+import useAStore from "@/stores/pages/album";
+
+// @components
 import Header from "./Header.vue";
 import Layout from "@/layouts/HeaderAndVList.vue";
-import useQueueStore from "@/stores/queue";
 
+// @vars
 const album = useAStore();
 const queue = useQueueStore();
 
+// @methods
+function playFromAlbum(index: number) {
+  const { title, artist, hash } = album.info;
+  queue.playFromAlbum(title, artist, hash, album.allTracks);
+  queue.play(index);
+}
+
+// @hooks
 onBeforeRouteUpdate(async (to: RouteLocationNormalized) => {
   await album
     .fetchTracksAndArtists(to.params.hash.toString())
@@ -32,10 +45,4 @@ onBeforeRouteLeave(() => {
     album.resetQuery();
   }, 500);
 });
-
-function playFromAlbum(index: number) {
-  const { title, artist, hash } = album.info;
-  queue.playFromAlbum(title, artist, hash, album.allTracks);
-  queue.play(index);
-}
 </script>
