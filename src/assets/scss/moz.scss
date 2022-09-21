@@ -2,8 +2,16 @@
 
 @-moz-document url-prefix() {
   #acontent {
-    margin-right: -1rem;
+    margin-right: calc(-1rem + 1px);
     padding-right: 1rem;
+  }
+
+  .header-list-layout {
+    margin-right: calc(0rem - ($medium + 4px)) !important;
+
+    .scrollable {
+      padding-right: calc(1rem - 3px) !important;
+    }
   }
 
   #app-grid.isSmall,

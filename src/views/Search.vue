@@ -22,8 +22,8 @@ import Main from "@/components/RightSideBar/Search/Main.vue";
   }
 
   .artists-results {
-    margin-right: $small;
-    margin-left: -$small;
+    margin-right: calc($medium + 1px);
+    margin-left: 0;
   }
 
   .search-results-grid {
