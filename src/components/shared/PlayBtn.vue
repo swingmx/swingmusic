@@ -1,18 +1,16 @@
 <template>
-  <button
-    class="play-btn"
-    @click="usePlayFrom(source, useQStore, store)"
-  >
+  <button class="play-btn" @click="usePlayFrom(source, useQStore, store)">
     <PlaySvg />
   </button>
 </template>
 
 <script setup lang="ts">
-import { playSources } from "@/composables/enums";
+import useQStore from "@/stores/queue";
 import useAlbumStore from "@/stores/pages/album";
 import usePlaylistStore from "@/stores/pages/playlist";
+
+import { playSources } from "@/composables/enums";
 import usePlayFrom from "@/composables/usePlayFrom";
-import useQStore from "@/stores/queue";
 
 import PlaySvg from "../../assets/icons/play.svg";
 
@@ -27,5 +25,9 @@ defineProps<{
   aspect-ratio: 1;
   padding: 0;
   border-radius: 0.65rem;
+
+  svg {
+    transition: none;
+  }
 }
 </style>
