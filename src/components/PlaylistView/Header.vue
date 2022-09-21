@@ -67,7 +67,7 @@ function editPlaylist() {
 .p-header {
   display: grid;
   grid-template-columns: 1fr;
-  height: 100%;
+  height: $banner-height;
   position: relative;
   background-color: $gray5;
 

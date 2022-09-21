@@ -1,37 +1,32 @@
 <template>
-  <Page>
+  <Layout :tracks="playlist.tracks" @playFromPage="playFromPlaylistPage">
     <template #header>
-      <Header :info="playlist" />
+      <Header :info="playlist.info" />
     </template>
-    <template #content>
-      <Content
-        :tracks="tracks"
-        :count="playlist.count"
-        :name="playlist.name"
-        :playlistid="playlist.playlistid"
-      />
-    </template>
-  </Page>
+  </Layout>
 </template>
 
 <script setup lang="ts">
-import { storeToRefs } from "pinia";
-import Page from "@/layouts/HeaderContentBottom.vue";
-
-import Header from "@/components/PlaylistView/Header.vue";
-import Content from "./Content.vue";
-
-import usePlaylistStore from "@/stores/pages/playlist";
 import { onBeforeRouteLeave } from "vue-router";
 
-const store = usePlaylistStore();
-const { info: playlist, tracks } = storeToRefs(store);
+import useQueueStore from "@/stores/queue";
+import usePlaylistStore from "@/stores/pages/playlist";
+
+import Layout from "@/layouts/HeaderAndVList.vue";
+import Header from "@/components/PlaylistView/Header.vue";
+
+const queue = useQueueStore();
+const playlist = usePlaylistStore();
+
+function playFromPlaylistPage(index: number) {
+  const { name, playlistid } = playlist.info;
+  queue.playFromPlaylist(name, playlistid, playlist.allTracks);
+  queue.play(index);
+}
 
 onBeforeRouteLeave(() => {
   setTimeout(() => {
-    store.resetQuery();
+    playlist.resetQuery();
   }, 500);
 });
 </script>
-
-<style lang="scss"></style>

@@ -104,7 +104,7 @@ useVisibility(albumheaderthing, handleVisibilityState);
   grid-template-columns: max-content 1fr;
   gap: 1rem;
   padding: 1rem;
-  height: 100% !important;
+  height: $banner-height;
   background-color: $black;
   overflow: hidden;
 
