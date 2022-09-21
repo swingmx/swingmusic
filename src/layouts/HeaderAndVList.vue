@@ -7,7 +7,7 @@
       @scroll="handleScroll"
     >
       <div v-bind="wrapperProps">
-        <div class="header rounded pad-sm" style="height: 64px">
+        <div class="header rounded" style="height: 64px">
           <div
             ref="header"
             :style="{ top: -headerHeight + 64 - 16 + 'px' }"
@@ -18,12 +18,21 @@
         </div>
         <SongItem
           style="height: 60px"
-          v-for="(t, index) in tracks"
+          v-for="t in tracks"
           :key="t.data.trackid"
           :track="t.data"
-          :index="0"
+          :index="
+            on_album_page
+              ? t.data.track
+              : t.data.index !== undefined
+              ? t.data.index + 1
+              : t.index + 1
+          "
           :isPlaying="queue.playing"
           :isCurrent="queue.currentid == t.data.trackid"
+          @playThis="
+            updateQueue(t.data.index !== undefined ? t.data.index : t.index)
+          "
         />
       </div>
     </div>
@@ -40,6 +49,11 @@ import SongItem from "@/components/shared/SongItem.vue";
 
 const props = defineProps<{
   tracks: Track[];
+  on_album_page?: boolean;
+}>();
+
+const emit = defineEmits<{
+  (e: "playFromPage", index: number): void;
 }>();
 
 const queue = useQStore();
@@ -55,6 +69,10 @@ const {
   itemHeight: 60,
   overscan: 15,
 });
+
+function updateQueue(index: number) {
+  emit("playFromPage", index);
+}
 
 function handleScroll(e: Event) {
   const scrollTop = (e.target as HTMLElement).scrollTop;
@@ -74,6 +92,7 @@ function handleScroll(e: Event) {
 
     .header-content {
       position: absolute;
+      width: 100%;
     }
   }
 }
