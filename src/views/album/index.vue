@@ -1,5 +1,9 @@
 <template>
-  <Layout :tracks="album.tracks" @playFromPage="playFromAlbum">
+  <Layout
+    :tracks="album.tracks"
+    @playFromPage="playFromAlbum"
+    :on_album_page="true"
+  >
     <template #header>
       <Header :album="album.info" :bio="album.bio" />
     </template>
