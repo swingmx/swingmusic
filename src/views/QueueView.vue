@@ -50,7 +50,7 @@ const source = computed(() => queue.tracklist);
 // import { focusElem } from "@/utils";
 </script>
 
-<style lang="scss">
+<!-- <style lang="scss">
 .queue-view {
 }
-</style>
+</style> -->

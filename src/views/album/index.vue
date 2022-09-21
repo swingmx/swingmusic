@@ -1,12 +1,9 @@
 <template>
-  <Page>
+  <Layout :tracks="album.tracks" @playFromPage="playFromAlbum">
     <template #header>
       <Header :album="album.info" :bio="album.bio" />
     </template>
-    <template #content>
-      <Content :discs="album.discs" :copyright="album.info.copyright" />
-    </template>
-  </Page>
+  </Layout>
 </template>
 
 <script setup lang="ts">
@@ -18,10 +15,11 @@ import {
 } from "vue-router";
 
 import Header from "./Header.vue";
-import Content from "./Content.vue";
-import Page from "@/layouts/HeaderContentBottom.vue";
+import Layout from "@/layouts/HeaderAndVList.vue";
+import useQueueStore from "@/stores/queue";
 
 const album = useAStore();
+const queue = useQueueStore();
 
 onBeforeRouteUpdate(async (to: RouteLocationNormalized) => {
   await album
@@ -34,4 +32,10 @@ onBeforeRouteLeave(() => {
     album.resetQuery();
   }, 500);
 });
+
+function playFromAlbum(index: number) {
+  const { title, artist, hash } = album.info;
+  queue.playFromAlbum(title, artist, hash, album.allTracks);
+  queue.play(index);
+}
 </script>
