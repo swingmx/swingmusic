@@ -1,7 +1,11 @@
 <template>
-  <Layout :tracks="folder.tracks" @playFromPage="playFromPage">
-    <template #header>
-      <FolderList :folders="folder.dirs" v-if="folder.dirs.length" />
+  <Layout
+    :tracks="folder.tracks"
+    :no_header="folder.dirs.length === 0"
+    @playFromPage="playFromPage"
+  >
+    <template #header v-if="folder.dirs.length">
+      <FolderList :folders="folder.dirs" />
     </template>
   </Layout>
 </template>
