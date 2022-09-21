@@ -7,7 +7,7 @@
       @scroll="handleScroll"
     >
       <div v-bind="wrapperProps" class="scrollable">
-        <div class="header rounded" style="height: 64px">
+        <div class="header rounded" style="height: 64px" v-if="!no_header">
           <div
             ref="header"
             :style="{ top: -headerHeight + 64 - 16 + 'px' }"
@@ -51,6 +51,7 @@ import SongItem from "@/components/shared/SongItem.vue";
 const props = defineProps<{
   tracks: Track[];
   on_album_page?: boolean;
+  no_header?: boolean;
 }>();
 
 const emit = defineEmits<{
