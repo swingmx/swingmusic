@@ -5,7 +5,7 @@
     :on_album_page="true"
   >
     <template #header>
-      <Header :album="album.info" :bio="album.bio" />
+      <Header :album="album.info" />
     </template>
   </Layout>
 </template>
@@ -23,7 +23,7 @@ import useQueueStore from "@/stores/queue";
 import useAStore from "@/stores/pages/album";
 
 // @components
-import Header from "./Header.vue";
+import Header from "@/components/AlbumView/Header.vue";
 import Layout from "@/layouts/HeaderAndVList.vue";
 
 // @vars

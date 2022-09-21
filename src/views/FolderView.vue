@@ -15,7 +15,6 @@ import useLoaderStore from "@/stores/loader";
 import useFolderStore from "@/stores/pages/folder";
 
 import Layout from "@/layouts/HeaderAndVList.vue";
-import SongList from "@/components/FolderView/SongList.vue";
 import FolderList from "@/components/FolderView/FolderList.vue";
 
 const loader = useLoaderStore();
