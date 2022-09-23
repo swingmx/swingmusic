@@ -14,7 +14,7 @@
         :key="t.index"
         :track="t.data"
         :index="t.index"
-        :isPlaying="queue.playing"
+        :isCurrentPlaying="t.index === queue.currentindex && queue.playing"
         :isCurrent="t.index === queue.currentindex"
         :isQueueTrack="true"
         @PlayThis="playFromQueue(t.index)"
@@ -24,10 +24,9 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, onMounted, onBeforeUnmount } from "vue";
 import { useVirtualList } from "@vueuse/core";
+import { computed, onBeforeUnmount, onMounted, ref } from "vue";
 
-// import { focusElem } from "@/utils";
 import useQStore from "@/stores/queue";
 
 import TrackItem from "../shared/TrackItem.vue";
@@ -53,11 +52,11 @@ const {
 
 onMounted(() => {
   scrollTo(queue.currentindex);
-  queue.setQueueFunction(scrollTo, mouseover);
+  queue.setScrollFunction(scrollTo, mouseover);
 });
 
 onBeforeUnmount(() => {
-  queue.setQueueFunction(() => {}, null);
+  queue.setScrollFunction(() => {}, null);
 });
 
 // TODO: Handle focusing current track on song end

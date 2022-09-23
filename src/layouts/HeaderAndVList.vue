@@ -28,8 +28,8 @@
               ? t.data.index + 1
               : t.index + 1
           "
-          :isPlaying="queue.playing"
-          :isCurrent="queue.currentid == t.data.trackid"
+          :isCurrent="queue.currentid === t.data.trackid"
+          :isCurrentPlaying="queue.currentid === t.data.trackid && queue.playing"
           @playThis="
             updateQueue(t.data.index !== undefined ? t.data.index : t.index)
           "
@@ -40,8 +40,8 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from "vue";
 import { useElementSize, useVirtualList } from "@vueuse/core";
+import { computed, ref } from "vue";
 
 import { Track } from "@/interfaces";
 import useQStore from "@/stores/queue";
