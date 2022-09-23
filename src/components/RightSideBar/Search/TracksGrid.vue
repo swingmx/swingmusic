@@ -4,9 +4,9 @@
       <TrackComponent
         v-for="(track, index) in search.tracks.value"
         :key="track.trackid"
-        :isCurrent="queue.currentid == track.trackid"
+        :isCurrent="queue.currentid === track.trackid"
         :isHighlighted="false"
-        :isPlaying="queue.playing"
+        :isCurrentPlaying="queue.currentid === track.trackid && queue.playing"
         :track="track"
         @playThis="updateQueue(index)"
         :index="index + 1"
@@ -18,13 +18,13 @@
 </template>
 
 <script setup lang="ts">
-  import { computed } from "vue";
-  
-import LoadMore from "./LoadMore.vue";
-import TrackItem from "@/components/shared/TrackItem.vue";
+import { computed } from "vue";
+
 import SongItem from "@/components/shared/SongItem.vue";
+import TrackItem from "@/components/shared/TrackItem.vue";
 import useQStore from "@/stores/queue";
 import useSearchStore from "@/stores/search";
+import LoadMore from "./LoadMore.vue";
 
 const queue = useQStore();
 const search = useSearchStore();

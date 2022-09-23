@@ -27,7 +27,7 @@
             : index + 1
         "
         @playThis="updateQueue(track.index !== undefined ? track.index : index)"
-        :isPlaying="queue.playing"
+        :isCurrentPlaying="queue.playing"
         :isCurrent="queue.currentid == track.trackid"
       />
     </div>

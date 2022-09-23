@@ -22,7 +22,7 @@
         <div
           class="now-playing-track-indicator image"
           v-if="isCurrent"
-          :class="{ last_played: !isPlaying }"
+          :class="{ last_played: !isCurrentPlaying }"
         ></div>
       </div>
       <div v-tooltip class="song-title">
@@ -67,16 +67,16 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
+import { onUpdated, ref } from "vue";
 
+import { showTrackContextMenu as showContext } from "@/composables/context";
 import { paths } from "@/config";
 import { Track } from "@/interfaces";
 import { formatSeconds } from "@/utils";
-import { showTrackContextMenu as showContext } from "@/composables/context";
 
-import ArtistName from "./ArtistName.vue";
 import HeartSvg from "@/assets/icons/heart.svg";
 import OptionSvg from "@/assets/icons/more.svg";
+import ArtistName from "./ArtistName.vue";
 
 const context_on = ref(false);
 const imguri = paths.images.thumb.small;
@@ -87,8 +87,8 @@ const artisttitle = ref<HTMLElement | null>(null);
 const props = defineProps<{
   track: Track;
   index: number | string;
-  isPlaying: Boolean;
   isCurrent: Boolean;
+  isCurrentPlaying: Boolean;
 }>();
 
 const emit = defineEmits<{
@@ -102,6 +102,10 @@ function emitUpdate(track: Track) {
 function showMenu(e: Event) {
   showContext(e, props.track, options_button_clicked);
 }
+
+onUpdated(() => {
+  console.log(artisttitle.value);
+});
 </script>
 
 <style lang="scss">
@@ -155,7 +159,6 @@ function showMenu(e: Event) {
     width: 100%;
     position: relative;
     height: 3rem;
-    // border: solid 1px;
 
     .text {
       opacity: 1;

@@ -19,7 +19,7 @@
       <div
         class="now-playing-track-indicator image"
         v-if="isCurrent"
-        :class="{ last_played: !isPlaying }"
+        :class="{ last_played: !isCurrentPlaying }"
       ></div>
     </div>
     <div class="tags">
@@ -54,7 +54,7 @@ import ArtistName from "./ArtistName.vue";
 const props = defineProps<{
   track: Track;
   isCurrent: boolean;
-  isPlaying: boolean;
+  isCurrentPlaying: boolean;
   isQueueTrack?: boolean;
   index?: number;
 }>();

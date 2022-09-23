@@ -1,7 +1,6 @@
-import { Ref } from "vue";
-import { focusElem } from "@/utils";
 import { paths } from "@/config";
 import { defineStore } from "pinia";
+import { Ref } from "vue";
 import { NotifType, useNotifStore } from "./notification";
 
 import { FromOptions } from "../composables/enums";
@@ -12,7 +11,7 @@ import {
   fromFolder,
   fromPlaylist,
   fromSearch,
-  Track,
+  Track
 } from "../interfaces";
 
 function shuffle(tracks: Track[]) {
@@ -245,7 +244,7 @@ export default defineStore("Queue", {
     removeFromQueue(index: number = 0) {
       this.tracklist.splice(index, 1);
     },
-    setQueueFunction(
+    setScrollFunction(
       cb: (index: number) => void,
       mousover: Ref<boolean> | null
     ) {
