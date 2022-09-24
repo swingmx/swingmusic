@@ -1,12 +1,12 @@
 #app-grid {
   display: grid;
   grid-template-columns: min-content 1fr 29rem;
-  grid-template-rows: max-content 1fr max-content;
+  grid-template-rows: 42px 1fr max-content;
   grid-template-areas:
     "l-sidebar nav search-input"
     "l-sidebar content r-sidebar"
     "l-sidebar content r-sidebar"
-    "l-sidebar content bottombar";
+    "bottombar bottombar bottombar";
   height: calc(100vh);
   gap: 1rem;
   padding: $small 0;
@@ -112,4 +112,7 @@
 
 .b-bar {
   grid-area: bottombar;
+  width: calc(100% + 1.25rem);
+  margin-left: -$small;
+  margin-bottom: -$small;
 }

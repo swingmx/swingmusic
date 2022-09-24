@@ -1,5 +1,5 @@
 <template>
-  <div class="b-bar bg-primary pad-medium rounded" v-if="settings.show_alt_np">
+  <div class="b-bar bg-primary pad-medium noscroll" v-if="settings.show_alt_np">
     <div class="info">
       <img
         :src="paths.images.thumb.large + queue.currenttrack?.image"
@@ -51,9 +51,11 @@ const settings = useSettingsStore();
   display: grid;
   grid-template-rows: 1fr max-content;
   gap: 1rem;
-  padding: 1rem;
+  // padding: 1rem;
   padding-bottom: 1rem;
   position: relative;
+  height: 55px;
+  // width: 100%;
 
   .time {
     display: grid;
