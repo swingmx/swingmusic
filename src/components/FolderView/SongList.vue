@@ -157,25 +157,6 @@ function getTrackList() {
       background-color: $gray4;
       color: $white !important;
     }
-
-    .highlighted {
-      color: $white !important;
-      animation: blinker 1.5s ease 1s;
-    }
-
-    @keyframes blinker {
-      25% {
-        background-color: $gray4;
-      }
-
-      50% {
-        background-color: transparent;
-      }
-
-      75% {
-        background-color: $gray4;
-      }
-    }
   }
 }
 

@@ -31,6 +31,7 @@
       <ArtistName
         :artists="track?.artist || []"
         :albumartist="track?.albumartist || 'Play something'"
+        :small="true"
         class="artists"
       />
     </div>
@@ -106,9 +107,8 @@ const imguri = paths.images.thumb.large;
     font-weight: 900;
     margin: 0 auto;
   }
-
+  
   .artists {
-    font-size: 0.85rem;
     opacity: 0.5;
     margin: 0 auto;
 

@@ -28,7 +28,11 @@
       </div>
       <hr />
       <div class="artist">
-        <ArtistName :artists="track.artist" :albumartist="track.albumartist" />
+        <ArtistName
+          :artists="track.artist"
+          :albumartist="track.albumartist"
+          :smaller="true"
+        />
       </div>
     </div>
     <div
@@ -140,7 +144,6 @@ const playThis = (track: Track) => {
   }
 
   .artist {
-    font-size: small;
     opacity: 0.67;
     width: fit-content;
   }

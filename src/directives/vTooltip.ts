@@ -46,11 +46,11 @@ function hideTooltip() {
   tooltip.style.visibility = "hidden";
 }
 
-function getFullWidth(el: HTMLElement) {
-  // display el as inline-block to get the correct width
+function getElFullWidth(el: HTMLElement) {
   el.style.display = "inline-block";
   el.style.visibility = "hidden";
   document.getElementsByTagName("body")[0].appendChild(el);
+
   const width = el.offsetWidth;
   el.remove();
 
@@ -58,7 +58,7 @@ function getFullWidth(el: HTMLElement) {
 }
 
 export default (el: HTMLElement) => {
-  const fullWidth = getFullWidth(el.cloneNode(true) as HTMLElement);
+  const fullWidth = getElFullWidth(el.cloneNode(true) as HTMLElement);
   if (fullWidth <= el.offsetWidth) return;
 
   if (!tooltip) {
@@ -90,12 +90,3 @@ export default (el: HTMLElement) => {
     });
   });
 };
-
-// } as Directive;
-
-// beforeUnmount(el: HTMLElement) {
-//   // hideTooltip();
-
-//   el.removeEventListener("mouseover", () => {});
-//   el.removeEventListener("mouseout", () => {});
-// },
