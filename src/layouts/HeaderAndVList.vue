@@ -6,7 +6,15 @@
       :style="{ paddingTop: !no_header ? headerHeight - 64 + 16 + 'px' : 0 }"
       @scroll="handleScroll"
     >
-      <div v-bind="wrapperProps" class="scrollable">
+      <div
+        v-bind="wrapperProps"
+        class="scrollable"
+        ref="scrollable"
+        :class="{
+          isSmall: isSmall,
+          isMedium: isMedium,
+        }"
+      >
         <div class="header rounded" style="height: 64px" v-if="!no_header">
           <div
             ref="header"
@@ -29,7 +37,9 @@
               : t.index + 1
           "
           :isCurrent="queue.currentid === t.data.trackid"
-          :isCurrentPlaying="queue.currentid === t.data.trackid && queue.playing"
+          :isCurrentPlaying="
+            queue.currentid === t.data.trackid && queue.playing
+          "
           @playThis="
             updateQueue(t.data.index !== undefined ? t.data.index : t.index)
           "
@@ -59,9 +69,23 @@ const emit = defineEmits<{
 }>();
 
 const queue = useQStore();
-const header = ref<HTMLElement>();
 const source = computed(() => props.tracks);
+
+// element refs + sizes
+const header = ref<HTMLElement>();
+const scrollable = ref<HTMLElement>();
+
 const { height: headerHeight } = useElementSize(header);
+const { width } = useElementSize(scrollable);
+
+const brk = {
+  sm: 500,
+  md: 800,
+};
+
+const isSmall = computed(() => width.value < brk.sm);
+const isMedium = computed(() => width.value > brk.sm && width.value < brk.md);
+// ---
 
 const {
   list: tracks,
@@ -94,6 +118,34 @@ function handleScroll(e: Event) {
   .scrollable {
     padding-right: calc(1rem - $small + 2px);
     scrollbar-width: thin;
+  }
+
+  .scrollable.isSmall {
+    .songlist-item {
+      grid-template-columns: 1.5rem 2fr 2rem 2.5rem;
+    }
+
+    .song-artists,
+    .song-album {
+      display: none !important;
+    }
+
+    .isSmallArtists {
+      display: unset !important;
+      font-size: small;
+      color: $white;
+      opacity: 0.67;
+    }
+  }
+
+  .scrollable.isMedium {
+    .songlist-item {
+      grid-template-columns: 1.5rem 2fr 1fr 2rem 2.5rem;
+    }
+
+    .song-album {
+      display: none !important;
+    }
   }
 
   .header {
