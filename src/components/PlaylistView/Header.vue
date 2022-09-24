@@ -21,7 +21,7 @@
           {{ formatSeconds(info.duration, true) }}
         </div>
         <div class="title ellip">{{ info.name }}</div>
-        <div class="type">Playlist</div>
+        <div class="type">PLAYLIST</div>
       </div>
     </div>
     <div class="last-updated" :class="{ lightbg: !info.image }">
@@ -77,12 +77,12 @@ function editPlaylist() {
     left: 0;
     width: 100%;
     height: 100%;
-    background-image: linear-gradient(
-      20deg,
-      rgba(0, 0, 0, 0.25) 40%,
-      rgba(0, 0, 0, 0.1),
-      rgba(0, 0, 0, 0.1) 70%
-    );
+    // background-image: linear-gradient(
+    //   rgba(0, 0, 0, 0.514),
+    //   rgba(0, 0, 0, 0.651)
+    // );
+    background-color: $black;
+    opacity: 0.5;
   }
 
   .last-updated {
@@ -141,12 +141,14 @@ function editPlaylist() {
     }
 
     .type {
+      font-size: small;
+      font-weight: bold;
       color: rgba(255, 255, 255, 0.692);
     }
 
     .title {
-      font-size: 2.5rem;
-      font-weight: 900;
+      font-size: 4rem;
+      font-weight: 1000;
       text-transform: capitalize;
       cursor: text;
     }

@@ -12,7 +12,7 @@
         ref="scrollable"
         :class="{
           isSmall: isSmall,
-          isMedium: isMedium,
+          isMedium: isMedium || on_album_page,
         }"
       >
         <div class="header rounded" style="height: 64px" v-if="!no_header">
@@ -29,6 +29,7 @@
           v-for="t in tracks"
           :key="t.data.trackid"
           :track="t.data"
+          :no_album="on_album_page"
           :index="
             on_album_page
               ? t.data.track
@@ -58,14 +59,14 @@ import useQStore from "@/stores/queue";
 
 import SongItem from "@/components/shared/SongItem.vue";
 
+const emit = defineEmits<{
+  (e: "playFromPage", index: number): void;
+}>();
+
 const props = defineProps<{
   tracks: Track[];
   on_album_page?: boolean;
   no_header?: boolean;
-}>();
-
-const emit = defineEmits<{
-  (e: "playFromPage", index: number): void;
 }>();
 
 const queue = useQStore();
@@ -121,8 +122,9 @@ function handleScroll(e: Event) {
   }
 
   .scrollable.isSmall {
+    // hide album and artists columns
     .songlist-item {
-      grid-template-columns: 1.5rem 2fr 2rem 2.5rem;
+      grid-template-columns: 1.5rem 2fr 2.5rem 2.5rem;
     }
 
     .song-artists,
@@ -139,8 +141,9 @@ function handleScroll(e: Event) {
   }
 
   .scrollable.isMedium {
+    // hide album column
     .songlist-item {
-      grid-template-columns: 1.5rem 2fr 1fr 2rem 2.5rem;
+      grid-template-columns: 1.5rem 1.5fr 1fr 2.5rem 2.5rem;
     }
 
     .song-album {
