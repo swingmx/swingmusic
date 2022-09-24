@@ -2,7 +2,7 @@
   <div
     class="songlist-item rounded-sm"
     :class="[{ current: isCurrent }, { contexton: context_on }]"
-    @dblclick="emitUpdate(track)"
+    @dblclick.prevent="emitUpdate"
     @contextmenu.prevent="showMenu"
   >
     <div class="index t-center ellip" @dblclick.prevent.stop="() => {}">
@@ -12,7 +12,7 @@
       <HeartSvg />
     </div>
     <div class="flex">
-      <div @click="emitUpdate(track)" class="thumbnail">
+      <div @click.pre@dblclick.prevent="emitUpdate" class="thumbnail">
         <img
           loading="lazy"
           :src="imguri + track.image"
@@ -26,7 +26,7 @@
         ></div>
       </div>
       <div v-tooltip class="song-title">
-        <div class="title ellip" @click="emitUpdate(track)" ref="artisttitle">
+        <div class="title ellip" @click.pre@dblclick.prevent="emitUpdate" ref="artisttitle">
           {{ track.title }}
         </div>
         <div class="isSmallArtists" style="display: none">
@@ -95,17 +95,13 @@ const emit = defineEmits<{
   (e: "playThis"): void;
 }>();
 
-function emitUpdate(track: Track) {
+function emitUpdate() {
   emit("playThis");
 }
 
 function showMenu(e: Event) {
   showContext(e, props.track, options_button_clicked);
 }
-
-onUpdated(() => {
-  console.log(artisttitle.value);
-});
 </script>
 
 <style lang="scss">
