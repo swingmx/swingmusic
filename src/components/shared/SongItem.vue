@@ -26,7 +26,11 @@
         ></div>
       </div>
       <div v-tooltip class="song-title">
-        <div class="title ellip" @click.pre@dblclick.prevent="emitUpdate" ref="artisttitle">
+        <div
+          class="title ellip"
+          @click.pre@dblclick.prevent="emitUpdate"
+          ref="artisttitle"
+        >
           {{ track.title }}
         </div>
         <div class="isSmallArtists" style="display: none">
@@ -41,6 +45,7 @@
       <ArtistName :artists="track.artist" :albumartist="track.albumartist" />
     </div>
     <router-link
+      v-if="!no_album"
       class="song-album ellip"
       v-tooltip
       :to="{
@@ -52,9 +57,7 @@
     >
       {{ track.album }}
     </router-link>
-    <div class="song-duration">
-      <div class="text ellip">{{ formatSeconds(track.duration) }}</div>
-    </div>
+    <div class="song-duration">{{ formatSeconds(track.duration) }}</div>
     <div
       class="options-icon circular"
       :class="{ options_button_clicked }"
@@ -67,7 +70,7 @@
 </template>
 
 <script setup lang="ts">
-import { onUpdated, ref } from "vue";
+import { ref } from "vue";
 
 import { showTrackContextMenu as showContext } from "@/composables/context";
 import { paths } from "@/config";
@@ -89,6 +92,7 @@ const props = defineProps<{
   index: number | string;
   isCurrent: Boolean;
   isCurrentPlaying: Boolean;
+  no_album?: Boolean;
 }>();
 
 const emit = defineEmits<{
@@ -107,7 +111,7 @@ function showMenu(e: Event) {
 <style lang="scss">
 .songlist-item {
   display: grid;
-  grid-template-columns: 1.5rem 2fr 1fr 1.5fr 2rem 2.5rem;
+  grid-template-columns: 1.5rem 2fr 1fr 1.5fr 2.5rem 2.5rem;
   align-items: center;
   justify-content: flex-start;
   height: 3.75rem;
@@ -178,10 +182,6 @@ function showMenu(e: Event) {
   .song-duration {
     font-size: small;
     text-align: left;
-
-    .ellip {
-      word-break: keep-all !important;
-    }
   }
 
   .options-icon {

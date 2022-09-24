@@ -1,6 +1,6 @@
 @import "./app-grid.scss", "./controls.scss", "./inputs.scss",
-"./scrollbars.scss", "./state.scss", "./variants.scss", "./basic.scss",
-"./search-tabheaders.scss";
+  "./scrollbars.scss", "./state.scss", "./variants.scss", "./basic.scss",
+  "./search-tabheaders.scss";
 
 :root {
   --separator: #ffffff46;
@@ -23,9 +23,9 @@ html.loading * {
 body {
   background-color: $body;
   color: $white;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica,
-  Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
-  font-family: "SFCompactDisplay" !important;
+  font-family: "SFCompactDisplay", -apple-system, BlinkMacSystemFont, "Segoe UI",
+    Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji",
+    "Segoe UI Symbol";
   font-size: 1rem;
   image-rendering: -webkit-optimize-contrast;
   width: calc(100vw - 1rem);
