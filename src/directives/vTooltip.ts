@@ -46,41 +46,56 @@ function hideTooltip() {
   tooltip.style.visibility = "hidden";
 }
 
-export default {
-  mounted(el: HTMLElement, binding) {
-    if (!tooltip) {
-      tooltip = getTooltip();
-    }
+function getFullWidth(el: HTMLElement) {
+  // display el as inline-block to get the correct width
+  el.style.display = "inline-block";
+  el.style.visibility = "hidden";
+  document.getElementsByTagName("body")[0].appendChild(el);
+  const width = el.offsetWidth;
+  el.remove();
 
-    if (!popperInstance) {
-      popperInstance = getInstance() as Instance;
-    }
+  return width;
+}
 
-    let isHovered = false;
+export default (el: HTMLElement) => {
+  const fullWidth = getFullWidth(el.cloneNode(true) as HTMLElement);
+  if (fullWidth <= el.offsetWidth) return;
 
-    el.addEventListener("mouseover", () => {
-      isHovered = true;
+  if (!tooltip) {
+    tooltip = getTooltip();
+  }
 
-      setTimeout(() => {
-        if (!isHovered) return;
-        tooltip.innerText = el.innerText;
+  if (!popperInstance) {
+    popperInstance = getInstance() as Instance;
+  }
 
-        virtualEl.getBoundingClientRect = () => el.getBoundingClientRect();
-        popperInstance.update().then(showTooltip);
-      }, 1500);
+  let isHovered = false;
+
+  el.addEventListener("mouseover", () => {
+    isHovered = true;
+
+    setTimeout(() => {
+      if (!isHovered) return;
+      tooltip.innerText = el.innerText;
+
+      virtualEl.getBoundingClientRect = () => el.getBoundingClientRect();
+      popperInstance.update().then(showTooltip);
+    }, 1500);
+  });
+
+  ["mouseout", "click"].forEach((event) => {
+    document.addEventListener(event, () => {
+      isHovered = false;
+      hideTooltip();
     });
+  });
+};
 
-    ["mouseout", "click"].forEach((event) => {
-      document.addEventListener(event, () => {
-        isHovered = false;
-        hideTooltip();
-      });
-    });
-  },
-  beforeUnmount(el: HTMLElement) {
-    hideTooltip();
+// } as Directive;
 
-    el.removeEventListener("mouseover", () => {});
-    el.removeEventListener("mouseout", () => {});
-  },
-} as Directive;
+// beforeUnmount(el: HTMLElement) {
+//   // hideTooltip();
+
+//   el.removeEventListener("mouseover", () => {});
+//   el.removeEventListener("mouseout", () => {});
+// },
