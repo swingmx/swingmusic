@@ -1,6 +1,22 @@
 <template>
   <div id="gsearch-input">
-    <div id="ginner" tabindex="0" class="bg-primary rounded-sm">
+    <div id="ginner" tabindex="0" class="bg-primary">
+      <button
+        :title="
+          tabs.current === tabs.tabs.search
+            ? 'back to queue'
+            : 'go to search'
+        "
+      >
+        <SearchSvg
+          v-if="tabs.current === tabs.tabs.queue"
+          @click.prevent="tabs.switchToSearch"
+        />
+        <BackSvg
+          v-if="tabs.current === tabs.tabs.search"
+          @click.prevent="tabs.switchToQueue"
+        />
+      </button>
       <input
         id="globalsearch"
         v-model.trim="search.query"
@@ -9,9 +25,8 @@
         @blur.prevent="removeFocusedClass"
         @focus.prevent="addFocusedClass"
       />
-      <SearchSvg />
     </div>
-    <div class="buttons rounded-sm bg-primary">
+    <!-- <div class="buttons rounded-sm bg-primary">
       <button
         @click="tabs.switchToQueue"
         v-if="tabs.current !== tabs.tabs.queue"
@@ -27,13 +42,14 @@
       >
         <SearchSvg />
       </button>
-    </div>
+    </div> -->
+    <!-- <button>Global Search this that</button> -->
   </div>
 </template>
 
 <script setup lang="ts">
 import { onMounted } from "vue";
-import QueueSvg from "@/assets/icons/queue.svg";
+import BackSvg from "@/assets/icons/arrow.svg";
 import SearchSvg from "@/assets/icons/search.svg";
 import useSearchStore from "@/stores/search";
 import useTabStore from "@/stores/tabs";
@@ -59,26 +75,29 @@ function removeFocusedClass() {
 #gsearch-input {
   display: grid;
   grid-template-columns: 1fr max-content;
-  gap: 1rem;
-
-  .buttons {
-    display: grid;
-    grid-auto-flow: column;
-    overflow: hidden;
-
-    button {
-      padding: 0 $small;
-      height: 100%;
-      border-radius: 0;
-    }
-  }
+  border-radius: 3rem;
 
   #ginner {
     width: 100%;
     display: flex;
     align-items: center;
-    gap: $smaller;
+    gap: $small;
     padding: 0 $small;
+    border-radius: 3rem;
+
+    button {
+      background: transparent;
+      width: 3rem;
+      padding: 0;
+      border-radius: 3rem;
+      cursor: pointer;
+      margin-left: -$smaller;
+
+      &:hover {
+        transition: all 0.2s ease;
+        background-color: $gray2;
+      }
+    }
 
     input {
       width: 100%;
