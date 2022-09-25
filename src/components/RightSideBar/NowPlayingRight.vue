@@ -1,46 +1,73 @@
 <template>
-  <div class="b-bar bg-primary pad-medium noscroll" v-if="settings.show_alt_np">
-    <div class="info">
-      <img
-        :src="paths.images.thumb.large + queue.currenttrack?.image"
-        alt=""
-        class="rounded shadow-lg"
-      />
-      <div class="tags">
-        <div class="np-artist ellip">
-          <span
-            v-for="artist in putCommas(
-              queue.currenttrack?.artist || ['♥ Hello ♥']
-            )"
-          >
-            {{ artist }}
-          </span>
+  <div class="b-bar">
+    <div class="centered">
+      <div class="inner">
+        <RouterLink
+          title="go to album"
+          :to="{
+            name: Routes.album,
+            params: {
+              hash: queue.currenttrack.albumhash,
+            },
+          }"
+        >
+          <img
+            class="rounded-sm"
+            :src="paths.images.thumb.small + queue.currenttrack.image"
+            alt=""
+          />
+        </RouterLink>
+
+        <div class="info">
+          <div class="with-title">
+            <div class="time time-current">
+              <span>
+                {{ formatSeconds(queue.duration.current) }}
+              </span>
+            </div>
+            <div class="tags">
+              <div class="title ellip">
+                {{ queue.currenttrack.title }}
+              </div>
+              <ArtistName
+                :artists="queue.currenttrack.artist"
+                :albumartist="queue.currenttrack.albumartist"
+                class="artist"
+              />
+            </div>
+            <div class="time time-full">
+              <span>
+                {{
+                  formatSeconds(
+                    queue.currenttrack ? queue.currenttrack.duration : 0
+                  )
+                }}
+              </span>
+            </div>
+          </div>
+
+          <Progress />
         </div>
-        <div class="np-title ellip">
-          {{ queue.currenttrack?.title || "Play something"}}
+        <div class="buttons">
+          <HotKeys />
         </div>
       </div>
-    </div>
-    <Progress />
-    <div class="time">
-      <span class="current">{{ formatSeconds(queue.duration.current) }}</span>
-      <HotKeys />
-      <span class="full">{{
-        formatSeconds(queue.currenttrack ? queue.currenttrack.duration : 0)
-      }}</span>
+      <div class=""></div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import "@/assets/scss/BottomBar/BottomBar.scss";
-import useSettingsStore from "@/stores/settings";
-import { formatSeconds, putCommas } from "@/utils";
-import HotKeys from "../LeftSidebar/NP/HotKeys.vue";
-import Progress from "../LeftSidebar/NP/Progress.vue";
-
 import { paths } from "@/config";
 import useQStore from "@/stores/queue";
+import { formatSeconds } from "@/utils";
+
+import { Routes } from "@/composables/enums";
+import useSettingsStore from "@/stores/settings";
+
+import ArtistName from "../shared/ArtistName.vue";
+import HotKeys from "../LeftSidebar/NP/HotKeys.vue";
+import Progress from "../LeftSidebar/NP/Progress.vue";
 
 const queue = useQStore();
 const settings = useSettingsStore();
@@ -48,51 +75,126 @@ const settings = useSettingsStore();
 
 <style lang="scss">
 .b-bar {
+  height: 65px;
+  background-color: rgb(22, 22, 22);
   display: grid;
-  grid-template-rows: 1fr max-content;
-  gap: 1rem;
-  // padding: 1rem;
-  padding-bottom: 1rem;
-  position: relative;
-  height: 55px;
-  // width: 100%;
+  align-items: center;
+  z-index: 1;
+  border-top: solid 1px $gray3;
 
-  .time {
+  .centered {
+    width: 50rem;
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
     align-items: center;
 
-    .full {
-      text-align: end;
+    .inner {
+      display: grid;
+      height: 3rem;
+      grid-template-columns: max-content 1fr max-content;
+      gap: 1rem;
+      align-items: center;
     }
-  }
 
-  .info {
-    display: grid;
-    grid-template-columns: max-content 1fr;
-    gap: 1rem;
+    // background-color: $gray5;
+    width: max-content;
+    padding: $small $medium;
+    margin: 0 auto;
 
     img {
-      height: 6rem;
-      width: auto;
+      height: 2.75rem;
+      width: 100%;
+      aspect-ratio: 1;
+      object-fit: cover;
+      cursor: pointer;
     }
 
-    .tags {
-      display: flex;
-      flex-direction: column;
-      justify-content: flex-end;
-      gap: $smaller;
+    .info {
+      width: 30rem;
+      // width: 100%;
 
-      .np-title {
-        font-size: 1.15rem;
-        font-weight: bold;
+      .with-title {
+        display: grid;
+        grid-template-columns: max-content 1fr max-content;
+        align-items: flex-end;
+        gap: $smaller;
       }
 
-      .np-artist {
-        opacity: 0.75;
-        font-size: 0.9rem;
+      .time {
+        font-size: 12px;
+        height: fit-content;
+        width: 3rem;
+
+        span {
+          background-color: $gray3;
+          border-radius: $smaller;
+          padding: 0 $smaller;
+        }
       }
+
+      .time-full {
+        text-align: end;
+      }
+
+      .tags {
+        font-size: small;
+        display: grid;
+        grid-template-rows: 1fr 1fr;
+        place-items: center;
+
+        .title {
+          font-weight: bold;
+        }
+
+        .artist {
+          opacity: 0.75;
+          margin-bottom: -$smaller;
+          font-size: 12px;
+        }
+      }
+    }
+
+    .buttons {
+      width: 9rem;
     }
   }
+  // width: 100%;
+
+  // .time {
+  //   display: grid;
+  //   grid-template-columns: repeat(3, 1fr);
+  //   align-items: center;
+
+  //   .full {
+  //     text-align: end;
+  //   }
+  // }
+
+  // .info {
+  //   display: grid;
+  //   grid-template-columns: max-content 1fr;
+  //   gap: 1rem;
+
+  //   img {
+  //     height: 6rem;
+  //     width: auto;
+  //   }
+
+  //   .tags {
+  //     display: flex;
+  //     flex-direction: column;
+  //     justify-content: flex-end;
+  //     gap: $smaller;
+
+  //     .np-title {
+  //       font-size: 1.15rem;
+  //       font-weight: bold;
+  //     }
+
+  //     .np-artist {
+  //       opacity: 0.75;
+  //       font-size: 0.9rem;
+  //     }
+  //   }
+  // }
 }
 </style>
