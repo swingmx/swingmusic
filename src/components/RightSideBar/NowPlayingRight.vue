@@ -2,21 +2,25 @@
   <div class="b-bar">
     <div class="centered">
       <div class="inner">
-        <RouterLink
-          title="go to album"
-          :to="{
-            name: Routes.album,
-            params: {
-              hash: queue.currenttrack.albumhash,
-            },
-          }"
-        >
-          <img
-            class="rounded-sm"
-            :src="paths.images.thumb.small + queue.currenttrack.image"
-            alt=""
-          />
-        </RouterLink>
+        <div class="with-icons rounded-sm border">
+          <!-- <button><PlusSvg /></button> -->
+          <RouterLink
+            title="go to album"
+            :to="{
+              name: Routes.album,
+              params: {
+                hash: queue.currenttrack.albumhash,
+              },
+            }"
+          >
+            <img
+              class="rounded-sm"
+              :src="paths.images.thumb.small + queue.currenttrack.image"
+              alt=""
+            />
+          </RouterLink>
+          <button><HeartSvg /></button>
+        </div>
 
         <div class="info">
           <div class="with-title">
@@ -48,7 +52,7 @@
 
           <Progress />
         </div>
-        <div class="buttons">
+        <div class="buttons rounded-sm border">
           <HotKeys />
         </div>
       </div>
@@ -69,6 +73,9 @@ import ArtistName from "../shared/ArtistName.vue";
 import HotKeys from "../LeftSidebar/NP/HotKeys.vue";
 import Progress from "../LeftSidebar/NP/Progress.vue";
 
+import HeartSvg from "../../assets/icons/heart.svg";
+import PlusSvg from "../../assets/icons/plus.svg";
+
 const queue = useQStore();
 const settings = useSettingsStore();
 </script>
@@ -86,6 +93,9 @@ const settings = useSettingsStore();
     width: 50rem;
     display: grid;
     align-items: center;
+    width: max-content;
+    padding: $small $medium;
+    margin: 0 auto;
 
     .inner {
       display: grid;
@@ -95,10 +105,26 @@ const settings = useSettingsStore();
       align-items: center;
     }
 
-    // background-color: $gray5;
-    width: max-content;
-    padding: $small $medium;
-    margin: 0 auto;
+    .with-icons {
+      background-color: rgba(255, 255, 255, 0.048);
+      display: grid;
+      gap: $small;
+      grid-template-columns: repeat(3, max-content);
+      align-items: center;
+      padding: 0 5px;
+      margin-top: -$smaller;
+
+      button {
+        height: 2rem;
+        width: 2rem;
+        background: transparent;
+        padding: 0;
+
+        &:last-child:hover {
+          background: $red;
+        }
+      }
+    }
 
     img {
       height: 2.75rem;
@@ -106,6 +132,7 @@ const settings = useSettingsStore();
       aspect-ratio: 1;
       object-fit: cover;
       cursor: pointer;
+      margin-top: $smaller;
     }
 
     .info {
@@ -154,8 +181,19 @@ const settings = useSettingsStore();
     }
 
     .buttons {
-      width: 9rem;
+      // width: 10rem;
+      height: 3.25rem;
+      margin-top: -$smaller;
+      background-color: rgba(255, 255, 255, 0.048);
+      display: grid;
+      place-items: center;
+      padding: 0 $small;
     }
+  }
+
+  .right {
+    display: grid;
+    place-content: end;
   }
   // width: 100%;
 
