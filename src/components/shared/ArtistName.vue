@@ -5,6 +5,7 @@
     class="ellip"
     :style="{
       fontSize: small ? '0.85rem' : smaller ? 'small' : '',
+      padding: '0 .25rem'
     }"
   >
     <div v-if="artists === null || artists.length === 0">

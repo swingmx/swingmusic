@@ -2,7 +2,7 @@
   <div class="header-list-layout">
     <div
       v-bind="containerProps"
-      style="height: calc(100vh - 4.25rem)"
+      style="height: calc(100vh - 8.75rem)"
       :style="{ paddingTop: !no_header ? headerHeight - 64 + 16 + 'px' : 0 }"
       @scroll="handleScroll"
     >

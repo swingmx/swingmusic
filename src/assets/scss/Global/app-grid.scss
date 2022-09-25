@@ -1,20 +1,17 @@
 #app-grid {
   display: grid;
   grid-template-columns: min-content 1fr 29rem;
-  grid-template-rows: 42px 1fr max-content;
+  grid-template-rows: 43px calc(100vh - (8.5rem + 13px)) max-content;
   grid-template-areas:
     "l-sidebar nav search-input"
     "l-sidebar content r-sidebar"
-    "l-sidebar content r-sidebar"
     "bottombar bottombar bottombar";
-  height: calc(100vh);
+  height: 100%;
   gap: 1rem;
   padding: $small 0;
   margin: 0 auto;
   margin-top: -$small;
   max-width: 1720px;
-  // padding-right: $medium;
-  // border-right: solid 1px $gray4;
   padding-top: $small;
 }
 
@@ -34,7 +31,6 @@
   grid-template-areas:
     "l-sidebar nav"
     "l-sidebar content"
-    "l-sidebar content"
     "l-sidebar content";
 }
 
@@ -42,7 +38,6 @@
   @include tablet-landscape {
     grid-template-areas:
       "l-sidebar nav"
-      "l-sidebar content"
       "l-sidebar content"
       "l-sidebar bottombar";
   }
@@ -53,15 +48,17 @@
   grid-template-areas:
     "l-sidebar nav"
     "l-sidebar content"
-    "l-sidebar content"
     "l-sidebar content";
 }
 
 #acontent {
   grid-area: content;
-  overflow: hidden auto;
+  // overflow: hidden;
   margin-right: calc(0rem - ($medium + 2px));
   padding-right: calc($medium);
+  height: 100%;
+  // outline: solid;
+  // margin-top: -$small;
 
   .nav {
     margin: $small;
@@ -92,6 +89,7 @@
 }
 
 #gsearch-input {
+  // display: none !important;
   grid-area: search-input;
 }
 
