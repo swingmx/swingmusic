@@ -4,7 +4,7 @@ input[type="range"] {
   width: calc(100% - 2px);
   height: 0.3rem;
   border-radius: 5px;
-  background: $gray linear-gradient(90deg, $accent, $accent) no-repeat;
+  background: $gray4 linear-gradient(90deg, $accent, $darkestblue) no-repeat;
   background-size: 100% 100%;
 
   &::-webkit-slider-thumb {
@@ -13,7 +13,7 @@ input[type="range"] {
     height: 0;
     width: 0.8rem;
     border-radius: 50%;
-    background: $accent;
+    background: $darkestblue;
   }
 
   &::-moz-range-thumb {
@@ -21,7 +21,7 @@ input[type="range"] {
 
     height: 0;
     border-radius: 50%;
-    background: $accent;
+    background: $darkestblue;
     border: none;
   }
 
@@ -31,7 +31,7 @@ input[type="range"] {
     height: 0;
     width: 0.8rem;
     border-radius: 50%;
-    background: $accent;
+    background: $darkestblue;
     border: none;
   }
 }

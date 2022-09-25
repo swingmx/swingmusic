@@ -1,20 +1,14 @@
 <template>
-  <div
-    class="next-track bg-primary rounded"
-    :class="{ contexton: context_on }"
-    @click="playNext"
-    @contextmenu.prevent="showMenu"
-  >
-    <div class="nextup abs">next up</div>
-    <img :src="paths.images.thumb + track?.image" class="rounded-sm" />
-    <div class="tags">
-      <div class="title ellip">{{ track?.title || "Don't click here" }}</div>
-      <div class="artist ellip" v-if="track">
-        <span v-for="artist in putCommas(track.artist)" :key="artist">{{
-          artist
-        }}</span>
+  <div class="bottom-left">
+    <div class="upNext rounded-sm border" title="play next song">
+      <img
+        :src="paths.images.thumb.small + queue.next?.image"
+        class="rounded-sm"
+      />
+      <div class="text">
+        <div class="title"><b>Stiff necked fools</b></div>
+        <div class="from">Next up</div>
       </div>
-      <span v-else class="artist">nothing will happen</span>
     </div>
   </div>
 </template>
@@ -23,67 +17,51 @@
 import { paths } from "@/config";
 import { Track } from "@/interfaces";
 import { putCommas } from "@/utils";
+import useQueueStore from "@/stores/queue";
 
 import { showTrackContextMenu as showContext } from "@/composables/context";
 import { ref } from "vue";
 
-const props = defineProps<{
-  track: Track | null;
-  playNext: () => void;
-}>();
-
 const context_on = ref(false);
-
-function showMenu(e: Event) {
-  if (props.track) {
-    showContext(e, props.track, context_on);
-  }
-}
+const queue = useQueueStore();
 </script>
 
 <style lang="scss">
-.next-track {
-  position: relative;
-
+.bottom-left {
+  overflow: hidden;
   display: grid;
-  grid-template-columns: max-content 1fr;
-  gap: 1rem;
-  padding: 1rem;
-  width: 100%;
+  padding-top: 2px;
+  // place-content: end;
 
-  &:hover {
-    background-color: $gray4;
-
-    .h {
-      background-color: $black;
-    }
-  }
-
-  .nextup {
-    right: $small;
-    top: 0;
-    font-size: 0.8rem;
+  .upNext {
     padding: $smaller;
-    border-radius: 0.25rem;
-    font-style: oblique;
-    opacity: 0.5;
-  }
-
-  img {
-    width: 4.5rem;
-    aspect-ratio: 1;
-    object-fit: contain;
-  }
-
-  .tags {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    justify-content: center;
+    grid-template-columns: max-content 1fr;
     gap: $small;
+    display: grid;
+    width: 20rem;
+    background-color: rgba(255, 255, 255, 0.048);
+    cursor: pointer;
 
-    .artist {
+    &:hover {
+      transition: all 0.25s ease;
+      background-color: $gray4;
+    }
+
+    img {
+      height: 2.75rem;
+    }
+
+    .text {
       font-size: small;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+
+      .from {
+        opacity: 0.75;
+        font-size: $medium;
+        margin-top: $smaller;
+      }
     }
   }
 }
