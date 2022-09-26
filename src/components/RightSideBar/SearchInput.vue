@@ -3,47 +3,28 @@
     <div id="ginner" tabindex="0" class="bg-primary">
       <button
         :title="
-          tabs.current === tabs.tabs.search
-            ? 'back to queue'
-            : 'go to search'
+          tabs.current === tabs.tabs.search ? 'back to queue' : 'go to search'
         "
       >
         <SearchSvg
-          v-if="tabs.current === tabs.tabs.queue"
-          @click.prevent="tabs.switchToSearch"
+          v-if="on_nav || tabs.current === tabs.tabs.queue"
+          @click.prevent="!on_nav && tabs.switchToSearch()"
         />
         <BackSvg
-          v-if="tabs.current === tabs.tabs.search"
+          v-else-if="tabs.current === tabs.tabs.search"
           @click.prevent="tabs.switchToQueue"
         />
       </button>
       <input
         id="globalsearch"
         v-model.trim="search.query"
-        placeholder="Type to search"
-        type="search"
+        placeholder="Search your library"
+        type="text"
+        autocomplete="off"
         @blur.prevent="removeFocusedClass"
         @focus.prevent="addFocusedClass"
       />
     </div>
-    <!-- <div class="buttons rounded-sm bg-primary">
-      <button
-        @click="tabs.switchToQueue"
-        v-if="tabs.current !== tabs.tabs.queue"
-        name="switch to queue tab"
-      >
-        <QueueSvg />
-      </button>
-      <button
-        @click="tabs.switchToSearch"
-        v-if="tabs.current !== tabs.tabs.search"
-        name="switch to search tab"
-
-      >
-        <SearchSvg />
-      </button>
-    </div> -->
-    <!-- <button>Global Search this that</button> -->
   </div>
 </template>
 
@@ -53,6 +34,10 @@ import BackSvg from "@/assets/icons/arrow.svg";
 import SearchSvg from "@/assets/icons/search.svg";
 import useSearchStore from "@/stores/search";
 import useTabStore from "@/stores/tabs";
+
+defineProps<{
+  on_nav?: boolean;
+}>();
 
 const search = useSearchStore();
 const tabs = useTabStore();
@@ -82,7 +67,6 @@ function removeFocusedClass() {
     display: flex;
     align-items: center;
     gap: $small;
-    padding: 0 $small;
     border-radius: 3rem;
 
     button {
@@ -91,7 +75,6 @@ function removeFocusedClass() {
       padding: 0;
       border-radius: 3rem;
       cursor: pointer;
-      margin-left: -$smaller;
 
       &:hover {
         transition: all 0.2s ease;
