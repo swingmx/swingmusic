@@ -23,6 +23,6 @@ defineProps<{
 #f-items {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(13rem, 1fr));
-  gap: $medium;
+  gap: 1.5rem;
 }
 </style>

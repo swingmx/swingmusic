@@ -1,11 +1,12 @@
 <template>
   <div
-    class="r-sidebar rounded border"
+    class="r-sidebar border"
     :style="{
       marginBottom: !settings.show_alt_np ? '-1rem' : '',
     }"
   >
-    <div class="r-content">
+  <SearchInput />
+    <div class="r-content noscroll">
       <div class="r-dash" v-if="tabs.current === tabs.tabs.home">
         <DashBoard />
       </div>
@@ -25,6 +26,7 @@ import Queue from "./Queue.vue";
 import DashBoard from "./Home/Main.vue";
 import useTabStore from "../../stores/tabs";
 import useSettingsStore from "@/stores/settings";
+import SearchInput from "./SearchInput.vue";
 
 const tabs = useTabStore();
 const settings = useSettingsStore();
@@ -34,10 +36,26 @@ const settings = useSettingsStore();
 .r-sidebar {
   width: 100%;
   overflow: hidden;
+  // padding: $small;
+  display: grid;
+  grid-template-rows: max-content 1fr;
+  // gap: 1rem;
+  margin-top: -$small;
+  border-top: none;
+  border-bottom: none;
+  background-color: rgb(22, 22, 22);
+  padding-bottom: 1rem;
+
+  .gsearch-input {
+    height: 42px;
+    margin: $small;
+    margin-bottom: 1rem;
+  }
 
   .r-content {
     width: 100%;
     height: 100%;
+    background-color: $gray;
 
     .r-search {
       height: 100%;

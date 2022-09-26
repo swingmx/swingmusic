@@ -9,13 +9,13 @@
             :to="{
               name: Routes.album,
               params: {
-                hash: queue.currenttrack.albumhash,
+                hash: queue.currenttrack?.albumhash || ' ',
               },
             }"
           >
             <img
               class="rounded-sm"
-              :src="paths.images.thumb.small + queue.currenttrack.image"
+              :src="paths.images.thumb.small + queue.currenttrack?.image"
               alt=""
             />
           </RouterLink>
@@ -26,16 +26,16 @@
           <div class="with-title">
             <div class="time time-current">
               <span>
-                {{ formatSeconds(queue.duration.current) }}
+                {{ formatSeconds(queue.duration?.current) }}
               </span>
             </div>
             <div class="tags">
               <div class="title ellip">
-                {{ queue.currenttrack.title }}
+                {{ queue.currenttrack?.title || 'Hello there' }}
               </div>
               <ArtistName
-                :artists="queue.currenttrack.artist"
-                :albumartist="queue.currenttrack.albumartist"
+                :artists="queue.currenttrack?.artist || []"
+                :albumartist="queue.currenttrack?.albumartist || 'Welcome to alice'"
                 class="artist"
               />
             </div>

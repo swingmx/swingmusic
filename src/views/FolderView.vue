@@ -11,7 +11,6 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from "@vue/reactivity";
 import { onBeforeRouteLeave, onBeforeRouteUpdate } from "vue-router";
 
 import useQueueStore from "@/stores/queue";
@@ -25,7 +24,6 @@ const loader = useLoaderStore();
 const folder = useFolderStore();
 const queue = useQueueStore();
 
-const scrollable = ref<any>(null);
 
 function playFromPage(index: number) {
   queue.playFromFolder(folder.path, folder.allTracks);
@@ -38,7 +36,6 @@ onBeforeRouteUpdate((to, from) => {
     .fetchAll(to.params.path as string)
 
     .then(() => {
-      scrollable.value.scrollTop = 0;
       folder.resetQuery();
     })
     .then(() => {

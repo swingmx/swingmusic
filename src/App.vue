@@ -19,7 +19,7 @@
       <router-view />
     </div>
     <NowPlayingRight />
-    <SearchInput v-if="settings.use_sidebar && xl" />
+    <!-- <SearchInput v-if="settings.use_sidebar && xl" /> -->
     <RightSideBar v-if="settings.use_sidebar && xl" />
   </section>
 </template>
