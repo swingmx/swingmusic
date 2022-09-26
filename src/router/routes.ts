@@ -81,9 +81,9 @@ const routes = [
     component: () => import("@/views/SettingsView.vue"),
   },
   {
-    path: "/search",
+    path: "/search/:page",
     name: "SearchView",
-    component: () => import("@/views/Search.vue"),
+    component: () => import("@/views/search/main.vue"),
   },
   {
     path: "/queue",

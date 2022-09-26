@@ -15,7 +15,7 @@
   grid-area: content;
   margin-right: calc(0rem - ($medium + 2px));
   padding-right: calc($medium);
-
+  
   overflow: hidden;
 }
 
@@ -67,7 +67,7 @@
   }
 
   // show scrollbars on search page
-  .search-view {
-    margin-right: -1rem;
-  }
+  // .search-view {
+  //   margin-right: -1rem;
+  // }
 }
