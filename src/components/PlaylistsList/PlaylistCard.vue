@@ -38,7 +38,7 @@ const props = defineProps<{
 
   &:hover {
     transition: all .25s ease;
-    background-color: $darkestblue;
+    background-color: $gray3;
     background-blend-mode: screen;
   }
 

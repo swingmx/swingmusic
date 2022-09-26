@@ -74,7 +74,7 @@ import HotKeys from "../LeftSidebar/NP/HotKeys.vue";
 import Progress from "../LeftSidebar/NP/Progress.vue";
 
 import HeartSvg from "../../assets/icons/heart.svg";
-import PlusSvg from "../../assets/icons/plus.svg";
+// import PlusSvg from "../../assets/icons/plus.svg";
 
 const queue = useQStore();
 const settings = useSettingsStore();
@@ -82,12 +82,27 @@ const settings = useSettingsStore();
 
 <style lang="scss">
 .b-bar {
-  height: 65px;
+  // height: 100%;
   background-color: rgb(22, 22, 22);
   display: grid;
   align-items: center;
   z-index: 1;
   border-top: solid 1px $gray3;
+
+
+  &:hover {
+    ::-moz-range-thumb {
+      height: 0.8rem;
+    }
+
+    ::-webkit-slider-thumb {
+      height: 0.8rem;
+    }
+
+    ::-ms-thumb {
+      height: 0.8rem;
+    }
+  }
 
   .centered {
     width: 50rem;
@@ -181,7 +196,6 @@ const settings = useSettingsStore();
     }
 
     .buttons {
-      // width: 10rem;
       height: 3.25rem;
       margin-top: -$smaller;
       background-color: rgba(255, 255, 255, 0.048);

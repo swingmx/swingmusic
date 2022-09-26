@@ -1,99 +1,31 @@
 #app-grid {
   display: grid;
   grid-template-columns: min-content 1fr 29rem;
-  grid-template-rows: 43px calc(100vh - (6.5rem + 13px)) max-content;
+  grid-template-rows: max-content 1fr 5rem;
   grid-template-areas:
     "l-sidebar nav r-sidebar"
     "l-sidebar content r-sidebar"
     "bottombar bottombar bottombar";
-  height: 100%;
+
   gap: 0 1.5rem;
-  padding: $small 0;
-  // margin: 0 auto;
-  margin-top: -$small;
-  padding-top: $small;
-}
-
-#app-grid.extendWidth {
-  padding-right: 0;
-  border-right: none;
-  max-width: 100%;
-}
-
-// #app-grid.addBorderRight {
-//   // border-right: solid 1px $gray4;
-//   // padding-right: $medium;
-// }
-
-#app-grid.isSmall {
-  grid-template-columns: min-content 1fr;
-  grid-template-areas:
-    "l-sidebar nav"
-    "l-sidebar content"
-    "bottombar bottombar";
-}
-
-#app-grid.showAltNP {
-  @include tablet-landscape {
-    grid-template-areas:
-      "l-sidebar nav"
-      "l-sidebar content"
-      "bottombar bottombar";
-  }
-}
-
-#app-grid.disableSidebar {
-  grid-template-columns: min-content 1fr;
-  grid-template-areas:
-    "l-sidebar nav"
-    "l-sidebar content"
-    "bottombar bottombar";
+  height: 100%;
 }
 
 #acontent {
   grid-area: content;
-  // margin-right: calc(0rem - ($medium + 2px));
-  // padding-right: calc($medium);
-  // height: 100%;
+  margin-right: calc(0rem - ($medium + 2px));
+  padding-right: calc($medium);
 
-  overflow: auto;
-
-
-  .nav {
-    margin: $small;
-    width: calc(100% - 1rem);
-  }
-}
-
-#app-grid.isSmall,
-#app-grid.disableSidebar {
-  #acontent {
-    margin-right: -$small;
-    padding-right: calc($small - 1px);
-
-    .search-view {
-      margin-right: -0.8rem;
-    }
-  }
-}
-
-#tabs {
-  grid-area: tabs;
-  height: 3.5rem;
-  margin-top: -$small;
+  overflow: hidden;
 }
 
 .r-sidebar {
   grid-area: r-sidebar;
 }
 
-// #gsearch-input {
-//   // display: none !important;
-//   grid-area: search-input;
-// }
-
 .topnav {
   grid-area: nav;
+  margin: 1rem 0;
 }
 
 .l-sidebar {
@@ -101,14 +33,41 @@
   grid-area: l-sidebar;
   display: grid;
   grid-template-rows: 1fr max-content;
-  background-color: rgb(22, 22, 22);
-  height: 100vh;
-  margin-top: -$small;
-  // margin-left: -$small;
+  border-top: none !important;
+  border-bottom: none !important;
 }
 
 .b-bar {
   grid-area: bottombar;
-  width: 100%;
-  margin-bottom: -$small;
+}
+
+// ====== MODIFIERS =======
+
+#app-grid.extendWidth {
+  padding-right: 0;
+  border-right: none;
+  max-width: 100%;
+}
+
+#app-grid.noSidebar {
+  grid-template-columns: min-content 1fr;
+  grid-template-areas:
+    "l-sidebar nav"
+    "l-sidebar content"
+    "bottombar bottombar";
+
+  #acontent {
+    margin-right: 0 !important;
+    padding-right: 1rem !important;
+  }
+
+  .topnav {
+    //reduce width to match #acontent
+    width: calc(100% - 1rem);
+  }
+
+  // show scrollbars on search page
+  .search-view {
+    margin-right: -1rem;
+  }
 }

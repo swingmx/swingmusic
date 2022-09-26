@@ -1,5 +1,5 @@
 <template>
-  <div class="l-sidebar noscroll">
+  <div class="l-sidebar noscroll border">
     <div class="withlogo">
       <Logo />
       <Navigation />
