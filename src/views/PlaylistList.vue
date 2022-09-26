@@ -1,5 +1,5 @@
 <template>
-  <div id="p-view">
+  <div id="p-view" class="noscroll">
     <div class="grid">
       <PlaylistCard
         v-for="p in pStore.playlists"
@@ -22,10 +22,11 @@ const pStore = usePStore();
 <style lang="scss">
 #p-view {
   scrollbar-color: $gray2 transparent;
+  margin: 1rem 0;
 
   .grid {
     grid-template-columns: repeat(auto-fill, minmax(9.25rem, 1fr));
-    gap: 1rem;
+    gap: 2.5rem 1.75rem;
   }
 }
 </style>

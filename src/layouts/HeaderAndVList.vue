@@ -1,9 +1,10 @@
 <template>
+  <!-- JCOMMENT: 64 is single item height, 24 is gap height -->
   <div class="header-list-layout">
     <div
       v-bind="containerProps"
-      style="height: calc(100vh - 8.75rem)"
-      :style="{ paddingTop: !no_header ? headerHeight - 64 + 16 + 'px' : 0 }"
+      style="height: calc(100vh - 8.5rem); margin-top: 1rem"
+      :style="{ paddingTop: !no_header ? headerHeight - 64 + 24 + 'px' : 0 }"
       @scroll="handleScroll"
     >
       <div
@@ -18,7 +19,7 @@
         <div class="header rounded" style="height: 64px" v-if="!no_header">
           <div
             ref="header"
-            :style="{ top: -headerHeight + 64 - 16 + 'px' }"
+            :style="{ top: -headerHeight + 64 - 24 + 'px' }"
             class="header-content"
           >
             <slot name="header"></slot>
@@ -45,6 +46,7 @@
             updateQueue(t.data.index !== undefined ? t.data.index : t.index)
           "
         />
+        <div class="bottom-padding" style="height: 64px"></div>
       </div>
     </div>
   </div>

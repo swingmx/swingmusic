@@ -1,17 +1,16 @@
 #app-grid {
   display: grid;
   grid-template-columns: min-content 1fr 29rem;
-  grid-template-rows: 43px calc(100vh - (8.5rem + 13px)) max-content;
+  grid-template-rows: 43px calc(100vh - (6.5rem + 13px)) max-content;
   grid-template-areas:
-    "l-sidebar nav search-input"
+    "l-sidebar nav r-sidebar"
     "l-sidebar content r-sidebar"
     "bottombar bottombar bottombar";
   height: 100%;
-  gap: 1rem;
+  gap: 0 1.5rem;
   padding: $small 0;
-  margin: 0 auto;
+  // margin: 0 auto;
   margin-top: -$small;
-  max-width: 1720px;
   padding-top: $small;
 }
 
@@ -21,17 +20,17 @@
   max-width: 100%;
 }
 
-#app-grid.addBorderRight {
-  border-right: solid 1px $gray4;
-  padding-right: $medium;
-}
+// #app-grid.addBorderRight {
+//   // border-right: solid 1px $gray4;
+//   // padding-right: $medium;
+// }
 
 #app-grid.isSmall {
   grid-template-columns: min-content 1fr;
   grid-template-areas:
     "l-sidebar nav"
     "l-sidebar content"
-    "l-sidebar content";
+    "bottombar bottombar";
 }
 
 #app-grid.showAltNP {
@@ -39,7 +38,7 @@
     grid-template-areas:
       "l-sidebar nav"
       "l-sidebar content"
-      "l-sidebar bottombar";
+      "bottombar bottombar";
   }
 }
 
@@ -48,17 +47,17 @@
   grid-template-areas:
     "l-sidebar nav"
     "l-sidebar content"
-    "l-sidebar content";
+    "bottombar bottombar";
 }
 
 #acontent {
   grid-area: content;
-  // overflow: hidden;
-  margin-right: calc(0rem - ($medium + 2px));
-  padding-right: calc($medium);
-  height: 100%;
-  // outline: solid;
-  // margin-top: -$small;
+  // margin-right: calc(0rem - ($medium + 2px));
+  // padding-right: calc($medium);
+  // height: 100%;
+
+  overflow: auto;
+
 
   .nav {
     margin: $small;
@@ -88,10 +87,10 @@
   grid-area: r-sidebar;
 }
 
-#gsearch-input {
-  // display: none !important;
-  grid-area: search-input;
-}
+// #gsearch-input {
+//   // display: none !important;
+//   grid-area: search-input;
+// }
 
 .topnav {
   grid-area: nav;
@@ -105,12 +104,11 @@
   background-color: rgb(22, 22, 22);
   height: 100vh;
   margin-top: -$small;
-  margin-left: -$small;
+  // margin-left: -$small;
 }
 
 .b-bar {
   grid-area: bottombar;
-  width: calc(100% + 1.25rem);
-  margin-left: -$small;
+  width: 100%;
   margin-bottom: -$small;
 }

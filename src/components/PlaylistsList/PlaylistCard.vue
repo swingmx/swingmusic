@@ -30,11 +30,17 @@ const props = defineProps<{
 
 <style lang="scss">
 .p-card {
-  background-color: $playlist-card-bg;
+  background-color: $gray5;
   display: grid;
   grid-template-rows: 1fr max-content;
   padding: 1rem;
   gap: $small;
+
+  &:hover {
+    transition: all .25s ease;
+    background-color: $darkestblue;
+    background-blend-mode: screen;
+  }
 
   img {
     width: 100%;

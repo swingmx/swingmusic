@@ -1,5 +1,5 @@
 <template>
-  <div id="gsearch-input">
+  <div class="gsearch-input">
     <div id="ginner" tabindex="0" class="bg-primary">
       <button
         :title="
@@ -72,7 +72,7 @@ function removeFocusedClass() {
 </script>
 
 <style lang="scss">
-#gsearch-input {
+.gsearch-input {
   display: grid;
   grid-template-columns: 1fr max-content;
   border-radius: 3rem;
