@@ -35,21 +35,16 @@ const settings = useSettingsStore();
 <style lang="scss">
 .r-sidebar {
   width: 100%;
-  overflow: hidden;
-  // padding: $small;
   display: grid;
   grid-template-rows: max-content 1fr;
-  // gap: 1rem;
-  margin-top: -$small;
-  border-top: none;
-  border-bottom: none;
   background-color: rgb(22, 22, 22);
   padding-bottom: 1rem;
+  border-top: none;
+  border-bottom: none;
 
   .gsearch-input {
-    height: 42px;
-    margin: $small;
-    margin-bottom: 1rem;
+    height: 2.5rem;
+    margin: 1rem;
   }
 
   .r-content {

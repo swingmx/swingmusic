@@ -124,7 +124,7 @@ function showMenu(e: Event) {
   }
 
   &:hover {
-    background-color: $gray4;
+    background-color: $gray5;
 
     .index {
       .text {

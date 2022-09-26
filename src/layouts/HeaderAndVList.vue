@@ -1,9 +1,9 @@
 <template>
-  <!-- JCOMMENT: 64 is single item height, 24 is gap height -->
+  <!-- JUST A COMMENT: 64 is single item height, 24 is gap height -->
   <div class="header-list-layout">
     <div
       v-bind="containerProps"
-      style="height: calc(100vh - 8.5rem); margin-top: 1rem"
+      style="height: 100%;"
       :style="{ paddingTop: !no_header ? headerHeight - 64 + 24 + 'px' : 0 }"
       @scroll="handleScroll"
     >
@@ -61,6 +61,7 @@ import useQStore from "@/stores/queue";
 
 import SongItem from "@/components/shared/SongItem.vue";
 
+// EMITS & PROPS
 const emit = defineEmits<{
   (e: "playFromPage", index: number): void;
 }>();
@@ -71,14 +72,14 @@ const props = defineProps<{
   no_header?: boolean;
 }>();
 
+// QUEUE
 const queue = useQStore();
-const source = computed(() => props.tracks);
+function updateQueue(index: number) {
+  emit("playFromPage", index);
+}
 
-// element refs + sizes
-const header = ref<HTMLElement>();
+// SCROLLABLE AREA
 const scrollable = ref<HTMLElement>();
-
-const { height: headerHeight } = useElementSize(header);
 const { width } = useElementSize(scrollable);
 
 const brk = {
@@ -88,8 +89,9 @@ const brk = {
 
 const isSmall = computed(() => width.value < brk.sm);
 const isMedium = computed(() => width.value > brk.sm && width.value < brk.md);
-// ---
 
+// VIRTUAL LIST
+const source = computed(() => props.tracks);
 const {
   list: tracks,
   containerProps,
@@ -99,9 +101,9 @@ const {
   overscan: 15,
 });
 
-function updateQueue(index: number) {
-  emit("playFromPage", index);
-}
+// HEADER
+const header = ref<HTMLElement>();
+const { height: headerHeight } = useElementSize(header);
 
 function handleScroll(e: Event) {
   const scrollTop = (e.target as HTMLElement).scrollTop;
@@ -117,10 +119,19 @@ function handleScroll(e: Event) {
 <style lang="scss">
 .header-list-layout {
   margin-right: calc(0rem - ($medium));
+  height: 100%;
 
   .scrollable {
     padding-right: calc(1rem - $small + 2px);
     scrollbar-width: thin;
+
+    .current {
+      background-color: $gray5;
+
+      a {
+        color: inherit;
+      }
+    }
   }
 
   .scrollable.isSmall {

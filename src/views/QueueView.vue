@@ -1,6 +1,11 @@
 <template>
-  <div class="queue-view">
-    <Layout :tracks="queue.tracklist" :no_header="true"> </Layout>
+  <div class="queue-view" style="height: 100%">
+    <Layout
+      :tracks="queue.tracklist"
+      :no_header="true"
+      @playFromPage="playFromQueue"
+    >
+    </Layout>
   </div>
 </template>
 
@@ -9,4 +14,8 @@ import useQStore from "@/stores/queue";
 import Layout from "@/layouts/HeaderAndVList.vue";
 
 const queue = useQStore();
+
+function playFromQueue(index: number) {
+  queue.play(index);
+}
 </script>

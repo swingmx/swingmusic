@@ -7,9 +7,8 @@
     id="app-grid"
     :class="{
       showAltNP: settings.use_sidebar && settings.use_alt_np,
-      disableSidebar: !settings.use_sidebar,
+      noSidebar: !settings.use_sidebar || !xl,
       extendWidth: settings.extend_width && settings.extend_width_enabled,
-      isSmall: !xl,
       addBorderRight: xxl && !settings.extend_width,
     }"
   >
@@ -18,9 +17,9 @@
     <div id="acontent" v-element-size="updateContentElemSize">
       <router-view />
     </div>
-    <NowPlayingRight />
     <!-- <SearchInput v-if="settings.use_sidebar && xl" /> -->
     <RightSideBar v-if="settings.use_sidebar && xl" />
+    <NowPlayingRight />
   </section>
 </template>
 

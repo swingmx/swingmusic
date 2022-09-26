@@ -11,7 +11,12 @@
           separator: menu.separator,
         }"
       ></div>
-      <div class="nav-button" id="home-button" v-else>
+      <div
+        class="nav-button"
+        :class="{ active: $route.name === menu.route_name }"
+        id="home-button"
+        v-else
+      >
         <div class="in">
           <component :is="menu.icon"></component>
           <span>{{ menu.name }}</span>
@@ -69,16 +74,27 @@ const menus = [
 .side-nav-container {
   text-transform: capitalize;
   margin-top: 1rem;
+  // background-color: rgba(255, 255, 255, 0.075);
+  // padding: $small;
 
   .nav-button {
-    border-radius: $small;
+    border-radius: $medium;
     display: flex;
     align-items: flex-start;
     justify-content: flex-start;
     padding: $small 0;
+    position: relative;
+
+    &.active::before {
+      content: "•";
+      position: absolute;
+      left: -$small;
+      top: $medium;
+      opacity: 0.75;
+    }
 
     &:hover {
-      background-color: $gray3;
+      background-color: $darkestblue;
     }
 
     .in {
