@@ -1,11 +1,6 @@
 <template>
-  <div
-    class="r-sidebar border"
-    :style="{
-      marginBottom: !settings.show_alt_np ? '-1rem' : '',
-    }"
-  >
-  <SearchInput />
+  <div class="r-sidebar">
+    <SearchInput />
     <div class="r-content noscroll">
       <div class="r-dash" v-if="tabs.current === tabs.tabs.home">
         <DashBoard />
@@ -25,11 +20,9 @@ import Search from "./Search/Main.vue";
 import Queue from "./Queue.vue";
 import DashBoard from "./Home/Main.vue";
 import useTabStore from "../../stores/tabs";
-import useSettingsStore from "@/stores/settings";
 import SearchInput from "./SearchInput.vue";
 
 const tabs = useTabStore();
-const settings = useSettingsStore();
 </script>
 
 <style lang="scss">
@@ -41,6 +34,7 @@ const settings = useSettingsStore();
   padding-bottom: 1rem;
   border-top: none;
   border-bottom: none;
+  margin-bottom: -1rem;
 
   .gsearch-input {
     height: 2.5rem;

@@ -9,18 +9,24 @@
 
   gap: 0 1.5rem;
   height: 100%;
+  border: solid 1px $gray3;
+  border-top: none;
+  border-bottom: none;
+  margin: 0 auto;
+  max-width: 1720px;
 }
 
 #acontent {
   grid-area: content;
   margin-right: calc(0rem - ($medium + 2px));
   padding-right: calc($medium);
-  
+
   overflow: hidden;
 }
 
 .r-sidebar {
   grid-area: r-sidebar;
+  border-left: solid 1px $gray3;
 }
 
 .topnav {
@@ -33,8 +39,9 @@
   grid-area: l-sidebar;
   display: grid;
   grid-template-rows: 1fr max-content;
-  border-top: none !important;
-  border-bottom: none !important;
+  // border-top: none !important;
+  // border-bottom: none !important;
+  border-right: solid 1px $gray3;
 }
 
 .b-bar {
@@ -44,9 +51,10 @@
 // ====== MODIFIERS =======
 
 #app-grid.extendWidth {
-  padding-right: 0;
-  border-right: none;
   max-width: 100%;
+  padding-right: 0;
+  border-left: none;
+  border-right: none;
 }
 
 #app-grid.noSidebar {
@@ -58,7 +66,7 @@
 
   #acontent {
     margin-right: 0 !important;
-    padding-right: 1rem !important;
+    padding-right: $medium !important;
   }
 
   .topnav {

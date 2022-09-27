@@ -25,15 +25,15 @@
           </div>
         </div>
       </div>
-      <div>
-        <Input :page="Routes.folder" />
-      </div>
+      <SearchInput :page="Routes.folder" />
+      <!-- <div>
+      </div> -->
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import Input from "@/components/shared/Input.vue";
+import SearchInput from "@/components/shared/Input.vue";
 import { Routes } from "@/composables/enums";
 import { subPath } from "@/interfaces";
 import { focusElem } from "@/utils";
@@ -55,7 +55,6 @@ onUpdated(() => {
   .folder {
     display: grid;
     grid-template-columns: 1fr max-content;
-    gap: $small;
 
     .fname-wrapper {
       width: 100%;
@@ -122,13 +121,13 @@ onUpdated(() => {
           }
         }
 
-        .inthisfolder > .text {
-          color: #fff;
-          font-weight: bold;
-          background-color: $gray;
+        // .inthisfolder > .text {
+        //   color: #fff;
+        //   font-weight: bold;
+        //   background-color: $gray;
 
-          transition: all 0.5s;
-        }
+        //   transition: all 0.5s;
+        // }
       }
     }
   }

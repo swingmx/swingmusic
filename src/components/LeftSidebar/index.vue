@@ -1,17 +1,17 @@
 <template>
-  <div class="l-sidebar noscroll border">
+  <div class="l-sidebar noscroll">
     <div class="withlogo">
       <Logo />
       <Navigation />
     </div>
 
-    <nowPlaying v-if="settings.show_default_np" />
+    <NPImg v-if="settings.use_np_img" />
   </div>
 </template>
 
 <script setup lang="ts">
 import Navigation from "@/components/LeftSidebar/Navigation.vue";
-import nowPlaying from "@/components/LeftSidebar/nowPlaying.vue";
+import NPImg from "@/components/LeftSidebar/nowPlayingImg.vue";
 import Logo from "@/components/Logo.vue";
 
 import useSettingsStore from "@/stores/settings";

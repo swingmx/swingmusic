@@ -1,13 +1,16 @@
 <template>
   <div class="header-input-wrapper rounded-sm" :class="{ showInput: clicked }">
-    <div class="search-svg" @click="handleFocus">
-      <SearchSvg />
-    </div>
+    <button
+      class="search-btn circular"
+      :class="{ 'btn-active': clicked }"
+      @click="handleFocus"
+    >
+      <SearchSvg /> Search
+    </button>
     <input
-      type="search"
-      class="header-input rounded-sm pad-sm"
+      class="header-input pad-sm"
       :class="{ showInput: clicked }"
-      placeholder="Search here"
+      placeholder="Type to search"
       v-model.trim="query"
       id="page-search"
       ref="inputRef"
@@ -26,7 +29,7 @@ import useFolderStore from "@/stores/pages/folder";
 import { Routes } from "@/composables/enums";
 import SearchSvg from "@/assets/icons/search.svg";
 
-const clicked = ref(true);
+const clicked = ref(false);
 const [playlist, album, folder] = [
   usePStore(),
   useAlbumStore(),
@@ -82,18 +85,19 @@ if (source) {
 
 <style lang="scss">
 .header-input-wrapper {
+  &.showInput {
+    width: 21.5rem;
+  }
+
   display: flex;
   flex-direction: row-reverse;
-  width: 1.5rem;
+  width: 7rem;
+  gap: $small;
   transition: all 0.25s;
-
-  &.showInput {
-    width: 15rem;
-  }
 }
 
 .header-input {
-  background-color: $gray3;
+  background-color: transparent;
   outline: none;
   border: none;
   color: inherit;
@@ -102,9 +106,12 @@ if (source) {
   transition: all 0.25s $overshoot;
   opacity: 0;
   transform: translateY(-1rem);
-
+  border-radius: 3rem;
+  padding-left: 1rem;
+  outline: solid 1px $gray1;
+  
   &:focus {
-    outline: solid;
+    outline: solid $darkblue;
   }
 
   &.showInput {
@@ -114,16 +121,9 @@ if (source) {
   }
 }
 
-.search-svg {
-  margin-top: $smaller;
+.search-btn {
   cursor: pointer;
-  width: 2.25rem;
-  height: 2rem;
-  z-index: 100;
-
-  svg {
-    display: block;
-    margin: 0 auto;
-  }
+  padding: 0 $small;
+  padding-right: 1rem;
 }
 </style>

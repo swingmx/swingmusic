@@ -3,7 +3,7 @@
   <div class="header-list-layout">
     <div
       v-bind="containerProps"
-      style="height: 100%;"
+      style="height: 100%"
       :style="{ paddingTop: !no_header ? headerHeight - 64 + 24 + 'px' : 0 }"
       @scroll="handleScroll"
     >
@@ -118,7 +118,7 @@ function handleScroll(e: Event) {
 
 <style lang="scss">
 .header-list-layout {
-  margin-right: calc(0rem - ($medium));
+  margin-right: -$medium;
   height: 100%;
 
   .scrollable {
