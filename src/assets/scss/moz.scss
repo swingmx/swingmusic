@@ -14,23 +14,23 @@
     }
   }
 
-  #app-grid.isSmall,
-  #app-grid.disableSidebar {
-    #acontent {
-      margin-right: -$small;
-      padding-right: $medium;
+  // #app-grid.isSmall,
+  // #app-grid.disableSidebar {
+  //   #acontent {
+  //     margin-right: -$small;
+  //     padding-right: $medium;
 
-      .search-view {
-        margin-right: -0.8rem;
-      }
-    }
-  }
+  //     .search-view {
+  //       margin-right: -0.8rem;
+  //     }
+  //   }
+  // }
 
-  #app-grid.isSmall #page-search {
-    margin-right: $smaller;
-  }
+  // #app-grid.isSmall #page-search {
+  //   margin-right: $smaller;
+  // }
 
-  #app-grid.disableSidebar #page-search {
-    margin-right: $smaller;
-  }
+  // #app-grid.disableSidebar #page-search {
+  //   margin-right: $smaller;
+  // }
 }

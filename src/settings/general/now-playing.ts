@@ -1,14 +1,14 @@
 import { Setting, SettingType } from "@/interfaces/settings";
 import useSettingsStore from "@/stores/settings";
+import { nowPlayingStrings as data } from "../strings";
 
 const settings = useSettingsStore;
 
-const use_alt_np: Setting = {
-  title: "Use alternate now playing card",
+const disable_np_img: Setting = {
+  title: data.settings.album_art,
   type: SettingType.binary,
-  source: () => settings().use_alt_np,
-  inactive: () => settings().disable_show_alt_np,
-  action: () => settings().toggleUseRightNP(),
+  source: () => settings().use_np_img,
+  action: () => settings().toggleUseNPImg(),
 };
 
-export default [use_alt_np];
+export default [disable_np_img];

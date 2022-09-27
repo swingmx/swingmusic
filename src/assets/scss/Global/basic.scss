@@ -33,7 +33,7 @@
 }
 
 .circular {
-  border-radius: 50%;
+  border-radius: 10rem;
 }
 
 .flex {
@@ -82,12 +82,13 @@ button {
   }
 
   &:hover {
-    background-image: linear-gradient(70deg, $darkestblue, $darkblue);
+    background-image: linear-gradient($darkestblue, $darkblue);
   }
 }
 
+
 .btn-active {
-  background-image: linear-gradient(70deg, $darkestblue, $darkblue);
+  background-image: linear-gradient($darkestblue, $darkblue);
 }
 
 .btn-more {

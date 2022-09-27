@@ -6,7 +6,6 @@
   <section
     id="app-grid"
     :class="{
-      showAltNP: settings.use_sidebar && settings.use_alt_np,
       noSidebar: !settings.use_sidebar || !xl,
       extendWidth: settings.extend_width && settings.extend_width_enabled,
       addBorderRight: xxl && !settings.extend_width,
@@ -51,7 +50,6 @@ import Notification from "@/components/Notification.vue";
 import NavBar from "@/components/nav/NavBar.vue";
 import LeftSidebar from "./components/LeftSidebar/index.vue";
 import RightSideBar from "@/components/RightSideBar/Main.vue";
-import SearchInput from "@/components/RightSideBar/SearchInput.vue";
 import NowPlayingRight from "@/components/RightSideBar/NowPlayingRight.vue";
 
 const queue = useQStore();

@@ -1,24 +1,20 @@
 <template>
   <div class="gsearch-input">
-    <div id="ginner" tabindex="0" class="bg-primary">
+    <div id="ginner" tabindex="0" ref="inputRef">
       <button
         :title="
           tabs.current === tabs.tabs.search ? 'back to queue' : 'go to search'
         "
+        @click.prevent="handleButton"
+        :class="{ no_bg: on_nav }"
       >
-        <SearchSvg
-          v-if="on_nav || tabs.current === tabs.tabs.queue"
-          @click.prevent="!on_nav && tabs.switchToSearch()"
-        />
-        <BackSvg
-          v-else-if="tabs.current === tabs.tabs.search"
-          @click.prevent="tabs.switchToQueue"
-        />
+        <SearchSvg v-if="on_nav || tabs.current === tabs.tabs.queue" />
+        <BackSvg v-else-if="tabs.current === tabs.tabs.search" />
       </button>
       <input
         id="globalsearch"
         v-model.trim="search.query"
-        placeholder="Search your library"
+        placeholder="Start typing to search"
         type="text"
         autocomplete="off"
         @blur.prevent="removeFocusedClass"
@@ -29,30 +25,39 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted } from "vue";
+import { onMounted, ref } from "vue";
 import BackSvg from "@/assets/icons/arrow.svg";
 import SearchSvg from "@/assets/icons/search.svg";
 import useSearchStore from "@/stores/search";
 import useTabStore from "@/stores/tabs";
 
-defineProps<{
+const props = defineProps<{
   on_nav?: boolean;
 }>();
 
-const search = useSearchStore();
 const tabs = useTabStore();
-let classList: DOMTokenList | undefined;
+const search = useSearchStore();
 
-onMounted(() => {
-  classList = document.getElementById("ginner")?.classList;
-});
-
+// HANDLE FOCUS
+const inputRef = ref<HTMLElement>();
 function addFocusedClass() {
-  classList?.add("search-focused");
+  inputRef.value?.classList.add("search-focused");
 }
 
 function removeFocusedClass() {
-  classList?.remove("search-focused");
+  inputRef.value?.classList.remove("search-focused");
+}
+
+// @end
+
+function handleButton() {
+  if (props.on_nav) return;
+
+  if (tabs.current === tabs.tabs.search) {
+    tabs.switchToQueue();
+  } else {
+    tabs.switchToSearch();
+  }
 }
 </script>
 
@@ -68,18 +73,24 @@ function removeFocusedClass() {
     align-items: center;
     gap: $small;
     border-radius: 3rem;
+    outline: solid 1px $gray3;
 
     button {
       background: transparent;
       width: 3rem;
       padding: 0;
       border-radius: 3rem;
+      height: 100%;
       cursor: pointer;
 
       &:hover {
         transition: all 0.2s ease;
         background-color: $gray2;
       }
+    }
+
+    button.no_bg {
+      pointer-events: none;
     }
 
     input {
@@ -94,6 +105,6 @@ function removeFocusedClass() {
   }
 }
 .search-focused {
-  outline: solid $accent;
+  outline: solid $darkblue !important;
 }
 </style>

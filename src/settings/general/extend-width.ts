@@ -1,10 +1,11 @@
 import { Setting, SettingType } from "@/interfaces/settings";
 import useSettingsStore from "@/stores/settings";
+import { appWidthStrings } from "./../strings";
 
 const settings = useSettingsStore;
 
 const extend_to_full_width: Setting = {
-  title: "Extend app to full screen width",
+  title: appWidthStrings.settings.extend,
   type: SettingType.binary,
   source: () => settings().extend_width,
   action: () => settings().toggleExtendWidth(),
