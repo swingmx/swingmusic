@@ -82,3 +82,8 @@ $g-border: solid 1px $gray5;
   //   margin-right: -1rem;
   // }
 }
+
+#app-grid.NoSideBorders {
+  border-right: none;
+  border-left: none;
+}
