@@ -4,13 +4,10 @@ import useFStore from "@/stores/pages/folder";
 import usePTrackStore from "@/stores/pages/playlist";
 import usePStore from "@/stores/pages/playlists";
 
-import Home from "@/views/Home.vue";
-
 const routes = [
   {
     path: "/",
     name: "Home",
-    component: Home,
     redirect: "/folder/$home",
   },
   {
@@ -42,7 +39,7 @@ const routes = [
   {
     path: "/playlist/:pid",
     name: "PlaylistView",
-    component: () => import("@/views/playlist/index.vue"),
+    component: () => import("@/views/PlaylistView/index.vue"),
     beforeEnter: async (to: any) => {
       state.loading.value = true;
       await usePTrackStore()
@@ -60,7 +57,7 @@ const routes = [
   {
     path: "/albums/:hash",
     name: "AlbumView",
-    component: () => import("@/views/album/index.vue"),
+    component: () => import("@/views/AlbumView/index.vue"),
     beforeEnter: async (to: any) => {
       state.loading.value = true;
       const store = useAStore();
@@ -83,7 +80,7 @@ const routes = [
   {
     path: "/search/:page",
     name: "SearchView",
-    component: () => import("@/views/search/main.vue"),
+    component: () => import("@/views/SearchView/main.vue"),
   },
   {
     path: "/queue",
@@ -117,5 +114,7 @@ const routesList = routes.map((route, index) => {
 });
 
 // TODO: Use dynamic keys in routesList
+//       Try adding an index.ts on Foldered views, import main component and export it ...
+//       Then try importing it here as @/views/ThatView
 
 export { routes, routesList };

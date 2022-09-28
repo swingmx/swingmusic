@@ -1,3 +1,5 @@
+$g-border: solid 1px $gray5;
+
 #app-grid {
   display: grid;
   grid-template-columns: min-content 1fr 29rem;
@@ -9,7 +11,7 @@
 
   gap: 0 1.5rem;
   height: 100%;
-  border: solid 1px $gray3;
+  border: $g-border;
   border-top: none;
   border-bottom: none;
   margin: 0 auto;
@@ -26,7 +28,7 @@
 
 .r-sidebar {
   grid-area: r-sidebar;
-  border-left: solid 1px $gray3;
+  border-left: $g-border;
 }
 
 .topnav {
@@ -41,11 +43,12 @@
   grid-template-rows: 1fr max-content;
   // border-top: none !important;
   // border-bottom: none !important;
-  border-right: solid 1px $gray3;
+  border-right: $g-border;
 }
 
 .b-bar {
   grid-area: bottombar;
+  border-top: $g-border;
 }
 
 // ====== MODIFIERS =======

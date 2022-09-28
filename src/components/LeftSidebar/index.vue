@@ -11,7 +11,7 @@
 
 <script setup lang="ts">
 import Navigation from "@/components/LeftSidebar/Navigation.vue";
-import NPImg from "@/components/LeftSidebar/nowPlayingImg.vue";
+import NPImg from "./NowPlayingImg.vue";
 import Logo from "@/components/Logo.vue";
 
 import useSettingsStore from "@/stores/settings";
