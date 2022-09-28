@@ -7,8 +7,8 @@
     id="app-grid"
     :class="{
       noSidebar: !settings.use_sidebar || !xl,
+      NoSideBorders: !xxl,
       extendWidth: settings.extend_width && settings.extend_width_enabled,
-      addBorderRight: xxl && !settings.extend_width,
     }"
   >
     <LeftSidebar />
@@ -24,33 +24,33 @@
 
 <script setup lang="ts">
 // @libraries
+import { vElementSize } from "@vueuse/components";
+import { onStartTyping } from "@vueuse/core";
 import { onMounted } from "vue";
 import { useRouter } from "vue-router";
-import { onStartTyping } from "@vueuse/core";
-import { vElementSize } from "@vueuse/components";
 
 // @stores
-import useQStore from "@/stores/queue";
-import useModalStore from "@/stores/modal";
-import useContextStore from "@/stores/context";
-import useSettingsStore from "@/stores/settings";
 import { content_width } from "@/stores/content-width";
+import useContextStore from "@/stores/context";
+import useModalStore from "@/stores/modal";
+import useQStore from "@/stores/queue";
+import useSettingsStore from "@/stores/settings";
 
 // @utils
-import { xl, xxl } from "./composables/useBreakpoints";
 import handleShortcuts from "@/composables/useKeyboard";
 import { readLocalStorage, writeLocalStorage } from "@/utils";
+import { xl, xxl } from "./composables/useBreakpoints";
 
 // @small-components
-import Modal from "@/components/modal.vue";
 import ContextMenu from "@/components/ContextMenu.vue";
+import Modal from "@/components/modal.vue";
 import Notification from "@/components/Notification.vue";
 
 // @app-grid-components
-import NavBar from "@/components/nav/NavBar.vue";
-import LeftSidebar from "./components/LeftSidebar/index.vue";
-import RightSideBar from "@/components/RightSideBar/Main.vue";
 import BottomBar from "@/components/BottomBar.vue";
+import NavBar from "@/components/nav/NavBar.vue";
+import RightSideBar from "@/components/RightSideBar/Main.vue";
+import LeftSidebar from "./components/LeftSidebar/index.vue";
 
 const queue = useQStore();
 const router = useRouter();
