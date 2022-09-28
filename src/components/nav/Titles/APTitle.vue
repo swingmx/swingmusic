@@ -16,14 +16,14 @@
 </template>
 
 <script setup lang="ts">
-import { useRoute } from "vue-router";
 import { computed } from "@vue/reactivity";
+import { useRoute } from "vue-router";
 
+import Input from "@/components/shared/NavSearchInput.vue";
 import PlayBtn from "@/components/shared/PlayBtn.vue";
 import { playSources, Routes } from "@/composables/enums";
 import useAlbumStore from "@/stores/pages/album";
 import usePStore from "@/stores/pages/playlist";
-import Input from "@/components/shared/Input.vue";
 
 defineProps<{
   header_shown: boolean;

@@ -16,10 +16,10 @@
 </template>
 
 <script setup lang="ts">
-import Search from "./Search/Main.vue";
-import Queue from "./Queue.vue";
-import DashBoard from "./Home/Main.vue";
 import useTabStore from "../../stores/tabs";
+import DashBoard from "./Home/Main.vue";
+import Queue from "./Queue.vue";
+import Search from "./Search/Main.vue";
 import SearchInput from "./SearchInput.vue";
 
 const tabs = useTabStore();

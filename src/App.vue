@@ -18,7 +18,7 @@
     </div>
     <!-- <SearchInput v-if="settings.use_sidebar && xl" /> -->
     <RightSideBar v-if="settings.use_sidebar && xl" />
-    <NowPlayingRight />
+    <BottomBar />
   </section>
 </template>
 
@@ -43,14 +43,14 @@ import { readLocalStorage, writeLocalStorage } from "@/utils";
 
 // @small-components
 import Modal from "@/components/modal.vue";
-import ContextMenu from "@/components/contextMenu.vue";
+import ContextMenu from "@/components/ContextMenu.vue";
 import Notification from "@/components/Notification.vue";
 
 // @app-grid-components
 import NavBar from "@/components/nav/NavBar.vue";
 import LeftSidebar from "./components/LeftSidebar/index.vue";
 import RightSideBar from "@/components/RightSideBar/Main.vue";
-import NowPlayingRight from "@/components/RightSideBar/NowPlayingRight.vue";
+import BottomBar from "@/components/BottomBar.vue";
 
 const queue = useQStore();
 const router = useRouter();

@@ -31,11 +31,13 @@
             </div>
             <div class="tags">
               <div class="title ellip">
-                {{ queue.currenttrack?.title || 'Hello there' }}
+                {{ queue.currenttrack?.title || "Hello there" }}
               </div>
               <ArtistName
                 :artists="queue.currenttrack?.artist || []"
-                :albumartist="queue.currenttrack?.albumartist || 'Welcome to alice'"
+                :albumartist="
+                  queue.currenttrack?.albumartist || 'Welcome to alice'
+                "
                 class="artist"
               />
             </div>
@@ -69,12 +71,12 @@ import { formatSeconds } from "@/utils";
 import { Routes } from "@/composables/enums";
 import useSettingsStore from "@/stores/settings";
 
-import ArtistName from "../shared/ArtistName.vue";
-import HotKeys from "../LeftSidebar/NP/HotKeys.vue";
-import Progress from "../LeftSidebar/NP/Progress.vue";
+import ArtistName from "@/components/shared/ArtistName.vue";
+import HotKeys from "@/components/LeftSidebar/NP/HotKeys.vue";
+import Progress from "@/components/LeftSidebar/NP/Progress.vue";
 
-import HeartSvg from "../../assets/icons/heart.svg";
-// import PlusSvg from "../../assets/icons/plus.svg";
+import HeartSvg from "@/assets/icons/heart.svg";
+// import PlusSvg from "@/assets/icons/plus.svg";
 
 const queue = useQStore();
 const settings = useSettingsStore();
@@ -82,13 +84,10 @@ const settings = useSettingsStore();
 
 <style lang="scss">
 .b-bar {
-  // height: 100%;
   background-color: rgb(22, 22, 22);
   display: grid;
   align-items: center;
   z-index: 1;
-  border-top: solid 1px $gray3;
-
 
   &:hover {
     ::-moz-range-thumb {

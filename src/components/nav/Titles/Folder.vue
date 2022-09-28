@@ -33,7 +33,7 @@
 </template>
 
 <script setup lang="ts">
-import SearchInput from "@/components/shared/Input.vue";
+import SearchInput from "@/components/shared/NavSearchInput.vue";
 import { Routes } from "@/composables/enums";
 import { subPath } from "@/interfaces";
 import { focusElem } from "@/utils";
