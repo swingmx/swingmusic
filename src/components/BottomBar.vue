@@ -104,7 +104,6 @@ const settings = useSettingsStore();
   }
 
   .centered {
-    width: 50rem;
     display: grid;
     align-items: center;
     width: max-content;
@@ -150,8 +149,7 @@ const settings = useSettingsStore();
     }
 
     .info {
-      width: 30rem;
-      // width: 100%;
+      max-width: 30rem;
 
       .with-title {
         display: grid;
@@ -208,44 +206,5 @@ const settings = useSettingsStore();
     display: grid;
     place-content: end;
   }
-  // width: 100%;
-
-  // .time {
-  //   display: grid;
-  //   grid-template-columns: repeat(3, 1fr);
-  //   align-items: center;
-
-  //   .full {
-  //     text-align: end;
-  //   }
-  // }
-
-  // .info {
-  //   display: grid;
-  //   grid-template-columns: max-content 1fr;
-  //   gap: 1rem;
-
-  //   img {
-  //     height: 6rem;
-  //     width: auto;
-  //   }
-
-  //   .tags {
-  //     display: flex;
-  //     flex-direction: column;
-  //     justify-content: flex-end;
-  //     gap: $smaller;
-
-  //     .np-title {
-  //       font-size: 1.15rem;
-  //       font-weight: bold;
-  //     }
-
-  //     .np-artist {
-  //       opacity: 0.75;
-  //       font-size: 0.9rem;
-  //     }
-  //   }
-  // }
 }
 </style>

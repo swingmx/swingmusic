@@ -1,6 +1,6 @@
 <template>
   <div id="tracks-results" class="noscroll">
-    <div v-if="search.tracks.value.length">
+    <div v-if="search.tracks.value.length" v-auto-animate>
       <TrackComponent
         v-for="(track, index) in search.tracks.value"
         :key="track.trackid"

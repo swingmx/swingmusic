@@ -1,9 +1,8 @@
-import "./assets/scss/index.scss";
-
 import { createApp } from "vue";
 import { createPinia } from "pinia";
+import { autoAnimatePlugin } from "@formkit/auto-animate/vue";
 import piniaPluginPersistedstate from "pinia-plugin-persistedstate";
-
+import "./assets/scss/index.scss";
 
 import App from "./App.vue";
 import router from "./router";
@@ -16,5 +15,6 @@ pinia.use(piniaPluginPersistedstate);
 app.use(pinia);
 app.use(router);
 app.directive("tooltip", vTooltip);
+app.use(autoAnimatePlugin);
 
-app.mount("#app")
+app.mount("#app");

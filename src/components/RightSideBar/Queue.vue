@@ -7,7 +7,7 @@
     @mouseover="mouseover = true"
     @mouseout="mouseover = false"
   >
-    <div class="inner" v-bind="wrapperProps">
+    <div class="inner" v-bind="wrapperProps" >
       <TrackItem
         style="height: 64px"
         v-for="t in tracks"

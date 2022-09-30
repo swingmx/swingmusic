@@ -121,13 +121,10 @@ onUpdated(() => {
           }
         }
 
-        // .inthisfolder > .text {
-        //   color: #fff;
-        //   font-weight: bold;
-        //   background-color: $gray;
-
-        //   transition: all 0.5s;
-        // }
+        .inthisfolder > .text {
+          background-color: $gray;
+          transition: all 0.5s;
+        }
       }
     }
   }
