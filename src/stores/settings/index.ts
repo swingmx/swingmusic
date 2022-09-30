@@ -19,7 +19,7 @@ export default defineStore("settings", {
     },
   },
   getters: {
-    extend_width_enabled(): boolean {
+    can_extend_width(): boolean {
      return xxl.value
     },
   },

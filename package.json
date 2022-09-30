@@ -9,6 +9,7 @@
     "lint": "eslint --ext .js,.vue --ignore-path .gitignore --fix src"
   },
   "dependencies": {
+    "@formkit/auto-animate": "^1.0.0-beta.3",
     "@popperjs/core": "^2.11.6",
     "@vueuse/components": "^9.2.0",
     "@vueuse/core": "^8.5.0",

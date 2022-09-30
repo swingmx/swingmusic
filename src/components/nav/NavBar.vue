@@ -10,7 +10,10 @@
           v-if="$route.name == Routes.album || $route.name == Routes.playlist"
           :header_shown="nav.h_visible"
         />
-        <SettingsTitle v-if="$route.name == Routes.settings" :text="'Settings'" />
+        <SettingsTitle
+          v-if="$route.name == Routes.settings"
+          :text="'Settings'"
+        />
         <FolderTitle v-if="$route.name == Routes.folder" :subPaths="subPaths" />
         <SearchTitle v-if="$route.name == Routes.search" />
         <PlaylistsTitle v-if="$route.name == Routes.playlists" />
@@ -42,7 +45,6 @@ const route = useRoute();
 const nav = useNavStore();
 
 const subPaths = ref<subPath[]>([]);
-
 
 watch(
   () => route.name,

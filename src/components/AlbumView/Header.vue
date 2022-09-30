@@ -19,7 +19,7 @@
     >
       <div class="album-info">
         <div class="top">
-          <div class="h">
+          <div v-auto-animate class="h">
             <span v-if="album.is_soundtrack">Soundtrack</span>
             <span v-else-if="album.is_compilation">Compilation</span>
             <span v-else-if="album.is_single">Single</span>

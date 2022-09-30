@@ -2,6 +2,7 @@
   <div class="gsearch-input">
     <div id="ginner" tabindex="0" ref="inputRef">
       <button
+        v-auto-animate
         :title="
           tabs.current === tabs.tabs.search ? 'back to queue' : 'go to search'
         "

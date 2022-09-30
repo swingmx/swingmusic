@@ -16,7 +16,7 @@
       </Teleport>
     </div>
 
-    <div id="tab-content">
+    <div id="tab-content" v-auto-animate>
       <slot />
     </div>
   </div>

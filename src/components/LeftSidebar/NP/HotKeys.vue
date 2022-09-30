@@ -3,7 +3,7 @@
     <button @click.prevent="q.playPrev">
       <PrevSvg />
     </button>
-    <button @click.prevent="q.playPause">
+    <button v-auto-animate @click.prevent="q.playPause">
       <PauseSvg v-if="q.playing" />
       <PlaySvg v-else />
     </button>

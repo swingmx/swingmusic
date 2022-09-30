@@ -8,7 +8,7 @@
     :class="{
       noSidebar: !settings.use_sidebar || !xl,
       NoSideBorders: !xxl,
-      extendWidth: settings.extend_width && settings.extend_width_enabled,
+      extendWidth: settings.extend_width && settings.can_extend_width,
     }"
   >
     <LeftSidebar />
@@ -16,7 +16,6 @@
     <div id="acontent" v-element-size="updateContentElemSize">
       <router-view />
     </div>
-    <!-- <SearchInput v-if="settings.use_sidebar && xl" /> -->
     <RightSideBar v-if="settings.use_sidebar && xl" />
     <BottomBar />
   </section>

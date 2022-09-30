@@ -12,7 +12,7 @@
       <HeartSvg />
     </div>
     <div class="flex">
-      <div @click.pre@dblclick.prevent="emitUpdate" class="thumbnail">
+      <div v-auto-animate @click.pre@dblclick.prevent="emitUpdate" class="thumbnail">
         <img
           loading="lazy"
           :src="imguri + track.image"

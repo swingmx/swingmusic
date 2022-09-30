@@ -9,7 +9,7 @@ const extend_to_full_width: Setting = {
   type: SettingType.binary,
   source: () => settings().extend_width,
   action: () => settings().toggleExtendWidth(),
-  inactive: () => !settings().extend_width_enabled,
+  inactive: () => !settings().can_extend_width,
 };
 
 export default [extend_to_full_width];
