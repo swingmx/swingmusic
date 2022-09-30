@@ -4,7 +4,7 @@
  * @param delay Delay in milliseconds
  * @param pos Positioning of the focus element
  */
-export default function focusElem(
+export default function focusElemByClass(
   className: string,
   delay?: number,
   pos?: any

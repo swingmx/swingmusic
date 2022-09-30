@@ -36,7 +36,7 @@
 import SearchInput from "@/components/shared/NavSearchInput.vue";
 import { Routes } from "@/composables/enums";
 import { subPath } from "@/interfaces";
-import { focusElem } from "@/utils";
+import { focusElemByClass } from "@/utils";
 import { onUpdated } from "vue";
 
 defineProps<{
@@ -44,7 +44,7 @@ defineProps<{
 }>();
 
 onUpdated(() => {
-  focusElem("inthisfolder");
+  focusElemByClass("inthisfolder");
 });
 </script>
 

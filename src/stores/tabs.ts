@@ -1,5 +1,5 @@
+import { focusElemByClass } from "@/utils";
 import { defineStore } from "pinia";
-import { focusElem } from "@/utils";
 
 const tablist = {
   home: "home",
@@ -16,7 +16,7 @@ export default defineStore("tabs", {
     changeTab(tab: string) {
       if (tab === this.tabs.queue) {
         setTimeout(() => {
-          focusElem("currentInQueue");
+          focusElemByClass("currentInQueue");
         }, 500);
       }
       this.current = tab;

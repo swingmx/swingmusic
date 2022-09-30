@@ -32,6 +32,7 @@ defineProps<{
   padding: 1.2rem 1rem !important;
   font-size: 0.9rem;
   font-weight: bolder;
+  height: fit-content;
 
   &:hover {
     background-color: $gray4;

@@ -1,6 +1,6 @@
 <template>
   <div id="tracks-results" class="noscroll">
-    <div v-if="search.tracks.value.length" v-auto-animate>
+    <div v-if="search.tracks.value.length">
       <TrackComponent
         v-for="(track, index) in search.tracks.value"
         :key="track.trackid"
@@ -18,7 +18,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from "vue";
+import { computed, onMounted } from "vue";
 
 import SongItem from "@/components/shared/SongItem.vue";
 import TrackItem from "@/components/shared/TrackItem.vue";
@@ -51,4 +51,8 @@ let use_song_item: boolean = false;
 if (props.isOnSearchPage) {
   use_song_item = true;
 }
+
+onMounted(() => {
+  search.switchTab("tracks");
+});
 </script>
