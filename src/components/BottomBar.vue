@@ -149,7 +149,7 @@ const settings = useSettingsStore();
     }
 
     .info {
-      max-width: 30rem;
+      width: 30rem;
 
       .with-title {
         display: grid;

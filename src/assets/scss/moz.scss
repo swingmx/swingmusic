@@ -6,6 +6,11 @@
     padding-right: 1rem;
   }
 
+  .content-page {
+    margin-right: calc(0rem - ($medium + 4px));
+    padding-right: calc(1rem - 3px) !important;
+  }
+
   .header-list-layout {
     margin-right: calc(0rem - ($medium + 4px)) !important;
 

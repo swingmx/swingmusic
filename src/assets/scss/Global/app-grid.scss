@@ -41,14 +41,17 @@ $g-border: solid 1px $gray5;
   grid-area: l-sidebar;
   display: grid;
   grid-template-rows: 1fr max-content;
-  // border-top: none !important;
-  // border-bottom: none !important;
   border-right: $g-border;
 }
 
 .b-bar {
   grid-area: bottombar;
   border-top: $g-border;
+}
+
+.content-page {
+  margin-right: -$medium;
+  padding-right: calc(1rem - $small + 2px);
 }
 
 // ====== MODIFIERS =======
