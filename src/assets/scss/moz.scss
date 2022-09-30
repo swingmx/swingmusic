@@ -6,11 +6,13 @@
     padding-right: 1rem;
   }
 
+  // applies to playlist list page
   .content-page {
     margin-right: calc(0rem - ($medium + 4px));
     padding-right: calc(1rem - 3px) !important;
   }
 
+  // virtual scroller pages: folder, playlist, album
   .header-list-layout {
     margin-right: calc(0rem - ($medium + 4px)) !important;
 
@@ -21,5 +23,9 @@
 
   #app-grid.noSidebar > #acontent {
     padding-right: 1rem !important;
+  }
+
+  .search-view {
+    margin-right: -1rem !important;
   }
 }

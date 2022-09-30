@@ -3,7 +3,6 @@
     <div class="noscroll">
       <Layout :no_header="true" :tracks="search.tracks.value" />
     </div>
-    <button @click.prevent="search.loadTracks">Load More</button>
   </div>
 </template>
 
@@ -18,9 +17,13 @@ const search = useSearchStore();
 .search-tracks-view {
   height: 100%;
 
-  display: grid;
-  grid-template-rows: 1fr max-content;
-  gap: 1rem;
+  .noscroll {
+    height: 100%;
+  }
+
+  .header-list-layout {
+    width: 100%;
+  }
 
   button {
     width: fit-content;

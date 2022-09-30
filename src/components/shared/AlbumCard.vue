@@ -30,6 +30,7 @@ defineProps<{
   gap: $small;
   padding: $medium;
   border-radius: 1rem;
+  height: fit-content;
 
   &:hover {
     background-color: $gray4;

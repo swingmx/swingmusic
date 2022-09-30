@@ -1,5 +1,5 @@
 // "local" | "remote"
-let mode = "local";
+let mode = "remote";
 
 export interface D<T = string> {
   [key: string]: T;
@@ -7,7 +7,7 @@ export interface D<T = string> {
 
 const domains: D = {
   local: "http://localhost:",
-  remote: "http://10.5.71.115:",
+  remote: "http://10.16.22.240:",
 };
 
 const ports = {

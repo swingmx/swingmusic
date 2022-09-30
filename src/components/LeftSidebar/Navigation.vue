@@ -57,7 +57,7 @@ const menus = [
   {
     name: "search",
     route_name: Routes.search,
-    params: { page: "top" },
+    params: { page: "tracks" },
     icon: SearchSvg,
   },
   {

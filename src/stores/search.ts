@@ -22,6 +22,8 @@ import { useDebounce } from "@vueuse/core";
 function scrollOnLoad() {
   const elem = document.getElementById("tab-content") as HTMLElement;
 
+  if (elem === null) return;
+
   elem.scroll({
     top: elem.scrollHeight,
     left: 0,
@@ -85,6 +87,7 @@ export default defineStore("search", () => {
   }
 
   function fetchAlbums(query: string) {
+    console.log("fetching albums");
     if (!query) return;
 
     searchAlbums(query).then((res) => {
@@ -92,6 +95,8 @@ export default defineStore("search", () => {
       albums.more = res.more;
       albums.query = query;
     });
+
+    console.log("fetched albums");
   }
 
   function fetchArtists(query: string) {
@@ -117,11 +122,11 @@ export default defineStore("search", () => {
       .then(() => scrollOnLoad());
   }
 
-  function loadAlbums() {
-    loadCounter.albums += RESULT_COUNT;
+  function loadAlbums(count = 6) {
+    loadCounter.albums += count;
 
     startLoading();
-    loadMoreAlbums(loadCounter.albums)
+    loadMoreAlbums(loadCounter.albums, count)
       .then((res) => {
         albums.value = [...albums.value, ...res.albums];
         albums.more = res.more;

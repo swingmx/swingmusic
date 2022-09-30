@@ -46,7 +46,7 @@
             updateQueue(t.data.index !== undefined ? t.data.index : t.index)
           "
         />
-        <div class="bottom-padding" style="height: 64px"></div>
+        <div class="page-bottom-padding" style="height: 64px"></div>
       </div>
     </div>
   </div>

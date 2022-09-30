@@ -1,14 +1,12 @@
 <template>
   <div class="artists-results" v-auto-animate>
     <div
-      v-auto-animate
       class="search-results-grid"
       v-if="album_grid == true && search.albums.value.length"
     >
       <AlbumCard v-for="a in search.albums.value" :key="a.albumid" :album="a" />
     </div>
     <div
-      v-auto-animate
       class="search-results-grid"
       v-else-if="!album_grid && search.artists.value.length"
     >
