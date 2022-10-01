@@ -10,7 +10,7 @@
         : '',
     }"
   >
-    <div class="big-img noscroll" :class="{ imgSmall: widthIsSmall }">
+    <div class="big-img no-scroll" :class="{ imgSmall: widthIsSmall }">
       <img :src="imguri.thumb.large + album.image" class="rounded" />
     </div>
     <div
@@ -59,13 +59,13 @@
 import { ref } from "vue";
 
 import { paths } from "@/config";
-import useNavStore from "@/stores/nav";
-import { AlbumInfo } from "../../interfaces";
-import useAlbumStore from "@/stores/pages/album";
-import { playSources } from "../../composables/enums";
-import { useVisibility, formatSeconds } from "@/utils";
-import { getButtonColor, isLight } from "../../composables/colors/album";
 import { isSmall as widthIsSmall } from "@/stores/content-width";
+import useNavStore from "@/stores/nav";
+import useAlbumStore from "@/stores/pages/album";
+import { formatSeconds, useVisibility } from "@/utils";
+import { getButtonColor, isLight } from "../../composables/colors/album";
+import { playSources } from "../../composables/enums";
+import { AlbumInfo } from "../../interfaces";
 
 import PlayBtnRect from "../shared/PlayBtnRect.vue";
 

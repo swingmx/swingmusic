@@ -1,6 +1,6 @@
 <template>
   <div
-    class="p-header image rounded noscroll"
+    class="p-header image rounded no-scroll"
     ref="playlistheader"
     :style="[
       {

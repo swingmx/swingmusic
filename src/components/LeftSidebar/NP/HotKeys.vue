@@ -1,5 +1,5 @@
 <template>
-  <div class="hotkeys rounded-sm noscroll">
+  <div class="hotkeys rounded-sm no-scroll">
     <button @click.prevent="q.playPrev">
       <PrevSvg />
     </button>
@@ -16,8 +16,7 @@
 <script setup lang="ts">
 import useQStore from "@/stores/queue";
 
-import NextSvg from "../../../assets/icons/next.svg";
-import PrevSvg from "../../../assets/icons/next.svg";
+import { default as NextSvg, default as PrevSvg } from "../../../assets/icons/next.svg";
 import PauseSvg from "../../../assets/icons/pause.svg";
 import PlaySvg from "../../../assets/icons/play.svg";
 

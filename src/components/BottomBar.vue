@@ -71,9 +71,9 @@ import { formatSeconds } from "@/utils";
 import { Routes } from "@/composables/enums";
 import useSettingsStore from "@/stores/settings";
 
-import ArtistName from "@/components/shared/ArtistName.vue";
 import HotKeys from "@/components/LeftSidebar/NP/HotKeys.vue";
 import Progress from "@/components/LeftSidebar/NP/Progress.vue";
+import ArtistName from "@/components/shared/ArtistName.vue";
 
 import HeartSvg from "@/assets/icons/heart.svg";
 // import PlusSvg from "@/assets/icons/plus.svg";
@@ -159,7 +159,7 @@ const settings = useSettingsStore();
       }
 
       .time {
-        font-size: 12px;
+        font-size: $medium;
         height: fit-content;
         width: 3rem;
 
@@ -187,7 +187,7 @@ const settings = useSettingsStore();
         .artist {
           opacity: 0.75;
           margin-bottom: -$smaller;
-          font-size: 12px;
+          font-size: $medium;
         }
       }
     }

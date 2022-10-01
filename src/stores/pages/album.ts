@@ -1,6 +1,7 @@
 import { useFuse } from "@/utils";
 import { defineStore } from "pinia";
 import { ComputedRef } from "vue";
+import { AlbumDisc } from "./../../interfaces";
 
 import { FuseTrackOptions } from "@/composables/enums";
 
@@ -62,7 +63,18 @@ export default defineStore("album", {
   },
   getters: {
     filteredTracks(): ComputedRef<FuseResult[]> {
-      return useFuse(this.query, this.allTracks, FuseTrackOptions);
+      const discs = createDiscs(this.allTracks);
+      let tracks: (Track[] | AlbumDisc[]) = [];
+
+      Object.keys(discs).forEach((disc) => {
+        const discHeader = {
+          is_album_disc_number: true,
+          album_page_disc_number: parseInt(disc),
+        } as AlbumDisc;
+        tracks = [...tracks, discHeader, ...discs[disc]];
+      });
+
+      return useFuse(this.query, tracks, FuseTrackOptions);
     },
     tracks(): Track[] {
       const tracks = this.filteredTracks.value.map((result: FuseResult) => {
@@ -75,9 +87,6 @@ export default defineStore("album", {
       });
 
       return tracks;
-    },
-    discs(): Discs {
-      return createDiscs(this.tracks);
     },
   },
 });
