@@ -2,7 +2,6 @@
   <ContextMenu />
   <Modal />
   <Notification />
-  <div id="tooltip"></div>
   <section
     id="app-grid"
     :class="{

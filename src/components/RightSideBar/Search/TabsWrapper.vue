@@ -2,7 +2,7 @@
   <div id="right-tabs" class="rounded">
     <div class="tab-buttons-wrapper">
       <Teleport :disabled="!isOnSearchPage" to="#nav-tab-headers">
-        <div class="tabheaders rounded-sm noscroll">
+        <div class="tabheaders rounded-sm no-scroll">
           <div
             class="tab"
             v-for="tab in tabs"

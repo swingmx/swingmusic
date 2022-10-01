@@ -1,7 +1,7 @@
 <template>
   <div class="r-sidebar">
     <SearchInput />
-    <div v-auto-animate class="r-content noscroll" >
+    <div v-auto-animate class="r-content no-scroll" >
       <div class="r-dash" v-if="tabs.current === tabs.tabs.home">
         <DashBoard />
       </div>

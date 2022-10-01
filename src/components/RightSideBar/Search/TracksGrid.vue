@@ -1,5 +1,5 @@
 <template>
-  <div id="tracks-results" class="noscroll">
+  <div id="tracks-results" class="no-scroll">
     <div v-if="search.tracks.value.length">
       <TrackComponent
         v-for="(track, index) in search.tracks.value"

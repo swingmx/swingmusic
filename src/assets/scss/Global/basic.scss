@@ -1,12 +1,7 @@
+// TEXT
+
 .t-center {
   text-align: center;
-}
-
-.image {
-  background-position: center;
-  background-repeat: no-repeat;
-  background-size: cover;
-  transition: transform 0.3s ease-in-out;
 }
 
 .ellip {
@@ -20,6 +15,24 @@
   max-width: 100%;
 }
 
+.heading {
+  font-size: 2rem;
+  font-weight: bold;
+}
+
+a {
+  text-decoration: none;
+  color: #fff;
+}
+
+.image {
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  transition: transform 0.3s ease-in-out;
+}
+
+// BORDERS
 .rounded {
   border-radius: 1rem;
 }
@@ -36,8 +49,8 @@
   border-radius: 10rem;
 }
 
-.flex {
-  display: flex;
+.border {
+  border: 1px solid $gray3;
 }
 
 .bg-primary {
@@ -45,20 +58,7 @@
   box-shadow: 0 0 1rem rgba(0, 0, 0, 0.425);
 }
 
-.border {
-  border: 1px solid $gray3;
-}
-
-.heading {
-  font-size: 2rem;
-  font-weight: bold;
-}
-
-a {
-  text-decoration: none;
-  color: #fff;
-}
-
+// BUTTONS
 button {
   border: none;
   font-size: 0.9rem !important;
@@ -99,6 +99,23 @@ button {
   width: 2.5rem;
 }
 
+
+
+// POSITION
+
+.abs {
+  position: absolute;
+}
+
+// OTHERS
+.grid {
+  display: grid;
+}
+
+.flex {
+  display: flex;
+}
+
 .separator {
   border-top: 1px $separator solid;
   color: transparent;
@@ -106,37 +123,15 @@ button {
   opacity: 0.5;
 }
 
+// NO THIS, NO THAT (OVERRIDES)
 .no-border {
   border: none;
 }
 
-.noscroll {
+.no-scroll {
   overflow: hidden;
 }
 
-.abs {
-  position: absolute;
-}
-
-.grid {
-  display: grid;
-}
-
-.card-dark {
-  background-color: #fff;
-}
-
-#tooltip {
-  background-color: $darkestblue;
-  border-radius: $smaller;
-  padding: $smaller;
-  font-size: 0.85rem;
-  visibility: hidden;
-  position: absolute;
-  z-index: 300;
-}
-
-#tooltip[data-popper-reference-hidden] {
-  visibility: hidden !important;
-  pointer-events: none;
+.no-select {
+  user-select: none;
 }

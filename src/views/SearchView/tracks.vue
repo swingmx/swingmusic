@@ -1,6 +1,6 @@
 <template>
   <div class="search-tracks-view">
-    <div class="noscroll">
+    <div class="no-scroll">
       <Layout :no_header="true" :tracks="search.tracks.value" />
     </div>
   </div>
@@ -17,7 +17,7 @@ const search = useSearchStore();
 .search-tracks-view {
   height: 100%;
 
-  .noscroll {
+  .no-scroll {
     height: 100%;
   }
 

@@ -12,11 +12,8 @@
       <HeartSvg />
     </div>
     <div class="flex">
-      <div v-auto-animate @click.pre@dblclick.prevent="emitUpdate" class="thumbnail">
-        <img
-          :src="imguri + track.image"
-          class="album-art image rounded-sm"
-        />
+      <div @click.prevent="emitUpdate" class="thumbnail">
+        <img :src="imguri + track.image" class="album-art image rounded-sm" />
         <div
           class="now-playing-track-indicator image"
           v-if="isCurrent"
@@ -24,11 +21,7 @@
         ></div>
       </div>
       <div v-tooltip class="song-title">
-        <div
-          class="title ellip"
-          @click.pre@dblclick.prevent="emitUpdate"
-          ref="artisttitle"
-        >
+        <div class="title ellip" @click.prevent="emitUpdate" ref="artisttitle">
           {{ track.title }}
         </div>
         <div class="isSmallArtists" style="display: none">
@@ -58,7 +51,7 @@
     <div class="song-duration">{{ formatSeconds(track.duration) }}</div>
     <div
       class="options-icon circular"
-      :class="{ options_button_clicked }"
+      :class="{ 'btn-active': options_button_clicked }"
       @click.stop="showMenu"
       @dblclick.stop="() => {}"
     >
@@ -72,7 +65,7 @@ import { ref } from "vue";
 
 import { showTrackContextMenu as showContext } from "@/composables/context";
 import { paths } from "@/config";
-import { Track } from "@/interfaces";
+import { AlbumDisc, Track } from "@/interfaces";
 import { formatSeconds } from "@/utils";
 
 import HeartSvg from "@/assets/icons/heart.svg";
@@ -87,7 +80,7 @@ const artisttitle = ref<HTMLElement | null>(null);
 
 const props = defineProps<{
   track: Track;
-  index: number | string;
+  index: Number | String;
   isCurrent: Boolean;
   isCurrentPlaying: Boolean;
   no_album?: Boolean;
@@ -107,12 +100,14 @@ function showMenu(e: Event) {
 </script>
 
 <style lang="scss">
+
+
 .songlist-item {
   display: grid;
   grid-template-columns: 1.5rem 2fr 1fr 1.5fr 2.5rem 2.5rem;
   align-items: center;
   justify-content: flex-start;
-  height: 3.75rem;
+  height: $song-item-height;
   gap: 1rem;
   user-select: none;
   padding-left: $small;
@@ -190,16 +185,11 @@ function showMenu(e: Event) {
     width: 2rem;
 
     svg {
-      transition: all 0.2s ease-in;
-      stroke: $track-btn-svg;
-
-      circle {
-        fill: $track-btn-svg;
-      }
+      stroke: $white;
     }
 
     &:hover {
-      background-color: $gray5;
+      background-color: $darkestblue;
     }
   }
 

@@ -14,7 +14,7 @@
         {{ page }}
       </button>
     </div>
-    <div ref="page" class="page noscroll" v-auto-animate>
+    <div ref="page" class="page no-scroll" v-auto-animate>
       <component :is="component" />
     </div>
     <button
@@ -28,14 +28,14 @@
 </template>
 
 <script setup lang="ts">
-import { useRoute } from "vue-router";
-import { computed, onMounted, ref } from "vue";
-import TracksPage from "./tracks.vue";
-import AlbumPage from "./albums.vue";
-import ArtistPage from "./artists.vue";
 import { Routes } from "@/composables/enums";
 import useSearchStore from "@/stores/search";
 import { focusElemByClass } from "@/utils";
+import { computed, onMounted, ref } from "vue";
+import { useRoute } from "vue-router";
+import AlbumPage from "./albums.vue";
+import ArtistPage from "./artists.vue";
+import TracksPage from "./tracks.vue";
 
 // width of album and artist cards
 const defaultItemCount = 6;
@@ -169,7 +169,7 @@ onMounted(() => {
     }
   }
 
-  .page.noscroll {
+  .page.no-scroll {
     overflow-x: visible;
   }
 

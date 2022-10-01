@@ -20,33 +20,40 @@
           ref="header"
           class="header rounded"
           v-if="!no_header"
-          :style="{ height: headerHeight + 24 + 'px' }"
+          :style="{ height: headerHeight + (on_album_page ? 0 : 24) + 'px' }"
         >
           <div ref="header_content" class="header-content">
             <slot name="header"></slot>
           </div>
         </div>
-        <SongItem
-          style="height: 60px"
-          v-for="t in tracks"
-          :key="t.data.trackid"
-          :track="t.data"
-          :no_album="on_album_page"
-          :index="
-            on_album_page
-              ? t.data.track
-              : t.data.index !== undefined
-              ? t.data.index + 1
-              : t.index + 1
-          "
-          :isCurrent="queue.currentid === t.data.trackid"
-          :isCurrentPlaying="
-            queue.currentid === t.data.trackid && queue.playing
-          "
-          @playThis="
-            updateQueue(t.data.index !== undefined ? t.data.index : t.index)
-          "
-        />
+        <div v-for="t in tracks">
+          <AlbumDiscBar
+            v-if="on_album_page && t.data.is_album_disc_number"
+            :album_disc="t.data"
+          />
+
+          <SongItem
+            v-else
+            style="height: 60px"
+            :key="t.data.trackid"
+            :track="t.data"
+            :no_album="on_album_page"
+            :index="
+              on_album_page
+                ? t.data.track
+                : t.data.index !== undefined
+                ? t.data.index + 1
+                : t.index + 1
+            "
+            :isCurrent="queue.currentid === t.data.trackid"
+            :isCurrentPlaying="
+              queue.currentid === t.data.trackid && queue.playing
+            "
+            @playThis="
+              updateQueue(t.data.index !== undefined ? t.data.index : t.index)
+            "
+          />
+        </div>
         <div class="page-bottom-padding" style="height: 64px"></div>
       </div>
     </div>
@@ -61,7 +68,7 @@ import { Track } from "@/interfaces";
 import useQStore from "@/stores/queue";
 
 import SongItem from "@/components/shared/SongItem.vue";
-
+import AlbumDiscBar from "@/components/AlbumView/AlbumDiscBar.vue";
 // EMITS & PROPS
 const emit = defineEmits<{
   (e: "playFromPage", index: number): void;

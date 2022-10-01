@@ -1,6 +1,11 @@
 import { FromOptions, NotifType } from "./composables/enums";
 
-export interface Track {
+export interface AlbumDisc {
+  is_album_disc_number?: boolean;
+  album_page_disc_number?: number;
+}
+
+export interface Track extends AlbumDisc {
   trackid: string;
   title: string;
   album?: string;
@@ -18,7 +23,7 @@ export interface Track {
   index: number;
   hash: string;
   copyright?: string;
-  filetype: string
+  filetype: string;
 }
 
 export interface Folder {
@@ -116,5 +121,3 @@ export interface FuseResult {
   item: Track;
   refIndex: number;
 }
-
-

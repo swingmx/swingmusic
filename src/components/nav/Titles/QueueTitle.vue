@@ -1,8 +1,8 @@
 <template>
   <div class="nav-queue-title">
-    <div class="first noscroll">
+    <div class="first no-scroll">
       <router-link :to="(location as RouteLocationRaw)">
-        <button>Go to source</button>
+        <button class="btn-active">Go to source</button>
       </router-link>
       <div class="playing-from">
         <div class="border rounded-sm pad-sm">

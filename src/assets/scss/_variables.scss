@@ -14,6 +14,7 @@ $large: 1.5rem;
 $larger: 2rem;
 
 $banner-height: 18rem;
+$song-item-height: 4rem;
 
 // apple human design guideline colors
 $black: #181a1c;
@@ -49,9 +50,6 @@ $playlist-card-bg: $gray4;
 
 // SVG COLORS
 $default: $accent;
-$track-btn-svg: $accent;
 $side-nav-svg: $red;
 
-
 $overshoot: cubic-bezier(0.68, -0.55, 0.265, 1.55);
-

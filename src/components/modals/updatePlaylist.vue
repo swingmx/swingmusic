@@ -159,22 +159,5 @@ function update_playlist(e: Event) {
       background-color: $gray4;
     }
   }
-
-  textarea {
-    width: 100%;
-    max-width: 28rem;
-    max-height: 5rem;
-    color: $white;
-    background-color: $gray2;
-    border: none;
-    font-family: inherit;
-    padding: $small;
-    outline: none;
-    margin: $small 0;
-
-    &:focus {
-      outline: solid 2px $gray1;
-    }
-  }
 }
 </style>
