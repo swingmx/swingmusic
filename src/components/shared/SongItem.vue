@@ -14,9 +14,7 @@
     <div class="flex">
       <div v-auto-animate @click.pre@dblclick.prevent="emitUpdate" class="thumbnail">
         <img
-          loading="lazy"
           :src="imguri + track.image"
-          alt=""
           class="album-art image rounded-sm"
         />
         <div
