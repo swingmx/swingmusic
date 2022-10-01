@@ -4,7 +4,7 @@ input[type="range"] {
   width: calc(100% - 2px);
   height: 0.3rem;
   border-radius: 5px;
-  background: $gray4 linear-gradient(90deg, $accent, $darkestblue) no-repeat;
+  background: $gray4 linear-gradient(90deg, $darkblue, $darkestblue) no-repeat;
   background-size: 100% 100%;
 
   &::-webkit-slider-thumb {

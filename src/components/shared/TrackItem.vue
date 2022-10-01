@@ -13,7 +13,6 @@
     <div class="album-art">
       <img
         :src="paths.images.thumb.small + track.image"
-        alt=""
         class="rounded-sm"
       />
       <div

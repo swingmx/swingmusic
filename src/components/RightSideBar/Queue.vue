@@ -1,13 +1,14 @@
 <template>
   <QueueActions />
   <div
+    ref="scrollable"
     class="scrollable-r"
     v-bind="containerProps"
     style="height: 100%"
     @mouseover="mouseover = true"
     @mouseout="mouseover = false"
   >
-    <div class="inner" v-bind="wrapperProps" >
+    <div class="inner" v-bind="wrapperProps">
       <TrackItem
         style="height: 64px"
         v-for="t in tracks"
@@ -34,6 +35,7 @@ import QueueActions from "./Queue/QueueActions.vue";
 
 const queue = useQStore();
 const mouseover = ref(false);
+const scrollable = ref<HTMLElement>();
 
 function playFromQueue(index: number) {
   queue.play(index);
@@ -51,8 +53,8 @@ const {
 });
 
 onMounted(() => {
-  scrollTo(queue.currentindex);
-  queue.setScrollFunction(scrollTo, mouseover);
+  // scrollTo(queue.currentindex);
+  queue.setScrollFunction(scrollToCurrent, mouseover);
 });
 
 onBeforeUnmount(() => {
@@ -60,6 +62,18 @@ onBeforeUnmount(() => {
 });
 
 // TODO: Handle focusing current track on song end
+
+
+function scrollToCurrent() {
+  const elem = document.getElementsByClassName('scrollable-r')[0] as HTMLElement;
+  const itemHeight = 64;
+
+  const top = queue.currentindex * itemHeight - itemHeight;
+   elem.scroll({
+    top,
+    behavior: "smooth",
+  });
+}
 </script>
 
 <style lang="scss">

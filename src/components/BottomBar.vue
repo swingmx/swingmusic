@@ -30,7 +30,7 @@
               </span>
             </div>
             <div class="tags">
-              <div class="title ellip">
+              <div v-tooltip class="title ellip">
                 {{ queue.currenttrack?.title || "Hello there" }}
               </div>
               <ArtistName

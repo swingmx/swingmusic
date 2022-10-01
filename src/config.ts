@@ -1,5 +1,5 @@
 // "local" | "remote"
-let mode = "remote";
+let mode = "local";
 
 export interface D<T = string> {
   [key: string]: T;

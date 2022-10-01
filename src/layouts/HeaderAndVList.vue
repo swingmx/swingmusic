@@ -2,26 +2,27 @@
   <!-- JUST A COMMENT: 64 is single item height, 24 is gap height -->
   <div class="header-list-layout">
     <div
+      id="v-page-scrollable"
       v-bind="containerProps"
       style="height: 100%"
-      :style="{ paddingTop: !no_header ? headerHeight - 64 + 24 + 'px' : 0 }"
       @scroll="handleScroll"
     >
       <div
         v-bind="wrapperProps"
-        class="scrollable"
-        ref="scrollable"
+        class="v-list"
+        ref="v_list"
         :class="{
           isSmall: isSmall,
           isMedium: isMedium || on_album_page,
         }"
       >
-        <div class="header rounded" style="height: 64px" v-if="!no_header">
-          <div
-            ref="header"
-            :style="{ top: -headerHeight + 64 - 24 + 'px' }"
-            class="header-content"
-          >
+        <div
+          ref="header"
+          class="header rounded"
+          v-if="!no_header"
+          :style="{ height: headerHeight + 24 + 'px' }"
+        >
+          <div ref="header_content" class="header-content">
             <slot name="header"></slot>
           </div>
         </div>
@@ -54,7 +55,7 @@
 
 <script setup lang="ts">
 import { useElementSize, useVirtualList } from "@vueuse/core";
-import { computed, ref } from "vue";
+import { computed, onMounted, onUpdated, ref, watch } from "vue";
 
 import { Track } from "@/interfaces";
 import useQStore from "@/stores/queue";
@@ -79,8 +80,10 @@ function updateQueue(index: number) {
 }
 
 // SCROLLABLE AREA
-const scrollable = ref<HTMLElement>();
-const { width } = useElementSize(scrollable);
+let scrollable: HTMLElement;
+const v_list = ref<HTMLElement>();
+const header_content = ref<HTMLElement>();
+const { width } = useElementSize(v_list);
 
 const brk = {
   sm: 500,
@@ -92,28 +95,38 @@ const isMedium = computed(() => width.value > brk.sm && width.value < brk.md);
 
 // VIRTUAL LIST
 const source = computed(() => props.tracks);
+
 const {
   list: tracks,
   containerProps,
   wrapperProps,
 } = useVirtualList(source, {
   itemHeight: 60,
-  overscan: 15,
+  overscan: 20,
+});
+
+// watch source changes and scroll to top
+watch(source, () => {
+  scrollable.scroll(0, 0);
 });
 
 // HEADER
 const header = ref<HTMLElement>();
-const { height: headerHeight } = useElementSize(header);
+const { height: headerHeight } = useElementSize(header_content);
 
 function handleScroll(e: Event) {
   const scrollTop = (e.target as HTMLElement).scrollTop;
 
-  if (scrollTop > headerHeight.value) {
+  if (scrollTop > (header.value?.offsetHeight || 0)) {
     header.value ? (header.value.style.opacity = "0") : null;
   } else {
     header.value ? (header.value.style.opacity = "1") : null;
   }
 }
+
+onMounted(() => {
+  scrollable = document.getElementById("v-page-scrollable") as HTMLElement;
+});
 </script>
 
 <style lang="scss">
@@ -121,7 +134,7 @@ function handleScroll(e: Event) {
   margin-right: -$medium;
   height: 100%;
 
-  .scrollable {
+  .v-list {
     padding-right: calc(1rem - $small + 2px);
     scrollbar-width: thin;
 
@@ -134,7 +147,7 @@ function handleScroll(e: Event) {
     }
   }
 
-  .scrollable.isSmall {
+  .v-list.isSmall {
     // hide album and artists columns
     .songlist-item {
       grid-template-columns: 1.5rem 2fr 2.5rem 2.5rem;
@@ -153,7 +166,7 @@ function handleScroll(e: Event) {
     }
   }
 
-  .scrollable.isMedium {
+  .v-list.isMedium {
     // hide album column
     .songlist-item {
       grid-template-columns: 1.5rem 1.5fr 1fr 2.5rem 2.5rem;
@@ -161,15 +174,6 @@ function handleScroll(e: Event) {
 
     .song-album {
       display: none !important;
-    }
-  }
-
-  .header {
-    position: relative;
-
-    .header-content {
-      position: absolute;
-      width: 100%;
     }
   }
 }
