@@ -2,7 +2,7 @@
   <QueueActions />
   <div
     ref="scrollable"
-    class="scrollable-r"
+    id="queue-scrollable"
     v-bind="containerProps"
     style="height: 100%"
     @mouseover="mouseover = true"
@@ -36,44 +36,37 @@ import QueueActions from "./Queue/QueueActions.vue";
 const queue = useQStore();
 const mouseover = ref(false);
 const scrollable = ref<HTMLElement>();
+const sourceTrackList = computed(() => queue.tracklist);
+const {
+  list: tracks,
+  containerProps,
+  wrapperProps,
+} = useVirtualList(sourceTrackList, {
+  itemHeight: 64,
+});
 
 function playFromQueue(index: number) {
   queue.play(index);
 }
 
-const source = computed(() => queue.tracklist);
+function scrollToCurrent() {
+  const elem = document.getElementById("queue-scrollable") as HTMLElement;
+  const itemHeight = 64;
 
-const {
-  list: tracks,
-  containerProps,
-  wrapperProps,
-  scrollTo,
-} = useVirtualList(source, {
-  itemHeight: 64,
-});
+  const top = queue.currentindex * itemHeight - itemHeight;
+  elem.scroll({
+    top,
+    behavior: "smooth",
+  });
+}
 
 onMounted(() => {
-  // scrollTo(queue.currentindex);
   queue.setScrollFunction(scrollToCurrent, mouseover);
 });
 
 onBeforeUnmount(() => {
   queue.setScrollFunction(() => {}, null);
 });
-
-// TODO: Handle focusing current track on song end
-
-
-function scrollToCurrent() {
-  const elem = document.getElementsByClassName('scrollable-r')[0] as HTMLElement;
-  const itemHeight = 64;
-
-  const top = queue.currentindex * itemHeight - itemHeight;
-   elem.scroll({
-    top,
-    behavior: "smooth",
-  });
-}
 </script>
 
 <style lang="scss">
