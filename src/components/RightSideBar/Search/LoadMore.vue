@@ -1,6 +1,6 @@
 <template>
   <div class="morexx">
-    <button class="btn" @click="loader">
+    <button class="btn" @click.prevent="loader()">
       <div class="text">Load More</div>
     </button>
   </div>

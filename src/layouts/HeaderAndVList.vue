@@ -20,7 +20,12 @@
           ref="header"
           class="header rounded"
           v-if="!no_header"
-          :style="{ height: headerHeight + (on_album_page ? 0 : 24) + 'px' }"
+          :style="{
+            height:
+              headerHeight +
+              (on_album_page && album.query.length === 0 ? 0 : 24) +
+              'px',
+          }"
         >
           <div ref="header_content" class="header-content">
             <slot name="header"></slot>
@@ -50,7 +55,11 @@
               queue.currentid === t.data.trackid && queue.playing
             "
             @playThis="
-              updateQueue(t.data.index !== undefined ? t.data.index : t.index)
+              updateQueue(
+                t.data.index !== undefined
+                  ? t.data.index - (on_album_page ? t.data.disc : 0)
+                  : t.index
+              )
             "
           />
         </div>
@@ -62,13 +71,15 @@
 
 <script setup lang="ts">
 import { useElementSize, useVirtualList } from "@vueuse/core";
-import { computed, onMounted, onUpdated, ref, watch } from "vue";
+import { computed, onMounted, ref, watch } from "vue";
 
 import { Track } from "@/interfaces";
 import useQStore from "@/stores/queue";
+import useAlbumStore from "@/stores/pages/album";
 
 import SongItem from "@/components/shared/SongItem.vue";
 import AlbumDiscBar from "@/components/AlbumView/AlbumDiscBar.vue";
+
 // EMITS & PROPS
 const emit = defineEmits<{
   (e: "playFromPage", index: number): void;
@@ -80,13 +91,13 @@ const props = defineProps<{
   no_header?: boolean;
 }>();
 
-// QUEUE
 const queue = useQStore();
+const album = useAlbumStore();
+
 function updateQueue(index: number) {
   emit("playFromPage", index);
 }
 
-// SCROLLABLE AREA
 let scrollable: HTMLElement;
 const v_list = ref<HTMLElement>();
 const header_content = ref<HTMLElement>();

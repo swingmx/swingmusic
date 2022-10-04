@@ -9,7 +9,11 @@ import { getAlbumTracks } from "../../composables/fetch/album";
 import { AlbumInfo, Artist, FuseResult, Track } from "../../interfaces";
 import { useNotifStore } from "../notification";
 
-function sortTracks(tracks: Track[]) {
+interface Disc {
+  [key: string]: Track[];
+}
+
+function sortByTrackNumber(tracks: Track[]) {
   return tracks.sort((a, b) => {
     if (a.track && b.track) {
       return a.track - b.track;
@@ -19,24 +23,31 @@ function sortTracks(tracks: Track[]) {
   });
 }
 
-interface Discs {
-  [key: string]: Track[];
+function albumHasNoDiscs(album: AlbumInfo) {
+  if (album.is_single) return true;
+
+  return false;
 }
 
-function createDiscs(tracks: Track[]): Discs {
+/**
+ *
+ * @param tracks The raw tracklist from the server
+ * @returns A list of `Disc` objects
+ */
+function createDiscs(tracks: Track[]) {
   return tracks.reduce((group, track) => {
     const { disc } = track;
     group[disc] = group[disc] ?? [];
     group[disc].push(track);
     return group;
-  }, {} as Discs);
+  }, {} as Disc);
 }
 
 export default defineStore("album", {
   state: () => ({
     query: "",
     info: <AlbumInfo>{},
-    allTracks: <Track[]>[],
+    rawTracks: <Track[]>[],
     artists: <Artist[]>[],
     bio: null,
   }),
@@ -47,14 +58,8 @@ export default defineStore("album", {
      * @param hash title of the album
      */
     async fetchTracksAndArtists(hash: string) {
-      this.allTracks = [];
       const album = await getAlbumTracks(hash, useNotifStore);
-
-      const discs = createDiscs(sortTracks(album.tracks));
-      Object.keys(discs).forEach((disc) => {
-        this.allTracks.push(...discs[disc]);
-      });
-
+      this.rawTracks = album.tracks;
       this.info = album.info;
     },
     resetQuery() {
@@ -62,15 +67,26 @@ export default defineStore("album", {
     },
   },
   getters: {
+    discs(): Disc {
+      return createDiscs(sortByTrackNumber(this.rawTracks));
+    },
+    allTracks(): Track[] {
+      return Object.keys(this.discs).reduce((tracks: Track[], disc) => {
+        const disc_tracks = this.discs[disc];
+
+        return [...tracks, ...disc_tracks];
+      }, []);
+    },
     filteredTracks(): ComputedRef<FuseResult[]> {
-      const discs = createDiscs(this.allTracks);
-      let tracks: (Track[] | AlbumDisc[]) = [];
+      const discs = this.discs;
+      let tracks: Track[] | AlbumDisc[] = [];
 
       Object.keys(discs).forEach((disc) => {
         const discHeader = {
           is_album_disc_number: true,
           album_page_disc_number: parseInt(disc),
         } as AlbumDisc;
+
         tracks = [...tracks, discHeader, ...discs[disc]];
       });
 
@@ -90,3 +106,5 @@ export default defineStore("album", {
     },
   },
 });
+
+// TODO: Implement Disc interface using a class
