@@ -54,6 +54,16 @@ $g-border: solid 1px $gray5;
   padding-right: calc(1rem - $small + 2px);
 }
 
+.v-scroll-page {
+  width: calc(100% + $medium) !important;
+
+  .scroller {
+    height: 100%;
+    width: 100%;
+    padding-right: $small !important;
+  }
+}
+
 // ====== MODIFIERS =======
 
 #app-grid.extendWidth {

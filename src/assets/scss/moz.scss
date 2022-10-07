@@ -21,6 +21,16 @@
     }
   }
 
+  .v-scroll-page {
+    width: calc(100% + 1rem) !important;
+
+    .scroller {
+      height: 100%;
+      width: 100%;
+      padding-right: 1rem !important;
+    }
+  }
+
   #app-grid.noSidebar > #acontent {
     padding-right: 1rem !important;
   }
