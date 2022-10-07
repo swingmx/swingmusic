@@ -14,6 +14,7 @@
     "@vueuse/components": "^9.2.0",
     "@vueuse/core": "^8.5.0",
     "@vueuse/integrations": "^9.2.0",
+    "vue-virtual-scroller": "^2.0.0-alpha.1",
     "axios": "^0.26.1",
     "fuse.js": "^6.6.2",
     "pinia": "^2.0.17",
