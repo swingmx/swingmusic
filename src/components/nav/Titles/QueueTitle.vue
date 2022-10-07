@@ -77,12 +77,13 @@ function getSource() {
           name: Routes.search,
           params: {
             query: source.query,
+            page: "tracks",
           },
         },
       };
 
     default:
-      return { name: "👻 Ghost source", location: {} };
+      return { name: "👻 No source", location: {} };
   }
 }
 
