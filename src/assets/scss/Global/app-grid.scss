@@ -54,16 +54,6 @@ $g-border: solid 1px $gray5;
   padding-right: calc(1rem - $small + 2px);
 }
 
-.v-scroll-page {
-  width: calc(100% + $medium) !important;
-
-  .scroller {
-    height: 100%;
-    width: 100%;
-    padding-right: $small !important;
-  }
-}
-
 // ====== MODIFIERS =======
 
 #app-grid.extendWidth {
@@ -94,4 +84,44 @@ $g-border: solid 1px $gray5;
 #app-grid.NoSideBorders {
   border-right: none;
   border-left: none;
+}
+
+.v-scroll-page {
+  width: calc(100% + $medium) !important;
+
+  .scroller {
+    height: 100%;
+    width: 100%;
+    padding-right: $small !important;
+  }
+}
+
+.v-scroll-page.isSmall {
+  // hide album and artists columns
+  .songlist-item {
+    grid-template-columns: 1.5rem 2fr 2.5rem 2.5rem;
+  }
+
+  .song-artists,
+  .song-album {
+    display: none !important;
+  }
+
+  .isSmallArtists {
+    display: unset !important;
+    font-size: small;
+    color: $white;
+    opacity: 0.67;
+  }
+}
+
+.v-scroll-page.isMedium {
+  // hide album column
+  .songlist-item {
+    grid-template-columns: 1.5rem 1.5fr 1fr 2.5rem 2.5rem;
+  }
+
+  .song-album {
+    display: none !important;
+  }
 }

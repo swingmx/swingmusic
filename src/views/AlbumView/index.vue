@@ -1,5 +1,5 @@
 <template>
-  <div class="album-virtual-scroller v-scroll-page">
+  <div class="album-virtual-scroller v-scroll-page" :class="{ isSmall }">
     <RecycleScroller
       class="scroller"
       :items="scrollerItems"
@@ -10,29 +10,32 @@
       <component
         :is="item.component"
         v-bind="item.props"
-        @playThis="playFromAlbum(item.props.index - item.props.track.disc - 1)"
+        @playThis="
+          playFromAlbum(item.props.track.index - item.props.track.disc)
+        "
       />
     </RecycleScroller>
   </div>
 </template>
 
 <script setup lang="ts">
-import {
-  onBeforeRouteLeave,
-  onBeforeRouteUpdate,
-  RouteLocationNormalized,
-} from "vue-router";
 import { computed } from "@vue/reactivity";
+import {
+onBeforeRouteLeave,
+onBeforeRouteUpdate,
+RouteLocationNormalized
+} from "vue-router";
 
 import { Track } from "@/interfaces";
 import { createTrackProps } from "@/utils";
 
-import useQueueStore from "@/stores/queue";
 import useAlbumStore from "@/stores/pages/album";
+import useQueueStore from "@/stores/queue";
 
+import AlbumDiscBar from "@/components/AlbumView/AlbumDiscBar.vue";
 import Header from "@/components/AlbumView/Header.vue";
 import SongItem from "@/components/shared/SongItem.vue";
-import AlbumDiscBar from "@/components/AlbumView/AlbumDiscBar.vue";
+import { isSmall } from "@/stores/content-width";
 
 const album = useAlbumStore();
 const queue = useQueueStore();
@@ -40,7 +43,7 @@ const queue = useQueueStore();
 interface ScrollerItem {
   id: string;
   component: typeof Header | typeof SongItem;
-  props: Record<string, unknown>;
+  props: any;
   size: number;
 }
 
@@ -54,7 +57,7 @@ class songItem {
     this.id = Math.random();
     this.props = track.is_album_disc_number
       ? { album_disc: track }
-      : createTrackProps(track);
+      : { ...createTrackProps(track), hide_album: true, index: track.track };
     this.component = track.is_album_disc_number ? AlbumDiscBar : SongItem;
   }
 }
@@ -100,8 +103,13 @@ onBeforeRouteLeave(() => {
 <style lang="scss">
 .album-virtual-scroller {
   height: 100%;
+
   .scroller {
     padding-bottom: $content-padding-bottom;
+  }
+
+  .songlist-item {
+    grid-template-columns: 1.5rem 1.5fr 1fr 2.5rem 2.5rem;
   }
 }
 </style>

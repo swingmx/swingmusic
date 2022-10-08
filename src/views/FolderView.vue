@@ -1,5 +1,5 @@
 <template>
-  <div class="folder-view v-scroll-page">
+  <div class="folder-view v-scroll-page" :class="{ isSmall, isMedium }">
     <DynamicScroller
       :items="scrollerItems"
       :min-item-size="64"
@@ -32,6 +32,7 @@ import { Track } from "@/interfaces";
 import useQueueStore from "@/stores/queue";
 import useLoaderStore from "@/stores/loader";
 import useFolderStore from "@/stores/pages/folder";
+import { isSmall, isMedium } from "@/stores/content-width";
 
 import SongItem from "@/components/shared/SongItem.vue";
 import FolderList from "@/components/FolderView/FolderList.vue";
@@ -41,18 +42,18 @@ const folder = useFolderStore();
 const queue = useQueueStore();
 
 interface ScrollerItem {
-  id: string;
+  id: string | number;
   component: typeof FolderList | typeof SongItem;
   props: any;
 }
 
 class songItem {
-  id: string;
+  id: number;
   props: any;
   component = SongItem;
 
   constructor(track: Track) {
-    this.id = track.trackid;
+    this.id = Math.random();
     this.props = {
       track,
       index: track.index + 1,

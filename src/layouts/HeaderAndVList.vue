@@ -1,5 +1,5 @@
 <template>
-  <!-- JUST A COMMENT: 64 is single item height, 24 is gap height -->
+  <!-- 64 is single item height, 24 is gap height -->
   <div class="header-list-layout">
     <div
       id="v-page-scrollable"
@@ -42,7 +42,7 @@
             style="height: 60px"
             :key="t.data.trackid"
             :track="t.data"
-            :no_album="on_album_page"
+            :hide_album="on_album_page"
             :index="
               on_album_page
                 ? t.data.track
@@ -74,11 +74,11 @@ import { useElementSize, useVirtualList } from "@vueuse/core";
 import { computed, onMounted, ref, watch } from "vue";
 
 import { Track } from "@/interfaces";
-import useQStore from "@/stores/queue";
 import useAlbumStore from "@/stores/pages/album";
+import useQStore from "@/stores/queue";
 
-import SongItem from "@/components/shared/SongItem.vue";
 import AlbumDiscBar from "@/components/AlbumView/AlbumDiscBar.vue";
+import SongItem from "@/components/shared/SongItem.vue";
 
 // EMITS & PROPS
 const emit = defineEmits<{
