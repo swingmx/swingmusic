@@ -5,6 +5,7 @@ import useFuse from "./useFuse";
 import { readLocalStorage, writeLocalStorage } from "./useLocalStorage";
 import putCommas from "./usePutCommas";
 import useVisibility from "./useVisibility";
+import useCreateTrackProps from "./useCreateTrackProps";
 
 export {
     readLocalStorage,
@@ -13,6 +14,7 @@ export {
     focusElemByClass,
     useVisibility,
     formatSeconds,
+    useCreateTrackProps as createTrackProps,
     putCommas,
     useFuse,
 };

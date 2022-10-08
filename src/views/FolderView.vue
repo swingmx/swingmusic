@@ -48,8 +48,8 @@ interface ScrollerItem {
 
 class songItem {
   id: string;
-  component = SongItem;
   props: any;
+  component = SongItem;
 
   constructor(track: Track) {
     this.id = track.trackid;
