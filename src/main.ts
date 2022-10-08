@@ -1,8 +1,13 @@
 import { createApp } from "vue";
 import { createPinia } from "pinia";
 
-// @ts-ignore
-import { RecycleScroller } from "vue-virtual-scroller";
+import {
+    RecycleScroller,
+    DynamicScroller,
+    DynamicScrollerItem,
+    // @ts-ignore
+} from "vue-virtual-scroller";
+
 import { autoAnimatePlugin } from "@formkit/auto-animate/vue";
 import piniaPluginPersistedstate from "pinia-plugin-persistedstate";
 
@@ -21,6 +26,8 @@ app.use(pinia);
 app.use(router);
 app.directive("tooltip", vTooltip);
 app.use(autoAnimatePlugin);
-app.component("RecycleScroller", RecycleScroller)
+app.component("RecycleScroller", RecycleScroller);
+app.component("DynamicScroller", DynamicScroller);
+app.component("DynamicScrollerItem", DynamicScrollerItem);
 
 app.mount("#app");
