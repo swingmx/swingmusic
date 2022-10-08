@@ -193,12 +193,11 @@ const settings = useSettingsStore();
     }
 
     .buttons {
-      height: 3.25rem;
+      height: 100%;
       margin-top: -$smaller;
       background-color: rgba(255, 255, 255, 0.048);
       display: grid;
       place-items: center;
-      padding: 0 $small;
     }
   }
 

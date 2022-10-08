@@ -21,8 +21,7 @@ const pStore = usePStore();
 
 <style lang="scss">
 #p-view {
-  scrollbar-color: $gray2 transparent;
-  padding-bottom: 4rem;
+  padding-bottom: $content-padding-bottom;
   height: 100%;
   overflow: auto;
 
