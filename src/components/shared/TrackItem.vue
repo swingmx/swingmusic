@@ -11,10 +11,7 @@
     @contextmenu.prevent="showMenu"
   >
     <div class="album-art">
-      <img
-        :src="paths.images.thumb.small + track.image"
-        class="rounded-sm"
-      />
+      <img :src="paths.images.thumb.small + track.image" class="rounded-sm" />
       <div
         class="now-playing-track-indicator image"
         v-if="isCurrent"
@@ -39,7 +36,9 @@
       @click.stop="queue.removeFromQueue(index)"
       v-if="isQueueTrack"
     >
-      <DelSvg />
+      <div title="remove from queue" >
+        <DelSvg/>
+      </div>
     </div>
   </div>
 </template>
@@ -47,7 +46,7 @@
 <script setup lang="ts">
 import { ref } from "vue";
 
-import DelSvg from "@/assets/icons/delete.svg";
+import DelSvg from "@/assets/icons/plus.svg";
 import { showTrackContextMenu as showContext } from "@/composables/context";
 import { paths } from "@/config";
 import { Track } from "@/interfaces";
@@ -103,7 +102,7 @@ const playThis = (track: Track) => {
   .remove-track {
     opacity: 0;
     transition: all 0.25s ease;
-    transform: scale(0.75) translateY(1rem);
+    transform: scale(0.75) translateY(1rem) rotate(45deg);
 
     &:hover {
       opacity: 1 !important;
@@ -113,7 +112,7 @@ const playThis = (track: Track) => {
   &:hover {
     .remove-track {
       opacity: 0.5;
-      transform: scale(1) translateY(0);
+      transform: scale(1) translateY(0) rotate(45deg);
     }
 
     background-color: $gray5;

@@ -36,7 +36,7 @@ const queue = useQueueStore();
 const playlist = usePlaylistStore();
 
 interface ScrollerItem {
-  id: string;
+  id: string | number;
   component: typeof Header | typeof SongItem;
   props: Record<string, unknown>;
   size: number;
@@ -56,7 +56,7 @@ const scrollerItems = computed(() => {
     header,
     ...playlist.tracks.map((track) => {
       return {
-        id: track.trackid,
+        id: Math.random(),
         component: SongItem,
         props: {
           track: track,

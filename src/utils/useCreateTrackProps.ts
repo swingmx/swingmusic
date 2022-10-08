@@ -5,8 +5,8 @@ export default function createTrackProps(track: Track) {
   return {
     track,
     index: track.index + 1,
-    isCurrent: queue().currenttrack?.hash === track.hash,
+    isCurrent: queue().currentid === track.trackid,
     isCurrentPlaying:
-      queue().currenttrack?.hash === track.hash && queue().playing,
+      queue().currentid === track.trackid && queue().playing,
   };
 }

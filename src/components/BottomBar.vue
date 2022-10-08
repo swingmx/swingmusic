@@ -3,7 +3,6 @@
     <div class="centered">
       <div class="inner">
         <div class="with-icons rounded-sm border">
-          <!-- <button><PlusSvg /></button> -->
           <RouterLink
             title="go to album"
             :to="{
@@ -26,7 +25,7 @@
           <div class="with-title">
             <div class="time time-current">
               <span>
-                {{ formatSeconds(queue.duration?.current) }}
+                {{ formatSeconds(queue.duration.current || 0) }}
               </span>
             </div>
             <div class="tags">
@@ -58,28 +57,26 @@
           <HotKeys />
         </div>
       </div>
-      <div class=""></div>
+      <div></div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
 import { paths } from "@/config";
-import useQStore from "@/stores/queue";
 import { formatSeconds } from "@/utils";
-
 import { Routes } from "@/composables/enums";
-import useSettingsStore from "@/stores/settings";
 
+
+import useQStore from "@/stores/queue";
+import ArtistName from "@/components/shared/ArtistName.vue";
 import HotKeys from "@/components/LeftSidebar/NP/HotKeys.vue";
 import Progress from "@/components/LeftSidebar/NP/Progress.vue";
-import ArtistName from "@/components/shared/ArtistName.vue";
 
 import HeartSvg from "@/assets/icons/heart.svg";
 // import PlusSvg from "@/assets/icons/plus.svg";
 
 const queue = useQStore();
-const settings = useSettingsStore();
 </script>
 
 <style lang="scss">

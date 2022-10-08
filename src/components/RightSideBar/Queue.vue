@@ -13,10 +13,12 @@
       key-field="id"
       v-slot="{ item, index }"
     >
+    
       <TrackItem
+        :index="index"
         :track="item.track"
-        :isCurrentPlaying="index === queue.currentindex && queue.playing"
         :isCurrent="index === queue.currentindex"
+        :isCurrentPlaying="index === queue.currentindex && queue.playing"
         :isQueueTrack="true"
         @playThis="playFromQueue(index)"
       />
