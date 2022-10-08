@@ -54,7 +54,7 @@ function playFromQueue(index: number) {
 function scrollToCurrent() {
   const scrollable = document.getElementById("queue-page-scrollable");
   const itemHeight = 64;
-  const top = queue.currentindex * itemHeight - itemHeight;
+  const top = (queue.currentindex - 1) * itemHeight;
 
   scrollable?.scrollTo({
     top,

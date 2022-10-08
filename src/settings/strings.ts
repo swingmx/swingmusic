@@ -28,3 +28,9 @@ export const sidebarStrings = <S>{
     use_sidebar: "Show right sidebar",
   },
 };
+
+export const contextChildrenShowModeStrings = <S>{
+  settings: {
+    show_mode: "Show context children on",
+  },
+};

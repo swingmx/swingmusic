@@ -1,5 +1,7 @@
+import { SettingType } from "../enums";
 import { sidebarStrings } from "./../strings";
-import { Setting, SettingType } from "@/interfaces/settings";
+import { Setting } from "@/interfaces/settings";
+
 import useSettingsStore from "@/stores/settings";
 
 const settings = useSettingsStore;

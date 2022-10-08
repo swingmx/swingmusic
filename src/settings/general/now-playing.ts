@@ -1,6 +1,8 @@
-import { Setting, SettingType } from "@/interfaces/settings";
-import useSettingsStore from "@/stores/settings";
+import { SettingType } from "../enums";
+import { Setting } from "@/interfaces/settings";
 import { nowPlayingStrings as data } from "../strings";
+
+import useSettingsStore from "@/stores/settings";
 
 const settings = useSettingsStore;
 

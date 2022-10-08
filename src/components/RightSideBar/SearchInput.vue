@@ -26,11 +26,13 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref } from "vue";
+import { ref } from "vue";
+
+import useTabStore from "@/stores/tabs";
+import useSearchStore from "@/stores/search";
+
 import BackSvg from "@/assets/icons/arrow.svg";
 import SearchSvg from "@/assets/icons/search.svg";
-import useSearchStore from "@/stores/search";
-import useTabStore from "@/stores/tabs";
 
 const props = defineProps<{
   on_nav?: boolean;

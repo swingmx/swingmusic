@@ -1,15 +1,33 @@
 <template>
-  <div class="context-item">
+  <div
+    class="context-item"
+    @mouseenter="
+      option.children &&
+        childrenShowMode === contextChildrenShowMode.hover &&
+        showChildren()
+    "
+    @mouseleave="
+      option.children &&
+        childrenShowMode === contextChildrenShowMode.hover &&
+        hideChildren()
+    "
+    @click="runAction"
+    ref="parentRef"
+  >
     <div class="icon image" :class="option.icon"></div>
     <div class="label ellip">{{ option.label }}</div>
     <div class="more image" v-if="option.children"></div>
-    <div class="children rounded shadow-sm" v-if="option.children">
+    <div
+      class="children rounded shadow-sm"
+      v-if="option.children"
+      ref="childRef"
+    >
       <div
         class="context-item"
         v-for="child in option.children"
         :key="child.label"
         :class="[{ critical: child.critical }, child.type]"
-        @click="child.action && child.action()"
+        @click="child.action && runChildAction(child.action)"
       >
         <div class="label ellip">
           {{ child.label }}
@@ -20,11 +38,83 @@
 </template>
 
 <script setup lang="ts">
-import { Option } from "@/interfaces";
+import { ref } from "vue";
+import { createPopper, Instance } from "@popperjs/core";
 
-defineProps<{
+import { Option } from "@/interfaces";
+import { contextChildrenShowMode } from "@/composables/enums";
+
+const props = defineProps<{
   option: Option;
+  childrenShowMode: contextChildrenShowMode;
 }>();
+
+const emit = defineEmits<{
+  (event: "hideContextMenu"): void;
+}>();
+
+const parentRef = ref<HTMLElement>();
+const childRef = ref<HTMLElement>();
+const childrenShown = ref(false);
+
+let popperInstance: Instance | null = null;
+
+function showChildren() {
+  if (childrenShown.value) {
+    childrenShown.value = false;
+    return;
+  }
+
+  popperInstance = createPopper(
+    parentRef.value as HTMLElement,
+    childRef.value as HTMLElement,
+    {
+      placement: "right-start",
+      modifiers: [
+        {
+          name: "offset",
+          options: {
+            offset: [-5, -2],
+          },
+        },
+      ],
+    }
+  );
+  childRef.value ? (childRef.value.style.visibility = "visible") : null;
+  childrenShown.value = true;
+}
+
+function hideChildren() {
+  childRef.value ? (childRef.value.style.visibility = "hidden") : null;
+  popperInstance?.destroy();
+  childrenShown.value = false;
+}
+
+function hideContextMenu() {
+  if (props.option.children) return;
+  emit("hideContextMenu");
+}
+
+function runAction() {
+  if (props.option.children) {
+    if (childrenShown.value) {
+      console.log("what");
+      hideChildren();
+      return;
+    }
+
+    showChildren();
+    return;
+  }
+
+  props.option.action && props.option.action();
+  hideContextMenu();
+}
+
+function runChildAction(action: () => void) {
+  action();
+  emit("hideContextMenu");
+}
 </script>
 
 <style lang="scss">
@@ -40,19 +130,15 @@ defineProps<{
     width: 1.5rem;
     position: absolute;
     right: $small;
-    background-image: url("../assets/icons/expand.svg");
+    background-image: url("../../assets/icons/expand.svg");
   }
 
   .children {
     position: absolute;
-    right: -13rem;
     width: 13rem;
-    top: -0.5rem;
-    max-height: 23.5rem;
 
     background-color: $context;
     transform: scale(0);
-    transform-origin: top left;
     padding: $small 0;
 
     .context-item {
@@ -66,12 +152,12 @@ defineProps<{
 
   &:hover {
     background: $darkestblue;
+  }
 
-    .children {
-      transform: scale(1);
-      transition: transform 0.1s ease-in-out;
-      transition-delay: 0.3s;
-    }
+  .children {
+    transform: scale(0);
+    overflow: auto;
+    max-height: calc(100vh - 10rem);
   }
 
   .icon {

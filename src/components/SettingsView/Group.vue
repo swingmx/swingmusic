@@ -19,6 +19,12 @@
             @click="setting.action()"
             :state="setting.source()"
           />
+          <Select
+            v-if="setting.type === SettingType.select"
+            :options="setting.options"
+            :source="setting.source"
+            :setterFn="setting.action"
+          />
         </div>
       </div>
     </div>
@@ -26,8 +32,11 @@
 </template>
 
 <script setup lang="ts">
-import { SettingGroup, SettingType } from "@/interfaces/settings";
+import { SettingType } from "@/settings/enums";
+import { SettingGroup } from "@/interfaces/settings";
+
 import Switch from "./Components/Switch.vue";
+import Select from "./Components/Select.vue";
 
 defineProps<{
   group: SettingGroup;
@@ -39,7 +48,7 @@ defineProps<{
   display: grid;
   gap: $small;
   margin-top: 2rem;
-  
+
   &:first-child {
     margin-top: 0;
   }
@@ -51,7 +60,7 @@ defineProps<{
   h4 {
     margin: $small auto;
   }
-  
+
   .desc {
     opacity: 0.5;
     font-size: 0.8rem;

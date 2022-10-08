@@ -9,13 +9,13 @@ import { Track } from "@/interfaces";
 import trackContext from "@/contexts/track_context";
 
 export const showTrackContextMenu = (
-  e: Event,
+  e: MouseEvent,
   track: Track,
   flag: Ref<boolean>
 ) => {
   const menu = useContextStore();
 
-  const options = trackContext(track, useModalStore, useQueueStore);
+  const options = () => trackContext(track, useModalStore, useQueueStore);
 
   menu.showContextMenu(e, options, ContextSrc.Track);
   flag.value = true;

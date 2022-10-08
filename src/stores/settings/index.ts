@@ -1,3 +1,4 @@
+import { contextChildrenShowMode } from "@/composables/enums";
 import { xxl } from "@/composables/useBreakpoints";
 import { defineStore } from "pinia";
 
@@ -6,6 +7,7 @@ export default defineStore("settings", {
     use_np_img: false,
     use_sidebar: true,
     extend_width: false,
+    contextChildrenShowMode: contextChildrenShowMode.click,
   }),
   actions: {
     toggleUseNPImg() {
@@ -17,10 +19,13 @@ export default defineStore("settings", {
     toggleExtendWidth() {
       this.extend_width = !this.extend_width;
     },
+    setContextChildrenShowMode(mode: contextChildrenShowMode) {
+      this.contextChildrenShowMode = mode;
+    },
   },
   getters: {
     can_extend_width(): boolean {
-     return xxl.value
+      return xxl.value;
     },
   },
   persist: true,

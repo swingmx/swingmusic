@@ -10,7 +10,7 @@
     "sourceMap": true,
     "resolveJsonModule": true,
     "isolatedModules": true,
-    "esModuleInterop": true,
+    "esModuleInterop": false,
     "lib": ["ESNext", "DOM"],
     "skipLibCheck": true,
     "paths": {

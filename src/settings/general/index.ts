@@ -1,5 +1,6 @@
 import { SettingCategory } from "@/interfaces/settings";
 import * as strings from "../strings";
+import contextChildrenShowMode from "./context-children-show-mode";
 import extendWidth from "./extend-width";
 import nowPlaying from "./now-playing";
 import sidebarSettings from "./sidebar";
@@ -10,7 +11,11 @@ export default {
   title: "General",
   groups: [
     {
-      settings: [...sidebarSettings, ...extendWidth],
+      settings: [
+        ...sidebarSettings,
+        ...extendWidth,
+        ...contextChildrenShowMode,
+      ],
     },
     {
       title: npStrings.title,

@@ -13,7 +13,6 @@
       key-field="id"
       v-slot="{ item, index }"
     >
-    
       <TrackItem
         :index="index"
         :track="item.track"
@@ -52,7 +51,7 @@ function playFromQueue(index: number) {
 function scrollToCurrent() {
   const elem = document.getElementById("queue-scrollable") as HTMLElement;
 
-  const top = queue.currentindex * itemHeight - itemHeight;
+  const top = (queue.currentindex - 1) * itemHeight;
   elem.scroll({
     top,
     behavior: "smooth",
