@@ -80,13 +80,7 @@ onStartTyping((e) => {
   elem.value = "";
 });
 
-function updateContentElemSize({
-  width,
-  height,
-}: {
-  width: number;
-  height: number;
-}) {
+function updateContentElemSize({ width }: { width: number }) {
   content_width.value = width;
 }
 

@@ -36,7 +36,7 @@
       <ArtistName :artists="track.artist" :albumartist="track.albumartist" />
     </div>
     <router-link
-      v-if="!no_album"
+      v-if="!hide_album"
       class="song-album ellip"
       v-tooltip
       :to="{
@@ -65,7 +65,7 @@ import { ref } from "vue";
 
 import { showTrackContextMenu as showContext } from "@/composables/context";
 import { paths } from "@/config";
-import { AlbumDisc, Track } from "@/interfaces";
+import { Track } from "@/interfaces";
 import { formatSeconds } from "@/utils";
 
 import HeartSvg from "@/assets/icons/heart.svg";
@@ -83,7 +83,7 @@ const props = defineProps<{
   index: Number | String;
   isCurrent: Boolean;
   isCurrentPlaying: Boolean;
-  no_album?: Boolean;
+  hide_album?: Boolean;
 }>();
 
 const emit = defineEmits<{

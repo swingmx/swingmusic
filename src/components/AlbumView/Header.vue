@@ -10,7 +10,7 @@
         : '',
     }"
   >
-    <div class="big-img no-scroll" :class="{ imgSmall: widthIsSmall }">
+    <div class="big-img no-scroll" :class="{ imgSmall: albumHeaderSmall }">
       <img :src="imguri.thumb.large + album.image" class="rounded" />
     </div>
     <div
@@ -44,7 +44,7 @@
           />
         </div>
       </div>
-      <div class="art" v-if="!widthIsSmall">
+      <div class="art" v-if="!albumHeaderSmall">
         <img
           :src="imguri.artist + album.artistimg"
           class="shadow-lg circular"
@@ -59,7 +59,7 @@
 import { ref } from "vue";
 
 import { paths } from "@/config";
-import { isSmall as widthIsSmall } from "@/stores/content-width";
+import { albumHeaderSmall } from "@/stores/content-width";
 import useNavStore from "@/stores/nav";
 import useAlbumStore from "@/stores/pages/album";
 import { formatSeconds, useVisibility } from "@/utils";

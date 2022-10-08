@@ -1,5 +1,8 @@
 <template>
-  <div class="playlist-virtual-scroller v-scroll-page">
+  <div
+    class="playlist-virtual-scroller v-scroll-page"
+    :class="{ isSmall, isMedium }"
+  >
     <RecycleScroller
       class="scroller"
       :items="scrollerItems"
@@ -22,6 +25,7 @@ import { onBeforeRouteLeave } from "vue-router";
 
 import useQueueStore from "@/stores/queue";
 import usePlaylistStore from "@/stores/pages/playlist";
+import { isSmall, isMedium } from "@/stores/content-width";
 
 import Header from "@/components/PlaylistView/Header.vue";
 import SongItem from "@/components/shared/SongItem.vue";
@@ -81,7 +85,7 @@ onBeforeRouteLeave(() => {
 .playlist-virtual-scroller {
   height: 100%;
   width: 100%;
-  
+
   .scroller {
     height: 100%;
     width: 100%;
