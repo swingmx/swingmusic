@@ -100,8 +100,6 @@ function showMenu(e: Event) {
 </script>
 
 <style lang="scss">
-
-
 .songlist-item {
   display: grid;
   grid-template-columns: 1.5rem 2fr 1fr 1.5fr 2.5rem 2.5rem;
@@ -232,5 +230,9 @@ function showMenu(e: Event) {
   td:nth-child(2) {
     border-radius: 0 $small $small 0;
   }
+}
+
+.songlist-item.current {
+  background-color: $gray;
 }
 </style>

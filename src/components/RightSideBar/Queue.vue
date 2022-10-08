@@ -2,7 +2,6 @@
   <QueueActions />
   <div
     class="queue-virtual-scroller"
-    style="height: 100%"
     @mouseover="mouseover = true"
     @mouseout="mouseover = false"
   >
@@ -39,8 +38,8 @@ const mouseover = ref(false);
 
 const scrollerItems = computed(() => {
   return queue.tracklist.map((track) => ({
+    track,
     id: Math.random(),
-    track: track,
   }));
 });
 
