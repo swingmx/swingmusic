@@ -53,18 +53,10 @@ import LeftSidebar from "./components/LeftSidebar/index.vue";
 const queue = useQStore();
 const router = useRouter();
 const modal = useModalStore();
-const context_store = useContextStore();
 const settings = useSettingsStore();
-const app_dom = document.getElementById("app") as HTMLElement;
 
 queue.readQueue();
 handleShortcuts(useQStore);
-
-app_dom.addEventListener("click", (e) => {
-  if (context_store.visible) {
-    context_store.hideContextMenu();
-  }
-});
 
 router.afterEach(() => {
   (document.getElementById("acontent") as HTMLElement).scrollTo(0, 0);
