@@ -26,14 +26,14 @@ const q = useQStore();
 <style lang="scss">
 .hotkeys {
   display: grid;
-  grid-template-columns: 2rem 4rem 2rem;
-  gap: 1rem;
-  width: 100%;
+  grid-template-columns: 4rem 4rem 4rem;
+  height: 100%;
 
   button {
-    height: 2rem;
+    height: 100%;
     padding: 0;
     background: none;
+    border-radius: 0;
 
     &:hover {
       background: $darkestblue;
