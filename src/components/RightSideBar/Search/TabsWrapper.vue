@@ -1,19 +1,17 @@
 <template>
   <div id="right-tabs" class="rounded">
     <div class="tab-buttons-wrapper">
-      <Teleport :disabled="!isOnSearchPage" to="#nav-tab-headers">
-        <div class="tabheaders rounded-sm no-scroll">
-          <div
-            class="tab"
-            v-for="tab in tabs"
-            :key="tab"
-            @click="switchTab(tab)"
-            :class="{ activetab: tab === currentTab }"
-          >
-            {{ tab }}
-          </div>
+      <div class="tabheaders rounded-sm no-scroll">
+        <div
+          class="tab"
+          v-for="tab in tabs"
+          :key="tab"
+          @click="switchTab(tab)"
+          :class="{ activetab: tab === currentTab }"
+        >
+          {{ tab }}
         </div>
-      </Teleport>
+      </div>
     </div>
 
     <div id="tab-content" v-auto-animate>
@@ -24,7 +22,6 @@
 
 <script setup lang="ts">
 defineProps<{
-  isOnSearchPage?: boolean;
   tabs: string[];
   currentTab: string;
 }>();

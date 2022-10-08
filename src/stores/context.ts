@@ -1,70 +1,79 @@
 import { defineStore } from "pinia";
-import normalize from "../composables/normalizeContextMenu";
 import { Option } from "../interfaces";
 import { ContextSrc } from "../composables/enums";
+import { createPopper, VirtualElement } from "@popperjs/core";
 
-function getPlaceholders(length: number) {
-  let list: Option[] = [];
-
-  for (let index = 0; index < length; index++) {
-    list.push("" as Option);
-  }
-
-  return list;
+function generateGetBoundingClientRect(x = 0, y = 0) {
+  return () => ({
+    width: 0,
+    height: 0,
+    top: y,
+    right: x,
+    bottom: y,
+    left: x,
+  });
 }
-
-getPlaceholders(5);
 
 export default defineStore("context-menu", {
   state: () => ({
     visible: false,
-    options: getPlaceholders(5),
-    x: 500,
-    y: 500,
-    normalizedX: false,
-    normalizedY: false,
+    options: {} as Option[],
     src: <null | string>"",
+    elem: <HTMLElement | null>null,
   }),
   actions: {
     showContextMenu(
-      e: any,
-      context_options: Promise<Option[]>,
+      e: MouseEvent,
+      getContextOptions: () => Promise<Option[]>,
       src: ContextSrc
     ) {
       if (this.visible) {
-        this.visible = false;
+        this.hideContextMenu();
         return;
       }
 
+      if (this.elem === null) {
+        this.elem = document.getElementById("context-menu");
+      }
+
+      const virtualElement = {
+        getBoundingClientRect: generateGetBoundingClientRect(e.x, e.y),
+      } as VirtualElement;
+
+      getContextOptions()
+        .then((options) => {
+          this.options = options;
+        })
+        .then(() => {
+          createPopper(virtualElement, this.elem as HTMLElement, {
+            placement: "right-start",
+            modifiers: [
+              {
+                name: "flip",
+                options: {
+                  fallbackPlacements: ["left-start"],
+                },
+              },
+            ],
+          });
+        });
+
       this.visible = true;
-      context_options.then((options) => {
-        this.options = options;
-      });
-
-      const xy = normalize(e.clientX, e.clientY);
-
-      this.x = xy.normalX;
-      this.y = xy.normalY;
-
-      this.normalizedX = xy.normalizedX;
-      this.normalizedY = xy.normalizedY;
       this.src = src;
+
+      // const xy = normalize(e.clientX, e.clientY);
+
+      // this.x = xy.normalX;
+      // this.y = xy.normalY;
+
+      // this.normalizedX = xy.normalizedX;
+      // this.normalizedY = xy.normalizedY;
     },
     hideContextMenu() {
       this.visible = false;
       this.src = null;
       this.options = [];
-    },
-    hasManyChildren() {
-      let result = false;
-
-      this.options.forEach((option: Option) => {
-        if (option.children && option.children.length > 9) {
-          result = true;
-        }
-      });
-
-      return result;
+      this.elem ? (this.elem.style.transform = "scale(0)") : null;
     },
   },
 });

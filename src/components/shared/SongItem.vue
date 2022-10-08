@@ -94,7 +94,7 @@ function emitUpdate() {
   emit("playThis");
 }
 
-function showMenu(e: Event) {
+function showMenu(e: MouseEvent) {
   showContext(e, props.track, options_button_clicked);
 }
 </script>

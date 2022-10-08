@@ -1,22 +1,8 @@
 <template>
   <div
-    class="context-menu rounded shadow-lg"
+    class="context-menu rounded shadow-lg no-select"
     ref="contextMenu"
-    :class="[
-      { 'context-menu-visible': context.visible },
-      { 'context-normalizedX': context.normalizedX },
-      {
-        'context-normalizedY': context.normalizedY,
-      },
-      {
-        'context-many-kids': context.hasManyChildren(),
-      },
-    ]"
     id="context-menu"
-    :style="{
-      left: context.x + 'px',
-      top: context.y + 'px',
-    }"
   >
     <ContextItem
       class="context-item"
@@ -24,7 +10,8 @@
       :key="option.label"
       :class="[{ critical: option.critical }, option.type]"
       :option="option"
-      @click="option.action && option.action()"
+      :childrenShowMode="settings.contextChildrenShowMode"
+      @hideContextMenu="context.hideContextMenu()"
     />
   </div>
 </template>
@@ -34,9 +21,12 @@ import { ref } from "vue";
 import { onClickOutside } from "@vueuse/core";
 
 import useContextStore from "../stores/context";
-import ContextItem from "./Contextmenu/ContextItem.vue";
-const context = useContextStore();
+import useSettingsStore from "../stores/settings";
 
+import ContextItem from "./Contextmenu/ContextItem.vue";
+
+const context = useContextStore();
+const settings = useSettingsStore();
 const contextMenu = ref<HTMLElement>();
 
 let clickCount = 0;
@@ -64,6 +54,7 @@ onClickOutside(contextMenu, (e) => {
   width: 12rem;
   z-index: 10000 !important;
   transform: scale(0);
+  height: min-content;
 
   padding: $small 0;
   background: $context;
@@ -79,34 +70,6 @@ onClickOutside(contextMenu, (e) => {
     &:hover {
       background-color: $red;
     }
-  }
-}
-
-.context-menu-visible {
-  transform: scale(1);
-}
-
-.context-normalizedX {
-  .more {
-    transform: rotate(180deg);
-  }
-
-  .context-item > .children {
-    left: -13rem;
-    transform-origin: center right;
-  }
-}
-
-.context-normalizedY {
-  .context-item > .children {
-    transform-origin: bottom right;
-    top: -0.5rem;
-  }
-}
-
-.context-many-kids {
-  .context-item > .children {
-    overflow-y: auto;
   }
 }
 </style>

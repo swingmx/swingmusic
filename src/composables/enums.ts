@@ -46,3 +46,8 @@ export const FuseTrackOptions = {
     { name: "albumartist", weight: 0.25 },
   ],
 };
+
+export enum contextChildrenShowMode {
+  click = "click",
+  hover = "hover",
+}
