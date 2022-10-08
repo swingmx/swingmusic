@@ -1,48 +1,47 @@
 <template>
   <QueueActions />
   <div
-    ref="scrollable"
-    id="queue-scrollable"
-    v-bind="containerProps"
+    class="queue-virtual-scroller"
     style="height: 100%"
     @mouseover="mouseover = true"
     @mouseout="mouseover = false"
   >
-    <div class="inner" v-bind="wrapperProps">
+    <RecycleScroller
+      class="scroller"
+      id="queue-scrollable"
+      :items="scrollerItems"
+      :item-size="itemHeight"
+      key-field="id"
+      v-slot="{ item, index }"
+    >
       <TrackItem
-        style="height: 64px"
-        v-for="t in tracks"
-        :key="t.index"
-        :track="t.data"
-        :index="t.index"
-        :isCurrentPlaying="t.index === queue.currentindex && queue.playing"
-        :isCurrent="t.index === queue.currentindex"
+        :track="item.track"
+        :isCurrentPlaying="index === queue.currentindex && queue.playing"
+        :isCurrent="index === queue.currentindex"
         :isQueueTrack="true"
-        @PlayThis="playFromQueue(t.index)"
+        @playThis="playFromQueue(index)"
       />
-    </div>
+    </RecycleScroller>
   </div>
 </template>
 
 <script setup lang="ts">
-import { useVirtualList } from "@vueuse/core";
 import { computed, onBeforeUnmount, onMounted, ref } from "vue";
 
 import useQStore from "@/stores/queue";
 
-import TrackItem from "../shared/TrackItem.vue";
+import TrackItem from "@/components/shared/TrackItem.vue";
 import QueueActions from "./Queue/QueueActions.vue";
 
+const itemHeight = 64;
 const queue = useQStore();
 const mouseover = ref(false);
-const scrollable = ref<HTMLElement>();
-const sourceTrackList = computed(() => queue.tracklist);
-const {
-  list: tracks,
-  containerProps,
-  wrapperProps,
-} = useVirtualList(sourceTrackList, {
-  itemHeight: 64,
+
+const scrollerItems = computed(() => {
+  return queue.tracklist.map((track) => ({
+    id: Math.random(),
+    track: track,
+  }));
 });
 
 function playFromQueue(index: number) {
@@ -51,7 +50,6 @@ function playFromQueue(index: number) {
 
 function scrollToCurrent() {
   const elem = document.getElementById("queue-scrollable") as HTMLElement;
-  const itemHeight = 64;
 
   const top = queue.currentindex * itemHeight - itemHeight;
   elem.scroll({
@@ -70,12 +68,12 @@ onBeforeUnmount(() => {
 </script>
 
 <style lang="scss">
-.scrollable-r {
+.queue-virtual-scroller {
   height: 100%;
-  overflow: auto;
+  overflow: hidden;
 
-  .inner {
-    margin-bottom: 1rem;
+  .scroller {
+    height: 100%;
   }
 }
 </style>

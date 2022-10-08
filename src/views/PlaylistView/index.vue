@@ -89,7 +89,7 @@ onBeforeRouteLeave(() => {
   .scroller {
     height: 100%;
     width: 100%;
-    padding-bottom: 4rem;
+    padding-bottom: $content-padding-bottom;
   }
 }
 </style>
