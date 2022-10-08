@@ -16,7 +16,7 @@
 </template>
 
 <script setup lang="ts">
-import useQStore from "../../../stores/queue";
+import useQStore from "@/stores/queue";
 
 const q = useQStore();
 

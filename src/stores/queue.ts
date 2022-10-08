@@ -1,3 +1,4 @@
+import { ref } from "@vue/reactivity";
 import { paths } from "@/config";
 import { defineStore } from "pinia";
 import { Ref } from "vue";
@@ -11,7 +12,7 @@ import {
   fromFolder,
   fromPlaylist,
   fromSearch,
-  Track
+  Track,
 } from "../interfaces";
 
 function shuffle(tracks: Track[]) {
@@ -26,6 +27,7 @@ function shuffle(tracks: Track[]) {
 type From = fromFolder | fromAlbum | fromPlaylist | fromSearch;
 
 let audio = new Audio();
+audio.autoplay = false;
 
 export default defineStore("Queue", {
   state: () => ({
@@ -34,7 +36,6 @@ export default defineStore("Queue", {
       full: 0,
     },
     currentindex: 0,
-    currentid: <string | null>"",
     playing: false,
     from: {} as From,
     tracklist: [] as Track[],
@@ -51,13 +52,12 @@ export default defineStore("Queue", {
       }
 
       const track = this.tracklist[index];
-      this.currentid = track.trackid;
-      const uri = `${paths.api.files}/${track.hash}`;
+      const uri = `${paths.api.files}/${track.trackid}-${track.hash}`;
 
       new Promise((resolve, reject) => {
         audio.autoplay = true;
         audio.src = uri;
-        audio.oncanplaythrough = resolve;
+        audio.oncanplay = resolve;
         audio.onerror = reject;
       })
         .then(() => {
@@ -81,7 +81,6 @@ export default defineStore("Queue", {
             "Can't play: " + track.title,
             NotifType.Error
           );
-
           if (this.currentindex !== this.tracklist.length - 1) {
             setTimeout(() => {
               if (!this.playing) return;
@@ -90,22 +89,31 @@ export default defineStore("Queue", {
           }
         });
     },
+    stop() {
+      this.playing = false;
+      audio.src = "";
+      // audio.pause();
+    },
     playPause() {
       if (audio.src === "") {
         this.play(this.currentindex);
+        return;
       }
 
       if (audio.paused) {
+        audio.currentTime === 0 ? this.play(this.currentindex) : null;
         audio.play();
+        this.playing = true;
       } else {
         audio.pause();
+        this.playing = false;
       }
 
-      if (this.playing) {
-        this.playing = false;
-      } else {
-        this.playing = true;
-      }
+      // if (this.playing) {
+      //   this.playing = false;
+      // } else {
+      //   this.playing = true;
+      // }
     },
     playNext() {
       this.play(this.nextindex);
@@ -208,7 +216,6 @@ export default defineStore("Queue", {
     },
     clearQueue() {
       this.tracklist = [] as Track[];
-      this.currentid = "";
       this.currentindex = 0;
       this.from = <From>{};
     },
@@ -220,7 +227,7 @@ export default defineStore("Queue", {
       }
 
       const current = this.currenttrack;
-      const current_hash = current.hash;
+      const current_hash = current?.hash;
 
       this.tracklist = shuffle(this.tracklist);
       // find current track after shuffle
@@ -233,7 +240,7 @@ export default defineStore("Queue", {
         // remove current track from queue
         this.tracklist.splice(newindex, 1);
         // insert current track at beginning of queue
-        this.tracklist.unshift(current);
+        this.tracklist.unshift(current as Track);
         this.currentindex = 0;
         return;
       }
@@ -242,7 +249,23 @@ export default defineStore("Queue", {
       this.play(this.currentindex);
     },
     removeFromQueue(index: number = 0) {
-      this.tracklist.splice(index, 1);
+      if (index === this.currentindex) {
+        const is_last = index === this.tracklist.length - 1;
+        const was_playing = this.playing;
+
+        audio.src = "";
+        this.tracklist.splice(index, 1);
+
+        if (is_last) {
+          this.currentindex = 0;
+        }
+
+        if (was_playing) {
+          this.playPause();
+        }
+      } else {
+        this.tracklist.splice(index, 1);
+      }
     },
     setScrollFunction(
       cb: (index: number) => void,
@@ -253,22 +276,25 @@ export default defineStore("Queue", {
     },
   },
   getters: {
-    next(): Track {
+    next(): Track | undefined {
       if (this.currentindex == this.tracklist.length - 1) {
         return this.tracklist[0];
       } else {
         return this.tracklist[this.currentindex + 1];
       }
     },
-    prev(): Track {
+    prev(): Track | undefined {
       if (this.currentindex === 0) {
         return this.tracklist[this.tracklist.length - 1];
       } else {
         return this.tracklist[this.currentindex - 1];
       }
     },
-    currenttrack(): Track {
+    currenttrack(): Track | undefined {
       return this.tracklist[this.currentindex];
+    },
+    currentid(): string {
+      return this.currenttrack?.trackid || "";
     },
     previndex(): number {
       return this.currentindex === 0

@@ -34,13 +34,13 @@ import { computed } from "@vue/reactivity";
 import { onBeforeRouteLeave, onBeforeRouteUpdate } from "vue-router";
 
 import { Track } from "@/interfaces";
-import useQueueStore from "@/stores/queue";
+import { isMedium, isSmall } from "@/stores/content-width";
 import useLoaderStore from "@/stores/loader";
 import useFolderStore from "@/stores/pages/folder";
-import { isSmall, isMedium } from "@/stores/content-width";
+import useQueueStore from "@/stores/queue";
 
-import SongItem from "@/components/shared/SongItem.vue";
 import FolderList from "@/components/FolderView/FolderList.vue";
+import SongItem from "@/components/shared/SongItem.vue";
 
 const loader = useLoaderStore();
 const folder = useFolderStore();
@@ -62,9 +62,9 @@ class songItem {
     this.props = {
       track,
       index: track.index + 1,
-      isCurrent: queue.currenttrack?.hash === track.hash,
+      isCurrent: queue.currentid === track.trackid,
       isCurrentPlaying:
-        queue.currenttrack?.hash === track.hash && queue.playing,
+        queue.currentid === track.trackid && queue.playing,
     };
   }
 }

@@ -16,9 +16,9 @@
       <SongItem
         :track="item.track"
         :index="index + 1"
-        :isCurrent="queue.currenttrack?.hash === item.track.hash"
+        :isCurrent="queue.currentid === item.trackid"
         :isCurrentPlaying="
-          queue.currenttrack?.hash === item.track.hash && queue.playing
+          queue.currentid === item.trackid && queue.playing
         "
         @playThis="playFromQueue(index)"
       />
