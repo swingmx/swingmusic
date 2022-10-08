@@ -1,6 +1,7 @@
 <template>
   <div
     class="context-menu rounded shadow-lg"
+    ref="contextMenu"
     :class="[
       { 'context-menu-visible': context.visible },
       { 'context-normalizedX': context.normalizedX },
@@ -29,10 +30,30 @@
 </template>
 
 <script setup lang="ts">
+import { ref } from "vue";
+import { onClickOutside } from "@vueuse/core";
+
 import useContextStore from "../stores/context";
 import ContextItem from "./Contextmenu/ContextItem.vue";
-
 const context = useContextStore();
+
+const contextMenu = ref<HTMLElement>();
+
+let clickCount = 0;
+
+onClickOutside(contextMenu, (e) => {
+  if (!context.visible) {
+    clickCount = 0;
+    return;
+  }
+  clickCount++;
+
+  if (context.visible && clickCount == 2) {
+    context.hideContextMenu();
+    e.stopImmediatePropagation();
+    clickCount = 0;
+  }
+});
 </script>
 
 <style lang="scss">

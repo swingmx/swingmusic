@@ -67,7 +67,6 @@ import { paths } from "@/config";
 import { formatSeconds } from "@/utils";
 import { Routes } from "@/composables/enums";
 
-
 import useQStore from "@/stores/queue";
 import ArtistName from "@/components/shared/ArtistName.vue";
 import HotKeys from "@/components/LeftSidebar/NP/HotKeys.vue";
