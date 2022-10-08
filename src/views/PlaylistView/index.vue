@@ -2,6 +2,7 @@
   <div
     class="playlist-virtual-scroller v-scroll-page"
     :class="{ isSmall, isMedium }"
+    style="height: 100%"
   >
     <RecycleScroller
       class="scroller"
@@ -9,6 +10,7 @@
       :item-size="null"
       key-field="id"
       v-slot="{ item }"
+      style="height: 100%"
     >
       <component
         :is="item.component"
@@ -80,16 +82,3 @@ onBeforeRouteLeave(() => {
   }, 500);
 });
 </script>
-
-<style lang="scss">
-.playlist-virtual-scroller {
-  height: 100%;
-  width: 100%;
-
-  .scroller {
-    height: 100%;
-    width: 100%;
-    padding-bottom: $content-padding-bottom;
-  }
-}
-</style>

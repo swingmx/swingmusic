@@ -21,9 +21,9 @@
 <script setup lang="ts">
 import { computed } from "@vue/reactivity";
 import {
-onBeforeRouteLeave,
-onBeforeRouteUpdate,
-RouteLocationNormalized
+  onBeforeRouteLeave,
+  onBeforeRouteUpdate,
+  RouteLocationNormalized,
 } from "vue-router";
 
 import { Track } from "@/interfaces";
@@ -103,10 +103,6 @@ onBeforeRouteLeave(() => {
 <style lang="scss">
 .album-virtual-scroller {
   height: 100%;
-
-  .scroller {
-    padding-bottom: $content-padding-bottom;
-  }
 
   .songlist-item {
     grid-template-columns: 1.5rem 1.5fr 1fr 2.5rem 2.5rem;

@@ -1,9 +1,14 @@
 <template>
-  <div class="folder-view v-scroll-page" :class="{ isSmall, isMedium }">
+  <div
+    class="folder-view v-scroll-page"
+    style="height: 100%"
+    :class="{ isSmall, isMedium }"
+  >
     <DynamicScroller
       :items="scrollerItems"
       :min-item-size="64"
       class="scroller"
+      style="height: 100%"
     >
       <template v-slot="{ item, index, active }">
         <DynamicScrollerItem
@@ -106,14 +111,3 @@ onBeforeRouteLeave(() => {
   setTimeout(() => folder.resetQuery(), 500);
 });
 </script>
-
-<style lang="scss">
-.folder-view {
-  height: 100%;
-
-  .scroller {
-    height: 100%;
-    padding-bottom: $content-padding-bottom !important;
-  }
-}
-</style>
