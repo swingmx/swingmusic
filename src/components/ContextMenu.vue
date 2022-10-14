@@ -44,6 +44,8 @@ onClickOutside(contextMenu, (e) => {
     e.stopImmediatePropagation();
     clickCount = 0;
   }
+}, {
+  capture: false
 });
 </script>
 

@@ -18,7 +18,7 @@ export default defineStore("context-menu", {
   state: () => ({
     visible: false,
     options: {} as Option[],
-    src: <null | string>"",
+    src: <null | ContextSrc>"",
     elem: <HTMLElement | null>null,
   }),
   actions: {

@@ -1,7 +1,7 @@
 <template>
   <div
     class="songlist-item rounded-sm"
-    :class="[{ current: isCurrent }, { contexton: context_on }]"
+    :class="[{ current: isCurrent }, { contexton: context_menu_showing }]"
     @dblclick.prevent="emitUpdate"
     @contextmenu.prevent="showMenu"
   >
@@ -51,7 +51,6 @@
     <div class="song-duration">{{ formatSeconds(track.duration) }}</div>
     <div
       class="options-icon circular"
-      :class="{ 'btn-active': options_button_clicked }"
       @click.stop="showMenu"
       @dblclick.stop="() => {}"
     >
@@ -74,7 +73,7 @@ import ArtistName from "./ArtistName.vue";
 
 const context_on = ref(false);
 const imguri = paths.images.thumb.small;
-const options_button_clicked = ref(false);
+const context_menu_showing = ref(false);
 
 const artisttitle = ref<HTMLElement | null>(null);
 
@@ -95,7 +94,7 @@ function emitUpdate() {
 }
 
 function showMenu(e: MouseEvent) {
-  showContext(e, props.track, options_button_clicked);
+  showContext(e, props.track, context_menu_showing);
 }
 </script>
 
@@ -191,8 +190,8 @@ function showMenu(e: MouseEvent) {
     }
   }
 
-  .options_button_clicked {
-    background-color: $gray5;
+  .context_menu_showing {
+    background-color: $gray4;
     opacity: 1;
   }
 
@@ -233,6 +232,10 @@ function showMenu(e: MouseEvent) {
 }
 
 .songlist-item.current {
+  background-color: $gray;
+}
+
+.songlist-item.contexton {
   background-color: $gray;
 }
 </style>
