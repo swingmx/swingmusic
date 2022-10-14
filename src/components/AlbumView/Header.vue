@@ -73,10 +73,6 @@ defineProps<{
   album: AlbumInfo;
 }>();
 
-const emit = defineEmits<{
-  (event: "resetBottomPadding"): void;
-}>();
-
 const albumheaderthing = ref<any>(null);
 const imguri = paths.images;
 const nav = useNavStore();
@@ -88,10 +84,6 @@ const nav = useNavStore();
  * @param {boolean} state the new visibility state of the album page header.
  */
 function handleVisibilityState(state: boolean) {
-  if (state) {
-    emit("resetBottomPadding");
-  }
-
   nav.toggleShowPlay(state);
 }
 

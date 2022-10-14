@@ -94,6 +94,7 @@ if (source) {
   width: 7rem;
   gap: $small;
   transition: all 0.25s;
+  transition-delay: 0.1s;
 }
 
 .header-input {
@@ -105,11 +106,11 @@ if (source) {
   z-index: 200;
   transition: all 0.25s $overshoot;
   opacity: 0;
-  transform: translateY(-1rem);
+  transform: translateY(-3.5rem);
   border-radius: 3rem;
   padding-left: 1rem;
   outline: solid 1px $gray1;
-  
+
   &:focus {
     outline: solid $darkblue;
   }
