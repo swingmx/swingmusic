@@ -1,5 +1,6 @@
 <template>
   <div
+    v-show="context.visible"
     class="context-menu rounded shadow-lg no-select"
     ref="contextMenu"
     id="context-menu"
