@@ -30,7 +30,7 @@ const props = defineProps<{
 
 <style lang="scss">
 .p-card {
-  background-color: $gray5;
+  background-color: #2c2c2e45;
   display: grid;
   grid-template-rows: 1fr max-content;
   padding: 1rem;
