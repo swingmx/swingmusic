@@ -45,9 +45,6 @@ interface ScrollerItem {
 const header: ScrollerItem = {
   id: "header",
   component: Header,
-  // props: {
-  //   info: playlist.info,
-  // },
   size: 19 * 16,
 };
 

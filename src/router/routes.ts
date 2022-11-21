@@ -73,6 +73,11 @@ const routes = [
     component: () => import("@/views/ArtistsExplorer.vue"),
   },
   {
+    path: "/artists/:hash",
+    name: "ArtistView",
+    component: () => import("@/views/ArtistView"),
+  },
+  {
     path: "/settings",
     name: "SettingsView",
     component: () => import("@/views/SettingsView.vue"),
@@ -90,7 +95,7 @@ const routes = [
   {
     name: "NotFound",
     path: "/:pathMatch(.*)",
-    component: () => import("../views/NotFound.vue"),
+    component: () => import("@/views/NotFound.vue"),
   },
 ];
 

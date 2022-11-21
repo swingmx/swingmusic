@@ -18,31 +18,6 @@ interface BtnColor {
   isDark: boolean;
 }
 
-/**
- * Returns the first contrasting color in the album colors.
- *
- * @param {string[]} colors The album colors to choose from.
- * @returns {BtnColor} A color to use as the play button background
- */
-export function getButtonColor(colors: string[], index: number): BtnColor {
-  const fallback = {
-    color: "#234ece",
-    isDark: true,
-  };
-
-  if (!colors || colors.length === 0) return fallback;
-
-  for (let i = 0; i < colors.length; i++) {
-    if (theyContrast(colors[index], colors[i])) {
-      return {
-        color: colors[i],
-        isDark: isLight(colors[i]),
-      };
-    }
-  }
-
-  return fallback;
-}
 
 /**
  * Returns the luminance of a color.
