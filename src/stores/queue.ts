@@ -1,4 +1,3 @@
-import { ref } from "@vue/reactivity";
 import { paths } from "@/config";
 import { defineStore } from "pinia";
 import { Ref } from "vue";
@@ -8,11 +7,11 @@ import { FromOptions } from "../composables/enums";
 import updateMediaNotif from "../composables/mediaNotification";
 
 import {
-  fromAlbum,
-  fromFolder,
-  fromPlaylist,
-  fromSearch,
-  Track,
+    fromAlbum,
+    fromFolder,
+    fromPlaylist,
+    fromSearch,
+    Track
 } from "../interfaces";
 
 function shuffle(tracks: Track[]) {
@@ -52,7 +51,7 @@ export default defineStore("Queue", {
       }
 
       const track = this.tracklist[index];
-      const uri = `${paths.api.files}/${track.trackid}-${track.hash}`;
+      const uri = `${paths.api.files}/${track.id}-${track.trackhash}`;
 
       new Promise((resolve, reject) => {
         audio.autoplay = true;
@@ -172,7 +171,7 @@ export default defineStore("Queue", {
       this.from = <fromPlaylist>{
         type: FromOptions.playlist,
         name: pname,
-        playlistid: pid,
+        id: pid,
       };
 
       this.setNewQueue(tracks);
@@ -195,7 +194,7 @@ export default defineStore("Queue", {
       const next: Track = this.tracklist[nextindex];
 
       // if track is already next, skip
-      if (next?.trackid === track.trackid) {
+      if (next?.id === track.id) {
         Toast.showNotification("Track is already queued", NotifType.Info);
         return;
       }
@@ -227,14 +226,14 @@ export default defineStore("Queue", {
       }
 
       const current = this.currenttrack;
-      const current_hash = current?.hash;
+      const current_hash = current?.trackhash;
 
       this.tracklist = shuffle(this.tracklist);
       // find current track after shuffle
 
       if (this.playing) {
         const newindex = this.tracklist.findIndex(
-          (track) => track.hash === current_hash
+          (track) => track.trackhash === current_hash
         );
 
         // remove current track from queue
@@ -294,7 +293,7 @@ export default defineStore("Queue", {
       return this.tracklist[this.currentindex];
     },
     currentid(): string {
-      return this.currenttrack?.trackid || "";
+      return this.currenttrack?.id || "";
     },
     previndex(): number {
       return this.currentindex === 0

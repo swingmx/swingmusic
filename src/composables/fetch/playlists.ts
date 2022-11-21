@@ -1,8 +1,6 @@
 import { paths } from "@/config";
-import { Artist } from "../../interfaces";
-import { Playlist, Track } from "../../interfaces";
+import { Artist, Playlist, Track } from "../../interfaces";
 import { Notification, NotifType } from "../../stores/notification";
-import state from "../state";
 import useAxios from "./useAxios";
 
 const {
@@ -67,12 +65,12 @@ async function getAllPlaylists(): Promise<Playlist[]> {
 }
 
 async function addTrackToPlaylist(playlist: Playlist, track: Track) {
-  const uri = `${basePlaylistUrl}/${playlist.playlistid}/add`;
+  const uri = `${basePlaylistUrl}/${playlist.id}/add`;
 
   const { status } = await useAxios({
     url: uri,
     props: {
-      track: track.trackid,
+      track: track.trackhash,
     },
   });
 
@@ -92,13 +90,13 @@ async function getPlaylist(pid: string) {
     tracks: Track[];
   }
 
-  const { data, error } = await useAxios({
+  const { data, status } = await useAxios({
     url: uri,
     get: true,
   });
 
-  if (error) {
-    new Notification("Something funny happened!", NotifType.Error);
+  if (status == 404) {
+    new Notification("Playlist not found", NotifType.Error);
   }
 
   if (data) {

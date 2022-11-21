@@ -55,7 +55,9 @@
     </div>
   </div>
 </template>
+
 <script setup lang="ts"></script>
+
 <style lang="scss">
 .welcome-to-alice {
   p {

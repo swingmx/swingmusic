@@ -3,7 +3,7 @@
     <div class="grid">
       <PCard
         v-for="album in search.albums.value"
-        :key="`${album.artist}-${album.title}`"
+        :key="`${album.albumartist}-${album.title}`"
         :album="album"
       />
     </div>

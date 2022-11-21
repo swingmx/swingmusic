@@ -98,7 +98,6 @@ function hideContextMenu() {
 function runAction() {
   if (props.option.children) {
     if (childrenShown.value) {
-      console.log("what");
       hideChildren();
       return;
     }

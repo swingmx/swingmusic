@@ -2,10 +2,6 @@
   <button
     class="playbtnrect"
     @click="usePlayFrom(source, useQStore, store)"
-    :style="{
-      background: background?.color,
-    }"
-    :class="{ playbtnrectdark: background?.isDark }"
   >
     <playBtnSvg />
     <div class="text">Play</div>
@@ -43,13 +39,6 @@ defineProps<{
   justify-content: center;
   transition: all 0.5s ease-in-out;
   color: $white;
-}
-
-.playbtnrectdark {
-  color: $black !important;
-
-  svg > path {
-    fill: $accent !important;
-  }
+  background: $darkestblue !important;
 }
 </style>

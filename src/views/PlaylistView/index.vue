@@ -25,9 +25,9 @@
 import { computed } from "@vue/reactivity";
 import { onBeforeRouteLeave } from "vue-router";
 
-import useQueueStore from "@/stores/queue";
+import { isMedium, isSmall } from "@/stores/content-width";
 import usePlaylistStore from "@/stores/pages/playlist";
-import { isSmall, isMedium } from "@/stores/content-width";
+import useQueueStore from "@/stores/queue";
 
 import Header from "@/components/PlaylistView/Header.vue";
 import SongItem from "@/components/shared/SongItem.vue";
@@ -38,16 +38,16 @@ const playlist = usePlaylistStore();
 interface ScrollerItem {
   id: string | number;
   component: typeof Header | typeof SongItem;
-  props: Record<string, unknown>;
+  // props: Record<string, unknown>;
   size: number;
 }
 
 const header: ScrollerItem = {
   id: "header",
   component: Header,
-  props: {
-    info: playlist.info,
-  },
+  // props: {
+  //   info: playlist.info,
+  // },
   size: 19 * 16,
 };
 
@@ -61,8 +61,8 @@ const scrollerItems = computed(() => {
         props: {
           track: track,
           index: track.index + 1,
-          isCurrent: queue.currentid === track.trackid,
-          isCurrentPlaying: queue.currentid === track.trackid && queue.playing,
+          isCurrent: queue.currentid === track.id,
+          isCurrentPlaying: queue.currentid === track.id && queue.playing,
         },
         size: 64,
       };
@@ -71,8 +71,8 @@ const scrollerItems = computed(() => {
 });
 
 function playFromPlaylistPage(index: number) {
-  const { name, playlistid } = playlist.info;
-  queue.playFromPlaylist(name, playlistid, playlist.allTracks);
+  const { name, id } = playlist.info;
+  queue.playFromPlaylist(name, id, playlist.allTracks);
   queue.play(index);
 }
 

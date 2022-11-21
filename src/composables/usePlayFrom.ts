@@ -33,7 +33,7 @@ export default function play(
 
       useQueue.playFromAlbum(
         a_store.info.title,
-        a_store.info.artist,
+        a_store.info.albumartist,
         a_store.info.hash,
         a_store.allTracks
       );
@@ -45,7 +45,7 @@ export default function play(
 
       if (p.tracks.length === 0) return;
 
-      useQueue.playFromPlaylist(p.info.name, p.info.playlistid, p.tracks);
+      useQueue.playFromPlaylist(p.info.name, p.info.id, p.tracks);
       useQueue.play();
       break;
   }

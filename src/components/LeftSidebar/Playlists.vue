@@ -7,7 +7,7 @@
           :to="{
             name: 'PlaylistView',
             params: {
-              pid: p.playlistid,
+              pid: p.id,
             },
           }"
         >

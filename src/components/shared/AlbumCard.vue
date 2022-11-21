@@ -9,14 +9,14 @@
     <img class="rounded" :src="imguri + album.image" alt="" />
     <div>
       <h4 class="title ellip" v-tooltip>{{ album.title }}</h4>
-      <div class="artist ellip">{{ album.artist }}</div>
+      <div class="artist ellip">{{ album.albumartist }}</div>
     </div>
   </router-link>
 </template>
 
 <script setup lang="ts">
-import { AlbumInfo } from "../../interfaces";
 import { paths } from "../../config";
+import { AlbumInfo } from "../../interfaces";
 
 const imguri = paths.images.thumb.large;
 defineProps<{

@@ -17,7 +17,7 @@
     <div class="songlist">
       <SongItem
         v-for="(track, index) in tracks"
-        :key="track.trackid"
+        :key="track.id"
         :track="track"
         :index="
           on_album_page
@@ -28,7 +28,7 @@
         "
         @playThis="updateQueue(track.index !== undefined ? track.index : index)"
         :isCurrentPlaying="queue.playing"
-        :isCurrent="queue.currentid == track.trackid"
+        :isCurrent="queue.currentid == track.id"
       />
     </div>
     <div class="copyright" v-if="copyright && copyright">
@@ -59,7 +59,7 @@ const props = defineProps<{
   tracks: Track[];
   path?: string;
   pname?: string;
-  playlistid?: string;
+  id?: string;
   on_album_page?: boolean;
   disc?: string | number;
   copyright?: string | null;

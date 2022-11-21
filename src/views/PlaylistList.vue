@@ -3,7 +3,7 @@
     <div class="grid">
       <PlaylistCard
         v-for="p in pStore.playlists"
-        :key="p.playlistid"
+        :key="p.id"
         :playlist="p"
       />
     </div>

@@ -26,7 +26,7 @@
     </div>
     <div class="last-updated" :class="{ lightbg: !info.image }">
       <span class="status"
-        >Last updated {{ info.lastUpdated }} &#160;|&#160;&#160;</span
+        >Last updated {{ info.last_updated }} &#160;|&#160;&#160;</span
       >
       <span class="edit" @click="editPlaylist">Edit</span>
     </div>
@@ -43,23 +43,23 @@ import useModalStore from "../../stores/modal";
 import { playSources } from "@/composables/enums";
 import { formatSeconds, useVisibility } from "@/utils";
 import { paths } from "../../config";
-import { Playlist } from "../../interfaces";
 
 import PlayBtnRect from "../shared/PlayBtnRect.vue";
+import { storeToRefs } from "pinia";
 
-const imguri = paths.images.playlist;
 const modal = useModalStore();
 const nav = useNavStore();
+const playlist = usePStore();
+
+const imguri = paths.images.playlist;
+
 const playlistheader = ref<HTMLElement | null>(null);
+const { info } = storeToRefs(playlist);
 
 useVisibility(playlistheader, nav.toggleShowPlay);
 
-const props = defineProps<{
-  info: Playlist;
-}>();
-
 function editPlaylist() {
-  modal.showEditPlaylistModal(props.info);
+  modal.showEditPlaylistModal(info.value);
 }
 </script>
 

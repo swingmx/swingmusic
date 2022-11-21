@@ -5,23 +5,27 @@
     :style="{
       backgroundImage: album.colors
         ? `linear-gradient(
-        37deg, ${album.colors[0]}, ${album.colors[3]}
+        37deg, ${album.colors[2]}, ${album.colors[2]}
       )`
         : '',
     }"
   >
-    <div class="big-img no-scroll" :class="{ imgSmall: albumHeaderSmall }">
-      <img :src="imguri.thumb.large + album.image" class="rounded" />
+    <div
+      class="big-img no-scroll"
+      :class="`${albumHeaderSmall ? 'imgSmall' : ''} shadow-lg rounded-sm`"
+    >
+      <img :src="imguri.thumb.large + album.image" class="rounded-sm" />
     </div>
     <div
       class="info"
-      :class="{ nocontrast: album.colors ? isLight(album.colors[0]) : false }"
+      :class="{ nocontrast: album.colors ? isLight(album.colors[2]) : false }"
     >
       <div class="album-info">
         <div class="top">
           <div v-auto-animate class="h">
             <span v-if="album.is_soundtrack">Soundtrack</span>
             <span v-else-if="album.is_compilation">Compilation</span>
+            <span v-else-if="album.is_EP">EP</span>
             <span v-else-if="album.is_single">Single</span>
             <span v-else>Album</span>
           </div>
@@ -32,7 +36,7 @@
         <div class="bottom">
           <div class="stats ellip">
             <div class="border rounded-sm pad-sm">
-              {{ album.artist }} • {{ album.date }} • {{ album.count }}
+              {{ album.albumartist }} • {{ album.date }} • {{ album.count }}
               {{ album.count === 1 ? "Track" : "Tracks" }} •
               {{ formatSeconds(album.duration, true) }}
             </div>
@@ -40,7 +44,6 @@
           <PlayBtnRect
             :source="playSources.album"
             :store="useAlbumStore"
-            :background="getButtonColor(album.colors)"
           />
         </div>
       </div>
@@ -99,6 +102,7 @@ useVisibility(albumheaderthing, handleVisibilityState);
   height: $banner-height;
   background-color: $black;
   overflow: hidden;
+  align-items: flex-end;
 
   .big-img {
     height: calc(100%);
@@ -114,6 +118,7 @@ useVisibility(albumheaderthing, handleVisibilityState);
 
   .big-img.imgSmall {
     width: 12rem;
+    height: 12rem;
 
     img {
       height: 12rem;
