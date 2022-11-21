@@ -64,7 +64,7 @@ function getSource() {
         location: {
           name: Routes.playlist,
           params: {
-            pid: source.playlistid,
+            pid: source.id,
           },
         },
       };

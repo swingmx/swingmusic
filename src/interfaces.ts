@@ -6,7 +6,7 @@ export interface AlbumDisc {
 }
 
 export interface Track extends AlbumDisc {
-  trackid: string;
+  id: string;
   title: string;
   album?: string;
   artist: string[];
@@ -21,7 +21,7 @@ export interface Track extends AlbumDisc {
   track: number;
   disc: number;
   index: number;
-  hash: string;
+  trackhash: string;
   copyright?: string;
   filetype: string;
 }
@@ -37,18 +37,20 @@ export interface Folder {
 export interface AlbumInfo {
   albumid: string;
   title: string;
-  artist: string;
+  albumartist: string;
   count: number;
   duration: number;
   date: string;
   image: string;
   artistimg: string;
-  is_compilation: boolean;
-  is_soundtrack: boolean;
-  is_single: boolean;
   hash: string;
   colors: string[];
   copyright?: string;
+
+  is_compilation: boolean;
+  is_soundtrack: boolean;
+  is_single: boolean;
+  is_EP: boolean;
 }
 
 export interface Artist {
@@ -66,12 +68,12 @@ export interface Option {
 }
 
 export interface Playlist {
-  playlistid: string;
+  id: string;
   name: string;
   image: string | FormData;
   tracks: Track[];
   count: number;
-  lastUpdated: string;
+  last_updated: string;
   thumb: string;
   duration: number;
 }
@@ -95,7 +97,7 @@ export interface fromAlbum {
 export interface fromPlaylist {
   type: FromOptions.playlist;
   name: string;
-  playlistid: string;
+  id: string;
 }
 
 export interface fromSearch {

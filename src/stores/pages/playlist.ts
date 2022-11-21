@@ -17,27 +17,30 @@ export default defineStore("playlist-tracks", {
   actions: {
     /**
      * Fetches a single playlist information, and its tracks from the server
-     * @param playlistid The id of the playlist to fetch
+     * @param id The id of the playlist to fetch
      */
-    async fetchAll(playlistid: string) {
-      const playlist = await getPlaylist(playlistid);
+    async fetchAll(id: string) {
+      const playlist = await getPlaylist(id);
 
       this.info = playlist?.info || ({} as Playlist);
       this.allTracks = playlist?.tracks || [];
     },
 
-    // async fetchArtists(playlistid: string) {
-    //   this.artists = await getPlaylistArtists(playlistid);
+    // async fetchArtists(id: string) {
+    //   this.artists = await getPlaylistArtists(id);
     // },
+
     /**
      * Updates the playlist header info. This is used when the playlist is
      * updated.
      * @param info Playlist info
      */
     updatePInfo(info: Playlist) {
-      const duration = this.info.duration;
+      const { duration, count } = this.info;
+
       this.info = info;
-      this.info.duration = duration;
+
+      this.info = { ...this.info, duration, count };
     },
     resetArtists() {
       this.artists = [];

@@ -3,10 +3,10 @@
     <div v-if="search.tracks.value.length">
       <TrackComponent
         v-for="(track, index) in search.tracks.value"
-        :key="track.trackid"
-        :isCurrent="queue.currentid === track.trackid"
+        :key="track.id"
+        :isCurrent="queue.currentid === track.id"
         :isHighlighted="false"
-        :isCurrentPlaying="queue.currentid === track.trackid && queue.playing"
+        :isCurrentPlaying="queue.currentid === track.id && queue.playing"
         :track="track"
         @playThis="updateQueue(index)"
         :index="index + 1"

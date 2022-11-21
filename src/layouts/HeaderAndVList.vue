@@ -40,7 +40,7 @@
           <SongItem
             v-else
             style="height: 60px"
-            :key="t.data.trackid"
+            :key="t.data.id"
             :track="t.data"
             :hide_album="on_album_page"
             :index="
@@ -50,9 +50,9 @@
                 ? t.data.index + 1
                 : t.index + 1
             "
-            :isCurrent="queue.currentid === t.data.trackid"
+            :isCurrent="queue.currentid === t.data.id"
             :isCurrentPlaying="
-              queue.currentid === t.data.trackid && queue.playing
+              queue.currentid === t.data.id && queue.playing
             "
             @playThis="
               updateQueue(

@@ -17,7 +17,7 @@
         <div class="play"></div>
         <div class="album-art image rounded"></div>
         <div class="name ellip">{{ album.title }}</div>
-        <div class="artist ellip">{{ album.artist }}</div>
+        <div class="artist ellip">{{ album.albumartist }}</div>
       </router-link>
     </div>
   </div>

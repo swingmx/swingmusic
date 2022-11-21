@@ -45,10 +45,10 @@
 import { onMounted, ref } from "vue";
 // import { useDropZone } from "@vueuse/core";
 
+import { updatePlaylist } from "@/composables/fetch/playlists";
 import { paths } from "@/config";
 import { Playlist } from "@/interfaces";
 import usePStore from "@/stores/pages/playlist";
-import { updatePlaylist } from "@/composables/fetch/playlists";
 
 const pStore = usePStore();
 
@@ -131,7 +131,7 @@ function update_playlist(e: Event) {
   formData.append("image", image);
 
   if (name && name.toString().trim() !== "") {
-    updatePlaylist(props.playlist.playlistid, formData, pStore).then(() => {
+    updatePlaylist(props.playlist.id, formData, pStore).then(() => {
       emit("hideModal");
     });
   }

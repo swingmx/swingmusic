@@ -2,7 +2,7 @@
   <div
     v-show="context.visible"
     class="context-menu rounded shadow-lg no-select"
-    ref="contextMenu"
+    ref="contextMenuRef"
     id="context-menu"
   >
     <ContextItem
@@ -21,31 +21,72 @@
 import { ref } from "vue";
 import { onClickOutside } from "@vueuse/core";
 
-import useContextStore from "../stores/context";
-import useSettingsStore from "../stores/settings";
+import useContextStore from "@/stores/context";
+import useSettingsStore from "@/stores/settings";
 
 import ContextItem from "./Contextmenu/ContextItem.vue";
 
 const context = useContextStore();
 const settings = useSettingsStore();
-const contextMenu = ref<HTMLElement>();
+const contextMenuRef = ref<HTMLElement>();
 
-let clickCount = 0;
+// let clickCount = 0;
 
-onClickOutside(contextMenu, (e) => {
-  if (!context.visible) {
-    clickCount = 0;
+// onClickOutside(
+//   contextMenuRef,
+//   (e) => {
+//     console.log(clickCount);
+
+//     if (!context.visible) {
+//       // clickCount = 0;
+//       return;
+//     }
+
+//     clickCount++;
+
+//     if (context.visible && clickCount === 1) {
+//       context.hideContextMenu();
+//       e.stopImmediatePropagation();
+//       clickCount = 0;
+//     }
+//   },
+//   {
+//     capture: false,
+//   }
+// );
+
+let watcher: any = null;
+
+context.$subscribe((mutation, state) => {
+  // let watchers = [];
+  // console.log("watchers count: " + watchers.length)
+  // let wat: any = () => {};
+
+  if (state.visible) {
+    setTimeout(() => {
+      if (watcher !== null) {
+        watcher();
+      }
+      watcher = onClickOutside(
+        contextMenuRef,
+        (e) => {
+          e.stopImmediatePropagation();
+          console.log("clicked outside ref");
+          context.hideContextMenu();
+        },
+        {
+          capture: false,
+        }
+      );
+    }, 200);
     return;
   }
-  clickCount++;
 
-  if (context.visible && clickCount == 2) {
-    context.hideContextMenu();
-    e.stopImmediatePropagation();
-    clickCount = 0;
+  if (watcher !== null) {
+    watcher();
   }
-}, {
-  capture: false
+
+  // wat();
 });
 </script>
 

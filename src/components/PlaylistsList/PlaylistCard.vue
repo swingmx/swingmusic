@@ -1,6 +1,6 @@
 <template>
   <router-link
-    :to="{ name: 'PlaylistView', params: { pid: playlist.playlistid } }"
+    :to="{ name: 'PlaylistView', params: { pid: playlist.id } }"
     class="p-card rounded no-scroll"
   >
     <img

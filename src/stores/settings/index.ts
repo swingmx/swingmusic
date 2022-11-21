@@ -4,7 +4,7 @@ import { defineStore } from "pinia";
 
 export default defineStore("settings", {
   state: () => ({
-    use_np_img: false,
+    use_np_img: true,
     use_sidebar: true,
     extend_width: false,
     contextChildrenShowMode: contextChildrenShowMode.click,

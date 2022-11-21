@@ -24,18 +24,16 @@ interface BtnColor {
  * @param {string[]} colors The album colors to choose from.
  * @returns {BtnColor} A color to use as the play button background
  */
-export function getButtonColor(colors: string[]): BtnColor {
-  const def = {
-    color: "#fff",
+export function getButtonColor(colors: string[], index: number): BtnColor {
+  const fallback = {
+    color: "#234ece",
     isDark: true,
   };
 
-  if (!colors || colors.length === 0) return def;
-
-  const base_color = colors[0];
+  if (!colors || colors.length === 0) return fallback;
 
   for (let i = 0; i < colors.length; i++) {
-    if (theyContrast(base_color, colors[i])) {
+    if (theyContrast(colors[index], colors[i])) {
       return {
         color: colors[i],
         isDark: isLight(colors[i]),
@@ -43,7 +41,7 @@ export function getButtonColor(colors: string[]): BtnColor {
     }
   }
 
-  return def;
+  return fallback;
 }
 
 /**

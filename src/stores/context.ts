@@ -55,19 +55,12 @@ export default defineStore("context-menu", {
                 },
               },
             ],
+            onFirstUpdate: () => {
+              this.visible = true;
+              this.src = src;
+            },
           });
-        });
-
-      this.visible = true;
-      this.src = src;
-
-      // const xy = normalize(e.clientX, e.clientY);
-
-      // this.x = xy.normalX;
-      // this.y = xy.normalY;
-
-      // this.normalizedX = xy.normalizedX;
-      // this.normalizedY = xy.normalizedY;
+        })
     },
     hideContextMenu() {
       this.visible = false;
