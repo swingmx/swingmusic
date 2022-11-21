@@ -3,11 +3,7 @@
     class="a-header rounded"
     ref="albumheaderthing"
     :style="{
-      backgroundImage: album.colors
-        ? `linear-gradient(
-        37deg, ${album.colors[2]}, ${album.colors[2]}
-      )`
-        : '',
+      backgroundColor: album.colors ? album.colors[0] : '',
     }"
   >
     <div
@@ -18,7 +14,7 @@
     </div>
     <div
       class="info"
-      :class="{ nocontrast: album.colors ? isLight(album.colors[2]) : false }"
+      :class="{ nocontrast: album.colors ? isLight(album.colors[0]) : false }"
     >
       <div class="album-info">
         <div class="top">
@@ -41,10 +37,7 @@
               {{ formatSeconds(album.duration, true) }}
             </div>
           </div>
-          <PlayBtnRect
-            :source="playSources.album"
-            :store="useAlbumStore"
-          />
+          <PlayBtnRect :source="playSources.album" :store="useAlbumStore" />
         </div>
       </div>
       <div class="art" v-if="!albumHeaderSmall">
