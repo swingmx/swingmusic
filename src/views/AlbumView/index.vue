@@ -10,6 +10,7 @@
       <component
         :is="item.component"
         v-bind="item.props"
+        :style="{ maxHeight: `${item.size}px` }"
         @playThis="
           playFromAlbum(item.props.track.index - item.props.track.disc)
         "
@@ -33,8 +34,11 @@ import useAlbumStore from "@/stores/pages/album";
 import useQueueStore from "@/stores/queue";
 
 import AlbumDiscBar from "@/components/AlbumView/AlbumDiscBar.vue";
+import ArtistAlbums from "@/components/AlbumView/ArtistAlbums.vue";
+import GenreBanner from "@/components/AlbumView/GenreBanner.vue";
 import Header from "@/components/AlbumView/Header.vue";
 import SongItem from "@/components/shared/SongItem.vue";
+
 import { isSmall } from "@/stores/content-width";
 
 const album = useAlbumStore();
@@ -42,8 +46,12 @@ const queue = useQueueStore();
 
 interface ScrollerItem {
   id: string;
-  component: typeof Header | typeof SongItem;
-  props: any;
+  component:
+    | typeof Header
+    | typeof SongItem
+    | typeof GenreBanner
+    | typeof ArtistAlbums;
+  props?: any;
   size: number;
 }
 
@@ -62,9 +70,26 @@ class songItem {
   }
 }
 
+const genreBanner: ScrollerItem = {
+  id: "genre-banner",
+  component: GenreBanner,
+  size: 64,
+};
+
 function getSongItems() {
   return album.tracks.map((track) => {
     return new songItem(track);
+  });
+}
+
+function getArtistAlbumComponents(): ScrollerItem[] {
+  return album.albumArtists.map((artist) => {
+    return {
+      id: Math.random().toString(),
+      component: ArtistAlbums,
+      props: { artist },
+      size: 20 * 16,
+    };
   });
 }
 
@@ -75,22 +100,29 @@ const scrollerItems = computed(() => {
     props: {
       album: album.info,
     },
-    size: 18 * 16,
+    size: 19 * 16,
   };
 
-  return [header, ...getSongItems()];
+  return [
+    header,
+    ...getSongItems(),
+    genreBanner,
+    ...getArtistAlbumComponents(),
+  ];
 });
 
 function playFromAlbum(index: number) {
-  const { title, artist, hash } = album.info;
-  queue.playFromAlbum(title, artist, hash, album.allTracks);
+  const { title, albumartist, albumhash } = album.info;
+  queue.playFromAlbum(title, albumartist, albumhash, album.allTracks);
   queue.play(index);
 }
 
 onBeforeRouteUpdate(async (to: RouteLocationNormalized) => {
-  await album
-    .fetchTracksAndArtists(to.params.hash.toString())
-    .then(() => album.resetQuery());
+  await album.fetchTracksAndArtists(to.params.hash.toString()).then(() => {
+    album.resetQuery();
+    album.resetAlbumArtists();
+    album.fetchArtistAlbums();
+  });
 });
 
 onBeforeRouteLeave(() => {

@@ -49,6 +49,7 @@
       </div>
     </div>
   </div>
+
 </template>
 
 <script setup lang="ts">
@@ -59,7 +60,7 @@ import { albumHeaderSmall } from "@/stores/content-width";
 import useNavStore from "@/stores/nav";
 import useAlbumStore from "@/stores/pages/album";
 import { formatSeconds, useVisibility } from "@/utils";
-import { getButtonColor, isLight } from "../../composables/colors/album";
+import { isLight } from "../../composables/colors/album";
 import { playSources } from "../../composables/enums";
 import { AlbumInfo } from "../../interfaces";
 
@@ -72,6 +73,7 @@ defineProps<{
 const albumheaderthing = ref<any>(null);
 const imguri = paths.images;
 const nav = useNavStore();
+
 
 /**
  * Calls the `toggleShowPlay` method which toggles the play button in the nav.
@@ -87,6 +89,8 @@ useVisibility(albumheaderthing, handleVisibilityState);
 </script>
 
 <style lang="scss">
+
+
 .a-header {
   display: grid;
   grid-template-columns: max-content 1fr;

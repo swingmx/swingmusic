@@ -4,8 +4,12 @@ import { ComputedRef } from "vue";
 import { AlbumDisc } from "./../../interfaces";
 
 import { FuseTrackOptions } from "@/composables/enums";
+import { content_width } from "@/stores/content-width";
 
-import { getAlbumTracks } from "../../composables/fetch/album";
+import {
+  getAlbumsFromArtist,
+  getAlbumTracks,
+} from "../../composables/fetch/album";
 import { AlbumInfo, Artist, FuseResult, Track } from "../../interfaces";
 import { useNotifStore } from "../notification";
 
@@ -49,6 +53,7 @@ export default defineStore("album", {
     info: <AlbumInfo>{},
     rawTracks: <Track[]>[],
     artists: <Artist[]>[],
+    albumArtists: <{ artist: string; albums: AlbumInfo[] }[]>[],
     bio: null,
   }),
   actions: {
@@ -62,8 +67,22 @@ export default defineStore("album", {
       this.rawTracks = album.tracks;
       this.info = album.info;
     },
+    async fetchArtistAlbums() {
+      const albumartist = this.info.albumartist;
+      const cardWidth = 8 * 16;
+      const visible_cards = Math.floor(content_width.value / cardWidth);
+
+      this.albumArtists = await getAlbumsFromArtist(
+        albumartist,
+        visible_cards,
+        this.info.albumhash
+      );
+    },
     resetQuery() {
       this.query = "";
+    },
+    resetAlbumArtists() {
+      this.albumArtists = [];
     },
   },
   getters: {

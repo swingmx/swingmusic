@@ -149,6 +149,8 @@ function showMenu(e: MouseEvent) {
     width: 100%;
     position: relative;
     height: 3rem;
+    display: flex;
+    justify-content: center;
 
     .text {
       opacity: 1;
