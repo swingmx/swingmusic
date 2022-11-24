@@ -2,7 +2,7 @@
   <div class="search-albums-view grid-page" v-auto-animate>
     <AlbumCard
       v-for="album in search.albums.value"
-      :key="album.hash"
+      :key="album.albumhash"
       :album="album"
     />
   </div>

@@ -40,7 +40,7 @@ function getSource() {
         location: {
           name: Routes.album,
           params: {
-            hash: source.hash,
+            hash: source.albumhash,
           },
         },
       };

@@ -43,7 +43,7 @@ export interface AlbumInfo {
   date: string;
   image: string;
   artistimg: string;
-  hash: string;
+  albumhash: string;
   colors: string[];
   copyright?: string;
 
@@ -91,7 +91,7 @@ export interface fromFolder {
 export interface fromAlbum {
   type: FromOptions.album;
   name: string;
-  hash: string;
+  albumhash: string;
   albumartist: string;
 }
 export interface fromPlaylist {

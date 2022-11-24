@@ -1,14 +1,14 @@
 import { paths } from "@/config";
-import state from "../state";
+import { NotifType, useNotifStore } from "@/stores/notification";
 import { AlbumInfo, Track } from "../../interfaces";
 import useAxios from "./useAxios";
-import { NotifType, useNotifStore } from "@/stores/notification";
 
 const {
   album: albumUrl,
   albumartists: albumArtistsUrl,
-  albumbio: albumBioUrl
-} = paths.api
+  albumbio: albumBioUrl,
+  albumsByArtistUrl,
+} = paths.api;
 
 const getAlbumData = async (hash: string, ToastStore: typeof useNotifStore) => {
   interface AlbumData {
@@ -66,4 +66,30 @@ const getAlbumBio = async (hash: string) => {
   }
 };
 
-export { getAlbumData as getAlbumTracks, getAlbumArtists, getAlbumBio };
+const getAlbumsFromArtist = async (
+  albumartist: string,
+  limit: number = 2,
+  exclude: string
+) => {
+  const { data } = await useAxios({
+    url: albumsByArtistUrl,
+    props: {
+      albumartist: albumartist,
+      limit: limit,
+      exclude: exclude,
+    },
+  });
+
+  if (data) {
+    return data.data;
+  }
+
+  return [];
+};
+
+export {
+  getAlbumData as getAlbumTracks,
+  getAlbumArtists,
+  getAlbumBio,
+  getAlbumsFromArtist,
+};

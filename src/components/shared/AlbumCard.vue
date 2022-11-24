@@ -2,7 +2,7 @@
   <router-link
     :to="{
       name: 'AlbumView',
-      params: { hash: album.hash },
+      params: { hash: album.albumhash },
     }"
     class="result-item"
   >

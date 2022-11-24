@@ -44,6 +44,9 @@ const paths = {
     get albumbio() {
       return this.album + "/bio";
     },
+    get albumsByArtistUrl(){
+      return this.album + "/from-artist"
+    },
     folder: baseApiUrl + "/folder",
     playlist: {
       base: baseApiUrl + "/playlist",

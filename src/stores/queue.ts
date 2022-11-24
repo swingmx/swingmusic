@@ -161,7 +161,7 @@ export default defineStore("Queue", {
       this.from = <fromAlbum>{
         type: FromOptions.album,
         name: aname,
-        hash: albumhash,
+        albumhash: albumhash,
         albumartist: albumartist,
       };
 
