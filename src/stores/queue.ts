@@ -7,11 +7,11 @@ import { FromOptions } from "../composables/enums";
 import updateMediaNotif from "../composables/mediaNotification";
 
 import {
-    fromAlbum,
-    fromFolder,
-    fromPlaylist,
-    fromSearch,
-    Track
+  fromAlbum,
+  fromFolder,
+  fromPlaylist,
+  fromSearch,
+  Track,
 } from "../interfaces";
 
 function shuffle(tracks: Track[]) {
@@ -45,6 +45,7 @@ export default defineStore("Queue", {
     play(index: number = 0) {
       if (this.tracklist.length === 0) return;
       this.currentindex = index;
+      console.log(this.tracklist.length);
 
       if (!this.mousover) {
         this.queueScrollFunction(this.currentindex - 1);
@@ -145,6 +146,7 @@ export default defineStore("Queue", {
       }
     },
     playFromFolder(fpath: string, tracks: Track[]) {
+      console.log("play from folder");
       this.from = <fromFolder>{
         type: FromOptions.folder,
         path: fpath,
@@ -152,17 +154,11 @@ export default defineStore("Queue", {
       };
       this.setNewQueue(tracks);
     },
-    playFromAlbum(
-      aname: string,
-      albumartist: string,
-      albumhash: string,
-      tracks: Track[]
-    ) {
+    playFromAlbum(aname: string, albumhash: string, tracks: Track[]) {
       this.from = <fromAlbum>{
         type: FromOptions.album,
         name: aname,
         albumhash: albumhash,
-        albumartist: albumartist,
       };
 
       this.setNewQueue(tracks);
@@ -292,8 +288,8 @@ export default defineStore("Queue", {
     currenttrack(): Track | undefined {
       return this.tracklist[this.currentindex];
     },
-    currentid(): string {
-      return this.currenttrack?.id || "";
+    currenttrackhash(): string {
+      return this.currenttrack?.trackhash || "";
     },
     previndex(): number {
       return this.currentindex === 0

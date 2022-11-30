@@ -1,14 +1,14 @@
 <template>
   <router-link :to="{ name: Routes.folder, params: { path: folder.path } }">
     <div class="f-item">
-      <div class="icon">
-        <FolderSvg v-if="!folder.is_sym" />
-        <SymLinkSvg v-if="folder.is_sym" />
-      </div>
+      <!-- <div class="icon"> -->
+      <FolderSvg v-if="!folder.is_sym" />
+      <SymLinkSvg v-if="folder.is_sym" />
+      <!-- </div> -->
       <div class="info">
         <div class="f-item-text ellip">{{ folder.name }}</div>
-        <div class="separator no-border"></div>
-        <div class="f-item-count">{{ folder.trackcount }} tracks</div>
+        <!-- <div class="separator no-border"></div> -->
+        <!-- <div class="f-item-count">{{ folder.has_tracks }} tracks</div> -->
       </div>
     </div>
   </router-link>
@@ -31,9 +31,8 @@ defineProps<{
   height: 5rem;
   display: grid;
   grid-template-columns: max-content 1fr;
-  padding-right: 1rem;
   align-items: center;
-  background-color: $gray5;
+  background-color: $gray;
   transition: all 0.2s ease;
   border-radius: 0.75rem;
 
@@ -41,24 +40,17 @@ defineProps<{
     height: 4rem;
   }
 
-  .icon {
-    margin: 0 0.75rem;
+  svg {
+    margin: 0 $small 0 1rem;
   }
 
-  .info {
-    .f-item-count {
-      font-size: 0.8rem;
-      color: rgb(219, 217, 217);
-    }
-
-    .f-item-text {
-      text-align: left;
-    }
+  .f-item-text {
+    margin-right: 1rem;
   }
 
   &:hover {
-    background: #0575e6;
-    background: linear-gradient(to top right, #021b79, #0575e6);
+    background: $gray3;
+    // background: linear-gradient(to top right, #021b79, #0575e6);
     background-size: 105% 105%;
     background-position-x: -$small;
 

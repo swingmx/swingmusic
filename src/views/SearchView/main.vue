@@ -1,5 +1,5 @@
 <template>
-  <div class="search-view">
+  <div class="search-view content-page">
     <div class="tabs">
       <button
         v-for="page in pages"
@@ -180,9 +180,6 @@ onMounted(() => {
     gap: 1.75rem 0;
 
     padding-bottom: 4rem;
-    padding-right: 1rem;
-
-    overflow: auto;
   }
 
   button.load-more {

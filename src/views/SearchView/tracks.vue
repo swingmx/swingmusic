@@ -12,8 +12,8 @@
 
 <script setup lang="ts">
 import Layout from "@/layouts/HeaderAndVList.vue";
-import useSearchStore from "@/stores/search";
 import useQueueStore from "@/stores/queue";
+import useSearchStore from "@/stores/search";
 
 const search = useSearchStore();
 const queue = useQueueStore();

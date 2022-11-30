@@ -14,9 +14,9 @@
 <script setup lang="ts">
 import { ref } from "vue";
 
+import useSearchStore from "@/stores/search";
 import Tab from "./Tab.vue";
 import TabsWrapper from "./TabsWrapper.vue";
-import useSearchStore from "@/stores/search";
 
 const search = useSearchStore();
 defineProps<{

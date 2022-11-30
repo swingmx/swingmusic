@@ -3,7 +3,7 @@
     <div class="grid">
       <PCard
         v-for="album in search.albums.value"
-        :key="`${album.albumartist}-${album.title}`"
+        :key="`${album.albumartists}-${album.title}`"
         :album="album"
       />
     </div>
@@ -13,8 +13,6 @@
 
 <script setup lang="ts">
 import useSearchStore from "../../../stores/search";
-import PCard from "../../playlists/PlaylistCard.vue";
-import LoadMore from "./LoadMore.vue";
 
 const search = useSearchStore();
 

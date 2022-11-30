@@ -8,7 +8,7 @@
     }"
   >
     <div v-if="artists === null || artists.length === 0">
-      <span>{{ albumartist }}</span>
+      <span>{{ albumartists }}</span>
     </div>
     <div v-else>
       <span v-for="artist in putCommas(artists)" :key="artist">{{
@@ -23,7 +23,7 @@ import { putCommas } from "@/utils";
 
 const props = defineProps<{
   artists: string[] | null;
-  albumartist: string | undefined;
+  albumartists: string | null;
   small?: boolean;
   smaller?: boolean;
 }>();

@@ -58,7 +58,7 @@ onUpdated(() => {
 
     .fname-wrapper {
       width: 100%;
-      overflow: auto;
+      overflow: hidden;
     }
 
     .fname {
@@ -82,7 +82,7 @@ onUpdated(() => {
       .paths {
         display: flex;
         gap: $smaller;
-        overflow: auto;
+        overflow: hidden;
         height: 100%;
         scrollbar-width: none;
 

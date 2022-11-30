@@ -15,11 +15,8 @@
 
 <script setup lang="ts">
 import { paths } from "@/config";
-import { Track } from "@/interfaces";
-import { putCommas } from "@/utils";
 import useQueueStore from "@/stores/queue";
 
-import { showTrackContextMenu as showContext } from "@/composables/context";
 import { ref } from "vue";
 
 const context_on = ref(false);

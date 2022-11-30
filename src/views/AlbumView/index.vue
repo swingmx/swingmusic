@@ -7,14 +7,15 @@
       key-field="id"
       v-slot="{ item }"
     >
-      <component
-        :is="item.component"
-        v-bind="item.props"
-        :style="{ maxHeight: `${item.size}px` }"
-        @playThis="
-          playFromAlbum(item.props.track.index - item.props.track.disc)
-        "
-      />
+      <div :style="{ maxHeight: `${item.size}px` }">
+        <component
+          :is="item.component"
+          v-bind="item.props"
+          @playThis="
+            playFromAlbum(item.props.track.index - item.props.track.disc)
+          "
+        />
+      </div>
     </RecycleScroller>
   </div>
 </template>
@@ -112,8 +113,9 @@ const scrollerItems = computed(() => {
 });
 
 function playFromAlbum(index: number) {
-  const { title, albumartist, albumhash } = album.info;
-  queue.playFromAlbum(title, albumartist, albumhash, album.allTracks);
+  
+  const { title, albumartists, albumhash } = album.info;
+  queue.playFromAlbum(title, albumhash, album.allTracks);
   queue.play(index);
 }
 
@@ -128,6 +130,7 @@ onBeforeRouteUpdate(async (to: RouteLocationNormalized) => {
 onBeforeRouteLeave(() => {
   setTimeout(() => {
     album.resetQuery();
+    album.resetAlbumArtists();
   }, 500);
 });
 </script>
@@ -135,7 +138,7 @@ onBeforeRouteLeave(() => {
 <style lang="scss">
 .album-virtual-scroller {
   height: 100%;
-
+  overflow: visible;
   .songlist-item {
     grid-template-columns: 1.5rem 1.5fr 1fr 2.5rem 2.5rem;
   }

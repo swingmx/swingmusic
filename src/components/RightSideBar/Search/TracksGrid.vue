@@ -4,9 +4,11 @@
       <TrackComponent
         v-for="(track, index) in search.tracks.value"
         :key="track.id"
-        :isCurrent="queue.currentid === track.id"
+        :isCurrent="queue.currenttrackhash === track.trackhash"
         :isHighlighted="false"
-        :isCurrentPlaying="queue.currentid === track.id && queue.playing"
+        :isCurrentPlaying="
+          queue.currenttrackhash === track.trackhash && queue.playing
+        "
         :track="track"
         @playThis="updateQueue(index)"
         :index="index + 1"

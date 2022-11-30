@@ -38,11 +38,11 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
 import { createPopper, Instance } from "@popperjs/core";
+import { ref } from "vue";
 
-import { Option } from "@/interfaces";
 import { contextChildrenShowMode } from "@/composables/enums";
+import { Option } from "@/interfaces";
 
 const props = defineProps<{
   option: Option;
@@ -155,7 +155,7 @@ function runChildAction(action: () => void) {
 
   .children {
     transform: scale(0);
-    overflow: auto;
+    overflow: hidden;
     max-height: calc(100vh - 10rem);
   }
 

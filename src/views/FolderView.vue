@@ -62,9 +62,9 @@ class songItem {
     this.props = {
       track,
       index: track.index + 1,
-      isCurrent: queue.currentid === track.id,
+      isCurrent: queue.currenttrackhash === track.trackhash,
       isCurrentPlaying:
-        queue.currentid === track.id && queue.playing,
+        queue.currenttrackhash === track.trackhash && queue.playing,
     };
   }
 }
@@ -111,3 +111,11 @@ onBeforeRouteLeave(() => {
   setTimeout(() => folder.resetQuery(), 500);
 });
 </script>
+
+
+<style lang="scss">
+// .folder-view {
+//   background-color: $red;
+//   padding-left: 0 !important;
+// }
+</style>

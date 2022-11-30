@@ -13,9 +13,6 @@
 <script setup lang="ts">
 import AlbumCard from "../shared/AlbumCard.vue";
 
-import useAlbumStore from "@/stores/pages/album";
-import { content_width } from "@/stores/content-width";
-import { computed, onBeforeMount } from "vue";
 import { AlbumInfo } from "@/interfaces";
 
 defineProps<{
@@ -29,7 +26,7 @@ defineProps<{
 <style lang="scss">
 .albums-from-artist {
   overflow: hidden;
-  padding-top: 1rem;
+  padding-top: 2rem;
 
   h3 {
     display: grid;
@@ -45,7 +42,7 @@ defineProps<{
   .cards {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(10rem, 1fr));
-    gap: 2rem 0
+    gap: 2rem 0;
   }
 }
 </style>
