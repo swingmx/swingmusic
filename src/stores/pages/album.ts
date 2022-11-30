@@ -68,12 +68,13 @@ export default defineStore("album", {
       this.info = album.info;
     },
     async fetchArtistAlbums() {
-      const albumartist = this.info.albumartist;
-      const cardWidth = 8 * 16;
+      const albumartists = this.info.albumartists;
+      const cardWidth = 10 * 16;
       const visible_cards = Math.floor(content_width.value / cardWidth);
+      const albumartisthashes = albumartists.map((artist) => artist.hash);
 
       this.albumArtists = await getAlbumsFromArtist(
-        albumartist,
+        albumartisthashes.join(),
         visible_cards,
         this.info.albumhash
       );

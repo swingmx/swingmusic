@@ -50,9 +50,9 @@
                 ? t.data.index + 1
                 : t.index + 1
             "
-            :isCurrent="queue.currentid === t.data.id"
+            :isCurrent="queue.currenttrackhash === t.data.trackhash"
             :isCurrentPlaying="
-              queue.currentid === t.data.id && queue.playing
+              queue.currenttrackhash === t.data.trackhash && queue.playing
             "
             @playThis="
               updateQueue(

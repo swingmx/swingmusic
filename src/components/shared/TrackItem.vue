@@ -26,7 +26,7 @@
       <div class="artist">
         <ArtistName
           :artists="track.artist"
-          :albumartist="track.albumartist"
+          :albumartists="track.albumartist"
           :smaller="true"
         />
       </div>
@@ -64,7 +64,7 @@ const props = defineProps<{
 const queue = useQueueStore();
 const context_on = ref(false);
 
-function showMenu(e: Event) {
+function showMenu(e: MouseEvent) {
   showContext(e, props.track, context_on);
 }
 

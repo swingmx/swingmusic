@@ -58,8 +58,8 @@ const scrollerItems = computed(() => {
         props: {
           track: track,
           index: track.index + 1,
-          isCurrent: queue.currentid === track.id,
-          isCurrentPlaying: queue.currentid === track.id && queue.playing,
+          isCurrent: queue.currenttrackhash === track.trackhash,
+          isCurrentPlaying: queue.currenttrackhash === track.trackhash && queue.playing,
         },
         size: 64,
       };

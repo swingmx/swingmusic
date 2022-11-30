@@ -10,7 +10,7 @@ export interface Track extends AlbumDisc {
   title: string;
   album?: string;
   artist: string[];
-  albumartist?: string;
+  albumartist: string;
   albumhash?: string;
   folder?: string;
   filepath?: string;
@@ -29,7 +29,7 @@ export interface Track extends AlbumDisc {
 export interface Folder {
   name: string;
   path: string;
-  trackcount: number;
+  has_tracks: number;
   subdircount: number;
   is_sym: boolean;
 }
@@ -37,7 +37,11 @@ export interface Folder {
 export interface AlbumInfo {
   albumid: string;
   title: string;
-  albumartist: string;
+  albumartists: {
+    name: string;
+    hash: string;
+    image: string;
+  }[];
   count: number;
   duration: number;
   date: string;
@@ -51,6 +55,7 @@ export interface AlbumInfo {
   is_soundtrack: boolean;
   is_single: boolean;
   is_EP: boolean;
+  genres: string[];
 }
 
 export interface Artist {
@@ -92,7 +97,6 @@ export interface fromAlbum {
   type: FromOptions.album;
   name: string;
   albumhash: string;
-  albumartist: string;
 }
 export interface fromPlaylist {
   type: FromOptions.playlist;

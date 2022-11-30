@@ -30,38 +30,9 @@ const context = useContextStore();
 const settings = useSettingsStore();
 const contextMenuRef = ref<HTMLElement>();
 
-// let clickCount = 0;
-
-// onClickOutside(
-//   contextMenuRef,
-//   (e) => {
-//     console.log(clickCount);
-
-//     if (!context.visible) {
-//       // clickCount = 0;
-//       return;
-//     }
-
-//     clickCount++;
-
-//     if (context.visible && clickCount === 1) {
-//       context.hideContextMenu();
-//       e.stopImmediatePropagation();
-//       clickCount = 0;
-//     }
-//   },
-//   {
-//     capture: false,
-//   }
-// );
-
 let watcher: any = null;
 
 context.$subscribe((mutation, state) => {
-  // let watchers = [];
-  // console.log("watchers count: " + watchers.length)
-  // let wat: any = () => {};
-
   if (state.visible) {
     setTimeout(() => {
       if (watcher !== null) {
@@ -71,7 +42,6 @@ context.$subscribe((mutation, state) => {
         contextMenuRef,
         (e) => {
           e.stopImmediatePropagation();
-          console.log("clicked outside ref");
           context.hideContextMenu();
         },
         {

@@ -44,8 +44,8 @@ import { playSources } from "@/composables/enums";
 import { formatSeconds, useVisibility } from "@/utils";
 import { paths } from "../../config";
 
-import PlayBtnRect from "../shared/PlayBtnRect.vue";
 import { storeToRefs } from "pinia";
+import PlayBtnRect from "../shared/PlayBtnRect.vue";
 
 const modal = useModalStore();
 const nav = useNavStore();

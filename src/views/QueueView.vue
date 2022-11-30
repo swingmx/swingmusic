@@ -16,9 +16,9 @@
       <SongItem
         :track="item.track"
         :index="index + 1"
-        :isCurrent="queue.currentid === item.track.id"
+        :isCurrent="queue.currenttrackhash === item.track.trackhash"
         :isCurrentPlaying="
-          queue.currentid === item.track.id && queue.playing
+          queue.currenttrackhash === item.track.trackhash && queue.playing
         "
         @playThis="playFromQueue(index)"
       />
@@ -29,10 +29,10 @@
 <script setup lang="ts">
 import { computed, onMounted } from "vue";
 
+import SongItem from "@/components/shared/SongItem.vue";
+import { isMedium, isSmall } from "@/stores/content-width";
 import useQStore from "@/stores/queue";
 import { createTrackProps } from "@/utils";
-import SongItem from "@/components/shared/SongItem.vue";
-import { isSmall, isMedium } from "@/stores/content-width";
 
 const itemHeight = 64;
 const queue = useQStore();

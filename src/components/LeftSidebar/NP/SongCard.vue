@@ -27,7 +27,7 @@ import { paths } from "@/config";
 import { Track } from "@/interfaces";
 
 defineProps<{
-  track: Track | null;
+  track: Track | undefined;
 }>();
 
 const imguri = paths.images.thumb.large;

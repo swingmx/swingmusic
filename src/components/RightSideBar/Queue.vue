@@ -8,6 +8,7 @@
     <RecycleScroller
       class="scroller"
       id="queue-scrollable"
+      style="height: 100%"
       :items="scrollerItems"
       :item-size="itemHeight"
       key-field="id"
@@ -72,8 +73,8 @@ onBeforeUnmount(() => {
   height: 100%;
   overflow: hidden;
 
-  .scroller {
-    height: 100%;
+  .vue-recycle-scroller {
+    padding: 0 !important;
   }
 }
 </style>

@@ -33,7 +33,6 @@ export default function play(
 
       useQueue.playFromAlbum(
         a_store.info.title,
-        a_store.info.albumartist,
         a_store.info.albumhash,
         a_store.allTracks
       );

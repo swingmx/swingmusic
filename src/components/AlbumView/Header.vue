@@ -1,5 +1,10 @@
 <template>
   <div
+    class="album-header-ambient rounded"
+    style="height: 100%; width: 100%"
+    :style="{ boxShadow: album.colors ? `0 .5rem 2rem ${album.colors[0]}` : '' }"
+  ></div>
+  <div
     class="a-header rounded"
     ref="albumheaderthing"
     :style="{
@@ -32,7 +37,12 @@
         <div class="bottom">
           <div class="stats ellip">
             <div class="border rounded-sm pad-sm">
-              {{ album.albumartist }} • {{ album.date }} • {{ album.count }}
+              <ArtistName
+                :artists="album.albumartists.map((a) => a.name)"
+                :albumartists="''"
+                :small="true"
+              />
+              &nbsp;• {{ album.date }} • {{ album.count }}
               {{ album.count === 1 ? "Track" : "Tracks" }} •
               {{ formatSeconds(album.duration, true) }}
             </div>
@@ -49,7 +59,6 @@
       </div>
     </div>
   </div>
-
 </template>
 
 <script setup lang="ts">
@@ -63,6 +72,7 @@ import { formatSeconds, useVisibility } from "@/utils";
 import { isLight } from "../../composables/colors/album";
 import { playSources } from "../../composables/enums";
 import { AlbumInfo } from "../../interfaces";
+import ArtistName from "@/components/shared/ArtistName.vue";
 
 import PlayBtnRect from "../shared/PlayBtnRect.vue";
 
@@ -74,6 +84,9 @@ const albumheaderthing = ref<any>(null);
 const imguri = paths.images;
 const nav = useNavStore();
 
+defineEmits<{
+  (event: "playThis"): void;
+}>();
 
 /**
  * Calls the `toggleShowPlay` method which toggles the play button in the nav.
@@ -89,7 +102,12 @@ useVisibility(albumheaderthing, handleVisibilityState);
 </script>
 
 <style lang="scss">
-
+.album-header-ambient {
+  width: 20rem;
+  position: absolute;
+  z-index: -100 !important;
+  opacity: 0.25;
+}
 
 .a-header {
   display: grid;
@@ -98,7 +116,6 @@ useVisibility(albumheaderthing, handleVisibilityState);
   padding: 1rem;
   height: $banner-height;
   background-color: $black;
-  overflow: hidden;
   align-items: flex-end;
 
   .big-img {
@@ -168,10 +185,12 @@ useVisibility(albumheaderthing, handleVisibilityState);
 
       .stats {
         font-weight: bold;
-        font-size: 0.8rem;
         margin-bottom: 0.75rem;
+        font-size: 0.8rem;
 
         div {
+          font-size: 0.8rem;
+          display: flex;
           width: fit-content;
           cursor: text;
         }

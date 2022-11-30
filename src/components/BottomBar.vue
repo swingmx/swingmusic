@@ -34,7 +34,7 @@
               </div>
               <ArtistName
                 :artists="queue.currenttrack?.artist || []"
-                :albumartist="
+                :albumartists="
                   queue.currenttrack?.albumartist || 'Welcome to alice'
                 "
                 class="artist"
@@ -63,14 +63,14 @@
 </template>
 
 <script setup lang="ts">
+import { Routes } from "@/composables/enums";
 import { paths } from "@/config";
 import { formatSeconds } from "@/utils";
-import { Routes } from "@/composables/enums";
 
-import useQStore from "@/stores/queue";
-import ArtistName from "@/components/shared/ArtistName.vue";
 import HotKeys from "@/components/LeftSidebar/NP/HotKeys.vue";
 import Progress from "@/components/LeftSidebar/NP/Progress.vue";
+import ArtistName from "@/components/shared/ArtistName.vue";
+import useQStore from "@/stores/queue";
 
 import HeartSvg from "@/assets/icons/heart.svg";
 // import PlusSvg from "@/assets/icons/plus.svg";

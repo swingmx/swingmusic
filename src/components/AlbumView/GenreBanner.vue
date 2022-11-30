@@ -1,6 +1,11 @@
 <template>
   <div class="genres-banner">
-    <div v-for="genre in genres" class="rounded pad-sm">{{ genre }}</div>
+    <div class="rounded pad-sm">
+      {{ album.info.genres.length ? "Genres" : "No genres" }}
+    </div>
+    <div v-for="genre in album.info.genres" class="rounded pad-sm">
+      {{ genre }}
+    </div>
   </div>
 </template>
 
@@ -8,7 +13,7 @@
 import { onMounted } from "vue";
 import useAlbumStore from "@/stores/pages/album";
 
-const genres = ["Genres", "RNB", "Alternative", "Genres", "RNB", "Alternative"];
+const album = useAlbumStore();
 
 onMounted(() => {
   // onMounted, fetch data to be used in the component below this one.

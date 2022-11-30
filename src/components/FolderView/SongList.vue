@@ -28,7 +28,7 @@
         "
         @playThis="updateQueue(track.index !== undefined ? track.index : index)"
         :isCurrentPlaying="queue.playing"
-        :isCurrent="queue.currentid == track.id"
+        :isCurrent="queue.currenttrackhash == track.trackhash"
       />
     </div>
     <div class="copyright" v-if="copyright && copyright">

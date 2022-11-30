@@ -9,7 +9,7 @@ $g-border: solid 1px $gray5;
     "l-sidebar content r-sidebar"
     "bottombar bottombar bottombar";
 
-  gap: 0 1.5rem;
+  // gap: 0 1.5rem;
   height: 100%;
   border: $g-border;
   border-top: none;
@@ -24,6 +24,15 @@ $g-border: solid 1px $gray5;
   padding-right: calc($medium);
 
   overflow: hidden;
+  margin-right: $smaller !important;
+}
+
+.vue-recycle-scroller__item-wrapper {
+  overflow: visible !important;
+}
+
+.vue-recycle-scroller {
+  padding-left: 1.25rem;
 }
 
 .r-sidebar {
@@ -50,8 +59,8 @@ $g-border: solid 1px $gray5;
 }
 
 .content-page {
+  margin-left: 1.25rem;
   margin-right: -$medium;
-  padding-right: calc(1rem - $small + 2px);
 }
 
 // ====== MODIFIERS =======

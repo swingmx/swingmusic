@@ -11,7 +11,7 @@
         <div class="image rounded"></div>
         <div class="info">
           <div class="name ellip">{{ album.title }}</div>
-          <div class="artist ellip">{{ album.albumartist }}</div>
+          <div class="artist ellip">{{ album.albumartists }}</div>
           <div class="separator"></div>
           <div class="top">
             <div class="play-icon"></div>

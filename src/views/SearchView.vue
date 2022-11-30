@@ -1,5 +1,5 @@
 <template>
-  <div class="search-view">
+  <div class="search-view content-page">
     <div class="scrollable">
       <Main :isOnSearchPage="true" />
     </div>
@@ -15,10 +15,11 @@ import Main from "@/components/RightSideBar/Search/Main.vue";
   height: 100%;
   padding-top: 0;
   margin-right: -1rem;
+  background-color: red !important;
 
   .scrollable {
     height: 100%;
-    overflow: auto;
+    overflow: hidden;
   }
 
   .artists-results {

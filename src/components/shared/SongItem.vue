@@ -27,13 +27,13 @@
         <div class="isSmallArtists" style="display: none">
           <ArtistName
             :artists="track.artist"
-            :albumartist="track.albumartist"
+            :albumartists="track.albumartist"
           />
         </div>
       </div>
     </div>
     <div class="song-artists">
-      <ArtistName :artists="track.artist" :albumartist="track.albumartist" />
+      <ArtistName :artists="track.artist" :albumartists="track.albumartist" />
     </div>
     <router-link
       v-if="!hide_album"
