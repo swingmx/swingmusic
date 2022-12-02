@@ -14,6 +14,3 @@ import useSearchStore from "@/stores/search";
 
 const search = useSearchStore();
 </script>
-
-<style lang="scss">
-</style>
