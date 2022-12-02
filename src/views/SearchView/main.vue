@@ -180,6 +180,7 @@ onMounted(() => {
     gap: 1.75rem 0;
 
     padding-bottom: 4rem;
+    overflow: auto;
   }
 
   button.load-more {

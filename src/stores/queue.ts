@@ -52,7 +52,7 @@ export default defineStore("Queue", {
       }
 
       const track = this.tracklist[index];
-      const uri = `${paths.api.files}/${track.id}-${track.trackhash}`;
+      const uri = `${paths.api.files}/${track.trackhash}`;
 
       new Promise((resolve, reject) => {
         audio.autoplay = true;

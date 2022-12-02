@@ -71,7 +71,6 @@ const getAlbumsFromArtist = async (
   limit: number = 2,
   exclude: string
 ) => {
-  console.log(albumartists)
   const { data } = await useAxios({
     url: albumsByArtistUrl,
     props: {

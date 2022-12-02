@@ -2,7 +2,9 @@
   <div
     class="album-header-ambient rounded"
     style="height: 100%; width: 100%"
-    :style="{ boxShadow: album.colors ? `0 .5rem 2rem ${album.colors[0]}` : '' }"
+    :style="{
+      boxShadow: album.colors ? `0 .5rem 2rem ${album.colors[0]}` : '',
+    }"
   ></div>
   <div
     class="a-header rounded"
@@ -52,9 +54,12 @@
       </div>
       <div class="art" v-if="!albumHeaderSmall">
         <img
-          :src="imguri.artist + album.artistimg"
+          v-for="a in album.albumartists"
+          :src="imguri.artist + a.image"
           class="shadow-lg circular"
           loading="lazy"
+          :title="a.name"
+          :style="{ border: `solid 2px ${album.colors[0]}` }"
         />
       </div>
     </div>
@@ -76,7 +81,7 @@ import ArtistName from "@/components/shared/ArtistName.vue";
 
 import PlayBtnRect from "../shared/PlayBtnRect.vue";
 
-defineProps<{
+const props = defineProps<{
   album: AlbumInfo;
 }>();
 
@@ -151,8 +156,29 @@ useVisibility(albumheaderthing, handleVisibilityState);
     align-items: flex-end;
 
     .art {
-      display: flex;
-      align-items: flex-end;
+      display: inline-flex;
+      align-items: center;
+      flex-direction: row-reverse;
+      // background-color: red;
+
+      img {
+        height: 4rem;
+        background-color: $gray;
+        border: solid 2px $white;
+      }
+
+      img:last-child {
+        height: 4rem;
+        margin-top: 5px;
+      }
+
+      img:not(:last-child) {
+        margin-left: -2rem;
+      }
+
+      img:hover {
+        z-index: 10;
+      }
     }
 
     img {
