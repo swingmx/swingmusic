@@ -1,11 +1,11 @@
 <template>
   <div class="albums-from-artist">
     <h3>
-      <span>More from {{ artist.artist }} </span>
+      <span>{{ title }} </span>
       <span class="see-more">SEE ALL</span>
     </h3>
     <div class="cards">
-      <AlbumCard v-for="a in artist.albums" :album="a" />
+      <AlbumCard v-for="a in albums" :album="a" />
     </div>
   </div>
 </template>
@@ -13,26 +13,25 @@
 <script setup lang="ts">
 import AlbumCard from "../shared/AlbumCard.vue";
 
-import { AlbumInfo } from "@/interfaces";
+import { Album } from "@/interfaces";
 
 defineProps<{
-  artist: {
-    artist: string;
-    albums: AlbumInfo[];
-  };
+  title: string;
+  albums: Album[];
 }>();
 </script>
 
 <style lang="scss">
 .albums-from-artist {
   overflow: hidden;
-  padding-top: 2rem;
+  padding-top: 1rem;
 
   h3 {
     display: grid;
     grid-template-columns: 1fr max-content;
     align-items: center;
     padding: 0 $medium;
+    margin-bottom: $small;
 
     .see-more {
       font-size: $medium;

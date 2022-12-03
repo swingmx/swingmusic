@@ -1,20 +1,17 @@
-import { Routes } from "./../composables/enums";
-import { ref, reactive } from "@vue/reactivity";
-import { defineStore } from "pinia";
-import { AlbumInfo, Artist, Playlist, Track } from "../interfaces";
-import {
-  searchTracks,
-  searchAlbums,
-  searchArtists,
-  loadMoreTracks,
-  loadMoreAlbums,
-  loadMoreArtists,
-} from "../composables/fetch/searchMusic";
-import { watch } from "vue";
-import useTabStore from "./tabs";
-import useLoaderStore from "./loader";
-import { useRoute } from "vue-router";
+import { reactive, ref } from "@vue/reactivity";
 import { useDebounce } from "@vueuse/core";
+import { defineStore } from "pinia";
+import { watch } from "vue";
+import { useRoute } from "vue-router";
+import {
+    loadMoreAlbums,
+    loadMoreArtists, loadMoreTracks, searchAlbums,
+    searchArtists, searchTracks
+} from "../composables/fetch/searchMusic";
+import { Album, Artist, Playlist, Track } from "../interfaces";
+import { Routes } from "./../composables/enums";
+import useLoaderStore from "./loader";
+import useTabStore from "./tabs";
 /**
  *
  * Scrolls on clicking the loadmore button
@@ -56,7 +53,7 @@ export default defineStore("search", () => {
 
   const albums = reactive({
     query: "",
-    value: <AlbumInfo[]>[],
+    value: <Album[]>[],
     more: false,
   });
 

@@ -1,6 +1,6 @@
 import { paths } from "@/config";
 import { NotifType, useNotifStore } from "@/stores/notification";
-import { AlbumInfo, Track } from "../../interfaces";
+import { Album, Track } from "../../interfaces";
 import useAxios from "./useAxios";
 
 const {
@@ -12,7 +12,7 @@ const {
 
 const getAlbumData = async (hash: string, ToastStore: typeof useNotifStore) => {
   interface AlbumData {
-    info: AlbumInfo;
+    info: Album;
     tracks: Track[];
   }
 
@@ -26,7 +26,7 @@ const getAlbumData = async (hash: string, ToastStore: typeof useNotifStore) => {
   if (status == 204) {
     ToastStore().showNotification("Album not created yet!", NotifType.Error);
     return {
-      info: {} as AlbumInfo,
+      info: {} as Album,
       tracks: [],
     };
   }
@@ -88,9 +88,9 @@ const getAlbumsFromArtist = async (
 };
 
 export {
-    getAlbumData as getAlbumTracks,
-    getAlbumArtists,
-    getAlbumBio,
-    getAlbumsFromArtist,
+  getAlbumData as getAlbumTracks,
+  getAlbumArtists,
+  getAlbumBio,
+  getAlbumsFromArtist,
 };
 

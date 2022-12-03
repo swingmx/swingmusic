@@ -7,10 +7,10 @@ import { FuseTrackOptions } from "@/composables/enums";
 import { content_width } from "@/stores/content-width";
 
 import {
-  getAlbumsFromArtist,
-  getAlbumTracks,
+    getAlbumsFromArtist,
+    getAlbumTracks
 } from "../../composables/fetch/album";
-import { AlbumInfo, Artist, FuseResult, Track } from "../../interfaces";
+import { Album, Artist, FuseResult, Track } from "../../interfaces";
 import { useNotifStore } from "../notification";
 
 interface Disc {
@@ -27,7 +27,7 @@ function sortByTrackNumber(tracks: Track[]) {
   });
 }
 
-function albumHasNoDiscs(album: AlbumInfo) {
+function albumHasNoDiscs(album: Album) {
   if (album.is_single) return true;
 
   return false;
@@ -50,10 +50,10 @@ function createDiscs(tracks: Track[]) {
 export default defineStore("album", {
   state: () => ({
     query: "",
-    info: <AlbumInfo>{},
+    info: <Album>{},
     rawTracks: <Track[]>[],
     artists: <Artist[]>[],
-    albumArtists: <{ artist: string; albums: AlbumInfo[] }[]>[],
+    albumArtists: <{ artist: string; albums: Album[] }[]>[],
     bio: null,
   }),
   actions: {

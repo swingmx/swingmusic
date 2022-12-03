@@ -31,6 +31,7 @@ export enum Routes {
   playlists = "PlaylistList",
   playlist = "PlaylistView",
   albums = "AlbumsView",
+  artist = "ArtistView",
   album = "AlbumView",
   artists = "ArtistsView",
   settings = "SettingsView",
