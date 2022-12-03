@@ -1,8 +1,9 @@
 import state from "@/composables/state";
-import useAStore from "@/stores/pages/album";
-import useFStore from "@/stores/pages/folder";
-import usePTrackStore from "@/stores/pages/playlist";
-import usePStore from "@/stores/pages/playlists";
+import useAlbumPageStore from "@/stores/pages/album";
+import useFolderPageStore from "@/stores/pages/folder";
+import usePlaylistPageStore from "@/stores/pages/playlist";
+import usePlaylistListPageStore from "@/stores/pages/playlists";
+import useArtistPageStore from "@/stores/pages/artist";
 
 const routes = [
   {
@@ -16,7 +17,7 @@ const routes = [
     component: () => import("@/views/FolderView.vue"),
     beforeEnter: async (to: any) => {
       state.loading.value = true;
-      await useFStore()
+      await useFolderPageStore()
         .fetchAll(to.params.path)
         .then(() => {
           state.loading.value = false;
@@ -29,7 +30,7 @@ const routes = [
     component: () => import("@/views/PlaylistList.vue"),
     beforeEnter: async () => {
       state.loading.value = true;
-      await usePStore()
+      await usePlaylistListPageStore()
         .fetchAll()
         .then(() => {
           state.loading.value = false;
@@ -42,7 +43,7 @@ const routes = [
     component: () => import("@/views/PlaylistView/index.vue"),
     beforeEnter: async (to: any) => {
       state.loading.value = true;
-      await usePTrackStore()
+      await usePlaylistPageStore()
         .fetchAll(to.params.pid)
         .then(() => {
           state.loading.value = false;
@@ -60,7 +61,7 @@ const routes = [
     component: () => import("@/views/AlbumView/index.vue"),
     beforeEnter: async (to: any) => {
       state.loading.value = true;
-      const store = useAStore();
+      const store = useAlbumPageStore();
 
       await store.fetchTracksAndArtists(to.params.hash).then(() => {
         state.loading.value = false;
@@ -76,6 +77,15 @@ const routes = [
     path: "/artists/:hash",
     name: "ArtistView",
     component: () => import("@/views/ArtistView"),
+    beforeEnter: async (to: any) => {
+      state.loading.value = true;
+
+      await useArtistPageStore()
+        .getData(to.params.hash)
+        .then(() => {
+          state.loading.value = false;
+        });
+    },
   },
   {
     path: "/settings",

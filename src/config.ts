@@ -38,14 +38,15 @@ const baseApiUrl = domain() + ports.api;
 const paths = {
   api: {
     album: baseApiUrl + "/album",
+    artist: baseApiUrl + "/artist",
     get albumartists() {
       return this.album + "/artists";
     },
     get albumbio() {
       return this.album + "/bio";
     },
-    get albumsByArtistUrl(){
-      return this.album + "/from-artist"
+    get albumsByArtistUrl() {
+      return this.album + "/from-artist";
     },
     folder: baseApiUrl + "/folder",
     playlist: {

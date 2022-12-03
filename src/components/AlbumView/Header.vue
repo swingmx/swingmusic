@@ -53,14 +53,21 @@
         </div>
       </div>
       <div class="art" v-if="!albumHeaderSmall">
-        <img
+        <RouterLink
           v-for="a in album.albumartists"
-          :src="imguri.artist + a.image"
-          class="shadow-lg circular"
-          loading="lazy"
-          :title="a.name"
-          :style="{ border: `solid 2px ${album.colors[0]}` }"
-        />
+          :to="{
+            name: Routes.artist,
+            params: { hash: a.hash },
+          }"
+        >
+          <img
+            :src="imguri.artist + a.image"
+            class="shadow-lg circular"
+            loading="lazy"
+            :title="a.name"
+            :style="{ border: `solid 2px ${album.colors[0]}` }"
+          />
+        </RouterLink>
       </div>
     </div>
   </div>
@@ -69,20 +76,20 @@
 <script setup lang="ts">
 import { ref } from "vue";
 
+import ArtistName from "@/components/shared/ArtistName.vue";
 import { paths } from "@/config";
 import { albumHeaderSmall } from "@/stores/content-width";
 import useNavStore from "@/stores/nav";
 import useAlbumStore from "@/stores/pages/album";
 import { formatSeconds, useVisibility } from "@/utils";
 import { isLight } from "../../composables/colors/album";
-import { playSources } from "../../composables/enums";
-import { AlbumInfo } from "../../interfaces";
-import ArtistName from "@/components/shared/ArtistName.vue";
+import { playSources, Routes } from "../../composables/enums";
+import { Album } from "../../interfaces";
 
 import PlayBtnRect from "../shared/PlayBtnRect.vue";
 
 const props = defineProps<{
-  album: AlbumInfo;
+  album: Album;
 }>();
 
 const albumheaderthing = ref<any>(null);

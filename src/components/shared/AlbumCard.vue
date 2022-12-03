@@ -16,11 +16,11 @@
 
 <script setup lang="ts">
 import { paths } from "../../config";
-import { AlbumInfo } from "../../interfaces";
+import { Album } from "../../interfaces";
 
 const imguri = paths.images.thumb.large;
 defineProps<{
-  album: AlbumInfo;
+  album: Album;
 }>();
 </script>
 

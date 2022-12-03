@@ -34,7 +34,7 @@ export interface Folder {
   is_sym: boolean;
 }
 
-export interface AlbumInfo {
+export interface Album {
   albumid: string;
   title: string;
   albumartists: {
@@ -61,6 +61,11 @@ export interface AlbumInfo {
 export interface Artist {
   name: string;
   image: string;
+  artisthash: string;
+  trackcount: number;
+  albumcount: number;
+  duration: number;
+  colors: string[];
 }
 
 export interface Option {
