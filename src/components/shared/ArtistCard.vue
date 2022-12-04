@@ -1,17 +1,35 @@
 <template>
-  <div class="artist-card" :class="{ _is_on_sidebar: alt }">
-    <img class="artist-image circular" :src="imguri + artist.image" loading="lazy" />
-    <div class="artist-name t-center">
-      {{ artist.name }}
+  <RouterLink
+    :to="{
+      name: Routes.artist,
+      params: {
+        hash: artist.artisthash,
+      },
+    }"
+  >
+    <div
+      class="artist-card"
+      :class="{ _is_on_sidebar: alt }"
+      :style="{ backgroundColor: `${artist.colors[0]}` }"
+    >
+      <img
+        class="artist-image circular"
+        :src="imguri + artist.image"
+        loading="lazy"
+      />
+      <div class="artist-name t-center">
+        {{ artist.name }}
+      </div>
     </div>
-  </div>
+  </RouterLink>
 </template>
 
 <script setup lang="ts">
+import { Routes } from "@/composables/enums";
 import { Artist } from "@/interfaces";
 import { paths } from "../../config";
 
-const imguri = paths.images.artist;
+const imguri = paths.images.artist.large;
 
 defineProps<{
   artist: Artist;

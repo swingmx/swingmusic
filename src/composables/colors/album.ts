@@ -10,14 +10,13 @@ export function isLight(rgb: string): boolean {
   const [r, g, b] = rgb.match(/\d+/g)!.map(Number);
   const brightness = (r * 299 + g * 587 + b * 114) / 1000;
 
-  return brightness > 170;
+  return brightness > 165;
 }
 
 interface BtnColor {
   color: string;
   isDark: boolean;
 }
-
 
 /**
  * Returns the luminance of a color.

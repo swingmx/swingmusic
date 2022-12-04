@@ -20,7 +20,11 @@ const imageRoutes = {
     large: "/t/",
     small: "/t/s/",
   },
-  artist: "/a/",
+  // artist: "/a/",
+  artist: {
+    large: "/a/",
+    small: "/a/s/",
+  },
   playlist: "/p/",
   raw: "/raw/",
 };
@@ -83,7 +87,10 @@ const paths = {
       small: baseImgUrl + imageRoutes.thumb.small,
       large: baseImgUrl + imageRoutes.thumb.large,
     },
-    artist: baseImgUrl + imageRoutes.artist,
+    artist: {
+      small: baseImgUrl + imageRoutes.artist.small,
+      large: baseImgUrl + imageRoutes.artist.large,
+    },
     playlist: baseImgUrl + imageRoutes.playlist,
     raw: baseImgUrl + imageRoutes.raw,
   },

@@ -47,30 +47,36 @@ interface ScrollerItem {
   id: string | number;
   component: any;
   props?: Record<string, unknown>;
-  // size: number;
 }
 
 const header: ScrollerItem = {
   id: "artist-header",
   component: Header,
-  // size: 16 * 19,
 };
 
 const top_tracks: ScrollerItem = {
   id: "artist-top-tracks",
   component: TopTracks,
-  // size: 16 * 25,
-};
-
-const artistAlbums: ScrollerItem = {
-  id: "artist-albums",
-  component: ArtistAlbums,
-  // size: 16 * 16,
-  props: { title: "Albums", albums: artistStore.albums },
 };
 
 const scrollerItems = computed(() => {
-  return [header, top_tracks, artistAlbums];
+  let components = [header];
+
+  if (artistStore.tracks.length > 0) {
+    components.push(top_tracks);
+  }
+
+  if (artistStore.albums.length > 0) {
+    const artistAlbums: ScrollerItem = {
+      id: "artist-albums",
+      component: ArtistAlbums,
+      props: { title: "Albums", albums: artistStore.albums },
+    };
+
+    components.push(artistAlbums);
+  }
+
+  return components;
 });
 
 onBeforeRouteUpdate((to, from, next) => {

@@ -40,5 +40,6 @@ defineProps<{
   transition: all 0.5s ease-in-out;
   color: $white;
   background: $darkestblue !important;
+  border-radius: 2rem;
 }
 </style>

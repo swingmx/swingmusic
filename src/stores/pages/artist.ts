@@ -14,8 +14,8 @@ export default defineStore("artistPage", {
       const { artist, albums, tracks } = await getArtistData(hash);
 
       this.info = artist;
-      this.albums = albums;
       this.tracks = tracks;
+      this.albums = albums;
     },
   },
 });

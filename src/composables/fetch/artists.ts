@@ -11,7 +11,7 @@ const getArtistData = async (hash: string) => {
 
   const { data, error } = await useAxios({
     get: true,
-    url: paths.api.artist + `/${hash}`,
+    url: paths.api.artist + `/${hash}?limit=6`,
   });
 
   if (error) {

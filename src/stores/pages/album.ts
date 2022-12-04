@@ -52,8 +52,7 @@ export default defineStore("album", {
     query: "",
     info: <Album>{},
     rawTracks: <Track[]>[],
-    artists: <Artist[]>[],
-    albumArtists: <{ artist: string; albums: Album[] }[]>[],
+    albumArtists: <{ artisthash: string; albums: Album[] }[]>[],
     bio: null,
   }),
   actions: {

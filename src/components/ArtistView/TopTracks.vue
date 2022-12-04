@@ -10,24 +10,28 @@
         :isCurrentPlaying="false"
       />
     </div>
+    <div class="error" v-if="!artist.tracks.length">No tracks</div>
   </div>
 </template>
 
 <script setup lang="ts">
-import useQueueStore from "@/stores/queue";
 import SongItem from "../shared/SongItem.vue";
 import useArtistPageStore from "@/stores/pages/artist";
 
-const queue = useQueueStore();
 const artist = useArtistPageStore();
 </script>
 
 <style lang="scss">
 .artist-top-tracks {
-  // padding-bottom: 2rem;
-
+  margin-bottom: 1rem;
+  margin-top: 2rem;
   .section-title {
     margin-left: 0;
+  }
+
+  .error {
+    padding-left: 1rem;
+    color: $red;
   }
 }
 </style>
