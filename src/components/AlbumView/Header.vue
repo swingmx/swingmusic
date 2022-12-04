@@ -61,7 +61,7 @@
           }"
         >
           <img
-            :src="imguri.artist + a.image"
+            :src="imguri.artist.small + a.image"
             class="shadow-lg circular"
             loading="lazy"
             :title="a.name"
@@ -164,27 +164,21 @@ useVisibility(albumheaderthing, handleVisibilityState);
 
     .art {
       display: inline-flex;
-      align-items: center;
-      flex-direction: row-reverse;
-      // background-color: red;
+      // align-items: center;
+      gap: $small;
 
       img {
-        height: 4rem;
+        height: 3rem;
         background-color: $gray;
         border: solid 2px $white;
       }
 
-      img:last-child {
-        height: 4rem;
-        margin-top: 5px;
+      a {
+        transition: all 0.25s ease-in-out;
       }
 
-      img:not(:last-child) {
-        margin-left: -2rem;
-      }
-
-      img:hover {
-        z-index: 10;
+      a:hover {
+        transform: scale(1.4);
       }
     }
 

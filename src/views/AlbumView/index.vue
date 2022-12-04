@@ -85,10 +85,13 @@ function getSongItems() {
 
 function getArtistAlbumComponents(): ScrollerItem[] {
   return album.albumArtists.map((artist) => {
+    const artist_name = album.info.albumartists.find(
+      (a) => a.hash === artist.artisthash
+    )?.name;
     return {
       id: Math.random().toString(),
       component: ArtistAlbums,
-      props: { artist },
+      props: { title: `More from ${artist_name}`, albums: artist.albums },
       size: 20 * 16,
     };
   });
@@ -113,7 +116,6 @@ const scrollerItems = computed(() => {
 });
 
 function playFromAlbum(index: number) {
-  
   const { title, albumartists, albumhash } = album.info;
   queue.playFromAlbum(title, albumhash, album.allTracks);
   queue.play(index);

@@ -24,7 +24,6 @@ defineProps<{
 <style lang="scss">
 .albums-from-artist {
   overflow: hidden;
-  padding-top: 1rem;
 
   h3 {
     display: grid;

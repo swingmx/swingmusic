@@ -1,9 +1,18 @@
 <template>
-  <div class="genres-banner">
+  <div
+    class="genres-banner"
+    :class="{
+      nocontrast: album.info.colors ? isLight(album.info.colors[0]) : false,
+    }"
+  >
     <div class="rounded pad-sm">
       {{ album.info.genres.length ? "Genres" : "No genres" }}
     </div>
-    <div v-for="genre in album.info.genres" class="rounded pad-sm">
+    <div
+      v-for="genre in album.info.genres"
+      class="rounded pad-sm"
+      :style="{ backgroundColor: album.info.colors[0] }"
+    >
       {{ genre }}
     </div>
   </div>
@@ -12,6 +21,7 @@
 <script setup lang="ts">
 import { onMounted } from "vue";
 import useAlbumStore from "@/stores/pages/album";
+import { isLight } from "@/composables/colors/album";
 
 const album = useAlbumStore();
 
@@ -23,6 +33,9 @@ onMounted(() => {
 </script>
 
 <style lang="scss">
+.genres-banner.nocontrast {
+  color: $black;
+}
 .genres-banner {
   display: flex;
   gap: 1rem;
@@ -36,7 +49,7 @@ onMounted(() => {
     background-color: $gray5;
     min-width: 4rem;
     text-align: center;
-    outline: solid 1px $gray3;
+    outline: solid 1px $gray;
     padding: $small 1rem;
 
     &:first-child {
@@ -47,8 +60,9 @@ onMounted(() => {
     }
 
     &:hover {
-      background-color: $darkestblue;
+      background-color: $darkestblue !important;
       outline-color: $darkestblue;
+      color: $white;
     }
   }
 }

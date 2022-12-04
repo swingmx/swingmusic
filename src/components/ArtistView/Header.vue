@@ -10,15 +10,20 @@
         <div class="card-title">ARTIST</div>
         <div class="artist-name">{{ artist.info.name }}</div>
         <div class="stats">
-          {{ artist.info.trackcount }} Tracks •
-          {{ artist.info.albumcount }} Albums •
+          {{ artist.info.trackcount }} Track{{
+            `${artist.info.trackcount == 1 ? "" : "s"}`
+          }}
+          • {{ artist.info.albumcount }} Album{{
+            `${artist.info.albumcount == 1 ? "" : "s"}`
+          }}
+          •
           {{ formatSeconds(artist.info.duration, true) }}
         </div>
       </section>
       <PlayBtnRect />
     </div>
-    <div class="artist-img">
-      <img :src="paths.images.artist + artist.info.image" />
+    <div class="artist-img no-select">
+      <img :src="paths.images.artist.large + artist.info.image" />
     </div>
     <div
       class="gradient"
@@ -63,8 +68,8 @@ const artist = useArtistPageStore();
     background-image: linear-gradient(
       to left,
       transparent 10%,
-      #434142 50%,
-      #434142 100%
+      $gray2 50%,
+      $gray2 100%
     );
     height: 100%;
     width: 100%;
@@ -105,10 +110,6 @@ const artist = useArtistPageStore();
 
     .stats {
       font-size: small;
-    }
-
-    .playbtnrect {
-      border-radius: 2rem;
     }
   }
 
