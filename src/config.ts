@@ -20,7 +20,6 @@ const imageRoutes = {
     large: "/t/",
     small: "/t/s/",
   },
-  // artist: "/a/",
   artist: {
     large: "/a/",
     small: "/a/s/",

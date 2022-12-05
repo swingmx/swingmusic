@@ -25,10 +25,10 @@ import { isLight } from "@/composables/colors/album";
 
 const album = useAlbumStore();
 
-onMounted(() => {
+onMounted(async () => {
   // onMounted, fetch data to be used in the component below this one.
   const album = useAlbumStore();
-  album.fetchArtistAlbums();
+  await album.fetchArtistAlbums();
 });
 </script>
 

@@ -86,7 +86,7 @@ function getSongItems() {
 function getArtistAlbumComponents(): ScrollerItem[] {
   return album.albumArtists.map((artist) => {
     const artist_name = album.info.albumartists.find(
-      (a) => a.hash === artist.artisthash
+      (a) => a.artisthash === artist.artisthash
     )?.name;
     return {
       id: Math.random().toString(),
@@ -121,7 +121,7 @@ function playFromAlbum(index: number) {
   queue.play(index);
 }
 
-onBeforeRouteUpdate(async (to: RouteLocationNormalized) => {
+onBeforeRouteUpdate(async (to) => {
   await album.fetchTracksAndArtists(to.params.hash.toString()).then(() => {
     album.resetQuery();
     album.resetAlbumArtists();

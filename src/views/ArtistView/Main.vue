@@ -34,14 +34,13 @@ import { isMedium, isSmall } from "@/stores/content-width";
 
 import Header from "@/components/ArtistView/Header.vue";
 import TopTracks from "@/components/ArtistView/TopTracks.vue";
-// import Albums from "@/components/ArtistView/Albums.vue";
 import useArtistPageStore from "@/stores/pages/artist";
 import ArtistAlbums from "@/components/AlbumView/ArtistAlbums.vue";
-
+import ArtistAlbumsFetcher from "./ArtistAlbumsFetcher.vue";
 import { computed } from "vue";
 import { onBeforeRouteUpdate } from "vue-router";
 
-const artistStore = useArtistPageStore();
+const store = useArtistPageStore();
 
 interface ScrollerItem {
   id: string | number;
@@ -59,18 +58,25 @@ const top_tracks: ScrollerItem = {
   component: TopTracks,
 };
 
+const artist_albums_fetcher: ScrollerItem = {
+  id: "artist-albums-fetcher",
+  component: ArtistAlbumsFetcher,
+};
+
 const scrollerItems = computed(() => {
   let components = [header];
 
-  if (artistStore.tracks.length > 0) {
+  if (store.tracks.length > 0) {
     components.push(top_tracks);
   }
 
-  if (artistStore.albums.length > 0) {
+  components = [...components, artist_albums_fetcher];
+
+  if (store.albums.length > 0) {
     const artistAlbums: ScrollerItem = {
       id: "artist-albums",
       component: ArtistAlbums,
-      props: { title: "Albums", albums: artistStore.albums },
+      props: { title: "Albums", albums: store.albums },
     };
 
     components.push(artistAlbums);
@@ -79,8 +85,9 @@ const scrollerItems = computed(() => {
   return components;
 });
 
-onBeforeRouteUpdate((to, from, next) => {
-  artistStore.getData(to.params.hash as string);
+onBeforeRouteUpdate(async (to) => {
+
+  await store.getData(to.params.hash as string);
 });
 </script>
 

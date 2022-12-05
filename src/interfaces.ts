@@ -9,7 +9,7 @@ export interface Track extends AlbumDisc {
   id: string;
   title: string;
   album?: string;
-  artist: string[];
+  artist: Artist[];
   albumartist: string;
   albumhash?: string;
   folder?: string;
@@ -37,11 +37,7 @@ export interface Folder {
 export interface Album {
   albumid: string;
   title: string;
-  albumartists: {
-    name: string;
-    hash: string;
-    image: string;
-  }[];
+  albumartists: Artist[];
   count: number;
   duration: number;
   date: string;

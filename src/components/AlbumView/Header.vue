@@ -40,11 +40,10 @@
           <div class="stats ellip">
             <div class="border rounded-sm pad-sm">
               <ArtistName
-                :artists="album.albumartists.map((a) => a.name)"
+                :artists="album.albumartists"
                 :albumartists="''"
                 :small="true"
-              />
-              &nbsp;• {{ album.date }} • {{ album.count }}
+              />&nbsp; • {{ album.date }} • {{ album.count }}
               {{ album.count === 1 ? "Track" : "Tracks" }} •
               {{ formatSeconds(album.duration, true) }}
             </div>
@@ -57,7 +56,7 @@
           v-for="a in album.albumartists"
           :to="{
             name: Routes.artist,
-            params: { hash: a.hash },
+            params: { hash: a.artisthash },
           }"
         >
           <img
@@ -129,6 +128,21 @@ useVisibility(albumheaderthing, handleVisibilityState);
   height: $banner-height;
   background-color: $black;
   align-items: flex-end;
+
+  // .albumartists {
+  //   outline: solid 1px;
+  //   // display: flex;
+  //   // width: 100%;
+  //   // flex-wrap: nowrap;
+  //   // height: 1rem;
+  //   // overflow: hidden;
+
+  //   span {
+  //     // white-space: nowrap;
+  //     // overflow: hidden;
+  //     // text-overflow: ellipsis;
+  //   }
+  // }
 
   .big-img {
     height: calc(100%);
@@ -204,6 +218,7 @@ useVisibility(albumheaderthing, handleVisibilityState);
 
       .artist {
         font-size: 1.15rem;
+        background-color: red;
       }
     }
 
@@ -215,11 +230,20 @@ useVisibility(albumheaderthing, handleVisibilityState);
         margin-bottom: 0.75rem;
         font-size: 0.8rem;
 
+        .artistname {
+          display: -webkit-box;
+          -webkit-line-clamp: 2;
+          -webkit-box-orient: vertical;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
+
         div {
           font-size: 0.8rem;
           display: flex;
-          width: fit-content;
-          cursor: text;
+          flex-wrap: wrap;
+          // width: fit-content;
+          // cursor: text;
         }
       }
     }
