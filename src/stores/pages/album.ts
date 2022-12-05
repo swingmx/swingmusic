@@ -4,11 +4,11 @@ import { ComputedRef } from "vue";
 import { AlbumDisc } from "./../../interfaces";
 
 import { FuseTrackOptions } from "@/composables/enums";
-import { content_width } from "@/stores/content-width";
+import { maxAbumCards } from "@/stores/content-width";
 
 import {
-    getAlbumsFromArtist,
-    getAlbumTracks
+  getAlbumsFromArtist,
+  getAlbumTracks,
 } from "../../composables/fetch/album";
 import { Album, Artist, FuseResult, Track } from "../../interfaces";
 import { useNotifStore } from "../notification";
@@ -27,11 +27,11 @@ function sortByTrackNumber(tracks: Track[]) {
   });
 }
 
-function albumHasNoDiscs(album: Album) {
-  if (album.is_single) return true;
+// function albumHasNoDiscs(album: Album) {
+//   if (album.is_single) return true;
 
-  return false;
-}
+//   return false;
+// }
 
 /**
  *
@@ -68,13 +68,12 @@ export default defineStore("album", {
     },
     async fetchArtistAlbums() {
       const albumartists = this.info.albumartists;
-      const cardWidth = 10 * 16;
-      const visible_cards = Math.floor(content_width.value / cardWidth);
-      const albumartisthashes = albumartists.map((artist) => artist.hash);
+
+      const albumartisthashes = albumartists.map((artist) => artist.artisthash);
 
       this.albumArtists = await getAlbumsFromArtist(
         albumartisthashes.join(),
-        visible_cards,
+        maxAbumCards.value,
         this.info.albumhash
       );
     },

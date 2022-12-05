@@ -6,11 +6,16 @@ export default () => {
   if ("mediaSession" in navigator) {
     const queue = useQueueStore();
     const { currenttrack: track } = queue;
-    const url = paths.images.thumb.large
+
+    if (track === undefined) {
+      return;
+    }
+
+    const url = paths.images.thumb.large;
 
     navigator.mediaSession.metadata = new window.MediaMetadata({
       title: track.title,
-      artist: track.artist.join(", "),
+      artist: track.artist.map((a) => a.name).join(", "),
       artwork: [
         {
           src: url + track.image,

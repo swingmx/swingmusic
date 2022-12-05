@@ -21,5 +21,17 @@ const isMedium = computed(() => {
 const albumHeaderSmall = computed(() => {
   return content_width.value <= brk.album_header_small;
 });
+const album_card_with = 10 * 16;
 
-export { content_width, window_width, isSmall, isMedium, albumHeaderSmall };
+const maxAbumCards = computed(() => {
+  return Math.floor(content_width.value / album_card_with);
+});
+
+export {
+  content_width,
+  window_width,
+  isSmall,
+  isMedium,
+  albumHeaderSmall,
+  maxAbumCards,
+};

@@ -131,6 +131,7 @@ function showMenu(e: MouseEvent) {
 
   .song-album {
     max-width: max-content;
+
     cursor: pointer !important;
 
     &:hover {
