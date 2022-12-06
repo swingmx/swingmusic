@@ -1,7 +1,7 @@
 <template>
   <div
     class="songlist-item rounded-sm"
-    :class="[{ current: isCurrent }, { contexton: context_menu_showing }]"
+    :class="[{ current: isCurrent() }, { contexton: context_menu_showing }]"
     @dblclick.prevent="emitUpdate"
     @contextmenu.prevent="showMenu"
   >
@@ -16,20 +16,16 @@
         <img :src="imguri + track.image" class="album-art image rounded-sm" />
         <div
           class="now-playing-track-indicator image"
-          v-if="isCurrent"
-          :class="{ last_played: !isCurrentPlaying }"
+          v-if="isCurrent()"
+          :class="{ last_played: !isCurrentPlaying() }"
         ></div>
       </div>
       <div v-tooltip class="song-title">
-        <div class="with-flag">
-          <span
-            class="title ellip"
-            @click.prevent="emitUpdate"
-            ref="artisttitle"
-          >
+        <div class="with-flag" @click.prevent="emitUpdate">
+          <span class="title ellip" ref="artisttitle">
             {{ track.title }}
           </span>
-          <span v-if="(track.bitrate > 1024)" class="master-flag"><b>M</b> </span>
+          <span v-if="track.bitrate > 1024" class="master-flag"><b>M</b> </span>
         </div>
         <div class="isSmallArtists" style="display: none">
           <ArtistName
@@ -78,16 +74,17 @@ import HeartSvg from "@/assets/icons/heart.svg";
 import OptionSvg from "@/assets/icons/more.svg";
 import ArtistName from "./ArtistName.vue";
 
+import useQueueStore from "@/stores/queue";
+
 const imguri = paths.images.thumb.small;
 const context_menu_showing = ref(false);
+const queue = useQueueStore();
 
 const artisttitle = ref<HTMLElement | null>(null);
 
 const props = defineProps<{
   track: Track;
   index: Number | String;
-  isCurrent: Boolean;
-  isCurrentPlaying: Boolean;
   hide_album?: Boolean;
 }>();
 
@@ -101,6 +98,14 @@ function emitUpdate() {
 
 function showMenu(e: MouseEvent) {
   showContext(e, props.track, context_menu_showing);
+}
+
+function isCurrent() {
+  return queue.currenttrackhash == props.track.trackhash;
+}
+
+function isCurrentPlaying() {
+  return isCurrent() && queue.playing;
 }
 </script>
 
@@ -128,7 +133,7 @@ function showMenu(e: MouseEvent) {
       color: rgb(255, 153, 0);
       padding: 2px 5px;
       border-radius: 5px;
-      opacity: .75;
+      opacity: 0.75;
     }
 
     cursor: pointer;

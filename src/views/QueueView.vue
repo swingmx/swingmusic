@@ -16,10 +16,6 @@
       <SongItem
         :track="item.track"
         :index="index + 1"
-        :isCurrent="queue.currenttrackhash === item.track.trackhash"
-        :isCurrentPlaying="
-          queue.currenttrackhash === item.track.trackhash && queue.playing
-        "
         @playThis="playFromQueue(index)"
       />
     </RecycleScroller>

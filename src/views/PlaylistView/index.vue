@@ -38,7 +38,6 @@ const playlist = usePlaylistStore();
 interface ScrollerItem {
   id: string | number;
   component: typeof Header | typeof SongItem;
-  // props: Record<string, unknown>;
   size: number;
 }
 
@@ -58,8 +57,6 @@ const scrollerItems = computed(() => {
         props: {
           track: track,
           index: track.index + 1,
-          isCurrent: queue.currenttrackhash === track.trackhash,
-          isCurrentPlaying: queue.currenttrackhash === track.trackhash && queue.playing,
         },
         size: 64,
       };

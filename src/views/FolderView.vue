@@ -41,6 +41,7 @@ import useQueueStore from "@/stores/queue";
 
 import FolderList from "@/components/FolderView/FolderList.vue";
 import SongItem from "@/components/shared/SongItem.vue";
+import { createTrackProps } from "@/utils";
 
 const loader = useLoaderStore();
 const folder = useFolderStore();
@@ -59,13 +60,7 @@ class songItem {
 
   constructor(track: Track) {
     this.id = Math.random();
-    this.props = {
-      track,
-      index: track.index + 1,
-      isCurrent: queue.currenttrackhash === track.trackhash,
-      isCurrentPlaying:
-        queue.currenttrackhash === track.trackhash && queue.playing,
-    };
+    this.props = createTrackProps(track)
   }
 }
 

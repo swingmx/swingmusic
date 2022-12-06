@@ -50,10 +50,6 @@
                 ? t.data.index + 1
                 : t.index + 1
             "
-            :isCurrent="queue.currenttrackhash === t.data.trackhash"
-            :isCurrentPlaying="
-              queue.currenttrackhash === t.data.trackhash && queue.playing
-            "
             @playThis="
               updateQueue(
                 t.data.index !== undefined
