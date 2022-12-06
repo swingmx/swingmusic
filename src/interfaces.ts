@@ -110,6 +110,12 @@ export interface fromSearch {
   query: string;
 }
 
+export interface fromArtist {
+  type: FromOptions.artist;
+  artisthash: string;
+  artistname: string;
+}
+
 export interface subPath {
   name: string;
   path: string;

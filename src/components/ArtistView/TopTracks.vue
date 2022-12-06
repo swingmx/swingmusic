@@ -23,8 +23,8 @@ const artist = useArtistPageStore();
 
 <style lang="scss">
 .artist-top-tracks {
-  margin-bottom: 1rem;
   margin-top: 2rem;
+
   .section-title {
     margin-left: 0;
   }

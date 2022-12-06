@@ -1,8 +1,5 @@
 <template>
-  <button
-    class="playbtnrect"
-    @click="usePlayFrom(source, useQStore, store)"
-  >
+  <button class="playbtnrect" @click="usePlayFrom(source, useQStore, store)">
     <playBtnSvg />
     <div class="text">Play</div>
   </button>
@@ -14,20 +11,18 @@ import usePlayFrom from "@/composables/usePlayFrom";
 import useFStore from "@/stores/pages/folder";
 import useAStore from "@/stores/pages/album";
 import usePStore from "@/stores/pages/playlist";
+import useArtistPageStore from "@/stores/pages/artist";
 import useQStore from "@/stores/queue";
 import playBtnSvg from "@/assets/icons/play.svg";
 
 defineProps<{
   source: playSources;
-  background?: {
-    color: string;
-    isDark?: boolean;
-  };
   store:
     | typeof useQStore
     | typeof useFStore
     | typeof useAStore
-    | typeof usePStore;
+    | typeof usePStore
+    | typeof useArtistPageStore;
 }>();
 </script>
 

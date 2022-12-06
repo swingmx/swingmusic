@@ -21,6 +21,12 @@ const getArtistData = async (hash: string) => {
 };
 
 const getArtistAlbums = async (hash: string, limit = 6) => {
+  interface ArtistAlbums {
+    albums: Album[];
+    eps: Album[];
+    singles: Album[];
+  }
+
   const { data, error } = await useAxios({
     get: true,
     url: paths.api.artist + `/${hash}/albums?limit=${limit}`,
@@ -30,7 +36,20 @@ const getArtistAlbums = async (hash: string, limit = 6) => {
     console.error(error);
   }
 
-  return data.albums as Album[];
+  return data as ArtistAlbums;
 };
 
-export { getArtistData, getArtistAlbums };
+const getArtistTracks = async (hash: string, offset: number = 0, limit = 6) => {
+  const { data, error } = await useAxios({
+    get: true,
+    url: paths.api.artist + `/${hash}/tracks?offset=${offset}&limit=${limit}`,
+  });
+
+  if (error) {
+    console.error(error);
+  }
+
+  return data.tracks as Track[];
+};
+
+export { getArtistData, getArtistAlbums, getArtistTracks };

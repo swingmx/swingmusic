@@ -20,7 +20,7 @@
           {{ formatSeconds(artist.info.duration, true) }}
         </div>
       </section>
-      <PlayBtnRect />
+      <PlayBtnRect :source="playSources.artist" :store="useArtistPageStore" />
     </div>
     <div class="artist-img no-select">
       <img :src="paths.images.artist.large + artist.info.image" />
@@ -28,7 +28,7 @@
     <div
       class="gradient"
       :style="{
-        backgroundImage: `linear-gradient(to left, transparent 10%,
+        backgroundImage: `linear-gradient(to left, transparent 40%,
       ${artist.info.colors[0]} 50%,
       ${artist.info.colors[0]} 100%)`,
       }"
@@ -42,6 +42,7 @@ import PlayBtnRect from "../shared/PlayBtnRect.vue";
 import formatSeconds from "@/utils/useFormatSeconds";
 import { isLight } from "@/composables/colors/album";
 import { paths } from "@/config";
+import { playSources } from "@/composables/enums";
 
 const artist = useArtistPageStore();
 </script>
@@ -55,9 +56,11 @@ const artist = useArtistPageStore();
 
   .artist-img {
     height: 18rem;
+
     img {
       height: 100%;
       width: 100%;
+      aspect-ratio: 1;
       object-fit: cover;
       object-position: 0% 20%;
     }

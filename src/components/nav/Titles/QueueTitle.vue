@@ -24,6 +24,7 @@ import AlbumSvg from "@/assets/icons/album.svg";
 import FolderSvg from "@/assets/icons/folder.svg";
 import PlaylistSvg from "@/assets/icons/playlist.svg";
 import SearchSvg from "@/assets/icons/search.svg";
+import ArtistSvg from "@/assets/icons/artist.svg";
 
 import { RouteLocationRaw } from "vue-router";
 
@@ -78,6 +79,18 @@ function getSource() {
           params: {
             query: source.query,
             page: "tracks",
+          },
+        },
+      };
+
+    case FromOptions.artist:
+      return {
+        name: source.artistname,
+        icon: ArtistSvg,
+        location: {
+          name: Routes.artist,
+          params: {
+            hash: source.artisthash,
           },
         },
       };

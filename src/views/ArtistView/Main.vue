@@ -39,6 +39,7 @@ import ArtistAlbums from "@/components/AlbumView/ArtistAlbums.vue";
 import ArtistAlbumsFetcher from "@/components/ArtistView/ArtistAlbumsFetcher.vue";
 import { computed } from "vue";
 import { onBeforeRouteLeave, onBeforeRouteUpdate } from "vue-router";
+import { Album } from "@/interfaces";
 
 const store = useArtistPageStore();
 
@@ -63,6 +64,17 @@ const artist_albums_fetcher: ScrollerItem = {
   component: ArtistAlbumsFetcher,
 };
 
+function createAbumComponent(title: string, albums: Album[]) {
+  return {
+    id: title,
+    component: ArtistAlbums,
+    props: {
+      title,
+      albums,
+    },
+  };
+}
+
 const scrollerItems = computed(() => {
   let components = [header];
 
@@ -73,13 +85,18 @@ const scrollerItems = computed(() => {
   components = [...components, artist_albums_fetcher];
 
   if (store.albums.length > 0) {
-    const artistAlbums: ScrollerItem = {
-      id: "artist-albums",
-      component: ArtistAlbums,
-      props: { title: "Albums", albums: store.albums },
-    };
+    const albums = createAbumComponent("Albums", store.albums);
+    components.push(albums);
+  }
 
-    components.push(artistAlbums);
+  if (store.eps.length > 0) {
+    const eps = createAbumComponent("EPs", store.eps);
+    components.push(eps);
+  }
+
+  if (store.singles.length > 0) {
+    const singles = createAbumComponent("Singles", store.singles);
+    components.push(singles);
   }
 
   return components;
@@ -97,8 +114,14 @@ onBeforeRouteLeave(async () => {
 </script>
 
 <style lang="scss">
-.section-title {
-  margin: 1rem;
-  padding-left: 1rem;
+.artist-page {
+  .artist-albums {
+    margin-top: 2rem;
+  }
+
+  .section-title {
+    margin: 1rem;
+    padding-left: 1rem;
+  }
 }
 </style>
