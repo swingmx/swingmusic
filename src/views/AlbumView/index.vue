@@ -22,11 +22,7 @@
 
 <script setup lang="ts">
 import { computed } from "@vue/reactivity";
-import {
-  onBeforeRouteLeave,
-  onBeforeRouteUpdate,
-  RouteLocationNormalized,
-} from "vue-router";
+import { onBeforeRouteLeave, onBeforeRouteUpdate } from "vue-router";
 
 import { Track } from "@/interfaces";
 import { createTrackProps } from "@/utils";
@@ -74,7 +70,7 @@ class songItem {
 const genreBanner: ScrollerItem = {
   id: "genre-banner",
   component: GenreBanner,
-  size: 64,
+  size: 80,
 };
 
 function getSongItems() {

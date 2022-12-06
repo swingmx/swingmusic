@@ -1,7 +1,7 @@
 import { useBreakpoints } from "@vueuse/core";
 
 const breakpoints = useBreakpoints({
-  xl: 1536,
+  xl: 1280,
   xxl: 1720,
 });
 

@@ -2,6 +2,7 @@
   <div class="header-input-wrapper rounded-sm" :class="{ showInput: clicked }">
     <button
       class="search-btn circular"
+      id="page-search-trigger"
       :class="{ 'btn-active': clicked }"
       @click="handleFocus"
     >

@@ -1,5 +1,4 @@
 import { useFuse } from "@vueuse/integrations/useFuse";
-import { Ref } from "vue";
 
 /**
  * Fuzzy search using Fuse.js

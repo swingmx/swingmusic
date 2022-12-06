@@ -3,15 +3,20 @@ import useQStore from "@/stores/queue";
 let key_down_fired = false;
 
 function focusPageSearchBox() {
-  const elem = document.getElementById("page-search") as HTMLInputElement;
-
-  elem.focus();
+  const elem = document.getElementById(
+    "page-search-trigger"
+  ) as HTMLButtonElement;
+  if (elem) {
+    elem.dispatchEvent(new MouseEvent("click", { bubbles: false }));
+  }
 }
 
 export default function (queue: typeof useQStore) {
   const q = queue();
   window.addEventListener("keydown", (e: KeyboardEvent) => {
     const target = e.target as HTMLElement;
+    // if alt is pressed, don't do anything
+    if (e.altKey) return;
     let ctrlKey = e.ctrlKey;
 
     function FocusedOnInput(target: HTMLElement) {

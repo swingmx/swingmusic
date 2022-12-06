@@ -21,8 +21,15 @@
         ></div>
       </div>
       <div v-tooltip class="song-title">
-        <div class="title ellip" @click.prevent="emitUpdate" ref="artisttitle">
-          {{ track.title }}
+        <div class="with-flag">
+          <span
+            class="title ellip"
+            @click.prevent="emitUpdate"
+            ref="artisttitle"
+          >
+            {{ track.title }}
+          </span>
+          <span v-if="(track.bitrate > 1024)" class="master-flag"><b>M</b> </span>
         </div>
         <div class="isSmallArtists" style="display: none">
           <ArtistName
@@ -71,7 +78,6 @@ import HeartSvg from "@/assets/icons/heart.svg";
 import OptionSvg from "@/assets/icons/more.svg";
 import ArtistName from "./ArtistName.vue";
 
-const context_on = ref(false);
 const imguri = paths.images.thumb.small;
 const context_menu_showing = ref(false);
 
@@ -110,7 +116,27 @@ function showMenu(e: MouseEvent) {
   padding-left: $small;
 
   .song-title {
+    .with-flag {
+      display: flex;
+      align-items: center;
+    }
+
+    .master-flag {
+      font-size: 10px;
+      margin-left: $smaller;
+      background-color: rgba(184, 108, 21, 0.281);
+      color: rgb(255, 153, 0);
+      padding: 2px 5px;
+      border-radius: 5px;
+      opacity: .75;
+    }
+
     cursor: pointer;
+    // outline: solid 1px;
+
+    .title {
+      margin-bottom: 2px;
+    }
   }
 
   &:hover {

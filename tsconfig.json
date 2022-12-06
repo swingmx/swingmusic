@@ -13,6 +13,7 @@
     "esModuleInterop": false,
     "lib": ["ESNext", "DOM"],
     "skipLibCheck": true,
+    // "noEmit": true,
     "paths": {
       "baseUrl": ["./"],
       "@/*": ["./src/*"]
