@@ -15,7 +15,7 @@ export interface Track extends AlbumDisc {
   folder?: string;
   filepath?: string;
   duration?: number;
-  bitrate?: number;
+  bitrate: number;
   genre?: string;
   image: string;
   track: number;

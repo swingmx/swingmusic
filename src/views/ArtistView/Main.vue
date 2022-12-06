@@ -36,9 +36,9 @@ import Header from "@/components/ArtistView/Header.vue";
 import TopTracks from "@/components/ArtistView/TopTracks.vue";
 import useArtistPageStore from "@/stores/pages/artist";
 import ArtistAlbums from "@/components/AlbumView/ArtistAlbums.vue";
-import ArtistAlbumsFetcher from "./ArtistAlbumsFetcher.vue";
+import ArtistAlbumsFetcher from "@/components/ArtistView/ArtistAlbumsFetcher.vue";
 import { computed } from "vue";
-import { onBeforeRouteUpdate } from "vue-router";
+import { onBeforeRouteLeave, onBeforeRouteUpdate } from "vue-router";
 
 const store = useArtistPageStore();
 
@@ -86,8 +86,13 @@ const scrollerItems = computed(() => {
 });
 
 onBeforeRouteUpdate(async (to) => {
-
   await store.getData(to.params.hash as string);
+});
+
+onBeforeRouteLeave(async () => {
+  setTimeout(() => {
+    store.resetAlbums();
+  }, 400);
 });
 </script>
 

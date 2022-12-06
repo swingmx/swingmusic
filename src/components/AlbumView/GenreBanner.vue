@@ -36,10 +36,11 @@ onMounted(async () => {
 .genres-banner.nocontrast {
   color: $black;
 }
+
 .genres-banner {
   display: flex;
   gap: 1rem;
-  margin-top: 1rem;
+  margin-top: 2rem;
   font-size: 0.9rem;
   padding-left: $medium;
   text-transform: capitalize;

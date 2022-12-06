@@ -43,8 +43,8 @@ export const FuseTrackOptions = {
   keys: [
     { name: "title", weight: 1 },
     { name: "album", weight: 0.7 },
-    { name: "artists", weight: 0.5 },
-    { name: "albumartists", weight: 0.25 },
+    { name: "artist.name", weight: 0.5 },
+    { name: "albumartist", weight: 0.25 },
   ],
 };
 
