@@ -190,7 +190,7 @@ export default defineStore("Queue", {
       const next: Track = this.tracklist[nextindex];
 
       // if track is already next, skip
-      if (next?.id === track.id) {
+      if (next?.trackhash === track.trackhash) {
         Toast.showNotification("Track is already queued", NotifType.Info);
         return;
       }
