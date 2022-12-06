@@ -6,8 +6,6 @@
         v-for="(song, index) in artist.tracks"
         :track="song"
         :index="index + 1"
-        :isCurrent="false"
-        :isCurrentPlaying="false"
       />
     </div>
     <div class="error" v-if="!artist.tracks.length">No tracks</div>
