@@ -8,6 +8,7 @@ export default defineStore("settings", {
     use_sidebar: true,
     extend_width: false,
     contextChildrenShowMode: contextChildrenShowMode.click,
+    artist_top_tracks_count: 5,
   }),
   actions: {
     toggleUseNPImg() {

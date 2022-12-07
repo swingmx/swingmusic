@@ -1,8 +1,9 @@
 import { defineStore } from "pinia";
 
-import { Artist, Album, Track } from "@/interfaces";
-import { getArtistData, getArtistAlbums } from "@/composables/fetch/artists";
+import { getArtistAlbums, getArtistData } from "@/composables/fetch/artists";
+import { Album, Artist, Track } from "@/interfaces";
 import { maxAbumCards } from "@/stores/content-width";
+import useSettingsStore from "@/stores/settings";
 
 export default defineStore("artistPage", {
   state: () => ({
@@ -11,16 +12,21 @@ export default defineStore("artistPage", {
     albums: <Album[]>[],
     eps: <Album[]>[],
     singles: <Album[]>[],
+    appearances: <Album[]>[],
   }),
   actions: {
     async getData(hash: string) {
-      const { artist, tracks } = await getArtistData(hash);
+      const settings = useSettingsStore();
+      const { artist, tracks } = await getArtistData(
+        hash,
+        settings.artist_top_tracks_count
+      );
 
       this.info = artist;
       this.tracks = tracks;
     },
     async getArtistAlbums() {
-      const { albums, eps, singles } = await getArtistAlbums(
+      const { albums, eps, singles, appearances } = await getArtistAlbums(
         this.info.artisthash,
         maxAbumCards.value
       );
@@ -28,6 +34,7 @@ export default defineStore("artistPage", {
       this.albums = albums;
       this.eps = eps;
       this.singles = singles;
+      this.appearances = appearances;
 
       // if (albums.length > 0) {
       // }

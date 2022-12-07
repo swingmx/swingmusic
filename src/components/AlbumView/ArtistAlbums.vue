@@ -1,5 +1,7 @@
 <template>
-  <div class="artist-albums">
+  <div
+    class="artist-albums"
+  >
     <h3>
       <span>{{ title }} </span>
       <span class="see-more">SEE ALL</span>

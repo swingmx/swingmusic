@@ -129,21 +129,6 @@ useVisibility(albumheaderthing, handleVisibilityState);
   background-color: $black;
   align-items: flex-end;
 
-  // .albumartists {
-  //   outline: solid 1px;
-  //   // display: flex;
-  //   // width: 100%;
-  //   // flex-wrap: nowrap;
-  //   // height: 1rem;
-  //   // overflow: hidden;
-
-  //   span {
-  //     // white-space: nowrap;
-  //     // overflow: hidden;
-  //     // text-overflow: ellipsis;
-  //   }
-  // }
-
   .big-img {
     height: calc(100%);
     width: 16rem;
