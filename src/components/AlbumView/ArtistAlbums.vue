@@ -1,10 +1,8 @@
 <template>
-  <div
-    class="artist-albums"
-  >
+  <div class="artist-albums">
     <h3>
       <span>{{ title }} </span>
-      <span class="see-more">SEE ALL</span>
+      <span class="see-more" v-if="maxAbumCards <= albums.length">SEE ALL</span>
     </h3>
     <div class="cards">
       <AlbumCard v-for="a in albums.slice(0, maxAbumCards)" :album="a" />
@@ -44,6 +42,12 @@ defineProps<{
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(10rem, 1fr));
     gap: 5rem 0;
+  }
+
+  .album-card {
+    &:hover {
+      background-color: $gray;
+    }
   }
 }
 </style>
