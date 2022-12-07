@@ -1,22 +1,11 @@
 <template>
-  <router-link
+  <RouterLink
     :to="{
       name: 'AlbumView',
       params: { hash: album.albumhash },
     }"
-    class="result-item"
-    :class="{
-      nocontrast: album.colors ? isLight(album.colors[0]) : false,
-    }"
+    class="album-card"
   >
-    <div
-      class="bg rounded"
-      :style="{
-        backgroundColor: `${
-          album.colors[0] ? album.colors[0] : 'rgb(72, 72, 74)'
-        }`,
-      }"
-    ></div>
     <div class="with-img">
       <img class="rounded-sm shadow-lg" :src="imguri + album.image" alt="" />
       <PlayBtn
@@ -41,17 +30,16 @@
         </RouterLink>
       </div>
     </div>
-  </router-link>
+  </RouterLink>
 </template>
 
 <script setup lang="ts">
 import { paths } from "../../config";
 import { Album } from "../../interfaces";
-import { isLight } from "@/composables/colors/album";
 import PlayBtn from "./PlayBtn.vue";
 
-import useAlbumStore from "@/stores/pages/album";
 import { playSources, Routes } from "@/composables/enums";
+import useAlbumStore from "@/stores/pages/album";
 
 const imguri = paths.images.thumb.large;
 defineProps<{
@@ -60,20 +48,13 @@ defineProps<{
 </script>
 
 <style lang="scss">
-.result-item.nocontrast {
-  &:hover {
-    color: $black;
-  }
-}
-
-.result-item {
+.album-card {
   display: grid;
   gap: $small;
   padding: $medium;
   border-radius: 1rem;
   height: fit-content;
   position: relative;
-  color: $white;
 
   .with-img {
     position: relative;
@@ -103,17 +84,8 @@ defineProps<{
     }
   }
 
-  .bg {
-    height: 100%;
-    width: 100%;
-    position: absolute;
-    opacity: 0;
-  }
-
   &:hover {
-    .bg {
-      opacity: 1;
-    }
+    background-color: $gray4;
   }
 
   img {
