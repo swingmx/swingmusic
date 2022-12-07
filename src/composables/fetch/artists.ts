@@ -2,7 +2,7 @@ import { paths } from "@/config";
 import useAxios from "./useAxios";
 import { Artist, Track, Album } from "@/interfaces";
 
-const getArtistData = async (hash: string) => {
+const getArtistData = async (hash: string, limit: number = 5) => {
   interface ArtistData {
     artist: Artist;
     tracks: Track[];
@@ -10,7 +10,7 @@ const getArtistData = async (hash: string) => {
 
   const { data, error } = await useAxios({
     get: true,
-    url: paths.api.artist + `/${hash}`,
+    url: paths.api.artist + `/${hash}?limit=${limit}`,
   });
 
   if (error) {
@@ -25,6 +25,7 @@ const getArtistAlbums = async (hash: string, limit = 6) => {
     albums: Album[];
     eps: Album[];
     singles: Album[];
+    appearances: Album[];
   }
 
   const { data, error } = await useAxios({

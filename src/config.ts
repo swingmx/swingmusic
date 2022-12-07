@@ -95,4 +95,6 @@ const paths = {
   },
 };
 
+
+
 export { paths, toggleMode };

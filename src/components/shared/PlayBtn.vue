@@ -1,5 +1,8 @@
 <template>
-  <button class="play-btn" @click="usePlayFrom(source, useQStore, store)">
+  <button
+    class="play-btn circular"
+    @click.prevent.stop="usePlayFrom(source, useQStore, store)"
+  >
     <PlaySvg />
   </button>
 </template>
@@ -17,6 +20,7 @@ import PlaySvg from "../../assets/icons/play.svg";
 defineProps<{
   source: playSources;
   store: typeof useAlbumStore | typeof usePlaylistStore;
+  color: string;
 }>();
 </script>
 
@@ -24,10 +28,12 @@ defineProps<{
 .play-btn {
   aspect-ratio: 1;
   padding: 0;
-  border-radius: 0.65rem;
+  background: $black;
 
   svg {
     transition: none;
   }
+
+
 }
 </style>

@@ -19,12 +19,11 @@ $g-border: solid 1px $gray5;
 }
 
 #acontent {
+  width: 100%;
   grid-area: content;
-  margin-right: calc(0rem - ($medium + 2px));
   padding-right: calc($medium);
 
   overflow: hidden;
-  margin-right: $smaller !important;
 }
 
 .vue-recycle-scroller__item-wrapper {
@@ -33,6 +32,9 @@ $g-border: solid 1px $gray5;
 
 .vue-recycle-scroller {
   padding-left: 1.25rem;
+  // padding-right: 1rem;
+
+  // margin-right: 1rem;
 }
 
 .r-sidebar {
@@ -101,7 +103,7 @@ $g-border: solid 1px $gray5;
   .scroller {
     height: 100%;
     width: 100%;
-    padding-right: $small !important;
+    padding-right: 1.25rem;
     padding-bottom: $content-padding-bottom;
   }
 }

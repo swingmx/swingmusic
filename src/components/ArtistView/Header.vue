@@ -1,4 +1,13 @@
 <template>
+  <div
+    class="artist-header-ambient rounded"
+    style="height: 100%; width: 100%"
+    :style="{
+      boxShadow: artist.info.colors
+        ? `0 .5rem 2rem ${artist.info.colors[0]}`
+        : '',
+    }"
+  ></div>
   <div class="artist-page-header rounded no-scroll">
     <div
       class="artist-info"
@@ -28,7 +37,7 @@
     <div
       class="gradient"
       :style="{
-        backgroundImage: `linear-gradient(to left, transparent 40%,
+        backgroundImage: `linear-gradient(to left, transparent 30%,
       ${artist.info.colors[0]} 50%,
       ${artist.info.colors[0]} 100%)`,
       }"
@@ -48,6 +57,13 @@ const artist = useArtistPageStore();
 </script>
 
 <style lang="scss">
+.artist-header-ambient {
+  height: 17rem;
+  position: absolute;
+  opacity: 0.25;
+  margin-right: -1rem;
+
+}
 .artist-page-header {
   height: 18rem;
   display: grid;

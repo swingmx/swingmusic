@@ -99,6 +99,11 @@ const scrollerItems = computed(() => {
     components.push(singles);
   }
 
+  if (store.appearances.length > 0) {
+    const appearances = createAbumComponent("Appearances", store.appearances);
+    components.push(appearances);
+  }
+
   return components;
 });
 
