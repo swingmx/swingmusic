@@ -6,8 +6,14 @@
     }"
     class="album-card"
   >
-    <div class="with-img">
-      <img class="rounded-sm shadow-lg" :src="imguri + album.image" alt="" />
+    <div class="with-img rounded-sm no-scroll">
+      <div
+        class="gradient"
+        :style="{
+          background: `linear-gradient(to top, ${album.colors[0]} 20%, transparent)`,
+        }"
+      ></div>
+      <img class="shadow-lg" :src="imguri + album.image" alt="" />
       <PlayBtn
         :store="useAlbumStore"
         :source="playSources.album"
@@ -53,16 +59,32 @@ defineProps<{
   gap: $small;
   padding: $medium;
   border-radius: 1rem;
-  height: fit-content;
-  position: relative;
 
   .with-img {
     position: relative;
-    padding: 0;
+
+    img {
+      display: block;
+    }
+
+    .gradient {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      opacity: 0;
+    }
 
     &:hover {
       .play-btn {
         transform: translateY(0);
+        opacity: 1;
+      }
+
+      img {
+        border-radius: 0 0 $medium $medium;
+      }
+
+      .gradient {
         opacity: 1;
       }
     }
