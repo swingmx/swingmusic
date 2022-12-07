@@ -1,8 +1,5 @@
 <template>
-  <button
-    class="play-btn circular"
-    @click.prevent.stop="usePlayFrom(source, useQStore, store)"
-  >
+  <button class="play-btn circular shadow-sm" @click.prevent.stop="handlePlay">
     <PlaySvg />
   </button>
 </template>
@@ -16,12 +13,29 @@ import { playSources } from "@/composables/enums";
 import usePlayFrom from "@/composables/usePlayFrom";
 
 import PlaySvg from "../../assets/icons/play.svg";
+import { playFromAlbumCard } from "@/composables/usePlayFrom";
 
-defineProps<{
+const props = defineProps<{
   source: playSources;
+  albumHash?: string;
+  albumName?: string;
   store: typeof useAlbumStore | typeof usePlaylistStore;
-  color: string;
 }>();
+
+function handlePlay() {
+  switch (props.source) {
+    case playSources.album:
+      playFromAlbumCard(
+        useQStore,
+        props.albumHash || "",
+        props.albumName || ""
+      );
+      break;
+
+    default:
+      break;
+  }
+}
 </script>
 
 <style lang="scss">
@@ -33,7 +47,5 @@ defineProps<{
   svg {
     transition: none;
   }
-
-
 }
 </style>
