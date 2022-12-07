@@ -15,8 +15,9 @@ export default function (queue: typeof useQStore) {
   const q = queue();
   window.addEventListener("keydown", (e: KeyboardEvent) => {
     const target = e.target as HTMLElement;
-    // if alt is pressed, don't do anything
     if (e.altKey) return;
+    if (e.shiftKey) return;
+
     let ctrlKey = e.ctrlKey;
 
     function FocusedOnInput(target: HTMLElement) {

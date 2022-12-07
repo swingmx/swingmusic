@@ -1,11 +1,15 @@
 import { playSources } from "@/composables/enums";
+
 import useAStore from "@/stores/pages/album";
 import useArtistPageStore from "@/stores/pages/artist";
 import useFStore from "@/stores/pages/folder";
 import usePStore from "@/stores/pages/playlist";
 import useQStore from "@/stores/queue";
 import useSettingsStore from "@/stores/settings";
+import { useNotifStore } from "@/stores/notification";
+
 import { getArtistTracks } from "./fetch/artists";
+import { getAlbumTracks } from "./fetch/album";
 
 const queue = useQStore;
 const folder = useFStore;
@@ -86,4 +90,16 @@ async function utilPlayFromArtist(
   qu.play(index);
 }
 
-export { utilPlayFromArtist };
+async function playFromAlbumCard(
+  queue: typeof useQStore,
+  albumhash: string,
+  albumname: string
+) {
+  const qu = queue();
+
+  const tracks = await getAlbumTracks(albumhash, useNotifStore);
+  qu.playFromAlbum(albumname, albumhash, tracks.tracks);
+  qu.play();
+}
+
+export { utilPlayFromArtist, playFromAlbumCard };

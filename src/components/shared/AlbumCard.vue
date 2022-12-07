@@ -18,31 +18,45 @@
       }"
     ></div>
     <div class="with-img">
-      <img class="rounded" :src="imguri + album.image" alt="" />
-      <PlayBtnVue />
+      <img class="rounded-sm shadow-lg" :src="imguri + album.image" alt="" />
+      <PlayBtn
+        :store="useAlbumStore"
+        :source="playSources.album"
+        :albumHash="album.albumhash"
+        :albumName="album.title"
+      />
     </div>
     <div>
       <h4 class="title ellip" v-tooltip>
         {{ album.title }}
       </h4>
-      <div class="artist ellip">{{ album.albumartists[0].name }}</div>
+      <div class="artist ellip" @click.prevent.stop="() => {}">
+        <RouterLink
+          :to="{
+            name: Routes.artist,
+            params: { hash: album.albumartists[0].artisthash },
+          }"
+        >
+          {{ album.albumartists[0].name }}
+        </RouterLink>
+      </div>
     </div>
   </router-link>
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
 import { paths } from "../../config";
 import { Album } from "../../interfaces";
 import { isLight } from "@/composables/colors/album";
-import PlayBtnVue from "./PlayBtn.vue";
+import PlayBtn from "./PlayBtn.vue";
+
+import useAlbumStore from "@/stores/pages/album";
+import { playSources, Routes } from "@/composables/enums";
 
 const imguri = paths.images.thumb.large;
 defineProps<{
   album: Album;
 }>();
-
-const isHovered = ref(false);
 </script>
 
 <style lang="scss">
@@ -64,15 +78,22 @@ const isHovered = ref(false);
   .with-img {
     position: relative;
     padding: 0;
+
+    &:hover {
+      .play-btn {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
   }
 
   .play-btn {
     $btn-width: 4rem;
     position: absolute;
-    top: 1rem;
+    bottom: 1rem;
     right: calc((100% - $btn-width) / 2);
     opacity: 0;
-    transform: translateY(-1rem);
+    transform: translateY(1rem);
     transition: all 0.25s;
     width: $btn-width;
 
@@ -86,18 +107,11 @@ const isHovered = ref(false);
     height: 100%;
     width: 100%;
     position: absolute;
-    z-index: -1;
     opacity: 0;
   }
 
   &:hover {
     .bg {
-      opacity: 1;
-    }
-
-    .play-btn {
-      // transition-delay: 0.25s;
-      transform: translateY(0);
       opacity: 1;
     }
   }
@@ -115,12 +129,21 @@ const isHovered = ref(false);
     margin-bottom: $smaller;
     font-size: 0.9rem;
     width: fit-content;
+    position: relative;
   }
 
   .artist {
     font-size: 0.8rem;
     text-align: left;
     opacity: 0.75;
+
+    a {
+      cursor: pointer !important;
+
+      &:hover {
+        text-decoration: underline;
+      }
+    }
   }
 }
 </style>
