@@ -1,15 +1,15 @@
-import { playSources } from "@/composables/enums";
+import { NotifType, playSources } from "@/composables/enums";
 
+import { useNotifStore } from "@/stores/notification";
 import useAStore from "@/stores/pages/album";
 import useArtistPageStore from "@/stores/pages/artist";
 import useFStore from "@/stores/pages/folder";
 import usePStore from "@/stores/pages/playlist";
 import useQStore from "@/stores/queue";
 import useSettingsStore from "@/stores/settings";
-import { useNotifStore } from "@/stores/notification";
 
-import { getArtistTracks } from "./fetch/artists";
 import { getAlbumTracks } from "./fetch/album";
+import { getArtistTracks } from "./fetch/artists";
 
 const queue = useQStore;
 const folder = useFStore;
@@ -97,8 +97,14 @@ async function playFromAlbumCard(
 ) {
   const qu = queue();
 
-  const tracks = await getAlbumTracks(albumhash, useNotifStore);
-  qu.playFromAlbum(albumname, albumhash, tracks.tracks);
+  const tracks = await getAlbumTracks(albumhash);
+
+  if (tracks.length === 0) {
+    useNotifStore().showNotification("Album tracks not found", NotifType.Error);
+    return;
+  }
+
+  qu.playFromAlbum(albumname, albumhash, tracks);
   qu.play();
 }
 
