@@ -21,7 +21,7 @@ const useNotifStore = defineStore("notification", {
 });
 
 class Notification {
-  constructor(text: string, type?: NotifType) {
+  constructor(text: string, type: NotifType = NotifType.Info) {
     useNotifStore().showNotification(text, type);
   }
 }

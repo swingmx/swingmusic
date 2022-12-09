@@ -8,8 +8,8 @@
       name="name"
       id="modal-playlist-name-input"
     />
-    <br />
-    <button type="submit">Create</button>
+    <br /><br>
+    <button type="submit" class="circular btn-active">Create</button>
   </form>
 </template>
 
@@ -95,6 +95,11 @@ function create(e: Event) {
   button {
     margin: 0 auto;
     width: 6rem;
+    transition: all .25s ease-out;
+
+    &:hover {
+      width: 10rem;
+    }
   }
 }
 </style>

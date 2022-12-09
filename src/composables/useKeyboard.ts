@@ -21,7 +21,7 @@ export default function (queue: typeof useQStore) {
     let ctrlKey = e.ctrlKey;
 
     function FocusedOnInput(target: HTMLElement) {
-      return target.tagName === "INPUT" || target.tagName === "TEXTAREA";
+      return target.tagName === "INPUT" || target.tagName === "TEXTAREA" || target.tagName === "BUTTON";
     }
 
     if (FocusedOnInput(target)) return;

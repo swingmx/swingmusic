@@ -3,7 +3,7 @@
     <div class="bg" @click="modal.hideModal"></div>
     <div class="m-content rounded">
       <div class="heading">{{ modal.title }}</div>
-      <div class="cancel image" @click="modal.hideModal"></div>
+      <div class="close image" @click="modal.hideModal"></div>
       <NewPlaylist
         v-if="modal.component == modal.options.newPlaylist"
         :track="modal.props.track"
@@ -23,6 +23,7 @@
 
 <script setup lang="ts">
 import useModalStore from "../stores/modal";
+
 import NewPlaylist from "./modals/NewPlaylist.vue";
 import UpdatePlaylist from "./modals/updatePlaylist.vue";
 import WelcomeModal from "./WelcomeModal.vue";
@@ -53,6 +54,7 @@ function hideModal() {
   width: 100vw;
   display: grid;
   place-items: center;
+  // padding: 1rem;
 
   .bg {
     position: absolute;
@@ -65,12 +67,12 @@ function hideModal() {
 
   .m-content {
     width: 100%;
-    max-width: 35rem;
-    padding: 1rem;
+    max-width: 30rem;
+    padding: 2rem;
     position: relative;
-    background-color: $gray;
+    background-color: $black;
 
-    .cancel {
+    .close {
       width: 2rem;
       height: 2rem;
       position: absolute;
