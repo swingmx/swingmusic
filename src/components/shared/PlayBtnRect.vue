@@ -1,5 +1,5 @@
 <template>
-  <button class="playbtnrect" @click="usePlayFrom(source, useQStore, store)">
+  <button class="playbtnrect shadow-sm" @click="usePlayFrom(source, useQStore, store)">
     <playBtnSvg />
     <div class="text">Play</div>
   </button>

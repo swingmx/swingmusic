@@ -87,10 +87,19 @@ const getAlbumsFromArtist = async (
   return [];
 };
 
+async function getAlbumTracks(albumhash: string): Promise<Track[]> {
+  const { data } = await useAxios({
+    url: albumUrl + `/${albumhash}a/` + "tracks",
+    get: true,
+  });
+
+  return data.tracks;
+}
+
 export {
-  getAlbumData as getAlbumTracks,
+  getAlbumData as getAlbum,
+  getAlbumTracks,
   getAlbumArtists,
   getAlbumBio,
   getAlbumsFromArtist,
 };
-

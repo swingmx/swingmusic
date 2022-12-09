@@ -8,9 +8,10 @@ export enum playSources {
 }
 
 export enum NotifType {
-  Success,
-  Info,
-  Error,
+  Success = "success",
+  Info = "info",
+  Error = "error",
+  Working = "working",
 }
 
 export enum FromOptions {
