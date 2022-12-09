@@ -35,7 +35,7 @@
         }"
       />
     </div>
-    <button>
+    <button class="circular btn-active">
       {{ clicked ? "Updating" : "Update" }}
     </button>
   </form>
