@@ -63,7 +63,7 @@
 </template>
 
 <script setup lang="ts">
-import { Routes } from "@/composables/enums";
+import { Routes } from "@/router/routes";
 import { paths } from "@/config";
 import { formatSeconds } from "@/utils";
 

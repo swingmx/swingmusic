@@ -47,8 +47,8 @@ import { ref } from "vue";
 
 import SongItem from "../shared/SongItem.vue";
 
-import { Routes } from "@/composables/enums";
 import { Track } from "@/interfaces";
+import { Routes } from "@/router/routes";
 import useQStore from "@/stores/queue";
 
 const queue = useQStore();

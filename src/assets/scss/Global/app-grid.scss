@@ -89,6 +89,7 @@ $g-border: solid 1px $gray5;
   .topnav {
     //reduce width to match #acontent
     width: calc(100% - 1rem);
+    padding-right: 0;
   }
 }
 
@@ -109,7 +110,6 @@ $g-border: solid 1px $gray5;
 }
 
 .v-scroll-page.isSmall {
-  // hide album and artists columns
   .songlist-item {
     grid-template-columns: 1.5rem 2fr 2.5rem 2.5rem;
   }

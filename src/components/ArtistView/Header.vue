@@ -37,9 +37,11 @@
     <div
       class="gradient"
       :style="{
-        backgroundImage: `linear-gradient(to left, transparent 30%,
+        backgroundImage: artist.info.colors[0]
+          ? `linear-gradient(to left, transparent 30%,
       ${artist.info.colors[0]} 50%,
-      ${artist.info.colors[0]} 100%)`,
+      ${artist.info.colors[0]} 100%)`
+          : '',
       }"
     ></div>
   </div>

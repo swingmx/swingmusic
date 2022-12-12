@@ -1,5 +1,5 @@
 <template>
-  <div v-auto-animate class="l-sidebar no-scroll">
+  <div class="l-sidebar no-scroll">
     <div class="withlogo">
       <Logo />
       <Navigation />

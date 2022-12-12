@@ -20,15 +20,15 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
 import { storeToRefs } from "pinia";
+import { ref } from "vue";
 
-import usePStore from "@/stores/pages/playlist";
 import useAlbumStore from "@/stores/pages/album";
 import useFolderStore from "@/stores/pages/folder";
+import usePStore from "@/stores/pages/playlist";
 
-import { Routes } from "@/composables/enums";
 import SearchSvg from "@/assets/icons/search.svg";
+import { Routes } from "@/router/routes";
 
 const clicked = ref(false);
 const [playlist, album, folder] = [
