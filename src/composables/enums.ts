@@ -20,7 +20,7 @@ export enum FromOptions {
   album = "album",
   search = "search",
   artist = "artist",
-  albumCard = "albumCard"
+  albumCard = "albumCard",
 }
 
 export enum ContextSrc {
@@ -42,4 +42,12 @@ export const FuseTrackOptions = {
 export enum contextChildrenShowMode {
   click = "click",
   hover = "hover",
+}
+
+export enum discographyAlbumTypes {
+  all = "All",
+  albums = "Albums",
+  singles = "Singles",
+  eps = "EPs",
+  appearances = "Appearances",
 }

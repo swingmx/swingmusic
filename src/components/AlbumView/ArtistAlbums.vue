@@ -2,8 +2,16 @@
   <div class="artist-albums">
     <h3>
       <span>{{ title }} </span>
-      <span class="see-more" v-if="maxAbumCards <= albums.length">
-        <RouterLink :to="{ name: Routes.artistDiscography }"
+      <span
+        class="see-more"
+        v-if="maxAbumCards <= albums.length"
+        @click="store.setPage(albumType)"
+      >
+        <RouterLink
+          :to="{
+            name: Routes.artistDiscography,
+            params: { hash: artisthash },
+          }"
           >SEE ALL</RouterLink
         >
       </span>
@@ -21,9 +29,16 @@ import { Album } from "@/interfaces";
 import { maxAbumCards } from "@/stores/content-width";
 import { Routes } from "@/router/routes";
 
+import { discographyAlbumTypes } from "@/composables/enums";
+import useArtistDiscographyStore from "@/stores/pages/artistDiscog";
+
+const store = useArtistDiscographyStore();
+
 defineProps<{
   title: string;
+  artisthash: string;
   albums: Album[];
+  albumType: discographyAlbumTypes;
 }>();
 </script>
 

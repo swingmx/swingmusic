@@ -20,7 +20,7 @@ const getArtistData = async (hash: string, limit: number = 5) => {
   return data as ArtistData;
 };
 
-const getArtistAlbums = async (hash: string, limit = 6) => {
+const getArtistAlbums = async (hash: string, all = false, limit = 6) => {
   interface ArtistAlbums {
     albums: Album[];
     eps: Album[];
@@ -30,7 +30,7 @@ const getArtistAlbums = async (hash: string, limit = 6) => {
 
   const { data, error } = await useAxios({
     get: true,
-    url: paths.api.artist + `/${hash}/albums?limit=${limit}`,
+    url: paths.api.artist + `/${hash}/albums?limit=${limit}&all=${all}`,
   });
 
   if (error) {

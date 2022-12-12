@@ -2,20 +2,23 @@
   <div class="artist-discography-nav">
     <h1 class="ellip">Creedence Clearwater Revival</h1>
     <div class="buttons">
-      <!-- create dropdown -->
-      <div class="select rounded-sm" v-auto-animate="{ duration: 100 }">
+      <div class="select rounded-sm" v-auto-animate="{ duration: 10 }">
         <button class="selected" @click.prevent="showDropDown = !showDropDown">
-          <span class="ellip">Albums and appearances</span>
+          <span class="ellip">{{ store.page }}</span>
           <ArrowSvg />
         </button>
         <div
           ref="dropOptionsRef"
-          class="options rounded-sm"
+          class="options rounded-sm shadow-lg"
           v-if="showDropDown"
         >
-          <div class="option selected" value="1">Albums</div>
-          <div class="option" value="2">Singles & EPs</div>
-          <div class="option" value="3">Appearances</div>
+          <div
+            class="option"
+            v-for="a in albums"
+            @click.prevent="switchView(a)"
+          >
+            {{ a }}
+          </div>
         </div>
       </div>
       <button class="rounded-sm"><GridSvg /></button>
@@ -29,12 +32,22 @@ import { onClickOutside } from "@vueuse/core";
 import ArrowSvg from "@/assets/icons/expand.svg";
 import GridSvg from "@/assets/icons/grid.svg";
 import { Ref, ref } from "vue";
+import { discographyAlbumTypes as albums } from "@/composables/enums";
+
+import useArtistDiscogStore from "@/stores/pages/artistDiscog";
+
+const store = useArtistDiscogStore();
 
 const showDropDown = ref(false);
 const dropOptionsRef: Ref<HTMLElement | undefined> = ref();
 
 function hideDropDown() {
   showDropDown.value = false;
+}
+
+function switchView(album: albums) {
+  store.setAlbums(album);
+  hideDropDown();
 }
 
 onClickOutside(dropOptionsRef, (e) => {

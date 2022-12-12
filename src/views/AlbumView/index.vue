@@ -37,6 +37,7 @@ import Header from "@/components/AlbumView/Header.vue";
 import SongItem from "@/components/shared/SongItem.vue";
 
 import { isSmall } from "@/stores/content-width";
+import { discographyAlbumTypes } from "@/composables/enums";
 
 const album = useAlbumStore();
 const queue = useQueueStore();
@@ -80,14 +81,22 @@ function getSongItems() {
 }
 
 function getArtistAlbumComponents(): ScrollerItem[] {
-  return album.albumArtists.map((artist) => {
-    const artist_name = album.info.albumartists.find(
-      (a) => a.artisthash === artist.artisthash
-    )?.name;
+  return album.albumArtists.map((ar) => {
+    const artist = album.info.albumartists.find(
+      (a) => a.artisthash === ar.artisthash
+    );
+    const artistname = artist?.name;
+    const artisthash = artist?.artisthash;
+
     return {
       id: Math.random().toString(),
       component: ArtistAlbums,
-      props: { title: `More from ${artist_name}`, albums: artist.albums },
+      props: {
+        artisthash,
+        albums: ar.albums,
+        title: `More from ${artistname}`,
+        albumType: discographyAlbumTypes.all,
+      },
       size: 20 * 16,
     };
   });
