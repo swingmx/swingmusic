@@ -14,13 +14,13 @@
 </template>
 
 <script setup lang="ts">
+import { Routes } from "@/router/routes";
+import usePlaylistStore from "@/stores/pages/playlists";
 import { onMounted } from "vue";
 import { useRoute } from "vue-router";
 import { createNewPlaylist } from "../../composables/fetch/playlists";
 import { Track } from "../../interfaces";
 import { Notification, NotifType } from "../../stores/notification";
-import usePlaylistStore from "@/stores/pages/playlists";
-import { Routes } from "@/composables/enums";
 
 const props = defineProps<{
   track?: Track;

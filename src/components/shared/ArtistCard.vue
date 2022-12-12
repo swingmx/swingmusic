@@ -25,8 +25,8 @@
 </template>
 
 <script setup lang="ts">
-import { Routes } from "@/composables/enums";
 import { Artist } from "@/interfaces";
+import { Routes } from "@/router/routes";
 import { paths } from "../../config";
 
 const imguri = paths.images.artist.large;

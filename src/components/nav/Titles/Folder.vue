@@ -34,8 +34,8 @@
 
 <script setup lang="ts">
 import SearchInput from "@/components/shared/NavSearchInput.vue";
-import { Routes } from "@/composables/enums";
 import { subPath } from "@/interfaces";
+import { Routes } from "@/router/routes";
 import { focusElemByClass } from "@/utils";
 import { onUpdated } from "vue";
 

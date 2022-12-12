@@ -27,12 +27,12 @@
 </template>
 
 <script setup lang="ts">
-import { Routes } from "@/composables/enums";
+import { Routes } from "@/router/routes";
+import FolderSvg from "../../assets/icons/folder-1.svg";
 import PlaylistSvg from "../../assets/icons/playlist-1.svg";
 import QueueSvg from "../../assets/icons/queue.svg";
-import FolderSvg from "../../assets/icons/folder-1.svg";
-import SettingsSvg from "../../assets/icons/settings.svg";
 import SearchSvg from "../../assets/icons/search.svg";
+import SettingsSvg from "../../assets/icons/settings.svg";
 
 const menus = [
   {

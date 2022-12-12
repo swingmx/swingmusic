@@ -9,7 +9,7 @@ import {
     searchArtists, searchTracks
 } from "../composables/fetch/searchMusic";
 import { Album, Artist, Playlist, Track } from "../interfaces";
-import { Routes } from "./../composables/enums";
+import { Routes } from "@/router/routes";
 import useLoaderStore from "./loader";
 import useTabStore from "./tabs";
 /**

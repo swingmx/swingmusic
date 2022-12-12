@@ -30,8 +30,7 @@
 
 <script setup lang="ts">
 import { Artist } from "@/interfaces";
-import { putCommas } from "@/utils";
-import { Routes } from "@/composables/enums";
+import { Routes } from "@/router/routes";
 
 const props = defineProps<{
   artists: Artist[] | null;

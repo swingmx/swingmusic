@@ -28,7 +28,7 @@
 </template>
 
 <script setup lang="ts">
-import { Routes } from "@/composables/enums";
+import { Routes } from "@/router/routes";
 import useSearchStore from "@/stores/search";
 import { focusElemByClass } from "@/utils";
 import { computed, onMounted, ref } from "vue";

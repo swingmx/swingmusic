@@ -1,9 +1,11 @@
 <template>
   <div
-    v-show="context.visible"
     class="context-menu rounded shadow-lg no-select"
     ref="contextMenuRef"
     id="context-menu"
+    :style="{
+      opacity: context.visible ? '1' : '0',
+    }"
   >
     <ContextItem
       class="context-item"
