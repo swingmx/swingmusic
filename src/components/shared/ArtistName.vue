@@ -34,7 +34,7 @@ import { Routes } from "@/router/routes";
 
 const props = defineProps<{
   artists: Artist[] | null;
-  albumartists: Artist[] | null;
+  albumartists: Artist[] | string | null;
   small?: boolean;
   smaller?: boolean;
 }>();

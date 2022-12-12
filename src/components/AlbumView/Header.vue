@@ -81,9 +81,10 @@ import { albumHeaderSmall } from "@/stores/content-width";
 import useNavStore from "@/stores/nav";
 import useAlbumStore from "@/stores/pages/album";
 import { formatSeconds, useVisibility } from "@/utils";
-import { isLight } from "../../composables/colors/album";
-import { playSources, Routes } from "../../composables/enums";
-import { Album } from "../../interfaces";
+import { isLight } from "@/composables/colors/album";
+import { playSources } from "@/composables/enums";
+import { Album } from "@/interfaces";
+import { Routes } from "@/router/routes";
 
 import PlayBtnRect from "../shared/PlayBtnRect.vue";
 

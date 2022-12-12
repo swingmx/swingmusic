@@ -22,7 +22,6 @@
             :is="item.component"
             v-bind="item.props"
           ></component>
-          <!-- @playThis="playFromPage(item.props.index - 1)" -->
         </DynamicScrollerItem>
       </template>
     </DynamicScroller>
@@ -38,10 +37,12 @@ import useArtistPageStore from "@/stores/pages/artist";
 import ArtistAlbums from "@/components/AlbumView/ArtistAlbums.vue";
 import ArtistAlbumsFetcher from "@/components/ArtistView/ArtistAlbumsFetcher.vue";
 import { computed } from "vue";
-import { onBeforeRouteLeave, onBeforeRouteUpdate } from "vue-router";
+import { onBeforeRouteLeave, onBeforeRouteUpdate, useRoute } from "vue-router";
 import { Album } from "@/interfaces";
+import { discographyAlbumTypes } from "@/composables/enums";
 
 const store = useArtistPageStore();
+const route = useRoute();
 
 interface ScrollerItem {
   id: string | number;
@@ -64,13 +65,41 @@ const artist_albums_fetcher: ScrollerItem = {
   component: ArtistAlbumsFetcher,
 };
 
-function createAbumComponent(title: string, albums: Album[]) {
+enum AlbumType {
+  ALBUMS = "Albums",
+  EPS = "EPs",
+  SINGLES = "Singles",
+  APPEARANCES = "Appearances",
+}
+
+function createAbumComponent(title: AlbumType, albums: Album[]) {
+  let albumType = null;
+
+  switch (title) {
+    case AlbumType.ALBUMS:
+      albumType = discographyAlbumTypes.albums;
+      break;
+    case AlbumType.EPS:
+      albumType = discographyAlbumTypes.eps;
+      break;
+    case AlbumType.SINGLES:
+      albumType = discographyAlbumTypes.singles;
+      break;
+    case AlbumType.APPEARANCES:
+      albumType = discographyAlbumTypes.appearances;
+      break;
+
+    default:
+      break;
+  }
   return {
     id: title,
     component: ArtistAlbums,
     props: {
-      title,
+      albumType,
       albums,
+      title,
+      artisthash: route.params.hash,
     },
   };
 }
@@ -85,22 +114,25 @@ const scrollerItems = computed(() => {
   components = [...components, artist_albums_fetcher];
 
   if (store.albums.length > 0) {
-    const albums = createAbumComponent("Albums", store.albums);
+    const albums = createAbumComponent(AlbumType.ALBUMS, store.albums);
     components.push(albums);
   }
 
   if (store.eps.length > 0) {
-    const eps = createAbumComponent("EPs", store.eps);
+    const eps = createAbumComponent(AlbumType.EPS, store.eps);
     components.push(eps);
   }
 
   if (store.singles.length > 0) {
-    const singles = createAbumComponent("Singles", store.singles);
+    const singles = createAbumComponent(AlbumType.SINGLES, store.singles);
     components.push(singles);
   }
 
   if (store.appearances.length > 0) {
-    const appearances = createAbumComponent("Appearances", store.appearances);
+    const appearances = createAbumComponent(
+      AlbumType.APPEARANCES,
+      store.appearances
+    );
     components.push(appearances);
   }
 
