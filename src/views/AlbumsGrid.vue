@@ -24,7 +24,7 @@ onMounted(() => {
   // artist.getArtistAlbums(route.params.hash);
   getArtistAlbums(route.params.hash as string).then((res) => {
     albums.value = res.appearances;
-    console.log(albums.value);
+    // console.log(albums.value);
   });
 });
 </script>

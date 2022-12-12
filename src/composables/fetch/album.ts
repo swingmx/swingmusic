@@ -89,7 +89,7 @@ const getAlbumsFromArtist = async (
 
 async function getAlbumTracks(albumhash: string): Promise<Track[]> {
   const { data } = await useAxios({
-    url: albumUrl + `/${albumhash}a/` + "tracks",
+    url: albumUrl + `/${albumhash}/` + "tracks",
     get: true,
   });
 

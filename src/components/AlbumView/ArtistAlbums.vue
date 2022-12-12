@@ -2,7 +2,11 @@
   <div class="artist-albums">
     <h3>
       <span>{{ title }} </span>
-      <span class="see-more" v-if="maxAbumCards <= albums.length">SEE ALL</span>
+      <span class="see-more" v-if="maxAbumCards <= albums.length">
+        <RouterLink :to="{ name: Routes.artistDiscography }"
+          >SEE ALL</RouterLink
+        >
+      </span>
     </h3>
     <div class="cards">
       <AlbumCard v-for="a in albums.slice(0, maxAbumCards)" :album="a" />
@@ -15,6 +19,7 @@ import AlbumCard from "../shared/AlbumCard.vue";
 import { Album } from "@/interfaces";
 
 import { maxAbumCards } from "@/stores/content-width";
+import { Routes } from "@/router/routes";
 
 defineProps<{
   title: string;
@@ -35,6 +40,11 @@ defineProps<{
 
     .see-more {
       font-size: $medium;
+
+      a:hover {
+        text-decoration: underline;
+        cursor: pointer !important;
+      }
     }
   }
 

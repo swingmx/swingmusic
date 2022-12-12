@@ -17,8 +17,9 @@
 
 <script setup lang="ts">
 import QueueActions from "@/components/RightSideBar/Queue/QueueActions.vue";
-import { FromOptions, Routes } from "@/composables/enums";
+import { FromOptions } from "@/composables/enums";
 import useQueueStore from "@/stores/queue";
+import {Routes} from "@/router/routes";
 
 import AlbumSvg from "@/assets/icons/album.svg";
 import FolderSvg from "@/assets/icons/folder.svg";
