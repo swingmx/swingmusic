@@ -30,20 +30,6 @@ export enum ContextSrc {
   FHeader = "FHeader",
 }
 
-export enum Routes {
-  home = "Home",
-  folder = "FolderView",
-  playlists = "PlaylistList",
-  playlist = "PlaylistView",
-  albums = "AlbumsView",
-  artist = "ArtistView",
-  album = "AlbumView",
-  artists = "ArtistsView",
-  settings = "SettingsView",
-  search = "SearchView",
-  queue = "QueueView",
-}
-
 export const FuseTrackOptions = {
   keys: [
     { name: "title", weight: 1 },

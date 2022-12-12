@@ -21,9 +21,10 @@ import { useRoute } from "vue-router";
 
 import Input from "@/components/shared/NavSearchInput.vue";
 import PlayBtn from "@/components/shared/PlayBtn.vue";
-import { playSources, Routes } from "@/composables/enums";
+import { playSources } from "@/composables/enums";
 import useAlbumStore from "@/stores/pages/album";
 import usePStore from "@/stores/pages/playlist";
+import { Routes } from "@/router/routes";
 
 defineProps<{
   header_shown: boolean;
