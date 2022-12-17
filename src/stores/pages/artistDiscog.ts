@@ -5,7 +5,7 @@ import { getArtistAlbums } from "@/composables/fetch/artists";
 
 export default defineStore("artistDiscography", {
   state: () => ({
-    artist: <string>"",
+    artistname: <string>"",
     page: discographyAlbumTypes.all,
 
     toShow: <Album[]>[],
@@ -17,6 +17,7 @@ export default defineStore("artistDiscography", {
   }),
   actions: {
     setAlbums(page: discographyAlbumTypes) {
+      this.setPage(page);
       switch (page) {
         case discographyAlbumTypes.albums:
           this.toShow = this.albums;
@@ -48,6 +49,7 @@ export default defineStore("artistDiscography", {
           this.eps = data.eps;
           this.singles = data.singles;
           this.appearances = data.appearances;
+          this.artistname = data.artistname;
         })
         .then(() => this.setAlbums(this.page));
     },
@@ -58,6 +60,7 @@ export default defineStore("artistDiscography", {
       this.appearances = [];
 
       this.toShow = [];
+      this.artistname = "";
     },
   },
 });

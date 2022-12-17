@@ -7,7 +7,7 @@ const {
   new: newPlaylistUrl,
   all: allPlaylistsUrl,
   base: basePlaylistUrl,
-  artists: playlistArtistsUrl
+  artists: playlistArtistsUrl,
 } = paths.api.playlist;
 
 /**
@@ -109,7 +109,7 @@ async function getPlaylist(pid: string) {
 async function updatePlaylist(pid: string, playlist: FormData, pStore: any) {
   const uri = `${basePlaylistUrl}/${pid}/update`;
 
-  const { data, error } = await useAxios({
+  const { data, status } = await useAxios({
     url: uri,
     put: true,
     props: playlist,
@@ -118,8 +118,9 @@ async function updatePlaylist(pid: string, playlist: FormData, pStore: any) {
     },
   });
 
-  if (error) {
-    new Notification("Something funny happened!", NotifType.Error);
+  if (status == 400) {
+    new Notification("Failed: Unsupported image", NotifType.Error);
+    return;
   }
 
   if (data) {

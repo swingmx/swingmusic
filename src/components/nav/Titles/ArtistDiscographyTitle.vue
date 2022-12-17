@@ -1,6 +1,6 @@
 <template>
   <div class="artist-discography-nav">
-    <h1 class="ellip">Creedence Clearwater Revival</h1>
+    <h1 class="ellip">{{ store.artistname }}</h1>
     <div class="buttons">
       <div class="select rounded-sm" v-auto-animate="{ duration: 10 }">
         <button class="selected" @click.prevent="showDropDown = !showDropDown">
@@ -21,7 +21,6 @@
           </div>
         </div>
       </div>
-      <button class="rounded-sm"><GridSvg /></button>
     </div>
   </div>
 </template>
@@ -69,7 +68,6 @@ onClickOutside(dropOptionsRef, (e) => {
 
   .buttons {
     display: flex;
-    gap: $small;
   }
 
   .selected {
@@ -86,7 +84,7 @@ onClickOutside(dropOptionsRef, (e) => {
 
   .select {
     position: relative;
-    width: 7rem;
+    width: 8rem;
     display: flex;
     align-items: center;
     font-size: calc($medium + 2px);
@@ -103,7 +101,7 @@ onClickOutside(dropOptionsRef, (e) => {
     .option {
       padding: $small;
       border-bottom: 1px solid $gray4;
-      width: 6.5rem;
+      width: 7.5rem;
 
       &:hover {
         border-radius: $smaller;

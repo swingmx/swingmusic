@@ -5,11 +5,18 @@
     @dblclick.prevent="emitUpdate"
     @contextmenu.prevent="showMenu"
   >
-    <div class="index t-center ellip" @dblclick.prevent.stop="() => {}">
-      <span class="text">
+    <div
+      class="index t-center ellip"
+      @click.prevent="addToFav(track.trackhash)"
+      @dblclick.prevent.stop="() => {}"
+    >
+      <div class="text">
         {{ index }}
-      </span>
-      <HeartSvg />
+      </div>
+      <div class="heart-icon">
+        <HeartFillSvg v-if="fav" />
+        <HeartSvg v-else />
+      </div>
     </div>
     <div class="flex">
       <div @click.prevent="emitUpdate" class="thumbnail">
@@ -71,10 +78,13 @@ import { Track } from "@/interfaces";
 import { formatSeconds } from "@/utils";
 
 import HeartSvg from "@/assets/icons/heart.svg";
+import HeartFillSvg from "@/assets/icons/heart.fill.svg";
 import OptionSvg from "@/assets/icons/more.svg";
 import ArtistName from "./ArtistName.vue";
 
 import useQueueStore from "@/stores/queue";
+import { addFavorite, removeFavorite } from "@/composables/fetch/favorite";
+import { favType } from "@/composables/enums";
 
 const imguri = paths.images.thumb.small;
 const context_menu_showing = ref(false);
@@ -107,6 +117,26 @@ function isCurrent() {
 function isCurrentPlaying() {
   return isCurrent() && queue.playing;
 }
+
+const fav = ref(props.track.is_favorite);
+
+async function addToFav(trackhash: string) {
+  if (fav.value) {
+    const removed = await removeFavorite(favType.track, trackhash);
+
+    if (removed) {
+      fav.value = false;
+    }
+
+    return;
+  }
+
+  const added = await addFavorite(favType.track, trackhash);
+
+  if (added) {
+    fav.value = true;
+  }
+}
 </script>
 
 <style lang="scss">
@@ -137,7 +167,6 @@ function isCurrentPlaying() {
     }
 
     cursor: pointer;
-    // outline: solid 1px;
 
     .title {
       margin-bottom: 2px;
@@ -149,11 +178,15 @@ function isCurrentPlaying() {
 
     .index {
       .text {
+        transition-delay: 500ms;
+
         transform: translateX($smaller);
         opacity: 0;
       }
 
-      svg {
+      .heart-icon {
+        transition-delay: 500ms;
+
         transform: translateX(0);
         opacity: 1;
       }
@@ -189,17 +222,17 @@ function isCurrentPlaying() {
       display: block;
       margin: auto 0;
       transition: all 0.25s;
-      transform: translateX(0);
+      width: 100%;
     }
 
-    svg {
+    .heart-icon {
       position: absolute;
-      left: 0;
+      left: -2px;
+      display: grid;
+      height: 100%;
+      align-content: center;
       transition: all 0.2s;
-      top: $medium;
-      opacity: 0;
-      transform: translateX(-1rem);
-      cursor: pointer;
+      transform: translateX(-1.5rem);
     }
   }
 

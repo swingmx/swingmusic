@@ -1,12 +1,15 @@
 <template>
   <div class="album-grid-view v-scroll-page">
-    <div class="scrollable" v-auto-animate="{ duration: 100 }">
+    <div class="scrollable">
       <AlbumCard
         v-for="album in artist.toShow"
         :album="album"
         :key="album.albumhash"
       />
     </div>
+    <!-- <div class="no-albums rounded" v-if="artist.toShow.length == 0">
+      <b>No {{ artist.page }}</b>
+    </div> -->
   </div>
 </template>
 
@@ -41,6 +44,18 @@ onBeforeRouteLeave(() => {
     padding-bottom: 4rem;
     overflow: auto;
     max-height: 100%;
+  }
+
+  .no-albums {
+    border: solid $red 1px;
+    width: 30rem;
+    display: block;
+    margin: 0 auto;
+    padding: 5rem;
+    text-align: center;
+    font-size: 1.25rem;
+    color: $red;
+    opacity: .5;
   }
 }
 </style>

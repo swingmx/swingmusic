@@ -12,6 +12,7 @@ export enum NotifType {
   Info = "info",
   Error = "error",
   Working = "working",
+  Favorite = "favorite",
 }
 
 export enum FromOptions {
@@ -50,4 +51,10 @@ export enum discographyAlbumTypes {
   singles = "Singles",
   eps = "EPs",
   appearances = "Appearances",
+}
+
+export enum favType {
+  artist = "artist",
+  album = "album",
+  track = "track",
 }

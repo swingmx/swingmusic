@@ -12,7 +12,6 @@ const domains: D = {
 
 const ports = {
   api: 1970,
-  images: 1971,
 };
 
 const imageRoutes = {
@@ -34,7 +33,7 @@ function toggleMode() {
 
 const domain = () => domains[mode];
 
-const baseImgUrl = domain() + ports.images;
+const baseImgUrl = domain() + ports.api + "/img";
 
 const baseApiUrl = domain() + ports.api;
 
@@ -42,6 +41,10 @@ const paths = {
   api: {
     album: baseApiUrl + "/album",
     artist: baseApiUrl + "/artist",
+    favorite: baseApiUrl + "/favorite",
+    get removeFavorite() {
+      return this.favorite + "/remove";
+    },
     get albumartists() {
       return this.album + "/artists";
     },
@@ -94,7 +97,5 @@ const paths = {
     raw: baseImgUrl + imageRoutes.raw,
   },
 };
-
-
 
 export { paths, toggleMode };

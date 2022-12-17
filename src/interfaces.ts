@@ -24,6 +24,7 @@ export interface Track extends AlbumDisc {
   trackhash: string;
   copyright?: string;
   filetype: string;
+  is_favorite: boolean;
 }
 
 export interface Folder {

@@ -26,6 +26,7 @@ const getArtistAlbums = async (hash: string, all = false, limit = 6) => {
     eps: Album[];
     singles: Album[];
     appearances: Album[];
+    artistname: string;
   }
 
   const { data, error } = await useAxios({
