@@ -18,6 +18,7 @@ import ErrorSvg from "../assets/icons/toast/error.svg";
 import InfoSvg from "../assets/icons/toast/info.svg";
 import SuccessSvg from "../assets/icons/toast/ok.svg";
 import WorkingSvg from "../assets/icons/toast/working.svg";
+import HeartSvg from "../assets/icons/heart.svg";
 
 const notifStore = useNotifStore();
 
@@ -31,6 +32,8 @@ function getSvg(notif: NotifType) {
       return SuccessSvg;
     case NotifType.Working:
       return WorkingSvg;
+    case NotifType.Favorite:
+      return HeartSvg;
   }
 }
 </script>
@@ -70,7 +73,7 @@ function getSvg(notif: NotifType) {
   background-image: linear-gradient(275deg, $bg, $bg1 74%);
 }
 
-.new-notif.info {
+.new-notif.info, .new-notif.favorite {
   $bg: rgb(28, 102, 238);
   $bg1: rgba(31, 144, 236, 0.15);
   background-image: linear-gradient(275deg, $bg, $bg1 74%);
@@ -78,7 +81,7 @@ function getSvg(notif: NotifType) {
 
 .new-notif.success {
   $bg: rgb(5, 167, 53);
-  $bg1: rgba(5, 167, 54, .15);
+  $bg1: rgba(5, 167, 54, 0.15);
   background-image: linear-gradient(275deg, $bg, $bg1 74%);
 }
 
