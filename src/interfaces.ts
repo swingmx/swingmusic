@@ -16,15 +16,17 @@ export interface Track extends AlbumDisc {
   filepath?: string;
   duration?: number;
   bitrate: number;
-  genre?: string;
   image: string;
   track: number;
   disc: number;
   index: number;
   trackhash: string;
-  copyright?: string;
   filetype: string;
   is_favorite: boolean;
+
+  genre?: string;
+  copyright?: string;
+  master_index?: number;
 }
 
 export interface Folder {

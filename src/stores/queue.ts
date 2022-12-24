@@ -46,7 +46,6 @@ export default defineStore("Queue", {
     play(index: number = 0) {
       if (this.tracklist.length === 0) return;
       this.currentindex = index;
-      console.log(this.tracklist.length);
 
       if (!this.mousover) {
         this.queueScrollFunction(this.currentindex - 1);

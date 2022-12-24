@@ -11,9 +11,7 @@
         <component
           :is="item.component"
           v-bind="item.props"
-          @playThis="
-            playFromAlbum(item.props.track.index - item.props.track.disc)
-          "
+          @playThis="playFromAlbum(item.props.track.master_index)"
         />
       </div>
     </RecycleScroller>
@@ -122,7 +120,7 @@ const scrollerItems = computed(() => {
 
 function playFromAlbum(index: number) {
   const { title, albumartists, albumhash } = album.info;
-  queue.playFromAlbum(title, albumhash, album.allTracks);
+  queue.playFromAlbum(title, albumhash, album.srcTracks);
   queue.play(index);
 }
 
