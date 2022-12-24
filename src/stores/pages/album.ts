@@ -9,7 +9,6 @@ import { maxAbumCards } from "@/stores/content-width";
 import { getAlbum, getAlbumsFromArtist } from "../../composables/fetch/album";
 import { Album, FuseResult, Track } from "../../interfaces";
 import { useNotifStore } from "../notification";
-import router from "@/router";
 
 interface Disc {
   [key: string]: Track[];
@@ -25,12 +24,6 @@ function sortByTrackNumber(tracks: Track[]) {
   });
 }
 
-// function albumHasNoDiscs(album: Album) {
-//   if (album.is_single) return true;
-
-//   return false;
-// }
-
 /**
  *
  * @param tracks The raw tracklist from the server
@@ -39,8 +32,10 @@ function sortByTrackNumber(tracks: Track[]) {
 function createDiscs(tracks: Track[]) {
   return tracks.reduce((group, track) => {
     const { disc } = track;
+
     group[disc] = group[disc] ?? [];
     group[disc].push(track);
+
     return group;
   }, {} as Disc);
 }
@@ -49,7 +44,7 @@ export default defineStore("album", {
   state: () => ({
     query: "",
     info: <Album>{},
-    rawTracks: <Track[]>[],
+    srcTracks: <Track[]>[],
     albumArtists: <{ artisthash: string; albums: Album[] }[]>[],
     bio: null,
   }),
@@ -62,8 +57,14 @@ export default defineStore("album", {
     async fetchTracksAndArtists(hash: string) {
       const album = await getAlbum(hash, useNotifStore);
 
-      this.rawTracks = album.tracks;
+      this.srcTracks = album.tracks;
       this.info = album.info;
+
+      this.srcTracks = sortByTrackNumber(this.srcTracks);
+
+      this.srcTracks.forEach((t, index) => {
+        t.master_index = index;
+      });
     },
     async fetchArtistAlbums() {
       const albumartists = this.info.albumartists;
@@ -85,14 +86,7 @@ export default defineStore("album", {
   },
   getters: {
     discs(): Disc {
-      return createDiscs(sortByTrackNumber(this.rawTracks));
-    },
-    allTracks(): Track[] {
-      return Object.keys(this.discs).reduce((tracks: Track[], disc) => {
-        const disc_tracks = this.discs[disc];
-
-        return [...tracks, ...disc_tracks];
-      }, []);
+      return createDiscs(this.srcTracks);
     },
     filteredTracks(): ComputedRef<FuseResult[]> {
       const discs = this.discs;

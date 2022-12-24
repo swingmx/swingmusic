@@ -26,7 +26,6 @@ const getAlbumData = async (hash: string, ToastStore: typeof useNotifStore) => {
   if (status == 204) {
     ToastStore().showNotification("Album not created yet!", NotifType.Error);
   }
-
   return data as AlbumData;
 };
 
