@@ -6,11 +6,10 @@ import { AlbumDisc } from "./../../interfaces";
 import { FuseTrackOptions } from "@/composables/enums";
 import { maxAbumCards } from "@/stores/content-width";
 
-import {
-    getAlbum, getAlbumsFromArtist
-} from "../../composables/fetch/album";
+import { getAlbum, getAlbumsFromArtist } from "../../composables/fetch/album";
 import { Album, FuseResult, Track } from "../../interfaces";
 import { useNotifStore } from "../notification";
+import router from "@/router";
 
 interface Disc {
   [key: string]: Track[];
@@ -62,6 +61,7 @@ export default defineStore("album", {
      */
     async fetchTracksAndArtists(hash: string) {
       const album = await getAlbum(hash, useNotifStore);
+
       this.rawTracks = album.tracks;
       this.info = album.info;
     },

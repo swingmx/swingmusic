@@ -18,7 +18,7 @@
       <div class="creator t-center">
         Designed and developed by
         <span class="name"
-          ><a href="https://github.com/geoffrey45">Geoffrey Mungai</a>
+          ><a href="https://github.com/geoffrey45">Mungai Njoroge</a>
         </span>
       </div>
     </div>
