@@ -94,6 +94,12 @@ const artistView = {
   },
 };
 
+const ArtistTracks = {
+  path: "/artists/:hash/tracks",
+  name: "ArtistTracks",
+  component: () => import("@/views/ArtistTracks.vue"),
+};
+
 const artistDiscography = {
   path: "/artists/:hash/discography",
   name: "ArtistDiscographyView",
@@ -138,6 +144,7 @@ const routes = [
   search,
   queue,
   notFound,
+  ArtistTracks,
 ];
 
 const Routes = {
@@ -154,6 +161,7 @@ const Routes = {
   search: search.name,
   queue: queue.name,
   notFound: notFound.name,
+  artistTracks: ArtistTracks.name,
 };
 
 export { routes, Routes };

@@ -3,9 +3,9 @@
     class="artist-header-ambient rounded"
     style="height: 100%; width: 100%"
     :style="{
-      boxShadow: artist.info.colors
+      boxShadow: artist.info.colors.length
         ? `0 .5rem 2rem ${artist.info.colors[0]}`
-        : '',
+        : undefined,
     }"
   ></div>
   <div class="artist-page-header rounded no-scroll">
@@ -88,8 +88,8 @@ const artist = useArtistPageStore();
     background-image: linear-gradient(
       to left,
       transparent 10%,
-      $gray2 50%,
-      $gray2 100%
+      $gray 50%,
+      $gray 100%
     );
     height: 100%;
     width: 100%;
