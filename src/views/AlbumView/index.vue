@@ -146,8 +146,9 @@ onBeforeRouteLeave(() => {
 .album-virtual-scroller {
   height: 100%;
   overflow: visible;
+
   .songlist-item {
-    grid-template-columns: 1.5rem 1.5fr 1fr 2.5rem 2.5rem;
+    grid-template-columns: 1.75rem 1.5fr 1fr 2.5rem 2.5rem;
   }
 }
 </style>

@@ -19,6 +19,7 @@
         <ArtistDiscographyTitle
           v-if="$route.name == Routes.artistDiscography"
         />
+        <ArtistTracksTitle v-if="$route.name == Routes.artistTracks" />
       </div>
     </div>
   </div>
@@ -42,6 +43,7 @@ import QueueTitle from "./Titles/QueueTitle.vue";
 import SearchTitle from "./Titles/SearchTitle.vue";
 import SettingsTitle from "./Titles/SettingsTitle.vue";
 import ArtistDiscographyTitle from "./Titles/ArtistDiscographyTitle.vue";
+import ArtistTracksTitle from "./Titles/ArtistTracksTitle.vue";
 
 const route = useRoute();
 const nav = useNavStore();

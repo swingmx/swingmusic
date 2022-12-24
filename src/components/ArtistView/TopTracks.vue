@@ -1,6 +1,22 @@
 <template>
   <div class="artist-top-tracks">
-    <h3 class="section-title">Tracks</h3>
+    <h3 class="section-title">
+      Tracks
+      <span class="see-more">
+        <RouterLink
+          :to="{
+            name: Routes.artistTracks,
+            params: {
+              hash: artist.info.artisthash,
+            },
+            query: {
+              artist: artist.info.name,
+            },
+          }"
+          >SEE ALL</RouterLink
+        >
+      </span>
+    </h3>
     <div class="tracks">
       <SongItem
         v-for="(song, index) in artist.tracks"
@@ -20,6 +36,7 @@ import useQueueStore from "@/stores/queue";
 import { FromOptions, playSources } from "@/composables/enums";
 
 import { getArtistTracks } from "@/composables/fetch/artists";
+import { Routes } from "@/router/routes";
 
 const artist = useArtistPageStore();
 const queue = useQueueStore();
@@ -50,6 +67,20 @@ async function playFromPage(index: number) {
   .error {
     padding-left: 1rem;
     color: $red;
+  }
+
+  h3 {
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .see-more {
+    font-size: $medium;
+
+    a:hover {
+      text-decoration: underline;
+      cursor: pointer !important;
+    }
   }
 }
 </style>

@@ -1,14 +1,13 @@
 <template>
   <div class="nav-queue-title">
     <div class="first no-scroll">
-      <router-link :to="(location as RouteLocationRaw)">
-        <button class="btn-active">Go to source</button>
-      </router-link>
       <div class="playing-from">
-        <div class="border rounded-sm pad-sm">
-          <SourceIcon v-if="SourceIcon" />
-          <b class="ellip">{{ name }}</b>
-        </div>
+        <router-link :to="(location as RouteLocationRaw)">
+          <div class="border rounded-sm pad-sm">
+            <SourceIcon v-if="SourceIcon" />
+            <b class="ellip">{{ name }}</b>
+          </div>
+        </router-link>
       </div>
     </div>
     <QueueActions />
@@ -19,7 +18,7 @@
 import QueueActions from "@/components/RightSideBar/Queue/QueueActions.vue";
 import { FromOptions } from "@/composables/enums";
 import useQueueStore from "@/stores/queue";
-import {Routes} from "@/router/routes";
+import { Routes } from "@/router/routes";
 
 import AlbumSvg from "@/assets/icons/album.svg";
 import FolderSvg from "@/assets/icons/folder.svg";
@@ -112,11 +111,6 @@ const { name, icon: SourceIcon, location } = getSource();
   align-items: center;
 
   .first {
-    width: 100%;
-    display: grid;
-    grid-template-columns: max-content 1fr;
-    gap: 1rem;
-
     .playing-from {
       display: flex;
       align-items: center;
@@ -124,11 +118,17 @@ const { name, icon: SourceIcon, location } = getSource();
       opacity: 0.75;
 
       .border {
+        cursor: pointer;
         display: grid;
         grid-template-columns: max-content 1fr;
         align-items: center;
         padding: $smaller $small;
         height: 100%;
+
+        &:hover {
+          background-color: $darkestblue;
+          border: solid 1px $darkestblue;
+        }
       }
 
       svg {

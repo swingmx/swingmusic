@@ -144,7 +144,7 @@ async function addToFav(trackhash: string) {
 <style lang="scss">
 .songlist-item {
   display: grid;
-  grid-template-columns: 1.5rem 2fr 1fr 1.5fr 2.5rem 2.5rem;
+  grid-template-columns: 1.75rem 2fr 1fr 1.5fr 2.5rem 2.5rem;
   align-items: center;
   justify-content: flex-start;
   height: $song-item-height;
@@ -169,6 +169,7 @@ async function addToFav(trackhash: string) {
     background-color: $gray5;
 
     .index {
+
       .text {
         transition-delay: 500ms;
 

@@ -111,7 +111,7 @@ $g-border: solid 1px $gray5;
 
 .v-scroll-page.isSmall {
   .songlist-item {
-    grid-template-columns: 1.5rem 2fr 2.5rem 2.5rem;
+    grid-template-columns: 1.75rem 2fr 2.5rem 2.5rem;
   }
 
   .song-artists,
@@ -130,7 +130,7 @@ $g-border: solid 1px $gray5;
 .v-scroll-page.isMedium {
   // hide album column
   .songlist-item {
-    grid-template-columns: 1.5rem 1.5fr 1fr 2.5rem 2.5rem;
+    grid-template-columns: 1.75rem 1.5fr 1fr 2.5rem 2.5rem;
   }
 
   .song-album {
