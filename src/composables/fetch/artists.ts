@@ -1,3 +1,4 @@
+import { NotifType, useNotifStore } from "@/stores/notification";
 import { paths } from "@/config";
 import useAxios from "./useAxios";
 import { Artist, Track, Album } from "@/interfaces";
@@ -8,10 +9,14 @@ const getArtistData = async (hash: string, limit: number = 5) => {
     tracks: Track[];
   }
 
-  const { data, error } = await useAxios({
+  const { data, error, status } = await useAxios({
     get: true,
     url: paths.api.artist + `/${hash}?limit=${limit}`,
   });
+
+  if (status == 404) {
+    useNotifStore().showNotification("Artist not found", NotifType.Error);
+  }
 
   if (error) {
     console.error(error);

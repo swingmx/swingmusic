@@ -4,6 +4,7 @@
     :class="{
       hide_play: header_shown,
     }"
+    v-if="album.info.albumhash"
   >
     <div class="first grid">
       <PlayBtn :source="things.source" :store="things.store" />
@@ -29,6 +30,9 @@ import { Routes } from "@/router/routes";
 defineProps<{
   header_shown: boolean;
 }>();
+
+const album = useAlbumStore();
+const playlist = usePStore();
 
 const things = computed(() => {
   const route = useRoute();

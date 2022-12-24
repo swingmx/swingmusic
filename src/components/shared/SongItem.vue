@@ -32,7 +32,7 @@
           <span class="title ellip" ref="artisttitle">
             {{ track.title }}
           </span>
-          <span v-if="track.bitrate > 1024" class="master-flag"><b>M</b> </span>
+          <MasterFlag v-if="track.bitrate > 1024" />
         </div>
         <div class="isSmallArtists" style="display: none">
           <ArtistName
@@ -85,6 +85,8 @@ import ArtistName from "./ArtistName.vue";
 import useQueueStore from "@/stores/queue";
 import { addFavorite, removeFavorite } from "@/composables/fetch/favorite";
 import { favType } from "@/composables/enums";
+
+import MasterFlag from "./MasterFlag.vue";
 
 const imguri = paths.images.thumb.small;
 const context_menu_showing = ref(false);
@@ -154,16 +156,6 @@ async function addToFav(trackhash: string) {
     .with-flag {
       display: flex;
       align-items: center;
-    }
-
-    .master-flag {
-      font-size: 10px;
-      margin-left: $smaller;
-      background-color: rgba(184, 108, 21, 0.281);
-      color: rgb(255, 153, 0);
-      padding: 2px 5px;
-      border-radius: 5px;
-      opacity: 0.75;
     }
 
     cursor: pointer;
