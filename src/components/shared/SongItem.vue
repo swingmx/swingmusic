@@ -169,7 +169,6 @@ async function addToFav(trackhash: string) {
     background-color: $gray5;
 
     .index {
-
       .text {
         transition-delay: 500ms;
 
@@ -202,7 +201,6 @@ async function addToFav(trackhash: string) {
   }
 
   .index {
-    opacity: 0.5;
     font-size: 0.8rem;
     width: 100%;
     position: relative;
@@ -211,7 +209,7 @@ async function addToFav(trackhash: string) {
     justify-content: center;
 
     .text {
-      opacity: 1;
+      opacity: 0.5;
       display: block;
       margin: auto 0;
       transition: all 0.25s;
@@ -226,7 +224,6 @@ async function addToFav(trackhash: string) {
       align-content: center;
       transition: all 0.2s;
       transform: translateX(-1.5rem);
-      color: red;
     }
   }
 

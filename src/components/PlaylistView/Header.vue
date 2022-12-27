@@ -21,7 +21,7 @@
           {{ formatSeconds(info.duration, true) }}
         </div>
         <div class="title ellip">{{ info.name }}</div>
-        <div class="type">PLAYLIST</div>
+        <div class="type">Playlist</div>
       </div>
     </div>
     <div class="last-updated" :class="{ lightbg: !info.image }">
