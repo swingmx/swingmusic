@@ -1,16 +1,17 @@
-import { Playlist, Track } from "../interfaces";
+import { Artist, Playlist, Track } from "../interfaces";
 
 // @ts-ignore
 import { Option } from "../interfaces";
 import Router from "../router";
 
 import {
-    addTrackToPlaylist,
-    getAllPlaylists
+  addTrackToPlaylist,
+  getAllPlaylists,
 } from "../composables/fetch/playlists";
 
 import useModalStore from "../stores/modal";
 import useQueueStore from "../stores/queue";
+import { Routes } from "@/router/routes";
 /**
  * Returns a list of context menu items for a track.
  * @param  {any} track a track object.
@@ -28,6 +29,7 @@ export default async (
   };
 
   const single_artist = track.artist.length === 1;
+  const single_album_artist = track.albumartist.length === 1;
 
   let playlists = <Option[]>[];
   const p = await getAllPlaylists();
@@ -41,15 +43,21 @@ export default async (
     };
   });
 
-  const goToArtist = () => {
-    if (single_artist) {
+  const goToArtist = (artists: Artist[]) => {
+    if (artists.length === 1) {
       return false;
     }
 
-    return track.artist.map((artist) => {
+    return artists.map((artist) => {
       return <Option>{
-        label: artist,
-        action: () => console.log("artist"),
+        label: artist.name,
+        action: () =>
+          Router.push({
+            name: Routes.artist,
+            params: {
+              hash: artist.artisthash,
+            },
+          }),
       };
     });
   };
@@ -99,20 +107,35 @@ export default async (
   };
 
   const go_to_artist: Option = {
-    label: single_artist ? "Go to Artist" : "Go to Artists",
+    label: `Go to Artist`,
     icon: "artist",
     action: () => {
-      if (single_artist) {
-        console.log("Go to Artist");
-      }
+      single_artist
+        ? Router.push({
+            name: Routes.artist,
+            params: {
+              hash: track.artist[0].artisthash,
+            },
+          })
+        : null;
     },
-    children: goToArtist(),
+    children: goToArtist(track.artist),
   };
 
   const go_to_alb_artist: Option = {
-    label: "Go to Album Artist",
-    action: () => console.log("Go to Album Artist"),
+    label: `Go to Album Artist`,
+    action: () => {
+      single_album_artist
+        ? Router.push({
+            name: Routes.artist,
+            params: {
+              hash: track.albumartist[0].artisthash,
+            },
+          })
+        : null;
+    },
     icon: "artist",
+    children: goToArtist(track.albumartist),
   };
 
   const go_to_album: Option = {
@@ -145,11 +168,11 @@ export default async (
     separator,
     add_to_playlist,
     separator,
-    go_to_folder,
     go_to_album,
+    go_to_folder,
     // add_to_fav,
-    // go_to_artist,
-    // go_to_alb_artist,
+    go_to_artist,
+    go_to_alb_artist,
     // separator,
     // del_track,
   ];

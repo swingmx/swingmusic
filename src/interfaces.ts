@@ -10,7 +10,7 @@ export interface Track extends AlbumDisc {
   title: string;
   album?: string;
   artist: Artist[];
-  albumartist: string;
+  albumartist: Artist[];
   albumhash?: string;
   folder?: string;
   filepath?: string;
@@ -70,7 +70,7 @@ export interface Artist {
 export interface Option {
   type?: string;
   label?: string;
-  action: () => void;
+  action?: () => void;
   children?: Option[] | false;
   icon?: string;
   critical?: Boolean;
