@@ -16,7 +16,7 @@
       }"
     >
       <section class="text">
-        <div class="card-title">ARTIST</div>
+        <div class="card-title">Artist</div>
         <div class="artist-name">{{ artist.info.name }}</div>
         <div class="stats">
           {{ artist.info.trackcount }} Track{{

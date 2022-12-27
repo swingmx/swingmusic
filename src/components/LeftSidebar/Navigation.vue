@@ -76,8 +76,6 @@ const menus = [
 .side-nav-container {
   text-transform: capitalize;
   margin-top: 1rem;
-  // background-color: rgba(255, 255, 255, 0.075);
-  // padding: $small;
 
   .nav-button {
     border-radius: $medium;

@@ -226,6 +226,7 @@ async function addToFav(trackhash: string) {
       align-content: center;
       transition: all 0.2s;
       transform: translateX(-1.5rem);
+      color: red;
     }
   }
 
