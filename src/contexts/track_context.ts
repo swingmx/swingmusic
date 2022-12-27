@@ -31,18 +31,6 @@ export default async (
   const single_artist = track.artist.length === 1;
   const single_album_artist = track.albumartist.length === 1;
 
-  let playlists = <Option[]>[];
-  const p = await getAllPlaylists();
-
-  playlists = p.map((playlist: Playlist) => {
-    return <Option>{
-      label: playlist.name,
-      action: () => {
-        addTrackToPlaylist(playlist, track);
-      },
-    };
-  });
-
   const goToArtist = (artists: Artist[]) => {
     if (artists.length === 1) {
       return false;
@@ -62,7 +50,7 @@ export default async (
     });
   };
 
-  function addToPlaylist() {
+  async function addToPlaylist() {
     const new_playlist = <Option>{
       label: "New playlist",
       action: () => {
@@ -70,12 +58,24 @@ export default async (
       },
     };
 
+    let playlists = <Option[]>[];
+    const p = await getAllPlaylists();
+
+    playlists = p.map((playlist: Playlist) => {
+      return <Option>{
+        label: playlist.name,
+        action: () => {
+          addTrackToPlaylist(playlist, track);
+        },
+      };
+    });
+
     return [new_playlist, separator, ...playlists];
   }
 
   const add_to_playlist: Option = {
     label: "Add to Playlist",
-    children: addToPlaylist(),
+    children: await addToPlaylist(),
     icon: "plus",
   };
 
@@ -99,7 +99,7 @@ export default async (
     label: "Go to Folder",
     action: () => {
       Router.push({
-        name: "FolderView",
+        name: Routes.folder,
         params: { path: track.folder },
       });
     },
@@ -142,7 +142,7 @@ export default async (
     label: "Go to Album",
     action: () => {
       Router.push({
-        name: "AlbumView",
+        name: Routes.album,
         params: { hash: track.albumhash },
       });
     },
@@ -170,12 +170,15 @@ export default async (
     separator,
     go_to_album,
     go_to_folder,
-    // add_to_fav,
+    separator,
     go_to_artist,
     go_to_alb_artist,
+    // add_to_fav,
     // separator,
     // del_track,
   ];
 
   return options;
 };
+
+// TODO: Find a way to fetch playlists lazily. ie. When the "Add to playlist" option is triggered.

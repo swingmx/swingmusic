@@ -40,8 +40,6 @@ export default defineStore("context-menu", {
         getBoundingClientRect: generateGetBoundingClientRect(e.x, e.y),
       } as VirtualElement;
 
-      console.log(virtualElement.contextElement)
-
       getContextOptions()
         .then((options) => {
           this.options = options;
