@@ -92,7 +92,7 @@ import HeartSvg from "../shared/HeartSvg.vue";
 
 import PlayBtnRect from "../shared/PlayBtnRect.vue";
 
-const props = defineProps<{
+defineProps<{
   album: Album;
 }>();
 

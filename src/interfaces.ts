@@ -65,6 +65,7 @@ export interface Artist {
   albumcount: number;
   duration: number;
   colors: string[];
+  is_favorite?: boolean;
 }
 
 export interface Option {

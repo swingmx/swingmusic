@@ -70,6 +70,8 @@ onUpdated(() => {
       padding-right: $smaller;
       width: fit-content;
       max-width: 100%;
+      overflow: scroll;
+      scrollbar-width: none;
 
       .icon {
         height: 2rem;
@@ -82,9 +84,6 @@ onUpdated(() => {
       .paths {
         display: flex;
         gap: $smaller;
-        overflow: hidden;
-        height: 100%;
-        scrollbar-width: none;
 
         &::-webkit-scrollbar {
           display: none;
@@ -100,10 +99,11 @@ onUpdated(() => {
           }
 
           &::before {
-            content: "/";
+            content: "∕";
             font-size: small;
             margin-right: $smaller;
-            opacity: 0.25;
+            color: $gray;
+            font-size: 1rem;
           }
 
           &:first-child {
