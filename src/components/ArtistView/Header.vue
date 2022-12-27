@@ -17,7 +17,7 @@
     >
       <section class="text">
         <div class="card-title">Artist</div>
-        <div class="artist-name">{{ artist.info.name }}</div>
+        <div class="artist-name ellip2">{{ artist.info.name }}</div>
         <div class="stats">
           {{ artist.info.trackcount }} Track{{
             `${artist.info.trackcount == 1 ? "" : "s"}`
@@ -29,7 +29,10 @@
           {{ formatSeconds(artist.info.duration, true) }}
         </div>
       </section>
-      <PlayBtnRect :source="playSources.artist" :store="useArtistPageStore" />
+      <div class="buttons">
+        <PlayBtnRect :source="playSources.artist" :store="useArtistPageStore" />
+        <HeartSvg />
+      </div>
     </div>
     <div class="artist-img no-select">
       <img :src="paths.images.artist.large + artist.info.image" />
@@ -54,6 +57,7 @@ import formatSeconds from "@/utils/useFormatSeconds";
 import { isLight } from "@/composables/colors/album";
 import { paths } from "@/config";
 import { playSources } from "@/composables/enums";
+import HeartSvg from "@/components/shared/HeartSvg.vue";
 
 const artist = useArtistPageStore();
 </script>
@@ -68,11 +72,13 @@ const artist = useArtistPageStore();
 .artist-page-header {
   height: 18rem;
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 50% 50%;
   position: relative;
 
   .artist-img {
+    // border: solid red;
     height: 18rem;
+    width: 100%;
 
     img {
       height: 100%;
@@ -120,12 +126,7 @@ const artist = useArtistPageStore();
     .artist-name {
       font-size: 3rem;
       font-weight: bold;
-
-      display: -webkit-box;
-      -webkit-line-clamp: 2;
-      -webkit-box-orient: vertical;
-      overflow: hidden;
-      text-overflow: ellipsis;
+      word-wrap: break-word;
     }
 
     .stats {
@@ -135,6 +136,11 @@ const artist = useArtistPageStore();
 
   .artist-info.nocontrast {
     color: $black;
+  }
+
+  .buttons {
+    display: flex;
+    gap: $small;
   }
 }
 </style>

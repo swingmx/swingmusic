@@ -32,7 +32,7 @@
             <span v-else-if="album.is_single">Single</span>
             <span v-else>Album</span>
           </div>
-          <div class="title ellip" v-tooltip>
+          <div class="title ellip2" v-tooltip>
             {{ album.title }}
           </div>
         </div>
@@ -48,7 +48,10 @@
               {{ formatSeconds(album.duration, true) }}
             </div>
           </div>
-          <PlayBtnRect :source="playSources.album" :store="useAlbumStore" />
+          <div class="buttons">
+            <PlayBtnRect :source="playSources.album" :store="useAlbumStore" />
+            <HeartSvg />
+          </div>
         </div>
       </div>
       <div class="art" v-if="!albumHeaderSmall">
@@ -85,6 +88,7 @@ import { isLight } from "@/composables/colors/album";
 import { playSources } from "@/composables/enums";
 import { Album } from "@/interfaces";
 import { Routes } from "@/router/routes";
+import HeartSvg from "../shared/HeartSvg.vue";
 
 import PlayBtnRect from "../shared/PlayBtnRect.vue";
 
@@ -129,6 +133,11 @@ useVisibility(albumheaderthing, handleVisibilityState);
   height: $banner-height;
   background-color: $black;
   align-items: flex-end;
+
+  .buttons {
+    display: flex;
+    gap: $small;
+  }
 
   .big-img {
     height: calc(100%);
