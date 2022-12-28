@@ -47,6 +47,7 @@ export default defineStore("album", {
     srcTracks: <Track[]>[],
     albumArtists: <{ artisthash: string; albums: Album[] }[]>[],
     bio: null,
+    discs: <Disc>{},
   }),
   actions: {
     /**
@@ -60,7 +61,17 @@ export default defineStore("album", {
       this.srcTracks = album.tracks;
       this.info = album.info;
 
-      this.srcTracks = sortByTrackNumber(this.srcTracks);
+      const tracks = sortByTrackNumber(this.srcTracks);
+      this.discs = createDiscs(tracks);
+
+      this.srcTracks = Object.keys(this.discs).reduce(
+        (tracks: Track[], disc) => {
+          const disc_tracks = this.discs[disc];
+
+          return [...tracks, ...disc_tracks];
+        },
+        []
+      );
 
       this.srcTracks.forEach((t, index) => {
         t.master_index = index;
@@ -91,19 +102,26 @@ export default defineStore("album", {
     },
   },
   getters: {
-    discs(): Disc {
-      return createDiscs(this.srcTracks);
-    },
+    // discs(): Disc {
+    //   return createDiscs(this.srcTracks);
+    // },
     /**
      * All tracks ordered by disc and track number.
      */
-    allTracks(): Track[] {
-      return Object.keys(this.discs).reduce((tracks: Track[], disc) => {
-        const disc_tracks = this.discs[disc];
+    // allTracks(): Track[] {
+    //   const tracks = Object.keys(this.discs).reduce((tracks: Track[], disc) => {
+    //     const disc_tracks = this.discs[disc];
 
-        return [...tracks, ...disc_tracks];
-      }, []);
-    },
+    //     return [...tracks, ...disc_tracks];
+    //   }, []);
+
+    //   tracks.map((t, index) => {
+    //     t.master_index = index;
+    //     return t;
+    //   });
+
+    //   return tracks;
+    // },
     filteredTracks(): ComputedRef<FuseResult[]> {
       const discs = this.discs;
       let tracks: Track[] | AlbumDisc[] = [];

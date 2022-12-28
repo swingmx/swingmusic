@@ -118,7 +118,7 @@ const scrollerItems = computed(() => {
 
 function playFromAlbum(index: number) {
   const { title, albumartists, albumhash } = album.info;
-  queue.playFromAlbum(title, albumhash, album.allTracks);
+  queue.playFromAlbum(title, albumhash, album.srcTracks);
   queue.play(index);
 }
 

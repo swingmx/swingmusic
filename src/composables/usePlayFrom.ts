@@ -47,7 +47,7 @@ export default async function play(
       useQueue.playFromAlbum(
         a_store.info.title,
         a_store.info.albumhash,
-        a_store.allTracks
+        a_store.srcTracks
       );
       useQueue.play();
       break;

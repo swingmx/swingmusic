@@ -180,5 +180,9 @@ onBeforeRouteLeave(async () => {
     margin: 1rem;
     padding-left: 1rem;
   }
+
+  .see-all {
+    opacity: 0.75;
+  }
 }
 </style>
