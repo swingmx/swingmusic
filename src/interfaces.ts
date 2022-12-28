@@ -54,6 +54,7 @@ export interface Album {
   is_soundtrack: boolean;
   is_single: boolean;
   is_EP: boolean;
+  is_favorite: boolean;
   genres: string[];
 }
 

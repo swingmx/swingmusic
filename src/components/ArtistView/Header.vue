@@ -51,38 +51,23 @@
 </template>
 
 <script setup lang="ts">
+import { ref } from "vue";
+
+import { paths } from "@/config";
 import useArtistPageStore from "@/stores/pages/artist";
-import PlayBtnRect from "../shared/PlayBtnRect.vue";
 import formatSeconds from "@/utils/useFormatSeconds";
 import { isLight } from "@/composables/colors/album";
-import { paths } from "@/config";
 import { favType, playSources } from "@/composables/enums";
+import favoriteHandler from "@/composables/favoriteHandler";
+
+import PlayBtnRect from "../shared/PlayBtnRect.vue";
 import HeartSvg from "@/components/shared/HeartSvg.vue";
-import { ref } from "vue";
-import { addFavorite, removeFavorite } from "@/composables/fetch/favorite";
 
 const artist = useArtistPageStore();
 const is_fav = ref(artist.info.is_favorite);
 
-async function handleFav() {
-  if (is_fav.value) {
-    const removed = await removeFavorite(
-      favType.artist,
-      artist.info.artisthash
-    );
-
-    if (removed) {
-      is_fav.value = false;
-    }
-
-    return;
-  }
-
-  const added = await addFavorite(favType.artist, artist.info.artisthash);
-
-  if (added) {
-    is_fav.value = true;
-  }
+function handleFav() {
+  favoriteHandler(is_fav, favType.artist, artist.info.artisthash);
 }
 </script>
 

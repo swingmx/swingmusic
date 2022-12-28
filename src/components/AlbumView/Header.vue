@@ -50,7 +50,7 @@
           </div>
           <div class="buttons">
             <PlayBtnRect :source="playSources.album" :store="useAlbumStore" />
-            <HeartSvg />
+            <HeartSvg :state="is_fav" @handleFav="handleFav"/>
           </div>
         </div>
       </div>
@@ -85,14 +85,15 @@ import useNavStore from "@/stores/nav";
 import useAlbumStore from "@/stores/pages/album";
 import { formatSeconds, useVisibility } from "@/utils";
 import { isLight } from "@/composables/colors/album";
-import { playSources } from "@/composables/enums";
+import { favType, playSources } from "@/composables/enums";
 import { Album } from "@/interfaces";
 import { Routes } from "@/router/routes";
 import HeartSvg from "../shared/HeartSvg.vue";
 
 import PlayBtnRect from "../shared/PlayBtnRect.vue";
+import favoriteHandler from "@/composables/favoriteHandler";
 
-defineProps<{
+const props = defineProps<{
   album: Album;
 }>();
 
@@ -115,6 +116,12 @@ function handleVisibilityState(state: boolean) {
 }
 
 useVisibility(albumheaderthing, handleVisibilityState);
+
+const is_fav = ref(props.album.is_favorite);
+
+function handleFav() {
+  favoriteHandler(is_fav, favType.album, props.album.albumhash);
+}
 </script>
 
 <style lang="scss">
@@ -173,7 +180,6 @@ useVisibility(albumheaderthing, handleVisibilityState);
 
     .art {
       display: inline-flex;
-      // align-items: center;
       gap: $small;
 
       img {

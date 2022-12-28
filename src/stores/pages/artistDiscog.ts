@@ -43,7 +43,7 @@ export default defineStore("artistDiscography", {
       this.page = page;
     },
     fetchAlbums(artisthash: string) {
-      getArtistAlbums(artisthash, true)
+      getArtistAlbums(artisthash, 0, true)
         .then((data) => {
           this.albums = data.albums;
           this.eps = data.eps;
