@@ -147,6 +147,10 @@ const queue = useQStore();
     .info {
       width: 30rem;
 
+      @media (max-width: 833px) {
+        width: 20rem !important;
+      }
+
       .with-title {
         display: grid;
         grid-template-columns: max-content 1fr max-content;

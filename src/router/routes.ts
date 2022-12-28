@@ -124,6 +124,12 @@ const queue = {
   component: () => import("@/views/QueueView.vue"),
 };
 
+const favorites = {
+  path: "/favorites",
+  name: "FavoritesView",
+  component: () => import("@/views/Favorites.vue"),
+};
+
 const notFound = {
   name: "NotFound",
   path: "/:pathMatch(.*)",
@@ -145,6 +151,7 @@ const routes = [
   queue,
   notFound,
   ArtistTracks,
+  favorites,
 ];
 
 const Routes = {
@@ -162,6 +169,7 @@ const Routes = {
   queue: queue.name,
   notFound: notFound.name,
   artistTracks: ArtistTracks.name,
+  favorites: favorites.name,
 };
 
 export { routes, Routes };
