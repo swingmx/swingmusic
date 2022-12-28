@@ -64,6 +64,7 @@ export default defineStore("album", {
 
       this.srcTracks.forEach((t, index) => {
         t.master_index = index;
+        console.log(t.disc, t.track);
       });
     },
     async fetchArtistAlbums() {
@@ -87,6 +88,16 @@ export default defineStore("album", {
   getters: {
     discs(): Disc {
       return createDiscs(this.srcTracks);
+    },
+    /**
+     * All tracks ordered by disc and track number.
+     */
+    allTracks(): Track[] {
+      return Object.keys(this.discs).reduce((tracks: Track[], disc) => {
+        const disc_tracks = this.discs[disc];
+
+        return [...tracks, ...disc_tracks];
+      }, []);
     },
     filteredTracks(): ComputedRef<FuseResult[]> {
       const discs = this.discs;

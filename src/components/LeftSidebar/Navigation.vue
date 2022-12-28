@@ -33,6 +33,7 @@ import PlaylistSvg from "../../assets/icons/playlist-1.svg";
 import QueueSvg from "../../assets/icons/queue.svg";
 import SearchSvg from "../../assets/icons/search.svg";
 import SettingsSvg from "../../assets/icons/settings.svg";
+import HeartSvg from "../../assets/icons/heart.svg";
 
 const menus = [
   {
@@ -49,6 +50,11 @@ const menus = [
 
   {
     separator: true,
+  },
+  {
+    name: "favorites",
+    route_name: Routes.favorites,
+    icon: HeartSvg,
   },
   {
     name: "queue",
