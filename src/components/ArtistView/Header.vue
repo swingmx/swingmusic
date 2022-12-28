@@ -31,7 +31,7 @@
       </section>
       <div class="buttons">
         <PlayBtnRect :source="playSources.artist" :store="useArtistPageStore" />
-        <HeartSvg @handleFav="handleFav" :state="is_fav" />
+        <HeartSvg @handleFav="handleFav" :state="artist.info.is_favorite" />
       </div>
     </div>
     <div class="artist-img no-select">
@@ -51,8 +51,6 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
-
 import { paths } from "@/config";
 import useArtistPageStore from "@/stores/pages/artist";
 import formatSeconds from "@/utils/useFormatSeconds";
@@ -64,10 +62,15 @@ import PlayBtnRect from "../shared/PlayBtnRect.vue";
 import HeartSvg from "@/components/shared/HeartSvg.vue";
 
 const artist = useArtistPageStore();
-const is_fav = ref(artist.info.is_favorite);
 
 function handleFav() {
-  favoriteHandler(is_fav, favType.artist, artist.info.artisthash);
+  favoriteHandler(
+    artist.info.is_favorite,
+    favType.artist,
+    artist.info.artisthash,
+    artist.makeFavorite,
+    artist.removeFavorite
+  );
 }
 </script>
 

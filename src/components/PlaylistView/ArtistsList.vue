@@ -28,6 +28,8 @@ defineProps<{
     display: flex;
     justify-content: space-between;
     padding-left: $medium;
+    align-items: center;
+    margin-bottom: $small;
 
     .see-all {
       font-size: $medium;

@@ -50,5 +50,11 @@ export default defineStore("artistPage", {
       this.eps = [];
       this.singles = [];
     },
+    makeFavorite() {
+      this.info.is_favorite = true;
+    },
+    removeFavorite() {
+      this.info.is_favorite = false;
+    },
   },
 });

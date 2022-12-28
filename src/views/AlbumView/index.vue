@@ -94,6 +94,7 @@ function getArtistAlbumComponents(): ScrollerItem[] {
         albums: ar.albums,
         title: `More from ${artistname}`,
         albumType: discographyAlbumTypes.all,
+        route: `/artists/${artisthash}/discography`
       },
       size: 20 * 16,
     };
@@ -104,9 +105,6 @@ const scrollerItems = computed(() => {
   const header: ScrollerItem = {
     id: "album-header",
     component: Header,
-    props: {
-      album: album.info,
-    },
     size: 19 * 16,
   };
 
