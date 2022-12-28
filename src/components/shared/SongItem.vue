@@ -14,7 +14,7 @@
         {{ index }}
       </div>
       <div class="heart-icon">
-        <HeartFillSvg v-if="is_fav" />
+        <HeartFillSvg v-if="props.track.is_favorite" />
         <HeartSvg v-else />
       </div>
     </div>
@@ -120,10 +120,16 @@ function isCurrentPlaying() {
   return isCurrent() && queue.playing;
 }
 
-const is_fav = ref(props.track.is_favorite);
+// const is_fav = ref(props.track.is_favorite);
 
 function addToFav(trackhash: string) {
-  favoriteHandler(is_fav, favType.track, trackhash);
+  favoriteHandler(
+    props.track.is_favorite,
+    favType.track,
+    trackhash,
+    () => (props.track.is_favorite = true),
+    () => (props.track.is_favorite = false)
+  );
 }
 </script>
 

@@ -3,7 +3,6 @@
     <h3 class="section-title">
       {{ title }}
       <span class="see-all">
-
         <RouterLink :to="route">SEE ALL</RouterLink>
       </span>
     </h3>
@@ -48,6 +47,7 @@ defineProps<{
   h3 {
     display: flex;
     justify-content: space-between;
+    padding-left: 1rem !important; // applies to favorite page
   }
 
   .see-all {
