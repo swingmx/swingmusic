@@ -4,10 +4,6 @@
       <NavButtons />
 
       <div class="info">
-        <APTitle
-          v-if="$route.name == Routes.album || $route.name == Routes.playlist"
-          :header_shown="nav.h_visible"
-        />
         <SettingsTitle
           v-if="$route.name == Routes.settings"
           :text="'Settings'"
@@ -31,12 +27,10 @@ import { useRoute } from "vue-router";
 
 import { subPath } from "@/interfaces";
 import { Routes } from "@/router/routes";
-import useNavStore from "@/stores/nav";
 import { createSubPaths } from "@/utils";
 
 import NavButtons from "./NavButtons.vue";
 
-import APTitle from "./Titles/APTitle.vue";
 import FolderTitle from "./Titles/Folder.vue";
 import PlaylistsTitle from "./Titles/PlaylistsTitle.vue";
 import QueueTitle from "./Titles/QueueTitle.vue";
@@ -46,7 +40,6 @@ import ArtistDiscographyTitle from "./Titles/ArtistDiscographyTitle.vue";
 import ArtistTracksTitle from "./Titles/ArtistTracksTitle.vue";
 
 const route = useRoute();
-const nav = useNavStore();
 
 const subPaths = ref<subPath[]>([]);
 

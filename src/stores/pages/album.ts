@@ -64,7 +64,6 @@ export default defineStore("album", {
 
       this.srcTracks.forEach((t, index) => {
         t.master_index = index;
-        console.log(t.disc, t.track);
       });
     },
     async fetchArtistAlbums() {
@@ -83,6 +82,12 @@ export default defineStore("album", {
     },
     resetAlbumArtists() {
       this.albumArtists = [];
+    },
+    makeFavorite() {
+      this.info.is_favorite = true;
+    },
+    removeFavorite() {
+      this.info.is_favorite = false;
     },
   },
   getters: {

@@ -50,7 +50,7 @@
           </div>
           <div class="buttons">
             <PlayBtnRect :source="playSources.album" :store="useAlbumStore" />
-            <HeartSvg :state="is_fav" @handleFav="handleFav"/>
+            <HeartSvg :state="album.is_favorite" @handleFav="handleFav" />
           </div>
         </div>
       </div>
@@ -92,14 +92,18 @@ import HeartSvg from "../shared/HeartSvg.vue";
 
 import PlayBtnRect from "../shared/PlayBtnRect.vue";
 import favoriteHandler from "@/composables/favoriteHandler";
+import { storeToRefs } from "pinia";
 
-const props = defineProps<{
-  album: Album;
-}>();
+// const props = defineProps<{
+//   album: Album;
+// }>();
 
 const albumheaderthing = ref<any>(null);
 const imguri = paths.images;
 const nav = useNavStore();
+const store = useAlbumStore();
+
+const { info: album } = storeToRefs(store);
 
 defineEmits<{
   (event: "playThis"): void;
@@ -117,10 +121,16 @@ function handleVisibilityState(state: boolean) {
 
 useVisibility(albumheaderthing, handleVisibilityState);
 
-const is_fav = ref(props.album.is_favorite);
+// const is_fav = ref(props.album.is_favorite);
 
 function handleFav() {
-  favoriteHandler(is_fav, favType.album, props.album.albumhash);
+  favoriteHandler(
+    album.value.is_favorite,
+    favType.album,
+    album.value.albumhash,
+    store.makeFavorite,
+    store.removeFavorite
+  );
 }
 </script>
 
