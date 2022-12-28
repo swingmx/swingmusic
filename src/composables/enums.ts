@@ -4,7 +4,7 @@ export enum playSources {
   search,
   folder,
   artist,
-  albumCard,
+  favorite,
 }
 
 export enum NotifType {
@@ -22,6 +22,7 @@ export enum FromOptions {
   search = "search",
   artist = "artist",
   albumCard = "albumCard",
+  favorite = "favorite",
 }
 
 export enum ContextSrc {

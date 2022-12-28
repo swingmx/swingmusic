@@ -35,6 +35,9 @@ const baseImgUrl = baseApiUrl + "/img";
 const paths = {
   api: {
     album: baseApiUrl + "/album",
+    favAlbums: baseApiUrl + "/albums/favorite",
+    favTracks: baseApiUrl + "/tracks/favorite",
+    favArtists: baseApiUrl + "/artists/favorite",
     artist: baseApiUrl + "/artist",
     favorite: baseApiUrl + "/favorite",
     get removeFavorite() {

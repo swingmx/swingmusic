@@ -39,7 +39,8 @@ export default defineStore("artistDiscography", {
           );
       }
     },
-    setPage(page: discographyAlbumTypes) {
+    setPage(page: discographyAlbumTypes | undefined) {
+      // @ts-ignore
       this.page = page;
     },
     fetchAlbums(artisthash: string) {

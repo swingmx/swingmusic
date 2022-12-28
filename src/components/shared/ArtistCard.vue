@@ -7,16 +7,8 @@
       },
     }"
   >
-    <div
-      class="artist-card"
-      :class="{ _is_on_sidebar: alt }"
-      :style="{ backgroundColor: `${artist.colors[0]}` }"
-    >
-      <img
-        class="artist-image circular"
-        :src="imguri + artist.image"
-        loading="lazy"
-      />
+    <div class="artist-card">
+      <img class="artist-image circular" :src="imguri + artist.image" />
       <div class="artist-name t-center">
         {{ artist.name }}
       </div>
@@ -33,7 +25,6 @@ const imguri = paths.images.artist.large;
 
 defineProps<{
   artist: Artist;
-  alt?: boolean;
 }>();
 </script>
 
@@ -58,7 +49,6 @@ defineProps<{
 
   .artist-image {
     width: 100%;
-    // margin-bottom: $small;
     transition: all 0.5s ease-in-out;
     object-fit: cover;
   }

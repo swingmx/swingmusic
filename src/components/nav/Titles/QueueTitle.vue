@@ -27,6 +27,7 @@ import SearchSvg from "@/assets/icons/search.svg";
 import ArtistSvg from "@/assets/icons/artist.svg";
 
 import { RouteLocationRaw } from "vue-router";
+import HeartSvg from "@/assets/icons/heart.fill.svg";
 
 const queue = useQueueStore();
 
@@ -92,6 +93,15 @@ function getSource() {
           params: {
             hash: source.artisthash,
           },
+        },
+      };
+
+    case FromOptions.favorite:
+      return {
+        name: "Favorite tracks",
+        icon: HeartSvg,
+        location: {
+          name: Routes.favorites,
         },
       };
 

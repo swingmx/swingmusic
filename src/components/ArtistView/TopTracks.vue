@@ -1,59 +1,35 @@
 <template>
   <div class="artist-top-tracks">
     <h3 class="section-title">
-      Tracks
-      <span class="see-more">
-        <RouterLink
-          :to="{
-            name: Routes.artistTracks,
-            params: {
-              hash: artist.info.artisthash,
-            },
-            query: {
-              artist: artist.info.name,
-            },
-          }"
-          >SEE ALL</RouterLink
-        >
+      {{ title }}
+      <span class="see-all">
+
+        <RouterLink :to="route">SEE ALL</RouterLink>
       </span>
     </h3>
-    <div class="tracks">
+    <div class="tracks" :class="{ isSmall, isMedium }">
       <SongItem
-        v-for="(song, index) in artist.tracks"
+        v-for="(song, index) in tracks"
         :track="song"
         :index="index + 1"
-        @playThis="playFromPage(index)"
+        @playThis="playHandler(index)"
       />
     </div>
-    <div class="error" v-if="!artist.tracks.length">No tracks</div>
+    <div class="error" v-if="!tracks.length">No tracks</div>
   </div>
 </template>
 
 <script setup lang="ts">
 import SongItem from "../shared/SongItem.vue";
-import useArtistPageStore from "@/stores/pages/artist";
-import useQueueStore from "@/stores/queue";
-import { FromOptions, playSources } from "@/composables/enums";
+import { Track } from "@/interfaces";
+import { isMedium, isSmall } from "@/stores/content-width";
 
-import { getArtistTracks } from "@/composables/fetch/artists";
-import { Routes } from "@/router/routes";
-
-const artist = useArtistPageStore();
-const queue = useQueueStore();
-
-async function playFromPage(index: number) {
-  if (
-    queue.from.type == FromOptions.artist &&
-    queue.from.artisthash == artist.info.artisthash
-  ) {
-    queue.play(index);
-    return;
-  }
-
-  const tracks = await getArtistTracks(artist.info.artisthash);
-  queue.playFromArtist(artist.info.artisthash, artist.info.name, tracks);
-  queue.play(index);
-}
+defineProps<{
+  tracks: Track[];
+  route: string;
+  title: string;
+  playHandler: (index: number) => void;
+}>();
 </script>
 
 <style lang="scss">
@@ -74,7 +50,7 @@ async function playFromPage(index: number) {
     justify-content: space-between;
   }
 
-  .see-more {
+  .see-all {
     font-size: $medium;
 
     a:hover {
