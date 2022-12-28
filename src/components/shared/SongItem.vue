@@ -14,7 +14,7 @@
         {{ index }}
       </div>
       <div class="heart-icon">
-        <HeartFillSvg v-if="fav" />
+        <HeartFillSvg v-if="is_fav" />
         <HeartSvg v-else />
       </div>
     </div>
@@ -83,10 +83,10 @@ import OptionSvg from "@/assets/icons/more.svg";
 import ArtistName from "./ArtistName.vue";
 
 import useQueueStore from "@/stores/queue";
-import { addFavorite, removeFavorite } from "@/composables/fetch/favorite";
 import { favType } from "@/composables/enums";
 
 import MasterFlag from "./MasterFlag.vue";
+import favoriteHandler from "@/composables/favoriteHandler";
 
 const imguri = paths.images.thumb.small;
 const context_menu_showing = ref(false);
@@ -120,24 +120,10 @@ function isCurrentPlaying() {
   return isCurrent() && queue.playing;
 }
 
-const fav = ref(props.track.is_favorite);
+const is_fav = ref(props.track.is_favorite);
 
-async function addToFav(trackhash: string) {
-  if (fav.value) {
-    const removed = await removeFavorite(favType.track, trackhash);
-
-    if (removed) {
-      fav.value = false;
-    }
-
-    return;
-  }
-
-  const added = await addFavorite(favType.track, trackhash);
-
-  if (added) {
-    fav.value = true;
-  }
+function addToFav(trackhash: string) {
+  favoriteHandler(is_fav, favType.track, trackhash);
 }
 </script>
 

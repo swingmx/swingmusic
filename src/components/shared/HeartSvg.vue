@@ -1,5 +1,11 @@
 <template>
-  <button class="heart-button circular" @click="emit('handleFav')">
+  <button
+    class="heart-button circular"
+    @click="emit('handleFav')"
+    :class="{
+      is_fav: state,
+    }"
+  >
     <HeartFillSvg v-if="state" />
     <HeartSvg v-else />
   </button>
@@ -19,15 +25,18 @@ const emit = defineEmits<{
 </script>
 
 <style lang="scss">
+$bg: rgb(250, 33, 33);
+
 .heart-button {
-  $bg: rgb(255, 184, 184);
-  background: $bg;
   align-items: center;
   padding: 0 1rem;
   gap: $smaller;
+  border: solid 1px $bg;
+  background: transparent;
+  color: rgb(250, 33, 33);
 
   &:hover {
-    background: $bg;
+    background: transparent;
   }
 }
 </style>
