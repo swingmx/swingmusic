@@ -8,6 +8,7 @@ const {
   albumartists: albumArtistsUrl,
   albumbio: albumBioUrl,
   albumsByArtistUrl,
+  favAlbums,
 } = paths.api;
 
 const getAlbumData = async (hash: string, ToastStore: typeof useNotifStore) => {

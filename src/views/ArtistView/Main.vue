@@ -1,9 +1,5 @@
 <template>
-  <div
-    class="artist-page v-scroll-page"
-    style="height: 100%"
-    :class="{ isSmall, isMedium }"
-  >
+  <div class="artist-page v-scroll-page" style="height: 100%">
     <DynamicScroller
       :items="scrollerItems"
       :min-item-size="64"
@@ -29,8 +25,6 @@
 </template>
 
 <script setup lang="ts">
-import { isMedium, isSmall } from "@/stores/content-width";
-
 import Header from "@/components/ArtistView/Header.vue";
 import TopTracks from "@/components/ArtistView/TopTracks.vue";
 import useArtistPageStore from "@/stores/pages/artist";
@@ -39,9 +33,12 @@ import ArtistAlbumsFetcher from "@/components/ArtistView/ArtistAlbumsFetcher.vue
 import { computed } from "vue";
 import { onBeforeRouteLeave, onBeforeRouteUpdate, useRoute } from "vue-router";
 import { Album } from "@/interfaces";
-import { discographyAlbumTypes } from "@/composables/enums";
+import { discographyAlbumTypes, FromOptions } from "@/composables/enums";
+import useQueueStore from "@/stores/queue";
+import { getArtistTracks } from "@/composables/fetch/artists";
 
 const store = useArtistPageStore();
+const queue = useQueueStore();
 const route = useRoute();
 
 interface ScrollerItem {
@@ -53,11 +50,6 @@ interface ScrollerItem {
 const header: ScrollerItem = {
   id: "artist-header",
   component: Header,
-};
-
-const top_tracks: ScrollerItem = {
-  id: "artist-top-tracks",
-  component: TopTracks,
 };
 
 const artist_albums_fetcher: ScrollerItem = {
@@ -100,6 +92,20 @@ function createAbumComponent(title: AlbumType, albums: Album[]) {
       albums,
       title,
       artisthash: route.params.hash,
+      route: `/artists/${store.info.artisthash}/discography?artist=${store.info.name}`,
+    },
+  };
+}
+
+function getTopTracksComponent(): ScrollerItem {
+  return {
+    id: "artist-top-tracks",
+    component: TopTracks,
+    props: {
+      tracks: store.tracks,
+      title: "Tracks",
+      route: `/artists/${store.info.artisthash}/tracks?artist=${store.info.name}`,
+      playHandler: handlePlay,
     },
   };
 }
@@ -108,7 +114,7 @@ const scrollerItems = computed(() => {
   let components = [header];
 
   if (store.tracks.length > 0) {
-    components.push(top_tracks);
+    components.push(getTopTracksComponent());
   }
 
   components = [...components, artist_albums_fetcher];
@@ -138,6 +144,20 @@ const scrollerItems = computed(() => {
 
   return components;
 });
+
+async function handlePlay(index: number) {
+  if (
+    queue.from.type == FromOptions.artist &&
+    queue.from.artisthash == store.info.artisthash
+  ) {
+    queue.play(index);
+    return;
+  }
+
+  const tracks = await getArtistTracks(store.info.artisthash);
+  queue.playFromArtist(store.info.artisthash, store.info.name, tracks);
+  queue.play(index);
+}
 
 onBeforeRouteUpdate(async (to) => {
   await store.getData(to.params.hash as string);

@@ -9,6 +9,7 @@ import updateMediaNotif from "../composables/mediaNotification";
 import {
   fromAlbum,
   fromArtist,
+  fromFav,
   fromFolder,
   fromPlaylist,
   fromSearch,
@@ -24,7 +25,13 @@ function shuffle(tracks: Track[]) {
   return shuffled;
 }
 
-type From = fromFolder | fromAlbum | fromPlaylist | fromSearch | fromArtist;
+type From =
+  | fromFolder
+  | fromAlbum
+  | fromPlaylist
+  | fromSearch
+  | fromArtist
+  | fromFav;
 
 let audio = new Audio();
 audio.autoplay = false;
@@ -185,6 +192,13 @@ export default defineStore("Queue", {
         type: FromOptions.artist,
         artisthash: artisthash,
         artistname: artistname,
+      };
+
+      this.setNewQueue(tracks);
+    },
+    playFromFav(tracks: Track[]) {
+      this.from = <fromFav>{
+        type: FromOptions.favorite,
       };
 
       this.setNewQueue(tracks);

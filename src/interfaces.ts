@@ -121,6 +121,10 @@ export interface fromArtist {
   artistname: string;
 }
 
+export interface fromFav {
+  type: FromOptions.favorite;
+}
+
 export interface subPath {
   name: string;
   path: string;

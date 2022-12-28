@@ -3,17 +3,13 @@
     <h3>
       <span>{{ title }} </span>
       <span
-        class="see-more"
+        class="see-all"
         v-if="maxAbumCards <= albums.length"
-        @click="store.setPage(albumType)"
+        @click="
+          !favorites ? useArtistDiscographyStore().setPage(albumType) : null
+        "
       >
-        <RouterLink
-          :to="{
-            name: Routes.artistDiscography,
-            params: { hash: artisthash },
-          }"
-          >SEE ALL</RouterLink
-        >
+        <RouterLink :to="route">SEE ALL</RouterLink>
       </span>
     </h3>
     <div class="cards">
@@ -23,22 +19,19 @@
 </template>
 
 <script setup lang="ts">
-import AlbumCard from "../shared/AlbumCard.vue";
 import { Album } from "@/interfaces";
-
 import { maxAbumCards } from "@/stores/content-width";
-import { Routes } from "@/router/routes";
-
 import { discographyAlbumTypes } from "@/composables/enums";
 import useArtistDiscographyStore from "@/stores/pages/artistDiscog";
 
-const store = useArtistDiscographyStore();
+import AlbumCard from "../shared/AlbumCard.vue";
 
 defineProps<{
   title: string;
-  artisthash: string;
   albums: Album[];
-  albumType: discographyAlbumTypes;
+  albumType?: discographyAlbumTypes;
+  favorites?: boolean;
+  route: string;
 }>();
 </script>
 
@@ -53,7 +46,7 @@ defineProps<{
     padding: 0 $medium;
     margin-bottom: $small;
 
-    .see-more {
+    .see-all {
       font-size: $medium;
 
       a:hover {
