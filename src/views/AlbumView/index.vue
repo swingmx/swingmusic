@@ -23,7 +23,6 @@ import { computed } from "@vue/reactivity";
 import { onBeforeRouteLeave, onBeforeRouteUpdate } from "vue-router";
 
 import { Track } from "@/interfaces";
-import { createTrackProps } from "@/utils";
 
 import useAlbumStore from "@/stores/pages/album";
 import useQueueStore from "@/stores/queue";
@@ -61,7 +60,7 @@ class songItem {
     this.id = Math.random();
     this.props = track.is_album_disc_number
       ? { album_disc: track }
-      : { ...createTrackProps(track), hide_album: true, index: track.track };
+      : { track, hide_album: true, index: track.track };
     this.component = track.is_album_disc_number ? AlbumDiscBar : SongItem;
   }
 }
@@ -94,7 +93,7 @@ function getArtistAlbumComponents(): ScrollerItem[] {
         albums: ar.albums,
         title: `More from ${artistname}`,
         albumType: discographyAlbumTypes.all,
-        route: `/artists/${artisthash}/discography`
+        route: `/artists/${artisthash}/discography`,
       },
       size: 20 * 16,
     };
@@ -117,7 +116,7 @@ const scrollerItems = computed(() => {
 });
 
 function playFromAlbum(index: number) {
-  const { title, albumartists, albumhash } = album.info;
+  const { title, albumhash } = album.info;
   queue.playFromAlbum(title, albumhash, album.srcTracks);
   queue.play(index);
 }
