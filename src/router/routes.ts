@@ -130,6 +130,12 @@ const favorites = {
   component: () => import("@/views/Favorites.vue"),
 };
 
+const favoriteAlbums = {
+  path: "/favorites/albums",
+  name: "FavoriteAlbums",
+  component: () => import("@/views/FavoriteAlbums.vue"),
+};
+
 const notFound = {
   name: "NotFound",
   path: "/:pathMatch(.*)",
@@ -152,6 +158,7 @@ const routes = [
   notFound,
   ArtistTracks,
   favorites,
+  favoriteAlbums,
 ];
 
 const Routes = {
@@ -170,6 +177,7 @@ const Routes = {
   notFound: notFound.name,
   artistTracks: ArtistTracks.name,
   favorites: favorites.name,
+  favoriteAlbums: favoriteAlbums.name,
 };
 
 export { routes, Routes };
