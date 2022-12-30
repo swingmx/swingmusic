@@ -5,7 +5,7 @@
         :albums="favAlbums"
         :albumType="discographyAlbumTypes.albums"
         :title="'Albums 💜'"
-        :route="'some'"
+        :route="'/favorites/albums'"
       />
     </div>
     <div class="fav-tracks" v-if="favTracks.length">
