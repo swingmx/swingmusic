@@ -1,14 +1,8 @@
-// "dev" | "prod"
-let mode = "dev";
+let development = import.meta.env.DEV;
+const dev_url = "http://localhost:1970";
 
-export interface D<T = string> {
-  [key: string]: T;
-}
-
-const domains: D = {
-  dev: "http://localhost:1970",
-  prod: "",
-};
+const baseApiUrl = development ? dev_url : "";
+const baseImgUrl = baseApiUrl + "/img";
 
 const imageRoutes = {
   thumb: {
@@ -22,15 +16,6 @@ const imageRoutes = {
   playlist: "/p/",
   raw: "/raw/",
 };
-
-function toggleMode() {
-  mode = mode === "dev" ? "prod" : "dev";
-}
-
-const domain = () => domains[mode];
-
-const baseApiUrl = domain();
-const baseImgUrl = baseApiUrl + "/img";
 
 const paths = {
   api: {
@@ -96,4 +81,4 @@ const paths = {
   },
 };
 
-export { paths, toggleMode };
+export { paths };
