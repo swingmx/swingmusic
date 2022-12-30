@@ -14,7 +14,7 @@
         {{ index }}
       </div>
       <div class="heart-icon">
-        <HeartFillSvg v-if="props.track.is_favorite" />
+        <HeartFillSvg v-if="is_fav" />
         <HeartSvg v-else />
       </div>
     </div>
@@ -29,7 +29,7 @@
       </div>
       <div v-tooltip class="song-title">
         <div class="with-flag" @click.prevent="emitUpdate">
-          <span class="title ellip" ref="artisttitle">
+          <span class="title ellip">
             {{ track.title }}
           </span>
           <MasterFlag v-if="track.bitrate > 1024" />
@@ -70,7 +70,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
+import { onBeforeUpdate, onUpdated, ref, toRef, watch } from "vue";
 
 import { showTrackContextMenu as showContext } from "@/composables/context";
 import { paths } from "@/config";
@@ -92,13 +92,13 @@ const imguri = paths.images.thumb.small;
 const context_menu_showing = ref(false);
 const queue = useQueueStore();
 
-const artisttitle = ref<HTMLElement | null>(null);
-
 const props = defineProps<{
   track: Track;
   index: Number | String;
   hide_album?: Boolean;
 }>();
+
+const is_fav = ref(props.track.is_favorite);
 
 const emit = defineEmits<{
   (e: "playThis"): void;
@@ -120,17 +120,22 @@ function isCurrentPlaying() {
   return isCurrent() && queue.playing;
 }
 
-// const is_fav = ref(props.track.is_favorite);
-
 function addToFav(trackhash: string) {
   favoriteHandler(
-    props.track.is_favorite,
+    is_fav.value,
     favType.track,
     trackhash,
-    () => (props.track.is_favorite = true),
-    () => (props.track.is_favorite = false)
+    () => (is_fav.value = true),
+    () => (is_fav.value = false)
   );
 }
+
+watch(
+  () => props.track.is_favorite,
+  (newValue) => {
+    is_fav.value = newValue;
+  }
+);
 </script>
 
 <style lang="scss">
