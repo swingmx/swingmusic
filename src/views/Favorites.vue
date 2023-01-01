@@ -4,7 +4,7 @@
       <ArtistAlbums
         :albums="favAlbums"
         :albumType="discographyAlbumTypes.albums"
-        :title="'Albums 💜'"
+        :title="'Albums ❤️'"
         :route="'/favorites/albums'"
       />
     </div>
@@ -12,13 +12,13 @@
       <TopTracks
         :tracks="favTracks"
         :route="'/home'"
-        :title="'Tracks 💛'"
+        :title="'Tracks ❤️'"
         :playHandler="handlePlay"
       />
     </div>
 
     <div class="fav-artists" v-if="favArtists.length">
-      <FeaturedArtists :artists="favArtists" :title="'Artists 💚'" />
+      <FeaturedArtists :artists="favArtists" :title="'Artists ❤️'" />
     </div>
   </div>
 </template>

@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "vite",
     "serve": "vite preview",
-    "build": "vite build",
+    "build": "vite build --emptyOutDir --outDir ../alice-core/client",
     "lint": "eslint --ext .js,.vue --ignore-path .gitignore --fix src"
   },
   "dependencies": {
