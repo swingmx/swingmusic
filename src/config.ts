@@ -20,11 +20,15 @@ const imageRoutes = {
 const paths = {
   api: {
     album: baseApiUrl + "/album",
+    favorite: baseApiUrl + "/favorite",
+    favorites: baseApiUrl + "/favorites",
     favAlbums: baseApiUrl + "/albums/favorite",
     favTracks: baseApiUrl + "/tracks/favorite",
     favArtists: baseApiUrl + "/artists/favorite",
     artist: baseApiUrl + "/artist",
-    favorite: baseApiUrl + "/favorite",
+    get addFavorite() {
+      return this.favorite + "/add";
+    },
     get removeFavorite() {
       return this.favorite + "/remove";
     },
