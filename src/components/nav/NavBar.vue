@@ -18,6 +18,7 @@
         <ArtistTracksTitle v-if="$route.name == Routes.artistTracks" />
         <FavoritesNav v-if="$route.name === Routes.favorites" />
         <FavoriteAlbumsNav v-if="$route.name === Routes.favoriteAlbums" />
+        <FavoriteTracksNav v-if="$route.name === Routes.favoriteTracks" />
       </div>
     </div>
   </div>
@@ -42,6 +43,7 @@ import ArtistDiscographyTitle from "./Titles/ArtistDiscographyTitle.vue";
 import ArtistTracksTitle from "./Titles/ArtistTracksTitle.vue";
 import FavoritesNav from "./Titles/FavoritesNav.vue";
 import FavoriteAlbumsNav from "./Titles/FavoriteAlbumsNav.vue";
+import FavoriteTracksNav from "./Titles/FavoriteTracksNav.vue";
 
 const route = useRoute();
 

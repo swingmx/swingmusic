@@ -11,7 +11,7 @@
     <div class="fav-tracks" v-if="favTracks.length">
       <TopTracks
         :tracks="favTracks"
-        :route="'/home'"
+        :route="'/favorites/tracks'"
         :title="'Tracks ❤️'"
         :playHandler="handlePlay"
       />
