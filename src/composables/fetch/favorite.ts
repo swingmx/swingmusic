@@ -7,7 +7,7 @@ import { Album, Artist, Track } from "@/interfaces";
 
 export async function addFavorite(favtype: favType, itemhash: string) {
   const { data, error } = await useAxios({
-    url: paths.api.favorite,
+    url: paths.api.addFavorite,
     props: {
       type: favtype,
       hash: itemhash,
@@ -45,6 +45,21 @@ export async function removeFavorite(favtype: favType, itemhash: string) {
   }
 
   return true;
+}
+
+export async function getAllFavs(
+  track_limit = 6,
+  album_limit = 6,
+  artist_limit = 6
+) {
+  const { data } = await useAxios({
+    url:
+      paths.api.favorites +
+      `?track_limit=${track_limit}&album_limit=${album_limit}&artist_limit=${artist_limit}`,
+    get: true,
+  });
+
+  return data;
 }
 
 export async function getFavAlbums(limit = 6) {

@@ -30,11 +30,7 @@ import ArtistAlbums from "@/components/AlbumView/ArtistAlbums.vue";
 import TopTracks from "@/components/ArtistView/TopTracks.vue";
 import FeaturedArtists from "@/components/PlaylistView/ArtistsList.vue";
 import { discographyAlbumTypes } from "@/composables/enums";
-import {
-  getFavAlbums,
-  getFavArtists,
-  getFavTracks,
-} from "@/composables/fetch/favorite";
+import { getAllFavs, getFavTracks } from "@/composables/fetch/favorite";
 import { Album, Artist, Track } from "@/interfaces";
 import useQueueStore from "@/stores/queue";
 import { maxAbumCards } from "@/stores/content-width";
@@ -46,11 +42,12 @@ const favTracks: Ref<Track[]> = ref([]);
 const favArtists: Ref<Artist[]> = ref([]);
 
 onMounted(() => {
-  getFavTracks().then((tracks) => (favTracks.value = tracks));
-  getFavAlbums(maxAbumCards.value).then((albums) => (favAlbums.value = albums));
-  getFavArtists(maxAbumCards.value).then(
-    (artists) => (favArtists.value = artists)
-  );
+  const max = maxAbumCards.value;
+  getAllFavs(5, max, max).then((favs) => {
+    favAlbums.value = favs.albums;
+    favTracks.value = favs.tracks;
+    favArtists.value = favs.artists;
+  });
 });
 
 async function handlePlay(index: number) {
