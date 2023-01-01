@@ -73,6 +73,10 @@ onUpdated(() => {
       overflow: scroll;
       scrollbar-width: none;
 
+      &::-webkit-scrollbar {
+        display: none;
+      }
+
       .icon {
         height: 2rem;
         aspect-ratio: 1;
