@@ -36,7 +36,7 @@ export default defineStore("search", () => {
   const route = useRoute();
 
   const currentTab = ref("tracks");
-  const RESULT_COUNT = 10;
+  const RESULT_COUNT = 12;
 
   const loadCounter = reactive({
     tracks: 0,
@@ -92,8 +92,6 @@ export default defineStore("search", () => {
       albums.more = res.more;
       albums.query = query;
     });
-
-    console.log("fetched albums");
   }
 
   function fetchArtists(query: string) {
@@ -109,7 +107,7 @@ export default defineStore("search", () => {
   function loadTracks() {
     loadCounter.tracks += RESULT_COUNT;
 
-    startLoading();
+   startLoading();
     loadMoreTracks(loadCounter.tracks)
       .then((res) => {
         tracks.value = [...tracks.value, ...res.tracks];
@@ -139,7 +137,7 @@ export default defineStore("search", () => {
   function loadArtists() {
     loadCounter.artists += RESULT_COUNT;
 
-    startLoading();
+   startLoading();
     loadMoreArtists(loadCounter.artists)
       .then((res) => {
         artists.value = [...artists.value, ...res.artists];

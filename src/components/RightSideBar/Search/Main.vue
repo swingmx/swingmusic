@@ -5,6 +5,7 @@
       :tabs="tabs"
       @switchTab="switchTab"
       :currentTab="currentTab"
+      :tabContent="true"
     >
       <Tab :name="currentTab" :isOnSearchPage="isOnSearchPage" />
     </TabsWrapper>
