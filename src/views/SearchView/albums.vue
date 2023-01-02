@@ -14,3 +14,11 @@ import useSearchStore from "@/stores/search";
 
 const search = useSearchStore();
 </script>
+
+<style lang="scss">
+.search-albums-view.grid-page {
+  padding-right: $small;
+
+  overflow: auto;
+}
+</style>
