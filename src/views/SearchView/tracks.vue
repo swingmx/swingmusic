@@ -1,20 +1,17 @@
 <template>
   <div class="search-tracks-view">
-    <div
-      :class="{ isSmall, isMedium }"
-      style="height: 100%"
-    >
+    <div :class="{ isSmall, isMedium }" style="height: 100%">
       <RecycleScroller
         id="songlist-scroller"
         style="height: 100%"
-        :items="search.tracks.value.map((track) => ({ track, id: Math.random() }))"
+        :items="scrollerItems"
         :item-size="64"
         key-field="id"
         v-slot="{ item, index }"
       >
-        <SongItem
-          :track="item.track"
-          :index="index + 1"
+        <component
+          :is="item.component"
+          v-bind="item.props"
           @playThis="playFromSearch(index)"
         />
       </RecycleScroller>
@@ -23,13 +20,43 @@
 </template>
 
 <script setup lang="ts">
+import { computed } from "vue";
+
 import useQueueStore from "@/stores/queue";
 import useSearchStore from "@/stores/search";
 import { isMedium, isSmall } from "@/stores/content-width";
 import SongItem from "@/components/shared/SongItem.vue";
+import FetchMore from "@/components/SearchPage/FetchMore.vue";
 
 const search = useSearchStore();
 const queue = useQueueStore();
+
+interface scrollerItem {
+  id: number;
+  component: typeof SongItem | typeof FetchMore;
+  props: Record<string, any>;
+}
+
+const scrollerItems = computed(() => {
+  const items: scrollerItem[] = search.tracks.value.map((track, index) => ({
+    id: Math.random(),
+    component: SongItem,
+    props: {
+      track,
+      index: index + 1,
+    },
+  }));
+
+  items.push({
+    id: Math.random(),
+    component: FetchMore,
+    props: {
+      action: search.loadTracks,
+    },
+  });
+
+  return items;
+});
 
 function playFromSearch(index: number) {
   queue.playFromSearch(search.query, search.tracks.value);
@@ -45,7 +72,7 @@ function playFromSearch(index: number) {
     height: 100%;
   }
 
-  #songlist-scroller{
+  #songlist-scroller {
     padding-right: 1rem;
     padding-left: 0;
   }

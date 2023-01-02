@@ -15,10 +15,12 @@
 
 <script setup lang="ts">
 import { Routes } from "@/router/routes";
-import useSearchStore from "@/stores/search";
-import { focusElemByClass } from "@/utils";
-import { computed, onMounted, ref } from "vue";
 import { useRoute } from "vue-router";
+import { computed, onMounted, ref } from "vue";
+
+import { focusElemByClass } from "@/utils";
+import useSearchStore from "@/stores/search";
+
 import AlbumPage from "./albums.vue";
 import ArtistPage from "./artists.vue";
 import TracksPage from "./tracks.vue";
@@ -55,7 +57,7 @@ const component = computed(() => {
 
 function loadTracks() {
   search.loadTracks();
-  focusElemByClass("page-bottom-padding", 100);
+  focusElemByClass("track-11", 100);
 }
 
 function getGridRowItemCount() {
