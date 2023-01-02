@@ -1,5 +1,5 @@
 <template>
-  <div class="album-grid-view v-scroll-page">
+  <div class="card-grid-view v-scroll-page">
     <div class="scrollable">
       <AlbumCard
         v-for="album in artist.toShow"
@@ -11,8 +11,8 @@
 </template>
 
 <script setup lang="ts">
-import useArtistDiscographyStore from "@/stores/pages/artistDiscog";
 import AlbumCard from "@/components/shared/AlbumCard.vue";
+import useArtistDiscographyStore from "@/stores/pages/artistDiscog";
 
 import { onMounted } from "vue";
 import { onBeforeRouteLeave, useRoute } from "vue-router";

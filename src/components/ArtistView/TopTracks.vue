@@ -2,9 +2,7 @@
   <div class="artist-top-tracks">
     <h3 class="section-title">
       {{ title }}
-      <span class="see-all">
-        <RouterLink :to="route">SEE ALL</RouterLink>
-      </span>
+      <SeeAll :route="route" />
     </h3>
     <div class="tracks" :class="{ isSmall, isMedium }">
       <SongItem
@@ -22,6 +20,7 @@
 import SongItem from "../shared/SongItem.vue";
 import { Track } from "@/interfaces";
 import { isMedium, isSmall } from "@/stores/content-width";
+import SeeAll from "../shared/SeeAll.vue";
 
 defineProps<{
   tracks: Track[];
@@ -48,15 +47,6 @@ defineProps<{
     display: flex;
     justify-content: space-between;
     padding-left: 1rem !important; // applies to favorite page
-  }
-
-  .see-all {
-    font-size: $medium;
-
-    a:hover {
-      text-decoration: underline;
-      cursor: pointer !important;
-    }
   }
 }
 </style>

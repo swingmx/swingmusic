@@ -2,15 +2,13 @@
   <div class="artist-albums">
     <h3>
       <span>{{ title }} </span>
-      <span
-        class="see-all"
+      <SeeAll
         v-if="maxAbumCards <= albums.length"
+        :route="route"
         @click="
           !favorites ? useArtistDiscographyStore().setPage(albumType) : null
         "
-      >
-        <RouterLink :to="route">SEE ALL</RouterLink>
-      </span>
+      />
     </h3>
     <div class="cards">
       <AlbumCard v-for="a in albums.slice(0, maxAbumCards)" :album="a" />
@@ -25,6 +23,7 @@ import { discographyAlbumTypes } from "@/composables/enums";
 import useArtistDiscographyStore from "@/stores/pages/artistDiscog";
 
 import AlbumCard from "../shared/AlbumCard.vue";
+import SeeAll from "../shared/SeeAll.vue";
 
 defineProps<{
   title: string;
@@ -45,15 +44,6 @@ defineProps<{
     align-items: center;
     padding: 0 $medium;
     margin-bottom: $small;
-
-    .see-all {
-      font-size: $medium;
-
-      a:hover {
-        text-decoration: underline;
-        cursor: pointer !important;
-      }
-    }
   }
 
   .cards {

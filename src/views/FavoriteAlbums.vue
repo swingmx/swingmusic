@@ -1,5 +1,5 @@
 <template>
-  <div class="album-grid-view v-scroll-page">
+  <div class="card-grid-view v-scroll-page">
     <div class="scrollable">
       <AlbumCard
         v-for="album in albums"
@@ -11,8 +11,8 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, Ref, ref } from "vue";
 import { getFavAlbums } from "@/composables/fetch/favorite";
+import { onMounted, Ref, ref } from "vue";
 
 import AlbumCard from "@/components/shared/AlbumCard.vue";
 import { Album } from "@/interfaces";
