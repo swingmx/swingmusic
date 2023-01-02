@@ -1,5 +1,5 @@
 <template>
-  <div class="title">{{ text }}</div>
+  <h2 style="margin: 0">{{ text }}</h2>
 </template>
 
 <script setup lang="ts">

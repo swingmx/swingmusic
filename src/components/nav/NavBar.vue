@@ -15,10 +15,26 @@
         <ArtistDiscographyTitle
           v-if="$route.name == Routes.artistDiscography"
         />
-        <ArtistTracksTitle v-if="$route.name == Routes.artistTracks" />
-        <FavoritesNav v-if="$route.name === Routes.favorites" />
-        <FavoriteAlbumsNav v-if="$route.name === Routes.favoriteAlbums" />
-        <FavoriteTracksNav v-if="$route.name === Routes.favoriteTracks" />
+        <SimpleNav
+          v-if="$route.name == Routes.artistTracks"
+          :text="$route.query.artist as string || 'Artist Tracks'"
+        />
+        <SimpleNav
+          v-if="$route.name === Routes.favorites"
+          :text="'Favorites ❤️'"
+        />
+        <SimpleNav
+          v-if="$route.name === Routes.favoriteAlbums"
+          :text="'Favorite Albums ❤️'"
+        />
+        <SimpleNav
+          v-if="$route.name === Routes.favoriteArtists"
+          :text="'Favorite Artists ❤️'"
+        />
+        <SimpleNav
+          v-if="$route.name === Routes.favoriteTracks"
+          :text="'Favorite Tracks ❤️'"
+        />
       </div>
     </div>
   </div>
@@ -35,18 +51,14 @@ import { createSubPaths } from "@/utils";
 import NavButtons from "./NavButtons.vue";
 
 import FolderTitle from "./Titles/Folder.vue";
+import SimpleNav from "./Titles/SimpleNav.vue";
 import PlaylistsTitle from "./Titles/PlaylistsTitle.vue";
 import QueueTitle from "./Titles/QueueTitle.vue";
 import SearchTitle from "./Titles/SearchTitle.vue";
 import SettingsTitle from "./Titles/SettingsTitle.vue";
 import ArtistDiscographyTitle from "./Titles/ArtistDiscographyTitle.vue";
-import ArtistTracksTitle from "./Titles/ArtistTracksTitle.vue";
-import FavoritesNav from "./Titles/FavoritesNav.vue";
-import FavoriteAlbumsNav from "./Titles/FavoriteAlbumsNav.vue";
-import FavoriteTracksNav from "./Titles/FavoriteTracksNav.vue";
 
 const route = useRoute();
-
 const subPaths = ref<subPath[]>([]);
 
 watch(

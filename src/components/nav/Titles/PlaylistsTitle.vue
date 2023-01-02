@@ -1,6 +1,6 @@
 <template>
   <div class="playlists-nav">
-    <SimpleTitle :text="'Playlists'" />
+    <SimpleNav :text="'Playlists'" />
     <div class="buttons">
       <button @click="showNewPlaylistModal()"><PlusSvg /> New Playlist</button>
     </div>
@@ -8,7 +8,7 @@
 </template>
 
 <script setup lang="ts">
-import SimpleTitle from "./SimpleTitle.vue";
+import SimpleNav from "./SimpleNav.vue";
 import PlusSvg from "../../../assets/icons/plus.svg";
 
 import useModalStore from "@/stores/modal";
