@@ -1,6 +1,6 @@
 <template>
   <div class="f-container rounded">
-    <div id="f-items" class="rounded lislt-mode">
+    <div id="f-items" class="rounded">
       <FolderItem
         v-for="folder in folders"
         :key="JSON.stringify(folder)"
@@ -28,12 +28,11 @@ defineProps<{
 }
 
 #f-items.list-mode {
-  grid-template-columns: repeat(auto-fill, minmax(100%, 1fr));
+  grid-template-columns: 1fr;
   gap: 0;
 
   .f-item {
-    // background-color: $red;
-    height: 4rem;
+    height: 3.25rem;
     border-radius: $small;
     background-color: transparent;
   }
@@ -43,3 +42,5 @@ defineProps<{
   }
 }
 </style>
+
+<!-- TODO: ADD BUTTON TO TOGGLE LIST MODE -->

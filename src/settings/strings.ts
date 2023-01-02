@@ -34,3 +34,7 @@ export const contextChildrenShowModeStrings = <S>{
     show_mode: "Show context children on",
   },
 };
+
+export const showFoldersAsStrings = <S>{
+  settings: { show_folders_as: "Show folders as" },
+};

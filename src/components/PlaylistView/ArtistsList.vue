@@ -1,6 +1,9 @@
 <template>
   <div class="f-artists">
-    <h3>{{ title }} <span class="see-all">SEE ALL</span></h3>
+    <h3>
+      {{ title }}
+      <SeeAll :route="route" />
+    </h3>
     <div class="artist-list">
       <ArtistCard
         v-for="artist in artists.slice(0, maxAbumCards)"
@@ -15,10 +18,12 @@
 import ArtistCard from "@/components/shared/ArtistCard.vue";
 import { Artist } from "@/interfaces";
 import { maxAbumCards } from "@/stores/content-width";
+import SeeAll from "../shared/SeeAll.vue";
 
 defineProps<{
   artists: Artist[];
   title: string;
+  route: string;
 }>();
 </script>
 
@@ -31,9 +36,7 @@ defineProps<{
     align-items: center;
     margin-bottom: $small;
 
-    .see-all {
-      font-size: $medium;
-    }
+   
   }
 
   .artist-list {

@@ -18,7 +18,7 @@
     </div>
 
     <div class="fav-artists" v-if="favArtists.length">
-      <FeaturedArtists :artists="favArtists" :title="'Artists ❤️'" />
+      <FeaturedArtists :artists="favArtists" :title="'Artists ❤️'" :route="'/favorites/artists'"/>
     </div>
   </div>
 </template>
@@ -65,10 +65,6 @@ async function handlePlay(index: number) {
 
   h3 {
     margin-top: 0;
-  }
-
-  .see-all {
-    opacity: 0.75;
   }
 
   .fav-tracks {
