@@ -1,12 +1,12 @@
 <template>
-  <div id="right-tabs" class="rounded">
+  <div id="right-tabs" :class="tabContent">
     <div class="tab-buttons-wrapper">
       <div class="tabheaders rounded-sm no-scroll">
         <div
           class="tab"
           v-for="tab in tabs"
           :key="tab"
-          @click="switchTab(tab)"
+          @click="emit('switchTab', tab)"
           :class="{ activetab: tab === currentTab }"
         >
           {{ tab }}
@@ -14,7 +14,7 @@
       </div>
     </div>
 
-    <div id="tab-content" v-auto-animate>
+    <div id="tab-content" v-auto-animate v-if="tabContent">
       <slot />
     </div>
   </div>
@@ -24,22 +24,18 @@
 defineProps<{
   tabs: string[];
   currentTab: string;
+  tabContent?: boolean;
 }>();
 
 const emit = defineEmits<{
   (e: "switchTab", tab: string): void;
 }>();
-
-function switchTab(tab: string) {
-  emit("switchTab", tab);
-}
 </script>
 
 <style lang="scss">
 #right-tabs {
   height: 100%;
   display: grid;
-  grid-template-rows: min-content 1fr;
 
   .tab-buttons-wrapper {
     display: flex;
@@ -53,5 +49,9 @@ function switchTab(tab: string) {
     overflow-x: hidden;
     padding-bottom: 1rem;
   }
+}
+
+#right-tabs.tabContent {
+  grid-template-rows: min-content 1fr;
 }
 </style>

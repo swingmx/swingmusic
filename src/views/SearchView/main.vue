@@ -1,19 +1,5 @@
 <template>
-  <div class="search-view content-page">
-    <div class="tabs">
-      <button
-        v-for="page in pages"
-        :class="{ 'btn-active': page === $route.params.page }"
-        @click="
-          () => {
-            $router.push({ name: Routes.search, params: { page: page } });
-            search.switchTab(page);
-          }
-        "
-      >
-        {{ page }}
-      </button>
-    </div>
+  <div class="search-view content-page" style="padding-right: 0;">
     <div ref="page" class="page no-scroll" v-auto-animate>
       <component :is="component" />
     </div>
@@ -152,22 +138,9 @@ onMounted(() => {
   height: calc(100% - 1rem);
   display: grid;
   gap: 1rem;
-  grid-template-rows: max-content 1fr;
+  grid-template-rows: 1fr max-content;
 
   margin-right: -0.75rem;
-
-  .tabs {
-    width: fit-content;
-    display: flex;
-    gap: 1rem;
-
-    & > * {
-      background-color: $gray4;
-      padding: $small 1rem;
-      border-radius: $small;
-      text-transform: capitalize;
-    }
-  }
 
   .page.no-scroll {
     overflow-x: visible;
@@ -181,6 +154,7 @@ onMounted(() => {
 
     padding-bottom: 4rem;
     overflow: auto;
+    padding-right: $medium;
   }
 
   button.load-more {
