@@ -1,12 +1,12 @@
 <template>
   <div class="settings-nav">
-    <SimpleTitle :text="'Settings'" />
+    <SimpleNav :text="'Settings'" />
     <Nav />
   </div>
 </template>
 
 <script setup lang="ts">
-import SimpleTitle from "./SimpleTitle.vue";
+import SimpleNav from "./SimpleNav.vue";
 import Nav from "@/components/SettingsView/Nav.vue";
 </script>
 
