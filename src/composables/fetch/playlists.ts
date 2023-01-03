@@ -23,7 +23,7 @@ async function createNewPlaylist(playlist_name: string, track?: Track) {
   });
 
   if (status == 201) {
-    new Notification("✅ Playlist created successfullly!");
+    new Notification("Playlist created successfullly!");
 
     if (track) {
       setTimeout(() => {
@@ -75,11 +75,11 @@ async function addTrackToPlaylist(playlist: Playlist, track: Track) {
   });
 
   if (status == 409) {
-    new Notification("Track already exists in playlist", NotifType.Info);
+    new Notification("Track already exists in playlist");
     return;
   }
 
-  new Notification(track.title + " added to " + playlist.name);
+  new Notification(track.title + " added to " + playlist.name, NotifType.Success);
 }
 
 async function getPlaylist(pid: string) {
