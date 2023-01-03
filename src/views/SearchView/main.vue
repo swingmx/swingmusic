@@ -1,12 +1,13 @@
 <template>
-  <div class="search-view content-page" style="padding-right: 0;">
+  <div class="search-view content-page" style="padding-right: 0">
     <div ref="page" class="page no-scroll" v-auto-animate>
       <component :is="component" />
     </div>
     <button
+      v-if="$route.params.page !== 'tracks'"
       class="load-more"
       :class="{ 'btn-disabled': !canLoadMore }"
-      @click="loadMore"
+      @click="canLoadMore && loadMore()"
     >
       Load more
     </button>
@@ -14,20 +15,15 @@
 </template>
 
 <script setup lang="ts">
-import { Routes } from "@/router/routes";
 import { useRoute } from "vue-router";
 import { computed, onMounted, ref } from "vue";
 
-import { focusElemByClass } from "@/utils";
 import useSearchStore from "@/stores/search";
 
 import AlbumPage from "./albums.vue";
 import ArtistPage from "./artists.vue";
 import TracksPage from "./tracks.vue";
 
-// width of album and artist cards
-const defaultItemCount = 6;
-const gridItemWidth = 160;
 const page = ref<HTMLElement>();
 
 const search = useSearchStore();
@@ -57,44 +53,24 @@ const component = computed(() => {
 
 function loadTracks() {
   search.loadTracks();
-  focusElemByClass("track-11", 100);
-}
-
-function getGridRowItemCount() {
-  if (page.value?.offsetWidth === undefined) return defaultItemCount;
-  const page_width = page.value?.offsetWidth - 16;
-  return Math.floor(page_width / gridItemWidth);
 }
 
 function scrollToGridPageBottom() {
   const elem = document.getElementsByClassName("grid-page")[0] as HTMLElement;
   setTimeout(() => {
-    elem.scrollTo(0, elem.scrollHeight);
+    elem.scroll({
+      top: elem.scrollHeight,
+      behavior: "smooth",
+    });
   }, 250);
-
-  // const elemWidth = elem.offsetWidth;
-  // console.log(Math.floor(elemWidth / 160));
-  // elem.scroll({
-  //   top: elem.scrollHeight,
-  //   behavior: "smooth",
-  // });
 }
 
 function loadAlbums() {
+  search.loadAlbums();
   scrollToGridPageBottom();
-
-  setTimeout(() => {
-    // search.loadAlbums();
-    const itemCount = getGridRowItemCount();
-    search.loadAlbums(itemCount);
-  
-    scrollToGridPageBottom();
-  }, 250);
-
 }
 
 function loadArtists() {
-  // const itemCount = getGridRowItemCount();
   search.loadArtists();
 
   scrollToGridPageBottom();
@@ -132,17 +108,16 @@ const canLoadMore = computed(() => {
 
 onMounted(() => {
   search.switchTab(route.params.page as string);
+  search.query = route.query.q as string;
 });
 </script>
 
 <style lang="scss">
 .search-view {
-  height: calc(100% - 1rem);
+  height: calc(100%);
   display: grid;
-  gap: 1rem;
-  grid-template-rows: 1fr max-content;
-
   margin-right: -0.75rem;
+  position: relative;
 
   .page.no-scroll {
     overflow-x: visible;
@@ -151,17 +126,31 @@ onMounted(() => {
   .grid-page {
     max-height: 100%;
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(10rem, 1fr));
     gap: 1.75rem 0;
 
     padding-bottom: 4rem;
     overflow: auto;
     padding-right: $medium;
+    scrollbar-gutter: stable;
   }
 
   button.load-more {
-    width: 10rem;
-    margin: 0 auto;
+    position: absolute;
+    bottom: 0;
+    height: 3rem;
+    left: -1.25rem;
+    width: calc(100% + 1.25rem);
+    border-radius: 0;
+    background: $darkestblue;
+    // margin: 0 auto;
+    // margin-bottom: 1rem;
+  }
+
+  .btn-disabled {
+    pointer-events: all;
+    background: $gray !important;
+    opacity: 1;
   }
 }
 </style>

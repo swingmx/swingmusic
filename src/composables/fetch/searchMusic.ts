@@ -49,12 +49,11 @@ async function loadMoreTracks(index: number) {
   return response.data;
 }
 
-async function loadMoreAlbums(index: number, count: number) {
+async function loadMoreAlbums(index: number) {
   const response = await axios.get(loadMoreUrl, {
     params: {
       type: "albums",
       index: index,
-      count: count,
     },
   });
 

@@ -1,11 +1,13 @@
 <template>
   <div class="nav-search-input">
     <SearchInput :on_nav="true" />
-    <TabsWrapper
+    <Tabs
       :tabs="tabs"
       :currentTab="($route.params.page as string)"
       @switchTab="(tab: string) => {
-        $router.push({ name: Routes.search, params: { page: tab } });
+        $router.replace({ name: Routes.search, params: { page: tab }, query: {
+          q: search.query,
+        } });
         search.switchTab(tab);
       }"
     />
@@ -13,7 +15,7 @@
 </template>
 
 <script setup lang="ts">
-import TabsWrapper from "@/components/RightSideBar/Search/TabsWrapper.vue";
+import Tabs from "@/components/RightSideBar/Search/TabsWrapper.vue";
 import SearchInput from "@/components/RightSideBar/SearchInput.vue";
 import { Routes } from "@/router/routes";
 

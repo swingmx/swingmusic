@@ -40,6 +40,8 @@ function switchTab(tab: string) {
   overflow: hidden;
   height: 100%;
   width: 100%;
+  display: grid;
+  grid-template-rows: max-content 1fr;
 
   .heading {
     padding: $medium;
