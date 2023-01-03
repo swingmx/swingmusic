@@ -22,6 +22,7 @@ const context_children_show_mode: Setting = {
   ],
   source: () => settings().contextChildrenShowMode,
   action: (value: mode) => settings().setContextChildrenShowMode(value),
+  defaultAction: () => settings().toggleContextChildrenShowMode(),
 };
 
 export default [context_children_show_mode];

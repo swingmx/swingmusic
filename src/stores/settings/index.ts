@@ -23,6 +23,12 @@ export default defineStore("settings", {
     setContextChildrenShowMode(mode: contextChildrenShowMode) {
       this.contextChildrenShowMode = mode;
     },
+    toggleContextChildrenShowMode() {
+      this.contextChildrenShowMode =
+        this.contextChildrenShowMode === contextChildrenShowMode.click
+          ? contextChildrenShowMode.hover
+          : contextChildrenShowMode.click;
+    },
   },
   getters: {
     can_extend_width(): boolean {
