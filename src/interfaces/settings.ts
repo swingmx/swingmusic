@@ -12,6 +12,7 @@ export interface Setting {
   inactive?: () => boolean;
   action: (arg0?: any) => void;
   source: () => any;
+  defaultAction?: () => void;
 }
 
 export interface SettingGroup {

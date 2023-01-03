@@ -10,7 +10,12 @@
         :key="index"
         :class="{ inactive: setting.inactive && setting.inactive() }"
       >
-        <div class="title ellip" @click="setting.action()">
+        <div
+          class="title ellip"
+          @click="
+            setting.defaultAction ? setting.defaultAction() : setting.action()
+          "
+        >
           {{ setting.title }}
         </div>
         <div class="options">
