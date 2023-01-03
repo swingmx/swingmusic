@@ -1,8 +1,8 @@
 <template>
-  <div class="search-albums-view grid-page" v-auto-animate>
+  <div class="search-albums-view grid-page">
     <AlbumCard
       v-for="album in search.albums.value"
-      :key="album.albumhash"
+      :key="Math.random()"
       :album="album"
     />
   </div>

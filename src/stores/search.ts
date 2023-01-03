@@ -4,6 +4,7 @@ import { defineStore } from "pinia";
 import { watch } from "vue";
 import { useRoute } from "vue-router";
 import { Routes } from "@/router/routes";
+import router from "@/router";
 
 import {
   loadMoreAlbums,
@@ -128,11 +129,11 @@ export default defineStore("search", () => {
       .then(() => scrollOnLoad());
   }
 
-  function loadAlbums(count = 6) {
-    loadCounter.albums += count;
+  function loadAlbums() {
+    loadCounter.albums += RESULT_COUNT;
 
     startLoading();
-    loadMoreAlbums(loadCounter.albums, count)
+    loadMoreAlbums(loadCounter.albums)
       .then((res) => {
         albums.value = [...albums.value, ...res.albums];
         albums.more = res.more;
@@ -165,6 +166,15 @@ export default defineStore("search", () => {
   watch(
     () => debouncedQuery.value,
     (newQuery) => {
+      if (route.name === Routes.search) {
+        router.replace({
+          name: Routes.search,
+          params: {
+            page: route.params.page,
+          },
+          query: { q: newQuery },
+        });
+      }
       // reset all counters
       for (const key in loadCounter) {
         // @ts-ignore

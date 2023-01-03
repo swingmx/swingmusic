@@ -3,7 +3,11 @@
     <router-link
       v-for="menu in menus"
       :key="menu.name"
-      :to="{ name: menu.route_name, params: menu?.params }"
+      :to="{
+        name: menu.route_name,
+        params: menu?.params,
+        query: menu.query && menu.query(),
+      }"
     >
       <div
         v-if="menu.separator"
@@ -34,6 +38,7 @@ import QueueSvg from "../../assets/icons/queue.svg";
 import SearchSvg from "../../assets/icons/search.svg";
 import SettingsSvg from "../../assets/icons/settings.svg";
 import HeartSvg from "../../assets/icons/heart.svg";
+import useSearchStore from "@/stores/search";
 
 const menus = [
   {
@@ -65,6 +70,7 @@ const menus = [
     name: "search",
     route_name: Routes.search,
     params: { page: "tracks" },
+    query: () => ({ q: useSearchStore().query }),
     icon: SearchSvg,
   },
   {

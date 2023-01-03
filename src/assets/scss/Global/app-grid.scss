@@ -32,9 +32,7 @@ $g-border: solid 1px $gray5;
 
 .vue-recycle-scroller {
   padding-left: 1.25rem;
-  // padding-right: 1rem;
-
-  // margin-right: 1rem;
+  scrollbar-gutter: stable;
 }
 
 .r-sidebar {
@@ -62,8 +60,9 @@ $g-border: solid 1px $gray5;
 
 .content-page {
   margin-left: 1.25rem;
-  // margin-right: -$medium;
-  padding-right: 1.25rem;
+  margin-right: -$medium;
+  padding-right: $medium;
+  scrollbar-gutter: stable;
 }
 
 // ====== MODIFIERS =======

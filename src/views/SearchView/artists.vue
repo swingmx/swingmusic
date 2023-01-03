@@ -1,5 +1,5 @@
 <template>
-  <div v-auto-animate class="search-artists-view grid-page">
+  <div class="grid-page">
     <ArtistCard
       v-for="artist in search.artists.value"
       :key="artist.image"

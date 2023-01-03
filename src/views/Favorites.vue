@@ -60,8 +60,9 @@ async function handlePlay(index: number) {
 <style lang="scss">
 .favorites-page {
   height: 100%;
-  overflow: scroll;
+  overflow: auto;
   padding-bottom: 4rem;
+  padding-right: 1rem;
 
   h3 {
     margin-top: 0;
