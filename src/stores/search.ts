@@ -3,15 +3,20 @@ import { useDebounce } from "@vueuse/core";
 import { defineStore } from "pinia";
 import { watch } from "vue";
 import { useRoute } from "vue-router";
-import {
-    loadMoreAlbums,
-    loadMoreArtists, loadMoreTracks, searchAlbums,
-    searchArtists, searchTracks
-} from "../composables/fetch/searchMusic";
-import { Album, Artist, Playlist, Track } from "../interfaces";
 import { Routes } from "@/router/routes";
+
+import {
+  loadMoreAlbums,
+  loadMoreArtists,
+  loadMoreTracks,
+  searchAlbums,
+  searchArtists,
+  searchTracks,
+} from "../composables/fetch/searchMusic";
 import useLoaderStore from "./loader";
 import useTabStore from "./tabs";
+import waitForScrollEnd from "@/composables/useWaitForScroll";
+import { Album, Artist, Playlist, Track } from "../interfaces";
 /**
  *
  * Scrolls on clicking the loadmore button
@@ -76,10 +81,16 @@ export default defineStore("search", () => {
   function fetchTracks(query: string) {
     if (!query) return;
 
-    searchTracks(query).then((res) => {
-      tracks.value = res.tracks;
-      tracks.more = res.more;
-      tracks.query = query;
+    searchTracks(query).then((data) => {
+      const scrollable = document.getElementById(
+        "songlist-scroller"
+      ) as HTMLElement;
+
+      waitForScrollEnd(scrollable, 0).then(() => {
+        tracks.value = data.tracks;
+        tracks.more = data.more;
+        tracks.query = query;
+      });
     });
   }
 
@@ -107,7 +118,7 @@ export default defineStore("search", () => {
   function loadTracks() {
     loadCounter.tracks += RESULT_COUNT;
 
-   startLoading();
+    startLoading();
     loadMoreTracks(loadCounter.tracks)
       .then((res) => {
         tracks.value = [...tracks.value, ...res.tracks];
@@ -137,7 +148,7 @@ export default defineStore("search", () => {
   function loadArtists() {
     loadCounter.artists += RESULT_COUNT;
 
-   startLoading();
+    startLoading();
     loadMoreArtists(loadCounter.artists)
       .then((res) => {
         artists.value = [...artists.value, ...res.artists];
