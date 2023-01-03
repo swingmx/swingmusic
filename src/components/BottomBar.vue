@@ -89,8 +89,8 @@ function handleFav() {
     queue.currenttrack?.is_favorite,
     favType.track,
     queue.currenttrack?.trackhash || "",
-    () => queue.toggleFav(queue.currentindex),
-    () => queue.toggleFav(queue.currentindex)
+    () => null,
+    () => null
   );
 }
 </script>
