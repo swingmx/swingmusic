@@ -70,7 +70,7 @@
 </template>
 
 <script setup lang="ts">
-import { onBeforeUpdate, onUpdated, ref, toRef, watch } from "vue";
+import { ref, watch } from "vue";
 
 import { showTrackContextMenu as showContext } from "@/composables/context";
 import { paths } from "@/config";

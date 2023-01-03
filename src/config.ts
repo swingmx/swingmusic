@@ -25,6 +25,7 @@ const paths = {
     favAlbums: baseApiUrl + "/albums/favorite",
     favTracks: baseApiUrl + "/tracks/favorite",
     favArtists: baseApiUrl + "/artists/favorite",
+    isFavorite: baseApiUrl + "/favorites/check",
     artist: baseApiUrl + "/artist",
     get addFavorite() {
       return this.favorite + "/add";

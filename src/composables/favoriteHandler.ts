@@ -1,6 +1,6 @@
 import { favType } from "./enums";
 import { addFavorite, removeFavorite } from "./fetch/favorite";
-
+import useQueueStore from "@/stores/queue";
 /**
  * Handles the favorite state of an item.
  * @param setter The ref to track the is_favorite state
@@ -11,15 +11,21 @@ export default async function favoriteHandler(
   flag: boolean | undefined,
   type: favType,
   itemhash: string,
-  setter: () => void,
-  remover: () => void
+  setter: (x?: any) => void,
+  remover: (x?: any) => void
 ) {
+  const queue = useQueueStore();
+  const is_current =
+    type === favType.track && itemhash === queue.currenttrackhash;
   if (flag) {
     const removed = await removeFavorite(type, itemhash);
     if (removed) remover();
-    return;
+  } else {
+    const added = await addFavorite(type, itemhash);
+    if (added) setter();
   }
 
-  const added = await addFavorite(type, itemhash);
-  if (added) setter();
+  if (is_current) {
+    queue.toggleFav(queue.currentindex);
+  }
 }

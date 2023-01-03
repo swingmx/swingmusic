@@ -4,8 +4,8 @@
   justify-content: space-around;
   margin: 1rem;
   width: max-content;
-  background: linear-gradient(37deg, $gray1, $gray2, $gray1);
-  height: 2rem;
+  background-color: $gray4;
+  height: 2.25rem;
 
   & > * {
     border-left: solid 1px $gray3;

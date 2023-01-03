@@ -88,3 +88,12 @@ export async function getFavArtists(limit = 6) {
 
   return data.artists as Artist[];
 }
+
+export async function isFavorite(itemhash: string, type: favType) {
+  const { data } = await useAxios({
+    url: paths.api.isFavorite + `?hash=${itemhash}&type=${type}`,
+    get: true,
+  });
+
+  return data.is_favorite as boolean;
+}

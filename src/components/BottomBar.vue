@@ -18,7 +18,13 @@
               alt=""
             />
           </RouterLink>
-          <button><HeartSvg /></button>
+
+          <button>
+            <HeartSvg
+              :state="queue.currenttrack?.is_favorite"
+              @handleFav="handleFav"
+            />
+          </button>
         </div>
 
         <div class="info">
@@ -72,10 +78,21 @@ import Progress from "@/components/LeftSidebar/NP/Progress.vue";
 import ArtistName from "@/components/shared/ArtistName.vue";
 import useQStore from "@/stores/queue";
 
-import HeartSvg from "@/assets/icons/heart.svg";
-// import PlusSvg from "@/assets/icons/plus.svg";
+import HeartSvg from "./shared/HeartSvg.vue"; // import PlusSvg from "@/assets/icons/plus.svg";
+import favoriteHandler from "@/composables/favoriteHandler";
+import { favType } from "@/composables/enums";
 
 const queue = useQStore();
+
+function handleFav() {
+  favoriteHandler(
+    queue.currenttrack?.is_favorite,
+    favType.track,
+    queue.currenttrack?.trackhash || "",
+    () => queue.toggleFav(queue.currentindex),
+    () => queue.toggleFav(queue.currentindex)
+  );
+}
 </script>
 
 <style lang="scss">
@@ -128,10 +145,7 @@ const queue = useQStore();
         width: 2rem;
         background: transparent;
         padding: 0;
-
-        &:last-child:hover {
-          background: $red;
-        }
+        border: none;
       }
     }
 
