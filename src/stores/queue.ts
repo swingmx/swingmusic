@@ -3,8 +3,9 @@ import { defineStore } from "pinia";
 import { Ref } from "vue";
 import { NotifType, useNotifStore } from "./notification";
 
-import { FromOptions } from "../composables/enums";
+import { favType, FromOptions } from "../composables/enums";
 import updateMediaNotif from "../composables/mediaNotification";
+import { isFavorite } from "@/composables/fetch/favorite";
 
 import {
   fromAlbum,
@@ -292,6 +293,13 @@ export default defineStore("Queue", {
       this.queueScrollFunction = cb;
       this.mousover = mousover;
     },
+    toggleFav(index: number) {
+      const track = this.tracklist[index];
+
+      if (track) {
+        track.is_favorite = !track.is_favorite;
+      }
+    },
   },
   getters: {
     next(): Track | undefined {
@@ -309,7 +317,15 @@ export default defineStore("Queue", {
       }
     },
     currenttrack(): Track | undefined {
-      return this.tracklist[this.currentindex];
+      const current = this.tracklist[this.currentindex];
+
+      isFavorite(current?.trackhash || "", favType.track).then((is_fav) => {
+        if (current) {
+          current.is_favorite = is_fav;
+        }
+      });
+
+      return current;
     },
     currenttrackhash(): string {
       return this.currenttrack?.trackhash || "";
