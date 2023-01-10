@@ -79,7 +79,10 @@ async function addTrackToPlaylist(playlist: Playlist, track: Track) {
     return;
   }
 
-  new Notification(track.title + " added to " + playlist.name, NotifType.Success);
+  new Notification(
+    track.title + " added to " + playlist.name,
+    NotifType.Success
+  );
 }
 
 async function getPlaylist(pid: string) {
@@ -151,6 +154,20 @@ export async function getPlaylistArtists(pid: string): Promise<Artist[]> {
   }
 
   return [];
+}
+
+export async function deletePlaylist(pid: string) {
+  console.log(pid);
+  const { status } = await useAxios({
+    url: paths.api.playlist.base + "/delete",
+    props: {
+      pid,
+    },
+  });
+
+  if (status == 200) {
+    new Notification("Playlist deleted", NotifType.Success);
+  }
 }
 
 export {

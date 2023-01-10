@@ -29,7 +29,7 @@
         >Last updated {{ info.last_updated }} &#160;|&#160;&#160;</span
       >
       <span class="edit" @click="editPlaylist">Edit&#160;&#160;|</span>
-      <DeleteSvg class="edit"/>
+      <DeleteSvg class="edit" @click="deletePlaylist" />
     </div>
   </div>
 </template>
@@ -63,6 +63,10 @@ useVisibility(playlistheader, nav.toggleShowPlay);
 function editPlaylist() {
   modal.showEditPlaylistModal(info.value);
 }
+
+function deletePlaylist() {
+  modal.showDeletePlaylistModal(parseInt(playlist.info.id));
+}
 </script>
 
 <style lang="scss">
@@ -79,10 +83,6 @@ function editPlaylist() {
     left: 0;
     width: 100%;
     height: 100%;
-    // background-image: linear-gradient(
-    //   rgba(0, 0, 0, 0.514),
-    //   rgba(0, 0, 0, 0.651)
-    // );
     background-color: $black;
     opacity: 0.5;
   }
@@ -103,8 +103,8 @@ function editPlaylist() {
     align-items: center;
 
     svg {
-      transform: scale(.75);
-    margin-bottom: -0.2rem;
+      transform: scale(0.75);
+      margin-bottom: -0.2rem;
     }
 
     .edit {
@@ -122,19 +122,6 @@ function editPlaylist() {
     display: grid;
     z-index: 10;
 
-    .art {
-      width: 100%;
-      height: 100%;
-      display: flex;
-      align-items: flex-end;
-
-      .image {
-        width: 12rem;
-        height: 12rem;
-        background-image: url("../../assets/images/eggs.jpg");
-      }
-    }
-
     .info {
       display: flex;
       flex-direction: column-reverse;
@@ -149,7 +136,6 @@ function editPlaylist() {
     .title {
       font-size: 4rem;
       font-weight: 1000;
-      text-transform: capitalize;
       cursor: text;
     }
 

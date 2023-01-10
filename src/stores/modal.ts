@@ -5,6 +5,7 @@ enum ModalOptions {
   newPlaylist,
   updatePlaylist,
   welcome,
+  deletePlaylist,
 }
 
 export default defineStore("newModal", {
@@ -33,8 +34,15 @@ export default defineStore("newModal", {
     showWelcomeModal() {
       this.showModal(ModalOptions.welcome);
     },
+    showDeletePlaylistModal(pid: number) {
+      this.props = {
+        pid: pid,
+      };
+      this.showModal(ModalOptions.deletePlaylist);
+    },
     hideModal() {
       this.visible = false;
+      this.setTitle("");
     },
     setTitle(new_title: string) {
       this.title = new_title;

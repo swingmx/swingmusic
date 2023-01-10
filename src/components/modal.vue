@@ -17,6 +17,13 @@
         @setTitle="setTitle"
       />
       <WelcomeModal v-if="modal.component == modal.options.welcome" />
+      <div v-if="modal.component == modal.options.deletePlaylist">
+        <ConfirmModal
+          :text="'Are you sure you want to permanently delete this playlist?'"
+          :cancelAction="modal.hideModal"
+          :confirmAction="deletePlaylist"
+        />
+      </div>
     </div>
   </div>
 </template>
@@ -27,9 +34,12 @@ import useModalStore from "../stores/modal";
 import NewPlaylist from "./modals/NewPlaylist.vue";
 import UpdatePlaylist from "./modals/updatePlaylist.vue";
 import WelcomeModal from "./WelcomeModal.vue";
+import ConfirmModal from "./modals/ConfirmModal.vue";
+import { deletePlaylist as delPlaylist } from "@/composables/fetch/playlists";
+import { useRouter } from "vue-router";
 
 const modal = useModalStore();
-
+const router = useRouter();
 /**
  * Sets the modal title
  * @param title
@@ -43,6 +53,12 @@ function setTitle(title: string) {
  */
 function hideModal() {
   modal.hideModal();
+}
+
+function deletePlaylist() {
+  delPlaylist(modal.props.pid)
+    .then(() => modal.hideModal())
+    .then(() => router.back());
 }
 </script>
 
