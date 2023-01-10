@@ -142,3 +142,9 @@ button {
 .no-select {
   user-select: none;
 }
+
+.load_disabled {
+  pointer-events: all;
+  background: $gray5 !important;
+  opacity: 1;
+}

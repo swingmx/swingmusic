@@ -1,7 +1,5 @@
 <template>
-  <div style="height: 100%">
-    <component :is="getComponent()?.component" v-bind="getComponent()?.props" />
-  </div>
+  <component :is="getComponent()?.component" v-bind="getComponent()?.props" />
 </template>
 
 <script setup lang="ts">

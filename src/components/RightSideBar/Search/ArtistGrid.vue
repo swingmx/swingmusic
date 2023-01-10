@@ -19,13 +19,15 @@
     </div>
     <div v-else class="t-center"><h5>💔 No results 💔</h5></div>
     <LoadMore
-      v-if="album_grid && search.albums.more"
-      :loader="search.loadAlbums"
+      v-if="search.albums.value.length || search.artists.value.length"
+      :loader="album_grid ? search.loadAlbums : search.loadArtists"
+      :can_load_more="album_grid ? search.albums.more : search.artists.more"
     />
-    <LoadMore
-      v-if="!album_grid && search.artists.more"
+    <!-- <LoadMore
+      v-if="!album_grid"
       :loader="search.loadArtists"
-    />
+      :can_load_more="search.artists.more"
+    /> -->
   </div>
 </template>
 
@@ -53,5 +55,7 @@ defineProps<{
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(8rem, 1fr));
   gap: 0.75rem;
+  min-height: 10rem;
+  padding-bottom: $small;
 }
 </style>
