@@ -1,5 +1,5 @@
 <template>
-  <div id="right-tabs" :class="tabContent">
+  <div id="right-tabs" :class="{ tabContent: tabContent }">
     <div class="tab-buttons-wrapper">
       <div class="tabheaders rounded-sm no-scroll">
         <div
@@ -34,21 +34,25 @@ const emit = defineEmits<{
 
 <style lang="scss">
 #right-tabs {
-  height: 100%;
   display: grid;
+  position: absolute; // TODO: Find a way to fix scrollability without using position absolute.
+  overflow: hidden;
+
+  height: 100%;
+  width: 100%;
 
   .tab-buttons-wrapper {
     display: flex;
     justify-content: center;
     align-items: center;
   }
+}
 
-  #tab-content {
-    height: 100%;
-    overflow: scroll;
-    overflow-x: hidden;
-    padding-bottom: 1rem;
-  }
+#tab-content {
+  height: 100%;
+  overflow: scroll;
+  overflow-x: hidden;
+  padding-bottom: 1rem;
 }
 
 #right-tabs.tabContent {
