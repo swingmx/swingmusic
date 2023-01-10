@@ -6,7 +6,7 @@
     <button
       v-if="$route.params.page !== 'tracks'"
       class="load-more"
-      :class="{ 'btn-disabled': !canLoadMore }"
+      :class="{ load_disabled: !canLoadMore }"
       @click="canLoadMore && loadMore()"
     >
       Load more
@@ -143,14 +143,8 @@ onMounted(() => {
     width: calc(100% + 1.25rem);
     border-radius: 0;
     background: $darkestblue;
-    // margin: 0 auto;
-    // margin-bottom: 1rem;
-  }
-
-  .btn-disabled {
-    pointer-events: all;
-    background: $gray !important;
-    opacity: 1;
   }
 }
+
+
 </style>

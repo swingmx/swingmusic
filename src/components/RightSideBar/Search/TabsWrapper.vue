@@ -52,7 +52,6 @@ const emit = defineEmits<{
   height: 100%;
   overflow: scroll;
   overflow-x: hidden;
-  padding-bottom: 1rem;
 }
 
 #right-tabs.tabContent {

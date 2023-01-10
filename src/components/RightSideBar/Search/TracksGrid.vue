@@ -15,7 +15,11 @@
       />
     </div>
     <div v-else class="t-center"><h5>💔 No results 💔</h5></div>
-    <LoadMore v-if="search.tracks.more" :loader="search.loadTracks" />
+    <LoadMore
+      :loader="search.loadTracks"
+      :can_load_more="search.tracks.more"
+      v-if="search.tracks.value.length"
+    />
   </div>
 </template>
 
@@ -58,3 +62,9 @@ onMounted(() => {
   search.switchTab("tracks");
 });
 </script>
+
+<style lang="scss">
+#tracks-results .morexx {
+  margin-top: 1rem;
+}
+</style>
