@@ -28,24 +28,26 @@
       <span class="status"
         >Last updated {{ info.last_updated }} &#160;|&#160;&#160;</span
       >
-      <span class="edit" @click="editPlaylist">Edit</span>
+      <span class="edit" @click="editPlaylist">Edit&#160;&#160;|</span>
+      <DeleteSvg class="edit"/>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref } from "vue";
+import { storeToRefs } from "pinia";
 
 import useNavStore from "@/stores/nav";
 import usePStore from "@/stores/pages/playlist";
-import useModalStore from "../../stores/modal";
+import useModalStore from "@/stores/modal";
 
+import { paths } from "@/config";
 import { playSources } from "@/composables/enums";
 import { formatSeconds, useVisibility } from "@/utils";
-import { paths } from "../../config";
 
-import { storeToRefs } from "pinia";
 import PlayBtnRect from "../shared/PlayBtnRect.vue";
+import DeleteSvg from "@/assets/icons/delete.svg";
 
 const modal = useModalStore();
 const nav = useNavStore();
@@ -89,7 +91,7 @@ function editPlaylist() {
     position: absolute;
     bottom: 1rem;
     right: 1rem;
-    padding: 0.5rem;
+    padding: $smaller $small;
     background-color: $body;
     color: rgb(255, 255, 255);
     font-size: 0.9rem;
@@ -97,14 +99,12 @@ function editPlaylist() {
     box-shadow: 0 0 1rem rgba(0, 0, 0, 0.479);
     z-index: 12;
 
-    @include phone-only {
-      bottom: 1rem;
-      right: 1rem;
-      font-size: small;
+    display: flex;
+    align-items: center;
 
-      .status {
-        display: none;
-      }
+    svg {
+      transform: scale(.75);
+    margin-bottom: -0.2rem;
     }
 
     .edit {

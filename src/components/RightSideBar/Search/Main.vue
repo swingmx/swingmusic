@@ -1,7 +1,6 @@
 <template>
   <div class="right-search">
     <TabsWrapper
-      :isOnSearchPage="isOnSearchPage"
       :tabs="tabs"
       @switchTab="switchTab"
       :currentTab="currentTab"

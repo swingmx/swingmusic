@@ -83,9 +83,13 @@ export default defineStore("search", () => {
     if (!query) return;
 
     searchTracks(query).then((data) => {
-      const scrollable = document.getElementById(
+      let scrollable = document.getElementById(
         "songlist-scroller"
       ) as HTMLElement;
+
+      if (scrollable === null) {
+        scrollable = document.createElement("div");
+      }
 
       waitForScrollEnd(scrollable, 0).then(() => {
         tracks.value = data.tracks;
