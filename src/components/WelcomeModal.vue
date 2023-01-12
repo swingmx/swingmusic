@@ -1,5 +1,5 @@
 <template>
-  <div class="welcome-to-alice">
+  <div class="welcome-to-swing">
     <h3 class="t-center">
       Welcome to
       <span class="app-name">Alice</span>
@@ -28,7 +28,7 @@
 <script setup lang="ts"></script>
 
 <style lang="scss">
-.welcome-to-alice {
+.welcome-to-swing {
   p {
     line-height: 1.5rem;
   }
