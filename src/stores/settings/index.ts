@@ -9,6 +9,8 @@ export default defineStore("settings", {
     extend_width: false,
     contextChildrenShowMode: contextChildrenShowMode.click,
     artist_top_tracks_count: 5,
+    repeat_all: true,
+    repeat_one: false,
   }),
   actions: {
     toggleUseNPImg() {
@@ -29,10 +31,30 @@ export default defineStore("settings", {
           ? contextChildrenShowMode.hover
           : contextChildrenShowMode.click;
     },
+    toggleRepeatMode() {
+      if (this.repeat_all) {
+        this.repeat_all = false;
+        this.repeat_one = true;
+        return;
+      }
+
+      if (this.repeat_one) {
+        this.repeat_one = false;
+        this.repeat_all = false;
+        return;
+      }
+
+      if (!this.repeat_all && !this.repeat_one) {
+        this.repeat_all = true;
+      }
+    },
   },
   getters: {
     can_extend_width(): boolean {
       return xxl.value;
+    },
+    no_repeat(): boolean {
+      return !this.repeat_all && !this.repeat_one;
     },
   },
   persist: true,

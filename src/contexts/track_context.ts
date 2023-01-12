@@ -92,7 +92,7 @@ export default async (
     action: () => {
       QueueStore().playTrackNext(track);
     },
-    icon: "add_to_queue",
+    icon: "play_next",
   };
 
   const go_to_folder: Option = {

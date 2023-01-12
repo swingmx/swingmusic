@@ -189,8 +189,13 @@ function runChildAction(action: () => void) {
     background-image: url("../../assets/icons/plus.svg");
   }
 
-  .add_to_queue {
+  .play_next {
     background-image: url("../../assets/icons/add_to_queue.svg");
+  }
+
+  .add_to_queue {
+    background-image: url("../../assets/icons/add-to-queue.svg");
+    transform: scale(0.8); // reason: icon is not from same source as other
   }
 
   .heart {

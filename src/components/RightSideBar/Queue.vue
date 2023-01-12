@@ -61,6 +61,7 @@ function scrollToCurrent() {
 
 onMounted(() => {
   queue.setScrollFunction(scrollToCurrent, mouseover);
+  queue.focusCurrentInSidebar();
 });
 
 onBeforeUnmount(() => {
