@@ -158,7 +158,7 @@ export default defineStore("Queue", {
       this.from = <fromFolder>{
         type: FromOptions.folder,
         path: fpath,
-        name: "Folder",
+        name: "Folder: " + fpath.split("/").pop(),
       };
       this.setNewQueue(tracks);
     },
