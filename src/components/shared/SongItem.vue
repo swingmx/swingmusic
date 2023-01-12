@@ -1,3 +1,5 @@
+<!-- Track component used in app body -->
+
 <template>
   <div
     class="songlist-item rounded-sm"

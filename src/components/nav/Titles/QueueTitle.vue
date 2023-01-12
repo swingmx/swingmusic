@@ -101,7 +101,7 @@ function getSource() {
         name: "Favorite tracks",
         icon: HeartSvg,
         location: {
-          name: Routes.favorites,
+          name: Routes.favoriteTracks,
         },
       };
 

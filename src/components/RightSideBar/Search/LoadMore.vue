@@ -6,7 +6,7 @@
         load_disabled: !can_load_more,
       }"
     >
-      <div class="text">Load More {{ can_load_more }}</div>
+      <div class="text">Load More</div>
     </button>
   </div>
 </template>

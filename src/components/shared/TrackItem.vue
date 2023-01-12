@@ -1,3 +1,4 @@
+<!-- Track component used in the right sidebar -->
 <template>
   <div
     class="track-item"
@@ -31,20 +32,26 @@
         />
       </div>
     </div>
-    <div
-      class="remove-track flex"
-      @click.stop="queue.removeFromQueue(index)"
-      v-if="isQueueTrack"
-    >
-      <div title="remove from queue" >
-        <DelSvg/>
+    <div class="float-buttons flex" v-if="isQueueTrack">
+      <div
+        :title="is_fav ? 'Add to favorites' : 'Remove from favorites'"
+        @click.stop="() => addToFav(track.trackhash)"
+      >
+        <HeartSvg :state="is_fav" :no_emit="true" />
+      </div>
+      <div
+        class="remove-track"
+        title="remove from queue"
+        @click.stop="queue.removeFromQueue(index)"
+      >
+        <DelSvg />
       </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
+import { ref, watch } from "vue";
 
 import DelSvg from "@/assets/icons/plus.svg";
 import { showTrackContextMenu as showContext } from "@/composables/context";
@@ -52,6 +59,9 @@ import { paths } from "@/config";
 import { Track } from "@/interfaces";
 import useQueueStore from "@/stores/queue";
 import ArtistName from "./ArtistName.vue";
+import HeartSvg from "./HeartSvg.vue";
+import favoriteHandler from "@/composables/favoriteHandler";
+import { favType } from "@/composables/enums";
 
 const props = defineProps<{
   track: Track;
@@ -63,6 +73,7 @@ const props = defineProps<{
 
 const queue = useQueueStore();
 const context_on = ref(false);
+const is_fav = ref(props.track.is_favorite);
 
 function showMenu(e: MouseEvent) {
   showContext(e, props.track, context_on);
@@ -75,6 +86,23 @@ const emit = defineEmits<{
 const playThis = (track: Track) => {
   emit("playThis");
 };
+
+function addToFav(trackhash: string) {
+  favoriteHandler(
+    is_fav.value,
+    favType.track,
+    trackhash,
+    () => (is_fav.value = true),
+    () => (is_fav.value = false)
+  );
+}
+
+watch(
+  () => props.track.is_favorite,
+  (newValue) => {
+    is_fav.value = newValue;
+  }
+);
 </script>
 
 <style lang="scss">
@@ -99,10 +127,22 @@ const playThis = (track: Track) => {
     }
   }
 
-  .remove-track {
+  .float-buttons {
     opacity: 0;
-    transition: all 0.25s ease;
-    transform: scale(0.75) translateY(1rem) rotate(45deg);
+
+    .heart-button {
+      width: 2rem;
+      padding: 0;
+      border: none;
+      transition: all 0.25s ease;
+      transform: scale(1) translateY(-1rem);
+    }
+
+    .remove-track {
+      margin-top: $smaller;
+      transition: all 0.25s ease;
+      transform: scale(1) translateY(1rem) rotate(45deg);
+    }
 
     &:hover {
       opacity: 1 !important;
@@ -110,8 +150,15 @@ const playThis = (track: Track) => {
   }
 
   &:hover {
+    .float-buttons {
+      opacity: 1;
+    }
+
+    .heart-button {
+      transform: scale(1) translateY(0);
+    }
+
     .remove-track {
-      opacity: 0.5;
       transform: scale(1) translateY(0) rotate(45deg);
     }
 

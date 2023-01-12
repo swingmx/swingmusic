@@ -1,7 +1,7 @@
 <template>
   <button
     class="heart-button circular"
-    @click="emit('handleFav')"
+    @click="!no_emit && emit('handleFav')"
     :class="{
       is_fav: state,
     }"
@@ -17,6 +17,7 @@ import HeartFillSvg from "@/assets/icons/heart.fill.svg";
 
 defineProps<{
   state: boolean | undefined;
+  no_emit?: boolean;
 }>();
 
 const emit = defineEmits<{
