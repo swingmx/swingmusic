@@ -1,11 +1,11 @@
 {
-  "name": "musicx-v",
-  "version": "0.1.0",
+  "name": "swing_music_client",
+  "version": "0.1.0.alpha",
   "private": true,
   "scripts": {
     "dev": "vite",
     "serve": "vite preview",
-    "build": "vite build --emptyOutDir --outDir ../alice-core/client",
+    "build": "vite build --emptyOutDir --outDir ../swing-core/client",
     "lint": "eslint --ext .js,.vue --ignore-path .gitignore --fix src"
   },
   "dependencies": {

@@ -56,7 +56,7 @@
               <ArtistName
                 :artists="queue.currenttrack?.artist || []"
                 :albumartists="
-                  queue.currenttrack?.albumartist || 'Welcome to alice'
+                  queue.currenttrack?.albumartist || 'Welcome to Swing'
                 "
                 class="artist"
               />
