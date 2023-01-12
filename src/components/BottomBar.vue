@@ -25,6 +25,21 @@
               @handleFav="handleFav"
             />
           </button>
+          <button
+            class="repeat"
+            :class="{ 'repeat-disabled': settings.no_repeat }"
+            @click="settings.toggleRepeatMode"
+            :title="
+              settings.repeat_all
+                ? 'Repeat all'
+                : settings.no_repeat
+                ? 'No repeat'
+                : 'Repeat one'
+            "
+          >
+            <RepeatOneSvg v-if="settings.repeat_one" />
+            <RepeatAllSvg v-else />
+          </button>
         </div>
 
         <div class="info">
@@ -72,17 +87,22 @@
 import { Routes } from "@/router/routes";
 import { paths } from "@/config";
 import { formatSeconds } from "@/utils";
+import { favType } from "@/composables/enums";
+import favoriteHandler from "@/composables/favoriteHandler";
+
+import useQStore from "@/stores/queue";
+import useSettingsStore from "@/stores/settings";
 
 import HotKeys from "@/components/LeftSidebar/NP/HotKeys.vue";
 import Progress from "@/components/LeftSidebar/NP/Progress.vue";
 import ArtistName from "@/components/shared/ArtistName.vue";
-import useQStore from "@/stores/queue";
 
-import HeartSvg from "./shared/HeartSvg.vue"; // import PlusSvg from "@/assets/icons/plus.svg";
-import favoriteHandler from "@/composables/favoriteHandler";
-import { favType } from "@/composables/enums";
+import HeartSvg from "./shared/HeartSvg.vue";
+import RepeatAllSvg from "@/assets/icons/repeat.svg";
+import RepeatOneSvg from "@/assets/icons/repeat-one.svg";
 
 const queue = useQStore();
+const settings = useSettingsStore();
 
 function handleFav() {
   favoriteHandler(
@@ -146,6 +166,16 @@ function handleFav() {
         background: transparent;
         padding: 0;
         border: none;
+      }
+
+      button.repeat {
+        svg {
+          transform: scale(0.75);
+        }
+      }
+
+      button.repeat.repeat-disabled {
+        opacity: 0.25;
       }
     }
 

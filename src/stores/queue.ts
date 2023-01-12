@@ -6,6 +6,7 @@ import { NotifType, useNotifStore } from "./notification";
 import { favType, FromOptions } from "../composables/enums";
 import updateMediaNotif from "../composables/mediaNotification";
 import { isFavorite } from "@/composables/fetch/favorite";
+import useSettingsStore from "./settings";
 
 import {
   fromAlbum,
@@ -51,13 +52,17 @@ export default defineStore("Queue", {
     mousover: <Ref | null>null,
   }),
   actions: {
+    focusCurrentInSidebar(timeout = 500) {
+      if (!this.mousover) {
+        setTimeout(() => {
+          this.queueScrollFunction(this.currentindex - 1);
+        }, timeout);
+      }
+    },
     play(index: number = 0) {
       if (this.tracklist.length === 0) return;
       this.currentindex = index;
-
-      if (!this.mousover) {
-        this.queueScrollFunction(this.currentindex - 1);
-      }
+      this.focusCurrentInSidebar();
 
       const track = this.tracklist[index];
       const uri = `${paths.api.files}/${track.trackhash}`;
@@ -79,7 +84,7 @@ export default defineStore("Queue", {
             };
 
             audio.onended = () => {
-              this.playNext();
+              this.autoPlayNext();
             };
           });
         })
@@ -92,15 +97,14 @@ export default defineStore("Queue", {
           if (this.currentindex !== this.tracklist.length - 1) {
             setTimeout(() => {
               if (!this.playing) return;
-              this.playNext();
+              this.autoPlayNext();
             }, 5000);
           }
         });
     },
     stop() {
-      this.playing = false;
       audio.src = "";
-      // audio.pause();
+      this.playing = false;
     },
     playPause() {
       if (audio.src === "") {
@@ -116,12 +120,28 @@ export default defineStore("Queue", {
         audio.pause();
         this.playing = false;
       }
+    },
+    autoPlayNext() {
+      const settings = useSettingsStore();
+      const is_last = this.currentindex === this.tracklist.length - 1;
 
-      // if (this.playing) {
-      //   this.playing = false;
-      // } else {
-      //   this.playing = true;
-      // }
+      if (settings.repeat_one) {
+        this.play(this.currentindex);
+        return;
+      }
+
+      if (settings.repeat_all) {
+        this.play(is_last ? 0 : this.currentindex + 1);
+        return;
+      }
+
+      const resetQueue = () => {
+        this.currentindex = 0;
+        this.playing = false;
+        this.focusCurrentInSidebar();
+      };
+
+      !is_last ? this.play(this.currentindex + 1) : resetQueue();
     },
     playNext() {
       this.play(this.nextindex);
@@ -152,6 +172,13 @@ export default defineStore("Queue", {
         this.tracklist = [];
         this.tracklist.push(...tracklist);
       }
+
+      const settings = useSettingsStore();
+
+      if (settings.repeat_one) {
+        settings.toggleRepeatMode();
+      }
+      this.focusCurrentInSidebar(1000);
     },
     playFromFolder(fpath: string, tracks: Track[]) {
       console.log("play from folder");
