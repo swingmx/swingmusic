@@ -29,7 +29,8 @@
       <span class="status"
         >Last updated {{ info.last_updated }} &#160;|&#160;&#160;</span
       >
-      <div class="edit" @click="editPlaylist">Edit&#160;&#160;|</div>
+      <div class="edit" @click="editPlaylist">Edit&#160;&#160;</div>
+      |
       <DeleteSvg class="edit" @click="deletePlaylist" />
     </div>
   </div>
@@ -104,13 +105,15 @@ function deletePlaylist() {
     display: flex;
     align-items: center;
 
+    .edit {
+      cursor: pointer;
+      color: $brown;
+    }
+
     svg {
       transform: scale(0.75);
       margin-bottom: -0.2rem;
-    }
-
-    .edit {
-      cursor: pointer;
+      color: $red !important;
     }
   }
 
