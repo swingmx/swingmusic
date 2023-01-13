@@ -97,6 +97,7 @@ def add_track_to_playlist(playlist_id: str):
         return {"error": "Track already exists in playlist"}, 409
 
     add_artist_to_playlist(int(playlist_id), trackhash)
+    PL.update_last_updated(playlist_id)
 
     return {"msg": "Done"}, 200
 
