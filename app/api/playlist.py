@@ -115,8 +115,7 @@ def get_playlist(playlistid: str):
     tracks = remove_duplicates(tracks)
 
     duration = sum(t.duration for t in tracks)
-    playlist.last_updated = serializer.date_string_to_time_passed(
-        playlist.last_updated)
+    playlist.last_updated = serializer.date_string_to_time_passed(playlist.last_updated)
 
     playlist.duration = duration
 
@@ -171,8 +170,7 @@ def update_playlist_info(playlistid: str):
     update_playlist(int(playlistid), playlist)
 
     playlist = models.Playlist(*p_tuple)
-    playlist.last_updated = serializer.date_string_to_time_passed(
-        playlist.last_updated)
+    playlist.last_updated = serializer.date_string_to_time_passed(playlist.last_updated)
 
     return {
         "data": playlist,

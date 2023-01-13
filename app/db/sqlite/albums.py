@@ -65,8 +65,7 @@ class SQLiteAlbumMethods(AlbumMethods):
     @staticmethod
     def get_album_by_hash(album_hash: str):
         with SQLiteManager() as cur:
-            cur.execute("SELECT * FROM albums WHERE albumhash=?",
-                        (album_hash,))
+            cur.execute("SELECT * FROM albums WHERE albumhash=?", (album_hash,))
             album = cur.fetchone()
 
             if album is not None:
@@ -103,8 +102,7 @@ class SQLiteAlbumMethods(AlbumMethods):
     @staticmethod
     def get_albums_by_albumartist(albumartist: str):
         with SQLiteManager() as cur:
-            cur.execute("SELECT * FROM albums WHERE albumartist=?",
-                        (albumartist,))
+            cur.execute("SELECT * FROM albums WHERE albumartist=?", (albumartist,))
             albums = cur.fetchall()
 
             if albums is not None:

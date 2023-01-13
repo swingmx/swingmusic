@@ -156,7 +156,7 @@ class SQLitePlaylistMethods:
         del playlist["id"]
         del playlist["trackhashes"]
         del playlist["artisthashes"]
-        del playlist['banner_pos']
+        del playlist["banner_pos"]
 
         playlist = OrderedDict(sorted(playlist.items()))
         params = (*playlist.values(), playlist_id)

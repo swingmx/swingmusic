@@ -59,8 +59,7 @@ class Track:
     def __post_init__(self):
         if self.artist is not None:
             artist_str = str(self.artist).split(", ")
-            self.artist_hashes = [utils.create_hash(
-                a, decode=True) for a in artist_str]
+            self.artist_hashes = [utils.create_hash(a, decode=True) for a in artist_str]
 
             self.artist = [Artist(a) for a in artist_str]
 
@@ -101,8 +100,7 @@ class Album:
 
     def __post_init__(self):
         self.image = self.albumhash + ".webp"
-        self.albumartisthash = "-".join(
-            a.artisthash for a in self.albumartists)
+        self.albumartisthash = "-".join(a.artisthash for a in self.albumartists)
 
     def set_colors(self, colors: list[str]):
         self.colors = colors

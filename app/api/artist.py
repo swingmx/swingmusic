@@ -242,8 +242,7 @@ def get_artist_albums(artisthash: str):
     albums = list(albums)
     albums = remove_EPs_and_singles(albums)
 
-    appearances = filter(
-        lambda a: artisthash not in a.albumartisthash, all_albums)
+    appearances = filter(lambda a: artisthash not in a.albumartisthash, all_albums)
     appearances = list(appearances)
 
     appearances = remove_EPs_and_singles(appearances)
