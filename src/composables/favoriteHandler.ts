@@ -11,8 +11,8 @@ export default async function favoriteHandler(
   flag: boolean | undefined,
   type: favType,
   itemhash: string,
-  setter: (x?: any) => void,
-  remover: (x?: any) => void
+  setter: (x?: unknown) => void,
+  remover: (x?: unknown) => void
 ) {
   const queue = useQueueStore();
   const is_current =
