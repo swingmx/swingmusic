@@ -11,7 +11,6 @@ from app.lib import searchlib
 
 searchbp = Blueprint("search", __name__, url_prefix="/")
 
-
 SEARCH_COUNT = 12
 """The max amount of items to return per request"""
 
@@ -200,20 +199,20 @@ def search_load_more():
     if s_type == "tracks":
         t = SearchResults.tracks
         return {
-            "tracks": t[index : index + SEARCH_COUNT],
+            "tracks": t[index:index + SEARCH_COUNT],
             "more": len(t) > index + SEARCH_COUNT,
         }
 
     elif s_type == "albums":
         a = SearchResults.albums
         return {
-            "albums": a[index : index + SEARCH_COUNT],
+            "albums": a[index:index + SEARCH_COUNT],
             "more": len(a) > index + SEARCH_COUNT,
         }
 
     elif s_type == "artists":
         a = SearchResults.artists
         return {
-            "artists": a[index : index + SEARCH_COUNT],
+            "artists": a[index:index + SEARCH_COUNT],
             "more": len(a) > index + SEARCH_COUNT,
         }

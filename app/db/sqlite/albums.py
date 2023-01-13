@@ -7,6 +7,7 @@ from app.db import AlbumMethods
 
 
 class SQLiteAlbumMethods(AlbumMethods):
+
     @classmethod
     def insert_one_album(cls, cur: Cursor, albumhash: str, colors: str):
         """
@@ -66,7 +67,8 @@ class SQLiteAlbumMethods(AlbumMethods):
     @staticmethod
     def get_album_by_hash(album_hash: str):
         with SQLiteManager() as cur:
-            cur.execute("SELECT * FROM albums WHERE albumhash=?", (album_hash,))
+            cur.execute("SELECT * FROM albums WHERE albumhash=?",
+                        (album_hash, ))
             album = cur.fetchone()
 
             if album is not None:
@@ -81,9 +83,8 @@ class SQLiteAlbumMethods(AlbumMethods):
         """
         with SQLiteManager() as cur:
             hashes = ",".join("?" * len(album_hashes))
-            cur.execute(
-                f"SELECT * FROM albums WHERE albumhash IN ({hashes})", album_hashes
-            )
+            cur.execute(f"SELECT * FROM albums WHERE albumhash IN ({hashes})",
+                        album_hashes)
             albums = cur.fetchall()
 
             if albums is not None:
@@ -103,7 +104,8 @@ class SQLiteAlbumMethods(AlbumMethods):
     @staticmethod
     def get_albums_by_albumartist(albumartist: str):
         with SQLiteManager() as cur:
-            cur.execute("SELECT * FROM albums WHERE albumartist=?", (albumartist,))
+            cur.execute("SELECT * FROM albums WHERE albumartist=?",
+                        (albumartist, ))
             albums = cur.fetchall()
 
             if albums is not None:

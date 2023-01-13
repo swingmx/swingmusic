@@ -33,7 +33,8 @@ def extract_thumb(filepath: str, webp_path: str) -> bool:
     sm_tsize = settings.SM_THUMB_SIZE
 
     def save_image(img: Image.Image):
-        img.resize((sm_tsize, sm_tsize), Image.ANTIALIAS).save(sm_img_path, "webp")
+        img.resize((sm_tsize, sm_tsize),
+                   Image.ANTIALIAS).save(sm_img_path, "webp")
         img.resize((tsize, tsize), Image.ANTIALIAS).save(img_path, "webp")
 
     if os.path.exists(img_path):
@@ -84,7 +85,8 @@ def get_tags(filepath: str):
     except:  # pylint: disable=bare-except
         return None
 
-    no_albumartist: bool = (tags.albumartist == "") or (tags.albumartist is None)
+    no_albumartist: bool = (tags.albumartist
+                            == "") or (tags.albumartist is None)
     no_artist: bool = (tags.artist == "") or (tags.artist is None)
 
     if no_albumartist and not no_artist:

@@ -89,7 +89,8 @@ class SQLiteTrackMethods:
         Gets a track using its trackhash. Returns a Track object or None.
         """
         with SQLiteManager() as cur:
-            cur.execute("SELECT * FROM tracks WHERE trackhash=?", (trackhash,))
+            cur.execute("SELECT * FROM tracks WHERE trackhash=?",
+                        (trackhash, ))
             row = cur.fetchone()
 
             if row is not None:
@@ -104,9 +105,8 @@ class SQLiteTrackMethods:
         Returns a generator of Track objects or an empty list.
         """
 
-        sql = "SELECT * FROM tracks WHERE trackhash IN ({})".format(
-            ",".join("?" * len(hashes))
-        )
+        sql = "SELECT * FROM tracks WHERE trackhash IN ({})".format(",".join(
+            "?" * len(hashes)))
 
         with SQLiteManager() as cur:
             cur.execute(sql, hashes)
@@ -123,7 +123,7 @@ class SQLiteTrackMethods:
         Removes a track from the database using its filepath.
         """
         with SQLiteManager() as cur:
-            cur.execute("DELETE FROM tracks WHERE filepath=?", (filepath,))
+            cur.execute("DELETE FROM tracks WHERE filepath=?", (filepath, ))
 
     @staticmethod
     def track_exists(filepath: str):
@@ -131,7 +131,7 @@ class SQLiteTrackMethods:
         Checks if a track exists in the database using its filepath.
         """
         with SQLiteManager() as cur:
-            cur.execute("SELECT * FROM tracks WHERE filepath=?", (filepath,))
+            cur.execute("SELECT * FROM tracks WHERE filepath=?", (filepath, ))
             row = cur.fetchone()
 
             if row is not None:

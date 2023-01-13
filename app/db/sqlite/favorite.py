@@ -31,7 +31,7 @@ class SQLiteFavoriteMethods:
         """
         sql = """SELECT * FROM favorites WHERE type = ?"""
         with SQLiteManager(userdata_db=True) as cur:
-            cur.execute(sql, (fav_type,))
+            cur.execute(sql, (fav_type, ))
             return cur.fetchall()
 
     @classmethod

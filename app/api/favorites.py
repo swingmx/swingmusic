@@ -156,11 +156,8 @@ def get_all_favorites():
     artists = []
 
     for fav in favs:
-        if (
-            len(tracks) >= track_limit
-            and len(albums) >= album_limit
-            and len(artists) >= artist_limit
-        ):
+        if (len(tracks) >= track_limit and len(albums) >= album_limit
+                and len(artists) >= artist_limit):
             break
 
         if fav[2] == FavType.track:

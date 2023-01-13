@@ -44,5 +44,4 @@ handler.setLevel(logging.DEBUG)
 handler.setFormatter(CustomFormatter())
 log.addHandler(handler)
 
-
 # copied from: https://stackoverflow.com/a/56944256:

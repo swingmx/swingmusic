@@ -7,6 +7,7 @@ from .utils import SQLiteManager
 
 
 class SQLiteArtistMethods:
+
     @classmethod
     def insert_one_artist(cls, artisthash: str, colors: str | list[str]):
         """

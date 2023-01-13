@@ -66,6 +66,7 @@ class ArgsEnum:
 
 
 class HandleArgs:
+
     def __init__(self) -> None:
         self.handle_build()
         self.handle_host()
@@ -83,19 +84,17 @@ class HandleArgs:
                 config["DEFAULT"]["BUILD"] = "True"
                 config.write(file)
 
-            bundler.run(
-                [
-                    "manage.py",
-                    "--onefile",
-                    "--name",
-                    "swing",
-                    "--clean",
-                    "--add-data=assets:assets",
-                    "--add-data=client:client",
-                    "--add-data=pyinstaller.config.ini:.",
-                    "-y",
-                ]
-            )
+            bundler.run([
+                "manage.py",
+                "--onefile",
+                "--name",
+                "swing",
+                "--clean",
+                "--add-data=assets:assets",
+                "--add-data=client:client",
+                "--add-data=pyinstaller.config.ini:.",
+                "-y",
+            ])
 
             with open("pyinstaller.config.ini", "w", encoding="utf-8") as file:
                 config["DEFAULT"]["BUILD"] = "False"

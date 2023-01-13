@@ -90,6 +90,7 @@ def get_image(album: Album):
 
 
 class ProcessTrackThumbnails:
+
     def __init__(self) -> None:
         with ThreadPoolExecutor(max_workers=4) as pool:
             results = list(
@@ -97,7 +98,6 @@ class ProcessTrackThumbnails:
                     pool.map(get_image, Store.albums),
                     total=len(Store.albums),
                     desc="Extracting track images",
-                )
-            )
+                ))
 
             results = [r for r in results]

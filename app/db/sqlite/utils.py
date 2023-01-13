@@ -63,7 +63,9 @@ class SQLiteManager:
     for you. It also commits and closes the connection when you're done.
     """
 
-    def __init__(self, conn: Connection | None = None, userdata_db=False) -> None:
+    def __init__(self,
+                 conn: Connection | None = None,
+                 userdata_db=False) -> None:
         """
         When a connection is passed in, don't close the connection, because it's
         a connection to the search database [in memory db].

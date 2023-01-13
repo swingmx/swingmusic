@@ -73,12 +73,10 @@ def get_album():
     except AttributeError:
         album.duration = 0
 
-    if (
-        album.count == 1
-        and tracks[0].title == album.title
-        # and tracks[0].track == 1
-        # and tracks[0].disc == 1
-    ):
+    if (album.count == 1 and tracks[0].title == album.title
+            # and tracks[0].track == 1
+            # and tracks[0].disc == 1
+        ):
         album.is_single = True
     else:
         album.check_type()
@@ -118,13 +116,12 @@ def get_artist_albums():
 
     albumartists: list[str] = albumartists.split(",")  # type: ignore
 
-    albums = [
-        {
-            "artisthash": a,
-            "albums": Store.get_albums_by_albumartist(a, limit, exclude=exclude),
-        }
-        for a in albumartists
-    ]
+    albums = [{
+        "artisthash":
+        a,
+        "albums":
+        Store.get_albums_by_albumartist(a, limit, exclude=exclude),
+    } for a in albumartists]
 
     albums = [a for a in albums if len(a["albums"]) > 0]
 

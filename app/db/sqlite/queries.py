@@ -2,7 +2,6 @@
 This file contains the SQL queries to create the database tables.
 """
 
-
 CREATE_USERDATA_TABLES = """
 CREATE TABLE IF NOT EXISTS playlists (
     id integer PRIMARY KEY,

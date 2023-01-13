@@ -21,7 +21,6 @@ THUMBS_PATH = os.path.join(IMG_PATH, "thumbnails")
 SM_THUMB_PATH = os.path.join(THUMBS_PATH, "small")
 LG_THUMBS_PATH = os.path.join(THUMBS_PATH, "large")
 
-
 # TEST_DIR = "/home/cwilvx/Downloads/Telegram Desktop"
 # TEST_DIR = "/mnt/dfc48e0f-103b-426e-9bf9-f25d3743bc96/Music/Chill/Wolftyla Radio"
 # HOME_DIR = TEST_DIR
@@ -63,13 +62,11 @@ SUPPORTED_DIR_IMAGES = [
 # ===== DB =========
 USE_MONGO = False
 
-
 # ===== SQLite =====
 APP_DB_NAME = "swing.db"
 USER_DATA_DB_NAME = "userdata.db"
 APP_DB_PATH = os.path.join(APP_DIR, APP_DB_NAME)
 USERDATA_DB_PATH = os.path.join(APP_DIR, USER_DATA_DB_NAME)
-
 
 # ===== Store =====
 USE_STORE = True

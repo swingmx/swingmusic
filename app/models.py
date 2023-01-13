@@ -59,7 +59,9 @@ class Track:
     def __post_init__(self):
         if self.artist is not None:
             artist_str = str(self.artist).split(", ")
-            self.artist_hashes = [utils.create_hash(a, decode=True) for a in artist_str]
+            self.artist_hashes = [
+                utils.create_hash(a, decode=True) for a in artist_str
+            ]
 
             self.artist = [Artist(a) for a in artist_str]
 
@@ -100,7 +102,8 @@ class Album:
 
     def __post_init__(self):
         self.image = self.albumhash + ".webp"
-        self.albumartisthash = "-".join(a.artisthash for a in self.albumartists)
+        self.albumartisthash = "-".join(a.artisthash
+                                        for a in self.albumartists)
 
     def set_colors(self, colors: list[str]):
         self.colors = colors
@@ -149,12 +152,8 @@ class Album:
         """
         Checks if the album is a single.
         """
-        if (
-            len(tracks) == 1
-            and tracks[0].title == self.title
-            and tracks[0].track == 1
-            and tracks[0].disc == 1
-        ):
+        if (len(tracks) == 1 and tracks[0].title == self.title
+                and tracks[0].track == 1 and tracks[0].disc == 1):
             self.is_single = True
 
 

@@ -111,6 +111,5 @@ def send_playlist_image(imgpath: str):
 
 #     return imgpath, 404
 
-
 # def serve_imgs():
 #     app.run(threaded=True, port=1971, host="0.0.0.0", debug=True)

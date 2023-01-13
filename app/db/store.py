@@ -149,8 +149,7 @@ class Store:
 
         all_folders = set(track.folder for track in cls.tracks)
         folder_hashes = "".join(
-            create_folder_hash(*Path(f).parts[1:]) for f in all_folders
-        )
+            create_folder_hash(*Path(f).parts[1:]) for f in all_folders)
 
         path_hash = create_folder_hash(*Path(path).parts[1:])
         return path_hash in folder_hashes
@@ -202,7 +201,8 @@ class Store:
         all_folders = set(all_folders)
 
         all_folders = [
-            folder for folder in all_folders if not cls.check_has_tracks(folder)
+            folder for folder in all_folders
+            if not cls.check_has_tracks(folder)
         ]
 
         all_folders = [Path(f) for f in all_folders]
@@ -312,14 +312,16 @@ class Store:
         cls.albums.extend(albums)
 
     @classmethod
-    def get_albums_by_albumartist(
-        cls, artisthash: str, limit: int, exclude: str
-    ) -> list[Album]:
+    def get_albums_by_albumartist(cls, artisthash: str, limit: int,
+                                  exclude: str) -> list[Album]:
         """
         Returns N albums by the given albumartist, excluding the specified album.
         """
 
-        albums = [album for album in cls.albums if artisthash in album.albumartisthash]
+        albums = [
+            album for album in cls.albums
+            if artisthash in album.albumartisthash
+        ]
 
         albums = [album for album in albums if album.albumhash != exclude]
 
@@ -344,7 +346,10 @@ class Store:
         """
         Returns all albums by the given artist.
         """
-        return [album for album in cls.albums if artisthash in album.albumartisthash]
+        return [
+            album for album in cls.albums
+            if artisthash in album.albumartisthash
+        ]
 
     @classmethod
     def count_albums_by_artisthash(cls, artisthash: str):
@@ -446,7 +451,9 @@ class Store:
 
         for track in cls.tracks:
             artists.update(track.artist_hashes)
-            album_artists: list[str] = [a.artisthash for a in track.albumartist]
+            album_artists: list[str] = [
+                a.artisthash for a in track.albumartist
+            ]
             artists.update(album_artists)
 
         master_hash = "-".join(artists)

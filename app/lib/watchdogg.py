@@ -32,9 +32,9 @@ class Watcher:
         event_handler = Handler()
 
         for dir_ in self.dirs:
-            self.observer.schedule(
-                event_handler, os.path.realpath(dir_), recursive=True
-            )
+            self.observer.schedule(event_handler,
+                                   os.path.realpath(dir_),
+                                   recursive=True)
             self.observers.append(self.observer)
 
         try:

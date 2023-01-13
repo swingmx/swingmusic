@@ -40,6 +40,7 @@ def get_artist_image_link(artist: str):
 
 
 class DownloadImage:
+
     def __init__(self, url: str, name: str) -> None:
         sm_path = Path(settings.ARTIST_IMG_SM_PATH) / name
         lg_path = Path(settings.ARTIST_IMG_LG_PATH) / name
@@ -64,10 +65,12 @@ class DownloadImage:
         img.save(lg_path, format="webp")
 
         sm_size = settings.SM_ARTIST_IMG_SIZE
-        img.resize((sm_size, sm_size), Image.ANTIALIAS).save(sm_path, format="webp")
+        img.resize((sm_size, sm_size), Image.ANTIALIAS).save(sm_path,
+                                                             format="webp")
 
 
 class CheckArtistImages:
+
     def __init__(self):
         with ThreadPoolExecutor() as pool:
             list(
@@ -75,8 +78,7 @@ class CheckArtistImages:
                     pool.map(self.download_image, Store.artists),
                     total=len(Store.artists),
                     desc="Downloading artist images",
-                )
-            )
+                ))
 
     @staticmethod
     def download_image(artist: Artist):
@@ -85,7 +87,8 @@ class CheckArtistImages:
 
         :param artistname: The artist name
         """
-        img_path = Path(settings.ARTIST_IMG_SM_PATH) / f"{artist.artisthash}.webp"
+        img_path = Path(
+            settings.ARTIST_IMG_SM_PATH) / f"{artist.artisthash}.webp"
 
         if img_path.exists():
             return
@@ -116,7 +119,6 @@ class CheckArtistImages:
 #         bio = None
 
 #     return bio
-
 
 # class FetchAlbumBio:
 #     """

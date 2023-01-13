@@ -21,9 +21,8 @@ class CacheEntry:
     The cache entry class for the artists cache.
     """
 
-    def __init__(
-        self, artisthash: str, albumhashes: set[str], tracks: list[Track]
-    ) -> None:
+    def __init__(self, artisthash: str, albumhashes: set[str],
+                 tracks: list[Track]) -> None:
         self.albums: list[Album] = []
         self.tracks: list[Track] = []
 
@@ -87,7 +86,8 @@ class ArtistsCache:
         return False
 
     @classmethod
-    def add_entry(cls, artisthash: str, albumhashes: set[str], tracks: list[Track]):
+    def add_entry(cls, artisthash: str, albumhashes: set[str],
+                  tracks: list[Track]):
         """
         Adds a new entry to the cache.
         """
@@ -184,8 +184,7 @@ def get_artist(artisthash: str):
         tracks = Store.get_tracks_by_artist(artisthash)
         albumhashes = set(t.albumhash for t in tracks)
         hashes_from_albums = set(
-            a.albumhash for a in Store.get_albums_by_artisthash(artisthash)
-        )
+            a.albumhash for a in Store.get_albums_by_artisthash(artisthash))
 
         albumhashes = albumhashes.union(hashes_from_albums)
         ArtistsCache.add_entry(artisthash, albumhashes, tracks)
@@ -245,7 +244,8 @@ def get_artist_albums(artisthash: str):
     albums = list(albums)
     albums = remove_EPs_and_singles(albums)
 
-    appearances = filter(lambda a: artisthash not in a.albumartisthash, all_albums)
+    appearances = filter(lambda a: artisthash not in a.albumartisthash,
+                         all_albums)
     appearances = list(appearances)
 
     appearances = remove_EPs_and_singles(appearances)

@@ -35,6 +35,7 @@ class Limit:
 
 
 class SearchTracks:
+
     def __init__(self, tracks: List[models.Track], query: str) -> None:
         self.query = query
         self.tracks = tracks
@@ -57,6 +58,7 @@ class SearchTracks:
 
 
 class SearchArtists:
+
     def __init__(self, artists: list[str], query: str) -> None:
         self.query = query
         self.artists = artists
@@ -79,6 +81,7 @@ class SearchArtists:
 
 
 class SearchAlbums:
+
     def __init__(self, albums: List[models.Album], query: str) -> None:
         self.query = query
         self.albums = albums
@@ -109,6 +112,7 @@ class SearchAlbums:
 
 
 class SearchPlaylists:
+
     def __init__(self, playlists: List[models.Playlist], query: str) -> None:
         self.playlists = playlists
         self.query = query
