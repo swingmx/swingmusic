@@ -1,11 +1,7 @@
 <template>
   <div id="p-view" class="content-page">
     <div class="grid">
-      <PlaylistCard
-        v-for="p in pStore.playlists"
-        :key="p.id"
-        :playlist="p"
-      />
+      <PlaylistCard v-for="p in pStore.playlists" :key="p.id" :playlist="p" />
     </div>
   </div>
 </template>
@@ -24,6 +20,7 @@ const pStore = usePStore();
   padding-bottom: $content-padding-bottom;
   height: 100%;
   overflow: auto;
+  padding-right: 1rem;
 
   .grid {
     grid-template-columns: repeat(auto-fill, minmax(9.25rem, 1fr));

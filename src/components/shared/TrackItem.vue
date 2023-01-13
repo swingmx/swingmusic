@@ -32,7 +32,7 @@
         />
       </div>
     </div>
-    <div class="float-buttons flex" v-if="isQueueTrack">
+    <div class="float-buttons flex">
       <div
         :title="is_fav ? 'Add to favorites' : 'Remove from favorites'"
         @click.stop="() => addToFav(track.trackhash)"
@@ -40,6 +40,7 @@
         <HeartSvg :state="is_fav" :no_emit="true" />
       </div>
       <div
+        v-if="isQueueTrack"
         class="remove-track"
         title="remove from queue"
         @click.stop="queue.removeFromQueue(index)"

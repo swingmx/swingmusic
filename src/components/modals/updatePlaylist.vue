@@ -23,7 +23,7 @@
       @change="handleUpload"
       ref="dropZoneRef"
     />
-    <div id="upload" class="rounded-sm" @click="selectFiles">
+    <div id="upload" class="boxed rounded-sm" @click="selectFiles">
       <div>Click to upload cover image</div>
       <div
         id="update-pl-img-preview"
@@ -35,6 +35,18 @@
         }"
       />
     </div>
+    <div class="boxed banner-position-adjust rounded-sm">
+      <div class="t-center">Adjust image position</div>
+      <div class="buttons">
+        <button @click.prevent="pStore.minusBannerPos">
+          <ExpandSvg />
+        </button>
+        <button @click.prevent="pStore.plusBannerPos">
+          <ExpandSvg />
+        </button>
+      </div>
+    </div>
+
     <button class="circular btn-active">
       {{ clicked ? "Updating" : "Update" }}
     </button>
@@ -45,12 +57,14 @@
 import { onMounted, ref } from "vue";
 // import { useDropZone } from "@vueuse/core";
 
-import { updatePlaylist } from "@/composables/fetch/playlists";
 import { paths } from "@/config";
 import { Playlist } from "@/interfaces";
 import usePStore from "@/stores/pages/playlist";
+import { updatePlaylist } from "@/composables/fetch/playlists";
 
+import ExpandSvg from "@/assets/icons/expand.svg";
 const pStore = usePStore();
+const bannerPos = ref(0);
 
 const props = defineProps<{
   playlist: Playlist;
@@ -140,15 +154,18 @@ function update_playlist(e: Event) {
 
 <style lang="scss">
 .new-p-form {
+  .boxed {
+    border: solid 2px $gray3;
+    color: $gray1;
+    place-items: center;
+    display: grid;
+    grid-template-columns: 1fr max-content;
+    margin-bottom: $small;
+  }
+
   #upload {
     width: 100%;
     padding: $small;
-    border: solid 2px $gray3;
-    display: grid;
-    grid-template-columns: 1fr max-content;
-    place-items: center;
-    color: $gray1;
-    margin: $small 0;
     cursor: pointer;
 
     #update-pl-img-preview {
@@ -157,6 +174,32 @@ function update_playlist(e: Event) {
       border-radius: $small;
       object-fit: cover;
       background-color: $gray4;
+    }
+  }
+
+  .banner-position-adjust {
+    gap: 1rem;
+    padding: $small 1rem;
+    margin-bottom: 1rem;
+
+    .t-center {
+      position: relative;
+    }
+
+    button {
+      aspect-ratio: 1;
+      height: 2rem;
+      width: 2rem;
+      padding: 0;
+      background: transparent;
+    }
+
+    button:last-child {
+      transform: rotate(90deg);
+    }
+
+    button:first-child {
+      transform: rotate(-90deg);
     }
   }
 }

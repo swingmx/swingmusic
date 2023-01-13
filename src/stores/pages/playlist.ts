@@ -11,6 +11,7 @@ export default defineStore("playlist-tracks", {
   state: () => ({
     info: <Playlist>{},
     query: "",
+    bannerPos: 0,
     allTracks: <Track[]>[],
     artists: <Artist[]>[],
   }),
@@ -23,6 +24,7 @@ export default defineStore("playlist-tracks", {
       const playlist = await getPlaylist(id);
 
       this.info = playlist?.info || ({} as Playlist);
+      this.bannerPos = this.info.banner_pos;
       this.allTracks = playlist?.tracks || [];
     },
 
@@ -41,6 +43,12 @@ export default defineStore("playlist-tracks", {
       this.info = info;
 
       this.info = { ...this.info, duration, count };
+    },
+    plusBannerPos() {
+      this.bannerPos !== 100 ? (this.bannerPos += 10) : null;
+    },
+    minusBannerPos() {
+      this.bannerPos !== 0 ? (this.bannerPos -= 10) : null;
     },
     resetArtists() {
       this.artists = [];
@@ -65,6 +73,9 @@ export default defineStore("playlist-tracks", {
       });
 
       return tracks;
+    },
+    bannerPosUpdated(): boolean {
+      return this.info.banner_pos - this.bannerPos !== 0;
     },
   },
 });
