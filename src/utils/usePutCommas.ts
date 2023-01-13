@@ -4,7 +4,7 @@
  * @returns a string with commas in between each artist
  */
 export default (artists: string[]) => {
-  let result: string[] = [];
+  const result: string[] = [];
 
   artists.forEach((i, index, artists) => {
     if (index !== artists.length - 1) {

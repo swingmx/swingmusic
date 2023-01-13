@@ -104,7 +104,6 @@ onUpdated(() => {
 
           &::before {
             content: "∕";
-            font-size: small;
             margin-right: $smaller;
             color: $gray2;
             font-size: 1rem;

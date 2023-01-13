@@ -42,7 +42,7 @@ const { query: folderQuery } = storeToRefs(folder);
 const { query: albumQuery } = storeToRefs(album);
 
 const props = defineProps<{
-  page: Routes | string;
+  page: typeof Routes | string;
 }>();
 const inputRef = ref<HTMLElement>();
 
@@ -100,7 +100,6 @@ if (source) {
 
 .header-input {
   background-color: transparent;
-  outline: none;
   border: none;
   color: inherit;
   font-size: 1rem;
