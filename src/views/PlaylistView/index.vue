@@ -23,7 +23,7 @@
 
 <script setup lang="ts">
 import { computed } from "@vue/reactivity";
-import { onBeforeRouteLeave } from "vue-router";
+import { onBeforeRouteLeave, onBeforeRouteUpdate } from "vue-router";
 
 import { isMedium, isSmall } from "@/stores/content-width";
 import usePlaylistStore from "@/stores/pages/playlist";
@@ -31,6 +31,7 @@ import useQueueStore from "@/stores/queue";
 
 import Header from "@/components/PlaylistView/Header.vue";
 import SongItem from "@/components/shared/SongItem.vue";
+import { updateBannerPos } from "@/composables/fetch/playlists";
 
 const queue = useQueueStore();
 const playlist = usePlaylistStore();
@@ -70,9 +71,16 @@ function playFromPlaylistPage(index: number) {
   queue.play(index);
 }
 
-onBeforeRouteLeave(() => {
-  setTimeout(() => {
-    playlist.resetQuery();
-  }, 500);
+[onBeforeRouteLeave, onBeforeRouteUpdate].forEach((guard) => {
+  guard(() => {
+    if (playlist.bannerPosUpdated) {
+      console.log("Update banner pos in server");
+      updateBannerPos(parseInt(playlist.info.id), playlist.bannerPos);
+    }
+
+    setTimeout(() => {
+      playlist.resetQuery();
+    }, 500);
+  });
 });
 </script>

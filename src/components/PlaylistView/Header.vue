@@ -5,6 +5,7 @@
     :style="[
       {
         backgroundImage: info.image ? `url(${imguri + info.image})` : undefined,
+        backgroundPosition: `center ${bannerPos}%`,
       },
     ]"
     :class="{ border: !info.image }"
@@ -28,7 +29,7 @@
       <span class="status"
         >Last updated {{ info.last_updated }} &#160;|&#160;&#160;</span
       >
-      <span class="edit" @click="editPlaylist">Edit&#160;&#160;|</span>
+      <div class="edit" @click="editPlaylist">Edit&#160;&#160;|</div>
       <DeleteSvg class="edit" @click="deletePlaylist" />
     </div>
   </div>
@@ -56,7 +57,7 @@ const playlist = usePStore();
 const imguri = paths.images.playlist;
 
 const playlistheader = ref<HTMLElement | null>(null);
-const { info } = storeToRefs(playlist);
+const { info, bannerPos } = storeToRefs(playlist);
 
 useVisibility(playlistheader, nav.toggleShowPlay);
 
@@ -76,6 +77,7 @@ function deletePlaylist() {
   height: $banner-height;
   position: relative;
   background-color: $gray5;
+  background-position: center 50%;
 
   .gradient {
     position: absolute;

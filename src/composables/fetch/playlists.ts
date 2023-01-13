@@ -14,7 +14,7 @@ const {
  * Creates a new playlist on the server.
  * @param playlist_name The name of the playlist to create.
  */
-async function createNewPlaylist(playlist_name: string, track?: Track) {
+export async function createNewPlaylist(playlist_name: string, track?: Track) {
   const { data, status } = await useAxios({
     url: newPlaylistUrl,
     props: {
@@ -37,7 +37,13 @@ async function createNewPlaylist(playlist_name: string, track?: Track) {
     };
   }
 
-  new Notification("That playlist already exists", NotifType.Error);
+  let message = "Something went wrong";
+
+  if (status == 409) {
+    message = "That playlist already exists";
+  }
+
+  new Notification(message, NotifType.Error);
 
   return {
     success: false,
@@ -49,7 +55,7 @@ async function createNewPlaylist(playlist_name: string, track?: Track) {
  * Fetches all playlists from the server.
  * @returns {Promise<Playlist[]>} A promise that resolves to an array of playlists.
  */
-async function getAllPlaylists(): Promise<Playlist[]> {
+export async function getAllPlaylists(): Promise<Playlist[]> {
   const { data, error } = await useAxios({
     url: allPlaylistsUrl,
     get: true,
@@ -64,7 +70,7 @@ async function getAllPlaylists(): Promise<Playlist[]> {
   return [];
 }
 
-async function addTrackToPlaylist(playlist: Playlist, track: Track) {
+export async function addTrackToPlaylist(playlist: Playlist, track: Track) {
   const uri = `${basePlaylistUrl}/${playlist.id}/add`;
 
   const { status } = await useAxios({
@@ -85,7 +91,7 @@ async function addTrackToPlaylist(playlist: Playlist, track: Track) {
   );
 }
 
-async function getPlaylist(pid: string) {
+export async function getPlaylist(pid: string) {
   const uri = `${basePlaylistUrl}/${pid}`;
 
   interface PlaylistData {
@@ -109,7 +115,11 @@ async function getPlaylist(pid: string) {
   return null;
 }
 
-async function updatePlaylist(pid: string, playlist: FormData, pStore: any) {
+export async function updatePlaylist(
+  pid: string,
+  playlist: FormData,
+  pStore: any
+) {
   const uri = `${basePlaylistUrl}/${pid}/update`;
 
   const { data, status } = await useAxios({
@@ -157,7 +167,6 @@ export async function getPlaylistArtists(pid: string): Promise<Artist[]> {
 }
 
 export async function deletePlaylist(pid: string) {
-  console.log(pid);
   const { status } = await useAxios({
     url: paths.api.playlist.base + "/delete",
     props: {
@@ -170,10 +179,18 @@ export async function deletePlaylist(pid: string) {
   }
 }
 
-export {
-  createNewPlaylist,
-  getAllPlaylists,
-  addTrackToPlaylist,
-  getPlaylist,
-  updatePlaylist,
-};
+export async function updateBannerPos(pid: number, pos: number) {
+  const { status } = await useAxios({
+    url: paths.api.playlist.base + `/${pid}/set-image-pos`,
+    props: {
+      pos,
+    },
+  });
+
+  if (status === 200) {
+    new Notification("Image position saved", NotifType.Info);
+    return;
+  }
+
+  new Notification("Unable to save image position", NotifType.Error);
+}

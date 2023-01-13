@@ -87,6 +87,8 @@ export interface Playlist {
   last_updated: string;
   thumb: string;
   duration: number;
+  has_gif: boolean;
+  banner_pos: number;
 }
 
 export interface Notif {
