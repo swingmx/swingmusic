@@ -318,7 +318,8 @@ class Store:
         Returns N albums by the given albumartist, excluding the specified album.
         """
 
-        albums = [album for album in cls.albums if artisthash in album.albumartisthash]
+        albums = [
+            album for album in cls.albums if artisthash in album.albumartisthash]
 
         albums = [album for album in albums if album.albumhash != exclude]
 
@@ -445,7 +446,8 @@ class Store:
 
         for track in cls.tracks:
             artists.update(track.artist_hashes)
-            album_artists: list[str] = [a.artisthash for a in track.albumartist]
+            album_artists: list[str] = [
+                a.artisthash for a in track.albumartist]
             artists.update(album_artists)
 
         master_hash = "-".join(artists)

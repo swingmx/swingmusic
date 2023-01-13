@@ -33,7 +33,8 @@ class GetFilesAndDirs:
 
         # sort files by modified time
         files.sort(
-            key=lambda f: os.path.getmtime(f)  # pylint: disable=unnecessary-lambda
+            key=lambda f: os.path.getmtime(
+                f)  # pylint: disable=unnecessary-lambda
         )
 
         tracks = Store.get_tracks_by_filepaths(files)

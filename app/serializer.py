@@ -52,4 +52,3 @@ def date_string_to_time_passed(prev_date: str) -> str:
         return str(days // 365) + " years ago"
 
     return "I honestly don't know"
-

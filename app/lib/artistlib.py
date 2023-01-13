@@ -63,7 +63,8 @@ class DownloadImage:
         img.save(lg_path, format="webp")
 
         sm_size = settings.SM_ARTIST_IMG_SIZE
-        img.resize((sm_size, sm_size), Image.ANTIALIAS).save(sm_path, format="webp")
+        img.resize((sm_size, sm_size), Image.ANTIALIAS).save(
+            sm_path, format="webp")
 
 
 class CheckArtistImages:
@@ -84,7 +85,8 @@ class CheckArtistImages:
 
         :param artistname: The artist name
         """
-        img_path = Path(settings.ARTIST_IMG_SM_PATH) / f"{artist.artisthash}.webp"
+        img_path = Path(settings.ARTIST_IMG_SM_PATH) / \
+            f"{artist.artisthash}.webp"
 
         if img_path.exists():
             return
