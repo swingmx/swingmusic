@@ -1,7 +1,8 @@
 """
 Contains all the track routes.
 """
-from flask import Blueprint, send_file
+from flask import Blueprint
+from flask import send_file
 
 from app.db.store import Store
 

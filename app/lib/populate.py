@@ -5,9 +5,12 @@ from tqdm import tqdm
 from app import settings
 from app.db.sqlite.tracks import SQLiteTrackMethods
 from app.db.store import Store
-from app.lib.taglib import extract_thumb, get_tags
+from app.lib.taglib import extract_thumb
+from app.lib.taglib import get_tags
 from app.logger import log
-from app.models import Album, Artist, Track
+from app.models import Album
+from app.models import Artist
+from app.models import Track
 from app.utils import run_fast_scandir
 
 get_all_tracks = SQLiteTrackMethods.get_all_tracks

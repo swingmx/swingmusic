@@ -4,14 +4,17 @@ All playlist-related routes.
 import json
 from datetime import datetime
 
-from flask import Blueprint, request
+from flask import Blueprint
+from flask import request
 from PIL import UnidentifiedImageError
 
-from app import models, serializer
+from app import models
+from app import serializer
 from app.db.sqlite.playlists import SQLitePlaylistMethods
 from app.db.store import Store
 from app.lib import playlistlib
-from app.utils import create_new_date, remove_duplicates
+from app.utils import create_new_date
+from app.utils import remove_duplicates
 
 playlistbp = Blueprint("playlist", __name__, url_prefix="/")
 

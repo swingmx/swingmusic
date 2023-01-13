@@ -1,7 +1,6 @@
 """
 This module contains the functions to interact with the SQLite database.
 """
-
 import sqlite3
 from pathlib import Path
 from sqlite3 import Connection as SqlConn

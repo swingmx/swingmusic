@@ -1,8 +1,9 @@
 from sqlite3 import Cursor
 
+from .utils import SQLiteManager
+from .utils import tuple_to_album
+from .utils import tuples_to_albums
 from app.db import AlbumMethods
-
-from .utils import SQLiteManager, tuple_to_album, tuples_to_albums
 
 
 class SQLiteAlbumMethods(AlbumMethods):

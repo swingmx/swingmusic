@@ -1,7 +1,9 @@
 import os
 from pathlib import Path
 
-from flask import Blueprint, request, send_from_directory
+from flask import Blueprint
+from flask import request
+from flask import send_from_directory
 
 imgbp = Blueprint("imgserver", __name__, url_prefix="/img")
 SUPPORTED_IMAGES = (".jpg", ".png", ".webp", ".jpeg")

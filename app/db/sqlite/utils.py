@@ -1,12 +1,15 @@
 """
 Helper functions for use with the SQLite database.
 """
-
 import sqlite3
-from sqlite3 import Connection, Cursor
+from sqlite3 import Connection
+from sqlite3 import Cursor
 
-from app.models import Album, Playlist, Track
-from app.settings import APP_DB_PATH, USERDATA_DB_PATH
+from app.models import Album
+from app.models import Playlist
+from app.models import Track
+from app.settings import APP_DB_PATH
+from app.settings import USERDATA_DB_PATH
 
 
 def tuple_to_track(track: tuple):

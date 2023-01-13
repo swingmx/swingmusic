@@ -1,6 +1,5 @@
-from app.models import FavType
-
 from .utils import SQLiteManager
+from app.models import FavType
 
 
 class SQLiteFavoriteMethods:

@@ -12,7 +12,8 @@ from app.db.sqlite.tracks import SQLiteTrackMethods as db
 from app.db.store import Store
 from app.lib.taglib import get_tags
 from app.logger import log
-from app.models import Artist, Track
+from app.models import Artist
+from app.models import Track
 
 
 class Watcher:

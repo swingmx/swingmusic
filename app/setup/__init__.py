@@ -6,9 +6,12 @@ import shutil
 from configparser import ConfigParser
 
 from app import settings
-from app.db.sqlite import create_connection, create_tables, queries
+from app.db.sqlite import create_connection
+from app.db.sqlite import create_tables
+from app.db.sqlite import queries
 from app.db.store import Store
-from app.settings import APP_DB_PATH, USERDATA_DB_PATH
+from app.settings import APP_DB_PATH
+from app.settings import USERDATA_DB_PATH
 from app.utils import get_home_res_path
 
 config = ConfigParser()

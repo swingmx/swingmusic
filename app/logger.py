@@ -1,7 +1,6 @@
 """
 Logger module
 """
-
 import logging
 
 

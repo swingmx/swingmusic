@@ -1,7 +1,8 @@
 """
 Contains all the folder routes.
 """
-from flask import Blueprint, request
+from flask import Blueprint
+from flask import request
 
 from app import settings
 from app.lib.folderslib import GetFilesAndDirs

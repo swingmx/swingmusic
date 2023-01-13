@@ -3,11 +3,14 @@ Contains all the artist(s) routes.
 """
 from collections import deque
 
-from flask import Blueprint, request
+from flask import Blueprint
+from flask import request
 
 from app.db.sqlite.favorite import SQLiteFavoriteMethods as favdb
 from app.db.store import Store
-from app.models import Album, FavType, Track
+from app.models import Album
+from app.models import FavType
+from app.models import Track
 from app.utils import remove_duplicates
 
 artistbp = Blueprint("artist", __name__, url_prefix="/")

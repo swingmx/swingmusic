@@ -1,11 +1,16 @@
 """
 This module combines all API blueprints into a single Flask app instance.
 """
-
 from flask import Flask
 from flask_cors import CORS
 
-from app.api import album, artist, favorites, folder, playlist, search, track
+from app.api import album
+from app.api import artist
+from app.api import favorites
+from app.api import folder
+from app.api import playlist
+from app.api import search
+from app.api import track
 from app.imgserver import imgbp as imgserver
 
 

@@ -7,7 +7,8 @@ import string
 from datetime import datetime
 from typing import Any
 
-from PIL import Image, ImageSequence
+from PIL import Image
+from PIL import ImageSequence
 
 from app import settings
 from app.logger import log

@@ -1,7 +1,6 @@
 """
 Contains everything that deals with image color extraction.
 """
-
 import json
 from pathlib import Path
 
@@ -13,7 +12,8 @@ from app.db.sqlite.albums import SQLiteAlbumMethods as db
 from app.db.sqlite.artists import SQLiteArtistMethods as adb
 from app.db.sqlite.utils import SQLiteManager
 from app.db.store import Store
-from app.models import Album, Artist
+from app.models import Album
+from app.models import Artist
 
 
 def get_image_colors(image: str) -> list[str]:

@@ -2,7 +2,8 @@ import datetime
 import os
 from io import BytesIO
 
-from PIL import Image, UnidentifiedImageError
+from PIL import Image
+from PIL import UnidentifiedImageError
 from tinytag import TinyTag
 
 from app import settings

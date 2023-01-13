@@ -1,16 +1,17 @@
 """
 Contains all the album routes.
 """
-
 from dataclasses import asdict
 
-from flask import Blueprint, request
+from flask import Blueprint
+from flask import request
 
 from app import utils
 from app.db.sqlite.albums import SQLiteAlbumMethods as adb
 from app.db.sqlite.favorite import SQLiteFavoriteMethods as favdb
 from app.db.store import Store
-from app.models import FavType, Track
+from app.models import FavType
+from app.models import Track
 
 get_album_by_id = adb.get_album_by_id
 get_albums_by_albumartist = adb.get_albums_by_albumartist
