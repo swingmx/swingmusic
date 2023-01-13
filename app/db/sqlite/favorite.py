@@ -1,4 +1,5 @@
 from app.models import FavType
+
 from .utils import SQLiteManager
 
 

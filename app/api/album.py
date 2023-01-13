@@ -12,7 +12,6 @@ from app.db.sqlite.favorite import SQLiteFavoriteMethods as favdb
 from app.db.store import Store
 from app.models import FavType, Track
 
-
 get_album_by_id = adb.get_album_by_id
 get_albums_by_albumartist = adb.get_albums_by_albumartist
 check_is_fav = favdb.check_is_favorite

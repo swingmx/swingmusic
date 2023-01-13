@@ -1,13 +1,14 @@
 """
 This module contains mini functions for the server.
 """
-import os
 import hashlib
-from pathlib import Path
+import os
 import threading
 from datetime import datetime
-from unidecode import unidecode
+from pathlib import Path
+
 import requests
+from unidecode import unidecode
 
 from app import models
 from app.settings import SUPPORTED_FILES

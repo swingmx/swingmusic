@@ -3,6 +3,7 @@ Contains methods for reading and writing to the sqlite artists database.
 """
 
 import json
+
 from .utils import SQLiteManager
 
 

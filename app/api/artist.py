@@ -5,10 +5,10 @@ from collections import deque
 
 from flask import Blueprint, request
 
+from app.db.sqlite.favorite import SQLiteFavoriteMethods as favdb
 from app.db.store import Store
 from app.models import Album, FavType, Track
 from app.utils import remove_duplicates
-from app.db.sqlite.favorite import SQLiteFavoriteMethods as favdb
 
 artistbp = Blueprint("artist", __name__, url_prefix="/")
 

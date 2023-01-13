@@ -1,9 +1,9 @@
-import os
 import datetime
+import os
 from io import BytesIO
 
-from tinytag import TinyTag
 from PIL import Image, UnidentifiedImageError
+from tinytag import TinyTag
 
 from app import settings
 from app.utils import create_hash

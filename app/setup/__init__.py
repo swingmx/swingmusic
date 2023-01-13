@@ -11,7 +11,6 @@ from app.db.store import Store
 from app.settings import APP_DB_PATH, USERDATA_DB_PATH
 from app.utils import get_home_res_path
 
-
 config = ConfigParser()
 
 config_path = get_home_res_path("pyinstaller.config.ini")

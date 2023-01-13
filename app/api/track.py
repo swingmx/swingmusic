@@ -2,6 +2,7 @@
 Contains all the track routes.
 """
 from flask import Blueprint, send_file
+
 from app.db.store import Store
 
 trackbp = Blueprint("track", __name__, url_prefix="/")

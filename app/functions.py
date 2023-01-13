@@ -2,6 +2,7 @@
 This module contains functions for the server
 """
 import time
+
 from requests import ConnectionError as RequestConnectionError
 from requests import ReadTimeout
 

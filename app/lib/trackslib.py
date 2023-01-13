@@ -5,8 +5,8 @@ import os
 
 from tqdm import tqdm
 
-from app.db.store import Store
 from app.db.sqlite.tracks import SQLiteTrackMethods as tdb
+from app.db.store import Store
 
 
 def validate_tracks() -> None:
