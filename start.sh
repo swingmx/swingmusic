@@ -20,7 +20,6 @@ while getopts ':s' opt; do
   esac
 done
 
-
 echo "Starting swing"
 "$gpath" -b 0.0.0.0:1970 --threads=2 "manage:create_api()"
 
