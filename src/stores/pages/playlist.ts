@@ -21,6 +21,7 @@ export default defineStore("playlist-tracks", {
      * @param id The id of the playlist to fetch
      */
     async fetchAll(id: string) {
+      this.resetBannerPos();
       const playlist = await getPlaylist(id);
 
       this.info = playlist?.info || ({} as Playlist);
@@ -43,6 +44,7 @@ export default defineStore("playlist-tracks", {
       this.info = info;
 
       this.info = { ...this.info, duration, count };
+      this.bannerPos = this.info.banner_pos;
     },
     plusBannerPos() {
       this.bannerPos !== 100 ? (this.bannerPos += 10) : null;
@@ -55,6 +57,9 @@ export default defineStore("playlist-tracks", {
     },
     resetQuery() {
       this.query = "";
+    },
+    resetBannerPos() {
+      this.bannerPos = 50;
     },
   },
   getters: {
