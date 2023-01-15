@@ -54,15 +54,15 @@ def create_gif_thumbnail(image: Any, img_path: str):
 
 def save_p_image(file, pid: str):
     """
-    Saves the image of a playlist to the database.
+    Saves a playlist banner image and returns the filepath.
     """
     img = Image.open(file)
 
     random_str = "".join(random.choices(string.ascii_letters + string.digits, k=5))
 
-    img_path = pid + str(random_str) + ".webp"
+    filename = pid + str(random_str) + ".webp"
 
-    full_img_path = os.path.join(settings.APP_DIR, "images", "playlists", img_path)
+    full_img_path = os.path.join(settings.APP_DIR, "images", "playlists", filename)
 
     if file.content_type == "image/gif":
         frames = []
@@ -71,14 +71,14 @@ def save_p_image(file, pid: str):
             frames.append(frame.copy())
 
         frames[0].save(full_img_path, save_all=True, append_images=frames[1:])
-        create_gif_thumbnail(img, img_path=img_path)
+        create_gif_thumbnail(img, img_path=filename)
 
-        return img_path
+        return filename
 
     img.save(full_img_path, "webp")
-    create_thumbnail(img, img_path=img_path)
+    create_thumbnail(img, img_path=filename)
 
-    return img_path
+    return filename
 
 
 class ValidatePlaylistThumbs:

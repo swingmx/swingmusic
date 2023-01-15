@@ -79,7 +79,7 @@ I started working on this project on dec 2021. Why? I like listening and explori
 - Ability to move files around without breaking my playlists and mixes.
 - Something that can bring together all the audio files scattered all over my disks into a single place.
 - Browsing related artists and albums.
-- Reading artists and albums biographies.
+- Reading albums & artists biographies and getting insights on song lyrics (kinda Genium.com-ish).
 - Web browser based user interface.
 - a lot more ... but I can't remember them at the moment
 
