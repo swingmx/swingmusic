@@ -85,7 +85,7 @@ class HandleArgs:
                     "manage.py",
                     "--onefile",
                     "--name",
-                    "swing",
+                    "swingmusic",
                     "--clean",
                     "--add-data=assets:assets",
                     "--add-data=client:client",

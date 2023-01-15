@@ -75,7 +75,7 @@ USERDATA_DB_PATH = os.path.join(APP_DIR, USER_DATA_DB_NAME)
 USE_STORE = True
 
 HELP_MESSAGE = """
-Usage: swing [options]
+Usage: swingmusic [options]
 
 Options:
     --build: Build the application

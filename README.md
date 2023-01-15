@@ -8,22 +8,24 @@
 
 > Note: This project is in the early stages of development. Many features are missing but will be added with time.
 
-The app is currently only available on linux. (I don't have access to a Windows machine for building and testing purposes and my machine is not strong enough to support Windows in VM).
+The app is currently only available on linux. (I don't have access to a Windows machine for building and testing purposes).
 
 ### Setup
 
-Download the latest release from the [release page](#) and extract it in your machine. Then execute the extracted file in a terminal.
+Download the latest release from the [release page](#), make the binary file executable and run it in a terminal. You can do all this using the commands below.
 
 ```bash
-./swing
+wget https://github.com/geoffrey45/swingmusic/releases/download/linux-beta/swingmusic
+
+chmod a+x ./swingmusic
+
+./swingmusic
 ```
 
-The file will start the app at <http://localhost:1970> by default. See the setup option section on how to change the host and port.
-
-### Setup options
+The app should start at <http://localhost:1970> by default.
 
 ```
-Usage: swing [options]
+Usage: swingmusic [options]
 
 Options:
     --host: Set the host
@@ -42,16 +44,16 @@ The following instructions will guide you on how to setup the **server**.
 
 ---
 
-The project uses [Python poetry](https://python-poetry.org) as the dependency manager. Follow the instructions in [their docs](https://python-poetry.org/docs/) to install it in your machine.
+The project uses [Python poetry](https://python-poetry.org) as the virtual environment manager. Follow the instructions in [their docs](https://python-poetry.org/docs/) to install it in your machine.
 
 > It is assumed that you have `Python 3.10` or newer installed in your machine. This project uses duck typing features so older version of Python will not work. If you don't have Python installed in your machine, get it from the [python website](https://www.python.org/downloads/).
 
 Clone this repo locally in your machine. Then install the project dependencies and start the app.
 
 ```sh
-git clone <$>
+git clone https://github.com/geoffrey45/swingmusic.git
 
-cd swing-core
+cd swingmusic
 
 # install dependencies using poetry
 poetry install
@@ -72,7 +74,7 @@ This software is provided to you with terms stated in the MIT License. Read the 
 
 I started working on this project on dec 2021. Why? I like listening and exploring music and I like it more when I can enjoy it (like really really). I'd been searching for cute music players for linux that allow me to manage my ever growing music library. Some of the main features I was looking for were:
 
-- A simple, lively and beautiful user interface (main reason)
+- A simple and beautiful user interface (main reason)
 - Creating automated daily mixes based on my listening activity.
 - Ability to move files around without breaking my playlists and mixes.
 - Something that can bring together all the audio files scattered all over my disks into a single place.
@@ -83,11 +85,9 @@ I started working on this project on dec 2021. Why? I like listening and explori
 
 I've been working to make sure that most (if not all) of the features listed above are built. Some of them are done, but most are not even touched yet. A lot of work is needed and I know that it will take a lot of time to build and perfect them.
 
-I've been keeping a small 🤥 list of a few cool features that I'd like to see implemented in the project. You can check it out in [this notion page](https://rhetorical-othnielia-565.notion.site/Cool-features-1a0cd5b797904da687bec441e7c7aa19). https://rhetorical-othnielia-565.notion.site/Cool-features-1a0cd5b797904da687bec441e7c7aa19
+I've been keeping a small 🤥 list of a few cool features that I'd like to build in future. Some of the features listed there are outright stupid but some are cool. You can check it out in [this notion page](https://rhetorical-othnielia-565.notion.site/Cool-features-1a0cd5b797904da687bec441e7c7aa19). https://rhetorical-othnielia-565.notion.site/Cool-features-1a0cd5b797904da687bec441e7c7aa19
 
-I have been working on this project solo, so it’s very hard to push things fast. The app is written in Python for the backend and Vue3 for the client. If you have knowledge in any or both of this areas, feel free to contribute to the project. We’ll be excited to have you. Your help is highly appreciated.
-
-_The backend is basically a bunch of Python classes and functions. The client just sends API request and displays it._
+I have been working on this project solo, so it’s very hard to push things fast. If you have programming knowledge in Python or Vue, feel free to contribute to the project. We’ll be excited to have you. Your help is highly appreciated.
 
 ---
 
