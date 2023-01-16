@@ -10,7 +10,7 @@
 
 The app is currently only available on linux. (I don't have access to a Windows machine for building and testing purposes).
 
-#### 🎉🎉 Checkout the app screenshots in [this excalidraw canvas](https://excalidraw.com/#json=RTEbSl2gadmgpXH9UDZPk,AbghTOre_rt-ZRgHDQlxfQ) 🎉🎉.
+#### 🎉🎉 Checkout the app screenshots in [this excalidraw canvas](https://excalidraw.com/#json=b52G7e9g-dYhMmcyQy9El,pMWhoENuMZgC6mPgyMmU-g) 🎉🎉.
 
 ### Setup
 
