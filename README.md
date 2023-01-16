@@ -10,6 +10,8 @@
 
 The app is currently only available on linux. (I don't have access to a Windows machine for building and testing purposes).
 
+#### 🎉🎉 Checkout the app screenshots in [this excalidraw canvas](https://excalidraw.com/#json=RTEbSl2gadmgpXH9UDZPk,AbghTOre_rt-ZRgHDQlxfQ) 🎉🎉.
+
 ### Setup
 
 Download the latest release from the [release page](#), make the binary file executable and run it in a terminal. You can do all this using the commands below.
@@ -36,7 +38,7 @@ Options:
 
 ### Development
 
-This project is broken down into 2. The client and the server. The client comprises of the user interface code. This part is written in Typescript, Vue 3 and SCSS. To setup the client, checkout the [swing client repo ](#) on GitHub.
+This project is broken down into 2. The client and the server. The client comprises of the user interface code. This part is written in Typescript, Vue 3 and SCSS. To setup the client, checkout the [swing client repo ](https://github.com/swing-client) on GitHub.
 
 The second part of this project is the server. This is the main part of the app that runs on your machine, interacts with audio files and send data to the client. It's written in Python 3.
 
