@@ -36,6 +36,31 @@ Options:
     --version, -v: Show the version
 ```
 
+### Docker Build
+
+**Clone repo**
+
+```bash
+git clone https://github.com/geoffrey45/swingmusic.git
+cd swingmusic
+```
+
+**Build**
+
+```bash
+docker build . -t swingmusic
+```
+
+**Run**
+
+```bash
+docker run -p 1970:1970 -v /path/to/config/volume:/root/.swing -v /path/to/music:/root/music:ro swingmusic:latest
+```
+
+Update the volumes for the full path to where the config and music folders reside.
+
+> Note: Remove `:ro` in the music volume to allow writing to it, make sure you got backups ect..
+
 ### Development
 
 This project is broken down into 2. The client and the server. The client comprises of the user interface code. This part is written in Typescript, Vue 3 and SCSS. To setup the client, checkout the [swing client repo ](https://github.com/geoffrey45/swing-client) on GitHub.
