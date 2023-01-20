@@ -4,7 +4,7 @@ Contains default configs
 import multiprocessing
 import os
 
-APP_VERSION = "Swing v0.0.1.alpha"
+APP_VERSION = "Swing v.1.0.0.beta.1"
 
 # paths
 CONFIG_FOLDER = ".swing"

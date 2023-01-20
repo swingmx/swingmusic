@@ -4,13 +4,13 @@ Contains the functions to prepare the server for use.
 import os
 import shutil
 from configparser import ConfigParser
+import caribou  # pylint: disable=import-error
 
 from app import settings
 from app.db.sqlite import create_connection, create_tables, queries
 from app.db.store import Store
 from app.settings import APP_DB_PATH, USERDATA_DB_PATH
 from app.utils import get_home_res_path
-
 
 config = ConfigParser()
 
@@ -113,6 +113,19 @@ def setup_sqlite():
 
     create_tables(app_db_conn, queries.CREATE_APPDB_TABLES)
     create_tables(playlist_db_conn, queries.CREATE_USERDATA_TABLES)
+
+    userdb_migrations = get_home_res_path("app") / "migrations" / "userdata"
+    maindb_migrations = get_home_res_path("app") / "migrations" / "main"
+
+    caribou.upgrade(
+        APP_DB_PATH,
+        maindb_migrations,
+    )
+
+    caribou.upgrade(
+        str(USERDATA_DB_PATH),
+        str(userdb_migrations),
+    )
 
     app_db_conn.close()
     playlist_db_conn.close()

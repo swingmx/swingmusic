@@ -20,6 +20,12 @@ CREATE TABLE IF NOT EXISTS favorites (
     hash text not null,
     type text not null
 );
+
+CREATE TABLE IF NOT EXISTS settings (
+    id integer PRIMARY KEY,
+    root_dirs text NOT NULL,
+    exclude_dirs text
+)
 """
 
 CREATE_APPDB_TABLES = """

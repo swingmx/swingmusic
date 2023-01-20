@@ -13,7 +13,7 @@ from app.functions import run_periodic_checks
 from app.lib.watchdogg import Watcher as WatchDog
 from app.settings import APP_VERSION, HELP_MESSAGE, TCOLOR
 from app.setup import run_setup
-from app.utils import background, get_home_res_path
+from app.utils import background, get_home_res_path, get_ip
 
 werkzeug = logging.getLogger("werkzeug")
 werkzeug.setLevel(logging.ERROR)
@@ -154,13 +154,21 @@ def start_watchdog():
 
 
 def log_info():
-    lines = "  -------------------------------------"
+    lines = "  ---------------------------------------"
     os.system("cls" if os.name == "nt" else "echo -e \\\\033c")
     print(lines)
     print(f"  {TCOLOR.HEADER}{APP_VERSION} {TCOLOR.ENDC}")
-    print(
-        f"  Started app on: {TCOLOR.OKGREEN}http://{Variables.FLASK_HOST}:{Variables.FLASK_PORT}{TCOLOR.ENDC}"
-    )
+
+    adresses = [Variables.FLASK_HOST]
+
+    if Variables.FLASK_HOST == "0.0.0.0":
+        adresses = ["localhost", get_ip()]
+
+    for address in adresses:
+        print(
+            f"  Started app on: {TCOLOR.OKGREEN}http://{address}:{Variables.FLASK_PORT}{TCOLOR.ENDC}"
+        )
+
     print(lines)
     print("\n")
 

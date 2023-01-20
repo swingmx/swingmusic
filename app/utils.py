@@ -1,13 +1,16 @@
 """
 This module contains mini functions for the server.
 """
-import os
-import hashlib
 from pathlib import Path
-import threading
 from datetime import datetime
-from unidecode import unidecode
+
+import os
+import socket as Socket
+import hashlib
+import threading
 import requests
+
+from unidecode import unidecode
 
 from app import models
 from app.settings import SUPPORTED_FILES
@@ -224,3 +227,15 @@ def get_home_res_path(filename: str):
     Returns a path to resources in the home directory of this project. Used to resolve resources in builds.
     """
     return (CWD / ".." / filename).resolve()
+
+
+def get_ip():
+    """
+    Returns the IP address of this device.
+    """
+    soc = Socket.socket(Socket.AF_INET, Socket.SOCK_DGRAM)
+    soc.connect(("8.8.8.8", 80))
+    ip_address = str(soc.getsockname()[0])
+    soc.close()
+
+    return ip_address
