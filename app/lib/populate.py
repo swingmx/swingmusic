@@ -3,6 +3,7 @@ from tqdm import tqdm
 
 from app import settings
 from app.db.sqlite.tracks import SQLiteTrackMethods
+from app.db.sqlite.settings import SettingsSQLMethods as sdb
 from app.db.store import Store
 
 from app.lib.taglib import extract_thumb, get_tags
@@ -27,7 +28,18 @@ class Populate:
         tracks = get_all_tracks()
         tracks = list(tracks)
 
-        files = run_fast_scandir(settings.HOME_DIR, full=True)[1]
+        dirs_to_scan = sdb.get_root_dirs()
+
+        if len(dirs_to_scan) == 0:
+            log.error(
+                "The root directory is not set. No folders will be scanned for music files. Open the app in your web browser to configure."
+            )
+            return
+
+        files = []
+
+        for _dir in dirs_to_scan:
+            files.extend(run_fast_scandir(_dir, full=True)[1])
 
         untagged = self.filter_untagged(tracks, files)
 

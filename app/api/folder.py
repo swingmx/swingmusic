@@ -1,10 +1,12 @@
 """
 Contains all the folder routes.
 """
+import os
 from flask import Blueprint, request
 
 from app import settings
 from app.lib.folderslib import GetFilesAndDirs
+
 
 folderbp = Blueprint("folder", __name__, url_prefix="/")
 
@@ -29,4 +31,29 @@ def get_folder_tree():
     return {
         "tracks": tracks,
         "folders": sorted(folders, key=lambda i: i.name),
+    }
+
+
+@folderbp.route("/folder/dir-browser", methods=["POST"])
+def list_folders():
+    """
+    Returns a list of all the folders in the given folder.
+    """
+    data = request.get_json()
+
+    try:
+        req_dir: str = data["folder"]
+    except KeyError:
+        req_dir = settings.HOME_DIR
+
+    if req_dir == "$home":
+        req_dir = settings.HOME_DIR
+
+    entries = os.scandir(req_dir)
+
+    dirs = [e.name for e in entries if e.is_dir() and not e.name.startswith(".")]
+    dirs = [{"name": d, "path": os.path.join(req_dir, d)} for d in dirs]
+
+    return {
+        "folders": sorted(dirs, key=lambda i: i["name"]),
     }

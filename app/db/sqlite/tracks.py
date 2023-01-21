@@ -61,6 +61,8 @@ class SQLiteTrackMethods:
             ),
         )
 
+        # TODO: rewrite the above code using an ordered dict and destructuring
+
     @classmethod
     def insert_many_tracks(cls, tracks: list[dict]):
         """

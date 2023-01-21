@@ -186,6 +186,5 @@ if __name__ == "__main__":
         use_reloader=False,
     )
 
-# TODO: Find out how to print in color: red for errors, etc.
 # TODO: Find a way to verify the host string
 # TODO: Organize code in this file: move args to new file, etc.
