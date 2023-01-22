@@ -1,17 +1,18 @@
 from flask import Blueprint, request
+
 from app.db.sqlite.favorite import SQLiteFavoriteMethods as favdb
 from app.db.store import Store
 from app.models import FavType
 from app.utils import UseBisection
 
-favbp = Blueprint("favorite", __name__, url_prefix="/")
+api = Blueprint("favorite", __name__, url_prefix="/")
 
 
 def remove_none(items: list):
     return [i for i in items if i is not None]
 
 
-@favbp.route("/favorite/add", methods=["POST"])
+@api.route("/favorite/add", methods=["POST"])
 def add_favorite():
     """
     Adds a favorite to the database.
@@ -32,7 +33,7 @@ def add_favorite():
     return {"msg": "Added to favorites"}
 
 
-@favbp.route("/favorite/remove", methods=["POST"])
+@api.route("/favorite/remove", methods=["POST"])
 def remove_favorite():
     """
     Removes a favorite from the database.
@@ -53,7 +54,7 @@ def remove_favorite():
     return {"msg": "Removed from favorites"}
 
 
-@favbp.route("/albums/favorite")
+@api.route("/albums/favorite")
 def get_favorite_albums():
     limit = request.args.get("limit")
 
@@ -77,7 +78,7 @@ def get_favorite_albums():
     return {"albums": fav_albums[:limit]}
 
 
-@favbp.route("/tracks/favorite")
+@api.route("/tracks/favorite")
 def get_favorite_tracks():
     limit = request.args.get("limit")
 
@@ -100,7 +101,7 @@ def get_favorite_tracks():
     return {"tracks": tracks[:limit]}
 
 
-@favbp.route("/artists/favorite")
+@api.route("/artists/favorite")
 def get_favorite_artists():
     limit = request.args.get("limit")
 
@@ -124,7 +125,7 @@ def get_favorite_artists():
     return {"artists": artists[:limit]}
 
 
-@favbp.route("/favorites")
+@api.route("/favorites")
 def get_all_favorites():
     """
     Returns all the favorites in the database.
@@ -191,7 +192,7 @@ def get_all_favorites():
     }
 
 
-@favbp.route("/favorites/check")
+@api.route("/favorites/check")
 def check_favorite():
     """
     Checks if a favorite exists in the database.

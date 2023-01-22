@@ -5,12 +5,12 @@ from collections import deque
 
 from flask import Blueprint, request
 
+from app.db.sqlite.favorite import SQLiteFavoriteMethods as favdb
 from app.db.store import Store
 from app.models import Album, FavType, Track
 from app.utils import remove_duplicates
-from app.db.sqlite.favorite import SQLiteFavoriteMethods as favdb
 
-artistbp = Blueprint("artist", __name__, url_prefix="/")
+api = Blueprint("artist", __name__, url_prefix="/")
 
 
 class CacheEntry:
@@ -156,7 +156,7 @@ def add_albums_to_cache(artisthash: str):
 # =======================================================
 
 
-@artistbp.route("/artist/<artisthash>", methods=["GET"])
+@api.route("/artist/<artisthash>", methods=["GET"])
 def get_artist(artisthash: str):
     """
     Get artist data.
@@ -203,7 +203,7 @@ def get_artist(artisthash: str):
     return {"artist": artist, "tracks": tracks[:limit]}
 
 
-@artistbp.route("/artist/<artisthash>/albums", methods=["GET"])
+@api.route("/artist/<artisthash>/albums", methods=["GET"])
 def get_artist_albums(artisthash: str):
     limit = request.args.get("limit")
 
@@ -261,7 +261,7 @@ def get_artist_albums(artisthash: str):
     }
 
 
-@artistbp.route("/artist/<artisthash>/tracks", methods=["GET"])
+@api.route("/artist/<artisthash>/tracks", methods=["GET"])
 def get_artist_tracks(artisthash: str):
     """
     Returns all artists by a given artist.

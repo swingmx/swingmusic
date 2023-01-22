@@ -12,15 +12,14 @@ from app.db.sqlite.favorite import SQLiteFavoriteMethods as favdb
 from app.db.store import Store
 from app.models import FavType, Track
 
-
 get_album_by_id = adb.get_album_by_id
 get_albums_by_albumartist = adb.get_albums_by_albumartist
 check_is_fav = favdb.check_is_favorite
 
-albumbp = Blueprint("album", __name__, url_prefix="")
+api = Blueprint("album", __name__, url_prefix="")
 
 
-@albumbp.route("/album", methods=["POST"])
+@api.route("/album", methods=["POST"])
 def get_album():
     """Returns all the tracks in the given album."""
 
@@ -88,7 +87,7 @@ def get_album():
     return {"tracks": tracks, "info": album}
 
 
-@albumbp.route("/album/<albumhash>/tracks", methods=["GET"])
+@api.route("/album/<albumhash>/tracks", methods=["GET"])
 def get_album_tracks(albumhash: str):
     """
     Returns all the tracks in the given album.
@@ -105,7 +104,7 @@ def get_album_tracks(albumhash: str):
     return {"tracks": tracks}
 
 
-@albumbp.route("/album/from-artist", methods=["POST"])
+@api.route("/album/from-artist", methods=["POST"])
 def get_artist_albums():
     data = request.get_json()
 

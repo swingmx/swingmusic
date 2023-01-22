@@ -1,10 +1,17 @@
 from flask import Blueprint, request
+
 from app.db.sqlite.settings import SettingsSQLMethods as sdb
 
-settingsbp = Blueprint("settings", __name__, url_prefix="/")
+api = Blueprint("settings", __name__, url_prefix="/")
 
 
-@settingsbp.route("/settings/add-root-dirs", methods=["POST"])
+def get_child_dirs(parent: str, children: list[str]):
+    """Returns child directories in a list, given a parent directory"""
+
+    return [dir for dir in children if dir.startswith(parent)]
+
+
+@api.route("/settings/add-root-dirs", methods=["POST"])
 def add_root_dirs():
     """
     Add custom root directories to the database.
@@ -17,18 +24,26 @@ def add_root_dirs():
         return msg, 400
 
     try:
-        new_dirs = data["new_dirs"]
-        removed_dirs = data["removed"]
+        new_dirs: list[str] = data["new_dirs"]
+        removed_dirs: list[str] = data["removed"]
     except KeyError:
         return msg, 400
+
+    # --- Unregister child directories ---
+    db_dirs = sdb.get_root_dirs()
+
+    for _dir in new_dirs:
+        children = get_child_dirs(_dir, db_dirs)
+        removed_dirs.extend(children)
+    # ------------------------------------
 
     sdb.add_root_dirs(new_dirs)
     sdb.remove_root_dirs(removed_dirs)
 
-    return {"msg": "Added root directories to the database."}
+    return {"msg": "Updated!"}
 
 
-@settingsbp.route("/settings/get-root-dirs", methods=["GET"])
+@api.route("/settings/get-root-dirs", methods=["GET"])
 def get_root_dirs():
     """
     Get custom root directories from the database.
@@ -39,7 +54,7 @@ def get_root_dirs():
 
 
 # CURRENTLY UNUSED ROUTE 👇
-@settingsbp.route("/settings/remove-root-dirs", methods=["POST"])
+@api.route("/settings/remove-root-dirs", methods=["POST"])
 def remove_root_dirs():
     """
     Remove custom root directories from the database.

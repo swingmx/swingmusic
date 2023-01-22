@@ -2,16 +2,16 @@
 Contains all the folder routes.
 """
 import os
+
 from flask import Blueprint, request
 
 from app import settings
 from app.lib.folderslib import GetFilesAndDirs
 
+api = Blueprint("folder", __name__, url_prefix="/")
 
-folderbp = Blueprint("folder", __name__, url_prefix="/")
 
-
-@folderbp.route("/folder", methods=["POST"])
+@api.route("/folder", methods=["POST"])
 def get_folder_tree():
     """
     Returns a list of all the folders and tracks in the given folder.
@@ -21,10 +21,10 @@ def get_folder_tree():
     if data is not None:
         req_dir: str = data["folder"]
     else:
-        req_dir = settings.HOME_DIR
+        req_dir = settings.USER_HOME_DIR
 
     if req_dir == "$home":
-        req_dir = settings.HOME_DIR
+        req_dir = settings.USER_HOME_DIR
 
     tracks, folders = GetFilesAndDirs(req_dir)()
 
@@ -34,7 +34,7 @@ def get_folder_tree():
     }
 
 
-@folderbp.route("/folder/dir-browser", methods=["POST"])
+@api.route("/folder/dir-browser", methods=["POST"])
 def list_folders():
     """
     Returns a list of all the folders in the given folder.
@@ -44,10 +44,10 @@ def list_folders():
     try:
         req_dir: str = data["folder"]
     except KeyError:
-        req_dir = settings.HOME_DIR
+        req_dir = settings.USER_HOME_DIR
 
     if req_dir == "$home":
-        req_dir = settings.HOME_DIR
+        req_dir = settings.USER_HOME_DIR
 
     entries = os.scandir(req_dir)
 

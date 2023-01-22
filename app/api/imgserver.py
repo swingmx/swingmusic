@@ -1,14 +1,13 @@
-import os
 from pathlib import Path
 
 from flask import Blueprint, send_from_directory
 
-imgbp = Blueprint("imgserver", __name__, url_prefix="/img")
+from app.settings import APP_DIR
+
+api = Blueprint("imgserver", __name__, url_prefix="/img")
 SUPPORTED_IMAGES = (".jpg", ".png", ".webp", ".jpeg")
 
-HOME = os.path.expanduser("~")
-
-APP_DIR = Path(HOME) / ".swing"
+APP_DIR = Path(APP_DIR)
 IMG_PATH = APP_DIR / "images"
 ASSETS_PATH = APP_DIR / "assets"
 
@@ -23,7 +22,7 @@ ARTIST_SM_PATH = ARTIST_PATH / "small"
 PLAYLIST_PATH = IMG_PATH / "playlists"
 
 
-@imgbp.route("/")
+@api.route("/")
 def hello():
     return "<h1>Image Server</h1>"
 
@@ -37,7 +36,7 @@ def send_fallback_img(filename: str = "default.webp"):
     return send_from_directory(ASSETS_PATH, filename)
 
 
-@imgbp.route("/t/<imgpath>")
+@api.route("/t/<imgpath>")
 def send_lg_thumbnail(imgpath: str):
     fpath = LG_THUMB_PATH / imgpath
 
@@ -47,7 +46,7 @@ def send_lg_thumbnail(imgpath: str):
     return send_fallback_img()
 
 
-@imgbp.route("/t/s/<imgpath>")
+@api.route("/t/s/<imgpath>")
 def send_sm_thumbnail(imgpath: str):
     fpath = SM_THUMB_PATH / imgpath
 
@@ -57,7 +56,7 @@ def send_sm_thumbnail(imgpath: str):
     return send_fallback_img()
 
 
-@imgbp.route("/a/<imgpath>")
+@api.route("/a/<imgpath>")
 def send_lg_artist_image(imgpath: str):
     fpath = ARTIST_LG_PATH / imgpath
 
@@ -67,7 +66,7 @@ def send_lg_artist_image(imgpath: str):
     return send_fallback_img("artist.webp")
 
 
-@imgbp.route("/a/s/<imgpath>")
+@api.route("/a/s/<imgpath>")
 def send_sm_artist_image(imgpath: str):
     fpath = ARTIST_SM_PATH / imgpath
 
@@ -77,7 +76,7 @@ def send_sm_artist_image(imgpath: str):
     return send_fallback_img("artist.webp")
 
 
-@imgbp.route("/p/<imgpath>")
+@api.route("/p/<imgpath>")
 def send_playlist_image(imgpath: str):
     fpath = PLAYLIST_PATH / imgpath
 

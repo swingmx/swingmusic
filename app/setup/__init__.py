@@ -4,7 +4,6 @@ Contains the functions to prepare the server for use.
 import os
 import shutil
 from configparser import ConfigParser
-import caribou  # pylint: disable=import-error
 
 from app import settings
 from app.db.sqlite import create_connection, create_tables, queries
@@ -64,10 +63,6 @@ def create_config_dir() -> None:
     """
     Creates the config directory if it doesn't exist.
     """
-
-    home_dir = os.path.expanduser("~")
-    config_folder = os.path.join(home_dir, settings.CONFIG_FOLDER)
-
     thumb_path = os.path.join("images", "thumbnails")
     small_thumb_path = os.path.join(thumb_path, "small")
     large_thumb_path = os.path.join(thumb_path, "large")
@@ -91,7 +86,7 @@ def create_config_dir() -> None:
     ]
 
     for _dir in dirs:
-        path = os.path.join(config_folder, _dir)
+        path = os.path.join(settings.APP_DIR, _dir)
         exists = os.path.exists(path)
 
         if not exists:
@@ -113,19 +108,6 @@ def setup_sqlite():
 
     create_tables(app_db_conn, queries.CREATE_APPDB_TABLES)
     create_tables(playlist_db_conn, queries.CREATE_USERDATA_TABLES)
-
-    userdb_migrations = get_home_res_path("app") / "migrations" / "userdata"
-    maindb_migrations = get_home_res_path("app") / "migrations" / "main"
-
-    caribou.upgrade(
-        APP_DB_PATH,
-        maindb_migrations,
-    )
-
-    caribou.upgrade(
-        str(USERDATA_DB_PATH),
-        str(userdb_migrations),
-    )
 
     app_db_conn.close()
     playlist_db_conn.close()

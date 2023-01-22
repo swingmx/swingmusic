@@ -13,7 +13,7 @@ from app.functions import run_periodic_checks
 from app.lib.watchdogg import Watcher as WatchDog
 from app.settings import APP_VERSION, HELP_MESSAGE, TCOLOR
 from app.setup import run_setup
-from app.utils import background, get_home_res_path, get_ip
+from app.utils import background, get_home_res_path, get_ip, is_windows
 
 werkzeug = logging.getLogger("werkzeug")
 werkzeug.setLevel(logging.ERROR)
@@ -80,6 +80,8 @@ class HandleArgs:
                 config["DEFAULT"]["BUILD"] = "True"
                 config.write(file)
 
+            _s = ";" if is_windows() else ":"
+
             bundler.run(
                 [
                     "manage.py",
@@ -87,9 +89,10 @@ class HandleArgs:
                     "--name",
                     "swingmusic",
                     "--clean",
-                    "--add-data=assets:assets",
-                    "--add-data=client:client",
-                    "--add-data=pyinstaller.config.ini:.",
+                    f"--add-data=assets{_s}assets",
+                    f"--add-data=client{_s}client",
+                    f"--add-data=app/migrations{_s}app/migrations",
+                    f"--add-data=pyinstaller.config.ini{_s}.",
                     "-y",
                 ]
             )

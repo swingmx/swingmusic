@@ -69,13 +69,12 @@ class ProcessArtistColors:
     """
 
     def __init__(self) -> None:
+        db_colors: list[tuple] = list(adb.get_all_artists())
+        db_artisthashes = "-".join([artist[1] for artist in db_colors])
         all_artists = Store.artists
 
-        if all_artists is None:
-            return
-
         for artist in tqdm(all_artists, desc="Processing artist colors"):
-            if len(artist.colors) == 0:
+            if artist.artisthash not in db_artisthashes:
                 self.process_color(artist)
 
     @staticmethod
@@ -90,5 +89,3 @@ class ProcessArtistColors:
         if len(colors) > 0:
             adb.insert_one_artist(artisthash=artist.artisthash, colors=colors)
             Store.map_artist_color((0, artist.artisthash, json.dumps(colors)))
-
-    # TODO: Load album and artist colors into the store.

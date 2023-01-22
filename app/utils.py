@@ -5,6 +5,7 @@ from pathlib import Path
 from datetime import datetime
 
 import os
+import platform
 import socket as Socket
 import hashlib
 import threading
@@ -38,19 +39,22 @@ def run_fast_scandir(__dir: str, full=False) -> tuple[list[str], list[str]]:
     subfolders = []
     files = []
 
-    for f in os.scandir(__dir):
-        if f.is_dir() and not f.name.startswith("."):
-            subfolders.append(f.path)
-        if f.is_file():
-            ext = os.path.splitext(f.name)[1].lower()
-            if ext in SUPPORTED_FILES:
-                files.append(f.path)
+    try:
+        for _files in os.scandir(__dir):
+            if _files.is_dir() and not _files.name.startswith("."):
+                subfolders.append(_files.path)
+            if _files.is_file():
+                ext = os.path.splitext(_files.name)[1].lower()
+                if ext in SUPPORTED_FILES:
+                    files.append(_files.path)
 
-    if full or len(files) == 0:
-        for _dir in list(subfolders):
-            sf, f = run_fast_scandir(_dir, full=True)
-            subfolders.extend(sf)
-            files.extend(f)
+        if full or len(files) == 0:
+            for _dir in list(subfolders):
+                sub_dirs, _files = run_fast_scandir(_dir, full=True)
+                subfolders.extend(sub_dirs)
+                files.extend(_files)
+    except PermissionError:
+        return [], []
 
     return subfolders, files
 
@@ -239,3 +243,10 @@ def get_ip():
     soc.close()
 
     return ip_address
+
+
+def is_windows():
+    """
+    Returns True if the OS is Windows.
+    """
+    return platform.system() == "Windows"
