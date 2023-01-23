@@ -1,4 +1,5 @@
 from concurrent.futures import ThreadPoolExecutor
+import os
 from tqdm import tqdm
 
 from app import settings
@@ -24,17 +25,31 @@ class Populate:
     """
 
     def __init__(self) -> None:
+        messages = {
+            "root_unset": "The root directory is not set. Trying to scan the default directory: %s",
+            "default_not_exists": "The directory: %s does not exist. Please open the app in your web browser to set the root directory.",
+            "no_tracks": "No tracks found in: %s. Please open the app in your web browser to set the root directory.",
+        }
 
         tracks = get_all_tracks()
         tracks = list(tracks)
 
         dirs_to_scan = sdb.get_root_dirs()
+        initial_dirs_count = len(dirs_to_scan)
+
+        def_dir = "~/Music"
 
         if len(dirs_to_scan) == 0:
-            log.error(
-                "The root directory is not set. No folders will be scanned for music files. Open the app in your web browser to configure."
-            )
-            return
+            log.warning(messages["root_unset"], def_dir)
+            print("...")
+
+            exists = os.path.exists(settings.MUSIC_DIR)
+
+            if not exists:
+                log.warning(messages["default_not_exists"], def_dir)
+                return
+
+            dirs_to_scan = [settings.MUSIC_DIR]
 
         files = []
 
@@ -42,6 +57,26 @@ class Populate:
             files.extend(run_fast_scandir(_dir, full=True)[1])
 
         untagged = self.filter_untagged(tracks, files)
+
+        if initial_dirs_count == 0 and len(untagged) == 0:
+            log.warning(messages["no_tracks"], def_dir)
+            return
+
+        if initial_dirs_count == 0 and len(untagged) > 0:
+            log.info(
+                "%sFound %s tracks 💪 %s",
+                settings.TCOLOR.OKGREEN,
+                len(untagged),
+                settings.TCOLOR.ENDC,
+            )
+            log.info(
+                "%s%s saved as the default root directory. 😶%s",
+                settings.TCOLOR.OKGREEN,
+                def_dir,
+                settings.TCOLOR.ENDC,
+            )
+            sdb.add_root_dirs(dirs_to_scan)
+            return
 
         if len(untagged) == 0:
             log.info("All clear, no unread files.")

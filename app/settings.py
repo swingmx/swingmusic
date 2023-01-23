@@ -46,6 +46,7 @@ ARTIST_IMG_LG_PATH = os.path.join(ARTIST_IMG_PATH, "large")
 THUMBS_PATH = os.path.join(IMG_PATH, "thumbnails")
 SM_THUMB_PATH = os.path.join(THUMBS_PATH, "small")
 LG_THUMBS_PATH = os.path.join(THUMBS_PATH, "large")
+MUSIC_DIR = os.path.join(USER_HOME_DIR, "Music")
 
 
 # TEST_DIR = "/home/cwilvx/Downloads/Telegram Desktop"

@@ -51,26 +51,3 @@ def get_root_dirs():
     dirs = sdb.get_root_dirs()
 
     return {"dirs": dirs}
-
-
-# CURRENTLY UNUSED ROUTE 👇
-@api.route("/settings/remove-root-dirs", methods=["POST"])
-def remove_root_dirs():
-    """
-    Remove custom root directories from the database.
-    """
-    msg = {"msg": "Failed! No directories were given."}
-
-    data = request.get_json()
-
-    if data is None:
-        return msg, 400
-
-    try:
-        dirs = data["dirs"]
-    except KeyError:
-        return msg, 400
-
-    sdb.remove_root_dirs(dirs)
-
-    return {"msg": "Removed root directories from the database."}
