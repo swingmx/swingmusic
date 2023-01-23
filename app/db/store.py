@@ -89,6 +89,17 @@ class Store:
                 break
 
     @classmethod
+    def remove_tracks_by_dir_except(cls, dirs: list[str]):
+        """Removes all tracks not in the root directories."""
+        to_remove = set()
+
+        for track in cls.tracks:
+            if not track.folder.startswith(tuple(dirs)):
+                to_remove.add(track.folder)
+
+        tdb.remove_tracks_by_folders(to_remove)
+
+    @classmethod
     def count_tracks_by_hash(cls, trackhash: str) -> int:
         """
         Counts the number of tracks with a specific hash.
@@ -197,6 +208,8 @@ class Store:
         """
         Creates a list of folders from the tracks in the store.
         """
+        cls.folders.clear()
+
         all_folders = [track.folder for track in cls.tracks]
         all_folders = set(all_folders)
 
@@ -211,6 +224,7 @@ class Store:
             folder = cls.create_folder(str(path))
 
             cls.folders.append(folder)
+
 
     @classmethod
     def get_folder(cls, path: str):  # type: ignore
@@ -277,6 +291,8 @@ class Store:
         Loads all albums from the database into the store.
         """
 
+        cls.albums = []
+
         albumhashes = set(t.albumhash for t in cls.tracks)
 
         for albumhash in tqdm(albumhashes, desc="Loading albums"):
@@ -291,9 +307,9 @@ class Store:
             albumhash = album[1]
             colors = json.loads(album[2])
 
-            for al in cls.albums:
-                if al.albumhash == albumhash:
-                    al.set_colors(colors)
+            for _al in cls.albums:
+                if _al.albumhash == albumhash:
+                    _al.set_colors(colors)
                     break
 
     @classmethod

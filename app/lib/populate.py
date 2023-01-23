@@ -25,7 +25,7 @@ class Populate:
     """
 
     def __init__(self) -> None:
-        messages = {
+        text = {
             "root_unset": "The root directory is not set. Trying to scan the default directory: %s",
             "default_not_exists": "The directory: %s does not exist. Please open the app in your web browser to set the root directory.",
             "no_tracks": "No tracks found in: %s. Please open the app in your web browser to set the root directory.",
@@ -40,16 +40,22 @@ class Populate:
         def_dir = "~/Music"
 
         if len(dirs_to_scan) == 0:
-            log.warning(messages["root_unset"], def_dir)
+            log.warning(text["root_unset"], def_dir)
             print("...")
 
             exists = os.path.exists(settings.MUSIC_DIR)
 
             if not exists:
-                log.warning(messages["default_not_exists"], def_dir)
+                log.warning(text["default_not_exists"], def_dir)
                 return
 
             dirs_to_scan = [settings.MUSIC_DIR]
+
+        try:
+            if dirs_to_scan[0] == "$home":
+                dirs_to_scan = [settings.USER_HOME_DIR]
+        except IndexError:
+            pass
 
         files = []
 
@@ -59,7 +65,7 @@ class Populate:
         untagged = self.filter_untagged(tracks, files)
 
         if initial_dirs_count == 0 and len(untagged) == 0:
-            log.warning(messages["no_tracks"], def_dir)
+            log.warning(text["no_tracks"], def_dir)
             return
 
         if initial_dirs_count == 0 and len(untagged) > 0:
@@ -76,7 +82,7 @@ class Populate:
                 settings.TCOLOR.ENDC,
             )
             sdb.add_root_dirs(dirs_to_scan)
-            return
+            # return
 
         if len(untagged) == 0:
             log.info("All clear, no unread files.")

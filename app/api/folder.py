@@ -3,10 +3,14 @@ Contains all the folder routes.
 """
 import os
 
+from pathlib import Path
 from flask import Blueprint, request
 
 from app import settings
 from app.lib.folderslib import GetFilesAndDirs
+from app.db.sqlite.settings import SettingsSQLMethods as db
+from app.models import Folder
+from app.utils import create_folder_hash
 
 api = Blueprint("folder", __name__, url_prefix="/")
 
@@ -19,12 +23,32 @@ def get_folder_tree():
     data = request.get_json()
 
     if data is not None:
-        req_dir: str = data["folder"]
-    else:
+        try:
+            req_dir: str = data["folder"]
+        except KeyError:
+            req_dir = "$home"
+
+    root_dirs = db.get_root_dirs()
+
+    if req_dir == "$home" and root_dirs[0] == "$home":
         req_dir = settings.USER_HOME_DIR
 
     if req_dir == "$home":
-        req_dir = settings.USER_HOME_DIR
+        folders = [Path(f) for f in root_dirs]
+
+        return {
+            "folders": [
+                Folder(
+                    name=f.name,
+                    path=str(f),
+                    has_tracks=True,
+                    is_sym=f.is_symlink(),
+                    path_hash=create_folder_hash(*f.parts[1:]),
+                )
+                for f in folders
+            ],
+            "tracks": [],
+        }
 
     tracks, folders = GetFilesAndDirs(req_dir)()
 

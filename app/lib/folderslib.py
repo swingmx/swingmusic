@@ -1,5 +1,4 @@
 import os
-import pathlib
 from concurrent.futures import ThreadPoolExecutor
 
 from app.db.store import Store

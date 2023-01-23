@@ -38,9 +38,13 @@ class ProcessAlbumColors:
     """
 
     def __init__(self) -> None:
+        db_colors = db.get_all_albums()
+        db_albumhashes = "-".join([album[1] for album in db_colors])
+
+        albums = [a for a in Store.albums if a.albumhash not in db_albumhashes]
 
         with SQLiteManager() as cur:
-            for album in tqdm(Store.albums, desc="Processing album colors"):
+            for album in tqdm(albums, desc="Processing unprocessed album colors"):
                 if len(album.colors) == 0:
                     colors = self.process_color(album)
 
@@ -71,9 +75,9 @@ class ProcessArtistColors:
     def __init__(self) -> None:
         db_colors: list[tuple] = list(adb.get_all_artists())
         db_artisthashes = "-".join([artist[1] for artist in db_colors])
-        all_artists = Store.artists
+        all_artists = [a for a in Store.artists if a.artisthash not in db_artisthashes]
 
-        for artist in tqdm(all_artists, desc="Processing artist colors"):
+        for artist in tqdm(all_artists, desc="Processing unprocessed artist colors"):
             if artist.artisthash not in db_artisthashes:
                 self.process_color(artist)
 
