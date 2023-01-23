@@ -40,7 +40,7 @@ class Store:
         cls.tracks = list(tdb.get_all_tracks())
 
         fav_hashes = favdb.get_fav_tracks()
-        fav_hashes = [t[1] for t in fav_hashes]
+        fav_hashes = " ".join([t[1] for t in fav_hashes])
 
         for track in tqdm(cls.tracks, desc="Loading tracks"):
             if track.trackhash in fav_hashes:
@@ -224,7 +224,6 @@ class Store:
             folder = cls.create_folder(str(path))
 
             cls.folders.append(folder)
-
 
     @classmethod
     def get_folder(cls, path: str):  # type: ignore

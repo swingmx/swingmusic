@@ -5,6 +5,7 @@ from tqdm import tqdm
 from app import settings
 from app.db.sqlite.tracks import SQLiteTrackMethods
 from app.db.sqlite.settings import SettingsSQLMethods as sdb
+from app.db.sqlite.favorite import SQLiteFavoriteMethods as favdb
 from app.db.store import Store
 
 from app.lib.taglib import extract_thumb, get_tags
@@ -101,12 +102,16 @@ class Populate:
         tagged_tracks: list[dict] = []
         tagged_count = 0
 
+        fav_tracks = favdb.get_fav_tracks()
+        fav_tracks = "-".join([t[1] for t in fav_tracks])
+
         for file in tqdm(untagged, desc="Reading files"):
             tags = get_tags(file)
 
             if tags is not None:
                 tagged_tracks.append(tags)
                 track = Track(**tags)
+                track.is_favorite = track.trackhash in fav_tracks
 
                 Store.add_track(track)
                 Store.add_folder(track.folder)

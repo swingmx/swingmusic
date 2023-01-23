@@ -150,6 +150,8 @@ def get_all_favorites():
     favs = favdb.get_all()
     favs.reverse()
 
+    favs = [fav for fav in favs if fav[1] != ""]
+
     tracks = []
     albums = []
     artists = []
@@ -162,20 +164,21 @@ def get_all_favorites():
         ):
             break
 
-        if fav[2] == FavType.track:
-            tracks.append(fav[1])
-        elif fav[2] == FavType.album:
-            albums.append(fav[1])
-        elif fav[2] == FavType.artist:
-            artists.append(fav[1])
+        if not len(tracks) >= track_limit:
+            if fav[2] == FavType.track:
+                tracks.append(fav[1])
+
+        if not len(albums) >= album_limit:
+            if fav[2] == FavType.album:
+                albums.append(fav[1])
+
+        if not len(artists) >= artist_limit:
+            if fav[2] == FavType.artist:
+                artists.append(fav[1])
 
     src_tracks = sorted(Store.tracks, key=lambda x: x.trackhash)
     src_albums = sorted(Store.albums, key=lambda x: x.albumhash)
     src_artists = sorted(Store.artists, key=lambda x: x.artisthash)
-
-    tracks = tracks[:track_limit]
-    albums = albums[:album_limit]
-    artists = artists[:artist_limit]
 
     tracks = UseBisection(src_tracks, "trackhash", tracks)()
     albums = UseBisection(src_albums, "albumhash", albums)()

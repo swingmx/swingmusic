@@ -166,7 +166,6 @@ def update_playlist_info(playlistid: str):
             return {"error": "Failed: Invalid image"}, 400
 
     p_tuple = (*playlist.values(),)
-    print("banner pos:", playlist["banner_pos"])
 
     update_playlist(int(playlistid), playlist)
 

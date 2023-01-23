@@ -57,18 +57,19 @@ def add_root_dirs():
 
     # ---
     db_dirs = sdb.get_root_dirs()
+    _h = "$home"
 
-    if db_dirs[0] == "$home" and new_dirs[0] == "$home".strip():
+    if db_dirs[0] == _h and new_dirs[0] == _h.strip():
         return {"msg": "Not changed!"}
 
-    if db_dirs[0] == "$home":
+    if db_dirs[0] == _h:
         sdb.remove_root_dirs(db_dirs)
 
     try:
-        if new_dirs[0] == "$home":
-            finalize(["$home"], db_dirs, [settings.USER_HOME_DIR])
+        if new_dirs[0] == _h:
+            finalize([_h], db_dirs, [settings.USER_HOME_DIR])
 
-            return {"msg": "Updated!"}
+            return {"root_dirs": [_h]}
     except IndexError:
         pass
 
@@ -84,10 +85,11 @@ def add_root_dirs():
             pass
 
     db_dirs.extend(new_dirs)
+    db_dirs = [dir for dir in db_dirs if dir != _h]
 
     finalize(new_dirs, removed_dirs, db_dirs)
 
-    return {"msg": "Updated!"}
+    return {"root_dirs": db_dirs}
 
 
 @api.route("/settings/get-root-dirs", methods=["GET"])
