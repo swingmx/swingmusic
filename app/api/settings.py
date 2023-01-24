@@ -1,12 +1,13 @@
 from flask import Blueprint, request
 from app import settings
 
-from app.db.sqlite.settings import SettingsSQLMethods as sdb
-from app.lib import populate
-from app.logger import log
 
+from app.logger import log
+from app.lib import populate
 from app.db.store import Store
 from app.utils import background
+from app.lib.watchdogg import Watcher as WatchDog
+from app.db.sqlite.settings import SettingsSQLMethods as sdb
 
 api = Blueprint("settings", __name__, url_prefix="/")
 
@@ -19,6 +20,10 @@ def get_child_dirs(parent: str, children: list[str]):
 
 @background
 def rebuild_store(db_dirs: list[str]):
+    """
+    Restarts the watchdog and rebuilds the music library.
+    """
+
     log.info("Rebuilding library...")
     Store.remove_tracks_by_dir_except(db_dirs)
 
@@ -28,6 +33,7 @@ def rebuild_store(db_dirs: list[str]):
     Store.load_artists()
 
     populate.Populate()
+    WatchDog().restart()
 
     log.info("Rebuilding library... ✅")
 
@@ -59,13 +65,13 @@ def add_root_dirs():
     db_dirs = sdb.get_root_dirs()
     _h = "$home"
 
-    if db_dirs[0] == _h and new_dirs[0] == _h.strip():
-        return {"msg": "Not changed!"}
-
-    if db_dirs[0] == _h:
-        sdb.remove_root_dirs(db_dirs)
-
     try:
+        if db_dirs[0] == _h and new_dirs[0] == _h.strip():
+            return {"msg": "Not changed!"}
+
+        if db_dirs[0] == _h:
+            sdb.remove_root_dirs(db_dirs)
+
         if new_dirs[0] == _h:
             finalize([_h], db_dirs, [settings.USER_HOME_DIR])
 

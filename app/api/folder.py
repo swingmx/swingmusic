@@ -30,8 +30,11 @@ def get_folder_tree():
 
     root_dirs = db.get_root_dirs()
 
-    if req_dir == "$home" and root_dirs[0] == "$home":
-        req_dir = settings.USER_HOME_DIR
+    try:
+        if req_dir == "$home" and root_dirs[0] == "$home":
+            req_dir = settings.USER_HOME_DIR
+    except IndexError:
+        pass
 
     if req_dir == "$home":
         folders = [Path(f) for f in root_dirs]
