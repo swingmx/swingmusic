@@ -1,6 +1,7 @@
 """
 This module contains mini functions for the server.
 """
+import re
 from pathlib import Path
 from datetime import datetime
 
@@ -187,7 +188,7 @@ def get_albumartists(albums: list[models.Album]) -> set[str]:
 
 
 def get_all_artists(
-    tracks: list[models.Track], albums: list[models.Album]
+        tracks: list[models.Track], albums: list[models.Album]
 ) -> list[models.Artist]:
     artists_from_tracks = get_artists_from_tracks(tracks)
     artist_from_albums = get_albumartists(albums)
@@ -250,3 +251,28 @@ def is_windows():
     Returns True if the OS is Windows.
     """
     return platform.system() == "Windows"
+
+
+def split_artists(src: str):
+    artists = re.split(r"\s*[&,;/]\s*", src)
+    return [a.strip() for a in artists]
+
+
+
+
+
+def extract_featured_artists_from_title(title: str) -> list[str]:
+    """
+    Extracts featured artists from a song title using regex.
+    """
+    regex = r"\((?:feat|ft|featuring|with)\.?\s+(.+?)\)"
+    match = re.search(regex, title, re.IGNORECASE)
+
+    if not match:
+        return []
+
+    artists = match.group(1)
+    artists = split_artists(artists)
+    return artists
+
+

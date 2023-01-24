@@ -58,10 +58,14 @@ class Track:
 
     def __post_init__(self):
         if self.artist is not None:
-            artist_str = str(self.artist).split(", ")
-            self.artist_hashes = [utils.create_hash(a, decode=True) for a in artist_str]
+            artists = utils.split_artists(self.artist)
+            featured = utils.extract_featured_artists_from_title(self.title)
+            artists.extend(featured)
+            artists = set(artists)
 
-            self.artist = [Artist(a) for a in artist_str]
+            self.artist_hashes = [utils.create_hash(a, decode=True) for a in artists]
+
+            self.artist = [Artist(a) for a in artists]
 
             albumartists = str(self.albumartist).split(", ")
             self.albumartist = [Artist(a) for a in albumartists]
@@ -150,10 +154,10 @@ class Album:
         Checks if the album is a single.
         """
         if (
-            len(tracks) == 1
-            and tracks[0].title == self.title
-            and tracks[0].track == 1
-            and tracks[0].disc == 1
+                len(tracks) == 1
+                and tracks[0].title == self.title
+                and tracks[0].track == 1
+                and tracks[0].disc == 1
         ):
             self.is_single = True
 

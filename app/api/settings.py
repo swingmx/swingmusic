@@ -1,7 +1,6 @@
 from flask import Blueprint, request
 from app import settings
 
-
 from app.logger import log
 from app.lib import populate
 from app.db.store import Store
@@ -15,7 +14,7 @@ api = Blueprint("settings", __name__, url_prefix="/")
 def get_child_dirs(parent: str, children: list[str]):
     """Returns child directories in a list, given a parent directory"""
 
-    return [dir for dir in children if dir.startswith(parent) and dir != parent]
+    return [_dir for _dir in children if _dir.startswith(parent) and _dir != parent]
 
 
 @background
@@ -56,10 +55,10 @@ def add_root_dirs():
     except KeyError:
         return msg, 400
 
-    def finalize(new_dirs: list[str], removed_dirs: list[str], db_dirs: list[str]):
-        sdb.remove_root_dirs(removed_dirs)
-        sdb.add_root_dirs(new_dirs)
-        rebuild_store(db_dirs)
+    def finalize(new_: list[str], removed_: list[str], db_dirs_: list[str]):
+        sdb.remove_root_dirs(removed_)
+        sdb.add_root_dirs(new_)
+        rebuild_store(db_dirs_)
 
     # ---
     db_dirs = sdb.get_root_dirs()
@@ -91,7 +90,7 @@ def add_root_dirs():
             pass
 
     db_dirs.extend(new_dirs)
-    db_dirs = [dir for dir in db_dirs if dir != _h]
+    db_dirs = [dir_ for dir_ in db_dirs if dir_ != _h]
 
     finalize(new_dirs, removed_dirs, db_dirs)
 

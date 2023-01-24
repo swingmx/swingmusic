@@ -19,7 +19,7 @@ class CacheEntry:
     """
 
     def __init__(
-        self, artisthash: str, albumhashes: set[str], tracks: list[Track]
+            self, artisthash: str, albumhashes: set[str], tracks: list[Track]
     ) -> None:
         self.albums: list[Album] = []
         self.tracks: list[Track] = []
@@ -274,7 +274,6 @@ def get_artist_tracks(artisthash: str):
     #     return {"error": "Artist not found"}, 404
 
     # return {"albums": albums[:limit]}
-
 
 # @artist_bp.route("/artist/<artist>")
 # @cache.cached()

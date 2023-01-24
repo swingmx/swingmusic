@@ -16,7 +16,6 @@ __pycache__
 .hypothesis
 sqllib.py
 encoderx.py
-tests
 .pytest_cache
 
 # pyinstaller files
