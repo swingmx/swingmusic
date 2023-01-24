@@ -8,7 +8,7 @@ from requests import ReadTimeout
 from app import utils
 from app.lib.artistlib import CheckArtistImages
 from app.lib.colorlib import ProcessAlbumColors, ProcessArtistColors
-from app.lib.populate import Populate, ProcessTrackThumbnails
+from app.lib.populate import Populate, ProcessTrackThumbnails, PopulateCancelledError
 from app.lib.trackslib import validate_tracks
 from app.logger import log
 
@@ -23,8 +23,11 @@ def run_periodic_checks():
     validate_tracks()
 
     while True:
+        try:
+            Populate(key=utils.get_random_str())
+        except PopulateCancelledError:
+            pass
 
-        Populate()
         ProcessTrackThumbnails()
         ProcessAlbumColors()
         ProcessArtistColors()

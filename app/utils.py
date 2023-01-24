@@ -1,7 +1,9 @@
 """
 This module contains mini functions for the server.
 """
+import random
 import re
+import string
 from pathlib import Path
 from datetime import datetime
 
@@ -32,16 +34,19 @@ def background(func):
     return background_func
 
 
-def run_fast_scandir(__dir: str, full=False) -> tuple[list[str], list[str]]:
+def run_fast_scandir(_dir: str, full=False) -> tuple[list[str], list[str]]:
     """
     Scans a directory for files with a specific extension. Returns a list of files and folders in the directory.
     """
+
+    if _dir == "":
+        return [], []
 
     subfolders = []
     files = []
 
     try:
-        for _files in os.scandir(__dir):
+        for _files in os.scandir(_dir):
             if _files.is_dir() and not _files.name.startswith("."):
                 subfolders.append(_files.path)
             if _files.is_file():
@@ -54,7 +59,7 @@ def run_fast_scandir(__dir: str, full=False) -> tuple[list[str], list[str]]:
                 sub_dirs, _files = run_fast_scandir(_dir, full=True)
                 subfolders.extend(sub_dirs)
                 files.extend(_files)
-    except PermissionError:
+    except (PermissionError, FileNotFoundError, ValueError):
         return [], []
 
     return subfolders, files
@@ -177,13 +182,11 @@ def get_artists_from_tracks(tracks: list[models.Track]) -> set[str]:
 def get_albumartists(albums: list[models.Album]) -> set[str]:
     artists = set()
 
-    # master_artist_list = [a.albumartists for a in albums]
     for album in albums:
         albumartists = [a.name for a in album.albumartists]  # type: ignore
 
         artists.update(albumartists)
 
-    # return [models.Artist(a) for a in artists]
     return artists
 
 
@@ -231,7 +234,10 @@ def get_home_res_path(filename: str):
     """
     Returns a path to resources in the home directory of this project. Used to resolve resources in builds.
     """
-    return (CWD / ".." / filename).resolve()
+    try:
+        return (CWD / ".." / filename).resolve()
+    except ValueError:
+        return None
 
 
 def get_ip():
@@ -258,9 +264,6 @@ def split_artists(src: str):
     return [a.strip() for a in artists]
 
 
-
-
-
 def extract_featured_artists_from_title(title: str) -> list[str]:
     """
     Extracts featured artists from a song title using regex.
@@ -276,3 +279,8 @@ def extract_featured_artists_from_title(title: str) -> list[str]:
     return artists
 
 
+def get_random_str(length=5):
+    """
+    Generates a random string of length `length`.
+    """
+    return "".join(random.choices(string.ascii_letters + string.digits, k=length))

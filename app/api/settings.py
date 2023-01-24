@@ -4,7 +4,7 @@ from app import settings
 from app.logger import log
 from app.lib import populate
 from app.db.store import Store
-from app.utils import background
+from app.utils import background, get_random_str
 from app.lib.watchdogg import Watcher as WatchDog
 from app.db.sqlite.settings import SettingsSQLMethods as sdb
 
@@ -17,21 +17,32 @@ def get_child_dirs(parent: str, children: list[str]):
     return [_dir for _dir in children if _dir.startswith(parent) and _dir != parent]
 
 
-@background
-def rebuild_store(db_dirs: list[str]):
+def reload_everything():
     """
-    Restarts the watchdog and rebuilds the music library.
+    Reloads all stores using the current database items
     """
-
-    log.info("Rebuilding library...")
-    Store.remove_tracks_by_dir_except(db_dirs)
-
     Store.load_all_tracks()
     Store.process_folders()
     Store.load_albums()
     Store.load_artists()
 
-    populate.Populate()
+
+@background
+def rebuild_store(db_dirs: list[str]):
+    """
+    Restarts the watchdog and rebuilds the music library.
+    """
+    log.info("Rebuilding library...")
+    Store.remove_tracks_by_dir_except(db_dirs)
+    reload_everything()
+
+    key = get_random_str()
+    try:
+        populate.Populate(key=key)
+    except populate.PopulateCancelledError:
+        reload_everything()
+        return
+
     WatchDog().restart()
 
     log.info("Rebuilding library... ✅")

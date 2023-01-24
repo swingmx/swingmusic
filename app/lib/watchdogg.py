@@ -40,7 +40,6 @@ class Watcher:
         while trials < 10:
             try:
                 dirs = sdb.get_root_dirs()
-                print(dirs)
                 dir_map = [
                     {"original": d, "realpath": os.path.realpath(d)} for d in dirs
                 ]

@@ -16,6 +16,12 @@ from app.utils import run_fast_scandir
 get_all_tracks = SQLiteTrackMethods.get_all_tracks
 insert_many_tracks = SQLiteTrackMethods.insert_many_tracks
 
+POPULATE_KEY = ""
+
+
+class PopulateCancelledError(Exception):
+    pass
+
 
 class Populate:
     """
@@ -25,7 +31,10 @@ class Populate:
     also checks if the album art exists in the image path, if not tries to extract it.
     """
 
-    def __init__(self) -> None:
+    def __init__(self, key: str) -> None:
+        global POPULATE_KEY
+        POPULATE_KEY = key
+
         tracks = get_all_tracks()
         tracks = list(tracks)
 
@@ -54,7 +63,7 @@ class Populate:
             log.info("All clear, no unread files.")
             return
 
-        self.tag_untagged(untagged)
+        self.tag_untagged(untagged, key)
 
     @staticmethod
     def filter_untagged(tracks: list[Track], files: list[str]):
@@ -62,7 +71,7 @@ class Populate:
         return set(files) - set(tagged_files)
 
     @staticmethod
-    def tag_untagged(untagged: set[str]):
+    def tag_untagged(untagged: set[str], key: str):
         log.info("Found %s new tracks", len(untagged))
         tagged_tracks: list[dict] = []
         tagged_count = 0
@@ -71,6 +80,9 @@ class Populate:
         fav_tracks = "-".join([t[1] for t in fav_tracks])
 
         for file in tqdm(untagged, desc="Reading files"):
+            if POPULATE_KEY != key:
+                raise PopulateCancelledError('Populate key changed')
+
             tags = get_tags(file)
 
             if tags is not None:
