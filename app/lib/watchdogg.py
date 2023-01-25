@@ -40,6 +40,8 @@ class Watcher:
         while trials < 10:
             try:
                 dirs = sdb.get_root_dirs()
+                dirs = [rf"{d}" for d in dirs]
+
                 dir_map = [
                     {"original": d, "realpath": os.path.realpath(d)} for d in dirs
                 ]
@@ -59,7 +61,7 @@ class Watcher:
             )
             return
 
-        dir_map = [d for d in dir_map if d['realpath'] != d['original']]
+        dir_map = [d for d in dir_map if d["realpath"] != d["original"]]
 
         if len(dirs) > 0 and dirs[0] == "$home":
             dirs = [settings.USER_HOME_DIR]
@@ -179,6 +181,8 @@ def remove_track(filepath: str) -> None:
 
 class Handler(PatternMatchingEventHandler):
     files_to_process = []
+    files_to_process_windows = []
+
     root_dirs = []
     dir_map = []
 
@@ -208,6 +212,7 @@ class Handler(PatternMatchingEventHandler):
         Fired when a supported file is created.
         """
         self.files_to_process.append(event.src_path)
+        self.files_to_process_windows.append(event.src_path)
 
     def on_deleted(self, event):
         """
@@ -240,6 +245,7 @@ class Handler(PatternMatchingEventHandler):
     def on_closed(self, event):
         """
         Fired when a created file is closed.
+        NOT FIRED IN WINDOWS
         """
         try:
             self.files_to_process.remove(event.src_path)
@@ -247,4 +253,28 @@ class Handler(PatternMatchingEventHandler):
                 path = self.get_abs_path(event.src_path)
                 add_track(path)
         except ValueError:
+            pass
+
+    def on_modified(self, event):
+        # this event handler is triggered twice on windows
+        # for copy events. We need to test how this behaves in
+        # Linux.
+
+        if event.src_path not in self.files_to_process_windows:
+            return
+
+        file_size = -1
+
+        while file_size != os.path.getsize(event.src_path):
+            file_size = os.path.getsize(event.src_path)
+            time.sleep(0.1)
+
+        try:
+            os.rename(event.src_path, event.src_path)
+            path = self.get_abs_path(event.src_path)
+            remove_track(path)
+            add_track(path)
+            self.files_to_process_windows.remove(event.src_path)
+        except OSError:
+            print("File is locked, skipping")
             pass

@@ -28,10 +28,6 @@ def run_periodic_checks():
         except PopulateCancelledError:
             pass
 
-        ProcessTrackThumbnails()
-        ProcessAlbumColors()
-        ProcessArtistColors()
-
         if utils.Ping()():
             try:
                 CheckArtistImages()
@@ -39,5 +35,7 @@ def run_periodic_checks():
                 log.error(
                     "Internet connection lost. Downloading artist images stopped."
                 )
+
+        ProcessArtistColors()
 
         time.sleep(300)
