@@ -91,7 +91,6 @@ class HandleArgs:
                     "--clean",
                     f"--add-data=assets{_s}assets",
                     f"--add-data=client{_s}client",
-                    f"--add-data=app/migrations{_s}app/migrations",
                     f"--add-data=pyinstaller.config.ini{_s}.",
                     "-y",
                 ]
