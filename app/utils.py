@@ -260,7 +260,7 @@ def is_windows():
 
 
 def split_artists(src: str):
-    artists = re.split(r"\s*[&,;/]\s*", src)
+    artists = re.split(r"\s*[&,;]\s*", src)
     return [a.strip() for a in artists]
 
 
