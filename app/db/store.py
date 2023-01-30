@@ -17,6 +17,7 @@ from app.utils import (
     create_folder_hash,
     get_all_artists,
     remove_duplicates,
+    win_replace_slash,
 )
 
 
@@ -174,7 +175,7 @@ class Store:
 
         return Folder(
             name=folder.name,
-            path=str(folder),
+            path=win_replace_slash(str(folder)),
             is_sym=folder.is_symlink(),
             has_tracks=True,
             path_hash=create_folder_hash(*folder.parts[1:]),
@@ -218,9 +219,18 @@ class Store:
         ]
 
         all_folders = [Path(f) for f in all_folders]
-        all_folders = [f for f in all_folders if f.exists()]
+        # all_folders = [f for f in all_folders if f.exists()]
 
-        for path in tqdm(all_folders, desc="Processing folders"):
+        valid_folders = []
+
+        for folder in all_folders:
+            try:
+                if folder.exists():
+                    valid_folders.append(folder)
+            except PermissionError:
+                pass
+
+        for path in tqdm(valid_folders, desc="Processing folders"):
             folder = cls.create_folder(str(path))
 
             cls.folders.append(folder)

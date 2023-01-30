@@ -2,6 +2,7 @@
 Contains all the folder routes.
 """
 import os
+import psutil
 
 from pathlib import Path
 from flask import Blueprint, request
@@ -10,7 +11,7 @@ from app import settings
 from app.lib.folderslib import GetFilesAndDirs
 from app.db.sqlite.settings import SettingsSQLMethods as db
 from app.models import Folder
-from app.utils import create_folder_hash
+from app.utils import create_folder_hash, is_windows, win_replace_slash
 
 api = Blueprint("folder", __name__, url_prefix="/")
 
@@ -42,8 +43,8 @@ def get_folder_tree():
         return {
             "folders": [
                 Folder(
-                    name=f.name,
-                    path=str(f),
+                    name=f.name if f.name != "" else str(f).replace("\\", "/"),
+                    path=win_replace_slash(str(f)),
                     has_tracks=True,
                     is_sym=f.is_symlink(),
                     path_hash=create_folder_hash(*f.parts[1:]),
@@ -61,26 +62,56 @@ def get_folder_tree():
     }
 
 
+def get_all_drives():
+    """
+    Returns a list of all the drives on a windows machine.
+    """
+    drives = psutil.disk_partitions()
+    return [d.mountpoint for d in drives]
+
+
 @api.route("/folder/dir-browser", methods=["POST"])
 def list_folders():
     """
     Returns a list of all the folders in the given folder.
     """
     data = request.get_json()
+    is_win = is_windows()
 
     try:
         req_dir: str = data["folder"]
     except KeyError:
-        req_dir = settings.USER_HOME_DIR
+        req_dir = "$home"
 
     if req_dir == "$home":
-        req_dir = settings.USER_HOME_DIR
+        # req_dir = settings.USER_HOME_DIR
+        if is_win:
+            return {
+                "folders": [
+                    {"name": win_replace_slash(d), "path": win_replace_slash(d)}
+                    for d in get_all_drives()
+                ]
+            }
 
-    entries = os.scandir(req_dir)
+    req_dir = req_dir + "/"
+
+    try:
+        entries = os.scandir(req_dir)
+    except PermissionError:
+        return {"folders": []}
 
     dirs = [e.name for e in entries if e.is_dir() and not e.name.startswith(".")]
-    dirs = [{"name": d, "path": os.path.join(req_dir, d)} for d in dirs]
+    dirs = [
+        {"name": d, "path": win_replace_slash(os.path.join(req_dir, d))} for d in dirs
+    ]
 
     return {
         "folders": sorted(dirs, key=lambda i: i["name"]),
     }
+
+
+# todo:
+
+# - handle showing windows disks in root_dir configuration
+# - handle the above, but for all partitions mounted in linux.
+# - handle the "\" in client's folder page breadcrumb

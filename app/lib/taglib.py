@@ -1,13 +1,17 @@
-import os
 import datetime
+import os
 from io import BytesIO
 
-from tinytag import TinyTag
 from PIL import Image, UnidentifiedImageError
+from tinytag import TinyTag
 
 from app import settings
-from app.utils import create_hash
-
+from app.utils import (
+    create_hash,
+    parse_artist_from_filename,
+    parse_title_from_filename,
+    win_replace_slash,
+)
 
 
 def parse_album_art(filepath: str):
@@ -81,7 +85,7 @@ def get_tags(filepath: str):
 
     try:
         tags = TinyTag.get(filepath)
-    except:  # pylint: disable=bare-except
+    except:  # noqa: E722
         return None
 
     no_albumartist: bool = (tags.albumartist == "") or (tags.albumartist is None)
@@ -97,9 +101,22 @@ def get_tags(filepath: str):
     for tag in to_filename:
         p = getattr(tags, tag)
         if p == "" or p is None:
-            setattr(tags, tag, filename)
+            maybe = parse_title_from_filename(filename)
+            setattr(tags, tag, maybe)
 
-    to_check = ["album", "artist", "year", "albumartist"]
+    parse = ["artist", "albumartist"]
+    for tag in parse:
+        p = getattr(tags, tag)
+
+        if p == "" or p is None:
+            maybe = parse_artist_from_filename(filename)
+
+            if maybe != []:
+                setattr(tags, tag, ", ".join(maybe))
+            else:
+                setattr(tags, tag, "Unknown")
+
+    to_check = ["album", "year", "albumartist"]
     for prop in to_check:
         p = getattr(tags, prop)
         if (p is None) or (p == ""):
@@ -127,10 +144,10 @@ def get_tags(filepath: str):
     tags.albumhash = create_hash(tags.album, tags.albumartist)
     tags.trackhash = create_hash(tags.artist, tags.album, tags.title)
     tags.image = f"{tags.albumhash}.webp"
-    tags.folder = os.path.dirname(filepath)
+    tags.folder = win_replace_slash(os.path.dirname(filepath))
 
     tags.date = extract_date(tags.year)
-    tags.filepath = filepath
+    tags.filepath = win_replace_slash(filepath)
     tags.filetype = filetype
 
     tags = tags.__dict__
@@ -152,6 +169,11 @@ def get_tags(filepath: str):
         "track_total",
         "year",
     ]
+
+    for tag in to_delete:
+        del tags[tag]
+
+    return tags
 
     for tag in to_delete:
         del tags[tag]

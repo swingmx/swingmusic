@@ -48,6 +48,19 @@ def rebuild_store(db_dirs: list[str]):
     log.info("Rebuilding library... ✅")
 
 
+def finalize(new_: list[str], removed_: list[str], db_dirs_: list[str]):
+    """
+    Params:
+        new_: will be added to the database
+        removed_: will be removed from the database
+        db_dirs_: will be used to remove tracks that
+        are outside these directories from the database and store.
+    """
+    sdb.remove_root_dirs(removed_)
+    sdb.add_root_dirs(new_)
+    rebuild_store(db_dirs_)
+
+
 @api.route("/settings/add-root-dirs", methods=["POST"])
 def add_root_dirs():
     """
@@ -66,33 +79,28 @@ def add_root_dirs():
     except KeyError:
         return msg, 400
 
-    def finalize(new_: list[str], removed_: list[str], db_dirs_: list[str]):
-        sdb.remove_root_dirs(removed_)
-        sdb.add_root_dirs(new_)
-        rebuild_store(db_dirs_)
-
-    # ---
     db_dirs = sdb.get_root_dirs()
     _h = "$home"
 
-    try:
-        if db_dirs[0] == _h and new_dirs[0] == _h.strip():
-            return {"msg": "Not changed!"}
+    db_home = any([d == _h for d in db_dirs])  # if $home is in db
+    incoming_home = any([d == _h for d in new_dirs])  # if $home is in incoming
 
-        if db_dirs[0] == _h:
-            sdb.remove_root_dirs(db_dirs)
+    # handle $home case
+    if db_home and incoming_home:
+        return {"msg": "Not changed!"}
 
-        if new_dirs[0] == _h:
-            finalize([_h], db_dirs, [settings.USER_HOME_DIR])
+    if db_home or incoming_home:
+        sdb.remove_root_dirs(db_dirs)
 
-            return {"root_dirs": [_h]}
-    except IndexError:
-        pass
+    if incoming_home:
+        finalize([_h], [], [settings.USER_HOME_DIR])
+        return {"root_dirs": [_h]}
+
+    # ---
 
     for _dir in new_dirs:
         children = get_child_dirs(_dir, db_dirs)
         removed_dirs.extend(children)
-    # ---
 
     for _dir in removed_dirs:
         try:

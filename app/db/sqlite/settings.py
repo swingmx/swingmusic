@@ -1,5 +1,5 @@
-import json
 from app.db.sqlite.utils import SQLiteManager
+from app.utils import win_replace_slash
 
 
 class SettingsSQLMethods:
@@ -19,7 +19,8 @@ class SettingsSQLMethods:
             cur.execute(sql)
             dirs = cur.fetchall()
 
-            return [dir[0] for dir in dirs]
+            dirs = [dir[0] for dir in dirs]
+            return [win_replace_slash(d) for d in dirs]
 
     @staticmethod
     def add_root_dirs(dirs: list[str]):

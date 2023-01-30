@@ -71,7 +71,7 @@ SM_ARTIST_IMG_SIZE = 64
 The size of extracted images in pixels
 """
 
-FILES = ["flac", "mp3", "wav", "m4a"]
+FILES = ["flac", "mp3", "wav", "m4a", "ogg", "wma", "opus", "alac", "aiff"]
 SUPPORTED_FILES = tuple(f".{file}" for file in FILES)
 
 # ===== SQLite =====

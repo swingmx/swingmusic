@@ -18,7 +18,6 @@ from app.utils import background, get_home_res_path, get_ip, is_windows
 werkzeug = logging.getLogger("werkzeug")
 werkzeug.setLevel(logging.ERROR)
 
-
 class Variables:
     FLASK_PORT = 1970
     FLASK_HOST = "localhost"
@@ -180,6 +179,7 @@ if __name__ == "__main__":
     log_info()
     run_bg_checks()
     start_watchdog()
+
     app.run(
         debug=True,
         threaded=True,

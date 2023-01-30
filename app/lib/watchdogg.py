@@ -63,7 +63,10 @@ class Watcher:
 
         dir_map = [d for d in dir_map if d["realpath"] != d["original"]]
 
-        if len(dirs) > 0 and dirs[0] == "$home":
+        # if len(dirs) > 0 and dirs[0] == "$home":
+        #     dirs = [settings.USER_HOME_DIR]
+
+        if any([d == "$home" for d in dirs]):
             dirs = [settings.USER_HOME_DIR]
 
         event_handler = Handler(root_dirs=dirs, dir_map=dir_map)
@@ -83,7 +86,7 @@ class Watcher:
         try:
             self.observer.start()
             log.info("Started watchdog")
-        except FileNotFoundError:
+        except (FileNotFoundError, PermissionError):
             log.error(
                 "WatchdogError: Failed to start watchdog,  root directories could not be resolved."
             )
@@ -189,10 +192,11 @@ class Handler(PatternMatchingEventHandler):
     def __init__(self, root_dirs: list[str], dir_map: dict[str:str]):
         self.root_dirs = root_dirs
         self.dir_map = dir_map
+        patterns = [f"*{f}" for f in settings.SUPPORTED_FILES]
 
         PatternMatchingEventHandler.__init__(
             self,
-            patterns=["*.flac", "*.mp3"],
+            patterns=patterns,
             ignore_directories=True,
             case_sensitive=False,
         )

@@ -43,7 +43,10 @@ class Populate:
 
         if len(dirs_to_scan) == 0:
             log.warning(
-                "The root directory is not configured. Open the app in your web browser to configure."
+                (
+                    "The root directory is not configured. "
+                    + "Open the app in your webbrowser to configure."
+                )
             )
             return
 
@@ -85,7 +88,7 @@ class Populate:
 
         for file in tqdm(untagged, desc="Reading files"):
             if POPULATE_KEY != key:
-                raise PopulateCancelledError('Populate key changed')
+                raise PopulateCancelledError("Populate key changed")
 
             tags = get_tags(file)
 

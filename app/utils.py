@@ -1,19 +1,18 @@
 """
 This module contains mini functions for the server.
 """
-import random
-import re
-import string
-from pathlib import Path
-from datetime import datetime
-
+import hashlib
 import os
 import platform
+import random
+import re
 import socket as Socket
-import hashlib
+import string
 import threading
-import requests
+from datetime import datetime
+from pathlib import Path
 
+import requests
 from unidecode import unidecode
 
 from app import models
@@ -36,7 +35,8 @@ def background(func):
 
 def run_fast_scandir(_dir: str, full=False) -> tuple[list[str], list[str]]:
     """
-    Scans a directory for files with a specific extension. Returns a list of files and folders in the directory.
+    Scans a directory for files with a specific extension.
+    Returns a list of files and folders in the directory.
     """
 
     if _dir == "":
@@ -46,20 +46,20 @@ def run_fast_scandir(_dir: str, full=False) -> tuple[list[str], list[str]]:
     files = []
 
     try:
-        for _files in os.scandir(_dir):
-            if _files.is_dir() and not _files.name.startswith("."):
-                subfolders.append(_files.path)
-            if _files.is_file():
-                ext = os.path.splitext(_files.name)[1].lower()
+        for _file in os.scandir(_dir):
+            if _file.is_dir() and not _file.name.startswith("."):
+                subfolders.append(_file.path)
+            if _file.is_file():
+                ext = os.path.splitext(_file.name)[1].lower()
                 if ext in SUPPORTED_FILES:
-                    files.append(_files.path)
+                    files.append(win_replace_slash(_file.path))
 
         if full or len(files) == 0:
             for _dir in list(subfolders):
-                sub_dirs, _files = run_fast_scandir(_dir, full=True)
+                sub_dirs, _file = run_fast_scandir(_dir, full=True)
                 subfolders.extend(sub_dirs)
-                files.extend(_files)
-    except (PermissionError, FileNotFoundError, ValueError):
+                files.extend(_file)
+    except (OSError, PermissionError, FileNotFoundError, ValueError):
         return [], []
 
     return subfolders, files
@@ -191,7 +191,7 @@ def get_albumartists(albums: list[models.Album]) -> set[str]:
 
 
 def get_all_artists(
-        tracks: list[models.Track], albums: list[models.Album]
+    tracks: list[models.Track], albums: list[models.Album]
 ) -> list[models.Artist]:
     artists_from_tracks = get_artists_from_tracks(tracks)
     artist_from_albums = get_albumartists(albums)
@@ -232,7 +232,8 @@ def bisection_search_string(strings: list[str], target: str) -> str | None:
 
 def get_home_res_path(filename: str):
     """
-    Returns a path to resources in the home directory of this project. Used to resolve resources in builds.
+    Returns a path to resources in the home directory of this project.
+    Used to resolve resources in builds.
     """
     try:
         return (CWD / ".." / filename).resolve()
@@ -259,12 +260,7 @@ def is_windows():
     return platform.system() == "Windows"
 
 
-def split_artists(src: str):
-    artists = re.split(r"\s*[&,;]\s*", src)
-    return [a.strip() for a in artists]
-
-
-def extract_featured_artists_from_title(title: str) -> list[str]:
+def parse_feat_from_title(title: str) -> list[str]:
     """
     Extracts featured artists from a song title using regex.
     """
@@ -275,7 +271,7 @@ def extract_featured_artists_from_title(title: str) -> list[str]:
         return []
 
     artists = match.group(1)
-    artists = split_artists(artists)
+    artists = split_artists(artists, with_and=True)
     return artists
 
 
@@ -284,3 +280,54 @@ def get_random_str(length=5):
     Generates a random string of length `length`.
     """
     return "".join(random.choices(string.ascii_letters + string.digits, k=length))
+
+
+def win_replace_slash(path: str):
+    if is_windows():
+        return path.replace("\\", "/").replace("//", "/")
+
+    return path
+
+
+def split_artists(src: str, with_and: bool = False):
+    exp = r"\s*(?:and|&|,|;)\s*" if with_and else r"\s*[,;]\s*"
+
+    artists = re.split(exp, src)
+    return [a.strip() for a in artists]
+
+def parse_artist_from_filename(title: str):
+    """
+    Extracts artist names from a song title using regex.
+    """
+
+    regex = r"^(.+?)\s*[-–—]\s*(?:.+?)$"
+    match = re.search(regex, title, re.IGNORECASE)
+
+    if not match:
+        return []
+
+    artists = match.group(1)
+    artists = split_artists(artists)
+    return artists
+
+
+def parse_title_from_filename(title: str):
+    """
+    Extracts track title from a song title using regex.
+    """
+
+    regex = r"^(?:.+?)\s*[-–—]\s*(.+?)$"
+    match = re.search(regex, title, re.IGNORECASE)
+
+    if not match:
+        return title
+
+    res = match.group(1)
+    # remove text in brackets starting with "official" case insensitive
+    res = re.sub(r"\s*\([^)]*official[^)]*\)", "", res, flags=re.IGNORECASE)
+    return res.strip()
+
+
+# for title in sample_titles:
+#     print(parse_artist_from_filename(title))
+#     print(parse_title_from_filename(title))
