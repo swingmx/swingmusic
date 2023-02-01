@@ -38,7 +38,7 @@ class SettingsSQLMethods:
 
         with SQLiteManager(userdata_db=True) as cur:
             for _dir in dirs:
-                cur.execute(sql, (_dir,))
+                cur.execute(sql, (_dir, ))
 
     @staticmethod
     def remove_root_dirs(dirs: list[str]):
@@ -50,7 +50,7 @@ class SettingsSQLMethods:
 
         with SQLiteManager(userdata_db=True) as cur:
             for _dir in dirs:
-                cur.execute(sql, (_dir,))
+                cur.execute(sql, (_dir, ))
 
     @staticmethod
     def add_excluded_dirs(dirs: list[str]):

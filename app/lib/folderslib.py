@@ -37,12 +37,10 @@ class GetFilesAndDirs:
 
         for file in files:
             try:
-                files_.append(
-                    {
-                        "path": file,
-                        "time": os.path.getmtime(file),
-                    }
-                )
+                files_.append({
+                    "path": file,
+                    "time": os.path.getmtime(file),
+                })
             except OSError as e:
                 log.error(e)
 

@@ -16,7 +16,9 @@ api = Blueprint("settings", __name__, url_prefix="/")
 def get_child_dirs(parent: str, children: list[str]):
     """Returns child directories in a list, given a parent directory"""
 
-    return [_dir for _dir in children if _dir.startswith(parent) and _dir != parent]
+    return [
+        _dir for _dir in children if _dir.startswith(parent) and _dir != parent
+    ]
 
 
 def reload_everything():

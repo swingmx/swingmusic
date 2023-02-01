@@ -41,9 +41,10 @@ class Watcher:
                 dirs = sdb.get_root_dirs()
                 dirs = [rf"{d}" for d in dirs]
 
-                dir_map = [
-                    {"original": d, "realpath": os.path.realpath(d)} for d in dirs
-                ]
+                dir_map = [{
+                    "original": d,
+                    "realpath": os.path.realpath(d)
+                } for d in dirs]
                 break
             except sqlite3.OperationalError:
                 trials += 1
@@ -77,9 +78,9 @@ class Watcher:
                 log.error("WatchdogError: Directory not found: %s", _dir)
 
         for _dir in dirs:
-            self.observer.schedule(
-                event_handler, os.path.realpath(_dir), recursive=True
-            )
+            self.observer.schedule(event_handler,
+                                   os.path.realpath(_dir),
+                                   recursive=True)
             self.observers.append(self.observer)
 
         try:

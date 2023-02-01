@@ -19,7 +19,6 @@ config = ConfigParser()
 config_path = get_home_res_path("pyinstaller.config.ini")
 config.read(config_path)
 
-
 try:
     IS_BUILD = config["DEFAULT"]["BUILD"] == "True"
 except KeyError:
@@ -36,13 +35,11 @@ class CopyFiles:
         if IS_BUILD:
             assets_dir = get_home_res_path("assets")
 
-        files = [
-            {
-                "src": assets_dir,
-                "dest": os.path.join(settings.APP_DIR, "assets"),
-                "is_dir": True,
-            }
-        ]
+        files = [{
+            "src": assets_dir,
+            "dest": os.path.join(settings.APP_DIR, "assets"),
+            "is_dir": True,
+        }]
 
         for entry in files:
             src = os.path.join(os.getcwd(), entry["src"])
@@ -51,9 +48,7 @@ class CopyFiles:
                 shutil.copytree(
                     src,
                     entry["dest"],
-                    ignore=shutil.ignore_patterns(
-                        "*.pyc",
-                    ),
+                    ignore=shutil.ignore_patterns("*.pyc", ),
                     copy_function=shutil.copy2,
                     dirs_exist_ok=True,
                 )

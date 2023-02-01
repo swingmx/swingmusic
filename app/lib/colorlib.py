@@ -71,7 +71,8 @@ class ProcessArtistColors:
     def __init__(self) -> None:
         all_artists = [a for a in Store.artists if len(a.colors) == 0]
 
-        for artist in tqdm(all_artists, desc="Processing missing artist colors"):
+        for artist in tqdm(all_artists,
+                           desc="Processing missing artist colors"):
             self.process_color(artist)
 
     @staticmethod

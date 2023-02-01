@@ -126,7 +126,8 @@ class UseBisection:
     items.
     """
 
-    def __init__(self, source: list, search_from: str, queries: list[str]) -> None:
+    def __init__(self, source: list, search_from: str,
+                 queries: list[str]) -> None:
         self.source_list = source
         self.queries_list = queries
         self.attr = search_from
@@ -173,7 +174,8 @@ def get_artists_from_tracks(tracks: list[models.Track]) -> set[str]:
     """
     artists = set()
 
-    master_artist_list = [[x.name for x in t.artist] for t in tracks]  # type: ignore
+    master_artist_list = [[x.name for x in t.artist]
+                          for t in tracks]  # type: ignore
     artists = artists.union(*master_artist_list)
 
     return artists
@@ -190,9 +192,8 @@ def get_albumartists(albums: list[models.Album]) -> set[str]:
     return artists
 
 
-def get_all_artists(
-    tracks: list[models.Track], albums: list[models.Album]
-) -> list[models.Artist]:
+def get_all_artists(tracks: list[models.Track],
+                    albums: list[models.Album]) -> list[models.Artist]:
     artists_from_tracks = get_artists_from_tracks(tracks)
     artist_from_albums = get_albumartists(albums)
 
@@ -200,7 +201,8 @@ def get_all_artists(
     artists = sorted(artists)
 
     lower_artists = set(a.lower().strip() for a in artists)
-    indices = [[ar.lower().strip() for ar in artists].index(a) for a in lower_artists]
+    indices = [[ar.lower().strip() for ar in artists].index(a)
+               for a in lower_artists]
     artists = [artists[i] for i in indices]
 
     return [models.Artist(a) for a in artists]
@@ -289,7 +291,8 @@ def get_random_str(length=5):
     """
     Generates a random string of length `length`.
     """
-    return "".join(random.choices(string.ascii_letters + string.digits, k=length))
+    return "".join(
+        random.choices(string.ascii_letters + string.digits, k=length))
 
 
 def win_replace_slash(path: str):

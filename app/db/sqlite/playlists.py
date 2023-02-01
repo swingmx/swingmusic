@@ -29,7 +29,7 @@ class SQLitePlaylistMethods:
             """
 
         playlist = OrderedDict(sorted(playlist.items()))
-        params = (*playlist.values(),)
+        params = (*playlist.values(), )
 
         with SQLiteManager(userdata_db=True) as cur:
             cur.execute(sql, params)
@@ -43,7 +43,7 @@ class SQLitePlaylistMethods:
         sql = "SELECT * FROM playlists WHERE name = ?"
 
         with SQLiteManager(userdata_db=True) as cur:
-            cur.execute(sql, (name,))
+            cur.execute(sql, (name, ))
 
             data = cur.fetchone()
 
@@ -57,7 +57,7 @@ class SQLitePlaylistMethods:
         sql = "SELECT COUNT(*) FROM playlists WHERE name = ?"
 
         with SQLiteManager(userdata_db=True) as cur:
-            cur.execute(sql, (name,))
+            cur.execute(sql, (name, ))
 
             data = cur.fetchone()
 
@@ -79,7 +79,7 @@ class SQLitePlaylistMethods:
         sql = "SELECT * FROM playlists WHERE id = ?"
 
         with SQLiteManager(userdata_db=True) as cur:
-            cur.execute(sql, (playlist_id,))
+            cur.execute(sql, (playlist_id, ))
 
             data = cur.fetchone()
 
@@ -100,7 +100,7 @@ class SQLitePlaylistMethods:
         sql = f"SELECT {field} FROM playlists WHERE id = ?"
 
         with SQLiteManager(userdata_db=True) as cur:
-            cur.execute(sql, (playlist_id,))
+            cur.execute(sql, (playlist_id, ))
             data = cur.fetchone()
 
             if data is not None:
@@ -118,7 +118,8 @@ class SQLitePlaylistMethods:
 
     @classmethod
     def add_tracks_to_playlist(cls, playlist_id: int, trackhashes: list[str]):
-        return cls.add_item_to_json_list(playlist_id, "trackhashes", trackhashes)
+        return cls.add_item_to_json_list(playlist_id, "trackhashes",
+                                         trackhashes)
 
     @classmethod
     @background
@@ -166,7 +167,7 @@ class SQLitePlaylistMethods:
         sql = "DELETE FROM playlists WHERE id = ?"
 
         with SQLiteManager(userdata_db=True) as cur:
-            cur.execute(sql, (pid,))
+            cur.execute(sql, (pid, ))
 
     @staticmethod
     def update_banner_pos(playlistid: int, pos: int):

@@ -52,8 +52,7 @@ def get_folder_tree():
                     has_tracks=True,
                     is_sym=f.is_symlink(),
                     path_hash=create_folder_hash(*f.parts[1:]),
-                )
-                for f in folders
+                ) for f in folders
             ],
             "tracks": [],
         }
@@ -62,7 +61,8 @@ def get_folder_tree():
         req_dir = req_dir + "/"
         # TODO: Test this on Windows
     else:
-        req_dir = "/" + req_dir + "/" if not req_dir.startswith("/") else req_dir + "/"
+        req_dir = "/" + req_dir + "/" if not req_dir.startswith(
+            "/") else req_dir + "/"
 
     tracks, folders = GetFilesAndDirs(req_dir)()
 
@@ -105,7 +105,10 @@ def list_folders():
         # req_dir = settings.USER_HOME_DIR
         # if is_win:
         return {
-            "folders": [{"name": d, "path": d} for d in get_all_drives(is_win=is_win)]
+            "folders": [{
+                "name": d,
+                "path": d
+            } for d in get_all_drives(is_win=is_win)]
         }
 
     if is_win:
@@ -119,10 +122,13 @@ def list_folders():
     except PermissionError:
         return {"folders": []}
 
-    dirs = [e.name for e in entries if e.is_dir() and not e.name.startswith(".")]
     dirs = [
-        {"name": d, "path": win_replace_slash(os.path.join(req_dir, d))} for d in dirs
+        e.name for e in entries if e.is_dir() and not e.name.startswith(".")
     ]
+    dirs = [{
+        "name": d,
+        "path": win_replace_slash(os.path.join(req_dir, d))
+    } for d in dirs]
 
     return {
         "folders": sorted(dirs, key=lambda i: i["name"]),

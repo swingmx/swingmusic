@@ -27,7 +27,6 @@ def get_xdg_config_dir():
 
 # ------- HELPER METHODS --------
 
-
 APP_VERSION = "Swing v.1.0.0.beta.1"
 
 # paths

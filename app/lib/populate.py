@@ -44,12 +44,8 @@ class Populate:
         dirs_to_scan = sdb.get_root_dirs()
 
         if len(dirs_to_scan) == 0:
-            log.warning(
-                (
-                    "The root directory is not configured. "
-                    + "Open the app in your webbrowser to configure."
-                )
-            )
+            log.warning(("The root directory is not configured. " +
+                         "Open the app in your webbrowser to configure."))
             return
 
         try:
@@ -131,6 +127,7 @@ def get_image(album: Album):
 
 
 class ProcessTrackThumbnails:
+
     def __init__(self) -> None:
         with ThreadPoolExecutor(max_workers=4) as pool:
             results = list(
@@ -138,7 +135,6 @@ class ProcessTrackThumbnails:
                     pool.map(get_image, Store.albums),
                     total=len(Store.albums),
                     desc="Extracting track images",
-                )
-            )
+                ))
 
             list(results)

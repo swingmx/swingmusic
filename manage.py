@@ -70,6 +70,7 @@ class ArgsEnum:
 
 
 class HandleArgs:
+
     def __init__(self) -> None:
         self.handle_build()
         self.handle_host()
@@ -90,19 +91,17 @@ class HandleArgs:
 
             _s = ";" if is_windows() else ":"
 
-            bundler.run(
-                [
-                    "manage.py",
-                    "--onefile",
-                    "--name",
-                    "swingmusic",
-                    "--clean",
-                    f"--add-data=assets{_s}assets",
-                    f"--add-data=client{_s}client",
-                    f"--add-data=pyinstaller.config.ini{_s}.",
-                    "-y",
-                ]
-            )
+            bundler.run([
+                "manage.py",
+                "--onefile",
+                "--name",
+                "swingmusic",
+                "--clean",
+                f"--add-data=assets{_s}assets",
+                f"--add-data=client{_s}client",
+                f"--add-data=pyinstaller.config.ini{_s}.",
+                "-y",
+            ])
 
             with open("pyinstaller.config.ini", "w", encoding="utf-8") as file:
                 config["DEFAULT"]["BUILD"] = "False"
