@@ -38,23 +38,19 @@ class ProcessAlbumColors:
     """
 
     def __init__(self) -> None:
-        db_colors = db.get_all_albums()
-        db_albumhashes = "-".join([album[1] for album in db_colors])
-
-        albums = [a for a in Store.albums if a.albumhash not in db_albumhashes]
+        albums = [a for a in Store.albums if len(a.colors) == 0]
 
         with SQLiteManager() as cur:
-            for album in tqdm(albums, desc="Processing unprocessed album colors"):
-                if len(album.colors) == 0:
-                    colors = self.process_color(album)
+            for album in tqdm(albums, desc="Processing missing album colors"):
+                colors = self.process_color(album)
 
-                    if colors is None:
-                        continue
+                if colors is None:
+                    continue
 
-                    album.set_colors(colors)
+                album.set_colors(colors)
 
-                    color_str = json.dumps(colors)
-                    db.insert_one_album(cur, album.albumhash, color_str)
+                color_str = json.dumps(colors)
+                db.insert_one_album(cur, album.albumhash, color_str)
 
     @staticmethod
     def process_color(album: Album):
@@ -73,13 +69,10 @@ class ProcessArtistColors:
     """
 
     def __init__(self) -> None:
-        db_colors: list[tuple] = list(adb.get_all_artists())
-        db_artisthashes = "-".join([artist[1] for artist in db_colors])
-        all_artists = [a for a in Store.artists if a.artisthash not in db_artisthashes]
+        all_artists = [a for a in Store.artists if len(a.colors) == 0]
 
-        for artist in tqdm(all_artists, desc="Processing unprocessed artist colors"):
-            if artist.artisthash not in db_artisthashes:
-                self.process_color(artist)
+        for artist in tqdm(all_artists, desc="Processing missing artist colors"):
+            self.process_color(artist)
 
     @staticmethod
     def process_color(artist: Artist):
@@ -93,3 +86,12 @@ class ProcessArtistColors:
         if len(colors) > 0:
             adb.insert_one_artist(artisthash=artist.artisthash, colors=colors)
             Store.map_artist_color((0, artist.artisthash, json.dumps(colors)))
+
+# TODO: If item color is in db, get it, assign it to the item and continue.
+#   - Format all colors in the format: rgb(123, 123, 123)
+#   - Each digit should be 3 digits long.
+#   - Format all db colors into a master string of the format "-itemhash:colorhash-"
+#   - Find the item hash using index() and get the color using the index + number, where number
+#       is the length of the rgb string + 1
+#   - Assign the color to the item and continue.
+#   - If the color is not in the db, extract it and add it to the db.
