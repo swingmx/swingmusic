@@ -116,6 +116,8 @@ def get_tags(filepath: str):
             else:
                 setattr(tags, tag, "Unknown")
 
+    # TODO: Move parsing title, album and artist to startup.
+
     to_check = ["album", "year", "albumartist"]
     for prop in to_check:
         p = getattr(tags, prop)
