@@ -126,6 +126,7 @@ def get_artist_albums():
 
     return {"data": albums}
 
+
 # @album_bp.route("/album/bio", methods=["POST"])
 # def get_album_bio():
 #     """Returns the album bio for the given album."""

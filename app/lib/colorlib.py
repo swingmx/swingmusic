@@ -87,6 +87,7 @@ class ProcessArtistColors:
             adb.insert_one_artist(artisthash=artist.artisthash, colors=colors)
             Store.map_artist_color((0, artist.artisthash, json.dumps(colors)))
 
+
 # TODO: If item color is in db, get it, assign it to the item and continue.
 #   - Format all colors in the format: rgb(123, 123, 123)
 #   - Each digit should be 3 digits long.

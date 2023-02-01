@@ -173,8 +173,7 @@ def get_artists_from_tracks(tracks: list[models.Track]) -> set[str]:
     """
     artists = set()
 
-    master_artist_list = [[x.name for x in t.artist]
-                          for t in tracks]  # type: ignore
+    master_artist_list = [[x.name for x in t.artist] for t in tracks]  # type: ignore
     artists = artists.union(*master_artist_list)
 
     return artists
@@ -192,7 +191,7 @@ def get_albumartists(albums: list[models.Album]) -> set[str]:
 
 
 def get_all_artists(
-        tracks: list[models.Track], albums: list[models.Album]
+    tracks: list[models.Track], albums: list[models.Album]
 ) -> list[models.Artist]:
     artists_from_tracks = get_artists_from_tracks(tracks)
     artist_from_albums = get_albumartists(albums)
@@ -201,8 +200,7 @@ def get_all_artists(
     artists = sorted(artists)
 
     lower_artists = set(a.lower().strip() for a in artists)
-    indices = [[ar.lower().strip() for ar in artists].index(a)
-               for a in lower_artists]
+    indices = [[ar.lower().strip() for ar in artists].index(a) for a in lower_artists]
     artists = [artists[i] for i in indices]
 
     return [models.Artist(a) for a in artists]
@@ -339,6 +337,7 @@ def parse_title_from_filename(title: str):
     # remove text in brackets starting with "official" case insensitive
     res = re.sub(r"\s*\([^)]*official[^)]*\)", "", res, flags=re.IGNORECASE)
     return res.strip()
+
 
 # for title in sample_titles:
 #     print(parse_artist_from_filename(title))

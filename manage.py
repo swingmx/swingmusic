@@ -173,7 +173,9 @@ def log_startup_info():
     print(f"{TCOLOR.HEADER}{APP_VERSION} {TCOLOR.ENDC}")
 
     if not settings.EXTRACT_FEAT:
-        print(f"{TCOLOR.OKBLUE}Extracting featured artists from track titles: {TCOLOR.FAIL}DISABLED!{TCOLOR.ENDC}")
+        print(
+            f"{TCOLOR.OKBLUE}Extracting featured artists from track titles: {TCOLOR.FAIL}DISABLED!{TCOLOR.ENDC}"
+        )
 
     adresses = [Variables.FLASK_HOST]
 
