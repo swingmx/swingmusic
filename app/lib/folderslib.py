@@ -20,7 +20,7 @@ class GetFilesAndDirs:
         try:
             entries = os.scandir(self.path)
         except FileNotFoundError:
-            return ([], [])
+            return [], []
 
         dirs, files = [], []
 
@@ -56,4 +56,4 @@ class GetFilesAndDirs:
 
         folders = filter(lambda f: f.has_tracks, folders)
 
-        return (tracks, folders)  # type: ignore
+        return tracks, folders  # type: ignore

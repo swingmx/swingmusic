@@ -82,7 +82,7 @@ class CheckArtistImages:
         """
         Checks if an artist image exists and downloads it if not.
 
-        :param artistname: The artist name
+        :param artist: The artist name
         """
         img_path = Path(settings.ARTIST_IMG_SM_PATH) / f"{artist.artisthash}.webp"
 

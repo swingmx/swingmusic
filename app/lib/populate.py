@@ -1,5 +1,4 @@
 from concurrent.futures import ThreadPoolExecutor
-import os
 from tqdm import tqdm
 
 from app import settings
@@ -139,4 +138,4 @@ class ProcessTrackThumbnails:
                 )
             )
 
-            results = [r for r in results]
+            list(results)

@@ -1,7 +1,4 @@
 from hypothesis import given
-from hypothesis import strategies as st
-
-import app.utils
 from app.utils import parse_feat_from_title
 
 

@@ -111,7 +111,7 @@ def get_tags(filepath: str):
         if p == "" or p is None:
             maybe = parse_artist_from_filename(filename)
 
-            if maybe != []:
+            if maybe:
                 setattr(tags, tag, ", ".join(maybe))
             else:
                 setattr(tags, tag, "Unknown")
@@ -169,11 +169,6 @@ def get_tags(filepath: str):
         "track_total",
         "year",
     ]
-
-    for tag in to_delete:
-        del tags[tag]
-
-    return tags
 
     for tag in to_delete:
         del tags[tag]

@@ -130,7 +130,7 @@ class SQLiteTrackMethods:
             cur.execute("DELETE FROM tracks WHERE filepath=?", (filepath,))
 
     @staticmethod
-    def remove_tracks_by_folders(folders: list[str]):
+    def remove_tracks_by_folders(folders: set[str]):
         sql = "DELETE FROM tracks WHERE folder = ?"
 
         with SQLiteManager() as cur:

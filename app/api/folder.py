@@ -22,6 +22,7 @@ def get_folder_tree():
     Returns a list of all the folders and tracks in the given folder.
     """
     data = request.get_json()
+    req_dir = "$home"
 
     if data is not None:
         try:
@@ -60,7 +61,6 @@ def get_folder_tree():
     else:
         req_dir = "/" + req_dir + "/" if not req_dir.startswith("/") else req_dir + "/"
 
-    print(req_dir)
     tracks, folders = GetFilesAndDirs(req_dir)()
 
     return {
@@ -127,9 +127,3 @@ def list_folders():
     return {
         "folders": sorted(dirs, key=lambda i: i["name"]),
     }
-
-# todo:
-
-# - handle showing windows disks in root_dir configuration
-# - handle the above, but for all partitions mounted in linux.
-# - handle the "\" in client's folder page breadcrumb

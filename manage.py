@@ -181,6 +181,7 @@ def log_startup_info():
         adresses = ["localhost", get_ip()]
 
     for address in adresses:
+        # noinspection HttpUrlsUsage
         print(
             f"Started app on: {TCOLOR.OKGREEN}http://{address}:{Variables.FLASK_PORT}{TCOLOR.ENDC}"
         )

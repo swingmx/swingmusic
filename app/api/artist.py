@@ -48,9 +48,9 @@ class ArtistsCache:
         """
         for (index, albums) in enumerate(cls.artists):
             if albums.artisthash == artisthash:
-                return (albums.albums, index)
+                return albums.albums, index
 
-        return ([], -1)
+        return [], -1
 
     @classmethod
     def albums_cached(cls, artisthash: str) -> bool:
@@ -214,7 +214,6 @@ def get_artist_albums(artisthash: str):
 
     limit = int(limit)
 
-    all_albums = []
     is_cached = ArtistsCache.albums_cached(artisthash)
 
     if not is_cached:
