@@ -1,10 +1,11 @@
 """
 Contains all the search routes.
 """
+from flask import Blueprint
+from flask import request
 
-from flask import Blueprint, request
-
-from app import models, utils
+from app import models
+from app import utils
 from app.db.store import Store
 from app.lib import searchlib
 

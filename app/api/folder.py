@@ -5,13 +5,16 @@ import os
 from pathlib import Path
 
 import psutil
-from flask import Blueprint, request
+from flask import Blueprint
+from flask import request
 
 from app import settings
 from app.db.sqlite.settings import SettingsSQLMethods as db
 from app.lib.folderslib import GetFilesAndDirs
 from app.models import Folder
-from app.utils import create_folder_hash, is_windows, win_replace_slash
+from app.utils import create_folder_hash
+from app.utils import is_windows
+from app.utils import win_replace_slash
 
 api = Blueprint("folder", __name__, url_prefix="/")
 

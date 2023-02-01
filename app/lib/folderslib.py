@@ -3,7 +3,8 @@ from concurrent.futures import ThreadPoolExecutor
 
 from app.db.store import Store
 from app.logger import log
-from app.models import Folder, Track
+from app.models import Folder
+from app.models import Track
 from app.settings import SUPPORTED_FILES
 from app.utils import win_replace_slash
 

@@ -2,13 +2,11 @@
 Contains the SQLiteTrackMethods class which contains methods for
 interacting with the tracks table.
 """
-
-
 from sqlite3 import Cursor
 
-from app.db.sqlite.utils import tuple_to_track, tuples_to_tracks
-
 from .utils import SQLiteManager
+from app.db.sqlite.utils import tuple_to_track
+from app.db.sqlite.utils import tuples_to_tracks
 
 
 class SQLiteTrackMethods:

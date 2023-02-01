@@ -1,4 +1,5 @@
-from flask import Blueprint, request
+from flask import Blueprint
+from flask import request
 
 from app.db.sqlite.favorite import SQLiteFavoriteMethods as favdb
 from app.db.store import Store

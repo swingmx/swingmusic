@@ -1,6 +1,7 @@
 from pathlib import Path
 
-from flask import Blueprint, send_from_directory
+from flask import Blueprint
+from flask import send_from_directory
 
 from app.settings import APP_DIR
 

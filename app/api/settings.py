@@ -1,4 +1,5 @@
-from flask import Blueprint, request
+from flask import Blueprint
+from flask import request
 
 from app import settings
 from app.db.sqlite.settings import SettingsSQLMethods as sdb
@@ -6,7 +7,8 @@ from app.db.store import Store
 from app.lib import populate
 from app.lib.watchdogg import Watcher as WatchDog
 from app.logger import log
-from app.utils import background, get_random_str
+from app.utils import background
+from app.utils import get_random_str
 
 api = Blueprint("settings", __name__, url_prefix="/")
 

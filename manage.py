@@ -12,9 +12,14 @@ from app import settings
 from app.api import create_api
 from app.functions import run_periodic_checks
 from app.lib.watchdogg import Watcher as WatchDog
-from app.settings import APP_VERSION, HELP_MESSAGE, TCOLOR
+from app.settings import APP_VERSION
+from app.settings import HELP_MESSAGE
+from app.settings import TCOLOR
 from app.setup import run_setup
-from app.utils import background, get_home_res_path, get_ip, is_windows
+from app.utils import background
+from app.utils import get_home_res_path
+from app.utils import get_ip
+from app.utils import is_windows
 
 werkzeug = logging.getLogger("werkzeug")
 werkzeug.setLevel(logging.ERROR)
