@@ -197,7 +197,7 @@ if __name__ == "__main__":
     start_watchdog()
 
     app.run(
-        debug=True,
+        debug=False,
         threaded=True,
         host=Variables.FLASK_HOST,
         port=Variables.FLASK_PORT,
