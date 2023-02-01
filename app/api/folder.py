@@ -59,7 +59,8 @@ def get_folder_tree():
         req_dir = req_dir + "/"
         # TODO: Test this on Windows
     else:
-        req_dir = "/" + req_dir + "/" if not req_dir.startswith("/") else req_dir + "/"
+        req_dir = "/" + req_dir + \
+            "/" if not req_dir.startswith("/") else req_dir + "/"
 
     tracks, folders = GetFilesAndDirs(req_dir)()
 

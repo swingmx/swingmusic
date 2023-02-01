@@ -43,8 +43,8 @@ class Populate:
         if len(dirs_to_scan) == 0:
             log.warning(
                 (
-                        "The root directory is not configured. "
-                        + "Open the app in your webbrowser to configure."
+                    "The root directory is not configured. "
+                    + "Open the app in your webbrowser to configure."
                 )
             )
             return

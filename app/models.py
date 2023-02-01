@@ -65,14 +65,16 @@ class Track:
             if settings.EXTRACT_FEAT:
                 featured, new_title = utils.parse_feat_from_title(self.title)
                 original_lower = "-".join([a.lower() for a in artists])
-                artists.extend([a for a in featured if a.lower() not in original_lower])
+                artists.extend(
+                    [a for a in featured if a.lower() not in original_lower])
 
                 self.title = new_title
 
                 if self.og_title == self.album:
                     self.album = new_title
 
-            self.artist_hashes = [utils.create_hash(a, decode=True) for a in artists]
+            self.artist_hashes = [utils.create_hash(
+                a, decode=True) for a in artists]
 
             self.artist = [Artist(a) for a in artists]
 
@@ -113,7 +115,8 @@ class Album:
 
     def __post_init__(self):
         self.image = self.albumhash + ".webp"
-        self.albumartisthash = "-".join(a.artisthash for a in self.albumartists)
+        self.albumartisthash = "-".join(
+            a.artisthash for a in self.albumartists)
 
     def set_colors(self, colors: list[str]):
         self.colors = colors
