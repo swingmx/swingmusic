@@ -5,7 +5,7 @@ import dataclasses
 import json
 from dataclasses import dataclass
 
-from app import utils, settings
+from app import settings, utils
 
 
 @dataclass(slots=True)

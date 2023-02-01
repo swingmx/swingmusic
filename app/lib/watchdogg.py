@@ -8,16 +8,14 @@ import time
 from watchdog.events import PatternMatchingEventHandler
 from watchdog.observers import Observer
 
-
-from app.logger import log
-from app.db.store import Store
-from app.lib.taglib import get_tags
-from app.models import Artist, Track
 from app import settings
-
+from app.db.sqlite.settings import SettingsSQLMethods as sdb
 from app.db.sqlite.tracks import SQLiteManager
 from app.db.sqlite.tracks import SQLiteTrackMethods as db
-from app.db.sqlite.settings import SettingsSQLMethods as sdb
+from app.db.store import Store
+from app.lib.taglib import get_tags
+from app.logger import log
+from app.models import Artist, Track
 
 
 class Watcher:

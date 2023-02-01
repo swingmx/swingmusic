@@ -1,16 +1,17 @@
-from concurrent.futures import ThreadPoolExecutor
-from pathlib import Path
-from io import BytesIO
-from PIL import Image
-import requests
 import urllib
+from concurrent.futures import ThreadPoolExecutor
+from io import BytesIO
+from pathlib import Path
 
+import requests
+from PIL import Image
+from requests.exceptions import ConnectionError as ReqConnError
+from requests.exceptions import ReadTimeout
 from tqdm import tqdm
-from requests.exceptions import ConnectionError as ReqConnError, ReadTimeout
 
 from app import settings
-from app.models import Artist
 from app.db.store import Store
+from app.models import Artist
 from app.utils import create_hash
 
 

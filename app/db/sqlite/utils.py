@@ -3,8 +3,8 @@ Helper functions for use with the SQLite database.
 """
 
 import sqlite3
-from sqlite3 import Connection, Cursor
 import time
+from sqlite3 import Connection, Cursor
 
 from app.models import Album, Playlist, Track
 from app.settings import APP_DB_PATH, USERDATA_DB_PATH

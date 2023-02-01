@@ -6,12 +6,8 @@ from PIL import Image, UnidentifiedImageError
 from tinytag import TinyTag
 
 from app import settings
-from app.utils import (
-    create_hash,
-    parse_artist_from_filename,
-    parse_title_from_filename,
-    win_replace_slash,
-)
+from app.utils import (create_hash, parse_artist_from_filename,
+                       parse_title_from_filename, win_replace_slash)
 
 
 def parse_album_art(filepath: str):

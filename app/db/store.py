@@ -12,13 +12,8 @@ from app.db.sqlite.artists import SQLiteArtistMethods as ardb
 from app.db.sqlite.favorite import SQLiteFavoriteMethods as favdb
 from app.db.sqlite.tracks import SQLiteTrackMethods as tdb
 from app.models import Album, Artist, Folder, Track
-from app.utils import (
-    UseBisection,
-    create_folder_hash,
-    get_all_artists,
-    remove_duplicates,
-    win_replace_slash,
-)
+from app.utils import (UseBisection, create_folder_hash, get_all_artists,
+                       remove_duplicates, win_replace_slash)
 
 
 class Store:

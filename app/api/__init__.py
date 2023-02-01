@@ -5,17 +5,8 @@ This module combines all API blueprints into a single Flask app instance.
 from flask import Flask
 from flask_cors import CORS
 
-from app.api import (
-    album,
-    artist,
-    favorites,
-    folder,
-    imgserver,
-    playlist,
-    search,
-    settings,
-    track,
-)
+from app.api import (album, artist, favorites, folder, imgserver, playlist,
+                     search, settings, track)
 
 
 def create_api():

@@ -1,13 +1,13 @@
 from concurrent.futures import ThreadPoolExecutor
+
 from tqdm import tqdm
 
 from app import settings
-from app.db.sqlite.tracks import SQLiteTrackMethods
-from app.db.sqlite.settings import SettingsSQLMethods as sdb
 from app.db.sqlite.favorite import SQLiteFavoriteMethods as favdb
+from app.db.sqlite.settings import SettingsSQLMethods as sdb
+from app.db.sqlite.tracks import SQLiteTrackMethods
 from app.db.store import Store
 from app.lib.colorlib import ProcessAlbumColors
-
 from app.lib.taglib import extract_thumb, get_tags
 from app.logger import log
 from app.models import Album, Artist, Track
