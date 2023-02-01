@@ -72,12 +72,9 @@ def get_album():
     except AttributeError:
         album.duration = 0
 
-    if (
-        album.count == 1
-        and tracks[0].title == album.title
-        # and tracks[0].track == 1
-        # and tracks[0].disc == 1
-    ):
+    album.check_is_single(tracks)
+
+    if album.is_single:
         album.is_single = True
     else:
         album.check_type()
@@ -128,7 +125,6 @@ def get_artist_albums():
     albums = [a for a in albums if len(a["albums"]) > 0]
 
     return {"data": albums}
-
 
 # @album_bp.route("/album/bio", methods=["POST"])
 # def get_album_bio():

@@ -54,6 +54,13 @@ def get_folder_tree():
             "tracks": [],
         }
 
+    if is_windows():
+        req_dir = req_dir + "/"
+        # TODO: Test this on Windows
+    else:
+        req_dir = "/" + req_dir + "/" if not req_dir.startswith("/") else req_dir + "/"
+
+    print(req_dir)
     tracks, folders = GetFilesAndDirs(req_dir)()
 
     return {
@@ -62,12 +69,20 @@ def get_folder_tree():
     }
 
 
-def get_all_drives():
+def get_all_drives(is_win: bool = False):
     """
-    Returns a list of all the drives on a windows machine.
+    Returns a list of all the drives on a Windows machine.
     """
-    drives = psutil.disk_partitions()
-    return [d.mountpoint for d in drives]
+    drives = psutil.disk_partitions(all=False)
+    drives = [d.mountpoint for d in drives]
+
+    if is_win:
+        drives = [win_replace_slash(d) for d in drives]
+    else:
+        remove = ["/boot", "/boot/efi", "/tmp"]
+        drives = [d for d in drives if d not in remove]
+
+    return drives
 
 
 @api.route("/folder/dir-browser", methods=["POST"])
@@ -85,15 +100,19 @@ def list_folders():
 
     if req_dir == "$home":
         # req_dir = settings.USER_HOME_DIR
-        if is_win:
-            return {
-                "folders": [
-                    {"name": win_replace_slash(d), "path": win_replace_slash(d)}
-                    for d in get_all_drives()
-                ]
-            }
+        # if is_win:
+        return {
+            "folders": [
+                {"name": d, "path": d}
+                for d in get_all_drives(is_win=is_win)
+            ]
+        }
 
-    req_dir = req_dir + "/"
+    if is_win:
+        req_dir = req_dir + "/"
+    else:
+        req_dir = "/" + req_dir + "/"
+        req_dir = str(Path(req_dir).resolve())
 
     try:
         entries = os.scandir(req_dir)
@@ -108,7 +127,6 @@ def list_folders():
     return {
         "folders": sorted(dirs, key=lambda i: i["name"]),
     }
-
 
 # todo:
 

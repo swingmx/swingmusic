@@ -191,7 +191,7 @@ def get_albumartists(albums: list[models.Album]) -> set[str]:
 
 
 def get_all_artists(
-    tracks: list[models.Track], albums: list[models.Album]
+        tracks: list[models.Track], albums: list[models.Album]
 ) -> list[models.Artist]:
     artists_from_tracks = get_artists_from_tracks(tracks)
     artist_from_albums = get_albumartists(albums)
@@ -260,19 +260,29 @@ def is_windows():
     return platform.system() == "Windows"
 
 
-def parse_feat_from_title(title: str) -> list[str]:
+def parse_feat_from_title(title: str) -> tuple[list[str], str]:
     """
     Extracts featured artists from a song title using regex.
     """
     regex = r"\((?:feat|ft|featuring|with)\.?\s+(.+?)\)"
+    # regex for square brackets 👇
+    sqr_regex = r"\[(?:feat|ft|featuring|with)\.?\s+(.+?)\]"
+
     match = re.search(regex, title, re.IGNORECASE)
 
     if not match:
-        return []
+        match = re.search(sqr_regex, title, re.IGNORECASE)
+        regex = sqr_regex
+
+    if not match:
+        return [], title
 
     artists = match.group(1)
     artists = split_artists(artists, with_and=True)
-    return artists
+
+    # remove "feat" group from title
+    new_title = re.sub(regex, "", title, flags=re.IGNORECASE)
+    return artists, new_title
 
 
 def get_random_str(length=5):
@@ -294,6 +304,7 @@ def split_artists(src: str, with_and: bool = False):
 
     artists = re.split(exp, src)
     return [a.strip() for a in artists]
+
 
 def parse_artist_from_filename(title: str):
     """
@@ -326,7 +337,6 @@ def parse_title_from_filename(title: str):
     # remove text in brackets starting with "official" case insensitive
     res = re.sub(r"\s*\([^)]*official[^)]*\)", "", res, flags=re.IGNORECASE)
     return res.strip()
-
 
 # for title in sample_titles:
 #     print(parse_artist_from_filename(title))

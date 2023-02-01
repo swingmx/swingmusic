@@ -5,7 +5,7 @@ import dataclasses
 import json
 from dataclasses import dataclass
 
-from app import utils
+from app import utils, settings
 
 
 @dataclass(slots=True)
@@ -55,20 +55,28 @@ class Track:
     image: str = ""
     artist_hashes: list[str] = dataclasses.field(default_factory=list)
     is_favorite: bool = False
+    og_title: str = ""
 
     def __post_init__(self):
+        self.og_title = self.title
         if self.artist is not None:
             artists = utils.split_artists(self.artist)
 
-            featured = utils.parse_feat_from_title(self.title)
-            original_lower = "-".join([a.lower() for a in artists])
-            artists.extend([a for a in featured if a.lower() not in original_lower])
+            if settings.EXTRACT_FEAT:
+                featured, new_title = utils.parse_feat_from_title(self.title)
+                original_lower = "-".join([a.lower() for a in artists])
+                artists.extend([a for a in featured if a.lower() not in original_lower])
+
+                self.title = new_title
+
+                if self.og_title == self.album:
+                    self.album = new_title
 
             self.artist_hashes = [utils.create_hash(a, decode=True) for a in artists]
 
             self.artist = [Artist(a) for a in artists]
 
-            albumartists = str(self.albumartist).split(", ")
+            albumartists = utils.split_artists(self.albumartist)
             self.albumartist = [Artist(a) for a in albumartists]
 
         self.filetype = self.filepath.rsplit(".", maxsplit=1)[-1]
@@ -157,8 +165,10 @@ class Album:
         if (
                 len(tracks) == 1
                 and tracks[0].title == self.title
-                and tracks[0].track == 1
-                and tracks[0].disc == 1
+
+                # and tracks[0].track == 1
+                # and tracks[0].disc == 1
+                # Todo: Are the above commented checks necessary?
         ):
             self.is_single = True
 

@@ -43,7 +43,7 @@ class SearchTracks:
         Gets all songs with a given title.
         """
 
-        tracks = [track.title for track in self.tracks]
+        tracks = [track.og_title for track in self.tracks]
         results = process.extract(
             self.query,
             tracks,

@@ -48,7 +48,6 @@ SM_THUMB_PATH = os.path.join(THUMBS_PATH, "small")
 LG_THUMBS_PATH = os.path.join(THUMBS_PATH, "large")
 MUSIC_DIR = os.path.join(USER_HOME_DIR, "Music")
 
-
 # TEST_DIR = "/home/cwilvx/Downloads/Telegram Desktop"
 # TEST_DIR = "/mnt/dfc48e0f-103b-426e-9bf9-f25d3743bc96/Music/Chill/Wolftyla Radio"
 # HOME_DIR = TEST_DIR
@@ -80,10 +79,6 @@ USER_DATA_DB_NAME = "userdata.db"
 APP_DB_PATH = os.path.join(APP_DIR, APP_DB_NAME)
 USERDATA_DB_PATH = os.path.join(APP_DIR, USER_DATA_DB_NAME)
 
-
-# ===== Store =====
-USE_STORE = True
-
 HELP_MESSAGE = """
 Usage: swingmusic [options]
 
@@ -91,8 +86,15 @@ Options:
     --build: Build the application
     --host: Set the host
     --port: Set the port
+    --no-feat: Do not extract featured artists from the song title
     --help, -h: Show this help message
     --version, -v: Show the version
+"""
+
+EXTRACT_FEAT = True
+"""
+Whether to extract the featured artists from the song title
+Changed using the --no-feat flag
 """
 
 

@@ -8,6 +8,7 @@ from configparser import ConfigParser
 
 import PyInstaller.__main__ as bundler
 
+from app import settings
 from app.api import create_api
 from app.functions import run_periodic_checks
 from app.lib.watchdogg import Watcher as WatchDog
@@ -17,6 +18,7 @@ from app.utils import background, get_home_res_path, get_ip, is_windows
 
 werkzeug = logging.getLogger("werkzeug")
 werkzeug.setLevel(logging.ERROR)
+
 
 class Variables:
     FLASK_PORT = 1970
@@ -57,6 +59,7 @@ class ArgsEnum:
     build = "--build"
     port = "--port"
     host = "--host"
+    no_feat = "--no-feat"
     help = ["--help", "-h"]
     version = ["--version", "-v"]
 
@@ -66,6 +69,7 @@ class HandleArgs:
         self.handle_build()
         self.handle_host()
         self.handle_port()
+        self.handle_no_feat()
         self.handle_help()
         self.handle_version()
 
@@ -131,6 +135,11 @@ class HandleArgs:
             Variables.FLASK_HOST = host  # type: ignore
 
     @staticmethod
+    def handle_no_feat():
+        if ArgsEnum.no_feat in ARGS:
+            settings.EXTRACT_FEAT = False
+
+    @staticmethod
     def handle_help():
         if any((a in ARGS for a in ArgsEnum.help)):
             print(HELP_MESSAGE)
@@ -154,11 +163,17 @@ def start_watchdog():
     WatchDog().run()
 
 
-def log_info():
-    lines = "  ---------------------------------------"
+def log_startup_info():
+    lines = "---------------------------------------"
+    # clears terminal 👇
     os.system("cls" if os.name == "nt" else "echo -e \\\\033c")
+    # TODO: Check whether the line above breaks Windows terminal's CTRL D
+
     print(lines)
-    print(f"  {TCOLOR.HEADER}{APP_VERSION} {TCOLOR.ENDC}")
+    print(f"{TCOLOR.HEADER}{APP_VERSION} {TCOLOR.ENDC}")
+
+    if not settings.EXTRACT_FEAT:
+        print(f"{TCOLOR.OKBLUE}Extracting featured artists from track titles: {TCOLOR.FAIL}DISABLED!{TCOLOR.ENDC}")
 
     adresses = [Variables.FLASK_HOST]
 
@@ -167,7 +182,7 @@ def log_info():
 
     for address in adresses:
         print(
-            f"  Started app on: {TCOLOR.OKGREEN}http://{address}:{Variables.FLASK_PORT}{TCOLOR.ENDC}"
+            f"Started app on: {TCOLOR.OKGREEN}http://{address}:{Variables.FLASK_PORT}{TCOLOR.ENDC}"
         )
 
     print(lines)
@@ -176,7 +191,7 @@ def log_info():
 
 if __name__ == "__main__":
     HandleArgs()
-    log_info()
+    log_startup_info()
     run_bg_checks()
     start_watchdog()
 
