@@ -28,13 +28,13 @@ def get_xdg_config_dir():
 # ------- HELPER METHODS --------
 
 
-APP_VERSION = "Swing v.1.0.0.beta.1"
+APP_VERSION = "v.1.1.0.beta"
 
 # paths
 XDG_CONFIG_DIR = get_xdg_config_dir()
 USER_HOME_DIR = os.path.expanduser("~")
 
-CONFIG_FOLDER = "swing" if XDG_CONFIG_DIR != USER_HOME_DIR else ".swing"
+CONFIG_FOLDER = "swingmusic" if XDG_CONFIG_DIR != USER_HOME_DIR else ".swingmusic"
 
 APP_DIR = os.path.join(XDG_CONFIG_DIR, CONFIG_FOLDER)
 IMG_PATH = os.path.join(APP_DIR, "images")
@@ -90,8 +90,8 @@ Options:
 
 EXTRACT_FEAT = True
 """
-Whether to extract the featured artists from the song title
-Changed using the --no-feat flag
+Whether to extract the featured artists from the song title.
+Changed using the `--no-feat` flag
 """
 
 

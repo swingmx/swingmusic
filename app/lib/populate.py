@@ -6,7 +6,7 @@ from app.db.sqlite.tracks import SQLiteTrackMethods
 from app.db.sqlite.settings import SettingsSQLMethods as sdb
 from app.db.sqlite.favorite import SQLiteFavoriteMethods as favdb
 from app.db.store import Store
-from app.lib.colorlib import ProcessAlbumColors
+from app.lib.colorlib import ProcessAlbumColors, ProcessArtistColors
 
 from app.lib.taglib import extract_thumb, get_tags
 from app.logger import log
@@ -70,6 +70,8 @@ class Populate:
 
         ProcessTrackThumbnails()
         ProcessAlbumColors()
+        ProcessArtistColors()
+
 
     @staticmethod
     def filter_untagged(tracks: list[Track], files: list[str]):

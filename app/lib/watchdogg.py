@@ -280,5 +280,5 @@ class Handler(PatternMatchingEventHandler):
             add_track(path)
             self.files_to_process_windows.remove(event.src_path)
         except OSError:
-            print("File is locked, skipping")
+            # File is locked, skipping
             pass

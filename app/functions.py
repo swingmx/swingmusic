@@ -36,6 +36,4 @@ def run_periodic_checks():
                     "Internet connection lost. Downloading artist images stopped."
                 )
 
-        ProcessArtistColors()
-
         time.sleep(300)

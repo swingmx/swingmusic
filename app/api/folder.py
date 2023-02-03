@@ -56,8 +56,9 @@ def get_folder_tree():
         }
 
     if is_windows():
+        # Trailing slash needed when drive letters are passed,
+        # Remember, the trailing slash is removed in the client.
         req_dir = req_dir + "/"
-        # TODO: Test this on Windows
     else:
         req_dir = "/" + req_dir + "/" if not req_dir.startswith("/") else req_dir + "/"
 
@@ -96,16 +97,13 @@ def list_folders():
     try:
         req_dir: str = data["folder"]
     except KeyError:
-        req_dir = "$home"
+        req_dir = "$root"
 
-    if req_dir == "$home":
+    if req_dir == "$root":
         # req_dir = settings.USER_HOME_DIR
         # if is_win:
         return {
-            "folders": [
-                {"name": d, "path": d}
-                for d in get_all_drives(is_win=is_win)
-            ]
+            "folders": [{"name": d, "path": d} for d in get_all_drives(is_win=is_win)]
         }
 
     if is_win:

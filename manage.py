@@ -164,29 +164,37 @@ def start_watchdog():
 
 
 def log_startup_info():
-    lines = "---------------------------------------"
+    lines = "------------------------------"
     # clears terminal 👇
     os.system("cls" if os.name == "nt" else "echo -e \\\\033c")
-    # TODO: Check whether the line above breaks Windows terminal's CTRL D
 
     print(lines)
-    print(f"{TCOLOR.HEADER}{APP_VERSION} {TCOLOR.ENDC}")
-
-    if not settings.EXTRACT_FEAT:
-        print(f"{TCOLOR.OKBLUE}Extracting featured artists from track titles: {TCOLOR.FAIL}DISABLED!{TCOLOR.ENDC}")
+    print(f"{TCOLOR.HEADER}SwingMusic {APP_VERSION} {TCOLOR.ENDC}")
 
     adresses = [Variables.FLASK_HOST]
 
     if Variables.FLASK_HOST == "0.0.0.0":
         adresses = ["localhost", get_ip()]
 
+    print("Started app on:")
     for address in adresses:
         # noinspection HttpUrlsUsage
         print(
-            f"Started app on: {TCOLOR.OKGREEN}http://{address}:{Variables.FLASK_PORT}{TCOLOR.ENDC}"
+            f"➤ {TCOLOR.OKGREEN}http://{address}:{Variables.FLASK_PORT}{TCOLOR.ENDC}"
         )
 
     print(lines)
+    print("\n")
+
+    if not settings.EXTRACT_FEAT:
+        print(
+            f"{TCOLOR.OKBLUE}Extracting featured artists from track titles: {TCOLOR.FAIL}DISABLED!{TCOLOR.ENDC}"
+        )
+
+    print(
+        f"{TCOLOR.OKBLUE}App data folder: {settings.APP_DIR}{TCOLOR.OKGREEN}{TCOLOR.ENDC}"
+    )
+
     print("\n")
 
 
