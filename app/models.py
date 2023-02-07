@@ -150,7 +150,15 @@ class Album:
         artists = [a.name for a in self.albumartists]  # type: ignore
         artists = "".join(artists).lower()
 
-        return ("various artists" in artists) or self.title.lower().startswith('the essential')
+        if "various artists" in artists:
+            return True
+
+        substrings = ["the essential", "best of", "greatest hits", "#1 hits", "number ones"]
+        for substring in substrings:
+            if substring in self.title.lower():
+                return True
+
+        return False
 
     def check_is_ep(self) -> bool:
         """
