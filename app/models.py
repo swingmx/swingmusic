@@ -83,8 +83,9 @@ class Track:
         self.image = self.albumhash + ".webp"
 
         if self.genre is not None:
-            self.genre = str(self.genre).replace("/", ", ")
-            self.genre = str(self.genre).lower().split(", ")
+            self.genre = str(self.genre).replace("/", ",").replace(";", ",")
+            self.genre = str(self.genre).lower().split(",")
+            self.genre = [g.strip() for g in self.genre]
 
 
 @dataclass
