@@ -169,7 +169,7 @@ class Album:
         """
         Checks if the album is a live album.
         """
-        keywords = ["live from", "live at"]
+        keywords = ["live from", "live at", "live in"]
         for keyword in keywords:
             if keyword in self.title.lower():
                 return True
