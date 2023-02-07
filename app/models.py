@@ -130,7 +130,7 @@ class Album:
         if self.is_compilation:
             return
 
-        self.is_EP = self.check_is_EP()
+        self.is_EP = self.check_is_ep()
 
     def check_is_soundtrack(self) -> bool:
         """
@@ -150,9 +150,9 @@ class Album:
         artists = [a.name for a in self.albumartists]  # type: ignore
         artists = "".join(artists).lower()
 
-        return "various artists" in artists
+        return ("various artists" in artists) or self.title.lower().startswith('the essential')
 
-    def check_is_EP(self) -> bool:
+    def check_is_ep(self) -> bool:
         """
         Checks if the album is an EP.
         """
