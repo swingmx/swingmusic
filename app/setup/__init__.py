@@ -10,12 +10,12 @@ from app.db.sqlite import create_connection, create_tables, queries
 from app.db.store import Store
 from app.settings import APP_DB_PATH, USERDATA_DB_PATH
 from app.utils import get_home_res_path
+from app.migrations import apply_migrations
 
 config = ConfigParser()
 
 config_path = get_home_res_path("pyinstaller.config.ini")
 config.read(config_path)
-
 
 try:
     IS_BUILD = config["DEFAULT"]["BUILD"] == "True"
@@ -111,6 +111,8 @@ def setup_sqlite():
 
     app_db_conn.close()
     playlist_db_conn.close()
+
+    apply_migrations()
 
     Store.load_all_tracks()
     Store.process_folders()
