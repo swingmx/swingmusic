@@ -109,6 +109,7 @@ class Album:
     is_single: bool = False
     is_EP: bool = False
     is_favorite: bool = False
+    is_live: bool = False
     genres: list[str] = dataclasses.field(default_factory=list)
 
     def __post_init__(self):
@@ -124,6 +125,10 @@ class Album:
         """
         self.is_soundtrack = self.check_is_soundtrack()
         if self.is_soundtrack:
+            return
+
+        self.is_live = self.check_is_live_album()
+        if self.is_live:
             return
 
         self.is_compilation = self.check_is_compilation()
@@ -156,6 +161,17 @@ class Album:
         substrings = ["the essential", "best of", "greatest hits", "#1 hits", "number ones"]
         for substring in substrings:
             if substring in self.title.lower():
+                return True
+
+        return False
+
+    def check_is_live_album(self):
+        """
+        Checks if the album is a live album.
+        """
+        keywords = ["live from", "live at"]
+        for keyword in keywords:
+            if keyword in self.title.lower():
                 return True
 
         return False
