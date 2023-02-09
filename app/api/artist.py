@@ -39,7 +39,7 @@ class ArtistsCache:
     Holds artist page cache.
     """
 
-    artists: deque[CacheEntry] = deque(maxlen=6)
+    artists: deque[CacheEntry] = deque(maxlen=1)
 
     @classmethod
     def get_albums_by_artisthash(cls, artisthash: str):
@@ -131,6 +131,7 @@ class ArtistsCache:
             album_tracks = Store.get_tracks_by_albumhash(album.albumhash)
             album_tracks = remove_duplicates(album_tracks)
 
+            album.get_date_from_tracks(album_tracks)
             album.check_is_single(album_tracks)
 
         entry.type_checked = True
@@ -241,6 +242,10 @@ def get_artist_albums(artisthash: str):
     albums = list(albums)
     albums = remove_EPs_and_singles(albums)
 
+    compilations = [a for a in albums if a.is_compilation]
+    for c in compilations:
+        albums.remove(c)
+
     appearances = filter(lambda a: artisthash not in a.albumartisthash, all_albums)
     appearances = list(appearances)
 
@@ -257,6 +262,7 @@ def get_artist_albums(artisthash: str):
         "singles": singles[:limit],
         "eps": eps[:limit],
         "appearances": appearances[:limit],
+        "compilations": compilations[:limit]
     }
 
 

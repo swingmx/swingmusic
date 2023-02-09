@@ -159,7 +159,8 @@ class Album:
         if "various artists" in artists:
             return True
 
-        substrings = ["the essential", "best of", "greatest hits", "#1 hits", "number ones", "super hits"]
+        substrings = ["the essential", "best of", "greatest hits", "#1 hits", "number ones", "super hits",
+                      "ultimate collection"]
 
         for substring in substrings:
             if substring in self.title.lower():
@@ -197,6 +198,12 @@ class Album:
                 # Todo: Are the above commented checks necessary?
         ):
             self.is_single = True
+
+    def get_date_from_tracks(self, tracks: list[Track]):
+        for track in tracks:
+            if track.date != "Unknown":
+                self.date = track.date
+                break
 
 
 @dataclass

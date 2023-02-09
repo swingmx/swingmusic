@@ -61,11 +61,7 @@ def get_album():
     tracks = utils.remove_duplicates(tracks)
 
     album.count = len(tracks)
-
-    for track in tracks:
-        if track.date != "Unknown":
-            album.date = track.date
-            break
+    album.get_date_from_tracks(tracks)
 
     try:
         album.duration = sum((t.duration for t in tracks))
