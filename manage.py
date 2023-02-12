@@ -43,7 +43,7 @@ def serve_client_files(path):
 @app.route("/")
 def serve_client():
     """
-    Serves the index.html file at client/index.html.
+    Serves the index.html file at `client/index.html`.
     """
     return app.send_static_file("index.html")
 
