@@ -69,3 +69,13 @@ CREATE TABLE IF NOT EXISTS folders (
     trackcount integer NOT NULL
 );
 """
+
+CREATE_MIGRATIONS_TABLE = """
+CREATE TABLE IF NOT EXISTS migrations (
+    id integer PRIMARY KEY,
+    pre_init_version integer NOT NULL DEFAULT 0,
+    post_init_version integer NOT NULL DEFAULT 0
+);
+
+INSERT INTO migrations (pre_init_version, post_init_version) VALUES (0, 0);
+"""

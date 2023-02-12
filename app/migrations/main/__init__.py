@@ -1,4 +1,10 @@
-from .sample import SampleMigrationModel
+"""
+Migrations for the main database.
 
-main_db_migrations = [SampleMigrationModel]
+PLEASE NOTE: OLDER MIGRATIONS CAN NEVER BE DELETED.
+ONLY MODIFY OLD MIGRATIONS FOR BUG FIXES OR ENHANCEMENTS ONLY
+[TRY NOT TO MODIFY BEHAVIOR, UNLESS YOU KNOW WHAT YOU'RE DOING].
+"""
 
+
+main_db_migrations = []
