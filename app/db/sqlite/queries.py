@@ -77,5 +77,7 @@ CREATE TABLE IF NOT EXISTS migrations (
     post_init_version integer NOT NULL DEFAULT 0
 );
 
-INSERT INTO migrations (pre_init_version, post_init_version) VALUES (0, 0);
+INSERT INTO migrations (pre_init_version, post_init_version)
+SELECT 0, 0
+WHERE NOT EXISTS (SELECT 1 FROM migrations);
 """
