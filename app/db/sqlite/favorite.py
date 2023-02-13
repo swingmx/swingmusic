@@ -6,10 +6,25 @@ class SQLiteFavoriteMethods:
     """THis class contains methods for interacting with the favorites table."""
 
     @classmethod
+    def check_is_favorite(cls, itemhash: str, fav_type: str):
+        """
+        Checks if an item is favorited.
+        """
+        sql = """SELECT * FROM favorites WHERE hash = ? AND type = ?"""
+        with SQLiteManager(userdata_db=True) as cur:
+            cur.execute(sql, (itemhash, fav_type))
+            items = cur.fetchall()
+            return len(items) > 0
+
+    @classmethod
     def insert_one_favorite(cls, fav_type: str, fav_hash: str):
         """
         Inserts a single favorite into the database.
         """
+        # try to find the favorite in the database, if it exists, don't insert it
+        if cls.check_is_favorite(fav_hash, fav_type):
+            return
+
         sql = """INSERT INTO favorites(type, hash) VALUES(?,?)"""
         with SQLiteManager(userdata_db=True) as cur:
             cur.execute(sql, (fav_type, fav_hash))
@@ -64,14 +79,3 @@ class SQLiteFavoriteMethods:
 
         with SQLiteManager(userdata_db=True) as cur:
             cur.execute(sql, (fav_hash, fav_type))
-
-    @classmethod
-    def check_is_favorite(cls, itemhash: str, fav_type: str):
-        """
-        Checks if an item is favorited.
-        """
-        sql = """SELECT * FROM favorites WHERE hash = ? AND type = ?"""
-        with SQLiteManager(userdata_db=True) as cur:
-            cur.execute(sql, (itemhash, fav_type))
-            items = cur.fetchall()
-            return len(items) > 0
