@@ -8,17 +8,13 @@
 
 > Note: This project is in the early stages of development. Many features are missing but will be added with time.
 
-The app is currently only available on linux. (I don't have access to a Windows machine for building and testing purposes).
-
 #### 🎉🎉 Checkout the app screenshots in [this excalidraw canvas](https://excalidraw.com/#json=b52G7e9g-dYhMmcyQy9El,pMWhoENuMZgC6mPgyMmU-g) 🎉🎉.
 
 ### Setup
 
-Download the latest release from the [release page](#), make the binary file executable and run it in a terminal. You can do all this using the commands below.
+Download the latest release from the [release page](https://github.com/geoffrey45/swingmusic/releases) and launch it. For Linux, you need to make the file executable first.
 
 ```bash
-wget https://github.com/geoffrey45/swingmusic/releases/download/linux-beta/swingmusic
-
 chmod a+x ./swingmusic
 
 ./swingmusic
@@ -30,10 +26,13 @@ The app should start at <http://localhost:1970> by default.
 Usage: swingmusic [options]
 
 Options:
+    --build: Build the application
     --host: Set the host
     --port: Set the port
+    --no-feat: Do not extract featured artists from the song title
     --help, -h: Show this help message
     --version, -v: Show the version
+
 ```
 
 ### Development
@@ -48,7 +47,7 @@ The following instructions will guide you on how to setup the **server**.
 
 The project uses [Python poetry](https://python-poetry.org) as the virtual environment manager. Follow the instructions in [their docs](https://python-poetry.org/docs/) to install it in your machine.
 
-> It is assumed that you have `Python 3.10` or newer installed in your machine. This project uses duck typing features so older version of Python will not work. If you don't have Python installed in your machine, get it from the [python website](https://www.python.org/downloads/).
+> It is assumed that you have `Python 3.10` or newer installed in your machine. This project uses type hinting features so older version of Python will not work. If you don't have Python installed in your machine, get it from the [python website](https://www.python.org/downloads/).
 
 Clone this repo locally in your machine. Then install the project dependencies and start the app.
 
@@ -72,6 +71,8 @@ If you want to contribute to this project, feel free to open an issue or a pull 
 
 This software is provided to you with terms stated in the MIT License. Read the full text in the `LICENSE` file located at the root of this repository.
 
+---
+
 ### A brain dump ...
 
 I started working on this project on dec 2021. Why? I like listening and exploring music and I like it more when I can enjoy it (like really really). I'd been searching for cute music players for linux that allow me to manage my ever growing music library. Some of the main features I was looking for were:
@@ -89,7 +90,7 @@ I've been working to make sure that most (if not all) of the features listed abo
 
 I've been keeping a small 🤥 list of a few cool features that I'd like to build in future. Some of the features listed there are outright stupid but some are cool. You can check it out in [this notion page](https://rhetorical-othnielia-565.notion.site/Cool-features-1a0cd5b797904da687bec441e7c7aa19). https://rhetorical-othnielia-565.notion.site/Cool-features-1a0cd5b797904da687bec441e7c7aa19
 
-I have been working on this project solo, so it’s very hard to push things fast. If you have programming knowledge in Python or Vue, feel free to contribute to the project. We’ll be excited to have you. Your help is highly appreciated.
+I have been working on this project solo, so it’s very hard to push things fast. If you have programming knowledge in Python or Vue, feel free to contribute to the project. Your contributions are highly appreciated.
 
 ---
 
