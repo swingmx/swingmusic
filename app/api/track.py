@@ -2,12 +2,13 @@
 Contains all the track routes.
 """
 from flask import Blueprint, send_file
+
 from app.db.store import Store
 
-trackbp = Blueprint("track", __name__, url_prefix="/")
+api = Blueprint("track", __name__, url_prefix="/")
 
 
-@trackbp.route("/file/<trackhash>")
+@api.route("/file/<trackhash>")
 def send_track_file(trackhash: str):
     """
     Returns an audio file that matches the passed id to the client.

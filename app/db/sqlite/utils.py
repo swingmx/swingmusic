@@ -4,6 +4,7 @@ Helper functions for use with the SQLite database.
 
 import sqlite3
 from sqlite3 import Connection, Cursor
+import time
 
 from app.models import Album, Playlist, Track
 from app.settings import APP_DB_PATH, USERDATA_DB_PATH
@@ -82,12 +83,26 @@ class SQLiteManager:
         if self.userdata_db:
             db_path = USERDATA_DB_PATH
 
-        self.conn = sqlite3.connect(db_path)
+        self.conn = sqlite3.connect(
+            db_path,
+            timeout=15,
+        )
         return self.conn.cursor()
 
     def __exit__(self, exc_type, exc_value, exc_traceback):
         if self.conn:
-            self.conn.commit()
+            trial_count = 0
 
-            if self.CLOSE_CONN:
-                self.conn.close()
+            while trial_count < 10:
+                try:
+                    self.conn.commit()
+
+                    if self.CLOSE_CONN:
+                        self.conn.close()
+
+                    return
+                except sqlite3.OperationalError:
+                    trial_count += 1
+                    time.sleep(3)
+
+            self.conn.close()

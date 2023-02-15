@@ -5,12 +5,12 @@ from collections import deque
 
 from flask import Blueprint, request
 
+from app.db.sqlite.favorite import SQLiteFavoriteMethods as favdb
 from app.db.store import Store
 from app.models import Album, FavType, Track
 from app.utils import remove_duplicates
-from app.db.sqlite.favorite import SQLiteFavoriteMethods as favdb
 
-artistbp = Blueprint("artist", __name__, url_prefix="/")
+api = Blueprint("artist", __name__, url_prefix="/")
 
 
 class CacheEntry:
@@ -19,7 +19,7 @@ class CacheEntry:
     """
 
     def __init__(
-        self, artisthash: str, albumhashes: set[str], tracks: list[Track]
+            self, artisthash: str, albumhashes: set[str], tracks: list[Track]
     ) -> None:
         self.albums: list[Album] = []
         self.tracks: list[Track] = []
@@ -39,7 +39,7 @@ class ArtistsCache:
     Holds artist page cache.
     """
 
-    artists: deque[CacheEntry] = deque(maxlen=6)
+    artists: deque[CacheEntry] = deque(maxlen=1)
 
     @classmethod
     def get_albums_by_artisthash(cls, artisthash: str):
@@ -48,9 +48,9 @@ class ArtistsCache:
         """
         for (index, albums) in enumerate(cls.artists):
             if albums.artisthash == artisthash:
-                return (albums.albums, index)
+                return albums.albums, index
 
-        return ([], -1)
+        return [], -1
 
     @classmethod
     def albums_cached(cls, artisthash: str) -> bool:
@@ -131,6 +131,7 @@ class ArtistsCache:
             album_tracks = Store.get_tracks_by_albumhash(album.albumhash)
             album_tracks = remove_duplicates(album_tracks)
 
+            album.get_date_from_tracks(album_tracks)
             album.check_is_single(album_tracks)
 
         entry.type_checked = True
@@ -156,7 +157,7 @@ def add_albums_to_cache(artisthash: str):
 # =======================================================
 
 
-@artistbp.route("/artist/<artisthash>", methods=["GET"])
+@api.route("/artist/<artisthash>", methods=["GET"])
 def get_artist(artisthash: str):
     """
     Get artist data.
@@ -203,7 +204,7 @@ def get_artist(artisthash: str):
     return {"artist": artist, "tracks": tracks[:limit]}
 
 
-@artistbp.route("/artist/<artisthash>/albums", methods=["GET"])
+@api.route("/artist/<artisthash>/albums", methods=["GET"])
 def get_artist_albums(artisthash: str):
     limit = request.args.get("limit")
 
@@ -214,7 +215,6 @@ def get_artist_albums(artisthash: str):
 
     limit = int(limit)
 
-    all_albums = []
     is_cached = ArtistsCache.albums_cached(artisthash)
 
     if not is_cached:
@@ -242,6 +242,10 @@ def get_artist_albums(artisthash: str):
     albums = list(albums)
     albums = remove_EPs_and_singles(albums)
 
+    compilations = [a for a in albums if a.is_compilation]
+    for c in compilations:
+        albums.remove(c)
+
     appearances = filter(lambda a: artisthash not in a.albumartisthash, all_albums)
     appearances = list(appearances)
 
@@ -258,10 +262,11 @@ def get_artist_albums(artisthash: str):
         "singles": singles[:limit],
         "eps": eps[:limit],
         "appearances": appearances[:limit],
+        "compilations": compilations[:limit]
     }
 
 
-@artistbp.route("/artist/<artisthash>/tracks", methods=["GET"])
+@api.route("/artist/<artisthash>/tracks", methods=["GET"])
 def get_artist_tracks(artisthash: str):
     """
     Returns all artists by a given artist.
@@ -274,7 +279,6 @@ def get_artist_tracks(artisthash: str):
     #     return {"error": "Artist not found"}, 404
 
     # return {"albums": albums[:limit]}
-
 
 # @artist_bp.route("/artist/<artist>")
 # @cache.cached()

@@ -12,15 +12,14 @@ from app.db.sqlite.favorite import SQLiteFavoriteMethods as favdb
 from app.db.store import Store
 from app.models import FavType, Track
 
-
 get_album_by_id = adb.get_album_by_id
 get_albums_by_albumartist = adb.get_albums_by_albumartist
 check_is_fav = favdb.check_is_favorite
 
-albumbp = Blueprint("album", __name__, url_prefix="")
+api = Blueprint("album", __name__, url_prefix="")
 
 
-@albumbp.route("/album", methods=["POST"])
+@api.route("/album", methods=["POST"])
 def get_album():
     """Returns all the tracks in the given album."""
 
@@ -62,23 +61,16 @@ def get_album():
     tracks = utils.remove_duplicates(tracks)
 
     album.count = len(tracks)
-
-    for track in tracks:
-        if track.date != "Unknown":
-            album.date = track.date
-            break
+    album.get_date_from_tracks(tracks)
 
     try:
         album.duration = sum((t.duration for t in tracks))
     except AttributeError:
         album.duration = 0
 
-    if (
-        album.count == 1
-        and tracks[0].title == album.title
-        # and tracks[0].track == 1
-        # and tracks[0].disc == 1
-    ):
+    album.check_is_single(tracks)
+
+    if album.is_single:
         album.is_single = True
     else:
         album.check_type()
@@ -88,7 +80,7 @@ def get_album():
     return {"tracks": tracks, "info": album}
 
 
-@albumbp.route("/album/<albumhash>/tracks", methods=["GET"])
+@api.route("/album/<albumhash>/tracks", methods=["GET"])
 def get_album_tracks(albumhash: str):
     """
     Returns all the tracks in the given album.
@@ -105,7 +97,7 @@ def get_album_tracks(albumhash: str):
     return {"tracks": tracks}
 
 
-@albumbp.route("/album/from-artist", methods=["POST"])
+@api.route("/album/from-artist", methods=["POST"])
 def get_artist_albums():
     data = request.get_json()
 
@@ -129,7 +121,6 @@ def get_artist_albums():
     albums = [a for a in albums if len(a["albums"]) > 0]
 
     return {"data": albums}
-
 
 # @album_bp.route("/album/bio", methods=["POST"])
 # def get_album_bio():

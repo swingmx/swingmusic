@@ -38,19 +38,19 @@ class ProcessAlbumColors:
     """
 
     def __init__(self) -> None:
+        albums = [a for a in Store.albums if len(a.colors) == 0]
 
         with SQLiteManager() as cur:
-            for album in tqdm(Store.albums, desc="Processing album colors"):
-                if len(album.colors) == 0:
-                    colors = self.process_color(album)
+            for album in tqdm(albums, desc="Processing missing album colors"):
+                colors = self.process_color(album)
 
-                    if colors is None:
-                        continue
+                if colors is None:
+                    continue
 
-                    album.set_colors(colors)
+                album.set_colors(colors)
 
-                    color_str = json.dumps(colors)
-                    db.insert_one_album(cur, album.albumhash, color_str)
+                color_str = json.dumps(colors)
+                db.insert_one_album(cur, album.albumhash, color_str)
 
     @staticmethod
     def process_color(album: Album):
@@ -69,14 +69,10 @@ class ProcessArtistColors:
     """
 
     def __init__(self) -> None:
-        all_artists = Store.artists
+        all_artists = [a for a in Store.artists if len(a.colors) == 0]
 
-        if all_artists is None:
-            return
-
-        for artist in tqdm(all_artists, desc="Processing artist colors"):
-            if len(artist.colors) == 0:
-                self.process_color(artist)
+        for artist in tqdm(all_artists, desc="Processing missing artist colors"):
+            self.process_color(artist)
 
     @staticmethod
     def process_color(artist: Artist):
@@ -91,4 +87,11 @@ class ProcessArtistColors:
             adb.insert_one_artist(artisthash=artist.artisthash, colors=colors)
             Store.map_artist_color((0, artist.artisthash, json.dumps(colors)))
 
-    # TODO: Load album and artist colors into the store.
+# TODO: If item color is in db, get it, assign it to the item and continue.
+#   - Format all colors in the format: rgb(123, 123, 123)
+#   - Each digit should be 3 digits long.
+#   - Format all db colors into a master string of the format "-itemhash:colorhash-"
+#   - Find the item hash using index() and get the color using the index + number, where number
+#       is the length of the rgb string + 1
+#   - Assign the color to the item and continue.
+#   - If the color is not in the db, extract it and add it to the db.

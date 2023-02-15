@@ -17,6 +17,7 @@ from app.utils import (
     create_folder_hash,
     get_all_artists,
     remove_duplicates,
+    win_replace_slash,
 )
 
 
@@ -40,7 +41,7 @@ class Store:
         cls.tracks = list(tdb.get_all_tracks())
 
         fav_hashes = favdb.get_fav_tracks()
-        fav_hashes = [t[1] for t in fav_hashes]
+        fav_hashes = " ".join([t[1] for t in fav_hashes])
 
         for track in tqdm(cls.tracks, desc="Loading tracks"):
             if track.trackhash in fav_hashes:
@@ -87,6 +88,17 @@ class Store:
             if track.filepath == filepath:
                 cls.tracks.remove(track)
                 break
+
+    @classmethod
+    def remove_tracks_by_dir_except(cls, dirs: list[str]):
+        """Removes all tracks not in the root directories."""
+        to_remove = set()
+
+        for track in cls.tracks:
+            if not track.folder.startswith(tuple(dirs)):
+                to_remove.add(track.folder)
+
+        tdb.remove_tracks_by_folders(to_remove)
 
     @classmethod
     def count_tracks_by_hash(cls, trackhash: str) -> int:
@@ -163,7 +175,7 @@ class Store:
 
         return Folder(
             name=folder.name,
-            path=str(folder),
+            path=win_replace_slash(str(folder)),
             is_sym=folder.is_symlink(),
             has_tracks=True,
             path_hash=create_folder_hash(*folder.parts[1:]),
@@ -197,6 +209,8 @@ class Store:
         """
         Creates a list of folders from the tracks in the store.
         """
+        cls.folders.clear()
+
         all_folders = [track.folder for track in cls.tracks]
         all_folders = set(all_folders)
 
@@ -205,9 +219,18 @@ class Store:
         ]
 
         all_folders = [Path(f) for f in all_folders]
-        all_folders = [f for f in all_folders if f.exists()]
+        # all_folders = [f for f in all_folders if f.exists()]
 
-        for path in tqdm(all_folders, desc="Processing folders"):
+        valid_folders = []
+
+        for folder in all_folders:
+            try:
+                if folder.exists():
+                    valid_folders.append(folder)
+            except PermissionError:
+                pass
+
+        for path in tqdm(valid_folders, desc="Processing folders"):
             folder = cls.create_folder(str(path))
 
             cls.folders.append(folder)
@@ -277,6 +300,8 @@ class Store:
         Loads all albums from the database into the store.
         """
 
+        cls.albums = []
+
         albumhashes = set(t.albumhash for t in cls.tracks)
 
         for albumhash in tqdm(albumhashes, desc="Loading albums"):
@@ -291,9 +316,9 @@ class Store:
             albumhash = album[1]
             colors = json.loads(album[2])
 
-            for al in cls.albums:
-                if al.albumhash == albumhash:
-                    al.set_colors(colors)
+            for _al in cls.albums:
+                if _al.albumhash == albumhash:
+                    _al.set_colors(colors)
                     break
 
     @classmethod

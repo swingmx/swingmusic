@@ -5,8 +5,8 @@ This module combines all API blueprints into a single Flask app instance.
 from flask import Flask
 from flask_cors import CORS
 
-from app.api import album, artist, favorites, folder, playlist, search, track
-from app.imgserver import imgbp as imgserver
+from app.api import (album, artist, favorites, folder, imgserver, playlist,
+                     search, settings, track)
 
 
 def create_api():
@@ -18,13 +18,14 @@ def create_api():
 
     with app.app_context():
 
-        app.register_blueprint(album.albumbp)
-        app.register_blueprint(artist.artistbp)
-        app.register_blueprint(track.trackbp)
-        app.register_blueprint(search.searchbp)
-        app.register_blueprint(folder.folderbp)
-        app.register_blueprint(playlist.playlistbp)
-        app.register_blueprint(favorites.favbp)
-        app.register_blueprint(imgserver)
+        app.register_blueprint(album.api)
+        app.register_blueprint(artist.api)
+        app.register_blueprint(track.api)
+        app.register_blueprint(search.api)
+        app.register_blueprint(folder.api)
+        app.register_blueprint(playlist.api)
+        app.register_blueprint(favorites.api)
+        app.register_blueprint(imgserver.api)
+        app.register_blueprint(settings.api)
 
         return app

@@ -5,7 +5,7 @@ import dataclasses
 import json
 from dataclasses import dataclass
 
-from app import utils
+from app import utils, settings
 
 
 @dataclass(slots=True)
@@ -55,23 +55,37 @@ class Track:
     image: str = ""
     artist_hashes: list[str] = dataclasses.field(default_factory=list)
     is_favorite: bool = False
+    og_title: str = ""
 
     def __post_init__(self):
+        self.og_title = self.title
         if self.artist is not None:
-            artist_str = str(self.artist).split(", ")
-            self.artist_hashes = [utils.create_hash(a, decode=True) for a in artist_str]
+            artists = utils.split_artists(self.artist)
 
-            self.artist = [Artist(a) for a in artist_str]
+            if settings.EXTRACT_FEAT:
+                featured, new_title = utils.parse_feat_from_title(self.title)
+                original_lower = "-".join([a.lower() for a in artists])
+                artists.extend([a for a in featured if a.lower() not in original_lower])
 
-            albumartists = str(self.albumartist).split(", ")
+                self.title = new_title
+
+                if self.og_title == self.album:
+                    self.album = new_title
+
+            self.artist_hashes = [utils.create_hash(a, decode=True) for a in artists]
+
+            self.artist = [Artist(a) for a in artists]
+
+            albumartists = utils.split_artists(self.albumartist)
             self.albumartist = [Artist(a) for a in albumartists]
 
         self.filetype = self.filepath.rsplit(".", maxsplit=1)[-1]
         self.image = self.albumhash + ".webp"
 
         if self.genre is not None:
-            self.genre = str(self.genre).replace("/", ", ")
-            self.genre = str(self.genre).lower().split(", ")
+            self.genre = str(self.genre).replace("/", ",").replace(";", ",")
+            self.genre = str(self.genre).lower().split(",")
+            self.genre = [g.strip() for g in self.genre]
 
 
 @dataclass
@@ -96,6 +110,7 @@ class Album:
     is_single: bool = False
     is_EP: bool = False
     is_favorite: bool = False
+    is_live: bool = False
     genres: list[str] = dataclasses.field(default_factory=list)
 
     def __post_init__(self):
@@ -113,11 +128,15 @@ class Album:
         if self.is_soundtrack:
             return
 
+        self.is_live = self.check_is_live_album()
+        if self.is_live:
+            return
+
         self.is_compilation = self.check_is_compilation()
         if self.is_compilation:
             return
 
-        self.is_EP = self.check_is_EP()
+        self.is_EP = self.check_is_ep()
 
     def check_is_soundtrack(self) -> bool:
         """
@@ -137,9 +156,30 @@ class Album:
         artists = [a.name for a in self.albumartists]  # type: ignore
         artists = "".join(artists).lower()
 
-        return "various artists" in artists
+        if "various artists" in artists:
+            return True
 
-    def check_is_EP(self) -> bool:
+        substrings = ["the essential", "best of", "greatest hits", "#1 hits", "number ones", "super hits",
+                      "ultimate collection"]
+
+        for substring in substrings:
+            if substring in self.title.lower():
+                return True
+
+        return False
+
+    def check_is_live_album(self):
+        """
+        Checks if the album is a live album.
+        """
+        keywords = ["live from", "live at", "live in"]
+        for keyword in keywords:
+            if keyword in self.title.lower():
+                return True
+
+        return False
+
+    def check_is_ep(self) -> bool:
         """
         Checks if the album is an EP.
         """
@@ -150,12 +190,20 @@ class Album:
         Checks if the album is a single.
         """
         if (
-            len(tracks) == 1
-            and tracks[0].title == self.title
-            and tracks[0].track == 1
-            and tracks[0].disc == 1
+                len(tracks) == 1
+                and tracks[0].title == self.title
+
+                # and tracks[0].track == 1
+                # and tracks[0].disc == 1
+                # Todo: Are the above commented checks necessary?
         ):
             self.is_single = True
+
+    def get_date_from_tracks(self, tracks: list[Track]):
+        for track in tracks:
+            if track.date != "Unknown":
+                self.date = track.date
+                break
 
 
 @dataclass

@@ -20,6 +20,12 @@ CREATE TABLE IF NOT EXISTS favorites (
     hash text not null,
     type text not null
 );
+
+CREATE TABLE IF NOT EXISTS settings (
+    id integer PRIMARY KEY,
+    root_dirs text NOT NULL,
+    exclude_dirs text
+)
 """
 
 CREATE_APPDB_TABLES = """
@@ -62,4 +68,16 @@ CREATE TABLE IF NOT EXISTS folders (
     path text NOT NULL,
     trackcount integer NOT NULL
 );
+"""
+
+CREATE_MIGRATIONS_TABLE = """
+CREATE TABLE IF NOT EXISTS migrations (
+    id integer PRIMARY KEY,
+    pre_init_version integer NOT NULL DEFAULT 0,
+    post_init_version integer NOT NULL DEFAULT 0
+);
+
+INSERT INTO migrations (pre_init_version, post_init_version)
+SELECT 0, 0
+WHERE NOT EXISTS (SELECT 1 FROM migrations);
 """

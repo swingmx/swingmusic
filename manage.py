@@ -8,12 +8,13 @@ from configparser import ConfigParser
 
 import PyInstaller.__main__ as bundler
 
+from app import settings
 from app.api import create_api
 from app.functions import run_periodic_checks
 from app.lib.watchdogg import Watcher as WatchDog
 from app.settings import APP_VERSION, HELP_MESSAGE, TCOLOR
 from app.setup import run_setup
-from app.utils import background, get_home_res_path
+from app.utils import background, get_home_res_path, get_ip, is_windows
 
 werkzeug = logging.getLogger("werkzeug")
 werkzeug.setLevel(logging.ERROR)
@@ -42,7 +43,7 @@ def serve_client_files(path):
 @app.route("/")
 def serve_client():
     """
-    Serves the index.html file at client/index.html.
+    Serves the index.html file at `client/index.html`.
     """
     return app.send_static_file("index.html")
 
@@ -58,6 +59,7 @@ class ArgsEnum:
     build = "--build"
     port = "--port"
     host = "--host"
+    no_feat = "--no-feat"
     help = ["--help", "-h"]
     version = ["--version", "-v"]
 
@@ -67,6 +69,7 @@ class HandleArgs:
         self.handle_build()
         self.handle_host()
         self.handle_port()
+        self.handle_no_feat()
         self.handle_help()
         self.handle_version()
 
@@ -80,6 +83,8 @@ class HandleArgs:
                 config["DEFAULT"]["BUILD"] = "True"
                 config.write(file)
 
+            _s = ";" if is_windows() else ":"
+
             bundler.run(
                 [
                     "manage.py",
@@ -87,9 +92,9 @@ class HandleArgs:
                     "--name",
                     "swingmusic",
                     "--clean",
-                    "--add-data=assets:assets",
-                    "--add-data=client:client",
-                    "--add-data=pyinstaller.config.ini:.",
+                    f"--add-data=assets{_s}assets",
+                    f"--add-data=client{_s}client",
+                    f"--add-data=pyinstaller.config.ini{_s}.",
                     "-y",
                 ]
             )
@@ -130,6 +135,11 @@ class HandleArgs:
             Variables.FLASK_HOST = host  # type: ignore
 
     @staticmethod
+    def handle_no_feat():
+        if ArgsEnum.no_feat in ARGS:
+            settings.EXTRACT_FEAT = False
+
+    @staticmethod
     def handle_help():
         if any((a in ARGS for a in ArgsEnum.help)):
             print(HELP_MESSAGE)
@@ -153,31 +163,54 @@ def start_watchdog():
     WatchDog().run()
 
 
-def log_info():
-    lines = "  -------------------------------------"
+def log_startup_info():
+    lines = "------------------------------"
+    # clears terminal 👇
     os.system("cls" if os.name == "nt" else "echo -e \\\\033c")
+
     print(lines)
-    print(f"  {TCOLOR.HEADER}{APP_VERSION} {TCOLOR.ENDC}")
+    print(f"{TCOLOR.HEADER}SwingMusic {APP_VERSION} {TCOLOR.ENDC}")
+
+    adresses = [Variables.FLASK_HOST]
+
+    if Variables.FLASK_HOST == "0.0.0.0":
+        adresses = ["localhost", get_ip()]
+
+    print("Started app on:")
+    for address in adresses:
+        # noinspection HttpUrlsUsage
+        print(
+            f"➤ {TCOLOR.OKGREEN}http://{address}:{Variables.FLASK_PORT}{TCOLOR.ENDC}"
+        )
+
+    print(lines)
+    print("\n")
+
+    if not settings.EXTRACT_FEAT:
+        print(
+            f"{TCOLOR.OKBLUE}Extracting featured artists from track titles: {TCOLOR.FAIL}DISABLED!{TCOLOR.ENDC}"
+        )
+
     print(
-        f"  Started app on: {TCOLOR.OKGREEN}http://{Variables.FLASK_HOST}:{Variables.FLASK_PORT}{TCOLOR.ENDC}"
+        f"{TCOLOR.OKBLUE}App data folder: {settings.APP_DIR}{TCOLOR.OKGREEN}{TCOLOR.ENDC}"
     )
-    print(lines)
+
     print("\n")
 
 
 if __name__ == "__main__":
     HandleArgs()
-    log_info()
+    log_startup_info()
     run_bg_checks()
     start_watchdog()
+
     app.run(
-        debug=True,
+        debug=False,
         threaded=True,
         host=Variables.FLASK_HOST,
         port=Variables.FLASK_PORT,
         use_reloader=False,
     )
 
-# TODO: Find out how to print in color: red for errors, etc.
 # TODO: Find a way to verify the host string
 # TODO: Organize code in this file: move args to new file, etc.

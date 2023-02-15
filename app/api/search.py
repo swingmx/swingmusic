@@ -8,7 +8,7 @@ from app import models, utils
 from app.db.store import Store
 from app.lib import searchlib
 
-searchbp = Blueprint("search", __name__, url_prefix="/")
+api = Blueprint("search", __name__, url_prefix="/")
 
 
 SEARCH_COUNT = 12
@@ -95,7 +95,7 @@ class DoSearch:
         # self.search_playlists()
 
 
-@searchbp.route("/search/tracks", methods=["GET"])
+@api.route("/search/tracks", methods=["GET"])
 def search_tracks():
     """
     Searches for tracks that match the search query.
@@ -113,7 +113,7 @@ def search_tracks():
     }
 
 
-@searchbp.route("/search/albums", methods=["GET"])
+@api.route("/search/albums", methods=["GET"])
 def search_albums():
     """
     Searches for albums.
@@ -131,7 +131,7 @@ def search_albums():
     }
 
 
-@searchbp.route("/search/artists", methods=["GET"])
+@api.route("/search/artists", methods=["GET"])
 def search_artists():
     """
     Searches for artists.
@@ -167,7 +167,7 @@ def search_artists():
 #     }
 
 
-@searchbp.route("/search/top", methods=["GET"])
+@api.route("/search/top", methods=["GET"])
 def get_top_results():
     """
     Returns the top results for the search query.
@@ -188,7 +188,7 @@ def get_top_results():
     }
 
 
-@searchbp.route("/search/loadmore")
+@api.route("/search/loadmore")
 def search_load_more():
     """
     Returns more songs, albums or artists from a search query.
@@ -199,20 +199,20 @@ def search_load_more():
     if s_type == "tracks":
         t = SearchResults.tracks
         return {
-            "tracks": t[index : index + SEARCH_COUNT],
+            "tracks": t[index: index + SEARCH_COUNT],
             "more": len(t) > index + SEARCH_COUNT,
         }
 
     elif s_type == "albums":
         a = SearchResults.albums
         return {
-            "albums": a[index : index + SEARCH_COUNT],
+            "albums": a[index: index + SEARCH_COUNT],
             "more": len(a) > index + SEARCH_COUNT,
         }
 
     elif s_type == "artists":
         a = SearchResults.artists
         return {
-            "artists": a[index : index + SEARCH_COUNT],
+            "artists": a[index: index + SEARCH_COUNT],
             "more": len(a) > index + SEARCH_COUNT,
         }

@@ -3,20 +3,24 @@ Contains the functions to prepare the server for use.
 """
 import os
 import shutil
+import time
 from configparser import ConfigParser
 
 from app import settings
 from app.db.sqlite import create_connection, create_tables, queries
 from app.db.store import Store
+from app.migrations import apply_migrations, set_postinit_migration_versions
+from app.migrations._preinit import (
+    run_preinit_migrations,
+    set_preinit_migration_versions,
+)
 from app.settings import APP_DB_PATH, USERDATA_DB_PATH
 from app.utils import get_home_res_path
-
 
 config = ConfigParser()
 
 config_path = get_home_res_path("pyinstaller.config.ini")
 config.read(config_path)
-
 
 try:
     IS_BUILD = config["DEFAULT"]["BUILD"] == "True"
@@ -64,10 +68,6 @@ def create_config_dir() -> None:
     """
     Creates the config directory if it doesn't exist.
     """
-
-    home_dir = os.path.expanduser("~")
-    config_folder = os.path.join(home_dir, settings.CONFIG_FOLDER)
-
     thumb_path = os.path.join("images", "thumbnails")
     small_thumb_path = os.path.join(thumb_path, "small")
     large_thumb_path = os.path.join(thumb_path, "large")
@@ -91,7 +91,7 @@ def create_config_dir() -> None:
     ]
 
     for _dir in dirs:
-        path = os.path.join(config_folder, _dir)
+        path = os.path.join(settings.APP_DIR, _dir)
         exists = os.path.exists(path)
 
         if not exists:
@@ -107,6 +107,7 @@ def setup_sqlite():
     """
     # if os.path.exists(DB_PATH):
     #     os.remove(DB_PATH)
+    run_preinit_migrations()
 
     app_db_conn = create_connection(APP_DB_PATH)
     playlist_db_conn = create_connection(USERDATA_DB_PATH)
@@ -114,8 +115,15 @@ def setup_sqlite():
     create_tables(app_db_conn, queries.CREATE_APPDB_TABLES)
     create_tables(playlist_db_conn, queries.CREATE_USERDATA_TABLES)
 
+    create_tables(app_db_conn, queries.CREATE_MIGRATIONS_TABLE)
+    create_tables(playlist_db_conn, queries.CREATE_MIGRATIONS_TABLE)
+
     app_db_conn.close()
     playlist_db_conn.close()
+
+    apply_migrations()
+    set_preinit_migration_versions()
+    set_postinit_migration_versions()
 
     Store.load_all_tracks()
     Store.process_folders()

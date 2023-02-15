@@ -1,10 +1,11 @@
 import os
-import pathlib
 from concurrent.futures import ThreadPoolExecutor
 
 from app.db.store import Store
 from app.models import Folder, Track
 from app.settings import SUPPORTED_FILES
+from app.logger import log
+from app.utils import win_replace_slash
 
 
 class GetFilesAndDirs:
@@ -19,7 +20,7 @@ class GetFilesAndDirs:
         try:
             entries = os.scandir(self.path)
         except FileNotFoundError:
-            return ([], [])
+            return [], []
 
         dirs, files = [], []
 
@@ -27,14 +28,25 @@ class GetFilesAndDirs:
             ext = os.path.splitext(entry.name)[1].lower()
 
             if entry.is_dir() and not entry.name.startswith("."):
-                dirs.append(entry.path)
+                dirs.append(win_replace_slash(entry.path))
             elif entry.is_file() and ext in SUPPORTED_FILES:
-                files.append(entry.path)
+                files.append(win_replace_slash(entry.path))
 
-        # sort files by modified time
-        files.sort(
-            key=lambda f: os.path.getmtime(f)  # pylint: disable=unnecessary-lambda
-        )
+        files_ = []
+
+        for file in files:
+            try:
+                files_.append(
+                    {
+                        "path": file,
+                        "time": os.path.getmtime(file),
+                    }
+                )
+            except OSError as e:
+                log.error(e)
+
+        files_.sort(key=lambda f: f["time"])
+        files = [f["path"] for f in files_]
 
         tracks = Store.get_tracks_by_filepaths(files)
 
@@ -44,4 +56,4 @@ class GetFilesAndDirs:
 
         folders = filter(lambda f: f.has_tracks, folders)
 
-        return (tracks, folders)  # type: ignore
+        return tracks, folders  # type: ignore

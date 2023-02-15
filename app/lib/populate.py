@@ -3,7 +3,10 @@ from tqdm import tqdm
 
 from app import settings
 from app.db.sqlite.tracks import SQLiteTrackMethods
+from app.db.sqlite.settings import SettingsSQLMethods as sdb
+from app.db.sqlite.favorite import SQLiteFavoriteMethods as favdb
 from app.db.store import Store
+from app.lib.colorlib import ProcessAlbumColors, ProcessArtistColors
 
 from app.lib.taglib import extract_thumb, get_tags
 from app.logger import log
@@ -12,6 +15,12 @@ from app.utils import run_fast_scandir
 
 get_all_tracks = SQLiteTrackMethods.get_all_tracks
 insert_many_tracks = SQLiteTrackMethods.insert_many_tracks
+
+POPULATE_KEY = ""
+
+
+class PopulateCancelledError(Exception):
+    pass
 
 
 class Populate:
@@ -22,12 +31,34 @@ class Populate:
     also checks if the album art exists in the image path, if not tries to extract it.
     """
 
-    def __init__(self) -> None:
+    def __init__(self, key: str) -> None:
+        global POPULATE_KEY
+        POPULATE_KEY = key
 
         tracks = get_all_tracks()
         tracks = list(tracks)
 
-        files = run_fast_scandir(settings.HOME_DIR, full=True)[1]
+        dirs_to_scan = sdb.get_root_dirs()
+
+        if len(dirs_to_scan) == 0:
+            log.warning(
+                (
+                        "The root directory is not configured. "
+                        + "Open the app in your webbrowser to configure."
+                )
+            )
+            return
+
+        try:
+            if dirs_to_scan[0] == "$home":
+                dirs_to_scan = [settings.USER_HOME_DIR]
+        except IndexError:
+            pass
+
+        files = []
+
+        for _dir in dirs_to_scan:
+            files.extend(run_fast_scandir(_dir, full=True)[1])
 
         untagged = self.filter_untagged(tracks, files)
 
@@ -35,7 +66,12 @@ class Populate:
             log.info("All clear, no unread files.")
             return
 
-        self.tag_untagged(untagged)
+        self.tag_untagged(untagged, key)
+
+        ProcessTrackThumbnails()
+        ProcessAlbumColors()
+        ProcessArtistColors()
+
 
     @staticmethod
     def filter_untagged(tracks: list[Track], files: list[str]):
@@ -43,17 +79,24 @@ class Populate:
         return set(files) - set(tagged_files)
 
     @staticmethod
-    def tag_untagged(untagged: set[str]):
+    def tag_untagged(untagged: set[str], key: str):
         log.info("Found %s new tracks", len(untagged))
         tagged_tracks: list[dict] = []
         tagged_count = 0
 
+        fav_tracks = favdb.get_fav_tracks()
+        fav_tracks = "-".join([t[1] for t in fav_tracks])
+
         for file in tqdm(untagged, desc="Reading files"):
+            if POPULATE_KEY != key:
+                raise PopulateCancelledError("Populate key changed")
+
             tags = get_tags(file)
 
             if tags is not None:
                 tagged_tracks.append(tags)
                 track = Track(**tags)
+                track.is_favorite = track.trackhash in fav_tracks
 
                 Store.add_track(track)
                 Store.add_folder(track.folder)
@@ -97,4 +140,4 @@ class ProcessTrackThumbnails:
                 )
             )
 
-            results = [r for r in results]
+            list(results)

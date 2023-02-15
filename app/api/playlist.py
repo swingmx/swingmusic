@@ -13,7 +13,7 @@ from app.db.store import Store
 from app.lib import playlistlib
 from app.utils import create_new_date, remove_duplicates
 
-playlistbp = Blueprint("playlist", __name__, url_prefix="/")
+api = Blueprint("playlist", __name__, url_prefix="/")
 
 PL = SQLitePlaylistMethods
 
@@ -30,7 +30,7 @@ delete_playlist = PL.delete_playlist
 # get_tracks_by_trackhashes = SQLiteTrackMethods.get_tracks_by_trackhashes
 
 
-@playlistbp.route("/playlists", methods=["GET"])
+@api.route("/playlists", methods=["GET"])
 def send_all_playlists():
     """
     Gets all the playlists.
@@ -46,7 +46,7 @@ def send_all_playlists():
     return {"data": playlists}
 
 
-@playlistbp.route("/playlist/new", methods=["POST"])
+@api.route("/playlist/new", methods=["POST"])
 def create_playlist():
     """
     Creates a new playlist. Accepts POST method with a JSON body.
@@ -79,7 +79,7 @@ def create_playlist():
     return {"playlist": playlist}, 201
 
 
-@playlistbp.route("/playlist/<playlist_id>/add", methods=["POST"])
+@api.route("/playlist/<playlist_id>/add", methods=["POST"])
 def add_track_to_playlist(playlist_id: str):
     """
     Takes a playlist ID and a track hash, and adds the track to the playlist
@@ -97,12 +97,12 @@ def add_track_to_playlist(playlist_id: str):
         return {"error": "Track already exists in playlist"}, 409
 
     add_artist_to_playlist(int(playlist_id), trackhash)
-    PL.update_last_updated(playlist_id)
+    PL.update_last_updated(int(playlist_id))
 
     return {"msg": "Done"}, 200
 
 
-@playlistbp.route("/playlist/<playlistid>")
+@api.route("/playlist/<playlistid>")
 def get_playlist(playlistid: str):
     """
     Gets a playlist by id, and if it exists, it gets all the tracks in the playlist and returns them.
@@ -123,7 +123,7 @@ def get_playlist(playlistid: str):
     return {"info": playlist, "tracks": tracks}
 
 
-@playlistbp.route("/playlist/<playlistid>/update", methods=["PUT"])
+@api.route("/playlist/<playlistid>/update", methods=["PUT"])
 def update_playlist_info(playlistid: str):
     if playlistid is None:
         return {"error": "Playlist ID not provided"}, 400
@@ -166,7 +166,6 @@ def update_playlist_info(playlistid: str):
             return {"error": "Failed: Invalid image"}, 400
 
     p_tuple = (*playlist.values(),)
-    print("banner pos:", playlist["banner_pos"])
 
     update_playlist(int(playlistid), playlist)
 
@@ -188,7 +187,7 @@ def update_playlist_info(playlistid: str):
 #     return {"data": artists}
 
 
-@playlistbp.route("/playlist/delete", methods=["POST"])
+@api.route("/playlist/delete", methods=["POST"])
 def remove_playlist():
     """
     Deletes a playlist by ID.
@@ -209,7 +208,7 @@ def remove_playlist():
     return {"msg": "Done"}, 200
 
 
-@playlistbp.route("/playlist/<pid>/set-image-pos", methods=["POST"])
+@api.route("/playlist/<pid>/set-image-pos", methods=["POST"])
 def update_image_position(pid: int):
     data = request.get_json()
     message = {"msg": "No data provided"}

@@ -1,13 +1,19 @@
 """
 This module contains mini functions for the server.
 """
-import os
 import hashlib
-from pathlib import Path
+import os
+import platform
+import random
+import re
+import socket as Socket
+import string
 import threading
 from datetime import datetime
-from unidecode import unidecode
+from pathlib import Path
+
 import requests
+from unidecode import unidecode
 
 from app import models
 from app.settings import SUPPORTED_FILES
@@ -27,27 +33,34 @@ def background(func):
     return background_func
 
 
-def run_fast_scandir(__dir: str, full=False) -> tuple[list[str], list[str]]:
+def run_fast_scandir(_dir: str, full=False) -> tuple[list[str], list[str]]:
     """
-    Scans a directory for files with a specific extension. Returns a list of files and folders in the directory.
+    Scans a directory for files with a specific extension.
+    Returns a list of files and folders in the directory.
     """
+
+    if _dir == "":
+        return [], []
 
     subfolders = []
     files = []
 
-    for f in os.scandir(__dir):
-        if f.is_dir() and not f.name.startswith("."):
-            subfolders.append(f.path)
-        if f.is_file():
-            ext = os.path.splitext(f.name)[1].lower()
-            if ext in SUPPORTED_FILES:
-                files.append(f.path)
+    try:
+        for _file in os.scandir(_dir):
+            if _file.is_dir() and not _file.name.startswith("."):
+                subfolders.append(_file.path)
+            if _file.is_file():
+                ext = os.path.splitext(_file.name)[1].lower()
+                if ext in SUPPORTED_FILES:
+                    files.append(win_replace_slash(_file.path))
 
-    if full or len(files) == 0:
-        for _dir in list(subfolders):
-            sf, f = run_fast_scandir(_dir, full=True)
-            subfolders.extend(sf)
-            files.extend(f)
+        if full or len(files) == 0:
+            for _dir in list(subfolders):
+                sub_dirs, _file = run_fast_scandir(_dir, full=True)
+                subfolders.extend(sub_dirs)
+                files.extend(_file)
+    except (OSError, PermissionError, FileNotFoundError, ValueError):
+        return [], []
 
     return subfolders, files
 
@@ -169,18 +182,16 @@ def get_artists_from_tracks(tracks: list[models.Track]) -> set[str]:
 def get_albumartists(albums: list[models.Album]) -> set[str]:
     artists = set()
 
-    # master_artist_list = [a.albumartists for a in albums]
     for album in albums:
         albumartists = [a.name for a in album.albumartists]  # type: ignore
 
         artists.update(albumartists)
 
-    # return [models.Artist(a) for a in artists]
     return artists
 
 
 def get_all_artists(
-    tracks: list[models.Track], albums: list[models.Album]
+        tracks: list[models.Track], albums: list[models.Album]
 ) -> list[models.Artist]:
     artists_from_tracks = get_artists_from_tracks(tracks)
     artist_from_albums = get_albumartists(albums)
@@ -221,6 +232,112 @@ def bisection_search_string(strings: list[str], target: str) -> str | None:
 
 def get_home_res_path(filename: str):
     """
-    Returns a path to resources in the home directory of this project. Used to resolve resources in builds.
+    Returns a path to resources in the home directory of this project.
+    Used to resolve resources in builds.
     """
-    return (CWD / ".." / filename).resolve()
+    try:
+        return (CWD / ".." / filename).resolve()
+    except ValueError:
+        return None
+
+
+def get_ip():
+    """
+    Returns the IP address of this device.
+    """
+    soc = Socket.socket(Socket.AF_INET, Socket.SOCK_DGRAM)
+    soc.connect(("8.8.8.8", 80))
+    ip_address = str(soc.getsockname()[0])
+    soc.close()
+
+    return ip_address
+
+
+def is_windows():
+    """
+    Returns True if the OS is Windows.
+    """
+    return platform.system() == "Windows"
+
+
+def parse_feat_from_title(title: str) -> tuple[list[str], str]:
+    """
+    Extracts featured artists from a song title using regex.
+    """
+    regex = r"\((?:feat|ft|featuring|with)\.?\s+(.+?)\)"
+    # regex for square brackets 👇
+    sqr_regex = r"\[(?:feat|ft|featuring|with)\.?\s+(.+?)\]"
+
+    match = re.search(regex, title, re.IGNORECASE)
+
+    if not match:
+        match = re.search(sqr_regex, title, re.IGNORECASE)
+        regex = sqr_regex
+
+    if not match:
+        return [], title
+
+    artists = match.group(1)
+    artists = split_artists(artists, with_and=True)
+
+    # remove "feat" group from title
+    new_title = re.sub(regex, "", title, flags=re.IGNORECASE)
+    return artists, new_title
+
+
+def get_random_str(length=5):
+    """
+    Generates a random string of length `length`.
+    """
+    return "".join(random.choices(string.ascii_letters + string.digits, k=length))
+
+
+def win_replace_slash(path: str):
+    if is_windows():
+        return path.replace("\\", "/").replace("//", "/")
+
+    return path
+
+
+def split_artists(src: str, with_and: bool = False):
+    exp = r"\s*(?:and|&|,|;)\s*" if with_and else r"\s*[,;]\s*"
+
+    artists = re.split(exp, src)
+    return [a.strip() for a in artists]
+
+
+def parse_artist_from_filename(title: str):
+    """
+    Extracts artist names from a song title using regex.
+    """
+
+    regex = r"^(.+?)\s*[-–—]\s*(?:.+?)$"
+    match = re.search(regex, title, re.IGNORECASE)
+
+    if not match:
+        return []
+
+    artists = match.group(1)
+    artists = split_artists(artists)
+    return artists
+
+
+def parse_title_from_filename(title: str):
+    """
+    Extracts track title from a song title using regex.
+    """
+
+    regex = r"^(?:.+?)\s*[-–—]\s*(.+?)$"
+    match = re.search(regex, title, re.IGNORECASE)
+
+    if not match:
+        return title
+
+    res = match.group(1)
+    # remove text in brackets starting with "official" case insensitive
+    res = re.sub(r"\s*\([^)]*official[^)]*\)", "", res, flags=re.IGNORECASE)
+    return res.strip()
+
+# for title in sample_titles:
+#     print(parse_artist_from_filename(title))
+#     print(parse_title_from_filename(title))
