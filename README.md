@@ -4,11 +4,9 @@
 
 ### Make listening to your local music fun again.
 
-`Swing` is a music player for local audio files that is built with both visual coolness and functionality in mind. Just run the app and enjoy your music library in a web browser.
+`Swing` is a music player for local audio files built with both visual coolness and functionality in mind. Just run the app and enjoy your music library in a web browser.
 
 > Note: This project is in the early stages of development. Many features are missing but will be added with time.
-
-#### 🎉🎉 Checkout the app screenshots in [this excalidraw canvas](https://excalidraw.com/#json=b52G7e9g-dYhMmcyQy9El,pMWhoENuMZgC6mPgyMmU-g) 🎉🎉.
 
 ### Setup
 
@@ -26,13 +24,15 @@ The app should start at <http://localhost:1970> by default.
 Usage: swingmusic [options]
 
 Options:
-    --build: Build the application
+    --build: Build the application (in development)
     --host: Set the host
     --port: Set the port
-    --no-feat: Do not extract featured artists from the song title
-    --help, -h: Show this help message
-    --version, -v: Show the version
 
+    --show-feat, -sf: Do not extract featured artists from the song title
+    --show-prod, -sp: Do not hide producers in the song title
+
+    --help, -h: Show this help message
+    --version, -v: Show the app version
 ```
 
 ### Development

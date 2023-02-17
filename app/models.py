@@ -78,7 +78,6 @@ class Track:
             self.title = new_title
 
             self.artist_hashes = [utils.create_hash(a, decode=True) for a in artists]
-
             self.artist = [Artist(a) for a in artists]
 
             albumartists = utils.split_artists(self.albumartist)
