@@ -61,16 +61,21 @@ class Track:
         self.og_title = self.title
         if self.artist is not None:
             artists = utils.split_artists(self.artist)
+            new_title = self.title
 
             if settings.EXTRACT_FEAT:
                 featured, new_title = utils.parse_feat_from_title(self.title)
                 original_lower = "-".join([a.lower() for a in artists])
                 artists.extend([a for a in featured if a.lower() not in original_lower])
 
-                self.title = new_title
+            if settings.REMOVE_PROD:
+                new_title = utils.remove_prod(new_title)
 
-                if self.og_title == self.album:
-                    self.album = new_title
+            # if track is a single
+            if self.og_title == self.album:
+                self.album = new_title
+
+            self.title = new_title
 
             self.artist_hashes = [utils.create_hash(a, decode=True) for a in artists]
 

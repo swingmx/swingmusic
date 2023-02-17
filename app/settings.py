@@ -28,7 +28,7 @@ def get_xdg_config_dir():
 # ------- HELPER METHODS --------
 
 
-APP_VERSION = "v.1.1.0.beta"
+APP_VERSION = "v1.1.0"
 
 # paths
 XDG_CONFIG_DIR = get_xdg_config_dir()
@@ -76,22 +76,34 @@ USER_DATA_DB_NAME = "userdata.db"
 APP_DB_PATH = os.path.join(APP_DIR, APP_DB_NAME)
 USERDATA_DB_PATH = os.path.join(APP_DIR, USER_DATA_DB_NAME)
 
-HELP_MESSAGE = """
-Usage: swingmusic [options]
 
-Options:
-    --build: Build the application
-    --host: Set the host
-    --port: Set the port
-    --no-feat: Do not extract featured artists from the song title
-    --help, -h: Show this help message
-    --version, -v: Show the version
-"""
+class FLASKVARS:
+    FLASK_PORT = 1970
+    FLASK_HOST = "localhost"
+
+
+class ALLARGS:
+    """
+    Enumerates the possible app arguments.
+    """
+
+    build = "--build"
+    port = "--port"
+    host = "--host"
+    show_feat = ["--show-feat", "-sf"]
+    show_prod = ["--show-prod", "-sp"]
+    help = ["--help", "-h"]
+    version = ["--version", "-v"]
+
 
 EXTRACT_FEAT = True
 """
 Whether to extract the featured artists from the song title.
-Changed using the `--no-feat` flag
+"""
+
+REMOVE_PROD = True
+"""
+Whether to remove the producers from the song title.
 """
 
 

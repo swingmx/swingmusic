@@ -279,6 +279,7 @@ def parse_feat_from_title(title: str) -> tuple[list[str], str]:
 
     artists = match.group(1)
     artists = split_artists(artists, with_and=True)
+    print(artists)
 
     # remove "feat" group from title
     new_title = re.sub(regex, "", title, flags=re.IGNORECASE)
@@ -334,10 +335,26 @@ def parse_title_from_filename(title: str):
         return title
 
     res = match.group(1)
-    # remove text in brackets starting with "official" case insensitive
+    # remove text in brackets starting with "official" case-insensitive
     res = re.sub(r"\s*\([^)]*official[^)]*\)", "", res, flags=re.IGNORECASE)
     return res.strip()
 
-# for title in sample_titles:
-#     print(parse_artist_from_filename(title))
-#     print(parse_title_from_filename(title))
+
+def remove_prod(title: str) -> str:
+    """
+    Removes the producer string in a track title using regex.
+    """
+
+    # check if title contain title, if not return it.
+    if not ("prod." in title.lower()):
+        return title
+
+    # check if title has brackets
+    if re.search(r'[()\[\]]', title):
+        regex = r'\s?(\(|\[)prod\..*?(\)|\])\s?'
+    else:
+        regex = r'\s?\bprod\.\s*\S+'
+
+    # remove the producer string
+    title = re.sub(regex, "", title, flags=re.IGNORECASE)
+    return title.strip()

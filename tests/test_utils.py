@@ -24,7 +24,7 @@ def test_extract_featured_artists_from_title():
     ]
 
     for title, expected in zip(test_titles, results):
-        assert parse_feat_from_title(title) == expected
+        assert parse_feat_from_title(title)[0] == expected
 
 
 # === HYPOTHESIS GHOSTWRITER TESTS ===
