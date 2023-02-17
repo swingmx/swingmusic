@@ -279,7 +279,6 @@ def parse_feat_from_title(title: str) -> tuple[list[str], str]:
 
     artists = match.group(1)
     artists = split_artists(artists, with_and=True)
-    print(artists)
 
     # remove "feat" group from title
     new_title = re.sub(regex, "", title, flags=re.IGNORECASE)

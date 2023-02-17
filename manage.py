@@ -36,7 +36,7 @@ def serve_client():
 
 
 @background
-def run_bg_checks() -> None:
+def bg_run_setup() -> None:
     run_setup()
     run_periodic_checks()
 
@@ -49,7 +49,7 @@ def start_watchdog():
 if __name__ == "__main__":
     HandleArgs()
     log_startup_info()
-    run_bg_checks()
+    bg_run_setup()
     start_watchdog()
 
     app.run(
