@@ -6,6 +6,8 @@
 
 `Swing` is a music player for local audio files built with both visual coolness and functionality in mind. Just run the app and enjoy your music library in a web browser.
 
+### For screenshots, see the [screenshots folder](https://github.com/geoffrey45/swingmusic/tree/master/screenshots).
+
 > Note: This project is in the early stages of development. Many features are missing but will be added with time.
 
 ### Setup
