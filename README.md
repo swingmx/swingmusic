@@ -35,6 +35,14 @@ Options:
     --version, -v: Show the app version
 ```
 
+To stream your music across your local network, use the `--host` flag to run the app in all ports. Like this:
+
+```sh
+swingmusic --host 0.0.0.0
+```
+
+The link to access the app will be printed on your terminal. Copy it and open it in your browser.
+
 ### Development
 
 This project is broken down into 2. The client and the server. The client comprises of the user interface code. This part is written in Typescript, Vue 3 and SCSS. To setup the client, checkout the [swing client repo ](https://github.com/geoffrey45/swing-client) on GitHub.
