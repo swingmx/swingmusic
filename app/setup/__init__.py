@@ -125,10 +125,10 @@ def setup_sqlite():
     set_preinit_migration_versions()
     set_postinit_migration_versions()
 
-    Store.load_all_tracks()
-    Store.process_folders()
-    Store.load_albums()
-    Store.load_artists()
+    # Store.load_all_tracks()
+    # Store.process_folders()
+    # Store.load_albums()
+    # Store.load_artists()
 
 
 def run_setup():
