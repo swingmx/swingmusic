@@ -92,7 +92,7 @@ class Track:
             self.genre = [g.strip() for g in self.genre]
 
 
-@dataclass
+@dataclass(slots=True)
 class Album:
     """
     Creates an album object
@@ -210,7 +210,7 @@ class Album:
                 break
 
 
-@dataclass
+@dataclass(slots=True)
 class Playlist:
     """Creates playlist objects"""
 
@@ -241,7 +241,7 @@ class Playlist:
             self.thumb = "None"
 
 
-@dataclass
+@dataclass(slots=True, frozen=True)
 class Folder:
     name: str
     path: str
