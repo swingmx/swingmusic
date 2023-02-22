@@ -1,5 +1,5 @@
 # Swing music
-![SWING MUSIC PLAYER BANNER IMAGE](./screenshots/on-readme.webp)
+![SWING MUSIC PLAYER BANNER IMAGE](./screenshots/readme.webp)
 
 ---
 
