@@ -7,7 +7,6 @@ from requests import ReadTimeout
 
 from app import utils
 from app.lib.artistlib import CheckArtistImages
-from app.lib.colorlib import ProcessArtistColors
 from app.lib.populate import Populate, PopulateCancelledError
 from app.lib.trackslib import validate_tracks
 from app.logger import log

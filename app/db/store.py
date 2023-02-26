@@ -69,14 +69,8 @@ class Store:
         Returns a list of tracks by their hashes.
         """
 
-        tracks = []
-
-        for trackhash in trackhashes:
-            for track in cls.tracks:
-                if track.trackhash == trackhash:
-                    tracks.append(track)
-
-        return tracks
+        trackhashes = " ".join(trackhashes)
+        return [track for track in cls.tracks if track.trackhash in trackhashes]
 
     @classmethod
     def remove_track_by_filepath(cls, filepath: str):

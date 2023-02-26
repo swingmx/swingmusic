@@ -11,6 +11,8 @@ import string
 import threading
 from datetime import datetime
 from pathlib import Path
+from collections import defaultdict
+from operator import attrgetter
 
 import requests
 from unidecode import unidecode
@@ -67,34 +69,37 @@ def run_fast_scandir(_dir: str, full=False) -> tuple[list[str], list[str]]:
 
 def remove_duplicates(tracks: list[models.Track]) -> list[models.Track]:
     """
-    Removes duplicate tracks from a list of tracks.
+    Remove duplicates from a list of Track objects based on the trackhash attribute.
+    Retains objects with the highest bitrate.
     """
-    hashes = []
+    hash_to_tracks = defaultdict(list)
 
     for track in tracks:
-        if track.trackhash not in hashes:
-            hashes.append(track.trackhash)
+        hash_to_tracks[track.trackhash].append(track)
 
-    tracks = sorted(tracks, key=lambda x: x.trackhash)
-    tracks = UseBisection(tracks, "trackhash", hashes)()
+    tracks = []
 
-    return [t for t in tracks if t is not None]
+    for track_group in hash_to_tracks.values():
+        max_bitrate_track = max(track_group, key=attrgetter("bitrate"))
+        tracks.append(max_bitrate_track)
+
+    return tracks
 
 
 def create_hash(*args: str, decode=False, limit=7) -> str:
     """
     Creates a simple hash for an album
     """
-    string = "".join(args)
+    str_ = "".join(args)
 
     if decode:
-        string = unidecode(string)
+        str_ = unidecode(str_)
 
-    string = string.lower().strip().replace(" ", "")
-    string = "".join(t for t in string if t.isalnum())
-    string = string.encode("utf-8")
-    string = hashlib.sha256(string).hexdigest()
-    return string[-limit:]
+    str_ = str_.lower().strip().replace(" ", "")
+    str_ = "".join(t for t in str_ if t.isalnum())
+    str_ = str_.encode("utf-8")
+    str_ = hashlib.sha256(str_).hexdigest()
+    return str_[-limit:]
 
 
 def create_folder_hash(*args: str, limit=7) -> str:
@@ -191,7 +196,7 @@ def get_albumartists(albums: list[models.Album]) -> set[str]:
 
 
 def get_all_artists(
-        tracks: list[models.Track], albums: list[models.Album]
+    tracks: list[models.Track], albums: list[models.Album]
 ) -> list[models.Artist]:
     artists_from_tracks = get_artists_from_tracks(tracks)
     artist_from_albums = get_albumartists(albums)
@@ -300,7 +305,7 @@ def win_replace_slash(path: str):
 
 
 def split_artists(src: str, with_and: bool = False):
-    exp = r"\s*(?:and|&|,|;)\s*" if with_and else r"\s*[,;]\s*"
+    exp = r"\s*(?: and |&|,|;)\s*" if with_and else r"\s*[,;]\s*"
 
     artists = re.split(exp, src)
     return [a.strip() for a in artists]
@@ -349,10 +354,10 @@ def remove_prod(title: str) -> str:
         return title
 
     # check if title has brackets
-    if re.search(r'[()\[\]]', title):
-        regex = r'\s?(\(|\[)prod\..*?(\)|\])\s?'
+    if re.search(r"[()\[\]]", title):
+        regex = r"\s?(\(|\[)prod\..*?(\)|\])\s?"
     else:
-        regex = r'\s?\bprod\.\s*\S+'
+        regex = r"\s?\bprod\.\s*\S+"
 
     # remove the producer string
     title = re.sub(regex, "", title, flags=re.IGNORECASE)

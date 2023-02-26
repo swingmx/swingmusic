@@ -4,6 +4,7 @@ This library contains all the functions related to the search functionality.
 from typing import List
 
 from rapidfuzz import fuzz, process
+from unidecode import unidecode
 
 from app import models
 
@@ -16,10 +17,10 @@ class Cutoff:
     Holds all the default cutoff values.
     """
 
-    tracks: int = 60
-    albums: int = 60
-    artists: int = 60
-    playlists: int = 60
+    tracks: int = 90
+    albums: int = 90
+    artists: int = 90
+    playlists: int = 90
 
 
 class Limit:
@@ -27,10 +28,10 @@ class Limit:
     Holds all the default limit values.
     """
 
-    tracks: int = 50
-    albums: int = 50
-    artists: int = 50
-    playlists: int = 50
+    tracks: int = 150
+    albums: int = 150
+    artists: int = 150
+    playlists: int = 150
 
 
 class SearchTracks:
@@ -43,7 +44,7 @@ class SearchTracks:
         Gets all songs with a given title.
         """
 
-        tracks = [track.og_title for track in self.tracks]
+        tracks = [unidecode(track.og_title).lower() for track in self.tracks]
         results = process.extract(
             self.query,
             tracks,
@@ -56,7 +57,7 @@ class SearchTracks:
 
 
 class SearchArtists:
-    def __init__(self, artists: list[str], query: str) -> None:
+    def __init__(self, artists: list[models.Artist], query: str) -> None:
         self.query = query
         self.artists = artists
 
@@ -64,17 +65,18 @@ class SearchArtists:
         """
         Gets all artists with a given name.
         """
+        artists = [unidecode(a.name).lower() for a in self.artists]
 
         results = process.extract(
             self.query,
-            self.artists,
+            artists,
             scorer=fuzz.WRatio,
             score_cutoff=Cutoff.artists,
             limit=Limit.artists,
         )
 
         artists = [a[0] for a in results]
-        return [models.Artist(a) for a in artists]
+        return [self.artists[i[2]] for i in results]
 
 
 class SearchAlbums:
@@ -87,7 +89,7 @@ class SearchAlbums:
         Gets all albums with a given title.
         """
 
-        albums = [a.title.lower() for a in self.albums]
+        albums = [unidecode(a.title).lower() for a in self.albums]
 
         results = process.extract(
             self.query,
