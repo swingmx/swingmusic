@@ -15,25 +15,24 @@ class SQLitePlaylistMethods:
     @staticmethod
     def insert_one_playlist(playlist: dict):
         sql = """INSERT INTO playlists(
-            artisthashes,
-            banner_pos,
-            has_gif,
-            image,
-            last_updated,
-            name,
-            trackhashes
-            ) VALUES(?,?,?,?,?,?,?)
-            """
+        artisthashes,
+        banner_pos,
+        has_gif,
+        image,
+        last_updated,
+        name,
+        trackhashes
+        ) VALUES(:artisthashes, :banner_pos, :has_gif, :image, :last_updated, :name, :trackhashes)
+        """
 
         playlist = OrderedDict(sorted(playlist.items()))
-        params = (*playlist.values(),)
 
         with SQLiteManager(userdata_db=True) as cur:
-            cur.execute(sql, params)
+            cur.execute(sql, playlist)
             pid = cur.lastrowid
-            params = (pid, *params)
 
-            return tuple_to_playlist(params)
+            p_tuple = (pid, *playlist.values())
+            return tuple_to_playlist(p_tuple)
 
     @staticmethod
     def get_playlist_by_name(name: str):

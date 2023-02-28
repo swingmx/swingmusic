@@ -4,6 +4,7 @@ interacting with the tracks table.
 """
 
 
+from collections import OrderedDict
 from sqlite3 import Cursor
 
 from app.db.sqlite.utils import tuple_to_track, tuples_to_tracks
@@ -37,31 +38,11 @@ class SQLiteTrackMethods:
             title,
             track,
             trackhash
-            ) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
+            ) VALUES(:album, :albumartist, :albumhash, :artist, :bitrate, :copyright, :date, :disc, :duration, :filepath, :folder, :genre, :title, :track, :trackhash)
             """
 
-        cur.execute(
-            sql,
-            (
-                track["album"],
-                track["albumartist"],
-                track["albumhash"],
-                track["artist"],
-                track["bitrate"],
-                track["copyright"],
-                track["date"],
-                track["disc"],
-                track["duration"],
-                track["filepath"],
-                track["folder"],
-                track["genre"],
-                track["title"],
-                track["track"],
-                track["trackhash"],
-            ),
-        )
-
-        # TODO: rewrite the above code using an ordered dict and destructuring
+        track = OrderedDict(sorted(track.items()))
+        cur.execute(sql, track)
 
     @classmethod
     def insert_many_tracks(cls, tracks: list[dict]):
