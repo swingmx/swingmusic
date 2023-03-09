@@ -17,7 +17,6 @@ def create_api():
     CORS(app)
 
     with app.app_context():
-
         app.register_blueprint(album.api)
         app.register_blueprint(artist.api)
         app.register_blueprint(track.api)

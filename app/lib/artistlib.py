@@ -9,9 +9,9 @@ from tqdm import tqdm
 from requests.exceptions import ConnectionError as ReqConnError, ReadTimeout
 
 from app import settings
-from app.models import Artist
-from app.db.store import Store
-from app.utils import create_hash
+from app.models import Artist, Track, Album
+from app.db import store
+from app.utils.hashing import create_hash
 
 
 def get_artist_image_link(artist: str):
@@ -38,6 +38,7 @@ def get_artist_image_link(artist: str):
         return None
 
 
+# TODO: Move network calls to utils/network.py
 class DownloadImage:
     def __init__(self, url: str, name: str) -> None:
         sm_path = Path(settings.ARTIST_IMG_SM_PATH) / name
@@ -71,8 +72,8 @@ class CheckArtistImages:
         with ThreadPoolExecutor() as pool:
             list(
                 tqdm(
-                    pool.map(self.download_image, Store.artists),
-                    total=len(Store.artists),
+                    pool.map(self.download_image, store.Store.artists),
+                    total=len(store.Store.artists),
                     desc="Downloading artist images",
                 )
             )
@@ -95,13 +96,9 @@ class CheckArtistImages:
             return DownloadImage(url, name=f"{artist.artisthash}.webp")
 
 
-# def fetch_album_bio(title: str, albumartist: str) -> str | None:
-#     """
-#     Returns the album bio for a given album.
-#     """
-#     last_fm_url = "http://ws.audioscrobbler.com/2.0/?method=album.getinfo&api_key={}&artist={}&album={}&format=json".format(
-#         settings.LAST_FM_API_KEY, albumartist, title
-#     )
+# def fetch_album_bio(title: str, albumartist: str) -> str | None: """ Returns the album bio for a given album. """
+# last_fm_url = "http://ws.audioscrobbler.com/2.0/?method=album.getinfo&api_key={}&artist={}&album={
+# }&format=json".format( settings.LAST_FM_API_KEY, albumartist, title )
 
 #     try:
 #         response = requests.get(last_fm_url)
@@ -128,3 +125,42 @@ class CheckArtistImages:
 
 #     def __call__(self):
 #         return fetch_album_bio(self.title, self.albumartist)
+
+
+def get_artists_from_tracks(tracks: list[Track]) -> set[str]:
+    """
+    Extracts all artists from a list of tracks. Returns a list of Artists.
+    """
+    artists = set()
+
+    master_artist_list = [[x.name for x in t.artist] for t in tracks]
+    artists = artists.union(*master_artist_list)
+
+    return artists
+
+
+def get_albumartists(albums: list[Album]) -> set[str]:
+    artists = set()
+
+    for album in albums:
+        albumartists = [a.name for a in album.albumartists]
+
+        artists.update(albumartists)
+
+    return artists
+
+
+def get_all_artists(
+        tracks: list[Track], albums: list[Album]
+) -> list[Artist]:
+    artists_from_tracks = get_artists_from_tracks(tracks=tracks)
+    artist_from_albums = get_albumartists(albums=albums)
+
+    artists = list(artists_from_tracks.union(artist_from_albums))
+    artists = sorted(artists)
+
+    lower_artists = set(a.lower().strip() for a in artists)
+    indices = [[ar.lower().strip() for ar in artists].index(a) for a in lower_artists]
+    artists = [artists[i] for i in indices]
+
+    return [Artist(a) for a in artists]

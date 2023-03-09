@@ -3,7 +3,6 @@ Contains the SQLiteTrackMethods class which contains methods for
 interacting with the tracks table.
 """
 
-
 from collections import OrderedDict
 from sqlite3 import Cursor
 
@@ -38,7 +37,8 @@ class SQLiteTrackMethods:
             title,
             track,
             trackhash
-            ) VALUES(:album, :albumartist, :albumhash, :artist, :bitrate, :copyright, :date, :disc, :duration, :filepath, :folder, :genre, :title, :track, :trackhash)
+            ) VALUES(:album, :albumartist, :albumhash, :artist, :bitrate, :copyright, 
+            :date, :disc, :duration, :filepath, :folder, :genre, :title, :track, :trackhash)
             """
 
         track = OrderedDict(sorted(track.items()))

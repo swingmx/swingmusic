@@ -11,7 +11,7 @@ from app.lib.colorlib import ProcessAlbumColors, ProcessArtistColors
 from app.lib.taglib import extract_thumb, get_tags
 from app.logger import log
 from app.models import Album, Artist, Track
-from app.utils import run_fast_scandir
+from app.utils.filesystem import run_fast_scandir
 
 get_all_tracks = SQLiteTrackMethods.get_all_tracks
 insert_many_tracks = SQLiteTrackMethods.insert_many_tracks
@@ -71,7 +71,6 @@ class Populate:
         ProcessTrackThumbnails()
         ProcessAlbumColors()
         ProcessArtistColors()
-
 
     @staticmethod
     def filter_untagged(tracks: list[Track], files: list[str]):

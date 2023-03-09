@@ -5,14 +5,16 @@ import time
 from requests import ConnectionError as RequestConnectionError
 from requests import ReadTimeout
 
-from app import utils
 from app.lib.artistlib import CheckArtistImages
 from app.lib.populate import Populate, PopulateCancelledError
 from app.lib.trackslib import validate_tracks
 from app.logger import log
+from app.utils.generators import get_random_str
+from app.utils.network import Ping
+from app.utils.threading import background
 
 
-@utils.background
+@background
 def run_periodic_checks():
     """
     Checks for new songs every N minutes.
@@ -23,11 +25,11 @@ def run_periodic_checks():
 
     while True:
         try:
-            Populate(key=utils.get_random_str())
+            Populate(key=get_random_str())
         except PopulateCancelledError:
             pass
 
-        if utils.Ping()():
+        if Ping()():
             try:
                 CheckArtistImages()
             except (RequestConnectionError, ReadTimeout):

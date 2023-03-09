@@ -1,12 +1,15 @@
 """
 This library contains all the functions related to the search functionality.
 """
-from typing import List
+from typing import List, Generator, TypeVar, Any
+import itertools
 
 from rapidfuzz import fuzz, process
 from unidecode import unidecode
 
 from app import models
+from app.db.store import Store
+from app.utils.remove_duplicates import remove_duplicates
 
 ratio = fuzz.ratio
 wratio = fuzz.WRatio
@@ -35,31 +38,32 @@ class Limit:
 
 
 class SearchTracks:
-    def __init__(self, tracks: List[models.Track], query: str) -> None:
+    def __init__(self, query: str) -> None:
         self.query = query
-        self.tracks = tracks
+        self.tracks = Store.tracks
 
     def __call__(self) -> List[models.Track]:
         """
         Gets all songs with a given title.
         """
 
-        tracks = [unidecode(track.og_title).lower() for track in self.tracks]
+        track_titles = [unidecode(track.og_title).lower() for track in self.tracks]
         results = process.extract(
             self.query,
-            tracks,
+            track_titles,
             scorer=fuzz.WRatio,
             score_cutoff=Cutoff.tracks,
             limit=Limit.tracks,
         )
 
-        return [self.tracks[i[2]] for i in results]
+        tracks = [self.tracks[i[2]] for i in results]
+        return remove_duplicates(tracks)
 
 
 class SearchArtists:
-    def __init__(self, artists: list[models.Artist], query: str) -> None:
+    def __init__(self, query: str) -> None:
         self.query = query
-        self.artists = artists
+        self.artists = Store.artists
 
     def __call__(self) -> list:
         """
@@ -75,14 +79,13 @@ class SearchArtists:
             limit=Limit.artists,
         )
 
-        artists = [a[0] for a in results]
         return [self.artists[i[2]] for i in results]
 
 
 class SearchAlbums:
-    def __init__(self, albums: List[models.Album], query: str) -> None:
+    def __init__(self, query: str) -> None:
         self.query = query
-        self.albums = albums
+        self.albums = Store.albums
 
     def __call__(self) -> List[models.Album]:
         """
@@ -125,3 +128,90 @@ class SearchPlaylists:
         )
 
         return [self.playlists[i[2]] for i in results]
+
+
+_type = List[models.Track | models.Album | models.Artist]
+_S2 = TypeVar("_S2")
+_ResultType = int | float
+
+
+def get_titles(items: _type):
+    for item in items:
+        if isinstance(item, models.Track):
+            text = item.og_title
+        elif isinstance(item, models.Album):
+            text = item.title
+            # print(text)
+        elif isinstance(item, models.Artist):
+            text = item.name
+        else:
+            text = None
+
+        yield text
+
+
+class SearchAll:
+    """
+    Joins all tracks, albums and artists
+    then fuzzy searches them as a single unit.
+    """
+
+    @staticmethod
+    def collect_all():
+        all_items: _type = []
+
+        all_items.extend(Store.tracks)
+        all_items.extend(Store.albums)
+        all_items.extend(Store.artists)
+
+        return all_items, get_titles(all_items)
+
+    @staticmethod
+    def get_results(items: Generator[str, Any, None], query: str):
+        items = list(items)
+
+        results = process.extract(
+            query=query,
+            choices=items,
+            scorer=fuzz.WRatio,
+            score_cutoff=Cutoff.tracks,
+            limit=20
+        )
+
+        return results
+
+    @staticmethod
+    def sort_results(items: _type):
+        """
+        Separates results into differrent lists using itertools.groupby.
+        """
+        mapped_items = [
+            {"type": "track", "item": item} if isinstance(item, models.Track) else
+            {"type": "album", "item": item} if isinstance(item, models.Album) else
+            {"type": "artist", "item": item} if isinstance(item, models.Artist) else
+            {"type": "Unknown", "item": item} for item in items
+        ]
+
+        mapped_items.sort(key=lambda x: x["type"])
+
+        groups = [
+            list(group) for key, group in
+            itertools.groupby(mapped_items, lambda x: x["type"])
+        ]
+
+        print(len(groups))
+
+        # merge items of a group into a dict that looks like: {"albums": [album1, ...]}
+        groups = [
+            {f"{group[0]['type']}s": [i['item'] for i in group]} for group in groups
+        ]
+
+        return groups
+
+    @staticmethod
+    def search(query: str):
+        items, titles = SearchAll.collect_all()
+        results = SearchAll.get_results(titles, query)
+        results = [items[i[2]] for i in results]
+
+        return SearchAll.sort_results(results)

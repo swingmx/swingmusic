@@ -10,8 +10,9 @@ from flask import Blueprint, request
 from app import settings
 from app.lib.folderslib import GetFilesAndDirs
 from app.db.sqlite.settings import SettingsSQLMethods as db
-from app.models import Folder
-from app.utils import create_folder_hash, is_windows, win_replace_slash
+from app.models.folder import Folder
+from app.utils.hashing import create_folder_hash
+from app.utils.wintools import win_replace_slash, is_windows
 
 api = Blueprint("folder", __name__, url_prefix="/")
 

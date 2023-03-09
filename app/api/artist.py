@@ -8,7 +8,7 @@ from flask import Blueprint, request
 from app.db.sqlite.favorite import SQLiteFavoriteMethods as favdb
 from app.db.store import Store
 from app.models import Album, FavType, Track
-from app.utils import remove_duplicates
+from app.utils.remove_duplicates import remove_duplicates
 
 api = Blueprint("artist", __name__, url_prefix="/")
 

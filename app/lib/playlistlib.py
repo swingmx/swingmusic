@@ -4,13 +4,11 @@ This library contains all the functions related to playlists.
 import os
 import random
 import string
-from datetime import datetime
 from typing import Any
 
 from PIL import Image, ImageSequence
 
 from app import settings
-from app.logger import log
 
 
 def create_thumbnail(image: Any, img_path: str) -> str:
@@ -80,36 +78,33 @@ def save_p_image(file, pid: str):
 
     return filename
 
-
-class ValidatePlaylistThumbs:
-    """
-    Removes all unused images in the images/playlists folder.
-    """
-
-    def __init__(self) -> None:
-        images = []
-        playlists = Get.get_all_playlists()
-
-        log.info("Validating playlist thumbnails")
-        for playlist in playlists:
-            if playlist.image:
-                img_path = playlist.image.split("/")[-1]
-                thumb_path = playlist.thumb.split("/")[-1]
-
-                images.append(img_path)
-                images.append(thumb_path)
-
-        p_path = os.path.join(settings.APP_DIR, "images", "playlists")
-
-        for image in os.listdir(p_path):
-            if image not in images:
-                os.remove(os.path.join(p_path, image))
-
-        log.info("Validating playlist thumbnails ... ✅")
-
-
-def create_new_date():
-    return datetime.now()
+#
+# class ValidatePlaylistThumbs:
+#     """
+#     Removes all unused images in the images/playlists folder.
+#     """
+#
+#     def __init__(self) -> None:
+#         images = []
+#         playlists = Get.get_all_playlists()
+#
+#         log.info("Validating playlist thumbnails")
+#         for playlist in playlists:
+#             if playlist.image:
+#                 img_path = playlist.image.split("/")[-1]
+#                 thumb_path = playlist.thumb.split("/")[-1]
+#
+#                 images.append(img_path)
+#                 images.append(thumb_path)
+#
+#         p_path = os.path.join(settings.APP_DIR, "images", "playlists")
+#
+#         for image in os.listdir(p_path):
+#             if image not in images:
+#                 os.remove(os.path.join(p_path, image))
+#
+#         log.info("Validating playlist thumbnails ... ✅")
+#
 
 
 # TODO: Fix ValidatePlaylistThumbs

@@ -75,6 +75,7 @@ APP_DB_NAME = "swing.db"
 USER_DATA_DB_NAME = "userdata.db"
 APP_DB_PATH = os.path.join(APP_DIR, APP_DB_NAME)
 USERDATA_DB_PATH = os.path.join(APP_DIR, USER_DATA_DB_NAME)
+JSON_CONFIG_PATH = os.path.join(APP_DIR, "config.json")
 
 
 class FLASKVARS:
@@ -122,3 +123,5 @@ class TCOLOR:
     BOLD = "\033[1m"
     UNDERLINE = "\033[4m"
     # credits: https://stackoverflow.com/a/287944
+
+

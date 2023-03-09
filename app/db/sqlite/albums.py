@@ -1,11 +1,9 @@
 from sqlite3 import Cursor
 
-from app.db import AlbumMethods
-
 from .utils import SQLiteManager, tuple_to_album, tuples_to_albums
 
 
-class SQLiteAlbumMethods(AlbumMethods):
+class SQLiteAlbumMethods:
     @classmethod
     def insert_one_album(cls, cur: Cursor, albumhash: str, colors: str):
         """

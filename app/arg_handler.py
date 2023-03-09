@@ -9,7 +9,7 @@ import PyInstaller.__main__ as bundler
 
 from app import settings
 from app.print_help import HELP_MESSAGE
-from app.utils import is_windows
+from app.utils.wintools import is_windows
 
 config = ConfigParser()
 config.read("pyinstaller.config.ini")

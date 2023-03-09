@@ -1,8 +1,8 @@
 import os
 
-from app.utils import get_ip
 from app.settings import TCOLOR, APP_VERSION, FLASKVARS, APP_DIR
 from app import settings
+from app.utils.network import get_ip
 
 
 def log_startup_info():

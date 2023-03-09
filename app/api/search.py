@@ -2,15 +2,14 @@
 Contains all the search routes.
 """
 
+from unidecode import unidecode
 from flask import Blueprint, request
 
-from app import models, utils
+from app import models
 from app.db.store import Store
 from app.lib import searchlib
-from unidecode import unidecode
 
 api = Blueprint("search", __name__, url_prefix="/")
-
 
 SEARCH_COUNT = 12
 """The max amount of items to return per request"""
@@ -28,48 +27,36 @@ class SearchResults:
     artists: list[models.Artist] = []
 
 
-class DoSearch:
-    """Class containing the methods that perform searching."""
-
+class Search:
     def __init__(self, query: str) -> None:
-        """
-        :param :str:`query`: the search query.
-        """
         self.tracks: list[models.Track] = []
         self.query = unidecode(query)
         SearchResults.query = self.query
 
     def search_tracks(self):
-        """Calls :class:`SearchTracks` which returns the tracks that fuzzily match
+        """
+        Calls :class:`SearchTracks` which returns the tracks that fuzzily match
         the search terms. Then adds them to the `SearchResults` store.
         """
         self.tracks = Store.tracks
-        tracks = searchlib.SearchTracks(self.tracks, self.query)()
+        tracks = searchlib.SearchTracks(self.query)()
 
-        if len(tracks) == 0:
-            return []
-
-        tracks = utils.remove_duplicates(tracks)
         SearchResults.tracks = tracks
-
         return tracks
 
     def search_artists(self):
         """Calls :class:`SearchArtists` which returns the artists that fuzzily match
         the search term. Then adds them to the `SearchResults` store.
         """
-        artists = [a.name for a in Store.artists]
-        artists = searchlib.SearchArtists(Store.artists, self.query)()
+        artists = searchlib.SearchArtists(self.query)()
         SearchResults.artists = artists
-
         return artists
 
     def search_albums(self):
         """Calls :class:`SearchAlbums` which returns the albums that fuzzily match
         the search term. Then adds them to the `SearchResults` store.
         """
-        albums = Store.albums
-        albums = searchlib.SearchAlbums(albums, self.query)()
+        albums = searchlib.SearchAlbums(self.query)()
         SearchResults.albums = albums
 
         return albums
@@ -85,6 +72,10 @@ class DoSearch:
     #     SearchResults.playlists = playlists
 
     #     return playlists
+
+    def get_top_results(self):
+        finder = searchlib.SearchAll()
+        return finder.search(self.query)
 
     def search_all(self):
         """Calls all the search methods."""
@@ -104,7 +95,7 @@ def search_tracks():
     if not query:
         return {"error": "No query provided"}, 400
 
-    tracks = DoSearch(query).search_tracks()
+    tracks = Search(query).search_tracks()
 
     return {
         "tracks": tracks[:SEARCH_COUNT],
@@ -122,7 +113,7 @@ def search_albums():
     if not query:
         return {"error": "No query provided"}, 400
 
-    tracks = DoSearch(query).search_albums()
+    tracks = Search(query).search_albums()
 
     return {
         "albums": tracks[:SEARCH_COUNT],
@@ -140,7 +131,7 @@ def search_artists():
     if not query:
         return {"error": "No query provided"}, 400
 
-    artists = DoSearch(query).search_artists()
+    artists = Search(query).search_artists()
 
     return {
         "artists": artists[:SEARCH_COUNT],
@@ -176,14 +167,17 @@ def get_top_results():
     if not query:
         return {"error": "No query provided"}, 400
 
-    DoSearch(query).search_all()
+    results = Search(query).get_top_results()
 
-    max_results = 2
+    # max_results = 2
+    # return {
+    #     "tracks": SearchResults.tracks[:max_results],
+    #     "albums": SearchResults.albums[:max_results],
+    #     "artists": SearchResults.artists[:max_results],
+    #     "playlists": SearchResults.playlists[:max_results],
+    # }
     return {
-        "tracks": SearchResults.tracks[:max_results],
-        "albums": SearchResults.albums[:max_results],
-        "artists": SearchResults.artists[:max_results],
-        "playlists": SearchResults.playlists[:max_results],
+        "results": results
     }
 
 
@@ -198,20 +192,20 @@ def search_load_more():
     if s_type == "tracks":
         t = SearchResults.tracks
         return {
-            "tracks": t[index : index + SEARCH_COUNT],
+            "tracks": t[index: index + SEARCH_COUNT],
             "more": len(t) > index + SEARCH_COUNT,
         }
 
     elif s_type == "albums":
         a = SearchResults.albums
         return {
-            "albums": a[index : index + SEARCH_COUNT],
+            "albums": a[index: index + SEARCH_COUNT],
             "more": len(a) > index + SEARCH_COUNT,
         }
 
     elif s_type == "artists":
         a = SearchResults.artists
         return {
-            "artists": a[index : index + SEARCH_COUNT],
+            "artists": a[index: index + SEARCH_COUNT],
             "more": len(a) > index + SEARCH_COUNT,
         }

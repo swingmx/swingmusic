@@ -4,9 +4,10 @@ from app import settings
 from app.logger import log
 from app.lib import populate
 from app.db.store import Store
-from app.utils import background, get_random_str
 from app.lib.watchdogg import Watcher as WatchDog
 from app.db.sqlite.settings import SettingsSQLMethods as sdb
+from app.utils.generators import get_random_str
+from app.utils.threading import background
 
 api = Blueprint("settings", __name__, url_prefix="/")
 

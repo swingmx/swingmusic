@@ -11,7 +11,8 @@ from app import models, serializer
 from app.db.sqlite.playlists import SQLitePlaylistMethods
 from app.db.store import Store
 from app.lib import playlistlib
-from app.utils import create_new_date, remove_duplicates
+from app.utils.generators import create_new_date
+from app.utils.remove_duplicates import remove_duplicates
 
 api = Blueprint("playlist", __name__, url_prefix="/")
 

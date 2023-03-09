@@ -10,7 +10,8 @@ from app.lib.watchdogg import Watcher as WatchDog
 from app.settings import FLASKVARS
 from app.setup import run_setup
 from app.start_info_logger import log_startup_info
-from app.utils import background, get_home_res_path
+from app.utils.filesystem import get_home_res_path
+from app.utils.threading import background
 
 werkzeug = logging.getLogger("werkzeug")
 werkzeug.setLevel(logging.ERROR)

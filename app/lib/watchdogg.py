@@ -8,7 +8,6 @@ import time
 from watchdog.events import PatternMatchingEventHandler
 from watchdog.observers import Observer
 
-
 from app.logger import log
 from app.db.store import Store
 from app.lib.taglib import get_tags
@@ -90,6 +89,9 @@ class Watcher:
             log.error(
                 "WatchdogError: Failed to start watchdog,  root directories could not be resolved."
             )
+            return
+        except OSError as e:
+            log.error('Failed to start watchdog. %s', e)
             return
 
         try:

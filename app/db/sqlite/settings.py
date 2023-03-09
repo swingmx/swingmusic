@@ -1,5 +1,5 @@
 from app.db.sqlite.utils import SQLiteManager
-from app.utils import win_replace_slash
+from app.utils.wintools import win_replace_slash
 
 
 class SettingsSQLMethods:
@@ -19,7 +19,7 @@ class SettingsSQLMethods:
             cur.execute(sql)
             dirs = cur.fetchall()
 
-            dirs = [dir[0] for dir in dirs]
+            dirs = [_dir[0] for _dir in dirs]
             return [win_replace_slash(d) for d in dirs]
 
     @staticmethod
@@ -31,7 +31,7 @@ class SettingsSQLMethods:
         sql = "INSERT INTO settings (root_dirs) VALUES (?)"
         existing_dirs = SettingsSQLMethods.get_root_dirs()
 
-        dirs = [dir for dir in dirs if dir not in existing_dirs]
+        dirs = [_dir for _dir in dirs if _dir not in existing_dirs]
 
         if len(dirs) == 0:
             return
@@ -85,4 +85,4 @@ class SettingsSQLMethods:
         with SQLiteManager(userdata_db=True) as cur:
             cur.execute(sql)
             dirs = cur.fetchall()
-            return [dir[0] for dir in dirs]
+            return [_dir[0] for _dir in dirs]

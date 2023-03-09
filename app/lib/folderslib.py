@@ -5,7 +5,7 @@ from app.db.store import Store
 from app.models import Folder, Track
 from app.settings import SUPPORTED_FILES
 from app.logger import log
-from app.utils import win_replace_slash
+from app.utils.wintools import win_replace_slash
 
 
 class GetFilesAndDirs:

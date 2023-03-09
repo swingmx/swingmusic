@@ -6,13 +6,12 @@ from dataclasses import asdict
 
 from flask import Blueprint, request
 
-from app import utils
 from app.db.sqlite.albums import SQLiteAlbumMethods as adb
 from app.db.sqlite.favorite import SQLiteFavoriteMethods as favdb
 from app.db.store import Store
 from app.models import FavType, Track
+from app.utils.remove_duplicates import remove_duplicates
 
-get_album_by_id = adb.get_album_by_id
 get_albums_by_albumartist = adb.get_albums_by_albumartist
 check_is_fav = favdb.check_is_favorite
 
@@ -20,8 +19,10 @@ api = Blueprint("album", __name__, url_prefix="")
 
 
 @api.route("/album", methods=["POST"])
-def get_album():
-    """Returns all the tracks in the given album."""
+def get_album_tracks_and_info():
+    """
+    Returns all the tracks in the given album
+    """
 
     data = request.get_json()
     error_msg = {"msg": "No hash provided"}
@@ -58,7 +59,7 @@ def get_album():
         return list(genres)
 
     album.genres = get_album_genres(tracks)
-    tracks = utils.remove_duplicates(tracks)
+    tracks = remove_duplicates(tracks)
 
     album.count = len(tracks)
     album.get_date_from_tracks(tracks)
@@ -83,7 +84,7 @@ def get_album():
 @api.route("/album/<albumhash>/tracks", methods=["GET"])
 def get_album_tracks(albumhash: str):
     """
-    Returns all the tracks in the given album.
+    Returns all the tracks in the given album, sorted by disc and track number.
     """
     tracks = Store.get_tracks_by_albumhash(albumhash)
     tracks = [asdict(t) for t in tracks]
@@ -104,11 +105,11 @@ def get_artist_albums():
     if data is None:
         return {"msg": "No albumartist provided"}
 
-    albumartists: str = data["albumartists"]  # type: ignore
+    albumartists: str = data["albumartists"]
     limit: int = data.get("limit")
     exclude: str = data.get("exclude")
 
-    albumartists: list[str] = albumartists.split(",")  # type: ignore
+    albumartists: list[str] = albumartists.split(",")
 
     albums = [
         {
@@ -121,22 +122,3 @@ def get_artist_albums():
     albums = [a for a in albums if len(a["albums"]) > 0]
 
     return {"data": albums}
-
-# @album_bp.route("/album/bio", methods=["POST"])
-# def get_album_bio():
-#     """Returns the album bio for the given album."""
-#     data = request.get_json()
-#     album_hash = data["hash"]
-#     err_msg = {"bio": "No bio found"}
-
-#     album = instances.album_instance.find_album_by_hash(album_hash)
-
-#     if album is None:
-#         return err_msg, 404
-
-#     bio = FetchAlbumBio(album["title"], album["artist"])()
-
-#     if bio is None:
-#         return err_msg, 404
-
-#     return {"bio": bio}

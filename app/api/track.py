@@ -1,7 +1,9 @@
 """
 Contains all the track routes.
 """
-from flask import Blueprint, send_file
+import os
+
+from flask import Blueprint, send_file, request
 
 from app.db.store import Store
 
@@ -15,20 +17,31 @@ def send_track_file(trackhash: str):
     Falls back to track hash if id is not found.
     """
     msg = {"msg": "File Not Found"}
+
+    def get_mime(filename: str) -> str:
+        ext = filename.rsplit(".", maxsplit=1)[-1]
+        return f"audio/{ext}"
+
+    filepath = request.args.get("filepath")
+
+    if filepath is not None and os.path.exists(filepath):
+        audio_type = get_mime(filepath)
+        return send_file(filepath, mimetype=audio_type)
+
     if trackhash is None:
         return msg, 404
 
-    try:
-        track = Store.get_tracks_by_trackhashes([trackhash])[0]
-    except IndexError:
-        track = None
+    tracks = Store.get_tracks_by_trackhashes([trackhash])
 
-    if track is None:
-        return msg, 404
+    for track in tracks:
+        if track is None:
+            return msg, 404
 
-    audio_type = track.filepath.rsplit(".", maxsplit=1)[-1]
+        audio_type = get_mime(track.filepath)
 
-    try:
-        return send_file(track.filepath, mimetype=f"audio/{audio_type}")
-    except FileNotFoundError:
-        return msg, 404
+        try:
+            return send_file(track.filepath, mimetype=audio_type)
+        except FileNotFoundError:
+            return msg, 404
+
+    return msg, 404

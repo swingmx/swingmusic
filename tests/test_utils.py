@@ -1,5 +1,5 @@
-from hypothesis import given
-from app.utils import parse_feat_from_title
+# from hypothesis import given
+from app.utils.parsers import parse_feat_from_title
 
 
 def test_extract_featured_artists_from_title():

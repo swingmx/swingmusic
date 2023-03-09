@@ -22,7 +22,7 @@ def run_preinit_migrations():
     """
     try:
         userdb_version = MigrationManager.get_preinit_version()
-    except (OperationalError):
+    except OperationalError:
         userdb_version = 0
 
     for migration in all_preinits:
