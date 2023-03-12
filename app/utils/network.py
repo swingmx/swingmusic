@@ -26,3 +26,4 @@ def get_ip():
     soc.close()
 
     return ip_address
+

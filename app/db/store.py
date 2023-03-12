@@ -329,7 +329,7 @@ class Store:
 
     @classmethod
     def get_albums_by_albumartist(
-        cls, artisthash: str, limit: int, exclude: str
+            cls, artisthash: str, limit: int, exclude: str
     ) -> list[Album]:
         """
         Returns N albums by the given albumartist, excluding the specified album.
@@ -440,11 +440,20 @@ class Store:
     @classmethod
     def get_artist_by_hash(cls, artisthash: str) -> Artist:
         """
-        Returns an artist by its hash.
+        Returns an artist by its hash.P
         """
         artists = sorted(cls.artists, key=lambda x: x.artisthash)
         artist = UseBisection(artists, "artisthash", [artisthash])()[0]
         return artist
+
+    @classmethod
+    def get_artists_by_hashes(cls, artisthashes: list[str]) -> list[Artist]:
+        """
+        Returns artists by their hashes.
+        """
+        artists = sorted(cls.artists, key=lambda x: x.artisthash)
+        artists = UseBisection(artists, "artisthash", artisthashes)()
+        return [a for a in artists if a is not None]
 
     @classmethod
     def artist_exists(cls, artisthash: str) -> bool:

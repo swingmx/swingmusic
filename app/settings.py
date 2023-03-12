@@ -125,3 +125,6 @@ class TCOLOR:
     # credits: https://stackoverflow.com/a/287944
 
 
+class Keys:
+    # get last fm api key from os environment
+    LASTFM_API_KEY = os.environ.get("LASTFM_API_KEY")

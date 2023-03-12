@@ -1,6 +1,7 @@
 """
 Contains all the artist(s) routes.
 """
+import random
 from collections import deque
 
 from flask import Blueprint, request
@@ -9,6 +10,7 @@ from app.db.sqlite.favorite import SQLiteFavoriteMethods as favdb
 from app.db.store import Store
 from app.models import Album, FavType, Track
 from app.utils.remove_duplicates import remove_duplicates
+from app.requests.artists import fetch_similar_artists
 
 api = Blueprint("artist", __name__, url_prefix="/")
 
@@ -267,61 +269,36 @@ def get_artist_albums(artisthash: str):
 
 
 @api.route("/artist/<artisthash>/tracks", methods=["GET"])
-def get_artist_tracks(artisthash: str):
+def get_all_artist_tracks(artisthash: str):
     """
     Returns all artists by a given artist.
     """
     tracks = Store.get_tracks_by_artist(artisthash)
 
     return {"tracks": tracks}
-    # artist = Store.get_artist_by_hash(artisthash)
-    # if artist is None:
-    #     return {"error": "Artist not found"}, 404
 
-    # return {"albums": albums[:limit]}
 
-# @artist_bp.route("/artist/<artist>")
-# @cache.cached()
-# def get_artist_data(artist: str):
-#     """Returns the artist's data, tracks and albums"""
-#     artist = urllib.parse.unquote(artist)
-#     artist_obj = instances.artist_instance.get_artists_by_name(artist)
+@api.route("/artist/<artisthash>/similar", methods=["GET"])
+def get_similar_artists(artisthash: str):
+    """
+    Returns similar artists.
+    """
+    limit = request.args.get("limit")
 
-#     def get_artist_tracks():
-#         songs = instances.tracks_instance.find_songs_by_artist(artist)
+    if limit is None:
+        limit = 6
 
-#         return songs
+    limit = int(limit)
 
-#     artist_songs = get_artist_tracks()
-#     songs = utils.remove_duplicates(artist_songs)
+    artist = Store.get_artist_by_hash(artisthash)
 
-#     def get_artist_albums():
-#         artist_albums = []
-#         albums_with_count = []
+    if artist is None:
+        return {"error": "Artist not found"}, 404
 
-#         albums = instances.tracks_instance.find_songs_by_albumartist(artist)
+    similar_hashes = fetch_similar_artists(artist.name)
+    similar = Store.get_artists_by_hashes(similar_hashes)
 
-#         for song in albums:
-#             if song["album"] not in artist_albums:
-#                 artist_albums.append(song["album"])
+    if len(similar) > limit:
+        similar = random.sample(similar, limit)
 
-#         for album in artist_albums:
-#             count = 0
-#             length = 0
-
-#             for song in artist_songs:
-#                 if song["album"] == album:
-#                     count = count + 1
-#                     length = length + song["length"]
-
-#             album_ = {"title": album, "count": count, "length": length}
-
-#             albums_with_count.append(album_)
-
-#         return albums_with_count
-
-#     return {
-#         "artist": artist_obj,
-#         "songs": songs,
-#         "albums": get_artist_albums()
-#     }
+    return {"similar": similar[:limit]}
