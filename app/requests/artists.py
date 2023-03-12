@@ -12,7 +12,7 @@ def fetch_similar_artists(name: str):
     Fetches similar artists from Last.fm
     """
     url = f"https://ws.audioscrobbler.com/2.0/?method=artist.getsimilar&artist={name}&api_key=" \
-          f"{settings.Keys.LASTFM_API_KEY}&format=json&limit=100"
+          f"{settings.Keys.LASTFM_API_KEY}&format=json&limit=250"
 
     response = requests.get(url, timeout=10)
     response.raise_for_status()
