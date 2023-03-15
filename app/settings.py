@@ -43,6 +43,8 @@ ARTIST_IMG_PATH = os.path.join(IMG_PATH, "artists")
 ARTIST_IMG_SM_PATH = os.path.join(ARTIST_IMG_PATH, "small")
 ARTIST_IMG_LG_PATH = os.path.join(ARTIST_IMG_PATH, "large")
 
+PLAYLIST_IMG_PATH = os.path.join(IMG_PATH, "playlists")
+
 THUMBS_PATH = os.path.join(IMG_PATH, "thumbnails")
 SM_THUMB_PATH = os.path.join(THUMBS_PATH, "small")
 LG_THUMBS_PATH = os.path.join(THUMBS_PATH, "large")

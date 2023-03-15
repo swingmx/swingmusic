@@ -68,7 +68,10 @@ class Store:
         """
 
         trackhashes = " ".join(trackhashes)
-        return [track for track in cls.tracks if track.trackhash in trackhashes]
+        tracks = [track for track in cls.tracks if track.trackhash in trackhashes]
+
+        tracks.sort(key=lambda t: trackhashes.index(t.trackhash))
+        return tracks
 
     @classmethod
     def remove_track_by_filepath(cls, filepath: str):
@@ -354,6 +357,18 @@ class Store:
             return [a for a in cls.albums if a.albumhash == albumhash][0]
         except IndexError:
             return None
+
+    @classmethod
+    def get_albums_by_hashes(cls, albumhashes: list[str]) -> list[Album]:
+        """
+        Returns albums by their hashes.
+        """
+        albums_str = "-".join(albumhashes)
+        albums = [a for a in cls.albums if a.albumhash in albums_str]
+
+        # sort albums by the order of the hashes
+        albums.sort(key=lambda x: albumhashes.index(x.albumhash))
+        return albums
 
     @classmethod
     def get_albums_by_artisthash(cls, artisthash: str) -> list[Album]:

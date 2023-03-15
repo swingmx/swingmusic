@@ -14,7 +14,7 @@ def date_string_to_time_passed(prev_date: str) -> str:
     seconds = diff.total_seconds()
 
     if seconds < 0:
-        return "in the future"
+        return "-from a time machine 🛸"
 
     if seconds < 15:
         return "now"

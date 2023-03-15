@@ -45,6 +45,6 @@ def get_home_res_path(filename: str):
     Used to resolve resources in builds.
     """
     try:
-        return (CWD / ".." / filename).resolve()
+        return (CWD / ".." / ".." / filename).resolve()
     except ValueError:
         return None

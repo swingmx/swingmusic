@@ -28,6 +28,7 @@ add_artist_to_playlist = PL.add_artist_to_playlist
 update_playlist = PL.update_playlist
 delete_playlist = PL.delete_playlist
 
+
 # get_tracks_by_trackhashes = SQLiteTrackMethods.get_tracks_by_trackhashes
 
 
@@ -116,10 +117,40 @@ def get_playlist(playlistid: str):
     tracks = Store.get_tracks_by_trackhashes(list(playlist.trackhashes))
     tracks = remove_duplicates(tracks)
 
+    playlist.trackhashes = []
+
     duration = sum(t.duration for t in tracks)
     playlist.last_updated = serializer.date_string_to_time_passed(playlist.last_updated)
 
     playlist.duration = duration
+
+    if not playlist.has_image:
+        albums = []
+        for track in tracks:
+            if track.albumhash not in albums:
+                albums.append(track.albumhash)
+                if len(albums) == 4:
+                    break
+
+        albums = Store.get_albums_by_hashes(albums)
+        playlist.images = [
+            {
+                'image': album.image,
+                'color': ''.join(album.colors),
+            }
+            for album in albums
+        ]
+
+        if len(playlist.images) == 1:
+            playlist.images = playlist.images * 4
+        elif len(playlist.images) == 2:
+            playlist.images = playlist.images * 2
+        elif len(playlist.images) == 3:
+            playlist.images = playlist.images + playlist.images[:1]
+
+        # swap 3rd image with first (3rd image is the visible image in UI)
+        if len(playlist.images) > 2:
+            playlist.images[2], playlist.images[0] = playlist.images[0], playlist.images[2]
 
     return {"info": playlist, "tracks": tracks}
 
@@ -176,16 +207,6 @@ def update_playlist_info(playlistid: str):
     return {
         "data": playlist,
     }
-
-
-# @playlist_bp.route("/playlist/artists", methods=["POST"])
-# def get_playlist_artists():
-#     data = request.get_json()
-
-#     pid = data["pid"]
-#     artists = playlistlib.GetPlaylistArtists(pid)()
-
-#     return {"data": artists}
 
 
 @api.route("/playlist/delete", methods=["POST"])

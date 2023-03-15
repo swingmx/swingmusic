@@ -60,7 +60,7 @@ def save_p_image(file, pid: str):
 
     filename = pid + str(random_str) + ".webp"
 
-    full_img_path = os.path.join(settings.APP_DIR, "images", "playlists", filename)
+    full_img_path = os.path.join(settings.PLAYLIST_IMG_PATH, filename)
 
     if file.content_type == "image/gif":
         frames = []
