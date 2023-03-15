@@ -76,8 +76,10 @@ class Album:
         if "various artists" in artists:
             return True
 
-        substrings = ["the essential", "best of", "greatest hits", "#1 hits", "number ones", "super hits",
-                      "ultimate collection"]
+        substrings = [
+            "the essential", "best of", "greatest hits", "#1 hits", "number ones", "super hits",
+            "ultimate collection", "anthology", "great hits", "biggest hits", "the hits"
+        ]
 
         for substring in substrings:
             if substring in self.title.lower():
