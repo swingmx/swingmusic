@@ -30,6 +30,36 @@ delete_playlist = PL.delete_playlist
 
 
 # get_tracks_by_trackhashes = SQLiteTrackMethods.get_tracks_by_trackhashes
+def duplicate_images(images: list):
+    if len(images) == 1:
+        images = images * 4
+    elif len(images) == 2:
+        images = images + list(reversed(images))
+    elif len(images) == 3:
+        images = images + images[:1]
+
+    return images
+
+
+def get_first_4_images(trackhashes: list[str]) -> list[dict['str', str]]:
+    tracks = Store.get_tracks_by_trackhashes(trackhashes)
+    albums = []
+
+    for track in tracks:
+        if track.albumhash not in albums:
+            albums.append(track.albumhash)
+            if len(albums) == 4:
+                break
+
+    albums = Store.get_albums_by_hashes(albums)
+    images = [
+        {
+            'image': album.image,
+            'color': ''.join(album.colors),
+        }
+        for album in albums
+    ]
+    return duplicate_images(images)
 
 
 @api.route("/playlists", methods=["GET"])
@@ -37,8 +67,19 @@ def send_all_playlists():
     """
     Gets all the playlists.
     """
+    # get the no_images query param
+    no_images = request.args.get("no_images", False)
+
     playlists = get_all_playlists()
     playlists = list(playlists)
+
+    for playlist in playlists:
+        if not no_images:
+            playlist.images = get_first_4_images(playlist.trackhashes)
+            playlist.images = [img['image'] for img in playlist.images]
+
+        playlist.trackhashes = []
+        playlist.artisthashes = []
 
     playlists.sort(
         key=lambda p: datetime.strptime(p.last_updated, "%Y-%m-%d %H:%M:%S"),
@@ -117,40 +158,20 @@ def get_playlist(playlistid: str):
     tracks = Store.get_tracks_by_trackhashes(list(playlist.trackhashes))
     tracks = remove_duplicates(tracks)
 
-    playlist.trackhashes = []
-
     duration = sum(t.duration for t in tracks)
     playlist.last_updated = serializer.date_string_to_time_passed(playlist.last_updated)
 
     playlist.duration = duration
 
     if not playlist.has_image:
-        albums = []
-        for track in tracks:
-            if track.albumhash not in albums:
-                albums.append(track.albumhash)
-                if len(albums) == 4:
-                    break
+        playlist.images = get_first_4_images(playlist.trackhashes)
 
-        albums = Store.get_albums_by_hashes(albums)
-        playlist.images = [
-            {
-                'image': album.image,
-                'color': ''.join(album.colors),
-            }
-            for album in albums
-        ]
-
-        if len(playlist.images) == 1:
-            playlist.images = playlist.images * 4
-        elif len(playlist.images) == 2:
-            playlist.images = playlist.images * 2
-        elif len(playlist.images) == 3:
-            playlist.images = playlist.images + playlist.images[:1]
-
-        # swap 3rd image with first (3rd image is the visible image in UI)
         if len(playlist.images) > 2:
+            # swap 3rd image with first (3rd image is the visible image in UI)
             playlist.images[2], playlist.images[0] = playlist.images[0], playlist.images[2]
+
+    playlist.trackhashes = []
+    playlist.artisthashes = []
 
     return {"info": playlist, "tracks": tracks}
 
