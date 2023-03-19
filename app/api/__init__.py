@@ -6,7 +6,7 @@ from flask import Flask
 from flask_cors import CORS
 
 from app.api import (album, artist, favorites, folder, imgserver, playlist,
-                     search, settings, track)
+                     search, settings, track, colors)
 
 
 def create_api():
@@ -26,5 +26,6 @@ def create_api():
         app.register_blueprint(favorites.api)
         app.register_blueprint(imgserver.api)
         app.register_blueprint(settings.api)
+        app.register_blueprint(colors.api)
 
         return app
