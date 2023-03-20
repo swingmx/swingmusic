@@ -1,5 +1,5 @@
 ### Open the following links in new tabs (`ctrl + click`) to view screenshots:
-
+> These images were taken on v1.10, they might be a lil bit outdated.
 1. [Album page](https://github.com/geoffrey45/swingmusic/blob/master/screenshots/album-page.png?raw=true)
 2. [Artist page](https://github.com/geoffrey45/swingmusic/blob/master/screenshots/artist-page-1.png?raw=true)
 3. [Artist page continuation](https://github.com/geoffrey45/swingmusic/blob/master/screenshots/artist-page-2.png?raw=true)
