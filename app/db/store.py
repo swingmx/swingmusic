@@ -235,6 +235,7 @@ class Store:
         """
         Returns a folder object by its path.
         """
+        # TODO: Modify this method to accept a list of paths, sorting is computationally expensive.
         folders = sorted(cls.folders, key=lambda x: x.path)
         folder = UseBisection(folders, "path", [path])()[0]
 
@@ -249,6 +250,21 @@ class Store:
         folder = cls.create_folder(path)
         cls.folders.append(folder)
         return folder
+
+    @classmethod
+    def get_folders_count(cls, paths: list[str]) -> list[dict[str, int]]:
+        count_dict = {path: 0 for path in paths}
+
+        for track in cls.tracks:
+            for path in paths:
+                if track.filepath.startswith(path):
+                    count_dict[path] += 1
+
+        result = [{"path": path, "count": count_dict[path]} for path in paths]
+
+        # TODO: Modify this method to return Folder objects with
+        #   track count mapped. Keep an eye on function complexity.
+        return result
 
     @classmethod
     def get_tracks_by_filepaths(cls, paths: list[str]) -> list[Track]:

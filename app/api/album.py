@@ -71,9 +71,7 @@ def get_album_tracks_and_info():
 
     album.check_is_single(tracks)
 
-    if album.is_single:
-        album.is_single = True
-    else:
+    if not album.is_single:
         album.check_type()
 
     album.is_favorite = check_is_fav(albumhash, FavType.album)

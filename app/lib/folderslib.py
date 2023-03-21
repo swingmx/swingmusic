@@ -1,5 +1,6 @@
 import os
 from concurrent.futures import ThreadPoolExecutor
+from pprint import pprint
 
 from app.db.store import Store
 from app.models import Folder, Track
@@ -50,10 +51,16 @@ class GetFilesAndDirs:
 
         tracks = Store.get_tracks_by_filepaths(files)
 
+        # TODO: Remove this threadpool and modify the get_folder store
+        #  method to accept a list of paths.
         with ThreadPoolExecutor() as pool:
             iterable = pool.map(Store.get_folder, dirs)
             folders = [i for i in iterable if i is not None]
 
         folders = filter(lambda f: f.has_tracks, folders)
+
+        folders_with_count_dict = Store.get_folders_count(dirs)
+        pprint(folders_with_count_dict)
+        # TODO: Map folder count to folder object
 
         return tracks, folders  # type: ignore

@@ -110,7 +110,7 @@ class Album:
         """
         if (
                 len(tracks) == 1
-                and tracks[0].title == self.title
+                and tracks[0].title.lower() == self.title.lower()
 
                 # and tracks[0].track == 1
                 # and tracks[0].disc == 1
