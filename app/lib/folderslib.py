@@ -59,8 +59,8 @@ class GetFilesAndDirs:
 
         folders = filter(lambda f: f.has_tracks, folders)
 
-        folders_with_count_dict = Store.get_folders_count(dirs)
-        pprint(folders_with_count_dict)
+        # folders_with_count_dict = Store.get_folders_count(dirs)
+        # pprint(folders_with_count_dict)
         # TODO: Map folder count to folder object
 
         return tracks, folders  # type: ignore
