@@ -8,8 +8,11 @@ from rapidfuzz import fuzz, process
 from unidecode import unidecode
 
 from app import models
-from app.db.store import Store
 from app.utils.remove_duplicates import remove_duplicates
+
+from app.store.albums import AlbumStore
+from app.store.artists import ArtistStore
+from app.store.tracks import TrackStore
 
 ratio = fuzz.ratio
 wratio = fuzz.WRatio
@@ -40,7 +43,7 @@ class Limit:
 class SearchTracks:
     def __init__(self, query: str) -> None:
         self.query = query
-        self.tracks = Store.tracks
+        self.tracks = TrackStore.tracks
 
     def __call__(self) -> List[models.Track]:
         """
@@ -63,7 +66,7 @@ class SearchTracks:
 class SearchArtists:
     def __init__(self, query: str) -> None:
         self.query = query
-        self.artists = Store.artists
+        self.artists = ArtistStore.artists
 
     def __call__(self) -> list:
         """
@@ -85,7 +88,7 @@ class SearchArtists:
 class SearchAlbums:
     def __init__(self, query: str) -> None:
         self.query = query
-        self.albums = Store.albums
+        self.albums = AlbumStore.albums
 
     def __call__(self) -> List[models.Album]:
         """
@@ -160,9 +163,9 @@ class SearchAll:
     def collect_all():
         all_items: _type = []
 
-        all_items.extend(Store.tracks)
-        all_items.extend(Store.albums)
-        all_items.extend(Store.artists)
+        all_items.extend(TrackStore.tracks)
+        all_items.extend(AlbumStore.albums)
+        all_items.extend(ArtistStore.artists)
 
         return all_items, get_titles(all_items)
 

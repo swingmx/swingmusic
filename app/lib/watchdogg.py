@@ -9,7 +9,6 @@ from watchdog.events import PatternMatchingEventHandler
 from watchdog.observers import Observer
 
 from app.logger import log
-from app.db.store import Store
 from app.lib.taglib import get_tags
 from app.models import Artist, Track
 from app import settings
@@ -17,6 +16,11 @@ from app import settings
 from app.db.sqlite.tracks import SQLiteManager
 from app.db.sqlite.tracks import SQLiteTrackMethods as db
 from app.db.sqlite.settings import SettingsSQLMethods as sdb
+
+from app.store.store import FolderStore
+from app.store.tracks import TrackStore
+from app.store.albums import AlbumStore
+from app.store.artists import ArtistStore
 
 
 class Watcher:
@@ -138,19 +142,19 @@ def add_track(filepath: str) -> None:
         db.insert_one_track(tags, cur)
 
     track = Track(**tags)
-    Store().add_track(track)
+    TrackStore.add_track(track)
 
-    Store.add_folder(track.folder)
+    FolderStore.add_folder(track.folder)
 
-    if not Store.album_exists(track.albumhash):
-        album = Store.create_album(track)
-        Store.add_album(album)
+    if not AlbumStore.album_exists(track.albumhash):
+        album = AlbumStore.create_album(track)
+        AlbumStore.add_album(album)
 
     artists: list[Artist] = track.artist + track.albumartist  # type: ignore
 
     for artist in artists:
-        if not Store.artist_exists(artist.artisthash):
-            Store.add_artist(Artist(artist.name))
+        if not ArtistStore.artist_exists(artist.artisthash):
+            ArtistStore.add_artist(Artist(artist.name))
 
 
 def remove_track(filepath: str) -> None:
@@ -158,30 +162,30 @@ def remove_track(filepath: str) -> None:
     Removes a track from the music dict.
     """
     try:
-        track = Store.get_tracks_by_filepaths([filepath])[0]
+        track = TrackStore.get_tracks_by_filepaths([filepath])[0]
     except IndexError:
         return
 
     db.remove_track_by_filepath(filepath)
-    Store.remove_track_by_filepath(filepath)
+    TrackStore.remove_track_by_filepath(filepath)
 
-    empty_album = Store.count_tracks_by_hash(track.albumhash) > 0
+    empty_album = TrackStore.count_tracks_by_hash(track.albumhash) > 0
 
     if empty_album:
-        Store.remove_album_by_hash(track.albumhash)
+        AlbumStore.remove_album_by_hash(track.albumhash)
 
     artists: list[Artist] = track.artist + track.albumartist  # type: ignore
 
     for artist in artists:
-        empty_artist = not Store.artist_has_tracks(artist.artisthash)
+        empty_artist = not ArtistStore.artist_has_tracks(artist.artisthash)
 
         if empty_artist:
-            Store.remove_artist_by_hash(artist.artisthash)
+            ArtistStore.remove_artist_by_hash(artist.artisthash)
 
-    empty_folder = Store.is_empty_folder(track.folder)
+    empty_folder = FolderStore.is_empty_folder(track.folder)
 
     if empty_folder:
-        Store.remove_folder(track.folder)
+        FolderStore.remove_folder(track.folder)
 
 
 class Handler(PatternMatchingEventHandler):

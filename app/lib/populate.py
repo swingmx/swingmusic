@@ -5,13 +5,17 @@ from app import settings
 from app.db.sqlite.tracks import SQLiteTrackMethods
 from app.db.sqlite.settings import SettingsSQLMethods as sdb
 from app.db.sqlite.favorite import SQLiteFavoriteMethods as favdb
-from app.db.store import Store
 from app.lib.colorlib import ProcessAlbumColors, ProcessArtistColors
 
 from app.lib.taglib import extract_thumb, get_tags
 from app.logger import log
 from app.models import Album, Artist, Track
 from app.utils.filesystem import run_fast_scandir
+
+from app.store.store import FolderStore
+from app.store.albums import AlbumStore
+from app.store.tracks import TrackStore
+from app.store.artists import ArtistStore
 
 get_all_tracks = SQLiteTrackMethods.get_all_tracks
 insert_many_tracks = SQLiteTrackMethods.insert_many_tracks
@@ -97,19 +101,19 @@ class Populate:
                 track = Track(**tags)
                 track.is_favorite = track.trackhash in fav_tracks
 
-                Store.add_track(track)
-                Store.add_folder(track.folder)
+                TrackStore.add_track(track)
+                FolderStore.add_folder(track.folder)
 
-                if not Store.album_exists(track.albumhash):
-                    Store.add_album(Store.create_album(track))
+                if not AlbumStore.album_exists(track.albumhash):
+                    AlbumStore.add_album(AlbumStore.create_album(track))
 
                 for artist in track.artist:
-                    if not Store.artist_exists(artist.artisthash):
-                        Store.add_artist(Artist(artist.name))
+                    if not ArtistStore.artist_exists(artist.artisthash):
+                        ArtistStore.add_artist(Artist(artist.name))
 
                 for artist in track.albumartist:
-                    if not Store.artist_exists(artist.artisthash):
-                        Store.add_artist(Artist(artist.name))
+                    if not ArtistStore.artist_exists(artist.artisthash):
+                        ArtistStore.add_artist(Artist(artist.name))
 
                 tagged_count += 1
             else:
@@ -122,7 +126,7 @@ class Populate:
 
 
 def get_image(album: Album):
-    for track in Store.tracks:
+    for track in TrackStore.tracks:
         if track.albumhash == album.albumhash:
             extract_thumb(track.filepath, track.image)
             break
@@ -133,8 +137,8 @@ class ProcessTrackThumbnails:
         with ThreadPoolExecutor(max_workers=4) as pool:
             results = list(
                 tqdm(
-                    pool.map(get_image, Store.albums),
-                    total=len(Store.albums),
+                    pool.map(get_image, AlbumStore.albums),
+                    total=len(AlbumStore.albums),
                     desc="Extracting track images",
                 )
             )

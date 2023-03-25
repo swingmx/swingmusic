@@ -4,7 +4,7 @@ from collections import OrderedDict
 from app.db.sqlite.tracks import SQLiteTrackMethods
 from app.db.sqlite.utils import SQLiteManager, tuple_to_playlist, tuples_to_playlists
 from app.models import Artist
-from app.utils.generators import create_new_date
+from app.utils.dates import create_new_date
 from app.utils.threading import background
 
 
@@ -151,12 +151,12 @@ class SQLitePlaylistMethods:
             cur.execute(sql, params)
 
     @staticmethod
-    def update_last_updated(playlist_id: int, date=create_new_date()):
+    def update_last_updated(playlist_id: int):
         """Updates the last updated date of a playlist."""
         sql = """UPDATE playlists SET last_updated = ? WHERE id = ?"""
 
         with SQLiteManager(userdata_db=True) as cur:
-            cur.execute(sql, (date, playlist_id))
+            cur.execute(sql, (create_new_date(), playlist_id))
 
     @staticmethod
     def delete_playlist(pid: str):

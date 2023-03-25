@@ -7,10 +7,13 @@ from collections import deque
 from flask import Blueprint, request
 
 from app.db.sqlite.favorite import SQLiteFavoriteMethods as favdb
-from app.db.store import Store
 from app.models import Album, FavType, Track
 from app.utils.remove_duplicates import remove_duplicates
 from app.requests.artists import fetch_similar_artists
+
+from app.store.albums import AlbumStore
+from app.store.tracks import TrackStore
+from app.store.artists import ArtistStore
 
 api = Blueprint("artist", __name__, url_prefix="/")
 
@@ -107,10 +110,10 @@ class ArtistsCache:
         """
         entry = [a for a in cls.artists if a.artisthash == artisthash][0]
 
-        albums = [Store.get_album_by_hash(h) for h in entry.albumhashes]
+        albums = [AlbumStore.get_album_by_hash(h) for h in entry.albumhashes]
         entry.albums = [album for album in albums if album is not None]
 
-        store_albums = Store.get_albums_by_artisthash(artisthash)
+        store_albums = AlbumStore.get_albums_by_artisthash(artisthash)
 
         all_albums_hash = "-".join([a.albumhash for a in entry.albums])
 
@@ -130,7 +133,7 @@ class ArtistsCache:
         for album in entry.albums:
             album.check_type()
 
-            album_tracks = Store.get_tracks_by_albumhash(album.albumhash)
+            album_tracks = TrackStore.get_tracks_by_albumhash(album.albumhash)
             album_tracks = remove_duplicates(album_tracks)
 
             album.get_date_from_tracks(album_tracks)
@@ -143,7 +146,7 @@ def add_albums_to_cache(artisthash: str):
     """
     Fetches albums and adds them to the cache.
     """
-    tracks = Store.get_tracks_by_artist(artisthash)
+    tracks = TrackStore.get_tracks_by_artist(artisthash)
 
     if len(tracks) == 0:
         return False
@@ -171,7 +174,7 @@ def get_artist(artisthash: str):
 
     limit = int(limit)
 
-    artist = Store.get_artist_by_hash(artisthash)
+    artist = ArtistStore.get_artist_by_hash(artisthash)
 
     if artist is None:
         return {"error": "Artist not found"}, 404
@@ -181,17 +184,17 @@ def get_artist(artisthash: str):
     if tracks_cached:
         tracks = ArtistsCache.get_tracks(artisthash)
     else:
-        tracks = Store.get_tracks_by_artist(artisthash)
+        tracks = TrackStore.get_tracks_by_artist(artisthash)
         albumhashes = set(t.albumhash for t in tracks)
         hashes_from_albums = set(
-            a.albumhash for a in Store.get_albums_by_artisthash(artisthash)
+            a.albumhash for a in AlbumStore.get_albums_by_artisthash(artisthash)
         )
 
         albumhashes = albumhashes.union(hashes_from_albums)
         ArtistsCache.add_entry(artisthash, albumhashes, tracks)
 
     tcount = len(tracks)
-    acount = Store.count_albums_by_artisthash(artisthash)
+    acount = AlbumStore.count_albums_by_artisthash(artisthash)
 
     if acount == 0 and tcount < 10:
         limit = tcount
@@ -253,7 +256,7 @@ def get_artist_albums(artisthash: str):
 
     appearances = remove_EPs_and_singles(appearances)
 
-    artist = Store.get_artist_by_hash(artisthash)
+    artist = ArtistStore.get_artist_by_hash(artisthash)
 
     if return_all is not None:
         limit = len(all_albums)
@@ -273,7 +276,7 @@ def get_all_artist_tracks(artisthash: str):
     """
     Returns all artists by a given artist.
     """
-    tracks = Store.get_tracks_by_artist(artisthash)
+    tracks = TrackStore.get_tracks_by_artist(artisthash)
 
     return {"tracks": tracks}
 
@@ -290,13 +293,13 @@ def get_similar_artists(artisthash: str):
 
     limit = int(limit)
 
-    artist = Store.get_artist_by_hash(artisthash)
+    artist = ArtistStore.get_artist_by_hash(artisthash)
 
     if artist is None:
         return {"error": "Artist not found"}, 404
 
     similar_hashes = fetch_similar_artists(artist.name)
-    similar = Store.get_artists_by_hashes(similar_hashes)
+    similar = ArtistStore.get_artists_by_hashes(similar_hashes)
 
     if len(similar) > limit:
         similar = random.sample(similar, limit)

@@ -1,12 +1,13 @@
 import os
 from concurrent.futures import ThreadPoolExecutor
-from pprint import pprint
 
-from app.db.store import Store
 from app.models import Folder, Track
 from app.settings import SUPPORTED_FILES
 from app.logger import log
 from app.utils.wintools import win_replace_slash
+
+from app.store.store import FolderStore
+from app.store.tracks import TrackStore
 
 
 class GetFilesAndDirs:
@@ -49,12 +50,12 @@ class GetFilesAndDirs:
         files_.sort(key=lambda f: f["time"])
         files = [f["path"] for f in files_]
 
-        tracks = Store.get_tracks_by_filepaths(files)
+        tracks = TrackStore.get_tracks_by_filepaths(files)
 
         # TODO: Remove this threadpool and modify the get_folder store
         #  method to accept a list of paths.
         with ThreadPoolExecutor() as pool:
-            iterable = pool.map(Store.get_folder, dirs)
+            iterable = pool.map(FolderStore.get_folder, dirs)
             folders = [i for i in iterable if i is not None]
 
         folders = filter(lambda f: f.has_tracks, folders)

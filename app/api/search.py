@@ -6,8 +6,10 @@ from unidecode import unidecode
 from flask import Blueprint, request
 
 from app import models
-from app.db.store import Store
 from app.lib import searchlib
+
+
+from app.store.tracks import TrackStore
 
 api = Blueprint("search", __name__, url_prefix="/")
 
@@ -38,7 +40,7 @@ class Search:
         Calls :class:`SearchTracks` which returns the tracks that fuzzily match
         the search terms. Then adds them to the `SearchResults` store.
         """
-        self.tracks = Store.tracks
+        self.tracks = TrackStore.tracks
         tracks = searchlib.SearchTracks(self.query)()
 
         SearchResults.tracks = tracks

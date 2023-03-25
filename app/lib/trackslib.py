@@ -5,16 +5,16 @@ import os
 
 from tqdm import tqdm
 
-from app.db.store import Store
 from app.db.sqlite.tracks import SQLiteTrackMethods as tdb
+from app.store.tracks import TrackStore
 
 
 def validate_tracks() -> None:
     """
     Gets all songs under the ~/ directory.
     """
-    for track in tqdm(Store.tracks, desc="Removing deleted tracks"):
+    for track in tqdm(TrackStore.tracks, desc="Removing deleted tracks"):
         if not os.path.exists(track.filepath):
             print(f"Removing {track.filepath}")
-            Store.tracks.remove(track)
+            TrackStore.tracks.remove(track)
             tdb.remove_track_by_filepath(track.filepath)

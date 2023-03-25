@@ -7,12 +7,14 @@ from datetime import datetime
 from flask import Blueprint, request
 from PIL import UnidentifiedImageError
 
-from app import models, serializer
+from app import models
 from app.db.sqlite.playlists import SQLitePlaylistMethods
-from app.db.store import Store
 from app.lib import playlistlib
-from app.utils.generators import create_new_date
+from app.utils.dates import date_string_to_time_passed, create_new_date
 from app.utils.remove_duplicates import remove_duplicates
+
+from app.store.tracks import TrackStore
+from app.store.albums import AlbumStore
 
 api = Blueprint("playlist", __name__, url_prefix="/")
 
@@ -42,7 +44,7 @@ def duplicate_images(images: list):
 
 
 def get_first_4_images(trackhashes: list[str]) -> list[dict['str', str]]:
-    tracks = Store.get_tracks_by_trackhashes(trackhashes)
+    tracks = TrackStore.get_tracks_by_trackhashes(trackhashes)
     albums = []
 
     for track in tracks:
@@ -51,7 +53,7 @@ def get_first_4_images(trackhashes: list[str]) -> list[dict['str', str]]:
             if len(albums) == 4:
                 break
 
-    albums = Store.get_albums_by_hashes(albums)
+    albums = AlbumStore.get_albums_by_hashes(albums)
     images = [
         {
             'image': album.image,
@@ -155,11 +157,11 @@ def get_playlist(playlistid: str):
     if playlist is None:
         return {"msg": "Playlist not found"}, 404
 
-    tracks = Store.get_tracks_by_trackhashes(list(playlist.trackhashes))
+    tracks = TrackStore.get_tracks_by_trackhashes(list(playlist.trackhashes))
     tracks = remove_duplicates(tracks)
 
     duration = sum(t.duration for t in tracks)
-    playlist.last_updated = serializer.date_string_to_time_passed(playlist.last_updated)
+    playlist.last_updated = date_string_to_time_passed(playlist.last_updated)
 
     playlist.duration = duration
 
@@ -223,7 +225,7 @@ def update_playlist_info(playlistid: str):
     update_playlist(int(playlistid), playlist)
 
     playlist = models.Playlist(*p_tuple)
-    playlist.last_updated = serializer.date_string_to_time_passed(playlist.last_updated)
+    playlist.last_updated = date_string_to_time_passed(playlist.last_updated)
 
     return {
         "data": playlist,

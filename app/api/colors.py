@@ -1,5 +1,5 @@
 from flask import Blueprint
-from app.db.store import Store
+from app.store.albums import AlbumStore as Store
 
 api = Blueprint("colors", __name__, url_prefix="/colors")
 

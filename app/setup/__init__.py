@@ -1,9 +1,13 @@
 """
 Prepares the server for use.
 """
-from app.db.store import Store
+from app.store.store import FolderStore
 from app.setup.files import create_config_dir
 from app.setup.sqlite import setup_sqlite, run_migrations
+
+from app.store.albums import AlbumStore
+from app.store.tracks import TrackStore
+from app.store.artists import ArtistStore
 
 
 def run_setup():
@@ -11,7 +15,7 @@ def run_setup():
     setup_sqlite()
     run_migrations()
 
-    Store.load_all_tracks()
-    Store.process_folders()
-    Store.load_albums()
-    Store.load_artists()
+    TrackStore.load_all_tracks()
+    FolderStore.process_folders()
+    AlbumStore.load_albums()
+    ArtistStore.load_artists()

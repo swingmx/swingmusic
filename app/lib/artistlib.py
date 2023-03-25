@@ -10,8 +10,9 @@ from requests.exceptions import ConnectionError as ReqConnError, ReadTimeout
 
 from app import settings
 from app.models import Artist, Track, Album
-from app.db import store
 from app.utils.hashing import create_hash
+
+from app.store import artists as artist_store
 
 
 def get_artist_image_link(artist: str):
@@ -72,8 +73,8 @@ class CheckArtistImages:
         with ThreadPoolExecutor() as pool:
             list(
                 tqdm(
-                    pool.map(self.download_image, store.Store.artists),
-                    total=len(store.Store.artists),
+                    pool.map(self.download_image, artist_store.ArtistStore.artists),
+                    total=len(artist_store.ArtistStore.artists),
                     desc="Downloading artist images",
                 )
             )

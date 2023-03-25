@@ -3,11 +3,15 @@ from app import settings
 
 from app.logger import log
 from app.lib import populate
-from app.db.store import Store
 from app.lib.watchdogg import Watcher as WatchDog
 from app.db.sqlite.settings import SettingsSQLMethods as sdb
 from app.utils.generators import get_random_str
 from app.utils.threading import background
+
+from app.store.store import FolderStore
+from app.store.albums import AlbumStore
+from app.store.tracks import TrackStore
+from app.store.artists import ArtistStore
 
 api = Blueprint("settings", __name__, url_prefix="/")
 
@@ -22,10 +26,10 @@ def reload_everything():
     """
     Reloads all stores using the current database items
     """
-    Store.load_all_tracks()
-    Store.process_folders()
-    Store.load_albums()
-    Store.load_artists()
+    TrackStore.load_all_tracks()
+    FolderStore.process_folders()
+    AlbumStore.load_albums()
+    ArtistStore.load_artists()
 
 
 @background
@@ -34,7 +38,7 @@ def rebuild_store(db_dirs: list[str]):
     Restarts the watchdog and rebuilds the music library.
     """
     log.info("Rebuilding library...")
-    Store.remove_tracks_by_dir_except(db_dirs)
+    TrackStore.remove_tracks_by_dir_except(db_dirs)
     reload_everything()
 
     key = get_random_str()

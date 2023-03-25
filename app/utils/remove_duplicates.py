@@ -7,7 +7,7 @@ from app.models import Track
 def remove_duplicates(tracks: list[Track]) -> list[Track]:
     """
     Remove duplicates from a list of Track objects based on the trackhash attribute.
-    Retains objects with the highest bitrate.
+    Retain objects with the highest bitrate.
     """
     hash_to_tracks = defaultdict(list)
 

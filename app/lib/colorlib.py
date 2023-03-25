@@ -12,8 +12,10 @@ from app import settings
 from app.db.sqlite.albums import SQLiteAlbumMethods as db
 from app.db.sqlite.artists import SQLiteArtistMethods as adb
 from app.db.sqlite.utils import SQLiteManager
-from app.db.store import Store
 from app.models import Album, Artist
+
+from app.store.artists import ArtistStore
+from app.store.albums import AlbumStore
 
 
 def get_image_colors(image: str) -> list[str]:
@@ -38,7 +40,7 @@ class ProcessAlbumColors:
     """
 
     def __init__(self) -> None:
-        albums = [a for a in Store.albums if len(a.colors) == 0]
+        albums = [a for a in AlbumStore.albums if len(a.colors) == 0]
 
         with SQLiteManager() as cur:
             for album in tqdm(albums, desc="Processing missing album colors"):
@@ -69,7 +71,7 @@ class ProcessArtistColors:
     """
 
     def __init__(self) -> None:
-        all_artists = [a for a in Store.artists if len(a.colors) == 0]
+        all_artists = [a for a in ArtistStore.artists if len(a.colors) == 0]
 
         for artist in tqdm(all_artists, desc="Processing missing artist colors"):
             self.process_color(artist)
@@ -85,7 +87,7 @@ class ProcessArtistColors:
 
         if len(colors) > 0:
             adb.insert_one_artist(artisthash=artist.artisthash, colors=colors)
-            Store.map_artist_color((0, artist.artisthash, json.dumps(colors)))
+            ArtistStore.map_artist_color((0, artist.artisthash, json.dumps(colors)))
 
 # TODO: If item color is in db, get it, assign it to the item and continue.
 #   - Format all colors in the format: rgb(123, 123, 123)

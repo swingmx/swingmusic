@@ -5,7 +5,7 @@ import os
 
 from flask import Blueprint, send_file, request
 
-from app.db.store import Store
+from app.store.tracks import TrackStore
 
 api = Blueprint("track", __name__, url_prefix="/")
 
@@ -31,7 +31,7 @@ def send_track_file(trackhash: str):
     if trackhash is None:
         return msg, 404
 
-    tracks = Store.get_tracks_by_trackhashes([trackhash])
+    tracks = TrackStore.get_tracks_by_trackhashes([trackhash])
 
     for track in tracks:
         if track is None:

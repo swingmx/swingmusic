@@ -8,9 +8,11 @@ from flask import Blueprint, request
 
 from app.db.sqlite.albums import SQLiteAlbumMethods as adb
 from app.db.sqlite.favorite import SQLiteFavoriteMethods as favdb
-from app.db.store import Store
 from app.models import FavType, Track
 from app.utils.remove_duplicates import remove_duplicates
+
+from app.store.tracks import TrackStore
+from app.store.albums import AlbumStore
 
 get_albums_by_albumartist = adb.get_albums_by_albumartist
 check_is_fav = favdb.check_is_favorite
@@ -36,12 +38,12 @@ def get_album_tracks_and_info():
         return error_msg, 400
 
     error_msg = {"error": "Album not created yet."}
-    album = Store.get_album_by_hash(albumhash)
+    album = AlbumStore.get_album_by_hash(albumhash)
 
     if album is None:
         return error_msg, 204
 
-    tracks = Store.get_tracks_by_albumhash(albumhash)
+    tracks = TrackStore.get_tracks_by_albumhash(albumhash)
 
     if tracks is None:
         return error_msg, 404
@@ -84,7 +86,7 @@ def get_album_tracks(albumhash: str):
     """
     Returns all the tracks in the given album, sorted by disc and track number.
     """
-    tracks = Store.get_tracks_by_albumhash(albumhash)
+    tracks = TrackStore.get_tracks_by_albumhash(albumhash)
     tracks = [asdict(t) for t in tracks]
 
     for t in tracks:
@@ -112,7 +114,7 @@ def get_artist_albums():
     albums = [
         {
             "artisthash": a,
-            "albums": Store.get_albums_by_albumartist(a, limit, exclude=exclude),
+            "albums": AlbumStore.get_albums_by_albumartist(a, limit, exclude=exclude),
         }
         for a in albumartists
     ]

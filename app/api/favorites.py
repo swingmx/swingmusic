@@ -1,9 +1,12 @@
 from flask import Blueprint, request
 
 from app.db.sqlite.favorite import SQLiteFavoriteMethods as favdb
-from app.db.store import Store
 from app.models import FavType
 from app.utils.bisection import UseBisection
+
+from app.store.artists import ArtistStore
+from app.store.albums import AlbumStore
+from app.store.tracks import TrackStore
 
 api = Blueprint("favorite", __name__, url_prefix="/")
 
@@ -28,7 +31,7 @@ def add_favorite():
     favdb.insert_one_favorite(itemtype, itemhash)
 
     if itemtype == FavType.track:
-        Store.add_fav_track(itemhash)
+        TrackStore.make_track_fav(itemhash)
 
     return {"msg": "Added to favorites"}
 
@@ -49,7 +52,7 @@ def remove_favorite():
     favdb.delete_favorite(itemtype, itemhash)
 
     if itemtype == FavType.track:
-        Store.remove_fav_track(itemhash)
+        TrackStore.remove_track_from_fav(itemhash)
 
     return {"msg": "Removed from favorites"}
 
@@ -67,7 +70,7 @@ def get_favorite_albums():
     albumhashes = [a[1] for a in albums]
     albumhashes.reverse()
 
-    src_albums = sorted(Store.albums, key=lambda x: x.albumhash)
+    src_albums = sorted(AlbumStore.albums, key=lambda x: x.albumhash)
 
     fav_albums = UseBisection(src_albums, "albumhash", albumhashes)()
     fav_albums = remove_none(fav_albums)
@@ -90,7 +93,7 @@ def get_favorite_tracks():
     tracks = favdb.get_fav_tracks()
     trackhashes = [t[1] for t in tracks]
     trackhashes.reverse()
-    src_tracks = sorted(Store.tracks, key=lambda x: x.trackhash)
+    src_tracks = sorted(TrackStore.tracks, key=lambda x: x.trackhash)
 
     tracks = UseBisection(src_tracks, "trackhash", trackhashes)()
     tracks = remove_none(tracks)
@@ -114,7 +117,7 @@ def get_favorite_artists():
     artisthashes = [a[1] for a in artists]
     artisthashes.reverse()
 
-    src_artists = sorted(Store.artists, key=lambda x: x.artisthash)
+    src_artists = sorted(ArtistStore.artists, key=lambda x: x.artisthash)
 
     artists = UseBisection(src_artists, "artisthash", artisthashes)()
     artists = remove_none(artists)
@@ -176,9 +179,9 @@ def get_all_favorites():
             if fav[2] == FavType.artist:
                 artists.append(fav[1])
 
-    src_tracks = sorted(Store.tracks, key=lambda x: x.trackhash)
-    src_albums = sorted(Store.albums, key=lambda x: x.albumhash)
-    src_artists = sorted(Store.artists, key=lambda x: x.artisthash)
+    src_tracks = sorted(TrackStore.tracks, key=lambda x: x.trackhash)
+    src_albums = sorted(AlbumStore.albums, key=lambda x: x.albumhash)
+    src_artists = sorted(ArtistStore.artists, key=lambda x: x.artisthash)
 
     tracks = UseBisection(src_tracks, "trackhash", tracks)()
     albums = UseBisection(src_albums, "albumhash", albums)()

@@ -1,20 +1,30 @@
-from datetime import datetime, timezone
+from datetime import datetime
+
+_format = "%Y-%m-%d %H:%M:%S"
+
+
+def create_new_date():
+    """
+    Creates a new date and time string in the format of "YYYY-MM-DD HH:MM:SS"
+    :return: A string of the current date and time.
+    """
+    now = datetime.now()
+    return now.strftime(_format)
 
 
 def date_string_to_time_passed(prev_date: str) -> str:
     """
-    Converts a date string to time passed. eg. 2 minutes ago, 1 hour ago, yesterday, 2 days ago, 2 weeks ago, etc.
+    Converts a date string to time passed. e.g. 2 minutes ago, 1 hour ago, yesterday, 2 days ago, 2 weeks ago, etc.
     """
-    now = datetime.now(timezone.utc)
-    then = datetime.strptime(prev_date, "%Y-%m-%d %H:%M:%S").replace(
-        tzinfo=timezone.utc
-    )
+    now = datetime.now()
+    then = datetime.strptime(prev_date, _format)
 
     diff = now - then
-    seconds = diff.total_seconds()
+    seconds = diff.seconds
+    print(seconds)
 
     if seconds < 0:
-        return "-from a time machine 🛸"
+        return "from the future 🛸"
 
     if seconds < 15:
         return "now"
