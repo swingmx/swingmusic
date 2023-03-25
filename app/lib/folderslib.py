@@ -1,13 +1,42 @@
 import os
-from concurrent.futures import ThreadPoolExecutor
+from pathlib import Path
 
+from app.logger import log
 from app.models import Folder, Track
 from app.settings import SUPPORTED_FILES
-from app.logger import log
 from app.utils.wintools import win_replace_slash
 
-from app.store.store import FolderStore
 from app.store.tracks import TrackStore
+
+
+def create_folder(path: str, count=0) -> Folder:
+    """
+    Creates a folder object from a path.
+    """
+    folder = Path(path)
+
+    return Folder(
+        name=folder.name,
+        path=win_replace_slash(str(folder)),
+        is_sym=folder.is_symlink(),
+        count=count
+    )
+
+
+def get_folders(paths: list[str]):
+    """
+    Filters out folders that don't have any tracks and
+    returns a list of folder objects.
+    """
+    count_dict = {path: 0 for path in paths}
+
+    for track in TrackStore.tracks:
+        for path in paths:
+            if track.filepath.startswith(path):
+                count_dict[path] += 1
+
+    folders = [{"path": path, "count": count_dict[path]} for path in paths]
+    return [create_folder(f['path'], f['count']) for f in folders if f['count'] > 0]
 
 
 class GetFilesAndDirs:
@@ -51,17 +80,6 @@ class GetFilesAndDirs:
         files = [f["path"] for f in files_]
 
         tracks = TrackStore.get_tracks_by_filepaths(files)
+        folders = get_folders(dirs)
 
-        # TODO: Remove this threadpool and modify the get_folder store
-        #  method to accept a list of paths.
-        with ThreadPoolExecutor() as pool:
-            iterable = pool.map(FolderStore.get_folder, dirs)
-            folders = [i for i in iterable if i is not None]
-
-        folders = filter(lambda f: f.has_tracks, folders)
-
-        # folders_with_count_dict = Store.get_folders_count(dirs)
-        # pprint(folders_with_count_dict)
-        # TODO: Map folder count to folder object
-
-        return tracks, folders  # type: ignore
+        return tracks, folders

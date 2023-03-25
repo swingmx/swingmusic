@@ -17,7 +17,7 @@ from app.db.sqlite.tracks import SQLiteManager
 from app.db.sqlite.tracks import SQLiteTrackMethods as db
 from app.db.sqlite.settings import SettingsSQLMethods as sdb
 
-from app.store.store import FolderStore
+from app.store.folder import FolderStore
 from app.store.tracks import TrackStore
 from app.store.albums import AlbumStore
 from app.store.artists import ArtistStore

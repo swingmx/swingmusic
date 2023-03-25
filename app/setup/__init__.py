@@ -1,7 +1,7 @@
 """
 Prepares the server for use.
 """
-from app.store.store import FolderStore
+from app.store.folder import FolderStore
 from app.setup.files import create_config_dir
 from app.setup.sqlite import setup_sqlite, run_migrations
 

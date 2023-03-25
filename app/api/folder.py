@@ -8,10 +8,8 @@ from pathlib import Path
 from flask import Blueprint, request
 
 from app import settings
-from app.lib.folderslib import GetFilesAndDirs
+from app.lib.folderslib import GetFilesAndDirs, create_folder
 from app.db.sqlite.settings import SettingsSQLMethods as db
-from app.models.folder import Folder
-from app.utils.hashing import create_folder_hash
 from app.utils.wintools import win_replace_slash, is_windows
 
 api = Blueprint("folder", __name__, url_prefix="/")
@@ -44,14 +42,7 @@ def get_folder_tree():
 
         return {
             "folders": [
-                Folder(
-                    name=f.name if f.name != "" else str(f).replace("\\", "/"),
-                    path=win_replace_slash(str(f)),
-                    has_tracks=True,
-                    is_sym=f.is_symlink(),
-                    path_hash=create_folder_hash(*f.parts[1:]),
-                )
-                for f in folders
+                create_folder(str(f)) for f in folders
             ],
             "tracks": [],
         }

@@ -8,7 +8,7 @@ from app.db.sqlite.settings import SettingsSQLMethods as sdb
 from app.utils.generators import get_random_str
 from app.utils.threading import background
 
-from app.store.store import FolderStore
+from app.store.folder import FolderStore
 from app.store.albums import AlbumStore
 from app.store.tracks import TrackStore
 from app.store.artists import ArtistStore

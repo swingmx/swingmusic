@@ -12,7 +12,7 @@ from app.logger import log
 from app.models import Album, Artist, Track
 from app.utils.filesystem import run_fast_scandir
 
-from app.store.store import FolderStore
+from app.store.folder import FolderStore
 from app.store.albums import AlbumStore
 from app.store.tracks import TrackStore
 from app.store.artists import ArtistStore

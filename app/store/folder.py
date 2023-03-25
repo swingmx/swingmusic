@@ -2,13 +2,13 @@
 In memory store.
 """
 from pathlib import Path
-
 from tqdm import tqdm
 
 from app.models import Folder
 from app.utils.bisection import UseBisection
 from app.utils.hashing import create_folder_hash
-from app.utils.wintools import win_replace_slash
+
+from app.lib import folderslib
 from .tracks import TrackStore
 
 
@@ -44,21 +44,6 @@ class FolderStore:
         path_hash = create_folder_hash(*Path(path).parts[1:])
         return path_hash in folder_hashes
 
-    @staticmethod
-    def create_folder(path: str) -> Folder:
-        """
-        Creates a folder object from a path.
-        """
-        folder = Path(path)
-
-        return Folder(
-            name=folder.name,
-            path=win_replace_slash(str(folder)),
-            is_sym=folder.is_symlink(),
-            has_tracks=True,
-            path_hash=create_folder_hash(*folder.parts[1:]),
-        )
-
     @classmethod
     def add_folder(cls, path: str):
         """
@@ -68,7 +53,7 @@ class FolderStore:
         if cls.check_has_tracks(path):
             return
 
-        folder = cls.create_folder(path)
+        folder = folderslib.create_folder(path)
         cls.folders.append(folder)
 
     @classmethod
@@ -109,7 +94,7 @@ class FolderStore:
                 pass
 
         for path in tqdm(valid_folders, desc="Processing folders"):
-            folder = cls.create_folder(str(path))
+            folder = folderslib.create_folder(str(path))
 
             cls.folders.append(folder)
 
@@ -130,21 +115,8 @@ class FolderStore:
         if not has_tracks:
             return None
 
-        folder = cls.create_folder(path)
+        folder = folderslib.create_folder(path)
         cls.folders.append(folder)
         return folder
 
-    @classmethod
-    def get_folders_count(cls, paths: list[str]) -> list[dict[str, int]]:
-        count_dict = {path: 0 for path in paths}
-
-        for track in TrackStore.tracks:
-            for path in paths:
-                if track.filepath.startswith(path):
-                    count_dict[path] += 1
-
-        result = [{"path": path, "count": count_dict[path]} for path in paths]
-
-        # TODO: Modify this method to return Folder objects with
-        #   track count mapped. Keep an eye on function complexity.
-        return result
+# TODO: Remove this file. it's no longer needed.
