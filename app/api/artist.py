@@ -199,10 +199,9 @@ def get_artist(artisthash: str):
     if acount == 0 and tcount < 10:
         limit = tcount
 
-    artist.trackcount = tcount
-    artist.albumcount = acount
-
-    artist.duration = sum(t.duration for t in tracks)
+    artist.set_trackcount(tcount)
+    artist.set_albumcount(acount)
+    artist.set_duration(sum(t.duration for t in tracks))
 
     artist.is_favorite = favdb.check_is_favorite(artisthash, FavType.artist)
 

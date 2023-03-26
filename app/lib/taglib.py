@@ -64,16 +64,11 @@ def extract_thumb(filepath: str, webp_path: str) -> bool:
     return False
 
 
-def extract_date(date_str: str | None) -> int:
-    current_year = datetime.date.today().today().year
-
-    if date_str is None:
-        return current_year
-
+def extract_date(date_str: str | None, filepath: str) -> int:
     try:
         return int(date_str.split("-")[0])
     except:  # pylint: disable=bare-except
-        return current_year
+        return datetime.date.today().today().year
 
 
 def get_tags(filepath: str):
@@ -145,7 +140,7 @@ def get_tags(filepath: str):
     tags.image = f"{tags.albumhash}.webp"
     tags.folder = win_replace_slash(os.path.dirname(filepath))
 
-    tags.date = extract_date(tags.year)
+    tags.date = extract_date(tags.year, filepath)
     tags.filepath = win_replace_slash(filepath)
     tags.filetype = filetype
 

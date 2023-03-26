@@ -40,3 +40,14 @@ class Playlist:
         else:
             self.image = "None"
             self.thumb = "None"
+
+    def set_duration(self, duration: int):
+        self.duration = duration
+
+    def clear_lists(self):
+        """
+        Removes data from lists to make it lighter for sending
+        over the API.
+        """
+        self.trackhashes = []
+        self.artisthashes = []

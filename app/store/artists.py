@@ -36,7 +36,7 @@ class ArtistStore:
 
         for artist in cls.artists:
             if artist.artisthash == artisthash:
-                artist.colors = color
+                artist.set_colors(color)
                 break
 
     @classmethod

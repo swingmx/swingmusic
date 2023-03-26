@@ -80,8 +80,7 @@ def send_all_playlists():
             playlist.images = get_first_4_images(playlist.trackhashes)
             playlist.images = [img['image'] for img in playlist.images]
 
-        playlist.trackhashes = []
-        playlist.artisthashes = []
+        playlist.clear_lists()
 
     playlists.sort(
         key=lambda p: datetime.strptime(p.last_updated, "%Y-%m-%d %H:%M:%S"),
@@ -163,7 +162,7 @@ def get_playlist(playlistid: str):
     duration = sum(t.duration for t in tracks)
     playlist.last_updated = date_string_to_time_passed(playlist.last_updated)
 
-    playlist.duration = duration
+    playlist.set_duration(duration)
 
     if not playlist.has_image:
         playlist.images = get_first_4_images(playlist.trackhashes)
@@ -172,8 +171,7 @@ def get_playlist(playlistid: str):
             # swap 3rd image with first (3rd image is the visible image in UI)
             playlist.images[2], playlist.images[0] = playlist.images[0], playlist.images[2]
 
-    playlist.trackhashes = []
-    playlist.artisthashes = []
+    playlist.clear_lists()
 
     return {"info": playlist, "tracks": tracks}
 
