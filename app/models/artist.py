@@ -27,15 +27,15 @@ class Artist(ArtistMinimal):
     Artist class
     """
 
+    name: str = ""
     trackcount: int = 0
     albumcount: int = 0
     duration: int = 0
     colors: list[str] = dataclasses.field(default_factory=list)
     is_favorite: bool = False
 
-    def __init__(self, name: str):
-        super(Artist, self).__init__(name)
-        self.colors = json.loads(str(self.colors))
+    def __post_init__(self):
+        super(Artist, self).__init__(self.name)
 
     def set_trackcount(self, count: int):
         self.trackcount = count
