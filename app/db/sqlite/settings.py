@@ -52,6 +52,7 @@ class SettingsSQLMethods:
             for _dir in dirs:
                 cur.execute(sql, (_dir,))
 
+    # Not currently used anywhere, to be used later
     @staticmethod
     def add_excluded_dirs(dirs: list[str]):
         """

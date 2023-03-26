@@ -83,26 +83,6 @@ class SQLiteTrackMethods:
             return None
 
     @staticmethod
-    def get_tracks_by_trackhashes(hashes: list[str]):
-        """
-        Gets all tracks in a list of trackhashes.
-        Returns a generator of Track objects or an empty list.
-        """
-
-        sql = "SELECT * FROM tracks WHERE trackhash IN ({})".format(
-            ",".join("?" * len(hashes))
-        )
-
-        with SQLiteManager() as cur:
-            cur.execute(sql, hashes)
-            rows = cur.fetchall()
-
-            if rows is not None:
-                return tuples_to_tracks(rows)
-
-            return []
-
-    @staticmethod
     def remove_track_by_filepath(filepath: str):
         """
         Removes a track from the database using its filepath.

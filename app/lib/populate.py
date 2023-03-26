@@ -12,7 +12,6 @@ from app.logger import log
 from app.models import Album, Artist, Track
 from app.utils.filesystem import run_fast_scandir
 
-from app.store.folder import FolderStore
 from app.store.albums import AlbumStore
 from app.store.tracks import TrackStore
 from app.store.artists import ArtistStore
@@ -102,7 +101,6 @@ class Populate:
                 track.is_favorite = track.trackhash in fav_tracks
 
                 TrackStore.add_track(track)
-                FolderStore.add_folder(track.folder)
 
                 if not AlbumStore.album_exists(track.albumhash):
                     AlbumStore.add_album(AlbumStore.create_album(track))

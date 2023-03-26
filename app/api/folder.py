@@ -8,7 +8,7 @@ from pathlib import Path
 from flask import Blueprint, request
 
 from app import settings
-from app.lib.folderslib import GetFilesAndDirs, create_folder
+from app.lib.folderslib import GetFilesAndDirs, get_folders
 from app.db.sqlite.settings import SettingsSQLMethods as db
 from app.utils.wintools import win_replace_slash, is_windows
 
@@ -30,6 +30,7 @@ def get_folder_tree():
             req_dir = "$home"
 
     root_dirs = db.get_root_dirs()
+    root_dirs.sort()
 
     try:
         if req_dir == "$home" and root_dirs[0] == "$home":
@@ -38,19 +39,17 @@ def get_folder_tree():
         pass
 
     if req_dir == "$home":
-        folders = [Path(f) for f in root_dirs]
+        folders = get_folders(root_dirs)
 
         return {
-            "folders": [
-                create_folder(str(f)) for f in folders
-            ],
+            "folders": folders,
             "tracks": [],
         }
 
     if is_windows():
         # Trailing slash needed when drive letters are passed,
         # Remember, the trailing slash is removed in the client.
-        req_dir = req_dir + "/"
+        req_dir += "/"
     else:
         req_dir = "/" + req_dir + "/" if not req_dir.startswith("/") else req_dir + "/"
 
@@ -66,7 +65,7 @@ def get_all_drives(is_win: bool = False):
     """
     Returns a list of all the drives on a Windows machine.
     """
-    drives = psutil.disk_partitions(all=False)
+    drives = psutil.disk_partitions()
     drives = [d.mountpoint for d in drives]
 
     if is_win:
@@ -99,7 +98,7 @@ def list_folders():
         }
 
     if is_win:
-        req_dir = req_dir + "/"
+        req_dir += "/"
     else:
         req_dir = "/" + req_dir + "/"
         req_dir = str(Path(req_dir).resolve())

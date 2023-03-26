@@ -8,6 +8,11 @@ api = Blueprint("colors", __name__, url_prefix="/colors")
 def get_album_color(albumhash: str):
     album = Store.get_album_by_hash(albumhash)
 
+    if len(album.colors) > 0:
+        return {
+            "color": album.colors[0]
+        }
+
     return {
-        "color": album.colors[0]
+        "color": ""
     }

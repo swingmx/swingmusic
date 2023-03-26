@@ -23,10 +23,10 @@ class Cutoff:
     Holds all the default cutoff values.
     """
 
-    tracks: int = 90
-    albums: int = 90
-    artists: int = 90
-    playlists: int = 90
+    tracks: int = 75
+    albums: int = 75
+    artists: int = 75
+    playlists: int = 75
 
 
 class Limit:
@@ -54,7 +54,6 @@ class SearchTracks:
         results = process.extract(
             self.query,
             track_titles,
-            scorer=fuzz.WRatio,
             score_cutoff=Cutoff.tracks,
             limit=Limit.tracks,
         )
@@ -77,7 +76,6 @@ class SearchArtists:
         results = process.extract(
             self.query,
             artists,
-            scorer=fuzz.WRatio,
             score_cutoff=Cutoff.artists,
             limit=Limit.artists,
         )
@@ -100,7 +98,6 @@ class SearchAlbums:
         results = process.extract(
             self.query,
             albums,
-            scorer=fuzz.WRatio,
             score_cutoff=Cutoff.albums,
             limit=Limit.albums,
         )
@@ -125,7 +122,6 @@ class SearchPlaylists:
         results = process.extract(
             self.query,
             playlists,
-            scorer=fuzz.WRatio,
             score_cutoff=Cutoff.playlists,
             limit=Limit.playlists,
         )
@@ -176,7 +172,6 @@ class SearchAll:
         results = process.extract(
             query=query,
             choices=items,
-            scorer=fuzz.WRatio,
             score_cutoff=Cutoff.tracks,
             limit=20
         )

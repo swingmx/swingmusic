@@ -17,7 +17,6 @@ from app.db.sqlite.tracks import SQLiteManager
 from app.db.sqlite.tracks import SQLiteTrackMethods as db
 from app.db.sqlite.settings import SettingsSQLMethods as sdb
 
-from app.store.folder import FolderStore
 from app.store.tracks import TrackStore
 from app.store.albums import AlbumStore
 from app.store.artists import ArtistStore
@@ -144,8 +143,6 @@ def add_track(filepath: str) -> None:
     track = Track(**tags)
     TrackStore.add_track(track)
 
-    FolderStore.add_folder(track.folder)
-
     if not AlbumStore.album_exists(track.albumhash):
         album = AlbumStore.create_album(track)
         AlbumStore.add_album(album)
@@ -182,11 +179,6 @@ def remove_track(filepath: str) -> None:
         if empty_artist:
             ArtistStore.remove_artist_by_hash(artist.artisthash)
 
-    empty_folder = FolderStore.is_empty_folder(track.folder)
-
-    if empty_folder:
-        FolderStore.remove_folder(track.folder)
-
 
 class Handler(PatternMatchingEventHandler):
     files_to_process = []
@@ -204,7 +196,6 @@ class Handler(PatternMatchingEventHandler):
             self,
             patterns=patterns,
             ignore_directories=True,
-            case_sensitive=False,
         )
 
     def get_abs_path(self, path: str):

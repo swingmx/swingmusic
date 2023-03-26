@@ -45,13 +45,15 @@ CREATE TABLE IF NOT EXISTS tracks (
     genre text,
     title text NOT NULL,
     track integer NOT NULL,
-    trackhash text NOT NULL
+    trackhash text NOT NULL,
+    UNIQUE (filepath)
 );
 
 CREATE TABLE IF NOT EXISTS albums (
     id integer PRIMARY KEY,
     albumhash text NOT NULL,
-    colors text NOT NULL
+    colors text NOT NULL,
+    UNIQUE (albumhash)
 );
 
 
@@ -60,7 +62,8 @@ CREATE TABLE IF NOT EXISTS artists (
     id integer PRIMARY KEY,
     artisthash text NOT NULL,
     colors text,
-    bio text
+    bio text,
+    UNIQUE (artisthash)
 );
 
 CREATE TABLE IF NOT EXISTS folders (

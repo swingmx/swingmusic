@@ -1,7 +1,8 @@
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 from io import BytesIO
-from PIL import Image
+
+from PIL import Image, UnidentifiedImageError
 import requests
 import urllib
 
@@ -55,7 +56,10 @@ class DownloadImage:
         """
         Downloads the image from the url.
         """
-        return Image.open(BytesIO(requests.get(url, timeout=10).content))
+        try:
+            return Image.open(BytesIO(requests.get(url, timeout=10).content))
+        except UnidentifiedImageError:
+            return None
 
     @staticmethod
     def save_img(img: Image.Image, sm_path: Path, lg_path: Path):

@@ -34,9 +34,9 @@ delete_playlist = PL.delete_playlist
 # get_tracks_by_trackhashes = SQLiteTrackMethods.get_tracks_by_trackhashes
 def duplicate_images(images: list):
     if len(images) == 1:
-        images = images * 4
+        images *= 4
     elif len(images) == 2:
-        images = images + list(reversed(images))
+        images += list(reversed(images))
     elif len(images) == 3:
         images = images + images[:1]
 
