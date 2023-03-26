@@ -1,7 +1,5 @@
 import string
-from datetime import datetime
 import random
-
 
 
 def get_random_str(length=5):

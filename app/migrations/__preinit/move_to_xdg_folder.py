@@ -6,7 +6,7 @@ It also handles moving the userdata and the downloaded artist images to the new 
 
 import os
 import shutil
-from app.settings import APP_DIR, USER_HOME_DIR
+from app.settings import Paths
 from app.logger import log
 
 
@@ -16,8 +16,8 @@ class MoveToXdgFolder:
 
     @staticmethod
     def migrate():
-        old_config_dir = os.path.join(USER_HOME_DIR, ".swing")
-        new_config_dir = APP_DIR
+        old_config_dir = os.path.join(Paths.USER_HOME_DIR, ".swing")
+        new_config_dir = Paths.APP_DIR
 
         if not os.path.exists(old_config_dir):
             log.info("No old config folder found. Skipping migration.")

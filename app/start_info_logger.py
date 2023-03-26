@@ -1,7 +1,6 @@
 import os
 
-from app.settings import TCOLOR, APP_VERSION, FLASKVARS, APP_DIR
-from app import settings
+from app.settings import TCOLOR, Release, FLASKVARS, Paths, FromFlags
 from app.utils.network import get_ip
 
 
@@ -11,7 +10,7 @@ def log_startup_info():
     os.system("cls" if os.name == "nt" else "echo -e \\\\033c")
 
     print(lines)
-    print(f"{TCOLOR.HEADER}SwingMusic {APP_VERSION} {TCOLOR.ENDC}")
+    print(f"{TCOLOR.HEADER}SwingMusic {Release.APP_VERSION} {TCOLOR.ENDC}")
 
     adresses = [FLASKVARS.FLASK_HOST]
 
@@ -31,11 +30,11 @@ def log_startup_info():
     to_print = [
         [
             "Extract featured artists from titles",
-            settings.EXTRACT_FEAT
+            FromFlags.EXTRACT_FEAT
         ],
         [
             "Remove prod. from titles",
-            settings.REMOVE_PROD
+            FromFlags.REMOVE_PROD
         ]
     ]
 
@@ -45,7 +44,7 @@ def log_startup_info():
         )
 
     print(
-        f"{TCOLOR.YELLOW}Data folder: {APP_DIR}{TCOLOR.ENDC}"
+        f"{TCOLOR.YELLOW}Data folder: {Paths.APP_DIR}{TCOLOR.ENDC}"
     )
 
     print("\n")

@@ -7,7 +7,7 @@ from sqlite3 import Connection, Cursor
 import time
 
 from app.models import Album, Playlist, Track
-from app.settings import APP_DB_PATH, USERDATA_DB_PATH
+from app.settings import Db
 
 
 def tuple_to_track(track: tuple):
@@ -78,10 +78,10 @@ class SQLiteManager:
         if self.conn is not None:
             return self.conn.cursor()
 
-        db_path = APP_DB_PATH
+        db_path = Db.APP_DB_PATH
 
         if self.userdata_db:
-            db_path = USERDATA_DB_PATH
+            db_path = Db.USERDATA_DB_PATH
 
         self.conn = sqlite3.connect(
             db_path,

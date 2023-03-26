@@ -6,7 +6,7 @@ import json
 from enum import Enum
 from typing import Type
 
-from app.settings import JSON_CONFIG_PATH
+from app.settings import Db
 
 
 class ConfigKeys(Enum):
@@ -57,5 +57,5 @@ class ConfigManager:
         self.write_config(config_data)
 
 
-settings = ConfigManager(JSON_CONFIG_PATH)
+settings = ConfigManager(Db.JSON_CONFIG_PATH)
 a = settings.get_value(ConfigKeys.ROOT_DIRS)

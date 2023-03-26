@@ -98,7 +98,7 @@ def add_root_dirs():
         sdb.remove_root_dirs(db_dirs)
 
     if incoming_home:
-        finalize([_h], [], [settings.USER_HOME_DIR])
+        finalize([_h], [], [settings.Paths.USER_HOME_DIR])
         return {"root_dirs": [_h]}
 
     # ---

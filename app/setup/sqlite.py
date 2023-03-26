@@ -7,7 +7,7 @@ from app.db.sqlite import create_connection, create_tables, queries
 from app.migrations import apply_migrations, set_postinit_migration_versions
 from app.migrations.__preinit import run_preinit_migrations, set_preinit_migration_versions
 
-from app.settings import APP_DB_PATH, USERDATA_DB_PATH
+from app.settings import Db
 
 
 def setup_sqlite():
@@ -19,8 +19,8 @@ def setup_sqlite():
 
     run_preinit_migrations()
 
-    app_db_conn = create_connection(APP_DB_PATH)
-    playlist_db_conn = create_connection(USERDATA_DB_PATH)
+    app_db_conn = create_connection(Db.APP_DB_PATH)
+    playlist_db_conn = create_connection(Db.USERDATA_DB_PATH)
 
     create_tables(app_db_conn, queries.CREATE_APPDB_TABLES)
     create_tables(playlist_db_conn, queries.CREATE_USERDATA_TABLES)

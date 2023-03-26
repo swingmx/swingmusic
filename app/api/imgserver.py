@@ -2,12 +2,12 @@ from pathlib import Path
 
 from flask import Blueprint, send_from_directory
 
-from app.settings import APP_DIR
+from app.settings import Paths
 
 api = Blueprint("imgserver", __name__, url_prefix="/img")
 SUPPORTED_IMAGES = (".jpg", ".png", ".webp", ".jpeg")
 
-APP_DIR = Path(APP_DIR)
+APP_DIR = Path(Paths.APP_DIR)
 IMG_PATH = APP_DIR / "images"
 ASSETS_PATH = APP_DIR / "assets"
 

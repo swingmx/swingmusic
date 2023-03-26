@@ -33,7 +33,7 @@ def get_folder_tree():
 
     try:
         if req_dir == "$home" and root_dirs[0] == "$home":
-            req_dir = settings.USER_HOME_DIR
+            req_dir = settings.Paths.USER_HOME_DIR
     except IndexError:
         pass
 

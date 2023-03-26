@@ -33,7 +33,7 @@ class Playlist:
 
         self.count = len(self.trackhashes)
         self.has_gif = bool(int(self.has_gif))
-        self.has_image = (Path(settings.PLAYLIST_IMG_PATH) / str(self.image)).exists()
+        self.has_image = (Path(settings.Paths.PLAYLIST_IMG_PATH) / str(self.image)).exists()
 
         if self.image is not None:
             self.thumb = "thumb_" + self.image

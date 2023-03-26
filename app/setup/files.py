@@ -33,7 +33,7 @@ class CopyFiles:
         files = [
             {
                 "src": assets_dir,
-                "dest": os.path.join(settings.APP_DIR, "assets"),
+                "dest": os.path.join(settings.Paths.APP_DIR, "assets"),
                 "is_dir": True,
             }
         ]
@@ -83,7 +83,7 @@ def create_config_dir() -> None:
     ]
 
     for _dir in dirs:
-        path = os.path.join(settings.APP_DIR, _dir)
+        path = os.path.join(settings.Paths.APP_DIR, _dir)
         exists = os.path.exists(path)
 
         if not exists:

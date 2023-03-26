@@ -3,6 +3,8 @@ Contains default configs
 """
 import os
 
+join = os.path.join
+
 
 # ------- HELPER METHODS --------
 def get_xdg_config_dir():
@@ -17,7 +19,7 @@ def get_xdg_config_dir():
         return xdg_config_home
 
     try:
-        alt_dir = os.path.join(os.environ.get("HOME"), ".config")
+        alt_dir = join(os.environ.get("HOME"), ".config")
 
         if os.path.exists(alt_dir):
             return alt_dir
@@ -25,59 +27,65 @@ def get_xdg_config_dir():
         return os.path.expanduser("~")
 
 
-# ------- HELPER METHODS --------
+# !------- HELPER METHODS --------!
+
+class Release:
+    APP_VERSION = "v1.2.0"
 
 
-APP_VERSION = "v1.1.0"
+class Paths:
+    XDG_CONFIG_DIR = get_xdg_config_dir()
+    USER_HOME_DIR = os.path.expanduser("~")
 
-# paths
-XDG_CONFIG_DIR = get_xdg_config_dir()
-USER_HOME_DIR = os.path.expanduser("~")
+    CONFIG_FOLDER = "swingmusic" if XDG_CONFIG_DIR != USER_HOME_DIR else ".swingmusic"
 
-CONFIG_FOLDER = "swingmusic" if XDG_CONFIG_DIR != USER_HOME_DIR else ".swingmusic"
+    APP_DIR = join(XDG_CONFIG_DIR, CONFIG_FOLDER)
+    IMG_PATH = join(APP_DIR, "images")
 
-APP_DIR = os.path.join(XDG_CONFIG_DIR, CONFIG_FOLDER)
-IMG_PATH = os.path.join(APP_DIR, "images")
+    ARTIST_IMG_PATH = join(IMG_PATH, "artists")
+    ARTIST_IMG_SM_PATH = join(ARTIST_IMG_PATH, "small")
+    ARTIST_IMG_LG_PATH = join(ARTIST_IMG_PATH, "large")
 
-ARTIST_IMG_PATH = os.path.join(IMG_PATH, "artists")
-ARTIST_IMG_SM_PATH = os.path.join(ARTIST_IMG_PATH, "small")
-ARTIST_IMG_LG_PATH = os.path.join(ARTIST_IMG_PATH, "large")
+    PLAYLIST_IMG_PATH = join(IMG_PATH, "playlists")
 
-PLAYLIST_IMG_PATH = os.path.join(IMG_PATH, "playlists")
+    THUMBS_PATH = join(IMG_PATH, "thumbnails")
+    SM_THUMB_PATH = join(THUMBS_PATH, "small")
+    LG_THUMBS_PATH = join(THUMBS_PATH, "large")
 
-THUMBS_PATH = os.path.join(IMG_PATH, "thumbnails")
-SM_THUMB_PATH = os.path.join(THUMBS_PATH, "small")
-LG_THUMBS_PATH = os.path.join(THUMBS_PATH, "large")
-MUSIC_DIR = os.path.join(USER_HOME_DIR, "Music")
+    # TEST_DIR = "/home/cwilvx/Downloads/Telegram Desktop"
+    # TEST_DIR = "/mnt/dfc48e0f-103b-426e-9bf9-f25d3743bc96/Music/Chill/Wolftyla Radio"
+    # HOME_DIR = TEST_DIR
 
-# TEST_DIR = "/home/cwilvx/Downloads/Telegram Desktop"
-# TEST_DIR = "/mnt/dfc48e0f-103b-426e-9bf9-f25d3743bc96/Music/Chill/Wolftyla Radio"
-# HOME_DIR = TEST_DIR
 
-# URLS
-IMG_BASE_URI = "http://127.0.0.1:8900/images/"
-IMG_ARTIST_URI = IMG_BASE_URI + "artists/"
-IMG_THUMB_URI = IMG_BASE_URI + "thumbnails/"
-IMG_PLAYLIST_URI = IMG_BASE_URI + "playlists/"
+class Urls:
+    IMG_BASE_URI = "http://127.0.0.1:8900/images/"
+    IMG_ARTIST_URI = IMG_BASE_URI + "artists/"
+    IMG_THUMB_URI = IMG_BASE_URI + "thumbnails/"
+    IMG_PLAYLIST_URI = IMG_BASE_URI + "playlists/"
+
 
 # defaults
-DEFAULT_ARTIST_IMG = IMG_ARTIST_URI + "0.webp"
-THUMB_SIZE = 400
-SM_THUMB_SIZE = 64
-SM_ARTIST_IMG_SIZE = 64
-"""
-The size of extracted images in pixels
-"""
+class Defaults:
+    DEFAULT_ARTIST_IMG = Urls.IMG_ARTIST_URI + "0.webp"
+    THUMB_SIZE = 400
+    SM_THUMB_SIZE = 64
+    SM_ARTIST_IMG_SIZE = 64
+    """
+    The size of extracted images in pixels
+    """
+
 
 FILES = ["flac", "mp3", "wav", "m4a", "ogg", "wma", "opus", "alac", "aiff"]
 SUPPORTED_FILES = tuple(f".{file}" for file in FILES)
 
+
 # ===== SQLite =====
-APP_DB_NAME = "swing.db"
-USER_DATA_DB_NAME = "userdata.db"
-APP_DB_PATH = os.path.join(APP_DIR, APP_DB_NAME)
-USERDATA_DB_PATH = os.path.join(APP_DIR, USER_DATA_DB_NAME)
-JSON_CONFIG_PATH = os.path.join(APP_DIR, "config.json")
+class Db:
+    APP_DB_NAME = "swing.db"
+    USER_DATA_DB_NAME = "userdata.db"
+    APP_DB_PATH = join(Paths.APP_DIR, APP_DB_NAME)
+    USERDATA_DB_PATH = join(Paths.APP_DIR, USER_DATA_DB_NAME)
+    JSON_CONFIG_PATH = join(Paths.APP_DIR, "config.json")
 
 
 class FLASKVARS:
@@ -99,15 +107,16 @@ class ALLARGS:
     version = ["--version", "-v"]
 
 
-EXTRACT_FEAT = True
-"""
-Whether to extract the featured artists from the song title.
-"""
+class FromFlags:
+    EXTRACT_FEAT = True
+    """
+    Whether to extract the featured artists from the song title.
+    """
 
-REMOVE_PROD = True
-"""
-Whether to remove the producers from the song title.
-"""
+    REMOVE_PROD = True
+    """
+    Whether to remove the producers from the song title.
+    """
 
 
 class TCOLOR:
@@ -129,4 +138,4 @@ class TCOLOR:
 
 class Keys:
     # get last fm api key from os environment
-    LASTFM_API_KEY = os.environ.get("LASTFM_API_KEY")
+    LASTFM_API = os.environ.get("LASTFM_API_KEY")

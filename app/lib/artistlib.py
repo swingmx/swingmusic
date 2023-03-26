@@ -42,8 +42,8 @@ def get_artist_image_link(artist: str):
 # TODO: Move network calls to utils/network.py
 class DownloadImage:
     def __init__(self, url: str, name: str) -> None:
-        sm_path = Path(settings.ARTIST_IMG_SM_PATH) / name
-        lg_path = Path(settings.ARTIST_IMG_LG_PATH) / name
+        sm_path = Path(settings.Paths.ARTIST_IMG_SM_PATH) / name
+        lg_path = Path(settings.Paths.ARTIST_IMG_LG_PATH) / name
 
         img = self.download(url)
 
@@ -64,7 +64,7 @@ class DownloadImage:
         """
         img.save(lg_path, format="webp")
 
-        sm_size = settings.SM_ARTIST_IMG_SIZE
+        sm_size = settings.Defaults.SM_ARTIST_IMG_SIZE
         img.resize((sm_size, sm_size), Image.ANTIALIAS).save(sm_path, format="webp")
 
 
@@ -86,7 +86,7 @@ class CheckArtistImages:
 
         :param artist: The artist name
         """
-        img_path = Path(settings.ARTIST_IMG_SM_PATH) / f"{artist.artisthash}.webp"
+        img_path = Path(settings.Paths.ARTIST_IMG_SM_PATH) / f"{artist.artisthash}.webp"
 
         if img_path.exists():
             return
@@ -99,7 +99,7 @@ class CheckArtistImages:
 
 # def fetch_album_bio(title: str, albumartist: str) -> str | None: """ Returns the album bio for a given album. """
 # last_fm_url = "http://ws.audioscrobbler.com/2.0/?method=album.getinfo&api_key={}&artist={}&album={
-# }&format=json".format( settings.LAST_FM_API_KEY, albumartist, title )
+# }&format=json".format( settings.Paths.LAST_FM_API_KEY, albumartist, title )
 
 #     try:
 #         response = requests.get(last_fm_url)

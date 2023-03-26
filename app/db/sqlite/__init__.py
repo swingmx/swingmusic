@@ -6,7 +6,7 @@ import sqlite3
 from pathlib import Path
 from sqlite3 import Connection as SqlConn
 
-from app.settings import APP_DB_PATH
+from app.settings import Db
 
 
 def create_connection(db_file: str) -> SqlConn:
@@ -22,7 +22,7 @@ def get_sqlite_conn():
     It opens a connection to the database
     :return: A connection to the database.
     """
-    return create_connection(APP_DB_PATH)
+    return create_connection(Db.APP_DB_PATH)
 
 
 def create_tables(conn: SqlConn, sql_query: str):

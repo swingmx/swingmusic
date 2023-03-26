@@ -55,7 +55,7 @@ class Populate:
 
         try:
             if dirs_to_scan[0] == "$home":
-                dirs_to_scan = [settings.USER_HOME_DIR]
+                dirs_to_scan = [settings.Paths.USER_HOME_DIR]
         except IndexError:
             pass
 

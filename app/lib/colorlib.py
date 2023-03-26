@@ -56,7 +56,7 @@ class ProcessAlbumColors:
 
     @staticmethod
     def process_color(album: Album):
-        path = Path(settings.SM_THUMB_PATH) / album.image
+        path = Path(settings.Paths.SM_THUMB_PATH) / album.image
 
         if not path.exists():
             return
@@ -78,7 +78,7 @@ class ProcessArtistColors:
 
     @staticmethod
     def process_color(artist: Artist):
-        path = Path(settings.ARTIST_IMG_SM_PATH) / artist.image
+        path = Path(settings.Paths.ARTIST_IMG_SM_PATH) / artist.image
 
         if not path.exists():
             return

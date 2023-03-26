@@ -5,7 +5,7 @@ from io import BytesIO
 from PIL import Image, UnidentifiedImageError
 from tinytag import TinyTag
 
-from app import settings
+from app.settings import Defaults, Paths
 from app.utils.hashing import create_hash
 from app.utils.parsers import parse_title_from_filename, parse_artist_from_filename
 from app.utils.wintools import win_replace_slash
@@ -27,11 +27,11 @@ def extract_thumb(filepath: str, webp_path: str) -> bool:
     """
     Extracts the thumbnail from an audio file. Returns the path to the thumbnail.
     """
-    img_path = os.path.join(settings.LG_THUMBS_PATH, webp_path)
-    sm_img_path = os.path.join(settings.SM_THUMB_PATH, webp_path)
+    img_path = os.path.join(Paths.LG_THUMBS_PATH, webp_path)
+    sm_img_path = os.path.join(Paths.SM_THUMB_PATH, webp_path)
 
-    tsize = settings.THUMB_SIZE
-    sm_tsize = settings.SM_THUMB_SIZE
+    tsize = Defaults.THUMB_SIZE
+    sm_tsize = Defaults.SM_THUMB_SIZE
 
     def save_image(img: Image.Image):
         img.resize((sm_tsize, sm_tsize), Image.ANTIALIAS).save(sm_img_path, "webp")

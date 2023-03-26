@@ -109,5 +109,5 @@ class HandleArgs:
     @staticmethod
     def handle_version():
         if any((a in ARGS for a in ALLARGS.version)):
-            print(settings.APP_VERSION)
+            print(settings.Release.APP_VERSION)
             sys.exit(0)
