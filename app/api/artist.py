@@ -279,28 +279,28 @@ def get_all_artist_tracks(artisthash: str):
 
     return {"tracks": tracks}
 
-
-@api.route("/artist/<artisthash>/similar", methods=["GET"])
-def get_similar_artists(artisthash: str):
-    """
-    Returns similar artists.
-    """
-    limit = request.args.get("limit")
-
-    if limit is None:
-        limit = 6
-
-    limit = int(limit)
-
-    artist = ArtistStore.get_artist_by_hash(artisthash)
-
-    if artist is None:
-        return {"error": "Artist not found"}, 404
-
-    similar_hashes = fetch_similar_artists(artist.name)
-    similar = ArtistStore.get_artists_by_hashes(similar_hashes)
-
-    if len(similar) > limit:
-        similar = random.sample(similar, limit)
-
-    return {"similar": similar[:limit]}
+#
+# @api.route("/artist/<artisthash>/similar", methods=["GET"])
+# def get_similar_artists(artisthash: str):
+#     """
+#     Returns similar artists.
+#     """
+#     limit = request.args.get("limit")
+#
+#     if limit is None:
+#         limit = 6
+#
+#     limit = int(limit)
+#
+#     artist = ArtistStore.get_artist_by_hash(artisthash)
+#
+#     if artist is None:
+#         return {"error": "Artist not found"}, 404
+#
+#     similar_hashes = fetch_similar_artists(artist.name)
+#     similar = ArtistStore.get_artists_by_hashes(similar_hashes)
+#
+#     if len(similar) > limit:
+#         similar = random.sample(similar, limit)
+#
+#     return {"similar": similar[:limit]}

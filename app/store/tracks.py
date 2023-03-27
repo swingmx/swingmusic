@@ -123,7 +123,8 @@ class TrackStore:
         """
         Returns all tracks matching the given album hash.
         """
-        return [t for t in cls.tracks if t.albumhash == album_hash]
+        tracks = [t for t in cls.tracks if t.albumhash == album_hash]
+        return remove_duplicates(tracks)
 
     @classmethod
     def get_tracks_by_artist(cls, artisthash: str) -> list[Track]:
