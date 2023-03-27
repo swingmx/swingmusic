@@ -197,8 +197,6 @@ class SearchAll:
             itertools.groupby(mapped_items, lambda x: x["type"])
         ]
 
-        print(len(groups))
-
         # merge items of a group into a dict that looks like: {"albums": [album1, ...]}
         groups = [
             {f"{group[0]['type']}s": [i['item'] for i in group]} for group in groups
