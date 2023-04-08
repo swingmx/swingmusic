@@ -51,6 +51,54 @@ swingmusic --host 0.0.0.0
 
 The link to access the app will be printed on your terminal. Copy it and open it in your browser.
 
+### Docker
+
+You can run Swing in a Docker container. To do so, clone the repository and build the image:
+
+    git clone https://github.com/swing-opensource/swingmusic.git --depth 1
+    docker build . -t swingmusic
+
+Then create the container. Here are some example snippets to help you get started creating a container.
+
+#### docker-compose
+
+```yaml
+---
+version: "3.8"
+services:
+  swing:
+    image: swingmusic
+    container_name: swingmusic
+    volumes:
+      - /path/to/music:/music
+      - /path/to/config:/config
+    ports:
+      - 1970:1970
+    restart: unless-stopped
+```
+
+#### docker cli
+
+```bash
+docker run -d \
+  --name=swingmusic \
+  -p 1970:1970 \
+  -v /path/to/music:/music \
+  -v /path/to/config:/config \
+  --restart unless-stopped \
+  swingmusic
+```
+
+#### Parameters
+
+Container images are configured using parameters passed at runtime (such as those above). These parameters are separated by a colon and indicate `<external>:<internal>` respectively. For example, `-p 8080:80` would expose port `80` from inside the container to be accessible from the host's IP on port `8080` outside the container.
+
+| Parameter | Function |
+| :----: | --- |
+| `-p 1970` | WebUI |
+| `-v /music` | Recommended directory to store your music collection. You can bind other folder if you wish. |
+| `-v /config` | Configuration files. |
+
 ### Development
 
 This project is broken down into 2. The client and the server. The client comprises of the user interface code. This part is written in Typescript, Vue 3 and SCSS. To setup the client, checkout the [swing client repo ](https://github.com/geoffrey45/swing-client) on GitHub.
