@@ -68,6 +68,7 @@ def extract_date(date_str: str | None, filepath: str) -> int:
     try:
         return int(date_str.split("-")[0])
     except:  # pylint: disable=bare-except
+        # TODO: USE FILEPATH LAST-MOD DATE instead of current date
         return datetime.date.today().today().year
 
 
