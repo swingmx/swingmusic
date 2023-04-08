@@ -56,6 +56,7 @@ The link to access the app will be printed on your terminal. Copy it and open it
 You can run Swing in a Docker container. To do so, clone the repository and build the image:
 
     git clone https://github.com/swing-opensource/swingmusic.git --depth 1
+    cd swingmusic
     docker build . -t swingmusic
 
 Then create the container. Here are some example snippets to help you get started creating a container.
