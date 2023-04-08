@@ -16,7 +16,7 @@ def create_thumbnail(image: Any, img_path: str) -> str:
     Creates a 250 x 250 thumbnail from a playlist image
     """
     thumb_path = "thumb_" + img_path
-    full_thumb_path = os.path.join(settings.Paths.APP_DIR, "images", "playlists", thumb_path)
+    full_thumb_path = os.path.join(settings.Paths.get_app_dir(), "images", "playlists", thumb_path)
 
     aspect_ratio = image.width / image.height
 
@@ -33,7 +33,7 @@ def create_gif_thumbnail(image: Any, img_path: str):
     Creates a 250 x 250 thumbnail from a playlist image
     """
     thumb_path = "thumb_" + img_path
-    full_thumb_path = os.path.join(settings.Paths.APP_DIR, "images", "playlists", thumb_path)
+    full_thumb_path = os.path.join(settings.Paths.get_app_dir(), "images", "playlists", thumb_path)
 
     frames = []
 
@@ -60,7 +60,7 @@ def save_p_image(file, pid: str):
 
     filename = pid + str(random_str) + ".webp"
 
-    full_img_path = os.path.join(settings.Paths.PLAYLIST_IMG_PATH, filename)
+    full_img_path = os.path.join(settings.Paths.get_playlist_img_path(), filename)
 
     if file.content_type == "image/gif":
         frames = []

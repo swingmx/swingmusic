@@ -17,14 +17,6 @@ def create_connection(db_file: str) -> SqlConn:
     return conn
 
 
-def get_sqlite_conn():
-    """
-    It opens a connection to the database
-    :return: A connection to the database.
-    """
-    return create_connection(Db.APP_DB_PATH)
-
-
 def create_tables(conn: SqlConn, sql_query: str):
     """
     Executes the specifiend SQL file to create database tables.

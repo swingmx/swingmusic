@@ -17,7 +17,7 @@ class MoveToXdgFolder:
     @staticmethod
     def migrate():
         old_config_dir = os.path.join(Paths.USER_HOME_DIR, ".swing")
-        new_config_dir = Paths.APP_DIR
+        new_config_dir = Paths.get_app_dir()
 
         if not os.path.exists(old_config_dir):
             log.info("No old config folder found. Skipping migration.")

@@ -44,7 +44,7 @@ def log_startup_info():
         )
 
     print(
-        f"{TCOLOR.YELLOW}Data folder: {Paths.APP_DIR}{TCOLOR.ENDC}"
+        f"{TCOLOR.YELLOW}Data folder: {Paths.get_app_dir()}{TCOLOR.ENDC}"
     )
 
     print("\n")

@@ -57,5 +57,5 @@ class ConfigManager:
         self.write_config(config_data)
 
 
-settings = ConfigManager(Db.JSON_CONFIG_PATH)
+settings = ConfigManager(Db.get_json_config_path())
 a = settings.get_value(ConfigKeys.ROOT_DIRS)
