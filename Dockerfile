@@ -4,6 +4,8 @@ RUN git clone https://github.com/geoffrey45/swing-client.git client
 
 WORKDIR /client
 
+RUN git checkout $(git describe --tags $(git rev-list --tags --max-count=1))
+
 RUN yarn install
 
 RUN yarn build
