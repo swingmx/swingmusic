@@ -30,4 +30,4 @@ RUN poetry config virtualenvs.create false
 
 RUN poetry install
 
-CMD poetry run python manage.py --host 0.0.0.0
+ENTRYPOINT ["poetry", "run", "python", "manage.py", "--host", "0.0.0.0"]
