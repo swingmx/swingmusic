@@ -48,7 +48,7 @@ jobs:
         id: build-and-push
         uses: docker/build-push-action@v4.0.0
         with:
-          context: .
+          context: ./Dockerfile
           push: true
           tags: "${{ env.IMAGE_NAME }}:latest"
           labels: ${{ steps.meta.outputs.labels }}
