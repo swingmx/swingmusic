@@ -12,7 +12,6 @@ env:
   # github.repository as <account>/<repo>
   IMAGE_NAME: "bitnik212/swingmusic"
 
-
 jobs:
   build:
 
@@ -25,7 +24,6 @@ jobs:
       id-token: write
 
     steps:
-
       # Login against a Docker registry except on PR
       # https://github.com/docker/login-action
       - name: Log into registry ${{ env.REGISTRY }}
