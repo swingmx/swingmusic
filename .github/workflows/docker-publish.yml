@@ -8,7 +8,7 @@ on:
 
 env:
   # github.repository as <account>/<repo>
-  IMAGE_NAME: "bitnik212/swingmusic"
+  IMAGE_NAME: "$DOCKERHUB_USER/swingmusic"
 
 jobs:
   build:
@@ -31,7 +31,7 @@ jobs:
         if: github.event_name != 'pull_request'
         uses: docker/login-action@v2
         with:
-          username: ${{ secrets.DOCKERHUB_USER }}
+          username: ${{ $DOCKERHUB_USER }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
       # Extract metadata (tags, labels) for Docker
@@ -49,8 +49,8 @@ jobs:
         uses: docker/build-push-action@v4.0.0
         with:
           context: .
-          push: ${{ github.event_name != 'pull_request' }}
-          tags: ${{ steps.meta.outputs.tags }}
+          push: true
+          tags: "${{ env.IMAGE_NAME }}:latest"
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
