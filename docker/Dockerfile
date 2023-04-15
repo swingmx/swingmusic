@@ -26,7 +26,7 @@ ENV PATH="/root/.local/bin:$PATH"
 
 RUN mkdir $HOME/.config
 
-COPY . /application
+COPY .. /application
 
 RUN poetry install
 
