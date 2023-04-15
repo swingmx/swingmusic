@@ -1,0 +1,14 @@
+version: "3.8"
+
+services:
+    app:
+      image: bitnik212/swingmusic:latest
+      ports:
+        - "8080:1970"
+      volumes:
+        - config:/root/.config/swingmusic
+        # - your music folder path:/root/music
+
+
+volumes:
+  config:
