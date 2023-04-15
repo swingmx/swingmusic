@@ -43,8 +43,8 @@ def get_artist_image_link(artist: str):
 # TODO: Move network calls to utils/network.py
 class DownloadImage:
     def __init__(self, url: str, name: str) -> None:
-        sm_path = Path(settings.Paths.ARTIST_IMG_SM_PATH) / name
-        lg_path = Path(settings.Paths.ARTIST_IMG_LG_PATH) / name
+        sm_path = Path(settings.Paths.get_artist_img_sm_path()) / name
+        lg_path = Path(settings.Paths.get_artist_img_lg_path()) / name
 
         img = self.download(url)
 
@@ -90,7 +90,7 @@ class CheckArtistImages:
 
         :param artist: The artist name
         """
-        img_path = Path(settings.Paths.ARTIST_IMG_SM_PATH) / f"{artist.artisthash}.webp"
+        img_path = Path(settings.Paths.get_artist_img_sm_path()) / f"{artist.artisthash}.webp"
 
         if img_path.exists():
             return

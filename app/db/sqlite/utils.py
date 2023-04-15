@@ -78,10 +78,10 @@ class SQLiteManager:
         if self.conn is not None:
             return self.conn.cursor()
 
-        db_path = Db.APP_DB_PATH
+        db_path = Db.get_app_db_path()
 
         if self.userdata_db:
-            db_path = Db.USERDATA_DB_PATH
+            db_path = Db.get_userdata_db_path()
 
         self.conn = sqlite3.connect(
             db_path,

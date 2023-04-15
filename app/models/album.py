@@ -3,6 +3,7 @@ from dataclasses import dataclass
 
 from .track import Track
 from .artist import Artist
+from ..utils.hashing import create_hash
 
 
 @dataclass(slots=True)
@@ -105,16 +106,22 @@ class Album:
         return self.title.strip().endswith(" EP")
 
     def check_is_single(self, tracks: list[Track]):
+
         """
         Checks if the album is a single.
         """
+        keywords = ["single version", "- single"]
+        for keyword in keywords:
+            if keyword in self.title.lower():
+                self.is_single = True
+                return
+
         if (
                 len(tracks) == 1
-                and tracks[0].title.lower() == self.title.lower()
-
+                and create_hash(tracks[0].title) == create_hash(self.title)  # if they have the same title
                 # and tracks[0].track == 1
                 # and tracks[0].disc == 1
-                # Todo: Are the above commented checks necessary?
+                # TODO: Review -> Are the above commented checks necessary?
         ):
             self.is_single = True
 

@@ -27,8 +27,8 @@ def extract_thumb(filepath: str, webp_path: str) -> bool:
     """
     Extracts the thumbnail from an audio file. Returns the path to the thumbnail.
     """
-    img_path = os.path.join(Paths.LG_THUMBS_PATH, webp_path)
-    sm_img_path = os.path.join(Paths.SM_THUMB_PATH, webp_path)
+    img_path = os.path.join(Paths.get_lg_thumb_path(), webp_path)
+    sm_img_path = os.path.join(Paths.get_sm_thumb_path(), webp_path)
 
     tsize = Defaults.THUMB_SIZE
     sm_tsize = Defaults.SM_THUMB_SIZE
@@ -68,6 +68,7 @@ def extract_date(date_str: str | None, filepath: str) -> int:
     try:
         return int(date_str.split("-")[0])
     except:  # pylint: disable=bare-except
+        # TODO: USE FILEPATH LAST-MOD DATE instead of current date
         return datetime.date.today().today().year
 
 

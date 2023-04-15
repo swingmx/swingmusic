@@ -19,8 +19,8 @@ def setup_sqlite():
 
     run_preinit_migrations()
 
-    app_db_conn = create_connection(Db.APP_DB_PATH)
-    playlist_db_conn = create_connection(Db.USERDATA_DB_PATH)
+    app_db_conn = create_connection(Db.get_app_db_path())
+    playlist_db_conn = create_connection(Db.get_userdata_db_path())
 
     create_tables(app_db_conn, queries.CREATE_APPDB_TABLES)
     create_tables(playlist_db_conn, queries.CREATE_USERDATA_TABLES)

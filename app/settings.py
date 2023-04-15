@@ -6,67 +6,71 @@ import os
 join = os.path.join
 
 
-# ------- HELPER METHODS --------
-def get_xdg_config_dir():
-    """
-    Returns the XDG_CONFIG_HOME environment variable if it exists, otherwise
-    returns the default config directory. If none of those exist, returns the
-    user's home directory.
-    """
-    xdg_config_home = os.environ.get("XDG_CONFIG_HOME")
-
-    if xdg_config_home:
-        return xdg_config_home
-
-    try:
-        alt_dir = join(os.environ.get("HOME"), ".config")
-
-        if os.path.exists(alt_dir):
-            return alt_dir
-    except TypeError:
-        return os.path.expanduser("~")
-
-
-# !------- HELPER METHODS --------!
-
 class Release:
-    APP_VERSION = "v1.2.0"
+    APP_VERSION = "v1.2.1"
 
 
 class Paths:
-    XDG_CONFIG_DIR = get_xdg_config_dir()
+    XDG_CONFIG_DIR = ""
     USER_HOME_DIR = os.path.expanduser("~")
 
-    CONFIG_FOLDER = "swingmusic" if XDG_CONFIG_DIR != USER_HOME_DIR else ".swingmusic"
+    # TODO: Break this down into getter methods for each path
 
-    APP_DIR = join(XDG_CONFIG_DIR, CONFIG_FOLDER)
-    IMG_PATH = join(APP_DIR, "images")
+    @classmethod
+    def set_config_dir(cls, path: str):
+        cls.XDG_CONFIG_DIR = path
 
-    ARTIST_IMG_PATH = join(IMG_PATH, "artists")
-    ARTIST_IMG_SM_PATH = join(ARTIST_IMG_PATH, "small")
-    ARTIST_IMG_LG_PATH = join(ARTIST_IMG_PATH, "large")
+    @classmethod
+    def get_config_dir(cls):
+        return cls.XDG_CONFIG_DIR
 
-    PLAYLIST_IMG_PATH = join(IMG_PATH, "playlists")
+    @classmethod
+    def get_config_folder(cls):
+        return "swingmusic" if cls.get_config_dir() != cls.USER_HOME_DIR else ".swingmusic"
 
-    THUMBS_PATH = join(IMG_PATH, "thumbnails")
-    SM_THUMB_PATH = join(THUMBS_PATH, "small")
-    LG_THUMBS_PATH = join(THUMBS_PATH, "large")
+    @classmethod
+    def get_app_dir(cls):
+        return join(cls.get_config_dir(), cls.get_config_folder())
 
-    # TEST_DIR = "/home/cwilvx/Downloads/Telegram Desktop"
-    # TEST_DIR = "/mnt/dfc48e0f-103b-426e-9bf9-f25d3743bc96/Music/Chill/Wolftyla Radio"
-    # HOME_DIR = TEST_DIR
+    @classmethod
+    def get_img_path(cls):
+        return join(cls.get_app_dir(), "images")
 
+    @classmethod
+    def get_artist_img_path(cls):
+        return join(cls.get_img_path(), "artists")
 
-class Urls:
-    IMG_BASE_URI = "http://127.0.0.1:8900/images/"
-    IMG_ARTIST_URI = IMG_BASE_URI + "artists/"
-    IMG_THUMB_URI = IMG_BASE_URI + "thumbnails/"
-    IMG_PLAYLIST_URI = IMG_BASE_URI + "playlists/"
+    @classmethod
+    def get_artist_img_sm_path(cls):
+        return join(cls.get_artist_img_path(), "small")
+
+    @classmethod
+    def get_artist_img_lg_path(cls):
+        return join(cls.get_artist_img_path(), "large")
+
+    @classmethod
+    def get_playlist_img_path(cls):
+        return join(cls.get_img_path(), "playlists")
+
+    @classmethod
+    def get_thumbs_path(cls):
+        return join(cls.get_img_path(), "thumbnails")
+
+    @classmethod
+    def get_sm_thumb_path(cls):
+        return join(cls.get_thumbs_path(), "small")
+
+    @classmethod
+    def get_lg_thumb_path(cls):
+        return join(cls.get_thumbs_path(), "large")
+
+    @classmethod
+    def get_assets_path(cls):
+        return join(Paths.get_app_dir(), "assets")
 
 
 # defaults
 class Defaults:
-    DEFAULT_ARTIST_IMG = Urls.IMG_ARTIST_URI + "0.webp"
     THUMB_SIZE = 400
     SM_THUMB_SIZE = 64
     SM_ARTIST_IMG_SIZE = 64
@@ -83,9 +87,18 @@ SUPPORTED_FILES = tuple(f".{file}" for file in FILES)
 class Db:
     APP_DB_NAME = "swing.db"
     USER_DATA_DB_NAME = "userdata.db"
-    APP_DB_PATH = join(Paths.APP_DIR, APP_DB_NAME)
-    USERDATA_DB_PATH = join(Paths.APP_DIR, USER_DATA_DB_NAME)
-    JSON_CONFIG_PATH = join(Paths.APP_DIR, "config.json")
+
+    @classmethod
+    def get_app_db_path(cls):
+        return join(Paths.get_app_dir(), cls.APP_DB_NAME)
+
+    @classmethod
+    def get_userdata_db_path(cls):
+        return join(Paths.get_app_dir(), cls.USER_DATA_DB_NAME)
+
+    @classmethod
+    def get_json_config_path(cls):
+        return join(Paths.get_app_dir(), "config.json")
 
 
 class FLASKVARS:
@@ -101,6 +114,7 @@ class ALLARGS:
     build = "--build"
     port = "--port"
     host = "--host"
+    config = "--config"
     show_feat = ["--show-feat", "-sf"]
     show_prod = ["--show-prod", "-sp"]
     help = ["--help", "-h"]

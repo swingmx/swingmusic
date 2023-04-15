@@ -1,7 +1,7 @@
 """
 Handles arguments passed to the program.
 """
-
+import os.path
 import sys
 
 from configparser import ConfigParser
@@ -10,6 +10,10 @@ import PyInstaller.__main__ as bundler
 from app import settings
 from app.print_help import HELP_MESSAGE
 from app.utils.wintools import is_windows
+from app.logger import log
+from app.utils.xdg_utils import get_xdg_config_dir
+
+# from app.api.imgserver import set_app_dir
 
 config = ConfigParser()
 config.read("pyinstaller.config.ini")
@@ -23,6 +27,7 @@ class HandleArgs:
         self.handle_build()
         self.handle_host()
         self.handle_port()
+        self.handle_config_path()
         self.handle_no_feat()
         self.handle_remove_prod()
         self.handle_help()
@@ -88,6 +93,28 @@ class HandleArgs:
                 sys.exit(0)
 
             settings.FLASKVARS.FLASK_HOST = host  # type: ignore
+
+    @staticmethod
+    def handle_config_path():
+        """
+        Modifies the config path.
+        """
+        if ALLARGS.config in ARGS:
+            index = ARGS.index(ALLARGS.config)
+
+            try:
+                config_path = ARGS[index + 1]
+
+                if os.path.exists(config_path):
+                    settings.Paths.set_config_dir(config_path)
+                    return
+
+                log.warn(f"Config path {config_path} doesn't exist")
+                sys.exit(0)
+            except IndexError:
+                pass
+
+        settings.Paths.set_config_dir(get_xdg_config_dir())
 
     @staticmethod
     def handle_no_feat():
