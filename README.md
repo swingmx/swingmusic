@@ -1,10 +1,11 @@
 # Swing music
 
-![SWING MUSIC PLAYER BANNER IMAGE](screenshots/readme-artist.webp)
+## Screenshots
 
-![SWING MUSIC PLAYER BANNER IMAGE](screenshots/readme-album.webp)
-
-![SWING MUSIC PLAYER BANNER IMAGE](screenshots/readme-playlist.webp)
+| ![SWING MUSIC PLAYER BANNER IMAGE](screenshots/readme-artist.webp) | ![SWING MUSIC PLAYER BANNER IMAGE](screenshots/readme-album.webp) |
+|--------------|-----------|
+| ![SWING MUSIC PLAYER BANNER IMAGE](screenshots/readme-playlist.webp) | ![search page](screenshots/search-page.png) |
+| ![favorites page](screenshots/favorites-page.png) | ![artist discography page](screenshots/artist-discography-page.png) |
 
 ---
 
@@ -50,6 +51,25 @@ swingmusic --host 0.0.0.0
 ```
 
 The link to access the app will be printed on your terminal. Copy it and open it in your browser.
+
+### Setup with docker
+
+Run by docker cli:
+
+1. Create docker volume for configs
+
+```bash
+docker volume create swingmusic-config
+```
+
+2. Run with docker
+
+Params: 
+- "music folder" - Your file with music **(Replace it)**
+
+```bash
+docker run  -p 1970:1970 -v "music folder":/root/music -v swingmusic-config:/root/.config/swingmusic bitnik212/swingmusic:latest
+```
 
 ### Development
 
