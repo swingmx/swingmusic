@@ -68,3 +68,11 @@ class Track:
             self.genre = str(self.genre).replace("/", ",").replace(";", ",")
             self.genre = str(self.genre).lower().split(",")
             self.genre = [g.strip() for g in self.genre]
+
+        self.recreate_hash()
+
+    def recreate_hash(self):
+        if self.og_title == self.title:
+            return
+
+        self.trackhash = create_hash(", ".join([a.name for a in self.artist]), self.album, self.title)
