@@ -98,11 +98,11 @@ class TrackStore:
                 track.is_favorite = False
 
     @classmethod
-    def append_track_artists(cls, albumhash: str, artists: list[str]):
+    def append_track_artists(cls, albumhash: str, artists: list[str], new_album_title:str):
         tracks = cls.get_tracks_by_albumhash(albumhash)
 
         for track in tracks:
-            track.add_artists(artists)
+            track.add_artists(artists, new_album_title)
 
     # ================================================
     # ================== GETTERS =====================
