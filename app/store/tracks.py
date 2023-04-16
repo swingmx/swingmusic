@@ -42,18 +42,6 @@ class TrackStore:
         cls.tracks.extend(tracks)
 
     @classmethod
-    def get_tracks_by_trackhashes(cls, trackhashes: list[str]) -> list[Track]:
-        """
-        Returns a list of tracks by their hashes.
-        """
-
-        trackhashes = " ".join(trackhashes)
-        tracks = [track for track in cls.tracks if track.trackhash in trackhashes]
-
-        tracks.sort(key=lambda t: trackhashes.index(t.trackhash))
-        return tracks
-
-    @classmethod
     def remove_track_by_filepath(cls, filepath: str):
         """
         Removes a track from the store by its filepath.
@@ -108,6 +96,29 @@ class TrackStore:
         for track in cls.tracks:
             if track.trackhash == trackhash:
                 track.is_favorite = False
+
+    @classmethod
+    def append_track_artists(cls, albumhash: str, artists: list[str]):
+        tracks = cls.get_tracks_by_albumhash(albumhash)
+
+        for track in tracks:
+            track.add_artists(artists)
+
+    # ================================================
+    # ================== GETTERS =====================
+    # ================================================
+
+    @classmethod
+    def get_tracks_by_trackhashes(cls, trackhashes: list[str]) -> list[Track]:
+        """
+        Returns a list of tracks by their hashes.
+        """
+
+        trackhashes = " ".join(trackhashes)
+        tracks = [track for track in cls.tracks if track.trackhash in trackhashes]
+
+        tracks.sort(key=lambda t: trackhashes.index(t.trackhash))
+        return tracks
 
     @classmethod
     def get_tracks_by_filepaths(cls, paths: list[str]) -> list[Track]:
