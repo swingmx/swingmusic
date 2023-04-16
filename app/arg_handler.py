@@ -120,12 +120,12 @@ class HandleArgs:
     def handle_no_feat():
         # if ArgsEnum.no_feat in ARGS:
         if any((a in ARGS for a in ALLARGS.show_feat)):
-            settings.EXTRACT_FEAT = False
+            settings.FromFlags.EXTRACT_FEAT = False
 
     @staticmethod
     def handle_remove_prod():
         if any((a in ARGS for a in ALLARGS.show_prod)):
-            settings.REMOVE_PROD = False
+            settings.FromFlags.REMOVE_PROD = False
 
     @staticmethod
     def handle_help():

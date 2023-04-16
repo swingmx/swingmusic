@@ -2,14 +2,17 @@
 Reads and saves the latest database migrations version.
 """
 
-
 from app.db.sqlite.utils import SQLiteManager
 
 
 class MigrationManager:
     all_get_sql = "SELECT * FROM migrations"
-    pre_init_set_sql = "UPDATE migrations SET pre_init_version = ? WHERE id = 1"
-    post_init_set_sql = "UPDATE migrations SET post_init_version = ? WHERE id = 1"
+
+    _base = "UPDATE migrations SET"
+    _end = "= ? WHERE id = 1"
+
+    pre_init_set_sql = f"{_base} pre_init_version {_end}"
+    post_init_set_sql = f"{_base} post_init_version {_end}"
 
     @classmethod
     def get_preinit_version(cls) -> int:

@@ -31,12 +31,13 @@ class Track:
 
     filetype: str = ""
     image: str = ""
-    artist_hashes: list[str] = dataclasses.field(default_factory=list)
+    artist_hashes: str = ""
     is_favorite: bool = False
     og_title: str = ""
 
     def __post_init__(self):
         self.og_title = self.title
+
         if self.artist is not None:
             artists = split_artists(self.artist)
             new_title = self.title
@@ -55,7 +56,7 @@ class Track:
 
             self.title = new_title
 
-            self.artist_hashes = [create_hash(a, decode=True) for a in artists]
+            self.artist_hashes = "-".join(create_hash(a, decode=True) for a in artists)
             self.artist = [ArtistMinimal(a) for a in artists]
 
             albumartists = split_artists(self.albumartist)
@@ -68,3 +69,25 @@ class Track:
             self.genre = str(self.genre).replace("/", ",").replace(";", ",")
             self.genre = str(self.genre).lower().split(",")
             self.genre = [g.strip() for g in self.genre]
+
+        self.recreate_hash()
+
+    def recreate_hash(self):
+        """
+        Recreates a track hash if the track title was altered
+        to prevent duplicate tracks having different hashes.
+        """
+        if self.og_title == self.title:
+            return
+
+        self.trackhash = create_hash(", ".join([a.name for a in self.artist]), self.album, self.title)
+
+    def recreate_artists_hash(self):
+        self.artist_hashes = "-".join(a.artisthash for a in self.artist)
+
+    def add_artists(self, artists: list[str]):
+        for artist in artists:
+            if create_hash(artist) not in self.artist_hashes:
+                self.artist.append(ArtistMinimal(artist))
+
+        self.recreate_artists_hash()
