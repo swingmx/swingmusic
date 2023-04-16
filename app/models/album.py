@@ -47,7 +47,7 @@ class Album:
                 self.albumartists.extend([Artist(a) for a in featured if a.lower() not in original_lower])
 
                 from ..store.tracks import TrackStore
-                TrackStore.append_track_artists(self.albumhash, featured)
+                TrackStore.append_track_artists(self.albumhash, featured, self.title)
 
         self.albumartists_hashes = "-".join(a.artisthash for a in self.albumartists)
 

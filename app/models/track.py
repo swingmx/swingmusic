@@ -85,9 +85,13 @@ class Track:
     def recreate_artists_hash(self):
         self.artist_hashes = "-".join(a.artisthash for a in self.artist)
 
-    def add_artists(self, artists: list[str]):
+    def rename_album(self, new_album: str):
+        self.album = new_album
+
+    def add_artists(self, artists: list[str], new_album_title: str):
         for artist in artists:
             if create_hash(artist) not in self.artist_hashes:
                 self.artist.append(ArtistMinimal(artist))
 
         self.recreate_artists_hash()
+        self.rename_album(new_album_title)
