@@ -93,7 +93,7 @@ class SearchAlbums:
         Gets all albums with a given title.
         """
 
-        albums = [unidecode(a.title).lower() for a in self.albums]
+        albums = [unidecode(a.og_title).lower() for a in self.albums]
 
         results = process.extract(
             self.query,

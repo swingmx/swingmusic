@@ -71,7 +71,7 @@ class AlbumStore:
         Returns N albums by the given albumartist, excluding the specified album.
         """
 
-        albums = [album for album in cls.albums if artisthash in album.albumartisthash]
+        albums = [album for album in cls.albums if artisthash in album.albumartists_hashes]
 
         albums = [album for album in albums if album.albumhash != exclude]
 
@@ -108,7 +108,7 @@ class AlbumStore:
         """
         Returns all albums by the given artist.
         """
-        return [album for album in cls.albums if artisthash in album.albumartisthash]
+        return [album for album in cls.albums if artisthash in album.albumartists_hashes]
 
     @classmethod
     def count_albums_by_artisthash(cls, artisthash: str):

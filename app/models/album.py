@@ -4,6 +4,9 @@ from dataclasses import dataclass
 from .track import Track
 from .artist import Artist
 from ..utils.hashing import create_hash
+from ..utils.parsers import parse_feat_from_title
+
+from app.settings import FromFlags
 
 
 @dataclass(slots=True)
@@ -16,13 +19,14 @@ class Album:
     title: str
     albumartists: list[Artist]
 
-    albumartisthash: str = ""
+    albumartists_hashes: str = ""
     image: str = ""
     count: int = 0
     duration: int = 0
     colors: list[str] = dataclasses.field(default_factory=list)
     date: str = ""
 
+    og_title: str = ""
     is_soundtrack: bool = False
     is_compilation: bool = False
     is_single: bool = False
@@ -32,8 +36,20 @@ class Album:
     genres: list[str] = dataclasses.field(default_factory=list)
 
     def __post_init__(self):
+        self.og_title = self.title
         self.image = self.albumhash + ".webp"
-        self.albumartisthash = "-".join(a.artisthash for a in self.albumartists)
+
+        if FromFlags.EXTRACT_FEAT:
+            featured, self.title = parse_feat_from_title(self.title)
+
+            if len(featured) > 0:
+                original_lower = "-".join([a.name.lower() for a in self.albumartists])
+                self.albumartists.extend([Artist(a) for a in featured if a.lower() not in original_lower])
+
+                from ..store.tracks import TrackStore
+                TrackStore.append_track_artists(self.albumhash, featured)
+
+        self.albumartists_hashes = "-".join(a.artisthash for a in self.albumartists)
 
     def set_colors(self, colors: list[str]):
         self.colors = colors
