@@ -1,6 +1,6 @@
 FROM node:latest AS CLIENT
 
-RUN git clone https://github.com/geoffrey45/swing-client.git client
+RUN git clone https://github.com/swing-opensource/swingmusic-client.git client
 
 WORKDIR /client
 
