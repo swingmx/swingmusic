@@ -13,6 +13,18 @@
 docker-compose up -d
 ```
 
+## Filebrowser
+
+#### Default login credentials:
+**Login:** 
+```
+admin
+```
+**Password:**
+```
+admin
+```
+
 ---
 #### Sources:
 - [Filebrowser](https://github.com/filebrowser/filebrowser)
