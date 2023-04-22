@@ -9,6 +9,7 @@ from flask import Blueprint, request
 from app.db.sqlite.albums import SQLiteAlbumMethods as adb
 from app.db.sqlite.favorite import SQLiteFavoriteMethods as favdb
 from app.models import FavType, Track
+from app.utils.hashing import create_hash
 from app.utils.remove_duplicates import remove_duplicates
 
 from app.store.tracks import TrackStore
@@ -122,3 +123,30 @@ def get_artist_albums():
     albums = [a for a in albums if len(a["albums"]) > 0]
 
     return {"data": albums}
+
+
+@api.route("/album/versions", methods=["POST"])
+def get_album_versions():
+    """
+    Returns other versions of the given album.
+    """
+
+    data = request.get_json()
+
+    if data is None:
+        return {"msg": "No albumartist provided"}
+
+    og_album_title: str = data['og_album_title']
+    album_title: str = data['album_title']
+    artisthash: str = data['artisthash']
+
+    albums = AlbumStore.get_albums_by_artisthash(artisthash)
+
+    albums = [
+        a for a in albums
+        if create_hash(a.title) == create_hash(album_title) and create_hash(og_album_title) != create_hash(a.og_title)
+    ]
+
+    return {
+        "data": albums
+    }

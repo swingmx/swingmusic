@@ -87,8 +87,9 @@ def parse_feat_from_title(title: str) -> tuple[list[str], str]:
     return artists, new_title
 
 
-def get_base_album_title(string):
-    pattern = re.compile(r'\s*(\(|\[).*?(version|remaster|deluxe|edition|expanded).*?(\)|\])', re.IGNORECASE)
+def get_base_album_title(string) -> tuple[str, str | None]:
+    pattern = re.compile(r'\s*(\(|\[).*?(version|remaster|deluxe|edition|expanded|anniversary).*?(\)|\])',
+                         re.IGNORECASE)
     match = pattern.search(string)
     if match:
         removed_block = match.group(0)
@@ -99,18 +100,60 @@ def get_base_album_title(string):
 
 
 class AlbumVersionEnum(Enum):
-    REMASTER = ("remaster", "remastered")
-    DELUXE = ("deluxe",)
+    Explicit = ("explicit",)
+
+    ANNIVERSARY = ("anniversary",)
+    DIAMOND = ("diamond",)
+    Centennial = ("centennial",)
+    GOLDEN = ("gold",)
+    PLATINUM = ('platinum',)
+    SILVER = ("silver",)
+
     EXPANDED = ("expanded",)
-    SUPER_DELUXE = ("super deluxe",)
     EXTENDED = ("extended",)
-    BONUS_TRACK = ("bonus track", "bonus tracks")
-    RE_RECORD = ("re-recorded", "rerecorded")
-    INTL_VERSION = ("international",)
+
+    DELUXE = ("deluxe",)
+    SUPER_DELUXE = ("super deluxe",)
+
+    LEGACY = ("legacy",)
+    SPECIAL = ("special",)
+    COLLECTORS = ("collector",)
+    ARCHIVE = ("archive",)
+
+    Acoustic = ("acoustic",)
+    DOUBLE_DISC = ('double disc', 'double disk')
+
+    SUMMER = ("summer",)
+    WINTER = ("winter",)
+    SPRING = ("spring",)
+    FALL = ("fall",)
+
+    BONUS_TRACK = ("bonus track",)
+
     ORIGINAL = ("original",)
+    INTL_VERSION = ("international",)
+    UK_VERSION = ("uk version",)
+    US_VERSION = ("us version",)
+
+    Limited = ("limited",)
+
+    MONO = ("mono",)
+    STEREO = ("stereo",)
+
+    HI_RES = ("Hi-Res",)
     RE_MIX = ("re-mix",)
     RE_RECORDED = ("re-recorded", "rerecorded")
     REISSUE = ("reissue",)
+    REMASTER = ("remaster",)
+
+
+def get_anniversary(text: str) -> str | None:
+    _end = "anniversary"
+    match = re.search(r"\b\d+\w*(?= anniversary)", text, re.IGNORECASE)
+    if match:
+        return match.group(0).strip().lower() + f" {_end}"
+    else:
+        return _end
 
 
 def get_album_info(bracket_text: str | None) -> list[str]:
@@ -124,11 +167,25 @@ def get_album_info(bracket_text: str | None) -> list[str]:
             if re.search(keyword, bracket_text, re.IGNORECASE):
                 versions.append(version_keywords.name.lower())
                 break
+
+    if "anniversary" in versions:
+        anniversary = get_anniversary(bracket_text)
+        versions.insert(0, anniversary)
+        versions.remove("anniversary")
+
     return versions
 
 
-def get_base_title_and_versions(album: str) -> tuple[str, list[str]]:
-    album_title, version_block = get_base_album_title(album)
+def get_base_title_and_versions(original_album_title: str) -> tuple[str, list[str]]:
+    album_title, version_block = get_base_album_title(original_album_title)
+
+    if version_block is None:
+        return original_album_title, []
+
     versions = get_album_info(version_block)
+
+    # if no version info could be extracted, accept defeat!
+    if len(versions) == 0:
+        album_title = original_album_title
 
     return album_title, versions
