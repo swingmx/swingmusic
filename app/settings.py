@@ -132,6 +132,9 @@ class FromFlags:
     Whether to remove the producers from the song title.
     """
 
+    REMOVE_REMASTER = True
+    MERGE_REMASTERS = True
+
 
 class TCOLOR:
     """

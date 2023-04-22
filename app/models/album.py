@@ -4,7 +4,7 @@ from dataclasses import dataclass
 from .track import Track
 from .artist import Artist
 from ..utils.hashing import create_hash
-from ..utils.parsers import parse_feat_from_title
+from ..utils.parsers import parse_feat_from_title, get_base_title_and_versions
 
 from app.settings import FromFlags
 
@@ -34,6 +34,7 @@ class Album:
     is_favorite: bool = False
     is_live: bool = False
     genres: list[str] = dataclasses.field(default_factory=list)
+    versions: list[str] = dataclasses.field(default_factory=list)
 
     def __post_init__(self):
         self.og_title = self.title
@@ -48,6 +49,12 @@ class Album:
 
                 from ..store.tracks import TrackStore
                 TrackStore.append_track_artists(self.albumhash, featured, self.title)
+
+        if FromFlags.REMOVE_REMASTER:
+            self.title, self.versions = get_base_title_and_versions(self.title)
+
+            if "super_deluxe" in self.versions:
+                self.versions.remove("deluxe")
 
         self.albumartists_hashes = "-".join(a.artisthash for a in self.albumartists)
 
