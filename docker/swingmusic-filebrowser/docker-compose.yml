@@ -1,0 +1,23 @@
+version: "3.8"
+
+services:
+    app:
+      image: bitnik212/swingmusic:original-v1.2.0
+      ports:
+        - "8080:1970"
+      volumes:
+        - app-config:/config
+        - /path/to/music/folder:/music
+
+    filebrowser:
+      image: filebrowser/filebrowser:s6
+      ports:
+        - "8081:80"
+      volumes:
+        - fb-config:/database
+        - fb-config:/config
+        - /path/to/music/folder:/music
+
+volumes:
+  app-config:
+  fb-config:
