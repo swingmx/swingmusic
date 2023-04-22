@@ -16,7 +16,7 @@ services:
       volumes:
         - fb-config:/database
         - fb-config:/config
-        - /path/to/music/folder:/music
+        - /path/to/music/folder:/srv
 
 volumes:
   app-config:
