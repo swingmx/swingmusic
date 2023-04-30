@@ -37,7 +37,8 @@ class SQLiteFavoriteMethods:
         sql = """SELECT * FROM favorites"""
         with SQLiteManager(userdata_db=True) as cur:
             cur.execute(sql)
-            return cur.fetchall()
+            favs = cur.fetchall()
+            return [fav for fav in favs if fav[1] != ""]
 
     @classmethod
     def get_favorites(cls, fav_type: str) -> list[tuple]:

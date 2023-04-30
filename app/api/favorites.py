@@ -7,6 +7,8 @@ from app.utils.bisection import UseBisection
 from app.store.artists import ArtistStore
 from app.store.albums import AlbumStore
 from app.store.tracks import TrackStore
+from app.serializers.favorites_serializer import recent_fav_track_serializer, recent_fav_album_serializer, \
+    recent_fav_artist_serializer
 
 api = Blueprint("favorite", __name__, url_prefix="/")
 
@@ -153,17 +155,15 @@ def get_all_favorites():
     favs = favdb.get_all()
     favs.reverse()
 
-    favs = [fav for fav in favs if fav[1] != ""]
-
     tracks = []
     albums = []
     artists = []
 
     for fav in favs:
         if (
-            len(tracks) >= track_limit
-            and len(albums) >= album_limit
-            and len(artists) >= artist_limit
+                len(tracks) >= track_limit
+                and len(albums) >= album_limit
+                and len(artists) >= artist_limit
         ):
             break
 
@@ -191,7 +191,33 @@ def get_all_favorites():
     albums = remove_none(albums)
     artists = remove_none(artists)
 
+    recents = []
+    first_n = favs[:album_limit]
+
+    for fav in first_n:
+        if fav[2] == FavType.track:
+            track = [t for t in tracks if t.trackhash == fav[1]][0]
+            recents.append({
+                "type": "track",
+                "item": recent_fav_track_serializer(track)
+            })
+
+        elif fav[2] == FavType.album:
+            album = [a for a in albums if a.albumhash == fav[1]][0]
+            recents.append({
+                "type": "album",
+                "item": recent_fav_album_serializer(album)
+            })
+
+        elif fav[2] == FavType.artist:
+            artist = [a for a in artists if a.artisthash == fav[1]][0]
+            recents.append({
+                "type": "artist",
+                "item": recent_fav_artist_serializer(artist)
+            })
+
     return {
+        "recents": recents,
         "tracks": tracks,
         "albums": albums,
         "artists": artists,
