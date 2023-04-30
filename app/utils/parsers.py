@@ -88,13 +88,14 @@ def parse_feat_from_title(title: str) -> tuple[list[str], str]:
 
 
 def get_base_album_title(string) -> tuple[str, str | None]:
-    pattern = re.compile(r'\s*(\(|\[).*?(version|remaster|deluxe|edition|expanded|anniversary).*?(\)|\])',
+    pattern = re.compile(r'\s*(\(|\[)[^\)\]]*?(version|remaster|deluxe|edition|expanded|anniversary)[^\)\]]*?(\)|\])$',
                          re.IGNORECASE)
     match = pattern.search(string)
+
     if match:
         removed_block = match.group(0)
-        title = string.replace(removed_block, '').strip('()[] ')
-        return title, removed_block
+        title = string.replace(removed_block, '')
+        return title.strip(), removed_block.strip()
 
     return string, None
 
