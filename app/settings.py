@@ -106,8 +106,24 @@ class FLASKVARS:
     FLASK_PORT = 1970
     FLASK_HOST = "localhost"
 
+    @classmethod
+    def get_flask_port(cls):
+        return cls.FLASK_PORT
 
-class ALLARGS:
+    @classmethod
+    def get_flask_host(cls):
+        return cls.FLASK_HOST
+
+    @classmethod
+    def set_flask_port(cls, port):
+        cls.FLASK_PORT = port
+
+    @classmethod
+    def set_flask_host(cls, host):
+        cls.FLASK_HOST = host
+
+
+class ALLARGS(Enum):
     """
     Enumerates the possible app arguments.
     """
@@ -116,10 +132,16 @@ class ALLARGS:
     port = "--port"
     host = "--host"
     config = "--config"
-    show_feat = ["--show-feat", "-sf"]
-    show_prod = ["--show-prod", "-sp"]
-    help = ["--help", "-h"]
-    version = ["--version", "-v"]
+
+    show_feat = ("--show-feat", "-sf")
+    show_prod = ("--show-prod", "-sp")
+    dont_clean_albums = ("--no-clean-albums", "-nca")
+    dont_clean_tracks = ("--no-clean-tracks", "-nct")
+    no_periodic_scan = ("--no-periodic-scan", "-nps")
+    periodic_scan_interval = ("--scan-interval", "-psi")
+
+    help = ("--help", "-h")
+    version = ("--version", "-v")
 
 
 class FromFlags:
@@ -135,6 +157,7 @@ class FromFlags:
 
     CLEAN_ALBUM_TITLE = False
     REMOVE_REMASTER_FROM_TRACK = False
+    SHOW_ALBUM_VERSION = False
 
     DO_PERIODIC_SCANS = True
     PERIODIC_SCAN_INTERVAL = 300  # seconds
@@ -146,6 +169,7 @@ class ParserFlags(Enum):
     EXTRACT_FEAT = 'EXTRACT_FEAT'
     REMOVE_PROD = 'REMOVE_PROD'
     CLEAN_ALBUM_TITLE = 'CLEAN_ALBUM_TITLE'
+    SHOW_ALBUM_VERSION = 'SHOW_ALBUM_VERSION'
     REMOVE_REMASTER_FROM_TRACK = 'REMOVE_REMASTER_FROM_TRACK'
     DO_PERIODIC_SCANS = 'DO_PERIODIC_SCANS'
     PERIODIC_SCAN_INTERVAL = 'PERIODIC_SCAN_INTERVAL'

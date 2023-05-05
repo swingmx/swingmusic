@@ -1,7 +1,6 @@
 """
 Contains all the artist(s) routes.
 """
-import random
 from collections import deque
 
 from flask import Blueprint, request
@@ -9,7 +8,6 @@ from flask import Blueprint, request
 from app.db.sqlite.favorite import SQLiteFavoriteMethods as favdb
 from app.models import Album, FavType, Track
 from app.utils.remove_duplicates import remove_duplicates
-from app.requests.artists import fetch_similar_artists
 
 from app.store.albums import AlbumStore
 from app.store.tracks import TrackStore

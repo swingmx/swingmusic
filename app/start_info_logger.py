@@ -1,6 +1,6 @@
 import os
 
-from app.settings import TCOLOR, Release, FLASKVARS, Paths, FromFlags, get_flag, ParserFlags
+from app.settings import TCOLOR, Release, FLASKVARS, Paths, get_flag, ParserFlags
 from app.utils.network import get_ip
 
 
@@ -12,16 +12,16 @@ def log_startup_info():
     print(lines)
     print(f"{TCOLOR.HEADER}SwingMusic {Release.APP_VERSION} {TCOLOR.ENDC}")
 
-    adresses = [FLASKVARS.FLASK_HOST]
+    adresses = [FLASKVARS.get_flask_host()]
 
-    if FLASKVARS.FLASK_HOST == "0.0.0.0":
+    if FLASKVARS.get_flask_host() == "0.0.0.0":
         adresses = ["localhost", get_ip()]
 
     print("Started app on:")
     for address in adresses:
         # noinspection HttpUrlsUsage
         print(
-            f"➤ {TCOLOR.OKGREEN}http://{address}:{FLASKVARS.FLASK_PORT}{TCOLOR.ENDC}"
+            f"➤ {TCOLOR.OKGREEN}http://{address}:{FLASKVARS.get_flask_port()}{TCOLOR.ENDC}"
         )
 
     print(lines)

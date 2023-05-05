@@ -1,10 +1,9 @@
-import dataclasses
 from dataclasses import dataclass
 
-from app.settings import FromFlags, get_flag, ParserFlags
-from .artist import ArtistMinimal
+from app.settings import get_flag, ParserFlags
 from app.utils.hashing import create_hash
 from app.utils.parsers import split_artists, remove_prod, parse_feat_from_title, clean_title
+from .artist import ArtistMinimal
 
 
 @dataclass(slots=True)

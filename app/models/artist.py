@@ -1,4 +1,3 @@
-import json
 import dataclasses
 from dataclasses import dataclass
 

@@ -64,7 +64,7 @@ def extract_thumb(filepath: str, webp_path: str) -> bool:
     return False
 
 
-def extract_date(date_str: str | None, filepath: str) -> int:
+def extract_date(date_str: str | None) -> int:
     try:
         return int(date_str.split("-")[0])
     except:  # pylint: disable=bare-except

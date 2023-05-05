@@ -53,12 +53,12 @@ if __name__ == "__main__":
     bg_run_setup()
     start_watchdog()
 
-    app.run(
-        debug=False,
-        threaded=True,
-        host=FLASKVARS.FLASK_HOST,
-        port=FLASKVARS.FLASK_PORT,
-        use_reloader=False,
-    )
+app.run(
+    debug=False,
+    threaded=True,
+    host=FLASKVARS.get_flask_host(),
+    port=FLASKVARS.get_flask_port(),
+    use_reloader=False,
+)
 
 # TODO: Organize code in this file: move args to new file, etc.
