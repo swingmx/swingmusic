@@ -151,6 +151,7 @@ def get_all_favorites():
     track_limit = int(track_limit)
     album_limit = int(album_limit)
     artist_limit = int(artist_limit)
+    largest = max(track_limit, album_limit, artist_limit)
 
     favs = favdb.get_all()
     favs.reverse()
@@ -161,21 +162,21 @@ def get_all_favorites():
 
     for fav in favs:
         if (
-                len(tracks) >= track_limit
-                and len(albums) >= album_limit
-                and len(artists) >= artist_limit
+                len(tracks) >= largest
+                and len(albums) >= largest
+                and len(artists) >= largest
         ):
             break
 
-        if not len(tracks) >= track_limit:
+        if not len(tracks) >= largest:
             if fav[2] == FavType.track:
                 tracks.append(fav[1])
 
-        if not len(albums) >= album_limit:
+        if not len(albums) >= largest:
             if fav[2] == FavType.album:
                 albums.append(fav[1])
 
-        if not len(artists) >= artist_limit:
+        if not len(artists) >= largest:
             if fav[2] == FavType.artist:
                 artists.append(fav[1])
 
@@ -196,31 +197,39 @@ def get_all_favorites():
 
     for fav in first_n:
         if fav[2] == FavType.track:
-            track = [t for t in tracks if t.trackhash == fav[1]][0]
-            recents.append({
-                "type": "track",
-                "item": recent_fav_track_serializer(track)
-            })
+            try:
+                track = [t for t in tracks if t.trackhash == fav[1]][0]
+                recents.append({
+                    "type": "track",
+                    "item": recent_fav_track_serializer(track)
+                })
+            except IndexError:
+                pass
 
         elif fav[2] == FavType.album:
-            album = [a for a in albums if a.albumhash == fav[1]][0]
-            recents.append({
-                "type": "album",
-                "item": recent_fav_album_serializer(album)
-            })
-
+            try:
+                album = [a for a in albums if a.albumhash == fav[1]][0]
+                recents.append({
+                    "type": "album",
+                    "item": recent_fav_album_serializer(album)
+                })
+            except IndexError:
+                pass
         elif fav[2] == FavType.artist:
-            artist = [a for a in artists if a.artisthash == fav[1]][0]
-            recents.append({
-                "type": "artist",
-                "item": recent_fav_artist_serializer(artist)
-            })
+            try:
+                artist = [a for a in artists if a.artisthash == fav[1]][0]
+                recents.append({
+                    "type": "artist",
+                    "item": recent_fav_artist_serializer(artist)
+                })
+            except IndexError:
+                pass
 
     return {
-        "recents": recents,
-        "tracks": tracks,
-        "albums": albums,
-        "artists": artists,
+        "recents": recents[:album_limit],
+        "tracks": tracks[:track_limit],
+        "albums": albums[:album_limit],
+        "artists": artists[:artist_limit],
     }
 
 

@@ -1,6 +1,6 @@
 import os
 
-from app.settings import TCOLOR, Release, FLASKVARS, Paths, FromFlags
+from app.settings import TCOLOR, Release, FLASKVARS, Paths, FromFlags, get_flag, ParserFlags
 from app.utils.network import get_ip
 
 
@@ -30,11 +30,11 @@ def log_startup_info():
     to_print = [
         [
             "Extract featured artists from titles",
-            FromFlags.EXTRACT_FEAT
+            get_flag(ParserFlags.EXTRACT_FEAT)
         ],
         [
             "Remove prod. from titles",
-            FromFlags.REMOVE_PROD
+            get_flag(ParserFlags.REMOVE_PROD)
         ]
     ]
 

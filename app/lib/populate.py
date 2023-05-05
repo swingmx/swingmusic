@@ -8,6 +8,7 @@ from app.db.sqlite.favorite import SQLiteFavoriteMethods as favdb
 from app.lib.colorlib import ProcessAlbumColors, ProcessArtistColors
 
 from app.lib.taglib import extract_thumb, get_tags
+from app.lib.trackslib import validate_tracks
 from app.logger import log
 from app.models import Album, Artist, Track
 from app.utils.filesystem import run_fast_scandir
@@ -38,6 +39,7 @@ class Populate:
         global POPULATE_KEY
         POPULATE_KEY = key
 
+        validate_tracks()
         tracks = get_all_tracks()
         tracks = list(tracks)
 

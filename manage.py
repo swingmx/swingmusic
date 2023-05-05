@@ -5,7 +5,7 @@ import logging
 
 from app.api import create_api
 from app.arg_handler import HandleArgs
-from app.functions import run_periodic_checks
+from app.periodic_scan import run_periodic_scans
 from app.lib.watchdogg import Watcher as WatchDog
 from app.settings import FLASKVARS
 from app.setup import run_setup
@@ -39,7 +39,7 @@ def serve_client():
 @background
 def bg_run_setup() -> None:
     run_setup()
-    run_periodic_checks()
+    run_periodic_scans()
 
 
 @background

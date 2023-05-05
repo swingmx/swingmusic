@@ -1,10 +1,10 @@
 import dataclasses
 from dataclasses import dataclass
 
-from app.settings import FromFlags
+from app.settings import FromFlags, get_flag, ParserFlags
 from .artist import ArtistMinimal
 from app.utils.hashing import create_hash
-from app.utils.parsers import split_artists, remove_prod, parse_feat_from_title
+from app.utils.parsers import split_artists, remove_prod, parse_feat_from_title, clean_title
 
 
 @dataclass(slots=True)
@@ -42,17 +42,20 @@ class Track:
             artists = split_artists(self.artist)
             new_title = self.title
 
-            if FromFlags.EXTRACT_FEAT:
+            if get_flag(ParserFlags.EXTRACT_FEAT):
                 featured, new_title = parse_feat_from_title(self.title)
                 original_lower = "-".join([a.lower() for a in artists])
                 artists.extend([a for a in featured if a.lower() not in original_lower])
 
-            if FromFlags.REMOVE_PROD:
+            if get_flag(ParserFlags.REMOVE_PROD):
                 new_title = remove_prod(new_title)
 
             # if track is a single
             if self.og_title == self.album:
                 self.album = new_title
+
+            if get_flag(ParserFlags.REMOVE_REMASTER_FROM_TRACK):
+                new_title = clean_title(new_title)
 
             self.title = new_title
 

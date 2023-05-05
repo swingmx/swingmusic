@@ -2,6 +2,7 @@
 Contains default configs
 """
 import os
+from enum import Enum
 
 join = os.path.join
 
@@ -122,18 +123,40 @@ class ALLARGS:
 
 
 class FromFlags:
-    EXTRACT_FEAT = True
+    EXTRACT_FEAT = False
     """
     Whether to extract the featured artists from the song title.
     """
 
-    REMOVE_PROD = True
+    REMOVE_PROD = False
     """
     Whether to remove the producers from the song title.
     """
 
-    REMOVE_REMASTER = True
-    MERGE_REMASTERS = True
+    CLEAN_ALBUM_TITLE = False
+    REMOVE_REMASTER_FROM_TRACK = False
+
+    DO_PERIODIC_SCANS = True
+    PERIODIC_SCAN_INTERVAL = 300  # seconds
+
+    # MERGE_ALBUM_VERSIONS = True
+
+
+class ParserFlags(Enum):
+    EXTRACT_FEAT = 'EXTRACT_FEAT'
+    REMOVE_PROD = 'REMOVE_PROD'
+    CLEAN_ALBUM_TITLE = 'CLEAN_ALBUM_TITLE'
+    REMOVE_REMASTER_FROM_TRACK = 'REMOVE_REMASTER_FROM_TRACK'
+    DO_PERIODIC_SCANS = 'DO_PERIODIC_SCANS'
+    PERIODIC_SCAN_INTERVAL = 'PERIODIC_SCAN_INTERVAL'
+
+
+def get_flag(flag: ParserFlags) -> bool:
+    return getattr(FromFlags, flag.value)
+
+
+def get_scan_sleep_time() -> int:
+    return FromFlags.PERIODIC_SCAN_INTERVAL
 
 
 class TCOLOR:

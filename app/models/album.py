@@ -6,7 +6,7 @@ from .artist import Artist
 from ..utils.hashing import create_hash
 from ..utils.parsers import parse_feat_from_title, get_base_title_and_versions
 
-from app.settings import FromFlags
+from app.settings import get_flag, ParserFlags
 
 
 @dataclass(slots=True)
@@ -27,12 +27,14 @@ class Album:
     date: str = ""
 
     og_title: str = ""
+    base_title: str = ""
     is_soundtrack: bool = False
     is_compilation: bool = False
     is_single: bool = False
     is_EP: bool = False
     is_favorite: bool = False
     is_live: bool = False
+
     genres: list[str] = dataclasses.field(default_factory=list)
     versions: list[str] = dataclasses.field(default_factory=list)
 
@@ -40,7 +42,7 @@ class Album:
         self.og_title = self.title
         self.image = self.albumhash + ".webp"
 
-        if FromFlags.EXTRACT_FEAT:
+        if get_flag(ParserFlags.EXTRACT_FEAT):
             featured, self.title = parse_feat_from_title(self.title)
 
             if len(featured) > 0:
@@ -50,11 +52,14 @@ class Album:
                 from ..store.tracks import TrackStore
                 TrackStore.append_track_artists(self.albumhash, featured, self.title)
 
-        if FromFlags.REMOVE_REMASTER:
+        if get_flag(ParserFlags.CLEAN_ALBUM_TITLE):
+            # if FromFlags.CLEAN_ALBUM_TITLE:
             self.title, self.versions = get_base_title_and_versions(self.title)
 
             if "super_deluxe" in self.versions:
                 self.versions.remove("deluxe")
+        else:
+            self.base_title = get_base_title_and_versions(self.title, get_versions=False)[0]
 
         self.albumartists_hashes = "-".join(a.artisthash for a in self.albumartists)
 

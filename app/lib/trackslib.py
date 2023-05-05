@@ -13,8 +13,7 @@ def validate_tracks() -> None:
     """
     Gets all songs under the ~/ directory.
     """
-    for track in tqdm(TrackStore.tracks, desc="Removing deleted tracks"):
+    for track in tqdm(TrackStore.tracks, desc="Checking for deleted tracks"):
         if not os.path.exists(track.filepath):
-            print(f"Removing {track.filepath}")
             TrackStore.tracks.remove(track)
             tdb.remove_track_by_filepath(track.filepath)
