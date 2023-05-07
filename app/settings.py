@@ -145,19 +145,19 @@ class ALLARGS(Enum):
 
 
 class FromFlags:
-    EXTRACT_FEAT = False
+    EXTRACT_FEAT = True
     """
     Whether to extract the featured artists from the song title.
     """
 
-    REMOVE_PROD = False
+    REMOVE_PROD = True
     """
     Whether to remove the producers from the song title.
     """
 
-    CLEAN_ALBUM_TITLE = False
-    REMOVE_REMASTER_FROM_TRACK = False
-    SHOW_ALBUM_VERSION = False
+    CLEAN_ALBUM_TITLE = True
+    REMOVE_REMASTER_FROM_TRACK = True
+    SHOW_ALBUM_VERSION = True
 
     DO_PERIODIC_SCANS = True
     PERIODIC_SCAN_INTERVAL = 300  # seconds

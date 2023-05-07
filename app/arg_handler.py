@@ -44,7 +44,7 @@ class HandleArgs:
         """
         Runs Pyinstaller.
         """
-        if ALLARGS.build in ARGS:
+        if ALLARGS.build.value in ARGS:
             with open("pyinstaller.config.ini", "w", encoding="utf-8") as file:
                 config["DEFAULT"]["BUILD"] = "True"
                 config.write(file)
@@ -73,7 +73,7 @@ class HandleArgs:
 
     @staticmethod
     def handle_port():
-        if ALLARGS.port in ARGS:
+        if ALLARGS.port.value in ARGS:
             index = ARGS.index(ALLARGS.port.value)
             try:
                 port = ARGS[index + 1]
@@ -89,7 +89,7 @@ class HandleArgs:
 
     @staticmethod
     def handle_host():
-        if ALLARGS.host in ARGS:
+        if ALLARGS.host.value in ARGS:
             index = ARGS.index(ALLARGS.host.value)
 
             try:
@@ -105,7 +105,7 @@ class HandleArgs:
         """
         Modifies the config path.
         """
-        if ALLARGS.config in ARGS:
+        if ALLARGS.config.value in ARGS:
             index = ARGS.index(ALLARGS.config.value)
 
             try:

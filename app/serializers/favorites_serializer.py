@@ -21,7 +21,7 @@ def recent_fav_album_serializer(album: Album) -> dict:
     """
     return {
         "image": album.image,
-        "title": album.og_title,
+        "title": album.title,
         "albumhash": album.albumhash,
         "colors": album.colors,
     }

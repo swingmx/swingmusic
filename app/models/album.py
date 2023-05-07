@@ -55,6 +55,7 @@ class Album:
         if get_flag(ParserFlags.CLEAN_ALBUM_TITLE):
             # if FromFlags.CLEAN_ALBUM_TITLE:
             self.title, self.versions = get_base_title_and_versions(self.title)
+            self.base_title = self.title
 
             if "super_deluxe" in self.versions:
                 self.versions.remove("deluxe")
