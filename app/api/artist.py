@@ -2,6 +2,7 @@
 Contains all the artist(s) routes.
 """
 from collections import deque
+from pprint import pprint
 
 from flask import Blueprint, request
 
@@ -45,7 +46,7 @@ class ArtistsCache:
     artists: deque[CacheEntry] = deque(maxlen=1)
 
     @classmethod
-    def get_albums_by_artisthash(cls, artisthash: str):
+    def get_albums_by_artisthash(cls, artisthash: str) -> tuple[list[Album], int]:
         """
         Returns the cached albums for the given artisthash.
         """
@@ -138,6 +139,7 @@ class ArtistsCache:
             album.check_is_single(album_tracks)
 
         entry.type_checked = True
+        entry.albums.sort(key=lambda a: a.date, reverse=True)
 
 
 def add_albums_to_cache(artisthash: str):
@@ -235,10 +237,10 @@ def get_artist_albums(artisthash: str):
     singles = [a for a in all_albums if a.is_single]
     eps = [a for a in all_albums if a.is_EP]
 
-    def remove_EPs_and_singles(albums: list[Album]):
-        albums = [a for a in albums if not a.is_EP]
-        albums = [a for a in albums if not a.is_single]
-        return albums
+    def remove_EPs_and_singles(albums_: list[Album]):
+        albums_ = [a for a in albums_ if not a.is_EP]
+        albums_ = [a for a in albums_ if not a.is_single]
+        return albums_
 
     albums = filter(lambda a: artisthash in a.albumartists_hashes, all_albums)
     albums = list(albums)

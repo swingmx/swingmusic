@@ -6,6 +6,7 @@ from tqdm import tqdm
 from app.models import Album, Track
 from app.db.sqlite.albums import SQLiteAlbumMethods as aldb
 from .tracks import TrackStore
+from ..utils.hashing import create_hash
 
 
 class AlbumStore:
@@ -73,7 +74,7 @@ class AlbumStore:
 
         albums = [album for album in cls.albums if artisthash in album.albumartists_hashes]
 
-        albums = [album for album in albums if album.albumhash != exclude]
+        albums = [album for album in albums if create_hash(album.base_title) != create_hash(exclude)]
 
         if len(albums) > limit:
             random.shuffle(albums)

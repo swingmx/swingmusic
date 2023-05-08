@@ -108,14 +108,14 @@ def get_artist_albums():
 
     albumartists: str = data["albumartists"]
     limit: int = data.get("limit")
-    exclude: str = data.get("exclude")
+    base_title: str = data.get("base_title")
 
     albumartists: list[str] = albumartists.split(",")
 
     albums = [
         {
             "artisthash": a,
-            "albums": AlbumStore.get_albums_by_albumartist(a, limit, exclude=exclude),
+            "albums": AlbumStore.get_albums_by_albumartist(a, limit, exclude=base_title),
         }
         for a in albumartists
     ]
@@ -141,15 +141,12 @@ def get_album_versions():
     artisthash: str = data['artisthash']
 
     albums = AlbumStore.get_albums_by_artisthash(artisthash)
-    print(base_title, artisthash)
 
     albums = [
         a for a in albums
         if
         create_hash(a.base_title) == create_hash(base_title) and create_hash(og_album_title) != create_hash(a.og_title)
     ]
-
-    print(albums)
 
     return {
         "data": albums
