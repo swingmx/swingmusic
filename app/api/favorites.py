@@ -161,31 +161,24 @@ def get_all_favorites():
     artists = []
 
     for fav in favs:
-        if (
-                len(tracks) >= largest
-                and len(albums) >= largest
-                and len(artists) >= largest
-        ):
-            break
-
         if not len(tracks) >= largest:
             if fav[2] == FavType.track:
                 tracks.append(fav[1])
 
-        if not len(albums) >= largest:
-            if fav[2] == FavType.album:
-                albums.append(fav[1])
-
         if not len(artists) >= largest:
             if fav[2] == FavType.artist:
                 artists.append(fav[1])
+
+        if fav[2] == FavType.album:
+            albums.append(fav[1])
 
     src_tracks = sorted(TrackStore.tracks, key=lambda x: x.trackhash)
     src_albums = sorted(AlbumStore.albums, key=lambda x: x.albumhash)
     src_artists = sorted(ArtistStore.artists, key=lambda x: x.artisthash)
 
     tracks = UseBisection(src_tracks, "trackhash", tracks)()
-    albums = UseBisection(src_albums, "albumhash", albums)()
+    albums = UseBisection(src_albums, "albumhash", albums, limit=album_limit)()
+    print(albums)
     artists = UseBisection(src_artists, "artisthash", artists)()
 
     tracks = remove_none(tracks)

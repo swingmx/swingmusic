@@ -162,7 +162,7 @@ class FromFlags:
     DO_PERIODIC_SCANS = True
     PERIODIC_SCAN_INTERVAL = 300  # seconds
 
-    # MERGE_ALBUM_VERSIONS = True
+    MERGE_ALBUM_VERSIONS = True
 
 
 class ParserFlags(Enum):
@@ -173,6 +173,7 @@ class ParserFlags(Enum):
     REMOVE_REMASTER_FROM_TRACK = 'REMOVE_REMASTER_FROM_TRACK'
     DO_PERIODIC_SCANS = 'DO_PERIODIC_SCANS'
     PERIODIC_SCAN_INTERVAL = 'PERIODIC_SCAN_INTERVAL'
+    MERGE_ALBUM_VERSIONS = 'MERGE_ALBUM_VERSIONS'
 
 
 def get_flag(flag: ParserFlags) -> bool:

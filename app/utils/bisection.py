@@ -6,10 +6,11 @@ class UseBisection:
     items.
     """
 
-    def __init__(self, source: list, search_from: str, queries: list[str]) -> None:
+    def __init__(self, source: list, search_from: str, queries: list[str], limit=-1) -> None:
         self.source_list = source
         self.queries_list = queries
         self.attr = search_from
+        self.limit = limit
 
     def find(self, query: str):
         left = 0
@@ -30,7 +31,20 @@ class UseBisection:
         if len(self.source_list) == 0:
             return [None]
 
-        return [self.find(query) for query in self.queries_list]
+        results = []
+
+        for query in self.queries_list:
+            res = self.find(query)
+
+            if res is None:
+                continue
+
+            results.append(res)
+
+            if self.limit != -1 and len(results) >= self.limit:
+                break
+
+        return results
 
 
 def bisection_search_string(strings: list[str], target: str) -> str | None:

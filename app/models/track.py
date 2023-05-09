@@ -33,6 +33,7 @@ class Track:
     image: str = ""
     artist_hashes: str = ""
     is_favorite: bool = False
+
     og_title: str = ""
     og_album: str = ""
 
@@ -54,7 +55,7 @@ class Track:
 
             # if track is a single
             if self.og_title == self.album:
-                self.album = new_title
+                self.rename_album(new_title)
 
             if get_flag(ParserFlags.REMOVE_REMASTER_FROM_TRACK):
                 new_title = clean_title(new_title)
@@ -63,6 +64,9 @@ class Track:
 
             if get_flag(ParserFlags.CLEAN_ALBUM_TITLE):
                 self.album, _ = get_base_title_and_versions(self.album, get_versions=False)
+
+            if get_flag(ParserFlags.MERGE_ALBUM_VERSIONS):
+                self.recreate_albumhash()
 
             self.artist_hashes = "-".join(create_hash(a, decode=True) for a in artists)
             self.artist = [ArtistMinimal(a) for a in artists]
@@ -91,9 +95,21 @@ class Track:
         self.trackhash = create_hash(", ".join([a.name for a in self.artist]), self.og_album, self.title)
 
     def recreate_artists_hash(self):
+        """
+        Recreates a track's artist hashes if the artist list was altered
+        """
         self.artist_hashes = "-".join(a.artisthash for a in self.artist)
 
+    def recreate_albumhash(self):
+        """
+        Recreates an albumhash of a track to merge all versions of an album.
+        """
+        self.albumhash = create_hash(self.album, self.albumartist)
+
     def rename_album(self, new_album: str):
+        """
+        Renames an album
+        """
         self.album = new_album
 
     def add_artists(self, artists: list[str], new_album_title: str):

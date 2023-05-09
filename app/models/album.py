@@ -53,8 +53,9 @@ class Album:
                 TrackStore.append_track_artists(self.albumhash, featured, self.title)
 
         if get_flag(ParserFlags.CLEAN_ALBUM_TITLE):
-            # if FromFlags.CLEAN_ALBUM_TITLE:
-            self.title, self.versions = get_base_title_and_versions(self.title)
+            get_versions = not get_flag(ParserFlags.MERGE_ALBUM_VERSIONS)
+
+            self.title, self.versions = get_base_title_and_versions(self.title, get_versions=get_versions)
             self.base_title = self.title
 
             if "super_deluxe" in self.versions:
