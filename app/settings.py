@@ -162,7 +162,7 @@ class FromFlags:
     DO_PERIODIC_SCANS = True
     PERIODIC_SCAN_INTERVAL = 300  # seconds
 
-    MERGE_ALBUM_VERSIONS = True
+    MERGE_ALBUM_VERSIONS = False
 
 
 class ParserFlags(Enum):

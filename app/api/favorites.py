@@ -178,7 +178,6 @@ def get_all_favorites():
 
     tracks = UseBisection(src_tracks, "trackhash", tracks)()
     albums = UseBisection(src_albums, "albumhash", albums, limit=album_limit)()
-    print(albums)
     artists = UseBisection(src_artists, "artisthash", artists)()
 
     tracks = remove_none(tracks)
