@@ -6,13 +6,14 @@ import psutil
 
 from pathlib import Path
 from flask import Blueprint, request
+from showinfm import show_in_file_manager
 
 from app import settings
 from app.lib.folderslib import GetFilesAndDirs, get_folders
 from app.db.sqlite.settings import SettingsSQLMethods as db
 from app.utils.wintools import win_replace_slash, is_windows
 
-api = Blueprint("folder", __name__, url_prefix="/")
+api = Blueprint("folder", __name__, url_prefix="")
 
 
 @api.route("/folder", methods=["POST"])
@@ -116,3 +117,15 @@ def list_folders():
     return {
         "folders": sorted(dirs, key=lambda i: i["name"]),
     }
+
+
+@api.route("/folder/show-in-files")
+def open_in_file_manager():
+    path = request.args.get("path")
+
+    if path is None:
+        return {"error": "No path provided."}, 400
+
+    show_in_file_manager(path)
+
+    return {"success": True}

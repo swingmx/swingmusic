@@ -235,8 +235,13 @@ def clean_title(title: str) -> str:
     if "remaster" not in title.lower():
         return title
 
-    if "-" in title:
-        return remove_hyphen_remasters(title)
+    rem_1 = remove_bracketed_remaster(title)
+    rem_2 = remove_hyphen_remasters(title)
 
-    if "[" in title or "(" in title:
-        return remove_bracketed_remaster(title)
+    return rem_1 if len(rem_2) > len(rem_1) else rem_2
+
+    # if "[" in title or "(" in title:
+    #     return remove_bracketed_remaster(title)
+    #
+    # if "-" in title:
+    #     return remove_hyphen_remasters(title)

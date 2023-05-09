@@ -2,7 +2,6 @@
 Contains all the artist(s) routes.
 """
 from collections import deque
-from pprint import pprint
 
 from flask import Blueprint, request
 
@@ -44,6 +43,10 @@ class ArtistsCache:
     """
 
     artists: deque[CacheEntry] = deque(maxlen=1)
+    # THE ABOVE IS SET TO MAXLEN=1 TO AVOID A BUG THAT I WAS TOO LAZY TO INVESTIGATE
+    # ARTIST TRACKS SOMEHOW DISAPPEARED FOR SOME REASON I COULDN'T UNDERSTAND. BY
+    # DISAPPEARING I MEAN AN ARTIST YOU ARE SURE HAS 150 TRACKS ONLY SHOWING LIKE 3 IN
+    # THE ARTIST PAGE. 🤷🏿 (TODO: MAYBE FIX THIS BUG?)
 
     @classmethod
     def get_albums_by_artisthash(cls, artisthash: str) -> tuple[list[Album], int]:
