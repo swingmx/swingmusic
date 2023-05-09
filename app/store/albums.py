@@ -20,7 +20,7 @@ class AlbumStore:
         return Album(
             albumhash=track.albumhash,
             albumartists=track.albumartist,  # type: ignore
-            title=track.album,
+            title=track.og_album,
         )
 
     @classmethod

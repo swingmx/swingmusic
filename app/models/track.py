@@ -2,7 +2,8 @@ from dataclasses import dataclass
 
 from app.settings import get_flag, ParserFlags
 from app.utils.hashing import create_hash
-from app.utils.parsers import split_artists, remove_prod, parse_feat_from_title, clean_title
+from app.utils.parsers import split_artists, remove_prod, parse_feat_from_title, clean_title, \
+    get_base_title_and_versions
 from .artist import ArtistMinimal
 
 
@@ -33,9 +34,11 @@ class Track:
     artist_hashes: str = ""
     is_favorite: bool = False
     og_title: str = ""
+    og_album: str = ""
 
     def __post_init__(self):
         self.og_title = self.title
+        self.og_album = self.album
 
         if self.artist is not None:
             artists = split_artists(self.artist)
@@ -58,6 +61,9 @@ class Track:
 
             self.title = new_title
 
+            if get_flag(ParserFlags.CLEAN_ALBUM_TITLE):
+                self.album, _ = get_base_title_and_versions(self.album, get_versions=False)
+
             self.artist_hashes = "-".join(create_hash(a, decode=True) for a in artists)
             self.artist = [ArtistMinimal(a) for a in artists]
 
@@ -79,10 +85,10 @@ class Track:
         Recreates a track hash if the track title was altered
         to prevent duplicate tracks having different hashes.
         """
-        if self.og_title == self.title:
+        if self.og_title == self.title and self.og_album == self.album:
             return
 
-        self.trackhash = create_hash(", ".join([a.name for a in self.artist]), self.album, self.title)
+        self.trackhash = create_hash(", ".join([a.name for a in self.artist]), self.og_album, self.title)
 
     def recreate_artists_hash(self):
         self.artist_hashes = "-".join(a.artisthash for a in self.artist)
