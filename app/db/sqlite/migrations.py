@@ -21,7 +21,10 @@ class MigrationManager:
         """
         with SQLiteManager() as cur:
             cur.execute(cls.all_get_sql)
-            return int(cur.fetchone()[1])
+            ver = int(cur.fetchone()[1])
+            cur.close()
+
+            return ver
 
     @classmethod
     def get_maindb_postinit_version(cls) -> int:
@@ -30,7 +33,10 @@ class MigrationManager:
         """
         with SQLiteManager() as cur:
             cur.execute(cls.all_get_sql)
-            return int(cur.fetchone()[2])
+            ver = int(cur.fetchone()[2])
+            cur.close()
+
+            return ver
 
     @classmethod
     def get_userdatadb_postinit_version(cls) -> int:
@@ -39,7 +45,10 @@ class MigrationManager:
         """
         with SQLiteManager(userdata_db=True) as cur:
             cur.execute(cls.all_get_sql)
-            return cur.fetchone()[2]
+            ver = cur.fetchone()[2]
+            cur.close()
+
+            return ver
 
     # 👇 Setters 👇
     @classmethod
@@ -49,6 +58,7 @@ class MigrationManager:
         """
         with SQLiteManager() as cur:
             cur.execute(cls.pre_init_set_sql, (version,))
+            cur.close()
 
     @classmethod
     def set_maindb_postinit_version(cls, version: int):

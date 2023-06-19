@@ -31,6 +31,7 @@ class SQLitePlaylistMethods:
         with SQLiteManager(userdata_db=True) as cur:
             cur.execute(sql, playlist)
             pid = cur.lastrowid
+            cur.close()
 
             p_tuple = (pid, *playlist.values())
             return tuple_to_playlist(p_tuple)
@@ -43,6 +44,7 @@ class SQLitePlaylistMethods:
             cur.execute(sql, (name,))
 
             data = cur.fetchone()
+            cur.close()
 
             if data is not None:
                 return tuple_to_playlist(data)
@@ -57,6 +59,7 @@ class SQLitePlaylistMethods:
             cur.execute(sql, (name,))
 
             data = cur.fetchone()
+            cur.close()
 
             return int(data[0])
 
@@ -65,6 +68,7 @@ class SQLitePlaylistMethods:
         with SQLiteManager(userdata_db=True) as cur:
             cur.execute("SELECT * FROM playlists")
             playlists = cur.fetchall()
+            cur.close()
 
             if playlists is not None:
                 return tuples_to_playlists(playlists)
@@ -79,6 +83,7 @@ class SQLitePlaylistMethods:
             cur.execute(sql, (playlist_id,))
 
             data = cur.fetchone()
+            cur.close()
 
             if data is not None:
                 return tuple_to_playlist(data)

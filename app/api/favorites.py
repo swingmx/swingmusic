@@ -185,20 +185,13 @@ def get_all_favorites():
     artists = remove_none(artists)
 
     recents = []
-    first_n = favs[:album_limit]
+    # first_n = favs
 
-    for fav in first_n:
-        if fav[2] == FavType.track:
-            try:
-                track = [t for t in tracks if t.trackhash == fav[1]][0]
-                recents.append({
-                    "type": "track",
-                    "item": recent_fav_track_serializer(track)
-                })
-            except IndexError:
-                pass
+    for fav in favs:
+        if len(recents) >= largest:
+            break
 
-        elif fav[2] == FavType.album:
+        if fav[2] == FavType.album:
             try:
                 album = [a for a in albums if a.albumhash == fav[1]][0]
                 recents.append({
@@ -206,8 +199,9 @@ def get_all_favorites():
                     "item": recent_fav_album_serializer(album)
                 })
             except IndexError:
-                pass
-        elif fav[2] == FavType.artist:
+                continue
+
+        if fav[2] == FavType.artist:
             try:
                 artist = [a for a in artists if a.artisthash == fav[1]][0]
                 recents.append({
@@ -215,7 +209,7 @@ def get_all_favorites():
                     "item": recent_fav_artist_serializer(artist)
                 })
             except IndexError:
-                pass
+                continue
 
     return {
         "recents": recents[:album_limit],

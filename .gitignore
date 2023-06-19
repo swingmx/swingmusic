@@ -22,3 +22,4 @@ encoderx.py
 dist
 build
 client
+.gitignore

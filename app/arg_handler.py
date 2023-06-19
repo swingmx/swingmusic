@@ -151,7 +151,9 @@ class HandleArgs:
     @staticmethod
     def handle_periodic_scan_interval():
         if any((a in ARGS for a in ALLARGS.periodic_scan_interval.value)):
-            index = [ARGS.index(a) for a in ALLARGS.periodic_scan_interval.value if a in ARGS][0]
+            index = [
+                ARGS.index(a) for a in ALLARGS.periodic_scan_interval.value if a in ARGS
+            ][0]
 
             try:
                 interval = ARGS[index + 1]

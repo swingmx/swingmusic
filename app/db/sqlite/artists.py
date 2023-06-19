@@ -21,6 +21,7 @@ class SQLiteArtistMethods:
             """
         colors = json.dumps(colors)
         cur.execute(sql, (artisthash, colors))
+        cur.close()
 
     @staticmethod
     def get_all_artists():
@@ -34,3 +35,5 @@ class SQLiteArtistMethods:
 
             for artist in cur.fetchall():
                 yield artist
+
+            cur.close()

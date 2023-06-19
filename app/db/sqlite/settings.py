@@ -18,6 +18,7 @@ class SettingsSQLMethods:
         with SQLiteManager(userdata_db=True) as cur:
             cur.execute(sql)
             dirs = cur.fetchall()
+            cur.close()
 
             dirs = [_dir[0] for _dir in dirs]
             return [win_replace_slash(d) for d in dirs]

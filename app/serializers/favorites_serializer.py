@@ -1,4 +1,4 @@
-from app.models import Track, Album, Artist
+from app.models import Album, Artist, Track
 
 
 def recent_fav_track_serializer(track: Track) -> dict:
@@ -21,8 +21,9 @@ def recent_fav_album_serializer(album: Album) -> dict:
     """
     return {
         "image": album.image,
-        "title": album.title,
+        "title": album.og_title,
         "albumhash": album.albumhash,
+        "artist": album.albumartists[0].name,
         "colors": album.colors,
     }
 

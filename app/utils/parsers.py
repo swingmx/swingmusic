@@ -6,7 +6,7 @@ def split_artists(src: str, with_and: bool = False):
     """
     Splits a string of artists into a list of artists.
     """
-    exp = r"\s*(?: and |&|,|;)\s*" if with_and else r"\s*[,;]\s*"
+    exp = r"\s*(?: and |&|,|;|/)\s*" if with_and else r"\s*[,;]\s*"
 
     artists = re.split(exp, src)
     return [a.strip() for a in artists]
@@ -245,3 +245,21 @@ def clean_title(title: str) -> str:
     #
     # if "-" in title:
     #     return remove_hyphen_remasters(title)
+
+
+# Traceback (most recent call last):
+#   File "/usr/lib/python3.10/threading.py", line 1016, in _bootstrap_inner
+#     self.run()
+#   File "/usr/lib/python3.10/threading.py", line 953, in run
+#     self._target(*self._args, **self._kwargs)
+#   File "/home/cwilvx/code/swingmusic/app/periodic_scan.py", line 29, in run_periodic_scans
+#     Populate(key=get_random_str())
+#   File "/home/cwilvx/code/swingmusic/app/lib/populate.py", line 74, in __init__
+#     self.tag_untagged(untagged, key)
+#   File "/home/cwilvx/code/swingmusic/app/lib/populate.py", line 123, in tag_untagged
+#     insert_many_tracks(tagged_tracks)
+#   File "/home/cwilvx/code/swingmusic/app/db/sqlite/tracks.py", line 54, in insert_many_tracks
+#     cls.insert_one_track(track, cur)
+#   File "/home/cwilvx/code/swingmusic/app/db/sqlite/tracks.py", line 45, in insert_one_track
+#     cur.execute(sql, track)
+# sqlite3.IntegrityError: UNIQUE constraint failed: tracks.filepath

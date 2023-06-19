@@ -131,6 +131,11 @@ def add_track(filepath: str) -> None:
 
     Then creates the folder, album and artist objects for the added track and adds them to the store.
     """
+    # remove the track if it already exists
+    TrackStore.remove_track_by_filepath(filepath)
+    db.remove_track_by_filepath(filepath)
+
+    # add the track to the database and store.
     tags = get_tags(filepath)
 
     if tags is None:
@@ -253,7 +258,11 @@ class Handler(PatternMatchingEventHandler):
             if os.path.getsize(event.src_path) > 0:
                 path = self.get_abs_path(event.src_path)
                 add_track(path)
+        except FileNotFoundError:
+            # file was closed and deleted.
+            pass
         except ValueError:
+            # file was removed from the list by another event handler.
             pass
 
     def on_modified(self, event):

@@ -32,7 +32,7 @@ def get_folders(paths: list[str]):
 
     for track in TrackStore.tracks:
         for path in paths:
-            if track.filepath.startswith(path):
+            if track.folder.startswith(path):
                 count_dict[path] += 1
 
     folders = [{"path": path, "count": count_dict[path]} for path in paths]

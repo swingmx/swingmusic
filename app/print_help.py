@@ -5,6 +5,8 @@ args = ALLARGS
 HELP_MESSAGE = f"""
 Usage: swingmusic [options]
 
+   Swing Music is a beautiful, self-hosted music player for your local audio files. Like a cooler Spotify ... but bring your own music. 
+
 Options:
     {', '.join(args.help.value)}: Show this help message
     {', '.join(args.version.value)}: Show the app version

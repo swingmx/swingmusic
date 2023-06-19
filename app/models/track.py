@@ -42,7 +42,7 @@ class Track:
         self.og_album = self.album
 
         if self.artist is not None:
-            artists = split_artists(self.artist)
+            artists = split_artists(self.artist, with_and=True)
             new_title = self.title
 
             if get_flag(ParserFlags.EXTRACT_FEAT):
@@ -71,7 +71,7 @@ class Track:
             self.artist_hashes = "-".join(create_hash(a, decode=True) for a in artists)
             self.artist = [ArtistMinimal(a) for a in artists]
 
-            albumartists = split_artists(self.albumartist)
+            albumartists = split_artists(self.albumartist, with_and=True)
             self.albumartist = [ArtistMinimal(a) for a in albumartists]
 
         self.filetype = self.filepath.rsplit(".", maxsplit=1)[-1]

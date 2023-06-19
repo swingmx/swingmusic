@@ -17,13 +17,17 @@ class SQLiteAlbumMethods:
             """
 
         cur.execute(sql, (albumhash, colors))
-        return cur.lastrowid
+        lastrowid = cur.lastrowid
+        cur.close()
+
+        return lastrowid
 
     @classmethod
     def get_all_albums(cls):
         with SQLiteManager() as cur:
             cur.execute("SELECT * FROM albums")
             albums = cur.fetchall()
+            cur.close()
 
             if albums is not None:
                 return albums
@@ -35,6 +39,7 @@ class SQLiteAlbumMethods:
         with SQLiteManager() as cur:
             cur.execute("SELECT * FROM albums WHERE albumartist=?", (albumartist,))
             albums = cur.fetchall()
+            cur.close()
 
             if albums is not None:
                 return tuples_to_albums(albums)

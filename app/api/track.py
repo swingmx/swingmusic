@@ -24,9 +24,17 @@ def send_track_file(trackhash: str):
 
     filepath = request.args.get("filepath")
 
-    if filepath is not None and os.path.exists(filepath):
-        audio_type = get_mime(filepath)
-        return send_file(filepath, mimetype=audio_type)
+    if filepath is not None:
+        try:
+            track = TrackStore.get_tracks_by_filepaths([filepath])[0]
+        except IndexError:
+            track = None
+
+        track_exists = track is not None and os.path.exists(track.filepath)
+
+        if track_exists:
+            audio_type = get_mime(filepath)
+            return send_file(filepath, mimetype=audio_type)
 
     if trackhash is None:
         return msg, 404
