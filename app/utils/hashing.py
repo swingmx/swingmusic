@@ -3,7 +3,7 @@ import hashlib
 from unidecode import unidecode
 
 
-def create_hash(*args: str, decode=False, limit=7) -> str:
+def create_hash(*args: str, decode=False, limit=10) -> str:
     """
     Creates a simple hash for an album
     """
@@ -19,7 +19,7 @@ def create_hash(*args: str, decode=False, limit=7) -> str:
     return str_[-limit:]
 
 
-def create_folder_hash(*args: str, limit=7) -> str:
+def create_folder_hash(*args: str, limit=10) -> str:
     """
     Creates a simple hash for an album
     """

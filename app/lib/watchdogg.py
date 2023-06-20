@@ -8,18 +8,16 @@ import time
 from watchdog.events import PatternMatchingEventHandler
 from watchdog.observers import Observer
 
-from app.logger import log
-from app.lib.taglib import get_tags
-from app.models import Artist, Track
 from app import settings
-
+from app.db.sqlite.settings import SettingsSQLMethods as sdb
 from app.db.sqlite.tracks import SQLiteManager
 from app.db.sqlite.tracks import SQLiteTrackMethods as db
-from app.db.sqlite.settings import SettingsSQLMethods as sdb
-
-from app.store.tracks import TrackStore
+from app.lib.taglib import get_tags
+from app.logger import log
+from app.models import Artist, Track
 from app.store.albums import AlbumStore
 from app.store.artists import ArtistStore
+from app.store.tracks import TrackStore
 
 
 class Watcher:
@@ -133,7 +131,7 @@ def add_track(filepath: str) -> None:
     """
     # remove the track if it already exists
     TrackStore.remove_track_by_filepath(filepath)
-    db.remove_track_by_filepath(filepath)
+    db.remove_tracks_by_filepaths(filepath)
 
     # add the track to the database and store.
     tags = get_tags(filepath)
@@ -142,7 +140,6 @@ def add_track(filepath: str) -> None:
         return
 
     with SQLiteManager() as cur:
-        db.remove_track_by_filepath(tags["filepath"])
         db.insert_one_track(tags, cur)
 
     track = Track(**tags)
@@ -168,7 +165,7 @@ def remove_track(filepath: str) -> None:
     except IndexError:
         return
 
-    db.remove_track_by_filepath(filepath)
+    db.remove_tracks_by_filepaths(filepath)
     TrackStore.remove_track_by_filepath(filepath)
 
     empty_album = TrackStore.count_tracks_by_hash(track.albumhash) > 0

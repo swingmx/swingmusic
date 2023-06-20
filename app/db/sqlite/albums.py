@@ -18,7 +18,6 @@ class SQLiteAlbumMethods:
 
         cur.execute(sql, (albumhash, colors))
         lastrowid = cur.lastrowid
-        cur.close()
 
         return lastrowid
 

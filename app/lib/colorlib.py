@@ -34,7 +34,11 @@ def get_image_colors(image: str, count=1) -> list[str]:
 
 
 def process_color(item_hash: str, is_album=True):
-    path = settings.Paths.get_sm_thumb_path() if is_album else settings.Paths.get_artist_img_sm_path()
+    path = (
+        settings.Paths.get_sm_thumb_path()
+        if is_album
+        else settings.Paths.get_artist_img_sm_path()
+    )
     path = Path(path) / (item_hash + ".webp")
 
     if not path.exists():
@@ -69,6 +73,8 @@ class ProcessAlbumColors:
                 color_str = json.dumps(colors)
                 db.insert_one_album(cur, album.albumhash, color_str)
 
+            cur.close()
+
 
 class ProcessArtistColors:
     """
@@ -95,3 +101,5 @@ class ProcessArtistColors:
 
                 artist.set_colors(colors)
                 adb.insert_one_artist(cur, artist.artisthash, colors)
+
+            cur.close()

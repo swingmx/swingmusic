@@ -28,6 +28,10 @@ def run_preinit_migrations():
     except OperationalError:
         userdb_version = 0
 
+    # No migrations to run
+    if userdb_version == 0:
+        return
+
     for migration in all_preinits:
         if migration.version > userdb_version:
             log.warn("Running new pre-init migration: %s", migration.name)

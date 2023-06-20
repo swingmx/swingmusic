@@ -64,17 +64,18 @@ def extract_thumb(filepath: str, webp_path: str) -> bool:
     return False
 
 
-def extract_date(date_str: str | None, filepath: str) -> int:
+def extract_date(date_str: str | None, timestamp: float) -> int:
     try:
         return int(date_str.split("-")[0])
     except:  # pylint: disable=bare-except
-        # TODO: USE FILEPATH LAST-MOD DATE instead of current date
-        return datetime.date.today().today().year
+        print(datetime.datetime.fromtimestamp(timestamp).year)
+        return datetime.datetime.fromtimestamp(timestamp).year
 
 
 def get_tags(filepath: str):
     filetype = filepath.split(".")[-1]
     filename = (filepath.split("/")[-1]).replace(f".{filetype}", "")
+    last_mod = os.path.getmtime(filepath)
 
     try:
         tags = TinyTag.get(filepath)
@@ -141,9 +142,10 @@ def get_tags(filepath: str):
     tags.image = f"{tags.albumhash}.webp"
     tags.folder = win_replace_slash(os.path.dirname(filepath))
 
-    tags.date = extract_date(tags.year, filepath)
+    tags.date = extract_date(tags.year, last_mod)
     tags.filepath = win_replace_slash(filepath)
     tags.filetype = filetype
+    tags.last_mod = last_mod
 
     tags = tags.__dict__
 

@@ -79,7 +79,7 @@ class CheckArtistImages:
                 tqdm(
                     pool.map(self.download_image, artist_store.ArtistStore.artists),
                     total=len(artist_store.ArtistStore.artists),
-                    desc="Downloading artist images",
+                    desc="Downloading missing artist images",
                 )
             )
 

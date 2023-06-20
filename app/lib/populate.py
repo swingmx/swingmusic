@@ -1,10 +1,14 @@
-from concurrent.futures import ThreadPoolExecutor
+import os
 from tqdm import tqdm
+from concurrent.futures import ThreadPoolExecutor
+from requests import ConnectionError as RequestConnectionError
+from requests import ReadTimeout
 
 from app import settings
 from app.db.sqlite.tracks import SQLiteTrackMethods
 from app.db.sqlite.settings import SettingsSQLMethods as sdb
 from app.db.sqlite.favorite import SQLiteFavoriteMethods as favdb
+from app.lib.artistlib import CheckArtistImages
 from app.lib.colorlib import ProcessAlbumColors, ProcessArtistColors
 
 from app.lib.taglib import extract_thumb, get_tags
@@ -16,9 +20,11 @@ from app.utils.filesystem import run_fast_scandir
 from app.store.albums import AlbumStore
 from app.store.tracks import TrackStore
 from app.store.artists import ArtistStore
+from app.utils.network import Ping
 
 get_all_tracks = SQLiteTrackMethods.get_all_tracks
 insert_many_tracks = SQLiteTrackMethods.insert_many_tracks
+remove_tracks_by_filepaths = SQLiteTrackMethods.remove_tracks_by_filepaths
 
 POPULATE_KEY = ""
 
@@ -48,8 +54,8 @@ class Populate:
         if len(dirs_to_scan) == 0:
             log.warning(
                 (
-                        "The root directory is not configured. "
-                        + "Open the app in your webbrowser to configure."
+                    "The root directory is not configured. "
+                    + "Open the app in your webbrowser to configure."
                 )
             )
             return
@@ -65,17 +71,43 @@ class Populate:
         for _dir in dirs_to_scan:
             files.extend(run_fast_scandir(_dir, full=True)[1])
 
+        self.remove_modified(tracks)
         untagged = self.filter_untagged(tracks, files)
 
-        if len(untagged) == 0:
-            log.info("All clear, no unread files.")
-            return
-
-        self.tag_untagged(untagged, key)
+        if len(untagged) != 0:
+            self.tag_untagged(untagged, key)
 
         ProcessTrackThumbnails()
         ProcessAlbumColors()
         ProcessArtistColors()
+
+        tried_to_download_new_images = False
+
+        if Ping()():
+            tried_to_download_new_images = True
+            try:
+                CheckArtistImages()
+            except (RequestConnectionError, ReadTimeout):
+                log.error(
+                    "Internet connection lost. Downloading artist images stopped."
+                )
+        else:
+            log.warning(
+                f"No internet connection. Downloading artist images halted for {settings.get_scan_sleep_time()} seconds."
+            )
+
+        # Re-process the new artist images.
+        if tried_to_download_new_images:
+            ProcessArtistColors()
+
+    @staticmethod
+    def remove_modified(tracks: list[Track]):
+        modified = [
+            t.filepath for t in tracks if t.last_mod != os.path.getmtime(t.filepath)
+        ]
+
+        TrackStore.remove_tracks_by_filepaths(modified)
+        remove_tracks_by_filepaths(modified)
 
     @staticmethod
     def filter_untagged(tracks: list[Track], files: list[str]):
@@ -120,6 +152,7 @@ class Populate:
                 log.warning("Could not read file: %s", file)
 
         if len(tagged_tracks) > 0:
+            log.info("Adding %s tracks to database", len(tagged_tracks))
             insert_many_tracks(tagged_tracks)
 
         log.info("Added %s/%s tracks", tagged_count, len(untagged))

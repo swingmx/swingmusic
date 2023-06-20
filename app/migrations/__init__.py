@@ -24,6 +24,10 @@ def apply_migrations():
     userdb_version = MigrationManager.get_userdatadb_postinit_version()
     maindb_version = MigrationManager.get_maindb_postinit_version()
 
+    # No migrations to run
+    if userdb_version == 0 and maindb_version == 0:
+        return
+
     for migration in main_db_migrations:
         if migration.version > maindb_version:
             log.info("Running new MAIN-DB post-init migration: %s", migration.name)

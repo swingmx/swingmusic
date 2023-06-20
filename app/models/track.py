@@ -19,12 +19,13 @@ class Track:
     artist: str | list[ArtistMinimal]
     bitrate: int
     copyright: str
-    date: str
+    date: int
     disc: int
     duration: int
     filepath: str
     folder: str
     genre: str | list[str]
+    last_mod: float
     title: str
     track: int
     trackhash: str

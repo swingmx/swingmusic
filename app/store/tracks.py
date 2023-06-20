@@ -53,6 +53,18 @@ class TrackStore:
                 break
 
     @classmethod
+    def remove_tracks_by_filepaths(cls, filepaths: list[str]):
+        """
+        Removes multiple tracks from the store by their filepaths.
+        """
+
+        paths_str = "~".join(filepaths)
+
+        for track in cls.tracks:
+            if track.filepath in paths_str:
+                cls.tracks.remove(track)
+
+    @classmethod
     def remove_tracks_by_dir_except(cls, dirs: list[str]):
         """Removes all tracks not in the root directories."""
         to_remove = set()
@@ -98,7 +110,9 @@ class TrackStore:
                 track.is_favorite = False
 
     @classmethod
-    def append_track_artists(cls, albumhash: str, artists: list[str], new_album_title: str):
+    def append_track_artists(
+        cls, albumhash: str, artists: list[str], new_album_title: str
+    ):
         tracks = cls.get_tracks_by_albumhash(albumhash)
 
         for track in tracks:
