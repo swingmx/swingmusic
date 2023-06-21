@@ -6,7 +6,9 @@ class UseBisection:
     items.
     """
 
-    def __init__(self, source: list, search_from: str, queries: list[str], limit=-1) -> None:
+    def __init__(
+        self, source: list, search_from: str, queries: list[str], limit=-1
+    ) -> None:
         self.source_list = source
         self.queries_list = queries
         self.attr = search_from
@@ -45,27 +47,3 @@ class UseBisection:
                 break
 
         return results
-
-
-def bisection_search_string(strings: list[str], target: str) -> str | None:
-    """
-    Finds a string in a list of strings using bisection search.
-    """
-    if not strings:
-        return None
-
-    strings = sorted(strings)
-
-    left = 0
-    right = len(strings) - 1
-    while left <= right:
-        middle = (left + right) // 2
-        if strings[middle] == target:
-            return strings[middle]
-
-        if strings[middle] < target:
-            left = middle + 1
-        else:
-            right = middle - 1
-
-    return None

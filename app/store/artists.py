@@ -20,9 +20,9 @@ class ArtistStore:
         """
         cls.artists = get_all_artists(TrackStore.tracks, AlbumStore.albums)
 
-        db_artists: list[tuple] = list(ardb.get_all_artists())
+        # db_artists: list[tuple] = list(ardb.get_all_artists())
 
-        for art in tqdm(db_artists, desc="Loading artists"):
+        for art in tqdm(ardb.get_all_artists(), desc="Loading artists"):
             cls.map_artist_color(art)
 
     @classmethod

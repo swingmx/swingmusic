@@ -56,24 +56,25 @@ class ProcessAlbumColors:
         albums = [a for a in AlbumStore.albums if len(a.colors) == 0]
 
         with SQLiteManager() as cur:
-            for album in tqdm(albums, desc="Processing missing album colors"):
-                sql = "SELECT COUNT(1) FROM albums WHERE albumhash = ?"
-                cur.execute(sql, (album.albumhash,))
-                count = cur.fetchone()[0]
+            try:
+                for album in tqdm(albums, desc="Processing missing album colors"):
+                    sql = "SELECT COUNT(1) FROM albums WHERE albumhash = ?"
+                    cur.execute(sql, (album.albumhash,))
+                    count = cur.fetchone()[0]
 
-                if count != 0:
-                    continue
+                    if count != 0:
+                        continue
 
-                colors = process_color(album.albumhash)
+                    colors = process_color(album.albumhash)
 
-                if colors is None:
-                    continue
+                    if colors is None:
+                        continue
 
-                album.set_colors(colors)
-                color_str = json.dumps(colors)
-                db.insert_one_album(cur, album.albumhash, color_str)
-
-            cur.close()
+                    album.set_colors(colors)
+                    color_str = json.dumps(colors)
+                    db.insert_one_album(cur, album.albumhash, color_str)
+            finally:
+                cur.close()
 
 
 class ProcessArtistColors:
@@ -85,21 +86,24 @@ class ProcessArtistColors:
         all_artists = [a for a in ArtistStore.artists if len(a.colors) == 0]
 
         with SQLiteManager() as cur:
-            for artist in tqdm(all_artists, desc="Processing missing artist colors"):
-                sql = "SELECT COUNT(1) FROM artists WHERE artisthash = ?"
+            try:
+                for artist in tqdm(
+                    all_artists, desc="Processing missing artist colors"
+                ):
+                    sql = "SELECT COUNT(1) FROM artists WHERE artisthash = ?"
 
-                cur.execute(sql, (artist.artisthash,))
-                count = cur.fetchone()[0]
+                    cur.execute(sql, (artist.artisthash,))
+                    count = cur.fetchone()[0]
 
-                if count != 0:
-                    continue
+                    if count != 0:
+                        continue
 
-                colors = process_color(artist.artisthash, is_album=False)
+                    colors = process_color(artist.artisthash, is_album=False)
 
-                if colors is None:
-                    continue
+                    if colors is None:
+                        continue
 
-                artist.set_colors(colors)
-                adb.insert_one_artist(cur, artist.artisthash, colors)
-
-            cur.close()
+                    artist.set_colors(colors)
+                    adb.insert_one_artist(cur, artist.artisthash, colors)
+            finally:
+                cur.close()

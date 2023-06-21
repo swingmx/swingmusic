@@ -18,7 +18,7 @@ def test_extract_featured_artists_from_title():
         ["Ed Sheeran", "Stormzy"],
         ["Lil Peep"],
         ["Juice Wrld", "Lil Peep"],
-        ["Juice Wrld/Lil Peep"],
+        ["Juice Wrld", "Lil Peep"],
         ["Burna Boy"],
         [],
     ]
