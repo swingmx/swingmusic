@@ -131,7 +131,6 @@ def add_track(filepath: str) -> None:
     """
     # remove the track if it already exists
     TrackStore.remove_track_by_filepath(filepath)
-    db.remove_tracks_by_filepaths(filepath)
 
     # add the track to the database and store.
     tags = get_tags(filepath)

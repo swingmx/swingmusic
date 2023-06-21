@@ -21,7 +21,7 @@ class SQLiteTrackMethods:
         """
         Inserts a single track into the database.
         """
-        sql = """INSERT INTO tracks(
+        sql = """INSERT OR REPLACE INTO tracks(
             album,
             albumartist,
             albumhash,

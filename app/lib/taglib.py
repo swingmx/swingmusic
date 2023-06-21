@@ -1,6 +1,7 @@
 import datetime
 import os
 from io import BytesIO
+import pendulum
 
 from PIL import Image, UnidentifiedImageError
 from tinytag import TinyTag
@@ -64,11 +65,12 @@ def extract_thumb(filepath: str, webp_path: str) -> bool:
     return False
 
 
-def extract_date(date_str: str | None, timestamp: float) -> int:
+def extract_date(date_str: str | None) -> int | None:
     try:
-        return int(date_str.split("-")[0])
+        date = pendulum.parse(date_str, strict=False)
+        return int(date.timestamp())
     except Exception as e:
-        return datetime.datetime.fromtimestamp(timestamp).year
+        return None
 
 
 def get_tags(filepath: str):
@@ -141,7 +143,7 @@ def get_tags(filepath: str):
     tags.image = f"{tags.albumhash}.webp"
     tags.folder = win_replace_slash(os.path.dirname(filepath))
 
-    tags.date = extract_date(tags.year, last_mod)
+    tags.date = extract_date(tags.year) or int(last_mod)
     tags.filepath = win_replace_slash(filepath)
     tags.filetype = filetype
     tags.last_mod = last_mod

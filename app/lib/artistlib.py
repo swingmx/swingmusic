@@ -1,19 +1,19 @@
-from concurrent.futures import ThreadPoolExecutor
-from pathlib import Path
-from io import BytesIO
-
-from PIL import Image, UnidentifiedImageError
-import requests
 import urllib
+from concurrent.futures import ProcessPoolExecutor as Pool
+from io import BytesIO
+from multiprocessing import Pool, cpu_count
+from pathlib import Path
 
+import requests
+from PIL import Image, UnidentifiedImageError
+from requests.exceptions import ConnectionError as ReqConnError
+from requests.exceptions import ReadTimeout
 from tqdm import tqdm
-from requests.exceptions import ConnectionError as ReqConnError, ReadTimeout
 
 from app import settings
-from app.models import Artist, Track, Album
-from app.utils.hashing import create_hash
-
+from app.models import Album, Artist, Track
 from app.store import artists as artist_store
+from app.utils.hashing import create_hash
 
 
 def get_artist_image_link(artist: str):
@@ -74,14 +74,16 @@ class DownloadImage:
 
 class CheckArtistImages:
     def __init__(self):
-        with ThreadPoolExecutor() as pool:
-            list(
+        with Pool(cpu_count()) as pool:
+            res = list(
                 tqdm(
-                    pool.map(self.download_image, artist_store.ArtistStore.artists),
+                    pool.imap_unordered(self.download_image, artist_store.ArtistStore.artists),
                     total=len(artist_store.ArtistStore.artists),
                     desc="Downloading missing artist images",
                 )
             )
+
+            list(res)
 
     @staticmethod
     def download_image(artist: Artist):
@@ -90,7 +92,9 @@ class CheckArtistImages:
 
         :param artist: The artist name
         """
-        img_path = Path(settings.Paths.get_artist_img_sm_path()) / f"{artist.artisthash}.webp"
+        img_path = (
+            Path(settings.Paths.get_artist_img_sm_path()) / f"{artist.artisthash}.webp"
+        )
 
         if img_path.exists():
             return
@@ -155,9 +159,7 @@ def get_albumartists(albums: list[Album]) -> set[str]:
     return artists
 
 
-def get_all_artists(
-        tracks: list[Track], albums: list[Album]
-) -> list[Artist]:
+def get_all_artists(tracks: list[Track], albums: list[Album]) -> list[Artist]:
     artists_from_tracks = get_artists_from_tracks(tracks=tracks)
     artist_from_albums = get_albumartists(albums=albums)
 

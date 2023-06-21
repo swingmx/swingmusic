@@ -115,7 +115,9 @@ def get_artist_albums():
     albums = [
         {
             "artisthash": a,
-            "albums": AlbumStore.get_albums_by_albumartist(a, limit, exclude=base_title),
+            "albums": AlbumStore.get_albums_by_albumartist(
+                a, limit, exclude=base_title
+            ),
         }
         for a in albumartists
     ]
@@ -136,18 +138,17 @@ def get_album_versions():
     if data is None:
         return {"msg": "No albumartist provided"}
 
-    og_album_title: str = data['og_album_title']
-    base_title: str = data['base_title']
-    artisthash: str = data['artisthash']
+    og_album_title: str = data["og_album_title"]
+    base_title: str = data["base_title"]
+    artisthash: str = data["artisthash"]
 
     albums = AlbumStore.get_albums_by_artisthash(artisthash)
 
     albums = [
-        a for a in albums
-        if
-        create_hash(a.base_title) == create_hash(base_title) and create_hash(og_album_title) != create_hash(a.og_title)
+        a
+        for a in albums
+        if create_hash(a.base_title) == create_hash(base_title)
+        and create_hash(og_album_title) != create_hash(a.og_title)
     ]
 
-    return {
-        "data": albums
-    }
+    return {"data": albums}
