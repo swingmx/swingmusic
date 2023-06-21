@@ -92,7 +92,7 @@ class Watcher:
             )
             return
         except OSError as e:
-            log.error('Failed to start watchdog. %s', e)
+            log.error("Failed to start watchdog. %s", e)
             return
 
         try:

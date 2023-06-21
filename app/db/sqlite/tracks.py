@@ -84,12 +84,12 @@ class SQLiteTrackMethods:
             return None
 
     @staticmethod
-    def remove_tracks_by_filepaths(filepaths: str | list[str]):
+    def remove_tracks_by_filepaths(filepaths: str | set[str]):
         """
         Removes a track or tracks from the database using their filepaths.
         """
         if isinstance(filepaths, str):
-            filepaths = [filepaths]
+            filepaths = {filepaths}
 
         with SQLiteManager() as cur:
             for filepath in filepaths:

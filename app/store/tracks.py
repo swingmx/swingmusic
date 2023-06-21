@@ -53,15 +53,14 @@ class TrackStore:
                 break
 
     @classmethod
-    def remove_tracks_by_filepaths(cls, filepaths: list[str]):
+    def remove_tracks_by_filepaths(cls, filepaths: set[str]):
         """
         Removes multiple tracks from the store by their filepaths.
         """
 
-        paths_str = "~".join(filepaths)
 
         for track in cls.tracks:
-            if track.filepath in paths_str:
+            if track.filepath in filepaths:
                 cls.tracks.remove(track)
 
     @classmethod

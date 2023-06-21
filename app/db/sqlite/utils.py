@@ -5,6 +5,7 @@ Helper functions for use with the SQLite database.
 import sqlite3
 from sqlite3 import Connection, Cursor
 import time
+from typing import Optional
 
 from app.models import Album, Playlist, Track
 from app.settings import Db
@@ -61,12 +62,12 @@ class SQLiteManager:
     for you. It also commits and closes the connection when you're done.
     """
 
-    def __init__(self, conn: Connection | None = None, userdata_db=False) -> None:
+    def __init__(self, conn: Optional[Connection] = None, userdata_db=False) -> None:
         """
         When a connection is passed in, don't close the connection, because it's
         a connection to the search database [in memory db].
         """
-        self.conn: Connection | None = conn
+        self.conn = conn
         self.CLOSE_CONN = True
         self.userdata_db = userdata_db
 
@@ -90,19 +91,18 @@ class SQLiteManager:
         return self.conn.cursor()
 
     def __exit__(self, exc_type, exc_value, exc_traceback):
-        if self.conn:
-            trial_count = 0
+        trial_count = 0
 
-            while trial_count < 10:
-                try:
-                    self.conn.commit()
+        while trial_count < 10:
+            try:
+                self.conn.commit()
 
-                    if self.CLOSE_CONN:
-                        self.conn.close()
+                if self.CLOSE_CONN:
+                    self.conn.close()
 
-                    return
-                except sqlite3.OperationalError:
-                    trial_count += 1
-                    time.sleep(3)
+                return
+            except sqlite3.OperationalError:
+                trial_count += 1
+                time.sleep(3)
 
-            self.conn.close()
+        self.conn.close()

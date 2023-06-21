@@ -1,6 +1,7 @@
+from collections import deque
 import os
+from typing import Generator
 from tqdm import tqdm
-from concurrent.futures import ThreadPoolExecutor
 from requests import ConnectionError as RequestConnectionError
 from requests import ReadTimeout
 
@@ -47,7 +48,6 @@ class Populate:
 
         validate_tracks()
         tracks = get_all_tracks()
-        tracks = list(tracks)
 
         dirs_to_scan = sdb.get_root_dirs()
 
@@ -66,13 +66,13 @@ class Populate:
         except IndexError:
             pass
 
-        files = []
+        files = set()
 
         for _dir in dirs_to_scan:
-            files.extend(run_fast_scandir(_dir, full=True)[1])
+            files = files.union(run_fast_scandir(_dir, full=True)[1])
 
-        self.remove_modified(tracks)
-        untagged = self.filter_untagged(tracks, files)
+        unmodified = self.remove_modified(tracks)
+        untagged = files - unmodified
 
         if len(untagged) != 0:
             self.tag_untagged(untagged, key)
@@ -101,23 +101,31 @@ class Populate:
             ProcessArtistColors()
 
     @staticmethod
-    def remove_modified(tracks: list[Track]):
-        modified = [
-            t.filepath for t in tracks if t.last_mod != os.path.getmtime(t.filepath)
-        ]
+    def remove_modified(tracks: Generator[Track, None, None]):
+        """
+        Removes tracks from the database that have been modified
+        since they were added to the database.
+        """
+
+        unmodified = set()
+        modified = set()
+
+        for track in tracks:
+            if track.last_mod == os.path.getmtime(track.filepath):
+                unmodified.add(track.filepath)
+                continue
+
+            modified.add(track.filepath)
 
         TrackStore.remove_tracks_by_filepaths(modified)
         remove_tracks_by_filepaths(modified)
 
-    @staticmethod
-    def filter_untagged(tracks: list[Track], files: list[str]):
-        tagged_files = [t.filepath for t in tracks]
-        return set(files) - set(tagged_files)
+        return unmodified
 
     @staticmethod
     def tag_untagged(untagged: set[str], key: str):
         log.info("Found %s new tracks", len(untagged))
-        tagged_tracks: list[dict] = []
+        tagged_tracks: deque[dict] = deque()
         tagged_count = 0
 
         fav_tracks = favdb.get_fav_tracks()
@@ -159,18 +167,47 @@ class Populate:
 
 
 def get_image(album: Album):
-    for track in TrackStore.tracks:
-        if track.albumhash == album.albumhash:
-            extract_thumb(track.filepath, track.image)
-            break
+    """
+    The function retrieves an image from an album by iterating through its tracks and extracting the thumbnail from the first track that has one.
+
+    :param album: An instance of the `Album` class representing the album to retrieve the image from.
+    :type album: Album
+    :return: None
+    """
+
+    matching_tracks = filter(
+        lambda t: t.albumhash == album.albumhash, TrackStore.tracks
+    )
+
+    try:
+        track = next(matching_tracks)
+        extracted = extract_thumb(track.filepath, track.image)
+
+        while not extracted:
+            try:
+                track = next(matching_tracks)
+                extracted = extract_thumb(track.filepath, track.image)
+            except StopIteration:
+                break
+
+        return
+    except StopIteration:
+        pass
+
+
+from multiprocessing import Pool, cpu_count
 
 
 class ProcessTrackThumbnails:
+    """
+    Extracts the album art from all albums in album store.
+    """
+
     def __init__(self) -> None:
-        with ThreadPoolExecutor(max_workers=4) as pool:
+        with Pool(processes=cpu_count()) as pool:
             results = list(
                 tqdm(
-                    pool.map(get_image, AlbumStore.albums),
+                    pool.imap_unordered(get_image, AlbumStore.albums),
                     total=len(AlbumStore.albums),
                     desc="Extracting track images",
                 )

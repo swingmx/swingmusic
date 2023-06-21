@@ -67,8 +67,7 @@ def extract_thumb(filepath: str, webp_path: str) -> bool:
 def extract_date(date_str: str | None, timestamp: float) -> int:
     try:
         return int(date_str.split("-")[0])
-    except:  # pylint: disable=bare-except
-        print(datetime.datetime.fromtimestamp(timestamp).year)
+    except Exception as e:
         return datetime.datetime.fromtimestamp(timestamp).year
 
 
