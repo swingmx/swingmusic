@@ -1,5 +1,6 @@
 import dataclasses
 from dataclasses import dataclass
+import datetime
 
 from .track import Track
 from .artist import Artist
@@ -47,21 +48,28 @@ class Album:
 
             if len(featured) > 0:
                 original_lower = "-".join([a.name.lower() for a in self.albumartists])
-                self.albumartists.extend([Artist(a) for a in featured if a.lower() not in original_lower])
+                self.albumartists.extend(
+                    [Artist(a) for a in featured if a.lower() not in original_lower]
+                )
 
                 from ..store.tracks import TrackStore
+
                 TrackStore.append_track_artists(self.albumhash, featured, self.title)
 
         if get_flag(ParserFlags.CLEAN_ALBUM_TITLE):
             get_versions = not get_flag(ParserFlags.MERGE_ALBUM_VERSIONS)
 
-            self.title, self.versions = get_base_title_and_versions(self.title, get_versions=get_versions)
+            self.title, self.versions = get_base_title_and_versions(
+                self.title, get_versions=get_versions
+            )
             self.base_title = self.title
 
             if "super_deluxe" in self.versions:
                 self.versions.remove("deluxe")
         else:
-            self.base_title = get_base_title_and_versions(self.title, get_versions=False)[0]
+            self.base_title = get_base_title_and_versions(
+                self.title, get_versions=False
+            )[0]
 
         self.albumartists_hashes = "-".join(a.artisthash for a in self.albumartists)
 
@@ -108,8 +116,17 @@ class Album:
             return True
 
         substrings = [
-            "the essential", "best of", "greatest hits", "#1 hits", "number ones", "super hits",
-            "ultimate collection", "anthology", "great hits", "biggest hits", "the hits"
+            "the essential",
+            "best of",
+            "greatest hits",
+            "#1 hits",
+            "number ones",
+            "super hits",
+            "ultimate collection",
+            "anthology",
+            "great hits",
+            "biggest hits",
+            "the hits",
         ]
 
         for substring in substrings:
@@ -147,16 +164,26 @@ class Album:
                 return
 
         if (
-                len(tracks) == 1
-                and create_hash(tracks[0].title) == create_hash(self.title)  # if they have the same title
-                # and tracks[0].track == 1
-                # and tracks[0].disc == 1
-                # TODO: Review -> Are the above commented checks necessary?
+            len(tracks) == 1
+            and create_hash(tracks[0].title)
+            == create_hash(self.title)  # if they have the same title
+            # and tracks[0].track == 1
+            # and tracks[0].disc == 1
+            # TODO: Review -> Are the above commented checks necessary?
         ):
             self.is_single = True
 
     def get_date_from_tracks(self, tracks: list[Track]):
-        for track in tracks:
-            if track.date != "Unknown":
-                self.date = track.date
-                break
+        """
+        Gets the date of the album its tracks.
+
+        Args:
+            tracks (list[Track]): The tracks of the album.
+        """
+        dates = {t.date for t in tracks if t.date}
+
+        if len(dates) == 0:
+            self.date = 0
+            return
+
+        self.date = datetime.datetime.fromtimestamp(min(dates)).year

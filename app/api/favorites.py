@@ -2,13 +2,17 @@ from flask import Blueprint, request
 
 from app.db.sqlite.favorite import SQLiteFavoriteMethods as favdb
 from app.models import FavType
+from app.serializers.album import serialize_for_card_many
+from app.serializers.track import serialize_tracks
 from app.utils.bisection import UseBisection
 
 from app.store.artists import ArtistStore
 from app.store.albums import AlbumStore
 from app.store.tracks import TrackStore
-from app.serializers.favorites_serializer import recent_fav_track_serializer, recent_fav_album_serializer, \
-    recent_fav_artist_serializer
+from app.serializers.favorites_serializer import (
+    recent_fav_album_serializer,
+    recent_fav_artist_serializer,
+)
 
 api = Blueprint("favorite", __name__, url_prefix="/")
 
@@ -80,7 +84,7 @@ def get_favorite_albums():
     if limit == 0:
         limit = len(albums)
 
-    return {"albums": fav_albums[:limit]}
+    return {"albums": serialize_for_card_many(fav_albums[:limit])}
 
 
 @api.route("/tracks/favorite")
@@ -103,7 +107,7 @@ def get_favorite_tracks():
     if limit == 0:
         limit = len(tracks)
 
-    return {"tracks": tracks[:limit]}
+    return {"tracks": serialize_tracks(tracks[:limit])}
 
 
 @api.route("/artists/favorite")
@@ -194,20 +198,18 @@ def get_all_favorites():
         if fav[2] == FavType.album:
             try:
                 album = [a for a in albums if a.albumhash == fav[1]][0]
-                recents.append({
-                    "type": "album",
-                    "item": recent_fav_album_serializer(album)
-                })
+                recents.append(
+                    {"type": "album", "item": recent_fav_album_serializer(album)}
+                )
             except IndexError:
                 continue
 
         if fav[2] == FavType.artist:
             try:
                 artist = [a for a in artists if a.artisthash == fav[1]][0]
-                recents.append({
-                    "type": "artist",
-                    "item": recent_fav_artist_serializer(artist)
-                })
+                recents.append(
+                    {"type": "artist", "item": recent_fav_artist_serializer(artist)}
+                )
             except IndexError:
                 continue
 

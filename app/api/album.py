@@ -6,14 +6,16 @@ from dataclasses import asdict
 
 from flask import Blueprint, request
 
+from app.models import FavType, Track
+from app.serializers.track import track_serializer
+from app.store.albums import AlbumStore
+from app.store.tracks import TrackStore
 from app.db.sqlite.albums import SQLiteAlbumMethods as adb
 from app.db.sqlite.favorite import SQLiteFavoriteMethods as favdb
-from app.models import FavType, Track
-from app.utils.hashing import create_hash
-from app.utils.remove_duplicates import remove_duplicates
 
-from app.store.tracks import TrackStore
-from app.store.albums import AlbumStore
+from app.utils.hashing import create_hash
+from app.serializers.album import serialize_for_card
+from app.utils.remove_duplicates import remove_duplicates
 
 get_albums_by_albumartist = adb.get_albums_by_albumartist
 check_is_fav = favdb.check_is_favorite
@@ -79,7 +81,10 @@ def get_album_tracks_and_info():
 
     album.is_favorite = check_is_fav(albumhash, FavType.album)
 
-    return {"tracks": tracks, "info": album}
+    return {
+        "tracks": [track_serializer(t, retain_disc=True) for t in tracks],
+        "info": album,
+    }
 
 
 @api.route("/album/<albumhash>/tracks", methods=["GET"])
@@ -92,9 +97,10 @@ def get_album_tracks(albumhash: str):
 
     for t in tracks:
         track = str(t["track"]).zfill(3)
-        t["pos"] = int(f"{t['disc']}{track}")
+        t["_pos"] = int(f"{t['disc']}{track}")
 
-    tracks = sorted(tracks, key=lambda t: t["pos"])
+    tracks = sorted(tracks, key=lambda t: t["_pos"])
+    tracks = [track_serializer(t, _remove={"_pos"}) for t in tracks]
 
     return {"tracks": tracks}
 
@@ -122,7 +128,14 @@ def get_artist_albums():
         for a in albumartists
     ]
 
-    albums = [a for a in albums if len(a["albums"]) > 0]
+    albums = [
+        {
+            "artisthash": a["artisthash"],
+            "albums": [serialize_for_card(a_) for a_ in (a["albums"])],
+        }
+        for a in albums
+        if len(a["albums"]) > 0
+    ]
 
     return {"data": albums}
 

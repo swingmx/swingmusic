@@ -7,6 +7,8 @@ from flask import Blueprint, request
 
 from app.db.sqlite.favorite import SQLiteFavoriteMethods as favdb
 from app.models import Album, FavType, Track
+from app.serializers.album import serialize_for_card_many
+from app.serializers.track import serialize_tracks
 from app.utils.remove_duplicates import remove_duplicates
 
 from app.store.albums import AlbumStore
@@ -22,7 +24,7 @@ class CacheEntry:
     """
 
     def __init__(
-            self, artisthash: str, albumhashes: set[str], tracks: list[Track]
+        self, artisthash: str, albumhashes: set[str], tracks: list[Track]
     ) -> None:
         self.albums: list[Album] = []
         self.tracks: list[Track] = []
@@ -208,7 +210,7 @@ def get_artist(artisthash: str):
 
     artist.is_favorite = favdb.check_is_favorite(artisthash, FavType.artist)
 
-    return {"artist": artist, "tracks": tracks[:limit]}
+    return {"artist": artist, "tracks": serialize_tracks(tracks[:limit])}
 
 
 @api.route("/artist/<artisthash>/albums", methods=["GET"])
@@ -265,11 +267,11 @@ def get_artist_albums(artisthash: str):
 
     return {
         "artistname": artist.name,
-        "albums": albums[:limit],
-        "singles": singles[:limit],
-        "eps": eps[:limit],
-        "appearances": appearances[:limit],
-        "compilations": compilations[:limit]
+        "albums": serialize_for_card_many(albums[:limit]),
+        "singles": serialize_for_card_many(singles[:limit]),
+        "eps": serialize_for_card_many(eps[:limit]),
+        "appearances": serialize_for_card_many(appearances[:limit]),
+        "compilations": serialize_for_card_many(compilations[:limit]),
     }
 
 
@@ -280,7 +282,8 @@ def get_all_artist_tracks(artisthash: str):
     """
     tracks = TrackStore.get_tracks_by_artist(artisthash)
 
-    return {"tracks": tracks}
+    return {"tracks": serialize_tracks(tracks)}
+
 
 #
 # @api.route("/artist/<artisthash>/similar", methods=["GET"])
