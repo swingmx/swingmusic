@@ -43,7 +43,7 @@ class Track:
         self.og_album = self.album
 
         if self.artist is not None:
-            artists = split_artists(self.artist, with_and=True)
+            artists = split_artists(self.artist)
             new_title = self.title
 
             if get_flag(ParserFlags.EXTRACT_FEAT):
@@ -72,13 +72,13 @@ class Track:
             self.artist_hashes = "-".join(create_hash(a, decode=True) for a in artists)
             self.artist = [ArtistMinimal(a) for a in artists]
 
-            albumartists = split_artists(self.albumartist, with_and=True)
+            albumartists = split_artists(self.albumartist)
             self.albumartist = [ArtistMinimal(a) for a in albumartists]
 
         self.filetype = self.filepath.rsplit(".", maxsplit=1)[-1]
         self.image = self.albumhash + ".webp"
 
-        if self.genre is not None:
+        if self.genre is not None and self.genre != "":
             self.genre = str(self.genre).replace("/", ",").replace(";", ",")
             self.genre = str(self.genre).lower().split(",")
             self.genre = [g.strip() for g in self.genre]

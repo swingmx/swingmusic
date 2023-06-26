@@ -2,13 +2,17 @@ import re
 from enum import Enum
 
 
-def split_artists(src: str, with_and: bool = False):
+def split_artists(src: str, custom_seps: set[str] = {}):
     """
     Splits a string of artists into a list of artists.
     """
-    exp = r"\s*(?: and |&|,|;|/)\s*" if with_and else r"\s*[,;]\s*"
+    separators = {",", ";", "/"}.union(custom_seps)
 
-    artists = re.split(exp, src)
+    for sep in separators:
+        src = src.replace(sep, "߸")
+
+    artists = src.split("߸")
+
     return [a.strip() for a in artists]
 
 
@@ -83,7 +87,7 @@ def parse_feat_from_title(title: str) -> tuple[list[str], str]:
         return [], title
 
     artists = match.group(1)
-    artists = split_artists(artists, with_and=True)
+    artists = split_artists(artists)
 
     # remove "feat" group from title
     new_title = re.sub(regex, "", title, flags=re.IGNORECASE)
@@ -94,14 +98,16 @@ def get_base_album_title(string) -> tuple[str, str | None]:
     """
     Extracts the base album title from a string.
     """
-    pattern = re.compile(r'\s*(\(|\[)[^\)\]]*?(version|remaster|deluxe|edition|expanded|anniversary)[^\)\]]*?(\)|\])$',
-                         re.IGNORECASE)
+    pattern = re.compile(
+        r"\s*(\(|\[)[^\)\]]*?(version|remaster|deluxe|edition|expanded|anniversary)[^\)\]]*?(\)|\])$",
+        re.IGNORECASE,
+    )
     # TODO: Fix "Redundant character escape '\]' in RegExp "
     match = pattern.search(string)
 
     if match:
         removed_block = match.group(0)
-        title = string.replace(removed_block, '')
+        title = string.replace(removed_block, "")
         return title.strip(), removed_block.strip()
 
     return string, None
@@ -111,13 +117,14 @@ class AlbumVersionEnum(Enum):
     """
     Enum for album versions.
     """
+
     Explicit = ("explicit",)
 
     ANNIVERSARY = ("anniversary",)
     DIAMOND = ("diamond",)
     Centennial = ("centennial",)
     GOLDEN = ("gold",)
-    PLATINUM = ('platinum',)
+    PLATINUM = ("platinum",)
     SILVER = ("silver",)
 
     EXPANDED = ("expanded",)
@@ -132,7 +139,7 @@ class AlbumVersionEnum(Enum):
     ARCHIVE = ("archive",)
 
     Acoustic = ("acoustic",)
-    DOUBLE_DISC = ('double disc', 'double disk')
+    DOUBLE_DISC = ("double disc", "double disk")
 
     SUMMER = ("summer",)
     WINTER = ("winter",)
@@ -193,7 +200,9 @@ def get_album_info(bracket_text: str | None) -> list[str]:
     return versions
 
 
-def get_base_title_and_versions(original_album_title: str, get_versions=True) -> tuple[str, list[str]]:
+def get_base_title_and_versions(
+    original_album_title: str, get_versions=True
+) -> tuple[str, list[str]]:
     """
     Extracts the base album title and version info from an album title string using regex.
     """
@@ -218,14 +227,18 @@ def remove_bracketed_remaster(text: str):
     """
     Removes remaster info from a track title that contains brackets using regex.
     """
-    return re.sub(r'\s*[\\[(][^)\]]*remaster[^)\]]*[)\]]\s*', '', text, flags=re.IGNORECASE).strip()
+    return re.sub(
+        r"\s*[\\[(][^)\]]*remaster[^)\]]*[)\]]\s*", "", text, flags=re.IGNORECASE
+    ).strip()
 
 
 def remove_hyphen_remasters(text: str):
     """
     Removes remaster info from a track title that contains a hypen (-) using regex.
     """
-    return re.sub(r'\s-\s*[^-]*\bremaster[^-]*\s*', '', text, flags=re.IGNORECASE).strip()
+    return re.sub(
+        r"\s-\s*[^-]*\bremaster[^-]*\s*", "", text, flags=re.IGNORECASE
+    ).strip()
 
 
 def clean_title(title: str) -> str:

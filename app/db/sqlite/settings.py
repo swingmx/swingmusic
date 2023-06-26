@@ -88,3 +88,27 @@ class SettingsSQLMethods:
             cur.execute(sql)
             dirs = cur.fetchall()
             return [_dir[0] for _dir in dirs]
+
+    @staticmethod
+    def add_artist_separators(seps: set[str]):
+        """
+        Adds a set of artist separators to the userdata table.
+        """
+        # TODO: Implement
+        pass
+
+    @staticmethod
+    def get_artist_separators() -> set[str]:
+        """
+        Gets a set of artist separators from the userdata table.
+        """
+        # TODO: Implement
+        pass
+
+    @staticmethod
+    def remove_artist_separators(seps: set[str]):
+        """
+        Removes a set of artist separators from the userdata table.
+        """
+        # TODO: Implement
+        pass

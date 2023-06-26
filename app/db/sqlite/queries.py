@@ -24,7 +24,8 @@ CREATE TABLE IF NOT EXISTS favorites (
 CREATE TABLE IF NOT EXISTS settings (
     id integer PRIMARY KEY,
     root_dirs text NOT NULL,
-    exclude_dirs text
+    exclude_dirs text,
+    artist_separators text
 )
 """
 
