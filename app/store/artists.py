@@ -61,8 +61,11 @@ class ArtistStore:
         Returns an artist by its hash.P
         """
         artists = sorted(cls.artists, key=lambda x: x.artisthash)
-        artist = UseBisection(artists, "artisthash", [artisthash])()[0]
-        return artist
+        try:
+            artist = UseBisection(artists, "artisthash", [artisthash])()[0]
+            return artist
+        except IndexError:
+            return None
 
     @classmethod
     def get_artists_by_hashes(cls, artisthashes: list[str]) -> list[Artist]:

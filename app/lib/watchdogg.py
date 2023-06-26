@@ -129,13 +129,13 @@ def add_track(filepath: str) -> None:
 
     Then creates the folder, album and artist objects for the added track and adds them to the store.
     """
-    # remove the track if it already exists
+
     TrackStore.remove_track_by_filepath(filepath)
 
-    # add the track to the database and store.
     tags = get_tags(filepath)
 
-    if tags is None:
+    # if the track is somehow invalid, return
+    if tags is None or tags["bitrate"] == 0 or tags["duration"] == 0:
         return
 
     with SQLiteManager() as cur:

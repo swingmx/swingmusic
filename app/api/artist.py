@@ -262,6 +262,9 @@ def get_artist_albums(artisthash: str):
 
     artist = ArtistStore.get_artist_by_hash(artisthash)
 
+    if artist is None:
+        return {"error": "Artist not found"}, 404
+
     if return_all is not None:
         limit = len(all_albums)
 
