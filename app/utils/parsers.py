@@ -132,6 +132,7 @@ class AlbumVersionEnum(Enum):
 
     DELUXE = ("deluxe",)
     SUPER_DELUXE = ("super deluxe",)
+    COMPLETE = ("complete",)
 
     LEGACY = ("legacy",)
     SPECIAL = ("special",)

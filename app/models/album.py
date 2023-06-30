@@ -43,6 +43,7 @@ class Album:
         self.og_title = self.title
         self.image = self.albumhash + ".webp"
 
+        # Fetch album artists from title
         if get_flag(ParserFlags.EXTRACT_FEAT):
             featured, self.title = parse_feat_from_title(self.title)
 
@@ -56,6 +57,7 @@ class Album:
 
                 TrackStore.append_track_artists(self.albumhash, featured, self.title)
 
+        # Handle album version data
         if get_flag(ParserFlags.CLEAN_ALBUM_TITLE):
             get_versions = not get_flag(ParserFlags.MERGE_ALBUM_VERSIONS)
 
@@ -66,6 +68,8 @@ class Album:
 
             if "super_deluxe" in self.versions:
                 self.versions.remove("deluxe")
+
+            self.versions = [v.replace("_", " ") for v in self.versions]
         else:
             self.base_title = get_base_title_and_versions(
                 self.title, get_versions=False
@@ -180,10 +184,12 @@ class Album:
         Args:
             tracks (list[Track]): The tracks of the album.
         """
+        if self.date:
+            return
+
         dates = {t.date for t in tracks if t.date}
 
         if len(dates) == 0:
             self.date = 0
-            return
 
         self.date = datetime.datetime.fromtimestamp(min(dates)).year

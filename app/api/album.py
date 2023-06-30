@@ -100,7 +100,6 @@ def get_album_tracks(albumhash: str):
         t["_pos"] = int(f"{t['disc']}{track}")
 
     tracks = sorted(tracks, key=lambda t: t["_pos"])
-    tracks = [track_serializer(t, _remove={"_pos"}) for t in tracks]
 
     return {"tracks": tracks}
 
@@ -163,5 +162,9 @@ def get_album_versions():
         if create_hash(a.base_title) == create_hash(base_title)
         and create_hash(og_album_title) != create_hash(a.og_title)
     ]
+
+    for a in albums:
+        tracks = TrackStore.get_tracks_by_albumhash(a.albumhash)
+        a.get_date_from_tracks(tracks)
 
     return {"data": albums}

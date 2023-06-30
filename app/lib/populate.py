@@ -1,26 +1,29 @@
-from collections import deque
+import json
 import os
+from collections import deque
 from typing import Generator
-from tqdm import tqdm
+
 from requests import ConnectionError as RequestConnectionError
 from requests import ReadTimeout
+from tqdm import tqdm
 
 from app import settings
-from app.db.sqlite.tracks import SQLiteTrackMethods
-from app.db.sqlite.settings import SettingsSQLMethods as sdb
 from app.db.sqlite.favorite import SQLiteFavoriteMethods as favdb
+from app.db.sqlite.lastfm.similar_artists import SQLiteLastFMSimilarArtists as lastfmdb
+from app.db.sqlite.settings import SettingsSQLMethods as sdb
+from app.db.sqlite.tracks import SQLiteTrackMethods
 from app.lib.artistlib import CheckArtistImages
 from app.lib.colorlib import ProcessAlbumColors, ProcessArtistColors
-
 from app.lib.taglib import extract_thumb, get_tags
 from app.lib.trackslib import validate_tracks
 from app.logger import log
 from app.models import Album, Artist, Track
-from app.utils.filesystem import run_fast_scandir
-
+from app.models.lastfm import SimilarArtist
+from app.requests.artists import fetch_similar_artists
 from app.store.albums import AlbumStore
-from app.store.tracks import TrackStore
 from app.store.artists import ArtistStore
+from app.store.tracks import TrackStore
+from app.utils.filesystem import run_fast_scandir
 from app.utils.network import Ping
 
 get_all_tracks = SQLiteTrackMethods.get_all_tracks
@@ -100,6 +103,9 @@ class Populate:
         if tried_to_download_new_images:
             ProcessArtistColors()
 
+        if Ping()():
+            FetchSimilarArtistsLastFM()
+
     @staticmethod
     def remove_modified(tracks: Generator[Track, None, None]):
         """
@@ -111,9 +117,14 @@ class Populate:
         modified = set()
 
         for track in tracks:
-            if track.last_mod == os.path.getmtime(track.filepath):
-                unmodified.add(track.filepath)
-                continue
+            try:
+                if track.last_mod == os.path.getmtime(track.filepath):
+                    unmodified.add(track.filepath)
+                    continue
+            except FileNotFoundError:
+                print(f"File not found: {track.filepath}")
+                TrackStore.tracks.remove(track)
+                remove_tracks_by_filepaths(track.filepath)
 
             modified.add(track.filepath)
 
@@ -210,6 +221,44 @@ class ProcessTrackThumbnails:
                     pool.imap_unordered(get_image, AlbumStore.albums),
                     total=len(AlbumStore.albums),
                     desc="Extracting track images",
+                )
+            )
+
+            list(results)
+
+
+def save_similar_artists(artist: Artist):
+    """
+    Downloads and saves similar artists to the database.
+    """
+
+    if lastfmdb.exists(artist.artisthash):
+        return
+
+    artist_hashes = fetch_similar_artists(artist.name)
+    artist_ = SimilarArtist(artist.artisthash, "~".join(artist_hashes))
+
+    if len(artist_.similar_artist_hashes) == 0:
+        return
+
+    print(artist.artisthash, artist.name)
+    lastfmdb.insert_one(artist_)
+
+
+class FetchSimilarArtistsLastFM:
+    """
+    Fetches similar artists from LastFM using a process pool.
+    """
+
+    def __init__(self) -> None:
+        artists = ArtistStore.artists
+
+        with Pool(processes=cpu_count()) as pool:
+            results = list(
+                tqdm(
+                    pool.imap_unordered(save_similar_artists, artists),
+                    total=len(artists),
+                    desc="Downloading similar artists",
                 )
             )
 

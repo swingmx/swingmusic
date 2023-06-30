@@ -2,10 +2,13 @@
 Contains all the artist(s) routes.
 """
 from collections import deque
+import random
 
 from flask import Blueprint, request
 
 from app.db.sqlite.favorite import SQLiteFavoriteMethods as favdb
+from app.db.sqlite.lastfm.similar_artists import SQLiteLastFMSimilarArtists as fmdb
+
 from app.models import Album, FavType, Track
 from app.serializers.album import serialize_for_card_many
 from app.serializers.track import serialize_tracks
@@ -141,6 +144,11 @@ class ArtistsCache:
             album_tracks = remove_duplicates(album_tracks)
 
             album.get_date_from_tracks(album_tracks)
+
+            if album.date == 0:
+                AlbumStore.remove_album_by_hash(album.albumhash)
+                continue
+
             album.check_is_single(album_tracks)
 
         entry.type_checked = True
@@ -288,28 +296,33 @@ def get_all_artist_tracks(artisthash: str):
     return {"tracks": serialize_tracks(tracks)}
 
 
-#
-# @api.route("/artist/<artisthash>/similar", methods=["GET"])
-# def get_similar_artists(artisthash: str):
-#     """
-#     Returns similar artists.
-#     """
-#     limit = request.args.get("limit")
-#
-#     if limit is None:
-#         limit = 6
-#
-#     limit = int(limit)
-#
-#     artist = ArtistStore.get_artist_by_hash(artisthash)
-#
-#     if artist is None:
-#         return {"error": "Artist not found"}, 404
-#
-#     similar_hashes = fetch_similar_artists(artist.name)
-#     similar = ArtistStore.get_artists_by_hashes(similar_hashes)
-#
-#     if len(similar) > limit:
-#         similar = random.sample(similar, limit)
-#
-#     return {"similar": similar[:limit]}
+@api.route("/artist/<artisthash>/similar", methods=["GET"])
+def get_similar_artists(artisthash: str):
+    """
+    Returns similar artists.
+    """
+    limit = request.args.get("limit")
+
+    if limit is None:
+        limit = 6
+
+    limit = int(limit)
+
+    artist = ArtistStore.get_artist_by_hash(artisthash)
+
+    if artist is None:
+        return {"error": "Artist not found"}, 404
+
+    # result = LastFMStore.get_similar_artists_for(artist.artisthash)
+    result = fmdb.get_similar_artists_for(artist.artisthash)
+
+    if result is None:
+        return {"artists": []}
+
+    similar = ArtistStore.get_artists_by_hashes(result.get_artist_hash_set())
+
+    # print(similar)
+    if len(similar) > limit:
+        similar = random.sample(similar, limit)
+
+    return {"artists": similar[:limit]}

@@ -26,7 +26,14 @@ CREATE TABLE IF NOT EXISTS settings (
     root_dirs text NOT NULL,
     exclude_dirs text,
     artist_separators text
-)
+);
+
+CREATE TABLE IF NOT EXISTS lastfm_similar_artists (
+    id integer PRIMARY KEY,
+    artisthash text NOT NULL,
+    similar_artists text NOT NULL,
+    UNIQUE (artisthash)
+);
 """
 
 CREATE_APPDB_TABLES = """
@@ -57,8 +64,6 @@ CREATE TABLE IF NOT EXISTS albums (
     colors text NOT NULL,
     UNIQUE (albumhash)
 );
-
-
 
 CREATE TABLE IF NOT EXISTS artists (
     id integer PRIMARY KEY,
