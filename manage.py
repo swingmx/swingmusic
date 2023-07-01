@@ -2,7 +2,6 @@
 This file is used to run the application.
 """
 import logging
-# import sys
 
 from app.api import create_api
 from app.arg_handler import HandleArgs
@@ -13,8 +12,6 @@ from app.setup import run_setup
 from app.start_info_logger import log_startup_info
 from app.utils.filesystem import get_home_res_path
 from app.utils.threading import background
-
-# sys.stderr = open("./logs.txt", "w")
 
 werkzeug = logging.getLogger("werkzeug")
 werkzeug.setLevel(logging.ERROR)

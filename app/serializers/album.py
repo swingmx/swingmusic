@@ -19,6 +19,7 @@ def serialize_for_card(album: Album):
         "albumartist_hashes",
         "og_title",
         "base_title",
+        "genres",
     }
 
     return album_serializer(album, props_to_remove)

@@ -3,6 +3,7 @@ Contains all the album routes.
 """
 
 from dataclasses import asdict
+import random
 
 from flask import Blueprint, request
 
@@ -12,6 +13,7 @@ from app.store.albums import AlbumStore
 from app.store.tracks import TrackStore
 from app.db.sqlite.albums import SQLiteAlbumMethods as adb
 from app.db.sqlite.favorite import SQLiteFavoriteMethods as favdb
+from app.db.sqlite.lastfm.similar_artists import SQLiteLastFMSimilarArtists as lastfmdb
 
 from app.utils.hashing import create_hash
 from app.serializers.album import serialize_for_card
@@ -168,3 +170,44 @@ def get_album_versions():
         a.get_date_from_tracks(tracks)
 
     return {"data": albums}
+
+
+@api.route("/album/similar", methods=["GET"])
+def get_similar_albums():
+    """
+    Returns similar albums to the given album.
+    """
+    data = request.args
+
+    if data is None:
+        return {"msg": "No artisthash provided"}
+
+    artisthash: str = data["artisthash"]
+    limit: int = data.get("limit")
+
+    if limit is None:
+        limit = 6
+
+    limit = int(limit)
+
+    similar_artists = lastfmdb.get_similar_artists_for(artisthash)
+
+    if similar_artists is None:
+        return {"albums": []}
+
+    artisthashes = similar_artists.get_artist_hash_set()
+
+    if len(artisthashes) == 0:
+        return {"albums": []}
+
+    albums = [AlbumStore.get_albums_by_artisthash(a) for a in artisthashes]
+
+    albums = [a for sublist in albums for a in sublist]
+    albums = list({a.albumhash: a for a in albums}.values())
+
+    try:
+        albums = random.sample(albums, min(len(albums), limit))
+    except ValueError:
+        pass
+
+    return {"albums": [serialize_for_card(a) for a in albums]}
