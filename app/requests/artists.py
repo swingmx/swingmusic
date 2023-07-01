@@ -6,7 +6,7 @@ import requests
 
 from app import settings
 from app.utils.hashing import create_hash
-from requests import ConnectionError
+from requests import ConnectionError, ReadTimeout
 import urllib.parse
 
 
@@ -19,7 +19,7 @@ def fetch_similar_artists(name: str):
     try:
         response = requests.get(url, timeout=10)
         response.raise_for_status()
-    except ConnectionError:
+    except (ConnectionError, ReadTimeout):
         return []
 
     data = response.json()

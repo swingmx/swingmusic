@@ -23,3 +23,5 @@ dist
 build
 client
 .gitignore
+
+logs.txt
