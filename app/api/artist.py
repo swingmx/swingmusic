@@ -321,7 +321,6 @@ def get_similar_artists(artisthash: str):
 
     similar = ArtistStore.get_artists_by_hashes(result.get_artist_hash_set())
 
-    # print(similar)
     if len(similar) > limit:
         similar = random.sample(similar, limit)
 

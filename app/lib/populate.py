@@ -241,7 +241,6 @@ def save_similar_artists(artist: Artist):
     if len(artist_.similar_artist_hashes) == 0:
         return
 
-    print(artist.artisthash, artist.name)
     lastfmdb.insert_one(artist_)
 
 

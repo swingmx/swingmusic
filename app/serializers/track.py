@@ -16,6 +16,8 @@ def track_serializer(track: Track, _remove: set = {}, retain_disc=False) -> dict
         to_remove.union("disc", "track")
 
     to_remove.update(key for key in album_dict.keys() if key.startswith("is_"))
+    to_remove.remove('is_favorite')
+
     for key in to_remove:
         album_dict.pop(key, None)
 

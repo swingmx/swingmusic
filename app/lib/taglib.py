@@ -28,18 +28,20 @@ def extract_thumb(filepath: str, webp_path: str) -> bool:
     """
     Extracts the thumbnail from an audio file. Returns the path to the thumbnail.
     """
-    img_path = os.path.join(Paths.get_lg_thumb_path(), webp_path)
+    original_img_path = os.path.join(Paths.get_original_thumb_path(), webp_path)
+    lg_img_path = os.path.join(Paths.get_lg_thumb_path(), webp_path)
     sm_img_path = os.path.join(Paths.get_sm_thumb_path(), webp_path)
 
     tsize = Defaults.THUMB_SIZE
     sm_tsize = Defaults.SM_THUMB_SIZE
 
     def save_image(img: Image.Image):
+        img.save(original_img_path, "webp")
+        img.resize((tsize, tsize), Image.ANTIALIAS).save(lg_img_path, "webp")
         img.resize((sm_tsize, sm_tsize), Image.ANTIALIAS).save(sm_img_path, "webp")
-        img.resize((tsize, tsize), Image.ANTIALIAS).save(img_path, "webp")
 
-    if os.path.exists(img_path):
-        img_size = os.path.getsize(img_path)
+    if os.path.exists(lg_img_path):
+        img_size = os.path.getsize(lg_img_path)
 
         if img_size > 0:
             return True

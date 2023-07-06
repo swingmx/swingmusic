@@ -63,6 +63,7 @@ def create_config_dir() -> None:
     thumb_path = os.path.join("images", "thumbnails")
     small_thumb_path = os.path.join(thumb_path, "small")
     large_thumb_path = os.path.join(thumb_path, "large")
+    original_thumb_path = os.path.join(thumb_path, "original")
 
     artist_img_path = os.path.join("images", "artists")
     small_artist_img_path = os.path.join(artist_img_path, "small")
@@ -76,6 +77,7 @@ def create_config_dir() -> None:
         thumb_path,
         small_thumb_path,
         large_thumb_path,
+        original_thumb_path,
         artist_img_path,
         small_artist_img_path,
         large_artist_img_path,

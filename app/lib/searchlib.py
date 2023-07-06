@@ -140,7 +140,6 @@ def get_titles(items: _type):
             text = item.og_title
         elif isinstance(item, models.Album):
             text = item.title
-            # print(text)
         elif isinstance(item, models.Artist):
             text = item.name
         else:

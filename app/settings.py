@@ -27,7 +27,9 @@ class Paths:
 
     @classmethod
     def get_config_folder(cls):
-        return "swingmusic" if cls.get_config_dir() != cls.USER_HOME_DIR else ".swingmusic"
+        return (
+            "swingmusic" if cls.get_config_dir() != cls.USER_HOME_DIR else ".swingmusic"
+        )
 
     @classmethod
     def get_app_dir(cls):
@@ -66,6 +68,10 @@ class Paths:
         return join(cls.get_thumbs_path(), "large")
 
     @classmethod
+    def get_original_thumb_path(cls):
+        return join(cls.get_thumbs_path(), "original")
+
+    @classmethod
     def get_assets_path(cls):
         return join(Paths.get_app_dir(), "assets")
 
@@ -73,8 +79,8 @@ class Paths:
 # defaults
 class Defaults:
     THUMB_SIZE = 400
-    SM_THUMB_SIZE = 64
-    SM_ARTIST_IMG_SIZE = 64
+    SM_THUMB_SIZE = 144
+    SM_ARTIST_IMG_SIZE = 144
     """
     The size of extracted images in pixels
     """
@@ -166,14 +172,14 @@ class FromFlags:
 
 
 class ParserFlags(Enum):
-    EXTRACT_FEAT = 'EXTRACT_FEAT'
-    REMOVE_PROD = 'REMOVE_PROD'
-    CLEAN_ALBUM_TITLE = 'CLEAN_ALBUM_TITLE'
-    SHOW_ALBUM_VERSION = 'SHOW_ALBUM_VERSION'
-    REMOVE_REMASTER_FROM_TRACK = 'REMOVE_REMASTER_FROM_TRACK'
-    DO_PERIODIC_SCANS = 'DO_PERIODIC_SCANS'
-    PERIODIC_SCAN_INTERVAL = 'PERIODIC_SCAN_INTERVAL'
-    MERGE_ALBUM_VERSIONS = 'MERGE_ALBUM_VERSIONS'
+    EXTRACT_FEAT = "EXTRACT_FEAT"
+    REMOVE_PROD = "REMOVE_PROD"
+    CLEAN_ALBUM_TITLE = "CLEAN_ALBUM_TITLE"
+    SHOW_ALBUM_VERSION = "SHOW_ALBUM_VERSION"
+    REMOVE_REMASTER_FROM_TRACK = "REMOVE_REMASTER_FROM_TRACK"
+    DO_PERIODIC_SCANS = "DO_PERIODIC_SCANS"
+    PERIODIC_SCAN_INTERVAL = "PERIODIC_SCAN_INTERVAL"
+    MERGE_ALBUM_VERSIONS = "MERGE_ALBUM_VERSIONS"
 
 
 def get_flag(flag: ParserFlags) -> bool:

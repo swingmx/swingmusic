@@ -2,21 +2,21 @@
 Contains all the album routes.
 """
 
-from dataclasses import asdict
 import random
+from dataclasses import asdict
 
 from flask import Blueprint, request
 
+from app.db.sqlite.albums import SQLiteAlbumMethods as adb
+from app.db.sqlite.favorite import SQLiteFavoriteMethods as favdb
+from app.db.sqlite.lastfm.similar_artists import \
+    SQLiteLastFMSimilarArtists as lastfmdb
 from app.models import FavType, Track
+from app.serializers.album import serialize_for_card
 from app.serializers.track import track_serializer
 from app.store.albums import AlbumStore
 from app.store.tracks import TrackStore
-from app.db.sqlite.albums import SQLiteAlbumMethods as adb
-from app.db.sqlite.favorite import SQLiteFavoriteMethods as favdb
-from app.db.sqlite.lastfm.similar_artists import SQLiteLastFMSimilarArtists as lastfmdb
-
 from app.utils.hashing import create_hash
-from app.serializers.album import serialize_for_card
 from app.utils.remove_duplicates import remove_duplicates
 
 get_albums_by_albumartist = adb.get_albums_by_albumartist
@@ -210,4 +210,4 @@ def get_similar_albums():
     except ValueError:
         pass
 
-    return {"albums": [serialize_for_card(a) for a in albums]}
+    return {"albums": [serialize_for_card(a) for a in albums[:limit]]}
