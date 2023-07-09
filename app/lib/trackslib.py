@@ -15,5 +15,5 @@ def validate_tracks() -> None:
     """
     for track in tqdm(TrackStore.tracks, desc="Checking for deleted tracks"):
         if not os.path.exists(track.filepath):
-            TrackStore.tracks.remove(track)
+            TrackStore.remove_track_obj(track)
             tdb.remove_tracks_by_filepaths(track.filepath)

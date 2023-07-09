@@ -1,8 +1,8 @@
 from tqdm import tqdm
 
-from app.models import Track
 from app.db.sqlite.favorite import SQLiteFavoriteMethods as favdb
 from app.db.sqlite.tracks import SQLiteTrackMethods as tdb
+from app.models import Track
 from app.utils.bisection import UseBisection
 from app.utils.remove_duplicates import remove_duplicates
 
@@ -42,6 +42,16 @@ class TrackStore:
         cls.tracks.extend(tracks)
 
     @classmethod
+    def remove_track_obj(cls, track: Track):
+        """
+        Removes a single track from the store.
+        """
+        try:
+            cls.tracks.remove(track)
+        except ValueError:
+            pass
+
+    @classmethod
     def remove_track_by_filepath(cls, filepath: str):
         """
         Removes a track from the store by its filepath.
@@ -49,7 +59,7 @@ class TrackStore:
 
         for track in cls.tracks:
             if track.filepath == filepath:
-                cls.tracks.remove(track)
+                cls.remove_track_obj(track)
                 break
 
     @classmethod
@@ -58,10 +68,9 @@ class TrackStore:
         Removes multiple tracks from the store by their filepaths.
         """
 
-
         for track in cls.tracks:
             if track.filepath in filepaths:
-                cls.tracks.remove(track)
+                cls.remove_track_obj(track)
 
     @classmethod
     def remove_tracks_by_dir_except(cls, dirs: list[str]):

@@ -9,7 +9,8 @@ from tqdm import tqdm
 
 from app import settings
 from app.db.sqlite.favorite import SQLiteFavoriteMethods as favdb
-from app.db.sqlite.lastfm.similar_artists import SQLiteLastFMSimilarArtists as lastfmdb
+from app.db.sqlite.lastfm.similar_artists import \
+    SQLiteLastFMSimilarArtists as lastfmdb
 from app.db.sqlite.settings import SettingsSQLMethods as sdb
 from app.db.sqlite.tracks import SQLiteTrackMethods
 from app.lib.artistlib import CheckArtistImages
@@ -90,7 +91,7 @@ class Populate:
             tried_to_download_new_images = True
             try:
                 CheckArtistImages()
-            except (RequestConnectionError, ReadTimeout):
+            except (RequestConnectionError, ReadTimeout) as e:
                 log.error(
                     "Internet connection lost. Downloading artist images stopped."
                 )
@@ -123,7 +124,7 @@ class Populate:
                     continue
             except FileNotFoundError:
                 print(f"File not found: {track.filepath}")
-                TrackStore.tracks.remove(track)
+                TrackStore.remove_track_obj(track)
                 remove_tracks_by_filepaths(track.filepath)
 
             modified.add(track.filepath)

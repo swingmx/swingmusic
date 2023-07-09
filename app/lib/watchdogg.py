@@ -184,6 +184,7 @@ def remove_track(filepath: str) -> None:
 class Handler(PatternMatchingEventHandler):
     files_to_process = []
     files_to_process_windows = []
+    file_sizes = {}
 
     root_dirs = []
     dir_map = []
@@ -215,6 +216,7 @@ class Handler(PatternMatchingEventHandler):
         """
         self.files_to_process.append(event.src_path)
         self.files_to_process_windows.append(event.src_path)
+        self.file_sizes[event.src_path] = os.path.getsize(event.src_path)
 
     def on_deleted(self, event):
         """
@@ -269,18 +271,29 @@ class Handler(PatternMatchingEventHandler):
         if event.src_path not in self.files_to_process_windows:
             return
 
-        file_size = -1
+        # Check if file write operation is complete
+        current_size = os.path.getsize(event.src_path)
+        previous_size = self.file_sizes.get(event.src_path, -1)
 
-        while file_size != os.path.getsize(event.src_path):
-            file_size = os.path.getsize(event.src_path)
-            time.sleep(0.1)
+        if current_size == previous_size:
+            # Wait for a short duration to ensure the file write operation is complete
+            time.sleep(0.5)
 
-        try:
-            os.rename(event.src_path, event.src_path)
-            path = self.get_abs_path(event.src_path)
-            remove_track(path)
-            add_track(path)
-            self.files_to_process_windows.remove(event.src_path)
-        except OSError:
-            # File is locked, skipping
-            pass
+            # Check the file size again
+            current_size = os.path.getsize(event.src_path)
+
+            if current_size == previous_size:
+                try:
+                    os.rename(event.src_path, event.src_path)
+                    path = self.get_abs_path(event.src_path)
+                    remove_track(path)
+                    add_track(path)
+                    self.files_to_process_windows.remove(event.src_path)
+                    del self.file_sizes[event.src_path]
+                except OSError:
+                    # File is locked, skipping
+                    pass
+                return
+
+        # Update the file size for the next iteration
+        self.file_sizes[event.src_path] = current_size

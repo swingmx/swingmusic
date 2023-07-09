@@ -9,8 +9,7 @@ from flask import Blueprint, request
 
 from app.db.sqlite.albums import SQLiteAlbumMethods as adb
 from app.db.sqlite.favorite import SQLiteFavoriteMethods as favdb
-from app.db.sqlite.lastfm.similar_artists import \
-    SQLiteLastFMSimilarArtists as lastfmdb
+from app.db.sqlite.lastfm.similar_artists import SQLiteLastFMSimilarArtists as lastfmdb
 from app.models import FavType, Track
 from app.serializers.album import serialize_for_card
 from app.serializers.track import track_serializer
@@ -38,7 +37,7 @@ def get_album_tracks_and_info():
         return error_msg, 400
 
     try:
-        albumhash = data["hash"]
+        albumhash: str = data["albumhash"]
     except KeyError:
         return error_msg, 400
 

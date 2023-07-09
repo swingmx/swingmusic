@@ -191,5 +191,6 @@ class Album:
 
         if len(dates) == 0:
             self.date = 0
+            return
 
         self.date = datetime.datetime.fromtimestamp(min(dates)).year

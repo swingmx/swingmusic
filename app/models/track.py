@@ -2,8 +2,13 @@ from dataclasses import dataclass
 
 from app.settings import get_flag, ParserFlags
 from app.utils.hashing import create_hash
-from app.utils.parsers import split_artists, remove_prod, parse_feat_from_title, clean_title, \
-    get_base_title_and_versions
+from app.utils.parsers import (
+    split_artists,
+    remove_prod,
+    parse_feat_from_title,
+    clean_title,
+    get_base_title_and_versions,
+)
 from .artist import ArtistMinimal
 
 
@@ -64,7 +69,9 @@ class Track:
             self.title = new_title
 
             if get_flag(ParserFlags.CLEAN_ALBUM_TITLE):
-                self.album, _ = get_base_title_and_versions(self.album, get_versions=False)
+                self.album, _ = get_base_title_and_versions(
+                    self.album, get_versions=False
+                )
 
             if get_flag(ParserFlags.MERGE_ALBUM_VERSIONS):
                 self.recreate_albumhash()
@@ -93,7 +100,9 @@ class Track:
         if self.og_title == self.title and self.og_album == self.album:
             return
 
-        self.trackhash = create_hash(", ".join([a.name for a in self.artist]), self.og_album, self.title)
+        self.trackhash = create_hash(
+            ", ".join([a.name for a in self.artist]), self.og_album, self.title
+        )
 
     def recreate_artists_hash(self):
         """

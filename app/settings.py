@@ -78,9 +78,9 @@ class Paths:
 
 # defaults
 class Defaults:
-    THUMB_SIZE = 400
-    SM_THUMB_SIZE = 144
-    SM_ARTIST_IMG_SIZE = 144
+    THUMB_SIZE = 500
+    SM_THUMB_SIZE = 64
+    SM_ARTIST_IMG_SIZE = 64
     """
     The size of extracted images in pixels
     """
