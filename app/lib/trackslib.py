@@ -11,9 +11,9 @@ from app.store.tracks import TrackStore
 
 def validate_tracks() -> None:
     """
-    Gets all songs under the ~/ directory.
+    Removes track records whose files no longer exist.
     """
-    for track in tqdm(TrackStore.tracks, desc="Checking for deleted tracks"):
+    for track in tqdm(TrackStore.tracks, desc="Validating tracks"):
         if not os.path.exists(track.filepath):
             TrackStore.remove_track_obj(track)
             tdb.remove_tracks_by_filepaths(track.filepath)

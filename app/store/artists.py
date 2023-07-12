@@ -2,7 +2,7 @@ import json
 
 from tqdm import tqdm
 
-from app.db.sqlite.artists import SQLiteArtistMethods as ardb
+from app.db.sqlite.artistcolors import SQLiteArtistMethods as ardb
 from app.lib.artistlib import get_all_artists
 from app.models import Artist
 from app.utils.bisection import UseBisection

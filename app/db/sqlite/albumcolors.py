@@ -44,3 +44,23 @@ class SQLiteAlbumMethods:
                 return tuples_to_albums(albums)
 
         return []
+
+    @staticmethod
+    def exists(albumhash: str, cur: Cursor = None):
+        """
+        Checks if an album exists in the database.
+        """
+
+        sql = "SELECT COUNT(1) FROM albums WHERE albumhash = ?"
+
+        def _exists(cur: Cursor):
+            cur.execute(sql, (albumhash,))
+            count = cur.fetchone()[0]
+
+            return count != 0
+
+        if cur:
+            return _exists(cur)
+
+        with SQLiteManager() as cur:
+            return _exists(cur)

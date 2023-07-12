@@ -49,7 +49,7 @@ def send_track_file(trackhash: str):
 
         try:
             return send_file(track.filepath, mimetype=audio_type)
-        except FileNotFoundError:
+        except (FileNotFoundError, OSError) as e:
             return msg, 404
 
     return msg, 404

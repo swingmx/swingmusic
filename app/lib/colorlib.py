@@ -9,8 +9,8 @@ import colorgram
 from tqdm import tqdm
 
 from app import settings
-from app.db.sqlite.albums import SQLiteAlbumMethods as db
-from app.db.sqlite.artists import SQLiteArtistMethods as adb
+from app.db.sqlite.albumcolors import SQLiteAlbumMethods as aldb
+from app.db.sqlite.artistcolors import SQLiteArtistMethods as adb
 from app.db.sqlite.utils import SQLiteManager
 
 from app.store.artists import ArtistStore
@@ -58,11 +58,8 @@ class ProcessAlbumColors:
         with SQLiteManager() as cur:
             try:
                 for album in tqdm(albums, desc="Processing missing album colors"):
-                    sql = "SELECT COUNT(1) FROM albums WHERE albumhash = ?"
-                    cur.execute(sql, (album.albumhash,))
-                    count = cur.fetchone()[0]
-
-                    if count != 0:
+                    exists = aldb.exists(album.albumhash, cur=cur)
+                    if exists:
                         continue
 
                     colors = process_color(album.albumhash)
@@ -72,7 +69,7 @@ class ProcessAlbumColors:
 
                     album.set_colors(colors)
                     color_str = json.dumps(colors)
-                    db.insert_one_album(cur, album.albumhash, color_str)
+                    aldb.insert_one_album(cur, album.albumhash, color_str)
             finally:
                 cur.close()
 
@@ -90,12 +87,9 @@ class ProcessArtistColors:
                 for artist in tqdm(
                     all_artists, desc="Processing missing artist colors"
                 ):
-                    sql = "SELECT COUNT(1) FROM artists WHERE artisthash = ?"
+                    exists = adb.exists(artist.artisthash, cur=cur)
 
-                    cur.execute(sql, (artist.artisthash,))
-                    count = cur.fetchone()[0]
-
-                    if count != 0:
+                    if exists:
                         continue
 
                     colors = process_color(artist.artisthash, is_album=False)

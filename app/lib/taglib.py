@@ -78,7 +78,11 @@ def extract_date(date_str: str | None) -> int | None:
 def get_tags(filepath: str):
     filetype = filepath.split(".")[-1]
     filename = (filepath.split("/")[-1]).replace(f".{filetype}", "")
-    last_mod = os.path.getmtime(filepath)
+
+    try:
+        last_mod = os.path.getmtime(filepath)
+    except FileNotFoundError:
+        return None
 
     try:
         tags = TinyTag.get(filepath)

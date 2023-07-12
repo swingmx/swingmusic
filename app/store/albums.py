@@ -4,7 +4,7 @@ import random
 from tqdm import tqdm
 
 from app.models import Album, Track
-from app.db.sqlite.albums import SQLiteAlbumMethods as aldb
+from app.db.sqlite.albumcolors import SQLiteAlbumMethods as aldb
 from .tracks import TrackStore
 from ..utils.hashing import create_hash
 
@@ -132,6 +132,13 @@ class AlbumStore:
         Checks if an album exists.
         """
         return albumhash in "-".join([a.albumhash for a in cls.albums])
+
+    @classmethod
+    def remove_album(cls, album: Album):
+        """
+        Removes an album from the store.
+        """
+        cls.albums.remove(album)
 
     @classmethod
     def remove_album_by_hash(cls, albumhash: str):

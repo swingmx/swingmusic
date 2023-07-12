@@ -1,5 +1,5 @@
 from dataclasses import asdict
-from app.models.album import Album
+from app.models import Album
 
 
 def album_serializer(album: Album, to_remove: set[str]) -> dict:

@@ -1,7 +1,7 @@
 import json
 import sqlite3
 import os
-from app.db.sqlite.artists import SQLiteArtistMethods
+from app.db.sqlite.artistcolors import SQLiteArtistMethods
 from app.db.sqlite.queries import CREATE_APPDB_TABLES
 
 from app.db.sqlite.utils import SQLiteManager

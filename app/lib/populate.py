@@ -9,10 +9,10 @@ from tqdm import tqdm
 
 from app import settings
 from app.db.sqlite.favorite import SQLiteFavoriteMethods as favdb
-from app.db.sqlite.lastfm.similar_artists import \
-    SQLiteLastFMSimilarArtists as lastfmdb
+from app.db.sqlite.lastfm.similar_artists import SQLiteLastFMSimilarArtists as lastfmdb
 from app.db.sqlite.settings import SettingsSQLMethods as sdb
 from app.db.sqlite.tracks import SQLiteTrackMethods
+from app.lib.albumslib import validate_albums
 from app.lib.artistlib import CheckArtistImages
 from app.lib.colorlib import ProcessAlbumColors, ProcessArtistColors
 from app.lib.taglib import extract_thumb, get_tags
@@ -51,6 +51,8 @@ class Populate:
         POPULATE_KEY = key
 
         validate_tracks()
+        validate_albums()
+
         tracks = get_all_tracks()
 
         dirs_to_scan = sdb.get_root_dirs()
@@ -122,8 +124,7 @@ class Populate:
                 if track.last_mod == os.path.getmtime(track.filepath):
                     unmodified.add(track.filepath)
                     continue
-            except FileNotFoundError:
-                print(f"File not found: {track.filepath}")
+            except (FileNotFoundError, OSError) as e:
                 TrackStore.remove_track_obj(track)
                 remove_tracks_by_filepaths(track.filepath)
 
