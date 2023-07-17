@@ -186,6 +186,7 @@ def add_track(filepath: str) -> None:
 
     extract_thumb(filepath, track.image)
 
+
 def remove_track(filepath: str) -> None:
     """
     Removes a track from the music dict.
@@ -311,7 +312,11 @@ class Handler(PatternMatchingEventHandler):
             time.sleep(5)
 
             # Check the file size again
-            current_size = os.path.getsize(event.src_path)
+            try:
+                current_size = os.path.getsize(event.src_path)
+            except FileNotFoundError:
+                # File was deleted
+                return
 
             if current_size == previous_size:
                 try:
@@ -322,7 +327,7 @@ class Handler(PatternMatchingEventHandler):
                     self.files_to_process_windows.remove(event.src_path)
                     del self.file_sizes[event.src_path]
                 except OSError:
-                    # File is locked, skipping
+                    # File is locked
                     pass
                 return
 

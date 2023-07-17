@@ -2,9 +2,11 @@
 Contains methods relating to albums.
 """
 
-from tqdm import tqdm
+from alive_progress import alive_bar
+
 from app.store.albums import AlbumStore
 from app.store.tracks import TrackStore
+from app.logger import log
 
 
 def validate_albums():
@@ -17,6 +19,9 @@ def validate_albums():
     album_hashes = {t.albumhash for t in TrackStore.tracks}
     albums = AlbumStore.albums
 
-    for album in tqdm(albums, desc="Validating albums"):
-        if album.albumhash not in album_hashes:
-            AlbumStore.remove_album(album)
+    with alive_bar(len(albums)) as bar:
+        log.info("Validating albums")
+        for album in albums:
+            if album.albumhash not in album_hashes:
+                AlbumStore.remove_album(album)
+            bar()
