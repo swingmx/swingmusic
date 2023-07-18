@@ -246,9 +246,13 @@ class Handler(PatternMatchingEventHandler):
         """
         Fired when a supported file is created.
         """
+        try:
+            self.file_sizes[event.src_path] = os.path.getsize(event.src_path)
+        except FileNotFoundError:
+            return
+
         self.files_to_process.append(event.src_path)
         self.files_to_process_windows.append(event.src_path)
-        self.file_sizes[event.src_path] = os.path.getsize(event.src_path)
 
     def on_deleted(self, event):
         """
@@ -304,7 +308,12 @@ class Handler(PatternMatchingEventHandler):
             return
 
         # Check if file write operation is complete
-        current_size = os.path.getsize(event.src_path)
+        try:
+            current_size = os.path.getsize(event.src_path)
+        except FileNotFoundError:
+            # File was deleted or moved
+            return
+
         previous_size = self.file_sizes.get(event.src_path, -1)
 
         if current_size == previous_size:
@@ -315,7 +324,7 @@ class Handler(PatternMatchingEventHandler):
             try:
                 current_size = os.path.getsize(event.src_path)
             except FileNotFoundError:
-                # File was deleted
+                # File was deleted or moved
                 return
 
             if current_size == previous_size:

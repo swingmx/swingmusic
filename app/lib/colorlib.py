@@ -53,7 +53,7 @@ class ProcessAlbumColors:
     """
 
     def __init__(self) -> None:
-        albums = [a for a in AlbumStore.albums if a is None or len(a.colors) == 0]
+        albums = [a for a in AlbumStore.albums if a is not None and len(a.colors) == 0]
 
         with SQLiteManager() as cur:
             try:
