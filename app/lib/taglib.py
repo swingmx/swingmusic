@@ -24,9 +24,10 @@ def parse_album_art(filepath: str):
         return None
 
 
-def extract_thumb(filepath: str, webp_path: str) -> bool:
+def extract_thumb(filepath: str, webp_path: str, overwrite=False) -> bool:
     """
-    Extracts the thumbnail from an audio file. Returns the path to the thumbnail.
+    Extracts the thumbnail from an audio file.
+    Returns the path to the thumbnail.
     """
     original_img_path = os.path.join(Paths.get_original_thumb_path(), webp_path)
     lg_img_path = os.path.join(Paths.get_lg_thumb_path(), webp_path)
@@ -40,7 +41,7 @@ def extract_thumb(filepath: str, webp_path: str) -> bool:
         img.resize((tsize, tsize), Image.ANTIALIAS).save(lg_img_path, "webp")
         img.resize((sm_tsize, sm_tsize), Image.ANTIALIAS).save(sm_img_path, "webp")
 
-    if os.path.exists(lg_img_path):
+    if not overwrite and os.path.exists(lg_img_path):
         img_size = os.path.getsize(lg_img_path)
 
         if img_size > 0:
@@ -67,7 +68,10 @@ def extract_thumb(filepath: str, webp_path: str) -> bool:
     return False
 
 
-def extract_date(date_str: str | None) -> int | None:
+def parse_date(date_str: str | None) -> int | None:
+    """
+    Extracts the date from a string and returns a timestamp.
+    """
     try:
         date = pendulum.parse(date_str, strict=False)
         return int(date.timestamp())
@@ -76,6 +80,10 @@ def extract_date(date_str: str | None) -> int | None:
 
 
 def get_tags(filepath: str):
+    """
+    Returns the tags for a given audio file.
+    """
+
     filetype = filepath.split(".")[-1]
     filename = (filepath.split("/")[-1]).replace(f".{filetype}", "")
 
@@ -149,7 +157,7 @@ def get_tags(filepath: str):
     tags.image = f"{tags.albumhash}.webp"
     tags.folder = win_replace_slash(os.path.dirname(filepath))
 
-    tags.date = extract_date(tags.year) or int(last_mod)
+    tags.date = parse_date(tags.year) or int(last_mod)
     tags.filepath = win_replace_slash(filepath)
     tags.filetype = filetype
     tags.last_mod = last_mod

@@ -184,7 +184,7 @@ def add_track(filepath: str) -> None:
         if not ArtistStore.artist_exists(artist.artisthash):
             ArtistStore.add_artist(Artist(artist.name))
 
-    extract_thumb(filepath, track.image)
+    extract_thumb(filepath, track.image, overwrite=True)
 
 
 def remove_track(filepath: str) -> None:

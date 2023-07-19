@@ -77,11 +77,13 @@ class Populate:
         for _dir in dirs_to_scan:
             files = files.union(run_fast_scandir(_dir, full=True)[1])
 
-        unmodified = self.remove_modified(tracks)
+        unmodified, modified_tracks = self.remove_modified(tracks)
         untagged = files - unmodified
 
         if len(untagged) != 0:
             self.tag_untagged(untagged, key)
+
+        self.extract_thumb_with_overwrite(modified_tracks)
 
         ProcessTrackThumbnails()
         ProcessAlbumColors()
@@ -116,24 +118,26 @@ class Populate:
         since they were added to the database.
         """
 
-        unmodified = set()
-        modified = set()
+        unmodified_paths = set()
+        modified_tracks: list[Track] = []
+        modified_paths = set()
 
         for track in tracks:
             try:
                 if track.last_mod == os.path.getmtime(track.filepath):
-                    unmodified.add(track.filepath)
+                    unmodified_paths.add(track.filepath)
                     continue
             except (FileNotFoundError, OSError) as e:
                 TrackStore.remove_track_obj(track)
                 remove_tracks_by_filepaths(track.filepath)
 
-            modified.add(track.filepath)
+            modified_paths.add(track.filepath)
+            modified_tracks.append(track)
 
-        TrackStore.remove_tracks_by_filepaths(modified)
-        remove_tracks_by_filepaths(modified)
+        TrackStore.remove_tracks_by_filepaths(modified_paths)
+        remove_tracks_by_filepaths(modified_paths)
 
-        return unmodified
+        return unmodified_paths, modified_tracks
 
     @staticmethod
     def tag_untagged(untagged: set[str], key: str):
@@ -177,6 +181,19 @@ class Populate:
             insert_many_tracks(tagged_tracks)
 
         log.info("Added %s/%s tracks", tagged_count, len(untagged))
+
+    @staticmethod
+    def extract_thumb_with_overwrite(tracks: list[Track]):
+        """
+        Extracts the thumbnail from a list of filepaths,
+        overwriting the existing thumbnail if it exists,
+        for modified files.
+        """
+        for track in tracks:
+            try:
+                extract_thumb(track.filepath, track.image, overwrite=True)
+            except FileNotFoundError:
+                continue
 
 
 def get_image(album: Album):
@@ -259,7 +276,7 @@ class FetchSimilarArtistsLastFM:
                 tqdm(
                     pool.imap_unordered(save_similar_artists, artists),
                     total=len(artists),
-                    desc="Downloading similar artists",
+                    desc="Fetching similar artists",
                 )
             )
 
