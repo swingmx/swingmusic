@@ -120,12 +120,13 @@ class AlbumVersionEnum(Enum):
 
     Explicit = ("explicit",)
 
-    ANNIVERSARY = ("anniversary",)
-    DIAMOND = ("diamond",)
-    Centennial = ("centennial",)
-    GOLDEN = ("gold",)
-    PLATINUM = ("platinum",)
-    SILVER = ("silver",)
+    ANNIVERSARY_EDITION = ("anniversary",)
+    DIAMOND_EDITION = ("diamond",)
+    Centennial_EDITION = ("centennial",)
+    GOLDEN_EDITION = ("gold",)
+    PLATINUM_EDITION = ("platinum",)
+    SILVER_EDITION = ("silver",)
+    ULTIMATE_EDITION = ("ultimate",)
 
     EXPANDED = ("expanded",)
     EXTENDED = ("extended",)
@@ -134,19 +135,20 @@ class AlbumVersionEnum(Enum):
     SUPER_DELUXE = ("super deluxe",)
     COMPLETE = ("complete",)
 
-    LEGACY = ("legacy",)
-    SPECIAL = ("special",)
+    LEGACY_EDITION = ("legacy",)
+    SPECIAL_EDITION = ("special",)
     COLLECTORS_EDITION = ("collector",)
-    ARCHIVE = ("archive",)
+    ARCHIVE_EDITION = ("archive",)
 
     Acoustic = ("acoustic",)
     DOUBLE_DISC = ("double disc", "double disk")
 
-    SUMMER = ("summer",)
-    WINTER = ("winter",)
-    SPRING = ("spring",)
-    FALL = ("fall",)
+    SUMMER_EDITION = ("summer",)
+    WINTER_EDITION = ("winter",)
+    SPRING_EDITION = ("spring",)
+    FALL_EDITION = ("fall",)
 
+    BONUS_EDITION = ("bonus",)
     BONUS_TRACK = ("bonus track",)
 
     ORIGINAL = ("original",)
@@ -154,7 +156,7 @@ class AlbumVersionEnum(Enum):
     UK_VERSION = ("uk version",)
     US_VERSION = ("us version",)
 
-    Limited = ("limited",)
+    Limited_EDITION = ("limited",)
 
     MONO = ("mono",)
     STEREO = ("stereo",)
@@ -163,7 +165,8 @@ class AlbumVersionEnum(Enum):
     RE_MIX = ("re-mix",)
     RE_RECORDED = ("re-recorded", "rerecorded")
     REISSUE = ("reissue",)
-    REMASTER = ("remaster",)
+    REMASTERED = ("remaster",)
+    TAYLORS_VERSION = ("taylor's version",)
 
 
 def get_anniversary(text: str) -> str | None:
@@ -208,7 +211,7 @@ def get_base_title_and_versions(
     Extracts the base album title and version info from an album title string using regex.
     """
     album_title, version_block = get_base_album_title(original_album_title)
-
+    
     if version_block is None:
         return original_album_title, []
 

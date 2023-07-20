@@ -2,6 +2,7 @@
 This file is used to run the application.
 """
 import logging
+import mimetypes
 
 from app.api import create_api
 from app.arg_handler import HandleArgs
@@ -13,6 +14,18 @@ from app.start_info_logger import log_startup_info
 from app.utils.filesystem import get_home_res_path
 from app.utils.threading import background
 from alive_progress import config_handler
+
+mimetypes.add_type("text/css", ".css")
+mimetypes.add_type("text/javascript", ".js")
+mimetypes.add_type("text/plain", ".txt")
+mimetypes.add_type("text/html", ".html")
+mimetypes.add_type("image/webp", ".webp")
+mimetypes.add_type("image/svg+xml", ".svg")
+mimetypes.add_type("image/png", ".png")
+mimetypes.add_type("image/vnd.microsoft.icon", ".ico")
+mimetypes.add_type("image/gif", ".gif")
+mimetypes.add_type("font/woff", ".woff")
+mimetypes.add_type("application/manifest+json", ".webmanifest")
 
 werkzeug = logging.getLogger("werkzeug")
 werkzeug.setLevel(logging.ERROR)

@@ -10,6 +10,7 @@ from PIL import UnidentifiedImageError
 from app import models
 from app.db.sqlite.playlists import SQLitePlaylistMethods
 from app.lib import playlistlib
+from app.models.track import Track
 from app.utils.dates import date_string_to_time_passed, create_new_date
 from app.utils.remove_duplicates import remove_duplicates
 
@@ -31,36 +32,44 @@ update_playlist = PL.update_playlist
 delete_playlist = PL.delete_playlist
 
 
-# get_tracks_by_trackhashes = SQLiteTrackMethods.get_tracks_by_trackhashes
 def duplicate_images(images: list):
     if len(images) == 1:
         images *= 4
     elif len(images) == 2:
         images += list(reversed(images))
     elif len(images) == 3:
-        images = images + images[:1]
+        images = images + images[:]
 
     return images
 
 
-def get_first_4_images(trackhashes: list[str]) -> list[dict['str', str]]:
-    tracks = TrackStore.get_tracks_by_trackhashes(trackhashes)
+def get_first_4_images(
+    tracks: list[Track] = [], trackhashes: list[str] = []
+) -> list[dict["str", str]]:
+    if len(trackhashes) > 0:
+        tracks = TrackStore.get_tracks_by_trackhashes(trackhashes)
+
     albums = []
 
     for track in tracks:
         if track.albumhash not in albums:
             albums.append(track.albumhash)
+
             if len(albums) == 4:
                 break
 
     albums = AlbumStore.get_albums_by_hashes(albums)
     images = [
         {
-            'image': album.image,
-            'color': ''.join(album.colors),
+            "image": album.image,
+            "color": "".join(album.colors),
         }
         for album in albums
     ]
+
+    if len(images) == 4:
+        return images
+
     return duplicate_images(images)
 
 
@@ -77,8 +86,8 @@ def send_all_playlists():
 
     for playlist in playlists:
         if not no_images:
-            playlist.images = get_first_4_images(playlist.trackhashes)
-            playlist.images = [img['image'] for img in playlist.images]
+            playlist.images = get_first_4_images(trackhashes=playlist.trackhashes)
+            playlist.images = [img["image"] for img in playlist.images]
 
         playlist.clear_lists()
 
@@ -151,6 +160,9 @@ def get_playlist(playlistid: str):
     """
     Gets a playlist by id, and if it exists, it gets all the tracks in the playlist and returns them.
     """
+    no_tracks = request.args.get("no_tracks", False)
+    no_tracks = no_tracks == "true"
+
     playlist = get_playlist_by_id(int(playlistid))
 
     if playlist is None:
@@ -165,15 +177,18 @@ def get_playlist(playlistid: str):
     playlist.set_duration(duration)
 
     if not playlist.has_image:
-        playlist.images = get_first_4_images(playlist.trackhashes)
+        playlist.images = get_first_4_images(tracks)
 
         if len(playlist.images) > 2:
             # swap 3rd image with first (3rd image is the visible image in UI)
-            playlist.images[2], playlist.images[0] = playlist.images[0], playlist.images[2]
+            playlist.images[2], playlist.images[0] = (
+                playlist.images[0],
+                playlist.images[2],
+            )
 
     playlist.clear_lists()
 
-    return {"info": playlist, "tracks": tracks}
+    return {"info": playlist, "tracks": tracks if not no_tracks else []}
 
 
 @api.route("/playlist/<playlistid>/update", methods=["PUT"])
@@ -267,3 +282,21 @@ def update_image_position(pid: int):
     PL.update_banner_pos(pid, pos)
 
     return {"msg": "Image position saved"}, 200
+
+
+@api.route("/playlist/<pid>/remove-tracks", methods=["POST"])
+def remove_tracks_from_playlist(pid: int):
+    data = request.get_json()
+
+    if data is None:
+        return {"error": "Track index not provided"}, 400
+
+    # {
+    #    trackhash: str;
+    #    index: int;
+    # }
+
+    tracks = data["tracks"]
+    PL.remove_tracks_from_playlist(pid, tracks)
+
+    return {"msg": "Done"}, 200

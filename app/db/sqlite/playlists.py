@@ -176,3 +176,34 @@ class SQLitePlaylistMethods:
 
         with SQLiteManager(userdata_db=True) as cur:
             cur.execute(sql, (pos, playlistid))
+
+    @staticmethod
+    def remove_tracks_from_playlist(playlistid: int, tracks: list[dict[str, int]]):
+        """
+        Removes tracks from a playlist by trackhash and position.
+        """
+
+        sql = """UPDATE playlists SET trackhashes = ? WHERE id = ?"""
+
+        with SQLiteManager(userdata_db=True) as cur:
+            cur.execute("SELECT trackhashes FROM playlists WHERE id = ?", (playlistid,))
+            data = cur.fetchone()
+
+            if data is None:
+                return
+
+            trackhashes: list[str] = json.loads(data[0])
+            print(tracks)
+
+            for track in tracks:
+                # {
+                #    trackhash: str;
+                #    index: int;
+                # }
+
+                index = trackhashes.index(track["trackhash"])
+
+                if index == track["index"]:
+                    trackhashes.remove(track["trackhash"])
+
+            cur.execute(sql, (json.dumps(trackhashes), playlistid))
