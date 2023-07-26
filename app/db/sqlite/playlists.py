@@ -178,6 +178,13 @@ class SQLitePlaylistMethods:
             cur.execute(sql, (pos, playlistid))
 
     @staticmethod
+    def remove_banner(playlistid: int):
+        sql = """UPDATE playlists SET image = NULL WHERE id = ?"""
+
+        with SQLiteManager(userdata_db=True) as cur:
+            cur.execute(sql, (playlistid,))
+
+    @staticmethod
     def remove_tracks_from_playlist(playlistid: int, tracks: list[dict[str, int]]):
         """
         Removes tracks from a playlist by trackhash and position.

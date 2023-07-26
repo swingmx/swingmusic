@@ -30,6 +30,7 @@ tracks_to_playlist = PL.add_tracks_to_playlist
 add_artist_to_playlist = PL.add_artist_to_playlist
 update_playlist = PL.update_playlist
 delete_playlist = PL.delete_playlist
+remove_image = PL.remove_banner
 
 
 def duplicate_images(images: list):
@@ -38,7 +39,7 @@ def duplicate_images(images: list):
     elif len(images) == 2:
         images += list(reversed(images))
     elif len(images) == 3:
-        images = images + images[:]
+        images = images + images[:1]
 
     return images
 
@@ -245,6 +246,30 @@ def update_playlist_info(playlistid: str):
     }
 
 
+@api.route("/playlist/<playlistid>/remove-img", methods=["GET"])
+def remove_playlist_image(playlistid: str):
+    """
+    Removes the playlist image.
+    """
+    pid = int(playlistid)
+    playlist = get_playlist_by_id(pid)
+
+    if playlist is None:
+        return {"error": "Playlist not found"}, 404
+
+    remove_image(pid)
+
+    playlist.image = None
+    playlist.has_gif = False
+    playlist.has_image = False
+
+    playlist.images = get_first_4_images(trackhashes=playlist.trackhashes)
+    playlist.last_updated = date_string_to_time_passed(playlist.last_updated)
+    PL.update_last_updated(pid)
+
+    return {"playlist": playlist}, 200
+
+
 @api.route("/playlist/delete", methods=["POST"])
 def remove_playlist():
     """
@@ -298,5 +323,6 @@ def remove_tracks_from_playlist(pid: int):
 
     tracks = data["tracks"]
     PL.remove_tracks_from_playlist(pid, tracks)
+    PL.update_last_updated(pid)
 
     return {"msg": "Done"}, 200

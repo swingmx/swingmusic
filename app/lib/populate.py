@@ -271,13 +271,19 @@ class FetchSimilarArtistsLastFM:
     def __init__(self) -> None:
         artists = ArtistStore.artists
 
-        with Pool(processes=cpu_count()) as pool:
-            results = list(
-                tqdm(
-                    pool.imap_unordered(save_similar_artists, artists),
-                    total=len(artists),
-                    desc="Fetching similar artists",
+        try:
+            with Pool(processes=cpu_count()) as pool:
+                results = list(
+                    tqdm(
+                        pool.imap_unordered(save_similar_artists, artists),
+                        total=len(artists),
+                        desc="Fetching similar artists",
+                    )
                 )
-            )
 
-            list(results)
+                list(results)
+        except TypeError:
+            print("TypeError: Handled!!")
+            # 🤷
+            # TypeError: JSONDecodeError.__init__() missing 2 required positional arguments: 'doc' and 'pos'
+            pass
