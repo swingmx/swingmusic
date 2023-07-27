@@ -55,6 +55,7 @@ def save_p_image(file, pid: str):
     Saves a playlist banner image and returns the filepath.
     """
     img = Image.open(file)
+    
 
     random_str = "".join(random.choices(string.ascii_letters + string.digits, k=5))
 

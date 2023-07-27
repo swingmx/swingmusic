@@ -11,11 +11,10 @@ from app import models
 from app.db.sqlite.playlists import SQLitePlaylistMethods
 from app.lib import playlistlib
 from app.models.track import Track
-from app.utils.dates import date_string_to_time_passed, create_new_date
-from app.utils.remove_duplicates import remove_duplicates
-
-from app.store.tracks import TrackStore
 from app.store.albums import AlbumStore
+from app.store.tracks import TrackStore
+from app.utils.dates import create_new_date, date_string_to_time_passed
+from app.utils.remove_duplicates import remove_duplicates
 
 api = Blueprint("playlist", __name__, url_prefix="/")
 
@@ -27,7 +26,7 @@ count_playlist_by_name = PL.count_playlist_by_name
 get_all_playlists = PL.get_all_playlists
 get_playlist_by_id = PL.get_playlist_by_id
 tracks_to_playlist = PL.add_tracks_to_playlist
-add_artist_to_playlist = PL.add_artist_to_playlist
+add_artist_to_playlist = PL.add_artists_to_playlist
 update_playlist = PL.update_playlist
 delete_playlist = PL.delete_playlist
 remove_image = PL.remove_banner
@@ -100,6 +99,21 @@ def send_all_playlists():
     return {"data": playlists}
 
 
+def insert_playlist(name: str):
+    playlist = {
+        "artisthashes": json.dumps([]),
+        "image": None,
+        "last_updated": create_new_date(),
+        "name": name,
+        "trackhashes": json.dumps([]),
+        "settings": json.dumps(
+            {"has_gif": False, "banner_pos": 50, "square_img": False}
+        ),
+    }
+
+    return insert_one_playlist(playlist)
+
+
 @api.route("/playlist/new", methods=["POST"])
 def create_playlist():
     """
@@ -115,17 +129,7 @@ def create_playlist():
     if existing_playlist_count > 0:
         return {"error": "Playlist already exists"}, 409
 
-    playlist = {
-        "artisthashes": json.dumps([]),
-        "banner_pos": 50,
-        "has_gif": 0,
-        "image": None,
-        "last_updated": create_new_date(),
-        "name": data["name"],
-        "trackhashes": json.dumps([]),
-    }
-
-    playlist = insert_one_playlist(playlist)
+    playlist = insert_playlist(data["name"])
 
     if playlist is None:
         return {"error": "Playlist could not be created"}, 500
@@ -150,7 +154,7 @@ def add_track_to_playlist(playlist_id: str):
     if insert_count == 0:
         return {"error": "Track already exists in playlist"}, 409
 
-    add_artist_to_playlist(int(playlist_id), trackhash)
+    add_artist_to_playlist(int(playlist_id), [trackhash])
     PL.update_last_updated(int(playlist_id))
 
     return {"msg": "Done"}, 200
@@ -209,14 +213,16 @@ def update_playlist_info(playlistid: str):
 
     data = request.form
 
+    settings = json.loads(data.get("settings"))
+    settings["has_gif"] = False
+
     playlist = {
         "id": int(playlistid),
         "artisthashes": json.dumps([]),
-        "banner_pos": db_playlist.banner_pos,
-        "has_gif": 0,
         "image": db_playlist.image,
         "last_updated": create_new_date(),
         "name": str(data.get("name")).strip(),
+        "settings": settings,
         "trackhashes": json.dumps([]),
     }
 
@@ -225,11 +231,11 @@ def update_playlist_info(playlistid: str):
             playlist["image"] = playlistlib.save_p_image(image, playlistid)
 
             if image.content_type == "image/gif":
-                playlist["has_gif"] = 1
+                playlist["settings"]["has_gif"] = True
 
             # reset banner position to center.
-            playlist["banner_pos"] = 50
-            PL.update_banner_pos(int(playlistid), 50)
+            playlist["settings"]["banner_pos"] = 50
+            # PL.update_banner_pos(int(playlistid), 50)
 
         except UnidentifiedImageError:
             return {"error": "Failed: Invalid image"}, 400
@@ -260,7 +266,8 @@ def remove_playlist_image(playlistid: str):
     remove_image(pid)
 
     playlist.image = None
-    playlist.has_gif = False
+    playlist.thumb = None
+    playlist.settings["has_gif"] = False
     playlist.has_image = False
 
     playlist.images = get_first_4_images(trackhashes=playlist.trackhashes)
@@ -326,3 +333,46 @@ def remove_tracks_from_playlist(pid: int):
     PL.update_last_updated(pid)
 
     return {"msg": "Done"}, 200
+
+
+@api.route("/playlist/save-folder", methods=["POST"])
+def save_folder_as_folder():
+    data = request.get_json()
+    msg = {"error": "'path' and 'playlist_name' not provided"}, 400
+
+    if data is None:
+        return msg
+
+    name = data.get("playlist_name")
+    path = data.get("path")
+
+    if path is None or name is None:
+        return msg
+
+    p_count = count_playlist_by_name(name)
+
+    if p_count > 0:
+        return {"error": "Playlist already exists"}, 409
+
+    tracks = TrackStore.get_tracks_in_path(path)
+    trackhashes = [t.trackhash for t in tracks]
+
+    if len(trackhashes) == 0:
+        return {"error": "No tracks found in folder"}, 404
+
+    artisthashes = set()
+
+    for t in tracks:
+        for a in t.artist:
+            artisthashes.add(a.artisthash)
+
+    playlist = insert_playlist(name)
+
+    if playlist is None:
+        return {"error": "Playlist could not be created"}, 500
+
+    tracks_to_playlist(playlist.id, trackhashes)
+    PL.add_artists_to_playlist(playlist.id, artisthashes=artisthashes)
+    PL.update_last_updated(playlist.id)
+
+    return {"playlist_id": playlist.id}, 201

@@ -166,3 +166,10 @@ class TrackStore:
         """
         tracks = [t for t in cls.tracks if artisthash in t.artist_hashes]
         return remove_duplicates(tracks)
+
+    @classmethod
+    def get_tracks_in_path(cls, path: str):
+        """
+        Returns all tracks in the given path.
+        """
+        return (t for t in cls.tracks if t.folder.startswith(path))

@@ -12,11 +12,10 @@ class Playlist:
 
     id: int
     artisthashes: str | list[str]
-    banner_pos: int
-    has_gif: str | bool
     image: str
     last_updated: str
     name: str
+    settings: str | dict
     trackhashes: str | list[str]
 
     thumb: str = ""
@@ -29,10 +28,14 @@ class Playlist:
         self.trackhashes = json.loads(str(self.trackhashes))
         # self.artisthashes = json.loads(str(self.artisthashes))
         # commentted until we need it 👆
+
         self.artisthashes = []
 
         self.count = len(self.trackhashes)
-        self.has_gif = bool(int(self.has_gif))
+
+        if isinstance(self.settings, str):
+            self.settings = json.loads(self.settings)
+
         self.has_image = (
             Path(settings.Paths.get_playlist_img_path()) / str(self.image)
         ).exists()
