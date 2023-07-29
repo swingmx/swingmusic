@@ -110,6 +110,7 @@ class AddSettingsToPlaylistTable:
             # (my first coroutine)
             pipeline = insert_playlist()
             transform_playlists(pipeline, playlists)
+            pipeline.close()
 
             cur.close()
 

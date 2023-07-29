@@ -177,6 +177,7 @@ def get_playlist(playlistid: str):
     playlist.last_updated = date_string_to_time_passed(playlist.last_updated)
 
     playlist.set_duration(duration)
+    playlist.set_count(len(tracks))
 
     if not playlist.has_image:
         playlist.images = get_first_4_images(tracks)

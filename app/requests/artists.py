@@ -1,7 +1,6 @@
 """
 Requests related to artists
 """
-from pprint import pprint
 import requests
 
 from app import settings

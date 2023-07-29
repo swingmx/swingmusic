@@ -44,6 +44,9 @@ class Playlist:
 
     def set_duration(self, duration: int):
         self.duration = duration
+    
+    def set_count(self, count: int):
+        self.count = count
 
     def clear_lists(self):
         """

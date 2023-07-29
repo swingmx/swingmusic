@@ -41,5 +41,5 @@ def apply_migrations():
                 log.info("Running new migration: %s", m.name)
                 m.migrate()
 
-    # update migration version
+    # bump migration version
     MigrationManager.set_version(len(migrations))
