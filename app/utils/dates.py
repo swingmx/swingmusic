@@ -25,3 +25,4 @@ def date_string_to_time_passed(prev_date: str) -> str:
 
     now = pendulum.now()
     return now.subtract(seconds=seconds).diff_for_humans()
+

@@ -11,7 +11,6 @@ class Playlist:
     """Creates playlist objects"""
 
     id: int
-    artisthashes: str | list[str]
     image: str
     last_updated: str
     name: str
@@ -26,10 +25,7 @@ class Playlist:
 
     def __post_init__(self):
         self.trackhashes = json.loads(str(self.trackhashes))
-        # self.artisthashes = json.loads(str(self.artisthashes))
         # commentted until we need it 👆
-
-        self.artisthashes = []
 
         self.count = len(self.trackhashes)
 
@@ -55,4 +51,3 @@ class Playlist:
         over the API.
         """
         self.trackhashes = []
-        self.artisthashes = []

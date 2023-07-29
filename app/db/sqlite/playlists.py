@@ -18,13 +18,12 @@ class SQLitePlaylistMethods:
         # banner_pos,
         # has_gif,
         sql = """INSERT INTO playlists(
-        artisthashes,
         image,
         last_updated,
         name,
         settings,
         trackhashes
-        ) VALUES(:artisthashes, :image, :last_updated, :name, :settings, :trackhashes)
+        ) VALUES(:image, :last_updated, :name, :settings, :trackhashes)
         """
 
         playlist = OrderedDict(sorted(playlist.items()))
@@ -124,26 +123,6 @@ class SQLitePlaylistMethods:
     def add_tracks_to_playlist(cls, playlist_id: int, trackhashes: list[str]):
         return cls.add_item_to_json_list(playlist_id, "trackhashes", trackhashes)
 
-    @classmethod
-    @background
-    def add_artists_to_playlist(
-        cls,
-        playlist_id: int,
-        trackhashes: list[str] = [],
-        artisthashes: set[str] = None,
-    ):
-        if not artisthashes:
-            track = [SQLiteTrackMethods.get_track_by_trackhash(t) for t in trackhashes]
-            tracks = [t for t in track if t is not None]
-
-            artisthashes: set[str] = set()  # type: ignore
-
-            for track in tracks:
-                for a in track.artist:
-                    artisthashes.add(a.artisthash)
-
-        cls.add_item_to_json_list(playlist_id, "artisthashes", artisthashes)
-
     @staticmethod
     def update_playlist(playlist_id: int, playlist: dict):
         sql = """UPDATE playlists SET
@@ -156,9 +135,7 @@ class SQLitePlaylistMethods:
 
         del playlist["id"]
         del playlist["trackhashes"]
-        del playlist["artisthashes"]
         playlist["settings"] = json.dumps(playlist["settings"])
-
 
         playlist = OrderedDict(sorted(playlist.items()))
         params = (*playlist.values(), playlist_id)

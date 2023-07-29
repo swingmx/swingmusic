@@ -211,7 +211,7 @@ def get_base_title_and_versions(
     Extracts the base album title and version info from an album title string using regex.
     """
     album_title, version_block = get_base_album_title(original_album_title)
-    
+
     if version_block is None:
         return original_album_title, []
 

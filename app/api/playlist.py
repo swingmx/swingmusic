@@ -26,7 +26,6 @@ count_playlist_by_name = PL.count_playlist_by_name
 get_all_playlists = PL.get_all_playlists
 get_playlist_by_id = PL.get_playlist_by_id
 tracks_to_playlist = PL.add_tracks_to_playlist
-add_artist_to_playlist = PL.add_artists_to_playlist
 update_playlist = PL.update_playlist
 delete_playlist = PL.delete_playlist
 remove_image = PL.remove_banner
@@ -101,7 +100,6 @@ def send_all_playlists():
 
 def insert_playlist(name: str):
     playlist = {
-        "artisthashes": json.dumps([]),
         "image": None,
         "last_updated": create_new_date(),
         "name": name,
@@ -154,7 +152,6 @@ def add_track_to_playlist(playlist_id: str):
     if insert_count == 0:
         return {"error": "Track already exists in playlist"}, 409
 
-    add_artist_to_playlist(int(playlist_id), [trackhash])
     PL.update_last_updated(int(playlist_id))
 
     return {"msg": "Done"}, 200
@@ -218,7 +215,6 @@ def update_playlist_info(playlistid: str):
 
     playlist = {
         "id": int(playlistid),
-        "artisthashes": json.dumps([]),
         "image": db_playlist.image,
         "last_updated": create_new_date(),
         "name": str(data.get("name")).strip(),
@@ -360,19 +356,12 @@ def save_folder_as_folder():
     if len(trackhashes) == 0:
         return {"error": "No tracks found in folder"}, 404
 
-    artisthashes = set()
-
-    for t in tracks:
-        for a in t.artist:
-            artisthashes.add(a.artisthash)
-
     playlist = insert_playlist(name)
 
     if playlist is None:
         return {"error": "Playlist could not be created"}, 500
 
     tracks_to_playlist(playlist.id, trackhashes)
-    PL.add_artists_to_playlist(playlist.id, artisthashes=artisthashes)
     PL.update_last_updated(playlist.id)
 
     return {"playlist_id": playlist.id}, 201

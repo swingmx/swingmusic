@@ -6,72 +6,26 @@ from app.db.sqlite.utils import SQLiteManager
 
 
 class MigrationManager:
-    all_get_sql = "SELECT * FROM migrations"
-
-    _base = "UPDATE migrations SET"
-    _end = "= ? WHERE id = 1"
-
-    pre_init_set_sql = f"{_base} pre_init_version {_end}"
-    post_init_set_sql = f"{_base} post_init_version {_end}"
-
-    @classmethod
-    def get_preinit_version(cls) -> int:
+    @staticmethod
+    def get_version() -> int:
         """
-        Returns the latest userdata pre-init database version.
+        Returns the latest userdata database version.
         """
+        sql = "SELECT * FROM dbmigrations"
         with SQLiteManager() as cur:
-            cur.execute(cls.all_get_sql)
+            cur.execute(sql)
             ver = int(cur.fetchone()[1])
             cur.close()
 
             return ver
 
-    @classmethod
-    def get_maindb_postinit_version(cls) -> int:
-        """
-        Returns the latest maindb post-init database version.
-        """
-        with SQLiteManager() as cur:
-            cur.execute(cls.all_get_sql)
-            ver = int(cur.fetchone()[2])
-            cur.close()
-
-            return ver
-
-    @classmethod
-    def get_userdatadb_postinit_version(cls) -> int:
-        """
-        Returns the latest userdata post-init database version.
-        """
-        with SQLiteManager(userdata_db=True) as cur:
-            cur.execute(cls.all_get_sql)
-            ver = cur.fetchone()[2]
-            cur.close()
-
-            return ver
-
     # 👇 Setters 👇
-    @classmethod
-    def set_preinit_version(cls, version: int):
+    @staticmethod
+    def set_version(version: int):
         """
         Sets the userdata pre-init database version.
         """
+        sql = "UPDATE dbmigrations SET version = ? WHERE id = 1"
         with SQLiteManager() as cur:
-            cur.execute(cls.pre_init_set_sql, (version,))
+            cur.execute(sql, (version,))
             cur.close()
-
-    @classmethod
-    def set_maindb_postinit_version(cls, version: int):
-        """
-        Sets the maindb post-init database version.
-        """
-        with SQLiteManager() as cur:
-            cur.execute(cls.post_init_set_sql, (version,))
-
-    @classmethod
-    def set_userdatadb_postinit_version(cls, version: int):
-        """
-        Sets the userdata post-init database version.
-        """
-        with SQLiteManager(userdata_db=True) as cur:
-            cur.execute(cls.post_init_set_sql, (version,))

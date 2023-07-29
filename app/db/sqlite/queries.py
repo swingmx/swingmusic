@@ -5,10 +5,10 @@ This file contains the SQL queries to create the database tables.
 
 # banner_pos integer NOT NULL,
 # has_gif integer,
+
 CREATE_USERDATA_TABLES = """
 CREATE TABLE IF NOT EXISTS playlists (
     id integer PRIMARY KEY,
-    artisthashes text,
     image text,
     last_updated text not null,
     name text not null,
@@ -52,10 +52,10 @@ CREATE TABLE IF NOT EXISTS tracks (
     filepath text NOT NULL,
     folder text NOT NULL,
     genre text,
-    last_mod float NOT NULL,
     title text NOT NULL,
     track integer NOT NULL,
     trackhash text NOT NULL,
+    last_mod float NOT NULL,
     UNIQUE (filepath)
 );
 
@@ -81,14 +81,16 @@ CREATE TABLE IF NOT EXISTS folders (
 );
 """
 
+# changed from migrations to dbmigrations in v1.3.0
+# to avoid conflicts with the previous migrations.
+
 CREATE_MIGRATIONS_TABLE = """
-CREATE TABLE IF NOT EXISTS migrations (
+CREATE TABLE IF NOT EXISTS dbmigrations (
     id integer PRIMARY KEY,
-    pre_init_version integer NOT NULL DEFAULT 0,
-    post_init_version integer NOT NULL DEFAULT 0
+    version integer NOT NULL DEFAULT 0
 );
 
-INSERT INTO migrations (pre_init_version, post_init_version)
-SELECT 0, 0
-WHERE NOT EXISTS (SELECT 1 FROM migrations);
+INSERT INTO dbmigrations (version)
+SELECT 0
+WHERE NOT EXISTS (SELECT 1 FROM dbmigrations);
 """

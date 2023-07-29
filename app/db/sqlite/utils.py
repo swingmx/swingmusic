@@ -2,6 +2,7 @@
 Helper functions for use with the SQLite database.
 """
 
+from pprint import pprint
 import sqlite3
 from sqlite3 import Connection, Cursor
 import time
@@ -45,6 +46,7 @@ def tuple_to_playlist(playlist: tuple):
     """
     Takes a tuple and returns a Playlist object
     """
+    pprint(playlist)
     return Playlist(*playlist)
 
 

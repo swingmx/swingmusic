@@ -30,10 +30,10 @@ class Track:
     filepath: str
     folder: str
     genre: str | list[str]
-    last_mod: float
     title: str
     track: int
     trackhash: str
+    last_mod: float
 
     filetype: str = ""
     image: str = ""

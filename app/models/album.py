@@ -191,7 +191,7 @@ class Album:
         if self.date:
             return
 
-        dates = {t.date for t in tracks if t.date}
+        dates = {int(t.date) for t in tracks if t.date}
 
         if len(dates) == 0:
             self.date = 0
