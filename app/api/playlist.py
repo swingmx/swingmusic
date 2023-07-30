@@ -230,10 +230,6 @@ def update_playlist_info(playlistid: str):
             if image.content_type == "image/gif":
                 playlist["settings"]["has_gif"] = True
 
-            # reset banner position to center.
-            playlist["settings"]["banner_pos"] = 50
-            # PL.update_banner_pos(int(playlistid), 50)
-
         except UnidentifiedImageError:
             return {"error": "Failed: Invalid image"}, 400
 
