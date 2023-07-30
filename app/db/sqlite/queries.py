@@ -91,6 +91,6 @@ CREATE TABLE IF NOT EXISTS dbmigrations (
 );
 
 INSERT INTO dbmigrations (version)
-SELECT 0
+SELECT -1
 WHERE NOT EXISTS (SELECT 1 FROM dbmigrations);
 """

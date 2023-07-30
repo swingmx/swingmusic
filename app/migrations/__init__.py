@@ -34,6 +34,11 @@ def apply_migrations():
 
     version = MigrationManager.get_version()
 
+    # is clean install
+    if version == -1:
+        MigrationManager.set_version(len(migrations))
+        return
+
     if version != len(migrations):
         # run migrations after the previous migration version
         for migration in migrations[(version - 1) :]:

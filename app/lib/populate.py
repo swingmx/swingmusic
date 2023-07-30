@@ -1,4 +1,3 @@
-import json
 import os
 from collections import deque
 from typing import Generator
@@ -9,7 +8,8 @@ from tqdm import tqdm
 
 from app import settings
 from app.db.sqlite.favorite import SQLiteFavoriteMethods as favdb
-from app.db.sqlite.lastfm.similar_artists import SQLiteLastFMSimilarArtists as lastfmdb
+from app.db.sqlite.lastfm.similar_artists import \
+    SQLiteLastFMSimilarArtists as lastfmdb
 from app.db.sqlite.settings import SettingsSQLMethods as sdb
 from app.db.sqlite.tracks import SQLiteTrackMethods
 from app.lib.albumslib import validate_albums
@@ -124,7 +124,7 @@ class Populate:
 
         for track in tracks:
             try:
-                if track.last_mod == os.path.getmtime(track.filepath):
+                if track.last_mod == round(os.path.getmtime(track.filepath)):
                     unmodified_paths.add(track.filepath)
                     continue
             except (FileNotFoundError, OSError) as e:
@@ -271,19 +271,13 @@ class FetchSimilarArtistsLastFM:
     def __init__(self) -> None:
         artists = ArtistStore.artists
 
-        try:
-            with Pool(processes=cpu_count()) as pool:
-                results = list(
-                    tqdm(
-                        pool.imap_unordered(save_similar_artists, artists),
-                        total=len(artists),
-                        desc="Fetching similar artists",
-                    )
+        with Pool(processes=cpu_count()) as pool:
+            results = list(
+                tqdm(
+                    pool.imap_unordered(save_similar_artists, artists),
+                    total=len(artists),
+                    desc="Fetching similar artists",
                 )
+            )
 
-                list(results)
-        except TypeError:
-            print("TypeError: Handled!!")
-            # 🤷
-            # TypeError: JSONDecodeError.__init__() missing 2 required positional arguments: 'doc' and 'pos'
-            pass
+            list(results)

@@ -88,7 +88,7 @@ def get_tags(filepath: str):
     filename = (filepath.split("/")[-1]).replace(f".{filetype}", "")
 
     try:
-        last_mod = os.path.getmtime(filepath)
+        last_mod = round(os.path.getmtime(filepath))
     except FileNotFoundError:
         return None
 

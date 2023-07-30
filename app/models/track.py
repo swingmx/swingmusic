@@ -33,7 +33,7 @@ class Track:
     title: str
     track: int
     trackhash: str
-    last_mod: float
+    last_mod: str | int
 
     filetype: str = ""
     image: str = ""
@@ -46,6 +46,7 @@ class Track:
     def __post_init__(self):
         self.og_title = self.title
         self.og_album = self.album
+        self.last_mod = int(self.last_mod)
 
         if self.artist is not None:
             artists = split_artists(self.artist)
