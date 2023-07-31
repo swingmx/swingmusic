@@ -1,9 +1,11 @@
 import json
+from sqlite3 import OperationalError
 import time
 from collections import OrderedDict
 from typing import Generator
 
 from app.db.sqlite.utils import SQLiteManager
+from app.migrations.base import Migration
 from app.utils.decorators import coroutine
 from app.utils.hashing import create_hash
 
@@ -18,9 +20,9 @@ from app.utils.hashing import create_hash
 # 6: trackhashes
 
 
-class RemovePlaylistArtistHashes:
+class RemovePlaylistArtistHashes(Migration):
     """
-    This migration removes the artisthashes column from the playlists table.
+    removes the artisthashes column from the playlists table.
     """
 
     name = "RemovePlaylistArtistHashes"
@@ -31,13 +33,17 @@ class RemovePlaylistArtistHashes:
         sql = "ALTER TABLE playlists DROP COLUMN artisthashes"
 
         with SQLiteManager(userdata_db=True) as cur:
-            cur.execute(sql)
+            try:
+                cur.execute(sql)
+            except OperationalError:
+                pass
+
             cur.close()
 
 
-class AddSettingsToPlaylistTable:
+class AddSettingsToPlaylistTable(Migration):
     """
-    This migration adds the settings column and removes the banner_pos and has_gif columns
+    adds the settings column and removes the banner_pos and has_gif columns
     to the playlists table.
     """
 
@@ -115,9 +121,9 @@ class AddSettingsToPlaylistTable:
             cur.close()
 
 
-class AddLastUpdatedToTrackTable:
+class AddLastUpdatedToTrackTable(Migration):
     """
-    This migration adds the last modified column to the tracks table.
+    adds the last modified column to the tracks table.
     """
 
     name = "AddLastUpdatedToTrackTable"
@@ -129,13 +135,17 @@ class AddLastUpdatedToTrackTable:
         sql = f"ALTER TABLE tracks ADD COLUMN last_mod text not null DEFAULT '{timestamp}'"
 
         with SQLiteManager() as cur:
-            cur.execute(sql)
+            try:
+                cur.execute(sql)
+            except OperationalError:
+                pass
+
             cur.close()
 
 
-class MovePlaylistsAndFavoritesTo10BitHashes:
+class MovePlaylistsAndFavoritesTo10BitHashes(Migration):
     """
-    This migration moves the playlists and favorites to 10 bit hashes.
+    moves the playlists and favorites to 10 bit hashes.
     """
 
     name = "MovePlaylistsAndFavoritesTo10BitHashes"
@@ -242,9 +252,9 @@ class MovePlaylistsAndFavoritesTo10BitHashes:
             cur.close()
 
 
-class RemoveAllTracks:
+class RemoveAllTracks(Migration):
     """
-    This migration removes all tracks from the tracks table.
+    removes all tracks from the tracks table.
     """
 
     name = "RemoveAllTracks"

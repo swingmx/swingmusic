@@ -348,6 +348,9 @@ def save_folder_as_folder():
         return {"error": "Playlist already exists"}, 409
 
     tracks = TrackStore.get_tracks_in_path(path)
+    
+    # sort tracks by last_mod
+    tracks = sorted(tracks, key=lambda t: t.last_mod)
     trackhashes = [t.trackhash for t in tracks]
 
     if len(trackhashes) == 0:

@@ -14,8 +14,9 @@ PS: Fuck that! Do what you want.
 from app.db.sqlite.migrations import MigrationManager
 from app.logger import log
 from app.migrations import v1_3_0
+from app.migrations.base import Migration
 
-migrations = [
+migrations: list[list[Migration]] = [
     [
         # v1.3.0
         v1_3_0.RemovePlaylistArtistHashes,
@@ -34,17 +35,16 @@ def apply_migrations():
 
     version = MigrationManager.get_version()
 
-    # is clean install
-    if version == -1:
-        MigrationManager.set_version(len(migrations))
-        return
-
     if version != len(migrations):
         # run migrations after the previous migration version
         for migration in migrations[(version - 1) :]:
             for m in migration:
                 log.info("Running new migration: %s", m.name)
-                m.migrate()
+
+                try:
+                    m.migrate()
+                except:
+                    log.error("Failed to run migration: %s", m.name)
 
     # bump migration version
     MigrationManager.set_version(len(migrations))
