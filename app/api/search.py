@@ -79,12 +79,6 @@ class Search:
         finder = searchlib.SearchAll()
         return finder.search(self.query)
 
-    def search_all(self):
-        """Calls all the search methods."""
-        self.search_tracks()
-        self.search_albums()
-        self.search_artists()
-        # self.search_playlists()
 
 
 @api.route("/search/tracks", methods=["GET"])
@@ -211,3 +205,5 @@ def search_load_more():
             "artists": a[index: index + SEARCH_COUNT],
             "more": len(a) > index + SEARCH_COUNT,
         }
+
+# TODO: Rewrite this file using generators where possible

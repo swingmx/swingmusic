@@ -1,14 +1,16 @@
 import os
 from io import BytesIO
-import pendulum
 
+import pendulum
 from PIL import Image, UnidentifiedImageError
 from tinytag import TinyTag
 
 from app.settings import Defaults, Paths
 from app.utils.hashing import create_hash
-from app.utils.parsers import parse_title_from_filename, parse_artist_from_filename
+from app.utils.parsers import (parse_artist_from_filename,
+                               parse_title_from_filename)
 from app.utils.wintools import win_replace_slash
+
 
 
 def parse_album_art(filepath: str):
@@ -179,6 +181,7 @@ def get_tags(filepath: str):
         "samplerate",
         "track_total",
         "year",
+        "bitdepth",
     ]
 
     for tag in to_delete:

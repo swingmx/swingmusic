@@ -58,7 +58,7 @@ class ArtistsCache:
         """
         Returns the cached albums for the given artisthash.
         """
-        for (index, albums) in enumerate(cls.artists):
+        for index, albums in enumerate(cls.artists):
             if albums.artisthash == artisthash:
                 return albums.albums, index
 
@@ -325,3 +325,5 @@ def get_similar_artists(artisthash: str):
         similar = random.sample(similar, limit)
 
     return {"artists": similar[:limit]}
+
+# TODO: Rewrite this file using generators where possible
