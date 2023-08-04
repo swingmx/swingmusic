@@ -83,7 +83,7 @@ def get_album_tracks_and_info():
     album.is_favorite = check_is_fav(albumhash, FavType.album)
 
     return {
-        "tracks": [track_serializer(t, retain_disc=True) for t in tracks],
+        "tracks": [track_serializer(t, remove_disc=False) for t in tracks],
         "info": album,
     }
 
@@ -210,3 +210,5 @@ def get_similar_albums():
         pass
 
     return {"albums": [serialize_for_card(a) for a in albums[:limit]]}
+
+

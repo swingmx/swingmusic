@@ -96,8 +96,7 @@ class SQLitePlaylistMethods:
     def add_item_to_json_list(playlist_id: int, field: str, items: set[str]):
         """
         Adds a string item to a json dumped list using a playlist id and field name.
-        Takes the playlist ID, a field name,
-        an item to add to the field, and an error to raise if the item is already in the field.
+        Takes the playlist ID, a field name, an item to add to the field.
         """
         sql = f"SELECT {field} FROM playlists WHERE id = ?"
 
@@ -121,6 +120,9 @@ class SQLitePlaylistMethods:
 
     @classmethod
     def add_tracks_to_playlist(cls, playlist_id: int, trackhashes: list[str]):
+        """
+        Adds trackhashes to a playlist
+        """
         return cls.add_item_to_json_list(playlist_id, "trackhashes", trackhashes)
 
     @staticmethod

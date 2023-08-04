@@ -160,7 +160,7 @@ class TrackStore:
         return remove_duplicates(tracks)
 
     @classmethod
-    def get_tracks_by_artist(cls, artisthash: str) -> list[Track]:
+    def get_tracks_by_artisthash(cls, artisthash: str) -> list[Track]:
         """
         Returns all tracks matching the given artist. Duplicate tracks are removed.
         """

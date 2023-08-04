@@ -1,22 +1,21 @@
 """
 Contains all the artist(s) routes.
 """
-from collections import deque
 import random
+from collections import deque
 
 from flask import Blueprint, request
 
 from app.db.sqlite.favorite import SQLiteFavoriteMethods as favdb
-from app.db.sqlite.lastfm.similar_artists import SQLiteLastFMSimilarArtists as fmdb
-
+from app.db.sqlite.lastfm.similar_artists import \
+    SQLiteLastFMSimilarArtists as fmdb
 from app.models import Album, FavType, Track
 from app.serializers.album import serialize_for_card_many
 from app.serializers.track import serialize_tracks
-from app.utils.remove_duplicates import remove_duplicates
-
 from app.store.albums import AlbumStore
-from app.store.tracks import TrackStore
 from app.store.artists import ArtistStore
+from app.store.tracks import TrackStore
+from app.utils.remove_duplicates import remove_duplicates
 
 api = Blueprint("artist", __name__, url_prefix="/")
 
@@ -159,7 +158,7 @@ def add_albums_to_cache(artisthash: str):
     """
     Fetches albums and adds them to the cache.
     """
-    tracks = TrackStore.get_tracks_by_artist(artisthash)
+    tracks = TrackStore.get_tracks_by_artisthash(artisthash)
 
     if len(tracks) == 0:
         return False
@@ -197,7 +196,7 @@ def get_artist(artisthash: str):
     if tracks_cached:
         tracks = ArtistsCache.get_tracks(artisthash)
     else:
-        tracks = TrackStore.get_tracks_by_artist(artisthash)
+        tracks = TrackStore.get_tracks_by_artisthash(artisthash)
         albumhashes = set(t.albumhash for t in tracks)
         hashes_from_albums = set(
             a.albumhash for a in AlbumStore.get_albums_by_artisthash(artisthash)
@@ -291,7 +290,7 @@ def get_all_artist_tracks(artisthash: str):
     """
     Returns all artists by a given artist.
     """
-    tracks = TrackStore.get_tracks_by_artist(artisthash)
+    tracks = TrackStore.get_tracks_by_artisthash(artisthash)
 
     return {"tracks": serialize_tracks(tracks)}
 
