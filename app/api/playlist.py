@@ -376,92 +376,45 @@ def playlist_exists(name: str) -> bool:
     return count_playlist_by_name(name) > 0
 
 
-@api.route("/playlist/save-folder", methods=["POST"])
-def save_folder_as_folder():
+@api.route("/playlist/save-item", methods=["POST"])
+def save_item_as_playlist():
     data = request.get_json()
-    msg = {"error": "'path' and 'playlist_name' not provided"}, 400
+    msg = {"error": "'itemtype', 'playlist_name' and 'itemhash' not provided"}, 400
 
     if data is None:
         return msg
 
-    name = data.get("playlist_name")
-    path = data.get("path")
+    try:
+        playlist_name = data["playlist_name"]
+    except KeyError:
+        playlist_name = None
 
-    if path is None or name is None:
-        return msg
-
-    if playlist_exists(name):
+    if playlist_exists(playlist_name):
         return {"error": "Playlist already exists"}, 409
 
-    trackhashes = get_path_trackhashes(path)
+    try:
+        itemtype = data["itemtype"]
+    except KeyError:
+        itemtype = None
+
+    try:
+        itemhash = data["itemhash"]
+    except KeyError:
+        itemhash = None
+
+    if itemtype == "folder":
+        trackhashes = get_path_trackhashes(itemhash)
+    elif itemtype == "album":
+        trackhashes = get_album_trackhashes(itemhash)
+    elif itemtype == "artist":
+        trackhashes = get_artist_trackhashes(itemhash)
+    else:
+        trackhashes = []
+
     if len(trackhashes) == 0:
-        return {"error": "No tracks found in folder"}, 404
+        return {"error": "No tracks founds"}, 404
 
-    playlist = insert_playlist(name)
-
-    if playlist is None:
-        return {"error": "Playlist could not be created"}, 500
-
-    tracks_to_playlist(playlist.id, trackhashes)
-    PL.update_last_updated(playlist.id)
-
-    return {"playlist_id": playlist.id}, 201
-
-
-@api.route("/playlist/save-album", methods=["POST"])
-def save_album_as_playlist():
-    data = request.get_json()
-    msg = {"error": "'albumhash' and 'playlist_name' not provided"}, 400
-
-    if data is None:
-        return msg
-
-    albumhash = data.get("albumhash")
-    name = data.get("playlist_name")
-
-    if albumhash is None or name is None:
-        return msg
-
-    if playlist_exists(name):
-        return {"error": "Playlist already exists"}, 409
-
-    trackhashes = get_album_trackhashes(albumhash)
-    if len(trackhashes) == 0:
-        return {"error": "No tracks found in album"}, 404
-
-    playlist = insert_playlist(name)
-
-    if playlist is None:
-        return {"error": "Playlist could not be created"}, 500
-
-    tracks_to_playlist(playlist.id, trackhashes)
-    PL.update_last_updated(playlist.id)
-
-    return {"playlist_id": playlist.id}, 201
-
-
-@api.route("/playlist/save-artist", methods=["POST"])
-def save_artist_as_playlist():
-    data = request.get_json()
-    msg = {"error": "'artisthash' and 'playlist_name' not provided"}, 400
-
-    if data is None:
-        return msg
-
-    artisthash = data.get("artisthash")
-    name = data.get("playlist_name")
-
-    if artisthash is None or name is None:
-        return msg
-
-    if playlist_exists(name):
-        return {"error": "Playlist already exists"}, 409
-
-    trackhashes = get_artist_trackhashes(artisthash)
-    if len(trackhashes) == 0:
-        return {"error": "No tracks found in artist"}, 404
-
-    playlist = insert_playlist(name)
+    playlist = insert_playlist(playlist_name)
 
     if playlist is None:
         return {"error": "Playlist could not be created"}, 500
