@@ -2,13 +2,11 @@
 Contains all the search routes.
 """
 
-from unidecode import unidecode
 from flask import Blueprint, request
+from unidecode import unidecode
 
 from app import models
 from app.lib import searchlib
-
-
 from app.store.tracks import TrackStore
 
 api = Blueprint("search", __name__, url_prefix="/")
@@ -17,68 +15,45 @@ SEARCH_COUNT = 12
 """The max amount of items to return per request"""
 
 
-class SearchResults:
+def query_in_quotes(query: str) -> bool:
     """
-    Holds all the search results.
+    Returns True if the query is in quotes
     """
-
-    query: str = ""
-    tracks: list[models.Track] = []
-    albums: list[models.Album] = []
-    playlists: list[models.Playlist] = []
-    artists: list[models.Artist] = []
+    return query.startswith('"') and query.endswith('"')
 
 
 class Search:
     def __init__(self, query: str) -> None:
         self.tracks: list[models.Track] = []
         self.query = unidecode(query)
-        SearchResults.query = self.query
 
-    def search_tracks(self):
+    def search_tracks(self, in_quotes=False):
         """
         Calls :class:`SearchTracks` which returns the tracks that fuzzily match
         the search terms. Then adds them to the `SearchResults` store.
         """
         self.tracks = TrackStore.tracks
-        tracks = searchlib.SearchTracks(self.query)()
-
-        SearchResults.tracks = tracks
-        return tracks
+        return searchlib.TopResults().search(
+            self.query, tracks_only=True, in_quotes=in_quotes
+        )
 
     def search_artists(self):
         """Calls :class:`SearchArtists` which returns the artists that fuzzily match
         the search term. Then adds them to the `SearchResults` store.
         """
-        artists = searchlib.SearchArtists(self.query)()
-        SearchResults.artists = artists
-        return artists
+        return searchlib.SearchArtists(self.query)()
 
-    def search_albums(self):
+    def search_albums(self, in_quotes=False):
         """Calls :class:`SearchAlbums` which returns the albums that fuzzily match
         the search term. Then adds them to the `SearchResults` store.
         """
-        albums = searchlib.SearchAlbums(self.query)()
-        SearchResults.albums = albums
+        return searchlib.TopResults().search(
+            self.query, albums_only=True, in_quotes=in_quotes
+        )
 
-        return albums
-
-    # def search_playlists(self):
-    #     """Calls :class:`SearchPlaylists` which returns the playlists that fuzzily match
-    #     the search term. Then adds them to the `SearchResults` store.
-    #     """
-    #     playlists = utils.Get.get_all_playlists()
-    #     playlists = [serializer.Playlist(playlist) for playlist in playlists]
-
-    #     playlists = searchlib.SearchPlaylists(playlists, self.query)()
-    #     SearchResults.playlists = playlists
-
-    #     return playlists
-
-    def get_top_results(self):
-        finder = searchlib.SearchAll()
-        return finder.search(self.query)
-
+    def get_top_results(self, in_quotes=False):
+        finder = searchlib.TopResults()
+        return finder.search(self.query, in_quotes=in_quotes)
 
 
 @api.route("/search/tracks", methods=["GET"])
@@ -88,10 +63,12 @@ def search_tracks():
     """
 
     query = request.args.get("q")
+    in_quotes = query_in_quotes(query)
+
     if not query:
         return {"error": "No query provided"}, 400
 
-    tracks = Search(query).search_tracks()
+    tracks = Search(query).search_tracks(in_quotes)
 
     return {
         "tracks": tracks[:SEARCH_COUNT],
@@ -106,14 +83,16 @@ def search_albums():
     """
 
     query = request.args.get("q")
+    in_quotes = query_in_quotes(query)
+
     if not query:
         return {"error": "No query provided"}, 400
 
-    tracks = Search(query).search_albums()
+    albums = Search(query).search_albums(in_quotes)
 
     return {
-        "albums": tracks[:SEARCH_COUNT],
-        "more": len(tracks) > SEARCH_COUNT,
+        "albums": albums[:SEARCH_COUNT],
+        "more": len(albums) > SEARCH_COUNT,
     }
 
 
@@ -124,6 +103,7 @@ def search_artists():
     """
 
     query = request.args.get("q")
+
     if not query:
         return {"error": "No query provided"}, 400
 
@@ -135,24 +115,6 @@ def search_artists():
     }
 
 
-# @searchbp.route("/search/playlists", methods=["GET"])
-# def search_playlists():
-#     """
-#     Searches for playlists.
-#     """
-
-#     query = request.args.get("q")
-#     if not query:
-#         return {"error": "No query provided"}, 400
-
-#     playlists = DoSearch(query).search_playlists()
-
-#     return {
-#         "playlists": playlists[:SEARCH_COUNT],
-#         "more": len(playlists) > SEARCH_COUNT,
-#     }
-
-
 @api.route("/search/top", methods=["GET"])
 def get_top_results():
     """
@@ -160,21 +122,12 @@ def get_top_results():
     """
 
     query = request.args.get("q")
+    in_quotes = query_in_quotes(query)
+
     if not query:
         return {"error": "No query provided"}, 400
 
-    results = Search(query).get_top_results()
-
-    # max_results = 2
-    # return {
-    #     "tracks": SearchResults.tracks[:max_results],
-    #     "albums": SearchResults.albums[:max_results],
-    #     "artists": SearchResults.artists[:max_results],
-    #     "playlists": SearchResults.playlists[:max_results],
-    # }
-    return {
-        "results": results
-    }
+    return Search(query).get_top_results(in_quotes=in_quotes)
 
 
 @api.route("/search/loadmore")
@@ -182,28 +135,32 @@ def search_load_more():
     """
     Returns more songs, albums or artists from a search query.
     """
+    query = request.args.get("q")
+    in_quotes = query_in_quotes(query)
+
     s_type = request.args.get("type")
     index = int(request.args.get("index") or 0)
 
     if s_type == "tracks":
-        t = SearchResults.tracks
+        t = Search(query).search_tracks(in_quotes)
         return {
-            "tracks": t[index: index + SEARCH_COUNT],
+            "tracks": t[index : index + SEARCH_COUNT],
             "more": len(t) > index + SEARCH_COUNT,
         }
 
     elif s_type == "albums":
-        a = SearchResults.albums
+        a = Search(query).search_albums(in_quotes)
         return {
-            "albums": a[index: index + SEARCH_COUNT],
+            "albums": a[index : index + SEARCH_COUNT],
             "more": len(a) > index + SEARCH_COUNT,
         }
 
     elif s_type == "artists":
-        a = SearchResults.artists
+        a = Search(query).search_artists()
         return {
-            "artists": a[index: index + SEARCH_COUNT],
+            "artists": a[index : index + SEARCH_COUNT],
             "more": len(a) > index + SEARCH_COUNT,
         }
+
 
 # TODO: Rewrite this file using generators where possible

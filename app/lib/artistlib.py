@@ -77,7 +77,9 @@ class CheckArtistImages:
         with Pool(cpu_count()) as pool:
             res = list(
                 tqdm(
-                    pool.imap_unordered(self.download_image, artist_store.ArtistStore.artists),
+                    pool.imap_unordered(
+                        self.download_image, artist_store.ArtistStore.artists
+                    ),
                     total=len(artist_store.ArtistStore.artists),
                     desc="Downloading missing artist images",
                 )
@@ -164,10 +166,17 @@ def get_all_artists(tracks: list[Track], albums: list[Album]) -> list[Artist]:
     artist_from_albums = get_albumartists(albums=albums)
 
     artists = list(artists_from_tracks.union(artist_from_albums))
-    artists = sorted(artists)
+    artists.sort()
 
-    lower_artists = set(a.lower().strip() for a in artists)
-    indices = [[ar.lower().strip() for ar in artists].index(a) for a in lower_artists]
-    artists = [artists[i] for i in indices]
+    # Remove duplicates
+    artists_dup_free = set()
+    artist_hashes = set()
 
-    return [Artist(a) for a in artists]
+    for artist in artists:
+        artist_hash = create_hash(artist, decode=True)
+
+        if artist_hash not in artist_hashes:
+            artists_dup_free.add(artist)
+            artist_hashes.add(artist_hash)
+
+    return [Artist(a) for a in artists_dup_free]

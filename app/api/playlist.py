@@ -20,16 +20,6 @@ api = Blueprint("playlist", __name__, url_prefix="/")
 
 PL = SQLitePlaylistMethods
 
-insert_one_playlist = PL.insert_one_playlist
-get_playlist_by_name = PL.get_playlist_by_name
-count_playlist_by_name = PL.count_playlist_by_name
-get_all_playlists = PL.get_all_playlists
-get_playlist_by_id = PL.get_playlist_by_id
-tracks_to_playlist = PL.add_tracks_to_playlist
-update_playlist = PL.update_playlist
-delete_playlist = PL.delete_playlist
-remove_image = PL.remove_banner
-
 
 def duplicate_images(images: list):
     if len(images) == 1:
@@ -80,7 +70,7 @@ def send_all_playlists():
     # get the no_images query param
     no_images = request.args.get("no_images", False)
 
-    playlists = get_all_playlists()
+    playlists = PL.get_all_playlists()
     playlists = list(playlists)
 
     for playlist in playlists:
@@ -109,7 +99,7 @@ def insert_playlist(name: str):
         ),
     }
 
-    return insert_one_playlist(playlist)
+    return PL.insert_one_playlist(playlist)
 
 
 @api.route("/playlist/new", methods=["POST"])
@@ -122,7 +112,7 @@ def create_playlist():
     if data is None:
         return {"error": "Playlist name not provided"}, 400
 
-    existing_playlist_count = count_playlist_by_name(data["name"])
+    existing_playlist_count = PL.count_playlist_by_name(data["name"])
 
     if existing_playlist_count > 0:
         return {"error": "Playlist already exists"}, 409
@@ -161,7 +151,7 @@ def get_artist_trackhashes(artisthash: str):
 
 
 @api.route("/playlist/<playlist_id>/add", methods=["POST"])
-def add_track_to_playlist(playlist_id: str):
+def add_item_to_playlist(playlist_id: str):
     """
     Takes a playlist ID and a track hash, and adds the track to the playlist
     """
@@ -191,10 +181,10 @@ def add_track_to_playlist(playlist_id: str):
     else:
         trackhashes = []
 
-    insert_count = tracks_to_playlist(int(playlist_id), trackhashes)
+    insert_count = PL.add_tracks_to_playlist(int(playlist_id), trackhashes)
 
     if insert_count == 0:
-        return {"error": "Track already exists in playlist"}, 409
+        return {"error": "Item already exists in playlist"}, 409
 
     PL.update_last_updated(int(playlist_id))
 
@@ -209,7 +199,7 @@ def get_playlist(playlistid: str):
     no_tracks = request.args.get("no_tracks", False)
     no_tracks = no_tracks == "true"
 
-    playlist = get_playlist_by_id(int(playlistid))
+    playlist = PL.get_playlist_by_id(int(playlistid))
 
     if playlist is None:
         return {"msg": "Playlist not found"}, 404
@@ -243,7 +233,7 @@ def update_playlist_info(playlistid: str):
     if playlistid is None:
         return {"error": "Playlist ID not provided"}, 400
 
-    db_playlist = get_playlist_by_id(int(playlistid))
+    db_playlist = PL.get_playlist_by_id(int(playlistid))
 
     if db_playlist is None:
         return {"error": "Playlist not found"}, 404
@@ -279,7 +269,7 @@ def update_playlist_info(playlistid: str):
 
     p_tuple = (*playlist.values(),)
 
-    update_playlist(int(playlistid), playlist)
+    PL.update_playlist(int(playlistid), playlist)
 
     playlist = models.Playlist(*p_tuple)
     playlist.last_updated = date_string_to_time_passed(playlist.last_updated)
@@ -295,12 +285,12 @@ def remove_playlist_image(playlistid: str):
     Removes the playlist image.
     """
     pid = int(playlistid)
-    playlist = get_playlist_by_id(pid)
+    playlist = PL.get_playlist_by_id(pid)
 
     if playlist is None:
         return {"error": "Playlist not found"}, 404
 
-    remove_image(pid)
+    PL.remove_image(pid)
 
     playlist.image = None
     playlist.thumb = None
@@ -330,7 +320,7 @@ def remove_playlist():
     except KeyError:
         return message, 400
 
-    delete_playlist(pid)
+    PL.delete_playlist(pid)
 
     return {"msg": "Done"}, 200
 
@@ -373,7 +363,7 @@ def remove_tracks_from_playlist(pid: int):
 
 
 def playlist_exists(name: str) -> bool:
-    return count_playlist_by_name(name) > 0
+    return PL.count_playlist_by_name(name) > 0
 
 
 @api.route("/playlist/save-item", methods=["POST"])
@@ -402,7 +392,12 @@ def save_item_as_playlist():
     except KeyError:
         itemhash = None
 
-    if itemtype == "folder":
+    if itemtype is None or playlist_name is None or itemhash is None:
+        return msg
+
+    if itemtype == "track":
+        trackhashes = [itemhash]
+    elif itemtype == "folder":
         trackhashes = get_path_trackhashes(itemhash)
     elif itemtype == "album":
         trackhashes = get_album_trackhashes(itemhash)
@@ -419,7 +414,7 @@ def save_item_as_playlist():
     if playlist is None:
         return {"error": "Playlist could not be created"}, 500
 
-    tracks_to_playlist(playlist.id, trackhashes)
+    PL.add_tracks_to_playlist(playlist.id, trackhashes)
     PL.update_last_updated(playlist.id)
 
-    return {"playlist_id": playlist.id}, 201
+    return {"playlist": playlist}, 201

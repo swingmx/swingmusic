@@ -84,18 +84,11 @@ class TrackStore:
         tdb.remove_tracks_by_folders(to_remove)
 
     @classmethod
-    def count_tracks_by_hash(cls, trackhash: str) -> int:
+    def count_tracks_by_trackhash(cls, trackhash: str) -> int:
         """
-        Counts the number of tracks with a specific hash.
+        Counts the number of tracks with a specific trackhash.
         """
-
-        count = 0
-
-        for track in cls.tracks:
-            if track.trackhash == trackhash:
-                count += 1
-
-        return count
+        return sum(1 for track in cls.tracks if track.trackhash == trackhash)
 
     @classmethod
     def make_track_fav(cls, trackhash: str):

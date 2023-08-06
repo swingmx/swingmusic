@@ -10,12 +10,10 @@ from watchdog.events import PatternMatchingEventHandler
 from watchdog.observers import Observer
 
 from app import settings
-
+from app.db.sqlite.albumcolors import SQLiteAlbumMethods as aldb
 from app.db.sqlite.settings import SettingsSQLMethods as sdb
 from app.db.sqlite.tracks import SQLiteManager
 from app.db.sqlite.tracks import SQLiteTrackMethods as db
-from app.db.sqlite.albumcolors import SQLiteAlbumMethods as aldb
-
 from app.lib.colorlib import process_color
 from app.lib.taglib import extract_thumb, get_tags
 from app.logger import log
@@ -199,7 +197,7 @@ def remove_track(filepath: str) -> None:
     db.remove_tracks_by_filepaths(filepath)
     TrackStore.remove_track_by_filepath(filepath)
 
-    empty_album = TrackStore.count_tracks_by_hash(track.albumhash) > 0
+    empty_album = TrackStore.count_tracks_by_trackhash(track.albumhash) > 0
 
     if empty_album:
         AlbumStore.remove_album_by_hash(track.albumhash)
