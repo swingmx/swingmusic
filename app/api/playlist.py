@@ -3,9 +3,10 @@ All playlist-related routes.
 """
 import json
 from datetime import datetime
+import pathlib
 
 from flask import Blueprint, request
-from PIL import UnidentifiedImageError
+from PIL import UnidentifiedImageError, Image
 
 from app import models
 from app.db.sqlite.playlists import SQLitePlaylistMethods
@@ -15,6 +16,7 @@ from app.store.albums import AlbumStore
 from app.store.tracks import TrackStore
 from app.utils.dates import create_new_date, date_string_to_time_passed
 from app.utils.remove_duplicates import remove_duplicates
+from app.settings import Paths
 
 api = Blueprint("playlist", __name__, url_prefix="/")
 
@@ -88,14 +90,14 @@ def send_all_playlists():
     return {"data": playlists}
 
 
-def insert_playlist(name: str):
+def insert_playlist(name: str, image: str = None):
     playlist = {
-        "image": None,
+        "image": image,
         "last_updated": create_new_date(),
         "name": name,
         "trackhashes": json.dumps([]),
         "settings": json.dumps(
-            {"has_gif": False, "banner_pos": 50, "square_img": False}
+            {"has_gif": False, "banner_pos": 50, "square_img": True if image else False}
         ),
     }
 
@@ -259,7 +261,12 @@ def update_playlist_info(playlistid: str):
 
     if image:
         try:
-            playlist["image"] = playlistlib.save_p_image(image, playlistid)
+            pil_image = Image.open(image)
+            content_type = image.content_type
+
+            playlist["image"] = playlistlib.save_p_image(
+                pil_image, playlistid, content_type
+            )
 
             if image.content_type == "image/gif":
                 playlist["settings"]["has_gif"] = True
@@ -388,7 +395,7 @@ def save_item_as_playlist():
         itemtype = None
 
     try:
-        itemhash = data["itemhash"]
+        itemhash: str = data["itemhash"]
     except KeyError:
         itemhash = None
 
@@ -403,16 +410,33 @@ def save_item_as_playlist():
         trackhashes = get_album_trackhashes(itemhash)
     elif itemtype == "artist":
         trackhashes = get_artist_trackhashes(itemhash)
+
     else:
         trackhashes = []
 
     if len(trackhashes) == 0:
         return {"error": "No tracks founds"}, 404
 
-    playlist = insert_playlist(playlist_name)
+    playlist = insert_playlist(playlist_name, image=itemhash + ".webp")
 
     if playlist is None:
         return {"error": "Playlist could not be created"}, 500
+
+    if itemtype != "folder":
+        filename = itemhash + ".webp"
+
+        base_path = (
+            Paths.get_artist_img_lg_path()
+            if itemtype == "artist"
+            else Paths.get_lg_thumb_path()
+        )
+        img_path = pathlib.Path(base_path + "/" + filename)
+
+        if img_path.exists():
+            img = Image.open(img_path)
+            playlistlib.save_p_image(
+                img, str(playlist.id), "image/webp", filename=filename
+            )
 
     PL.add_tracks_to_playlist(playlist.id, trackhashes)
     PL.update_last_updated(playlist.id)

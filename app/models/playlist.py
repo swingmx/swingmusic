@@ -25,8 +25,6 @@ class Playlist:
 
     def __post_init__(self):
         self.trackhashes = json.loads(str(self.trackhashes))
-        # commentted until we need it 👆
-
         self.count = len(self.trackhashes)
 
         if isinstance(self.settings, str):
@@ -44,7 +42,7 @@ class Playlist:
 
     def set_duration(self, duration: int):
         self.duration = duration
-    
+
     def set_count(self, count: int):
         self.count = count
 

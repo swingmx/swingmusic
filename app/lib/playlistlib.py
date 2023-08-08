@@ -16,7 +16,9 @@ def create_thumbnail(image: Any, img_path: str) -> str:
     Creates a 250 x 250 thumbnail from a playlist image
     """
     thumb_path = "thumb_" + img_path
-    full_thumb_path = os.path.join(settings.Paths.get_app_dir(), "images", "playlists", thumb_path)
+    full_thumb_path = os.path.join(
+        settings.Paths.get_app_dir(), "images", "playlists", thumb_path
+    )
 
     aspect_ratio = image.width / image.height
 
@@ -33,7 +35,9 @@ def create_gif_thumbnail(image: Any, img_path: str):
     Creates a 250 x 250 thumbnail from a playlist image
     """
     thumb_path = "thumb_" + img_path
-    full_thumb_path = os.path.join(settings.Paths.get_app_dir(), "images", "playlists", thumb_path)
+    full_thumb_path = os.path.join(
+        settings.Paths.get_app_dir(), "images", "playlists", thumb_path
+    )
 
     frames = []
 
@@ -50,20 +54,22 @@ def create_gif_thumbnail(image: Any, img_path: str):
     return thumb_path
 
 
-def save_p_image(file, pid: str):
+def save_p_image(
+    img: Image, pid: str, content_type: str = None, filename: str = None
+) -> str:
     """
     Saves a playlist banner image and returns the filepath.
     """
-    img = Image.open(file)
-    
+    # img = Image.open(file)
 
     random_str = "".join(random.choices(string.ascii_letters + string.digits, k=5))
 
-    filename = pid + str(random_str) + ".webp"
+    if not filename:
+        filename = pid + str(random_str) + ".webp"
 
     full_img_path = os.path.join(settings.Paths.get_playlist_img_path(), filename)
 
-    if file.content_type == "image/gif":
+    if content_type == "image/gif":
         frames = []
 
         for frame in ImageSequence.Iterator(img):
@@ -78,6 +84,7 @@ def save_p_image(file, pid: str):
     create_thumbnail(img, img_path=filename)
 
     return filename
+
 
 #
 # class ValidatePlaylistThumbs:
