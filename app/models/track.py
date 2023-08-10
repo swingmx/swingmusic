@@ -1,14 +1,11 @@
 from dataclasses import dataclass
 
-from app.settings import get_flag, ParserFlags
+from app.settings import ParserFlags, get_flag
 from app.utils.hashing import create_hash
-from app.utils.parsers import (
-    split_artists,
-    remove_prod,
-    parse_feat_from_title,
-    clean_title,
-    get_base_title_and_versions,
-)
+from app.utils.parsers import (clean_title, get_base_title_and_versions,
+                               parse_feat_from_title, remove_prod,
+                               split_artists)
+
 from .artist import ArtistMinimal
 
 
@@ -19,9 +16,9 @@ class Track:
     """
 
     album: str
-    albumartist: str | list[ArtistMinimal]
+    albumartists: str | list[ArtistMinimal]
     albumhash: str
-    artist: str | list[ArtistMinimal]
+    artists: str | list[ArtistMinimal]
     bitrate: int
     copyright: str
     date: int
@@ -48,8 +45,8 @@ class Track:
         self.og_album = self.album
         self.last_mod = int(self.last_mod)
 
-        if self.artist is not None:
-            artists = split_artists(self.artist)
+        if self.artists is not None:
+            artists = split_artists(self.artists)
             new_title = self.title
 
             if get_flag(ParserFlags.EXTRACT_FEAT):
@@ -78,12 +75,11 @@ class Track:
                 self.recreate_albumhash()
 
             self.artist_hashes = "-".join(create_hash(a, decode=True) for a in artists)
-            self.artist = [ArtistMinimal(a) for a in artists]
+            self.artists = [ArtistMinimal(a) for a in artists]
 
-            albumartists = split_artists(self.albumartist)
-            self.albumartist = [ArtistMinimal(a) for a in albumartists]
+            albumartists = split_artists(self.albumartists)
+            self.albumartists = [ArtistMinimal(a) for a in albumartists]
 
-        self.filetype = self.filepath.rsplit(".", maxsplit=1)[-1]
         self.image = self.albumhash + ".webp"
 
         if self.genre is not None and self.genre != "":
@@ -102,20 +98,20 @@ class Track:
             return
 
         self.trackhash = create_hash(
-            ", ".join([a.name for a in self.artist]), self.og_album, self.title
+            ", ".join([a.name for a in self.artists]), self.og_album, self.title
         )
 
     def recreate_artists_hash(self):
         """
         Recreates a track's artist hashes if the artist list was altered
         """
-        self.artist_hashes = "-".join(a.artisthash for a in self.artist)
+        self.artist_hashes = "-".join(a.artisthash for a in self.artists)
 
     def recreate_albumhash(self):
         """
         Recreates an albumhash of a track to merge all versions of an album.
         """
-        self.albumhash = create_hash(self.album, self.albumartist)
+        self.albumhash = create_hash(self.album, self.albumartists)
 
     def rename_album(self, new_album: str):
         """
@@ -126,7 +122,7 @@ class Track:
     def add_artists(self, artists: list[str], new_album_title: str):
         for artist in artists:
             if create_hash(artist) not in self.artist_hashes:
-                self.artist.append(ArtistMinimal(artist))
+                self.artists.append(ArtistMinimal(artist))
 
         self.recreate_artists_hash()
         self.rename_album(new_album_title)

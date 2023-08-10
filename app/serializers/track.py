@@ -3,7 +3,7 @@ from dataclasses import asdict
 from app.models.track import Track
 
 
-def track_serializer(track: Track, to_remove: set = {}, remove_disc=True) -> dict:
+def serialize_track(track: Track, to_remove: set = {}, remove_disc=True) -> dict:
     album_dict = asdict(track)
     props = {
         "date",
@@ -14,6 +14,7 @@ def track_serializer(track: Track, to_remove: set = {}, remove_disc=True) -> dic
         "copyright",
         "disc",
         "track",
+        "artist_hashes",
     }.union(to_remove)
 
     if not remove_disc:
@@ -26,10 +27,15 @@ def track_serializer(track: Track, to_remove: set = {}, remove_disc=True) -> dic
     for key in props:
         album_dict.pop(key, None)
 
+    to_remove_images = ["artists", "albumartists"]
+    for key in to_remove_images:
+        for artist in album_dict[key]:
+            artist.pop("image", None)
+
     return album_dict
 
 
 def serialize_tracks(
     tracks: list[Track], _remove: set = {}, remove_disc=True
 ) -> list[dict]:
-    return [track_serializer(t, _remove, remove_disc) for t in tracks]
+    return [serialize_track(t, _remove, remove_disc) for t in tracks]

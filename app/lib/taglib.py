@@ -7,10 +7,8 @@ from tinytag import TinyTag
 
 from app.settings import Defaults, Paths
 from app.utils.hashing import create_hash
-from app.utils.parsers import (parse_artist_from_filename,
-                               parse_title_from_filename)
+from app.utils.parsers import parse_artist_from_filename, parse_title_from_filename
 from app.utils.wintools import win_replace_slash
-
 
 
 def parse_album_art(filepath: str):
@@ -163,6 +161,9 @@ def get_tags(filepath: str):
     tags.filetype = filetype
     tags.last_mod = last_mod
 
+    tags.artists = tags.artist
+    tags.albumartists = tags.albumartist
+
     tags = tags.__dict__
 
     # delete all tag properties that start with _ (tinytag internals)
@@ -182,6 +183,8 @@ def get_tags(filepath: str):
         "track_total",
         "year",
         "bitdepth",
+        "artist",
+        "albumartist",
     ]
 
     for tag in to_delete:

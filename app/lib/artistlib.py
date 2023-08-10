@@ -144,7 +144,7 @@ def get_artists_from_tracks(tracks: list[Track]) -> set[str]:
     """
     artists = set()
 
-    master_artist_list = [[x.name for x in t.artist] for t in tracks]
+    master_artist_list = [[x.name for x in t.artists] for t in tracks]
     artists = artists.union(*master_artist_list)
 
     return artists

@@ -164,11 +164,11 @@ class Populate:
                 if not AlbumStore.album_exists(track.albumhash):
                     AlbumStore.add_album(AlbumStore.create_album(track))
 
-                for artist in track.artist:
+                for artist in track.artists:
                     if not ArtistStore.artist_exists(artist.artisthash):
                         ArtistStore.add_artist(Artist(artist.name))
 
-                for artist in track.albumartist:
+                for artist in track.albumartists:
                     if not ArtistStore.artist_exists(artist.artisthash):
                         ArtistStore.add_artist(Artist(artist.name))
 

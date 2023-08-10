@@ -176,7 +176,7 @@ def add_track(filepath: str) -> None:
         album.set_colors(colors)
         AlbumStore.add_album(album)
 
-    artists: list[Artist] = track.artist + track.albumartist  # type: ignore
+    artists: list[Artist] = track.artists + track.albumartists  # type: ignore
 
     for artist in artists:
         if not ArtistStore.artist_exists(artist.artisthash):
@@ -202,7 +202,7 @@ def remove_track(filepath: str) -> None:
     if empty_album:
         AlbumStore.remove_album_by_hash(track.albumhash)
 
-    artists: list[Artist] = track.artist + track.albumartist  # type: ignore
+    artists: list[Artist] = track.artists + track.albumartists  # type: ignore
 
     for artist in artists:
         empty_artist = not ArtistStore.artist_has_tracks(artist.artisthash)

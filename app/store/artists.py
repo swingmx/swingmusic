@@ -6,8 +6,9 @@ from app.db.sqlite.artistcolors import SQLiteArtistMethods as ardb
 from app.lib.artistlib import get_all_artists
 from app.models import Artist
 from app.utils.bisection import UseBisection
-from .tracks import TrackStore
+
 from .albums import AlbumStore
+from .tracks import TrackStore
 
 
 class ArtistStore:
@@ -92,7 +93,7 @@ class ArtistStore:
 
         for track in TrackStore.tracks:
             artists.update(track.artist_hashes)
-            album_artists: list[str] = [a.artisthash for a in track.albumartist]
+            album_artists: list[str] = [a.artisthash for a in track.albumartists]
             artists.update(album_artists)
 
         master_hash = "-".join(artists)

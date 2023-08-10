@@ -4,15 +4,17 @@ Contains all the album routes.
 
 import random
 from dataclasses import asdict
+from typing import Any
 
 from flask import Blueprint, request
 
 from app.db.sqlite.albumcolors import SQLiteAlbumMethods as adb
 from app.db.sqlite.favorite import SQLiteFavoriteMethods as favdb
 from app.db.sqlite.lastfm.similar_artists import SQLiteLastFMSimilarArtists as lastfmdb
+from app.lib.albumslib import sort_by_track_no
 from app.models import FavType, Track
 from app.serializers.album import serialize_for_card
-from app.serializers.track import track_serializer
+from app.serializers.track import serialize_track
 from app.store.albums import AlbumStore
 from app.store.tracks import TrackStore
 from app.utils.hashing import create_hash
@@ -83,7 +85,7 @@ def get_album_tracks_and_info():
     album.is_favorite = check_is_fav(albumhash, FavType.album)
 
     return {
-        "tracks": [track_serializer(t, remove_disc=False) for t in tracks],
+        "tracks": [serialize_track(t, remove_disc=False) for t in tracks],
         "info": album,
     }
 
@@ -94,13 +96,7 @@ def get_album_tracks(albumhash: str):
     Returns all the tracks in the given album, sorted by disc and track number.
     """
     tracks = TrackStore.get_tracks_by_albumhash(albumhash)
-    tracks = [asdict(t) for t in tracks]
-
-    for t in tracks:
-        track = str(t["track"]).zfill(3)
-        t["_pos"] = int(f"{t['disc']}{track}")
-
-    tracks = sorted(tracks, key=lambda t: t["_pos"])
+    sort_by_track_no(tracks)
 
     return {"tracks": tracks}
 
@@ -210,5 +206,3 @@ def get_similar_albums():
         pass
 
     return {"albums": [serialize_for_card(a) for a in albums[:limit]]}
-
-

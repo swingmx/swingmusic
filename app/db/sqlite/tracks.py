@@ -42,7 +42,15 @@ class SQLiteTrackMethods:
             :date, :disc, :duration, :filepath, :folder, :genre, :last_mod, :title, :track, :trackhash)
             """
 
+        #
         track = OrderedDict(sorted(track.items()))
+
+        track["artist"] = track["artists"]
+        track["albumartist"] = track["albumartists"]
+
+        del track["artists"]
+        del track["albumartists"]
+
         cur.execute(sql, track)
 
     @classmethod

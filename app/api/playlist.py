@@ -11,6 +11,7 @@ from PIL import UnidentifiedImageError, Image
 from app import models
 from app.db.sqlite.playlists import SQLitePlaylistMethods
 from app.lib import playlistlib
+from app.lib.albumslib import sort_by_track_no
 from app.models.track import Track
 from app.store.albums import AlbumStore
 from app.store.tracks import TrackStore
@@ -69,7 +70,6 @@ def send_all_playlists():
     """
     Gets all the playlists.
     """
-    # get the no_images query param
     no_images = request.args.get("no_images", False)
 
     playlists = PL.get_all_playlists()
@@ -141,7 +141,9 @@ def get_album_trackhashes(albumhash: str):
     Returns a list of trackhashes in an album.
     """
     tracks = TrackStore.get_tracks_by_albumhash(albumhash)
-    return [t.trackhash for t in tracks]
+    tracks = sort_by_track_no(tracks)
+    
+    return [t["trackhash"] for t in tracks]
 
 
 def get_artist_trackhashes(artisthash: str):
@@ -410,7 +412,6 @@ def save_item_as_playlist():
         trackhashes = get_album_trackhashes(itemhash)
     elif itemtype == "artist":
         trackhashes = get_artist_trackhashes(itemhash)
-
     else:
         trackhashes = []
 

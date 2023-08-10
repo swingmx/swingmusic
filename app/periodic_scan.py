@@ -21,6 +21,11 @@ def run_periodic_scans():
     # ValidateAlbumThumbs()
     # ValidatePlaylistThumbs()
 
+    try:
+        Populate(key=get_random_str())
+    except PopulateCancelledError:
+        pass
+
     while get_flag(ParserFlags.DO_PERIODIC_SCANS):
         try:
             Populate(key=get_random_str())

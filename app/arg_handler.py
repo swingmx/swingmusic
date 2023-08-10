@@ -44,7 +44,7 @@ class HandleArgs:
         """
         Runs Pyinstaller.
         """
-        if ALLARGS.build.value in ARGS:
+        if ALLARGS.build in ARGS:
             with open("pyinstaller.config.ini", "w", encoding="utf-8") as file:
                 config["DEFAULT"]["BUILD"] = "True"
                 config.write(file)
@@ -73,8 +73,8 @@ class HandleArgs:
 
     @staticmethod
     def handle_port():
-        if ALLARGS.port.value in ARGS:
-            index = ARGS.index(ALLARGS.port.value)
+        if ALLARGS.port in ARGS:
+            index = ARGS.index(ALLARGS.port)
             try:
                 port = ARGS[index + 1]
             except IndexError:
@@ -89,8 +89,8 @@ class HandleArgs:
 
     @staticmethod
     def handle_host():
-        if ALLARGS.host.value in ARGS:
-            index = ARGS.index(ALLARGS.host.value)
+        if ALLARGS.host in ARGS:
+            index = ARGS.index(ALLARGS.host)
 
             try:
                 host = ARGS[index + 1]
@@ -105,8 +105,8 @@ class HandleArgs:
         """
         Modifies the config path.
         """
-        if ALLARGS.config.value in ARGS:
-            index = ARGS.index(ALLARGS.config.value)
+        if ALLARGS.config in ARGS:
+            index = ARGS.index(ALLARGS.config)
 
             try:
                 config_path = ARGS[index + 1]
@@ -125,34 +125,34 @@ class HandleArgs:
     @staticmethod
     def handle_no_feat():
         # if ArgsEnum.no_feat in ARGS:
-        if any((a in ARGS for a in ALLARGS.show_feat.value)):
+        if any((a in ARGS for a in ALLARGS.show_feat)):
             settings.FromFlags.EXTRACT_FEAT = False
 
     @staticmethod
     def handle_remove_prod():
-        if any((a in ARGS for a in ALLARGS.show_prod.value)):
+        if any((a in ARGS for a in ALLARGS.show_prod)):
             settings.FromFlags.REMOVE_PROD = False
 
     @staticmethod
     def handle_cleaning_albums():
-        if any((a in ARGS for a in ALLARGS.dont_clean_albums.value)):
+        if any((a in ARGS for a in ALLARGS.dont_clean_albums)):
             settings.FromFlags.CLEAN_ALBUM_TITLE = False
 
     @staticmethod
     def handle_cleaning_tracks():
-        if any((a in ARGS for a in ALLARGS.dont_clean_tracks.value)):
+        if any((a in ARGS for a in ALLARGS.dont_clean_tracks)):
             settings.FromFlags.REMOVE_REMASTER_FROM_TRACK = False
 
     @staticmethod
     def handle_periodic_scan():
-        if any((a in ARGS for a in ALLARGS.no_periodic_scan.value)):
+        if any((a in ARGS for a in ALLARGS.no_periodic_scan)):
             settings.FromFlags.DO_PERIODIC_SCANS = False
 
     @staticmethod
     def handle_periodic_scan_interval():
-        if any((a in ARGS for a in ALLARGS.periodic_scan_interval.value)):
+        if any((a in ARGS for a in ALLARGS.periodic_scan_interval)):
             index = [
-                ARGS.index(a) for a in ALLARGS.periodic_scan_interval.value if a in ARGS
+                ARGS.index(a) for a in ALLARGS.periodic_scan_interval if a in ARGS
             ][0]
 
             try:
@@ -177,12 +177,12 @@ class HandleArgs:
 
     @staticmethod
     def handle_help():
-        if any((a in ARGS for a in ALLARGS.help.value)):
+        if any((a in ARGS for a in ALLARGS.help)):
             print(HELP_MESSAGE)
             sys.exit(0)
 
     @staticmethod
     def handle_version():
-        if any((a in ARGS for a in ALLARGS.version.value)):
+        if any((a in ARGS for a in ALLARGS.version)):
             print(settings.Release.APP_VERSION)
             sys.exit(0)

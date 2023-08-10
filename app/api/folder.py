@@ -11,7 +11,7 @@ from showinfm import show_in_file_manager
 from app import settings
 from app.db.sqlite.settings import SettingsSQLMethods as db
 from app.lib.folderslib import GetFilesAndDirs, get_folders
-from app.serializers.track import track_serializer
+from app.serializers.track import serialize_track
 from app.store.tracks import TrackStore as store
 from app.utils.wintools import is_windows, win_replace_slash
 
@@ -142,7 +142,7 @@ def get_tracks_in_path():
 
     tracks = store.get_tracks_in_path(path)
     tracks = sorted(tracks, key=lambda i: i.last_mod)
-    tracks = (track_serializer(t) for t in tracks if Path(t.filepath).exists())
+    tracks = (serialize_track(t) for t in tracks if Path(t.filepath).exists())
 
     return {
         "tracks": list(tracks)[:300],

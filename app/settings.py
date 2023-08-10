@@ -2,13 +2,12 @@
 Contains default configs
 """
 import os
-from enum import Enum
 
 join = os.path.join
 
 
 class Release:
-    APP_VERSION = "1.3.0.beta"
+    APP_VERSION = "1.3.0"
 
 
 class Paths:
@@ -129,7 +128,7 @@ class FLASKVARS:
         cls.FLASK_HOST = host
 
 
-class ALLARGS(Enum):
+class ALLARGS:
     """
     Enumerates the possible app arguments.
     """
@@ -171,7 +170,7 @@ class FromFlags:
     MERGE_ALBUM_VERSIONS = False
 
 
-class ParserFlags(Enum):
+class ParserFlags():
     EXTRACT_FEAT = "EXTRACT_FEAT"
     REMOVE_PROD = "REMOVE_PROD"
     CLEAN_ALBUM_TITLE = "CLEAN_ALBUM_TITLE"
@@ -183,7 +182,7 @@ class ParserFlags(Enum):
 
 
 def get_flag(flag: ParserFlags) -> bool:
-    return getattr(FromFlags, flag.value)
+    return getattr(FromFlags, flag)
 
 
 def get_scan_sleep_time() -> int:

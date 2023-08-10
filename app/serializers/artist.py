@@ -1,25 +1,23 @@
-# from dataclasses import asdict
+from dataclasses import asdict
+
+from app.models.artist import Artist
 
 
-# def album_serializer(album: Artist, to_remove: set[str]) -> ArtistMinimal:
-#     album_dict = asdict(album)
+def serialize_for_card(artist: Artist):
+    artist_dict = asdict(artist)
 
-#     to_remove.update(key for key in album_dict.keys() if key.startswith("is_"))
-#     for key in to_remove:
-#         album_dict.pop(key, None)
+    props_to_remove = {
+        "is_favorite",
+        "trackcount",
+        "duration",
+        "albumcount",
+    }
 
-#     return album_dict
+    for key in props_to_remove:
+        artist_dict.pop(key, None)
+
+    return artist_dict
 
 
-# Traceback (most recent call last):
-#   File "/usr/lib/python3.10/threading.py", line 1016, in _bootstrap_inner
-#     self.run()
-#   File "/usr/lib/python3.10/threading.py", line 953, in run
-#     self._target(*self._args, **self._kwargs)
-#   File "/usr/lib/python3.10/multiprocessing/pool.py", line 579, in _handle_results
-#     task = get()
-#   File "/usr/lib/python3.10/multiprocessing/connection.py", line 251, in recv
-#     return _ForkingPickler.loads(buf.getbuffer())
-#   File "/home/cwilvx/.cache/pypoetry/virtualenvs/swing_music_player-xIXBgWdk-py3.10/lib/python3.10/site-packages/requests/exceptions.py", line 41, in __init__
-#     CompatJSONDecodeError.__init__(self, *args)
-# TypeError: JSONDecodeError.__init__() missing 2 required positional arguments: 'doc' and 'pos'
+def serialize_for_cards(artists: list[Artist]):
+    return [serialize_for_card(a) for a in artists]

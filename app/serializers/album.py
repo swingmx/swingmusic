@@ -9,6 +9,10 @@ def album_serializer(album: Album, to_remove: set[str]) -> dict:
     for key in to_remove:
         album_dict.pop(key, None)
 
+    # remove artist images
+    for artist in album_dict["albumartists"]:
+        artist.pop("image", None)
+
     return album_dict
 
 
@@ -16,7 +20,7 @@ def serialize_for_card(album: Album):
     props_to_remove = {
         "duration",
         "count",
-        "albumartist_hashes",
+        "albumartists_hashes",
         "og_title",
         "base_title",
         "genres",

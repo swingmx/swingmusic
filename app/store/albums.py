@@ -3,10 +3,11 @@ import random
 
 from tqdm import tqdm
 
-from app.models import Album, Track
 from app.db.sqlite.albumcolors import SQLiteAlbumMethods as aldb
-from .tracks import TrackStore
+from app.models import Album, Track
+
 from ..utils.hashing import create_hash
+from .tracks import TrackStore
 
 
 class AlbumStore:
@@ -19,7 +20,7 @@ class AlbumStore:
         """
         return Album(
             albumhash=track.albumhash,
-            albumartists=track.albumartist,  # type: ignore
+            albumartists=track.albumartists,  # type: ignore
             title=track.og_album,
         )
 

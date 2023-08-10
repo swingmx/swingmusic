@@ -7,14 +7,17 @@ from rapidfuzz import process, utils
 from unidecode import unidecode
 
 from app import models
+from app.db.sqlite.favorite import SQLiteFavoriteMethods as favdb
 from app.models.enums import FavType
 from app.models.track import Track
+from app.serializers.album import serialize_for_card as serialize_album
+from app.serializers.album import serialize_for_card_many as serialize_albums
+from app.serializers.artist import serialize_for_cards
+from app.serializers.track import serialize_track, serialize_tracks
 from app.store.albums import AlbumStore
 from app.store.artists import ArtistStore
 from app.store.tracks import TrackStore
-
 from app.utils.remove_duplicates import remove_duplicates
-from app.db.sqlite.favorite import SQLiteFavoriteMethods as favdb
 
 # ratio = fuzz.ratio
 # wratio = fuzz.WRatio
@@ -303,6 +306,8 @@ class TopResults:
         else:
             top_tracks = TopResults.get_track_items(result, query, limit=tracks_limit)
 
+        top_tracks = serialize_tracks(top_tracks)
+
         if tracks_only:
             return top_tracks
 
@@ -311,10 +316,19 @@ class TopResults:
         else:
             albums = TopResults.get_album_items(result, query, limit=albums_limit)
 
+        albums = serialize_albums(albums)
+
         if albums_only:
             return albums
 
         artists = SearchArtists(query)()[:artists_limit]
+        artists = serialize_for_cards(artists)
+
+        if result["type"] == "track":
+            result["item"] = serialize_track(result["item"])
+
+        if result["type"] == "album":
+            result["item"] = serialize_album(result["item"])
 
         return {
             "top_result": result,
