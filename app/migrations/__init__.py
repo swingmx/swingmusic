@@ -19,6 +19,7 @@ from app.migrations.base import Migration
 migrations: list[list[Migration]] = [
     [
         # v1.3.0
+        v1_3_0.RemoveSmallThumbnailFolder,
         v1_3_0.RemovePlaylistArtistHashes,
         v1_3_0.AddSettingsToPlaylistTable,
         v1_3_0.AddLastUpdatedToTrackTable,
@@ -39,12 +40,11 @@ def apply_migrations():
         # run migrations after the previous migration version
         for migration in migrations[(version - 1) :]:
             for m in migration:
-                log.info("Running new migration: %s", m.name)
-
                 try:
                     m.migrate()
+                    log.info("Applied migration: %s", m.__name__)
                 except:
-                    log.error("Failed to run migration: %s", m.name)
+                    log.error("Failed to run migration: %s", m.__name__)
 
     # bump migration version
     MigrationManager.set_version(len(migrations))

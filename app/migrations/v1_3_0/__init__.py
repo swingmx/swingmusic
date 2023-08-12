@@ -1,11 +1,14 @@
 import json
-from sqlite3 import OperationalError
+import os
+import shutil
 import time
 from collections import OrderedDict
+from sqlite3 import OperationalError
 from typing import Generator
 
 from app.db.sqlite.utils import SQLiteManager
 from app.migrations.base import Migration
+from app.settings import Paths
 from app.utils.decorators import coroutine
 from app.utils.hashing import create_hash
 
@@ -20,12 +23,29 @@ from app.utils.hashing import create_hash
 # 6: trackhashes
 
 
+class RemoveSmallThumbnailFolder(Migration):
+    """
+    Removes the small thumbnail folder.
+
+    Because we are added a new folder "original" in the same directory, and the small thumbs folder is used to check if an album's thumbnail is already extracted.
+
+    So we need to remove it, to force the app to extract thumbnails for all albums.
+    """
+
+    @staticmethod
+    def migrate():
+        path = Paths.get_sm_thumb_path()
+
+        if os.path.exists(path):
+            shutil.rmtree(path)
+
+        os.mkdir(path)
+
+
 class RemovePlaylistArtistHashes(Migration):
     """
     removes the artisthashes column from the playlists table.
     """
-
-    name = "RemovePlaylistArtistHashes"
 
     @staticmethod
     def migrate():
@@ -46,8 +66,6 @@ class AddSettingsToPlaylistTable(Migration):
     adds the settings column and removes the banner_pos and has_gif columns
     to the playlists table.
     """
-
-    name = "AddSettingsToPlaylistTable"
 
     @staticmethod
     def migrate():
@@ -126,8 +144,6 @@ class AddLastUpdatedToTrackTable(Migration):
     adds the last modified column to the tracks table.
     """
 
-    name = "AddLastUpdatedToTrackTable"
-
     @staticmethod
     def migrate():
         # add last_mod column and default to current timestamp
@@ -147,8 +163,6 @@ class MovePlaylistsAndFavoritesTo10BitHashes(Migration):
     """
     moves the playlists and favorites to 10 bit hashes.
     """
-
-    name = "MovePlaylistsAndFavoritesTo10BitHashes"
 
     @staticmethod
     def migrate():
@@ -256,8 +270,6 @@ class RemoveAllTracks(Migration):
     """
     removes all tracks from the tracks table.
     """
-
-    name = "RemoveAllTracks"
 
     @staticmethod
     def migrate():

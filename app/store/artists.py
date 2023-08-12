@@ -23,8 +23,8 @@ class ArtistStore:
 
         # db_artists: list[tuple] = list(ardb.get_all_artists())
 
-        for art in tqdm(ardb.get_all_artists(), desc="Loading artists"):
-            cls.map_artist_color(art)
+        for artist in tqdm(ardb.get_all_artists(), desc="Loading artists"):
+            cls.map_artist_color(artist)
 
     @classmethod
     def map_artist_color(cls, artist_tuple: tuple):

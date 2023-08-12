@@ -142,7 +142,7 @@ def get_album_trackhashes(albumhash: str):
     """
     tracks = TrackStore.get_tracks_by_albumhash(albumhash)
     tracks = sort_by_track_no(tracks)
-    
+
     return [t["trackhash"] for t in tracks]
 
 
@@ -299,7 +299,7 @@ def remove_playlist_image(playlistid: str):
     if playlist is None:
         return {"error": "Playlist not found"}, 404
 
-    PL.remove_image(pid)
+    PL.remove_banner(pid)
 
     playlist.image = None
     playlist.thumb = None
@@ -412,18 +412,22 @@ def save_item_as_playlist():
         trackhashes = get_album_trackhashes(itemhash)
     elif itemtype == "artist":
         trackhashes = get_artist_trackhashes(itemhash)
+    elif itemtype == "queue":
+        trackhashes = itemhash.split(",")
     else:
         trackhashes = []
 
     if len(trackhashes) == 0:
         return {"error": "No tracks founds"}, 404
 
-    playlist = insert_playlist(playlist_name, image=itemhash + ".webp")
+    image = itemhash + ".webp" if itemtype != "folder" and itemtype != "queue" else None
+
+    playlist = insert_playlist(playlist_name, image)
 
     if playlist is None:
         return {"error": "Playlist could not be created"}, 500
 
-    if itemtype != "folder":
+    if itemtype != "folder" and itemtype != "queue":
         filename = itemhash + ".webp"
 
         base_path = (

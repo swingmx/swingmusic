@@ -96,7 +96,7 @@ def get_album_tracks(albumhash: str):
     Returns all the tracks in the given album, sorted by disc and track number.
     """
     tracks = TrackStore.get_tracks_by_albumhash(albumhash)
-    sort_by_track_no(tracks)
+    tracks = sort_by_track_no(tracks)
 
     return {"tracks": tracks}
 

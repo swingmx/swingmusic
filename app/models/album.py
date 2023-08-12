@@ -148,7 +148,7 @@ class Album:
         """
         Checks if the album is a live album.
         """
-        keywords = ["live from", "live at", "live in"]
+        keywords = ["live from", "live at", "live in", "live on", "mtv unplugged"]
         for keyword in keywords:
             if keyword in self.title.lower():
                 return True

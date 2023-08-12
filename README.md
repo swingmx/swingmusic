@@ -10,7 +10,6 @@ enjoy your music library in a web browser.
 
 ### For more screenshots, see the [screenshots page on the website](https://swingmusic.vercel.app/screenshots.html).
 
-> This project is in the early stages of development. Many features are missing but will be added with time.
 
 ### Setup
 

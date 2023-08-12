@@ -8,8 +8,7 @@ from tqdm import tqdm
 
 from app import settings
 from app.db.sqlite.favorite import SQLiteFavoriteMethods as favdb
-from app.db.sqlite.lastfm.similar_artists import \
-    SQLiteLastFMSimilarArtists as lastfmdb
+from app.db.sqlite.lastfm.similar_artists import SQLiteLastFMSimilarArtists as lastfmdb
 from app.db.sqlite.settings import SettingsSQLMethods as sdb
 from app.db.sqlite.tracks import SQLiteTrackMethods
 from app.lib.albumslib import validate_albums
@@ -110,6 +109,8 @@ class Populate:
 
         if Ping()():
             FetchSimilarArtistsLastFM()
+
+        ArtistStore.load_artists()
 
     @staticmethod
     def remove_modified(tracks: Generator[Track, None, None]):
