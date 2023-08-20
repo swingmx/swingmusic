@@ -133,6 +133,8 @@ def get_album_info(bracket_text: str | None) -> list[str]:
     if not bracket_text:
         return []
 
+    # replace all non-alphanumeric characters with an empty string
+    bracket_text = re.sub(r"[^a-zA-Z0-9\s]", "", bracket_text)
     versions = []
 
     for version_keywords in AlbumVersionEnum:

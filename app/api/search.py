@@ -19,7 +19,10 @@ def query_in_quotes(query: str) -> bool:
     """
     Returns True if the query is in quotes
     """
-    return query.startswith('"') and query.endswith('"')
+    try:
+        return query.startswith('"') and query.endswith('"')
+    except AttributeError:
+        return False
 
 
 class Search:
@@ -51,9 +54,13 @@ class Search:
             self.query, albums_only=True, in_quotes=in_quotes
         )
 
-    def get_top_results(self, in_quotes=False):
+    def get_top_results(
+        self,
+        limit: int,
+        in_quotes=False,
+    ):
         finder = searchlib.TopResults()
-        return finder.search(self.query, in_quotes=in_quotes)
+        return finder.search(self.query, in_quotes=in_quotes, limit=limit)
 
 
 @api.route("/search/tracks", methods=["GET"])
@@ -122,12 +129,15 @@ def get_top_results():
     """
 
     query = request.args.get("q")
+    limit = request.args.get("limit", "6")
+    limit = int(limit)
+
     in_quotes = query_in_quotes(query)
 
     if not query:
         return {"error": "No query provided"}, 400
 
-    return Search(query).get_top_results(in_quotes=in_quotes)
+    return Search(query).get_top_results(in_quotes=in_quotes, limit=limit)
 
 
 @api.route("/search/loadmore")

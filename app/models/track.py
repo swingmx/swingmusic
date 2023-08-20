@@ -2,9 +2,13 @@ from dataclasses import dataclass
 
 from app.settings import ParserFlags, get_flag
 from app.utils.hashing import create_hash
-from app.utils.parsers import (clean_title, get_base_title_and_versions,
-                               parse_feat_from_title, remove_prod,
-                               split_artists)
+from app.utils.parsers import (
+    clean_title,
+    get_base_title_and_versions,
+    parse_feat_from_title,
+    remove_prod,
+    split_artists,
+)
 
 from .artist import ArtistMinimal
 
@@ -51,8 +55,10 @@ class Track:
 
             if get_flag(ParserFlags.EXTRACT_FEAT):
                 featured, new_title = parse_feat_from_title(self.title)
-                original_lower = "-".join([a.lower() for a in artists])
-                artists.extend([a for a in featured if a.lower() not in original_lower])
+                original_lower = "-".join([create_hash(a) for a in artists])
+                artists.extend(
+                    [a for a in featured if create_hash(a) not in original_lower]
+                )
 
             if get_flag(ParserFlags.REMOVE_PROD):
                 new_title = remove_prod(new_title)
@@ -121,7 +127,7 @@ class Track:
 
     def add_artists(self, artists: list[str], new_album_title: str):
         for artist in artists:
-            if create_hash(artist) not in self.artist_hashes:
+            if create_hash(artist, decode=True) not in self.artist_hashes:
                 self.artists.append(ArtistMinimal(artist))
 
         self.recreate_artists_hash()

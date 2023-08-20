@@ -1,4 +1,5 @@
 import hashlib
+import re
 
 from unidecode import unidecode
 
@@ -14,6 +15,7 @@ def create_hash(*args: str, decode=False, limit=10) -> str:
 
     str_ = str_.lower().strip().replace(" ", "")
     str_ = "".join(t for t in str_ if t.isalnum())
+    str_ = re.sub(r"[^a-zA-Z0-9\s]", "", str_)
     str_ = str_.encode("utf-8")
     str_ = hashlib.sha256(str_).hexdigest()
     return str_[-limit:]

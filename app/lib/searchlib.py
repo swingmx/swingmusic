@@ -274,13 +274,19 @@ class TopResults:
             return albums[:limit]
 
     @staticmethod
-    def search(query: str, albums_only=False, tracks_only=False, in_quotes=False):
+    def search(
+        query: str,
+        limit: int = None,
+        albums_only=False,
+        tracks_only=False,
+        in_quotes=False,
+    ):
         items, titles = TopResults.collect_all()
         results = TopResults.get_results(titles, query)
 
-        tracks_limit = Limit.tracks if tracks_only else 5
-        albums_limit = Limit.albums if albums_only else 6
-        artists_limit = 3
+        tracks_limit = Limit.tracks if tracks_only else 4
+        albums_limit = Limit.albums if albums_only else limit
+        artists_limit = limit
 
         # map results to their respective items
         try:
