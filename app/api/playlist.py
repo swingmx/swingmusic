@@ -97,7 +97,12 @@ def insert_playlist(name: str, image: str = None):
         "name": name,
         "trackhashes": json.dumps([]),
         "settings": json.dumps(
-            {"has_gif": False, "banner_pos": 50, "square_img": True if image else False}
+            {
+                "has_gif": False,
+                "banner_pos": 50,
+                "square_img": True if image else False,
+                "pinned": False,
+            }
         ),
     }
 
@@ -170,12 +175,12 @@ def add_item_to_playlist(playlist_id: str):
         itemtype = None
 
     try:
-        itemhash = data["itemhash"]
+        itemhash: str = data["itemhash"]
     except KeyError:
         itemhash = None
 
-    if itemtype == "track":
-        trackhashes = [itemhash]
+    if itemtype == "tracks":
+        trackhashes = itemhash.split(",")
     elif itemtype == "folder":
         trackhashes = get_path_trackhashes(itemhash)
     elif itemtype == "album":
@@ -189,8 +194,6 @@ def add_item_to_playlist(playlist_id: str):
 
     if insert_count == 0:
         return {"error": "Item already exists in playlist"}, 409
-
-    PL.update_last_updated(int(playlist_id))
 
     return {"msg": "Done"}, 200
 
@@ -219,13 +222,6 @@ def get_playlist(playlistid: str):
 
     if not playlist.has_image:
         playlist.images = get_first_4_images(tracks)
-
-        if len(playlist.images) > 2:
-            # swap 3rd image with first (3rd image is the visible image in UI)
-            playlist.images[2], playlist.images[0] = (
-                playlist.images[0],
-                playlist.images[2],
-            )
 
     playlist.clear_lists()
 
@@ -288,6 +284,28 @@ def update_playlist_info(playlistid: str):
     }
 
 
+@api.route("/playlist/<playlistid>/pin_unpin", methods=["GET"])
+def pin_unpin_playlist(playlistid: str):
+    """
+    Pins or unpins a playlist.
+    """
+    playlist = PL.get_playlist_by_id(int(playlistid))
+
+    if playlist is None:
+        return {"error": "Playlist not found"}, 404
+
+    settings = playlist.settings
+
+    try:
+        settings["pinned"] = not settings["pinned"]
+    except KeyError:
+        settings["pinned"] = True
+
+    PL.update_settings(int(playlistid), settings)
+
+    return {"msg": "Done"}, 200
+
+
 @api.route("/playlist/<playlistid>/remove-img", methods=["GET"])
 def remove_playlist_image(playlistid: str):
     """
@@ -308,7 +326,6 @@ def remove_playlist_image(playlistid: str):
 
     playlist.images = get_first_4_images(trackhashes=playlist.trackhashes)
     playlist.last_updated = date_string_to_time_passed(playlist.last_updated)
-    PL.update_last_updated(pid)
 
     return {"playlist": playlist}, 200
 
@@ -334,24 +351,6 @@ def remove_playlist():
     return {"msg": "Done"}, 200
 
 
-@api.route("/playlist/<pid>/set-image-pos", methods=["POST"])
-def update_image_position(pid: int):
-    data = request.get_json()
-    message = {"msg": "No data provided"}
-
-    if data is None:
-        return message, 400
-
-    try:
-        pos = data["pos"]
-    except KeyError:
-        return message, 400
-
-    PL.update_banner_pos(pid, pos)
-
-    return {"msg": "Image position saved"}, 200
-
-
 @api.route("/playlist/<pid>/remove-tracks", methods=["POST"])
 def remove_tracks_from_playlist(pid: int):
     data = request.get_json()
@@ -366,7 +365,6 @@ def remove_tracks_from_playlist(pid: int):
 
     tracks = data["tracks"]
     PL.remove_tracks_from_playlist(pid, tracks)
-    PL.update_last_updated(pid)
 
     return {"msg": "Done"}, 200
 
@@ -404,30 +402,29 @@ def save_item_as_playlist():
     if itemtype is None or playlist_name is None or itemhash is None:
         return msg
 
-    if itemtype == "track":
-        trackhashes = [itemhash]
+    if itemtype == "tracks":
+        trackhashes = itemhash.split(",")
     elif itemtype == "folder":
         trackhashes = get_path_trackhashes(itemhash)
     elif itemtype == "album":
         trackhashes = get_album_trackhashes(itemhash)
     elif itemtype == "artist":
         trackhashes = get_artist_trackhashes(itemhash)
-    elif itemtype == "queue":
-        trackhashes = itemhash.split(",")
     else:
         trackhashes = []
 
     if len(trackhashes) == 0:
         return {"error": "No tracks founds"}, 404
 
-    image = itemhash + ".webp" if itemtype != "folder" and itemtype != "queue" else None
+    image = itemhash + ".webp" if itemtype != "folder" and itemtype != "tracks" else None
 
     playlist = insert_playlist(playlist_name, image)
 
     if playlist is None:
         return {"error": "Playlist could not be created"}, 500
 
-    if itemtype != "folder" and itemtype != "queue":
+    # save image
+    if itemtype != "folder" and itemtype != "tracks":
         filename = itemhash + ".webp"
 
         base_path = (
@@ -444,6 +441,5 @@ def save_item_as_playlist():
             )
 
     PL.add_tracks_to_playlist(playlist.id, trackhashes)
-    PL.update_last_updated(playlist.id)
 
     return {"playlist": playlist}, 201

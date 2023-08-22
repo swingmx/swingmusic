@@ -69,8 +69,6 @@ class AddSettingsToPlaylistTable(Migration):
 
     @staticmethod
     def migrate():
-        # existing_playlists = []
-
         select_playlists_sql = "SELECT * FROM playlists"
 
         with SQLiteManager(userdata_db=True) as cur:
@@ -117,6 +115,7 @@ class AddSettingsToPlaylistTable(Migration):
                                 "has_gif": False,
                                 "banner_pos": playlist[1],
                                 "square_img": False,
+                                "pinned": False,
                             }
                         ),
                     }

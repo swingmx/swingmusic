@@ -22,13 +22,15 @@ class Playlist:
     duration: int = 0
     has_image: bool = False
     images: list[str] = dataclasses.field(default_factory=list)
+    pinned: bool = False
 
     def __post_init__(self):
         self.trackhashes = json.loads(str(self.trackhashes))
         self.count = len(self.trackhashes)
 
         if isinstance(self.settings, str):
-            self.settings = json.loads(self.settings)
+            self.settings = dict(json.loads(self.settings))
+            self.pinned = self.settings.get("pinned", False)
 
         self.has_image = (
             Path(settings.Paths.get_playlist_img_path()) / str(self.image)

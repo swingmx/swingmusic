@@ -40,8 +40,8 @@ def extract_thumb(filepath: str, webp_path: str, overwrite=False) -> bool:
         img.resize((tsize, tsize), Image.ANTIALIAS).save(lg_img_path, "webp")
         img.resize((sm_tsize, sm_tsize), Image.ANTIALIAS).save(sm_img_path, "webp")
 
-    if not overwrite and os.path.exists(lg_img_path):
-        img_size = os.path.getsize(lg_img_path)
+    if not overwrite and os.path.exists(sm_img_path):
+        img_size = os.path.getsize(sm_img_path)
 
         if img_size > 0:
             return True

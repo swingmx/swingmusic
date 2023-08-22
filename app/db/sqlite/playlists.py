@@ -14,6 +14,14 @@ class SQLitePlaylistMethods:
     """
 
     @staticmethod
+    def update_last_updated(playlist_id: int):
+        """Updates the last updated date of a playlist."""
+        sql = """UPDATE playlists SET last_updated = ? WHERE id = ?"""
+
+        with SQLiteManager(userdata_db=True) as cur:
+            cur.execute(sql, (create_new_date(), playlist_id))
+
+    @staticmethod
     def insert_one_playlist(playlist: dict):
         # banner_pos,
         # has_gif,
@@ -92,8 +100,8 @@ class SQLitePlaylistMethods:
 
     # FIXME: Extract the "add_track_to_playlist" method to use it for both the artisthash and trackhash lists.
 
-    @staticmethod
-    def add_item_to_json_list(playlist_id: int, field: str, items: set[str]):
+    @classmethod
+    def add_item_to_json_list(cls, playlist_id: int, field: str, items: set[str]):
         """
         Adds a string item to a json dumped list using a playlist id and field name.
         Takes the playlist ID, a field name, an item to add to the field.
@@ -118,6 +126,8 @@ class SQLitePlaylistMethods:
                 cur.execute(sql, (json.dumps(db_items), playlist_id))
                 return len(items)
 
+        cls.update_last_updated(playlist_id)
+
     @classmethod
     def add_tracks_to_playlist(cls, playlist_id: int, trackhashes: list[str]):
         """
@@ -125,8 +135,8 @@ class SQLitePlaylistMethods:
         """
         return cls.add_item_to_json_list(playlist_id, "trackhashes", trackhashes)
 
-    @staticmethod
-    def update_playlist(playlist_id: int, playlist: dict):
+    @classmethod
+    def update_playlist(cls, playlist_id: int, playlist: dict):
         sql = """UPDATE playlists SET
             image = ?,
             last_updated = ?,
@@ -145,13 +155,16 @@ class SQLitePlaylistMethods:
         with SQLiteManager(userdata_db=True) as cur:
             cur.execute(sql, params)
 
-    @staticmethod
-    def update_last_updated(playlist_id: int):
-        """Updates the last updated date of a playlist."""
-        sql = """UPDATE playlists SET last_updated = ? WHERE id = ?"""
+        cls.update_last_updated(playlist_id)
+
+    @classmethod
+    def update_settings(cls, playlist_id: int, settings: dict):
+        sql = """UPDATE playlists SET settings = ? WHERE id = ?"""
 
         with SQLiteManager(userdata_db=True) as cur:
-            cur.execute(sql, (create_new_date(), playlist_id))
+            cur.execute(sql, (json.dumps(settings), playlist_id))
+
+        cls.update_last_updated(playlist_id)
 
     @staticmethod
     def delete_playlist(pid: str):
@@ -161,29 +174,14 @@ class SQLitePlaylistMethods:
             cur.execute(sql, (pid,))
 
     @staticmethod
-    def update_banner_pos(playlistid: int, pos: int):
-        playlist = SQLitePlaylistMethods.get_playlist_by_id(playlistid)
-
-        if playlist is None:
-            return
-
-        playlist.settings["banner_pos"] = pos
-        settings_str = json.dumps(playlist.settings)
-
-        sql = """UPDATE playlists SET settings = ? WHERE id = ?"""
-
-        with SQLiteManager(userdata_db=True) as cur:
-            cur.execute(sql, (settings_str, playlistid))
-
-    @staticmethod
     def remove_banner(playlistid: int):
         sql = """UPDATE playlists SET image = NULL WHERE id = ?"""
 
         with SQLiteManager(userdata_db=True) as cur:
             cur.execute(sql, (playlistid,))
 
-    @staticmethod
-    def remove_tracks_from_playlist(playlistid: int, tracks: list[dict[str, int]]):
+    @classmethod
+    def remove_tracks_from_playlist(cls, playlistid: int, tracks: list[dict[str, int]]):
         """
         Removes tracks from a playlist by trackhash and position.
         """
@@ -211,3 +209,5 @@ class SQLitePlaylistMethods:
                     trackhashes.remove(track["trackhash"])
 
             cur.execute(sql, (json.dumps(trackhashes), playlistid))
+
+        cls.update_last_updated(playlistid)
