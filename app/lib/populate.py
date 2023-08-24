@@ -45,9 +45,9 @@ class Populate:
     also checks if the album art exists in the image path, if not tries to extract it.
     """
 
-    def __init__(self, key: str) -> None:
+    def __init__(self, instance_key: str) -> None:
         global POPULATE_KEY
-        POPULATE_KEY = key
+        POPULATE_KEY = instance_key
 
         validate_tracks()
         validate_albums()
@@ -80,7 +80,7 @@ class Populate:
         untagged = files - unmodified
 
         if len(untagged) != 0:
-            self.tag_untagged(untagged, key)
+            self.tag_untagged(untagged, instance_key)
 
         self.extract_thumb_with_overwrite(modified_tracks)
 
@@ -110,7 +110,7 @@ class Populate:
         if Ping()():
             FetchSimilarArtistsLastFM()
 
-        ArtistStore.load_artists()
+        ArtistStore.load_artists(instance_key)
 
     @staticmethod
     def remove_modified(tracks: Generator[Track, None, None]):
@@ -273,12 +273,17 @@ class FetchSimilarArtistsLastFM:
         artists = ArtistStore.artists
 
         with Pool(processes=cpu_count()) as pool:
-            results = list(
-                tqdm(
-                    pool.imap_unordered(save_similar_artists, artists),
-                    total=len(artists),
-                    desc="Fetching similar artists",
+            try:
+                results = list(
+                    tqdm(
+                        pool.imap_unordered(save_similar_artists, artists),
+                        total=len(artists),
+                        desc="Fetching similar artists",
+                    )
                 )
-            )
 
-            list(results)
+                list(results)
+
+            # any exception that can be raised by the pool
+            except:
+                pass

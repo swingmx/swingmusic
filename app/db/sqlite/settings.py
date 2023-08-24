@@ -1,11 +1,36 @@
+from pprint import pprint
+from typing import Any
 from app.db.sqlite.utils import SQLiteManager
 from app.utils.wintools import win_replace_slash
+from app.settings import FromFlags
 
 
 class SettingsSQLMethods:
     """
     Methods for interacting with the settings table.
     """
+
+    @staticmethod
+    def get_all_settings():
+        """
+        Gets all settings from the database.
+        """
+
+        sql = "SELECT * FROM settings WHERE id = 1"
+
+        with SQLiteManager(userdata_db=True) as cur:
+            cur.execute(sql)
+            settings = cur.fetchone()
+            cur.close()
+
+            # if root_dirs not set
+            if settings is None:
+                return []
+
+            # print
+
+            # omit id, root_dirs, and exclude_dirs
+            return settings[3:]
 
     @staticmethod
     def get_root_dirs() -> list[str]:
@@ -90,25 +115,34 @@ class SettingsSQLMethods:
             return [_dir[0] for _dir in dirs]
 
     @staticmethod
-    def add_artist_separators(seps: set[str]):
-        """
-        Adds a set of artist separators to the userdata table.
-        """
-        # TODO: Implement
+    def get_settings() -> dict[str, Any]:
         pass
 
     @staticmethod
-    def get_artist_separators() -> set[str]:
-        """
-        Gets a set of artist separators from the userdata table.
-        """
-        # TODO: Implement
-        pass
+    def set_setting(key: str, value: Any):
+        sql = f"UPDATE settings SET {key} = :value WHERE id = 1"
 
-    @staticmethod
-    def remove_artist_separators(seps: set[str]):
-        """
-        Removes a set of artist separators from the userdata table.
-        """
-        # TODO: Implement
-        pass
+        if type(value) == bool:
+            value = str(int(value))
+
+        with SQLiteManager(userdata_db=True) as cur:
+            cur.execute(sql, {"value": value})
+
+
+def load_settings():
+    s = SettingsSQLMethods.get_all_settings()
+
+    # artist separators
+    db_separators: str = s[0]
+    db_separators = db_separators.replace(" ", "")
+    separators = db_separators.split(",")
+
+    separators = set(db_separators)
+    FromFlags.ARTIST_SEPARATORS = separators
+
+    # boolean settings
+    FromFlags.EXTRACT_FEAT = bool(s[1])
+    FromFlags.REMOVE_PROD = bool(s[2])
+    FromFlags.CLEAN_ALBUM_TITLE = bool(s[3])
+    FromFlags.REMOVE_REMASTER_FROM_TRACK = bool(s[4])
+    FromFlags.MERGE_ALBUM_VERSIONS = bool(s[5])

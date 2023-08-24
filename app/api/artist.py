@@ -7,8 +7,7 @@ from collections import deque
 from flask import Blueprint, request
 
 from app.db.sqlite.favorite import SQLiteFavoriteMethods as favdb
-from app.db.sqlite.lastfm.similar_artists import \
-    SQLiteLastFMSimilarArtists as fmdb
+from app.db.sqlite.lastfm.similar_artists import SQLiteLastFMSimilarArtists as fmdb
 from app.models import Album, FavType, Track
 from app.serializers.album import serialize_for_card_many
 from app.serializers.track import serialize_tracks
@@ -49,8 +48,8 @@ class ArtistsCache:
     artists: deque[CacheEntry] = deque(maxlen=1)
     # THE ABOVE IS SET TO MAXLEN=1 TO AVOID A BUG THAT I WAS TOO LAZY TO INVESTIGATE
     # ARTIST TRACKS SOMEHOW DISAPPEARED FOR SOME REASON I COULDN'T UNDERSTAND. BY
-    # DISAPPEARING I MEAN AN ARTIST YOU ARE SURE HAS 150 TRACKS ONLY SHOWING LIKE 3 IN
-    # THE ARTIST PAGE. 🤷🏿 (TODO: MAYBE FIX THIS BUG?)
+    # DISAPPEARING I MEAN AN ARTIST YOU ARE SURE HAS 150 TRACKS ONLY SHOWING
+    # LIKE 3 IN THE ARTIST PAGE. 🤷🏿 (TODO: MAYBE FIX THIS BUG?)
 
     @classmethod
     def get_albums_by_artisthash(cls, artisthash: str) -> tuple[list[Album], int]:
@@ -324,5 +323,6 @@ def get_similar_artists(artisthash: str):
         similar = random.sample(similar, limit)
 
     return {"artists": similar[:limit]}
+
 
 # TODO: Rewrite this file using generators where possible

@@ -10,20 +10,28 @@ from app.utils.bisection import UseBisection
 from .albums import AlbumStore
 from .tracks import TrackStore
 
+ARTIST_LOAD_KEY = ""
+
 
 class ArtistStore:
     artists: list[Artist] = []
 
     @classmethod
-    def load_artists(cls):
+    def load_artists(cls, instance_key: str):
         """
         Loads all artists from the database into the store.
         """
+        global ARTIST_LOAD_KEY
+        ARTIST_LOAD_KEY = instance_key
+
         cls.artists = get_all_artists(TrackStore.tracks, AlbumStore.albums)
 
         # db_artists: list[tuple] = list(ardb.get_all_artists())
 
         for artist in tqdm(ardb.get_all_artists(), desc="Loading artists"):
+            if instance_key != ARTIST_LOAD_KEY:
+                return
+
             cls.map_artist_color(artist)
 
     @classmethod

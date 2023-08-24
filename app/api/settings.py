@@ -1,16 +1,15 @@
 from flask import Blueprint, request
-from app import settings
 
-from app.logger import log
+from app.db.sqlite.settings import SettingsSQLMethods as sdb
 from app.lib import populate
 from app.lib.watchdogg import Watcher as WatchDog
-from app.db.sqlite.settings import SettingsSQLMethods as sdb
+from app.logger import log
+from app.settings import ParserFlags, Paths, set_flag
+from app.store.albums import AlbumStore
+from app.store.artists import ArtistStore
+from app.store.tracks import TrackStore
 from app.utils.generators import get_random_str
 from app.utils.threading import background
-
-from app.store.albums import AlbumStore
-from app.store.tracks import TrackStore
-from app.store.artists import ArtistStore
 
 api = Blueprint("settings", __name__, url_prefix="/")
 
@@ -21,13 +20,24 @@ def get_child_dirs(parent: str, children: list[str]):
     return [_dir for _dir in children if _dir.startswith(parent) and _dir != parent]
 
 
-def reload_everything():
+def reload_everything(instance_key: str):
     """
     Reloads all stores using the current database items
     """
-    TrackStore.load_all_tracks()
-    AlbumStore.load_albums()
-    ArtistStore.load_artists()
+    try:
+        TrackStore.load_all_tracks(instance_key)
+    except Exception as e:
+        log.error(e)
+
+    try:
+        AlbumStore.load_albums(instance_key=instance_key)
+    except Exception as e:
+        log.error(e)
+
+    try:
+        ArtistStore.load_artists(instance_key)
+    except Exception as e:
+        log.error(e)
 
 
 @background
@@ -35,15 +45,16 @@ def rebuild_store(db_dirs: list[str]):
     """
     Restarts the watchdog and rebuilds the music library.
     """
+    instance_key = get_random_str()
+
     log.info("Rebuilding library...")
     TrackStore.remove_tracks_by_dir_except(db_dirs)
-    reload_everything()
+    reload_everything(instance_key)
 
-    key = get_random_str()
     try:
-        populate.Populate(key=key)
+        populate.Populate(instance_key=instance_key)
     except populate.PopulateCancelledError:
-        reload_everything()
+        reload_everything(instance_key)
         return
 
     WatchDog().restart()
@@ -51,6 +62,7 @@ def rebuild_store(db_dirs: list[str]):
     log.info("Rebuilding library... ✅")
 
 
+# I freaking don't know what this function does anymore
 def finalize(new_: list[str], removed_: list[str], db_dirs_: list[str]):
     """
     Params:
@@ -96,7 +108,7 @@ def add_root_dirs():
         sdb.remove_root_dirs(db_dirs)
 
     if incoming_home:
-        finalize([_h], [], [settings.Paths.USER_HOME_DIR])
+        finalize([_h], [], [Paths.USER_HOME_DIR])
         return {"root_dirs": [_h]}
 
     # ---
@@ -127,3 +139,78 @@ def get_root_dirs():
     dirs = sdb.get_root_dirs()
 
     return {"dirs": dirs}
+
+
+# maps settings to their parser flags
+mapp = {
+    "artist_separators": ParserFlags.ARTIST_SEPARATORS,
+    "extract_feat": ParserFlags.EXTRACT_FEAT,
+    "remove_prod": ParserFlags.REMOVE_PROD,
+    "clean_album_title": ParserFlags.CLEAN_ALBUM_TITLE,
+    "remove_remaster": ParserFlags.REMOVE_REMASTER_FROM_TRACK,
+    "merge_albums": ParserFlags.MERGE_ALBUM_VERSIONS,
+}
+
+
+@api.route("/settings/", methods=["GET"])
+def get_all_settings():
+    """
+    Get all settings from the database.
+    """
+
+    settings = sdb.get_all_settings()
+
+    key_list = list(mapp.keys())
+    s = {}
+
+    for key in key_list:
+        val_index = key_list.index(key)
+
+        try:
+            s[key] = settings[val_index]
+
+            if type(s[key]) == int:
+                s[key] = bool(s[key])
+            if type(s[key]) == str:
+                s[key] = str(s[key]).split(",")
+
+        except IndexError:
+            s[key] = None
+
+    root_dirs = sdb.get_root_dirs()
+    s["root_dirs"] = root_dirs
+
+    return {
+        "settings": s,
+    }
+
+
+@background
+def reload_all_for_set_setting():
+    reload_everything(get_random_str())
+
+
+@api.route("/settings/set", methods=["POST"])
+def set_setting():
+    key = request.get_json().get("key")
+    value = request.get_json().get("value")
+
+    if key is None or value is None or key == "root_dirs":
+        return {"msg": "Invalid arguments!"}, 400
+
+    root_dir = sdb.get_root_dirs()
+
+    if not root_dir:
+        return {"msg": "No root directories set!"}, 400
+
+    if key not in mapp:
+        return {"msg": "Invalid key!"}, 400
+
+    sdb.set_setting(key, value)
+
+    if mapp[key] is not False:
+        flag = mapp[key]
+        set_flag(flag, value)
+        reload_all_for_set_setting()
+
+    return {"result": value}

@@ -9,6 +9,8 @@ from app.models import Album, Track
 from ..utils.hashing import create_hash
 from .tracks import TrackStore
 
+ALBUM_LOAD_KEY = ""
+
 
 class AlbumStore:
     albums: list[Album] = []
@@ -25,16 +27,21 @@ class AlbumStore:
         )
 
     @classmethod
-    def load_albums(cls):
+    def load_albums(cls, instance_key: str):
         """
         Loads all albums from the database into the store.
         """
+        global ALBUM_LOAD_KEY
+        ALBUM_LOAD_KEY = instance_key
 
         cls.albums = []
 
         albumhashes = set(t.albumhash for t in TrackStore.tracks)
 
-        for albumhash in tqdm(albumhashes, desc="Loading albums"):
+        for albumhash in tqdm(albumhashes, desc=f"Loading {instance_key}"):
+            if instance_key != ALBUM_LOAD_KEY:
+                return
+
             for track in TrackStore.tracks:
                 if track.albumhash == albumhash:
                     cls.albums.append(cls.create_album(track))
@@ -67,15 +74,21 @@ class AlbumStore:
 
     @classmethod
     def get_albums_by_albumartist(
-            cls, artisthash: str, limit: int, exclude: str
+        cls, artisthash: str, limit: int, exclude: str
     ) -> list[Album]:
         """
         Returns N albums by the given albumartist, excluding the specified album.
         """
 
-        albums = [album for album in cls.albums if artisthash in album.albumartists_hashes]
+        albums = [
+            album for album in cls.albums if artisthash in album.albumartists_hashes
+        ]
 
-        albums = [album for album in albums if create_hash(album.base_title) != create_hash(exclude)]
+        albums = [
+            album
+            for album in albums
+            if create_hash(album.base_title) != create_hash(exclude)
+        ]
 
         if len(albums) > limit:
             random.shuffle(albums)
@@ -110,7 +123,9 @@ class AlbumStore:
         """
         Returns all albums by the given artist.
         """
-        return [album for album in cls.albums if artisthash in album.albumartists_hashes]
+        return [
+            album for album in cls.albums if artisthash in album.albumartists_hashes
+        ]
 
     @classmethod
     def count_albums_by_artisthash(cls, artisthash: str):

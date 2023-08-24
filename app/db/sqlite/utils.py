@@ -8,7 +8,7 @@ import time
 from typing import Optional
 
 from app.models import Album, Playlist, Track
-from app.settings import Db
+from app import settings
 
 
 def tuple_to_track(track: tuple):
@@ -88,10 +88,10 @@ class SQLiteManager:
         if self.test_db_path:
             db_path = self.test_db_path
         else:
-            db_path = Db.get_app_db_path()
+            db_path = settings.Db.get_app_db_path()
 
         if self.userdata_db:
-            db_path = Db.get_userdata_db_path()
+            db_path = settings.Db.get_userdata_db_path()
 
         self.conn = sqlite3.connect(
             db_path,

@@ -25,6 +25,7 @@ migrations: list[list[Migration]] = [
         v1_3_0.AddLastUpdatedToTrackTable,
         v1_3_0.MovePlaylistsAndFavoritesTo10BitHashes,
         v1_3_0.RemoveAllTracks,
+        v1_3_0.UpdateAppSettingsTable,
     ]
 ]
 

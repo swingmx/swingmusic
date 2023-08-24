@@ -3,6 +3,9 @@ This file is used to run the application.
 """
 import logging
 import mimetypes
+import os
+
+from flask import request
 
 from app.api import create_api
 from app.arg_handler import HandleArgs
@@ -34,12 +37,25 @@ app = create_api()
 app.static_folder = get_home_res_path("client")
 
 
+# @app.route("/", defaults={"path": ""})
 @app.route("/<path:path>")
-def serve_client_files(path):
+def serve_client_files(path: str):
     """
     Serves the static files in the client folder.
     """
-    return app.send_static_file(path)
+    js_or_css = path.endswith(".js") or path.endswith(".css")
+    if not js_or_css:
+        return app.send_static_file(path)
+
+    gzipped_path = path + ".gz"
+
+    if request.headers.get("Accept-Encoding", "").find("gzip") >= 0:
+        if os.path.exists(os.path.join(app.static_folder, gzipped_path)):
+            response = app.make_response(app.send_static_file(gzipped_path))
+            response.headers["Content-Encoding"] = "gzip"
+            return response
+        else:
+            return app.send_static_file(path)
 
 
 @app.route("/")
@@ -75,12 +91,10 @@ if __name__ == "__main__":
     bg_run_setup()
     start_watchdog()
 
-app.run(
-    debug=False,
-    threaded=True,
-    host=FLASKVARS.get_flask_host(),
-    port=FLASKVARS.get_flask_port(),
-    use_reloader=False,
-)
-
-# TODO: Organize code in this file: move args to new file, etc.
+    app.run(
+        debug=False,
+        threaded=True,
+        host=FLASKVARS.get_flask_host(),
+        port=FLASKVARS.get_flask_port(),
+        use_reloader=False,
+    )

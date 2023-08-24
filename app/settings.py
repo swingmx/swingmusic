@@ -2,6 +2,7 @@
 Contains default configs
 """
 import os
+from typing import Any
 
 join = os.path.join
 
@@ -162,27 +163,32 @@ class FromFlags:
 
     CLEAN_ALBUM_TITLE = True
     REMOVE_REMASTER_FROM_TRACK = True
-    SHOW_ALBUM_VERSION = True
 
     DO_PERIODIC_SCANS = True
     PERIODIC_SCAN_INTERVAL = 300  # seconds
 
     MERGE_ALBUM_VERSIONS = False
+    ARTIST_SEPARATORS = {",", "/", ";", "&"}
 
 
-class ParserFlags():
+# TODO: Find a way to eliminate this class without breaking typings
+class ParserFlags:
     EXTRACT_FEAT = "EXTRACT_FEAT"
     REMOVE_PROD = "REMOVE_PROD"
     CLEAN_ALBUM_TITLE = "CLEAN_ALBUM_TITLE"
-    SHOW_ALBUM_VERSION = "SHOW_ALBUM_VERSION"
     REMOVE_REMASTER_FROM_TRACK = "REMOVE_REMASTER_FROM_TRACK"
     DO_PERIODIC_SCANS = "DO_PERIODIC_SCANS"
     PERIODIC_SCAN_INTERVAL = "PERIODIC_SCAN_INTERVAL"
     MERGE_ALBUM_VERSIONS = "MERGE_ALBUM_VERSIONS"
+    ARTIST_SEPARATORS = "ARTIST_SEPARATORS"
 
 
 def get_flag(flag: ParserFlags) -> bool:
     return getattr(FromFlags, flag)
+
+
+def set_flag(flag: ParserFlags, value: Any):
+    setattr(FromFlags, flag, value)
 
 
 def get_scan_sleep_time() -> int:

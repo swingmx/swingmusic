@@ -3,18 +3,34 @@ This module combines all API blueprints into a single Flask app instance.
 """
 
 from flask import Flask
+from flask_compress import Compress
 from flask_cors import CORS
 
-from app.api import (album, artist, favorites, folder, imgserver, playlist,
-                     search, settings, track, colors)
+from app.api import (
+    album,
+    artist,
+    colors,
+    favorites,
+    folder,
+    imgserver,
+    playlist,
+    search,
+    settings,
+    track,
+)
 
 
 def create_api():
     """
     Creates the Flask instance, registers modules and registers all the API blueprints.
     """
-    app = Flask(__name__, static_url_path="")
+    app = Flask(__name__)
     CORS(app)
+    Compress(app)
+
+    app.config["COMPRESS_MIMETYPES"] = [
+        "application/json",
+    ]
 
     with app.app_context():
         app.register_blueprint(album.api)

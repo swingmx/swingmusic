@@ -242,7 +242,6 @@ class TopResults:
 
         if item["type"] == "artist":
             t = TrackStore.get_tracks_by_artisthash(item["item"].artisthash)
-            t.sort(key=lambda x: x.last_mod)
 
             # if there are less than the limit, get more tracks
             if len(t) < limit:

@@ -6,15 +6,19 @@ from app.models import Track
 from app.utils.bisection import UseBisection
 from app.utils.remove_duplicates import remove_duplicates
 
+TRACKS_LOAD_KEY = ""
+
 
 class TrackStore:
     tracks: list[Track] = []
 
     @classmethod
-    def load_all_tracks(cls):
+    def load_all_tracks(cls, instance_key: str):
         """
         Loads all tracks from the database into the store.
         """
+        global TRACKS_LOAD_KEY
+        TRACKS_LOAD_KEY = instance_key
 
         cls.tracks = list(tdb.get_all_tracks())
 
@@ -22,6 +26,9 @@ class TrackStore:
         fav_hashes = " ".join([t[1] for t in fav_hashes])
 
         for track in tqdm(cls.tracks, desc="Loading tracks"):
+            if instance_key != TRACKS_LOAD_KEY:
+                return
+
             if track.trackhash in fav_hashes:
                 track.is_favorite = True
 
@@ -153,12 +160,14 @@ class TrackStore:
         return remove_duplicates(tracks)
 
     @classmethod
-    def get_tracks_by_artisthash(cls, artisthash: str) -> list[Track]:
+    def get_tracks_by_artisthash(cls, artisthash: str):
         """
         Returns all tracks matching the given artist. Duplicate tracks are removed.
         """
         tracks = [t for t in cls.tracks if artisthash in t.artist_hashes]
-        return remove_duplicates(tracks)
+        tracks = remove_duplicates(tracks)
+        tracks.sort(key=lambda x: x.last_mod)
+        return tracks
 
     @classmethod
     def get_tracks_in_path(cls, path: str):
