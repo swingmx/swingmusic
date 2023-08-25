@@ -137,7 +137,7 @@ def load_settings():
     db_separators = db_separators.replace(" ", "")
     separators = db_separators.split(",")
 
-    separators = set(db_separators)
+    separators = set(separators)
     FromFlags.ARTIST_SEPARATORS = separators
 
     # boolean settings

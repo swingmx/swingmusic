@@ -38,7 +38,7 @@ class AlbumStore:
 
         albumhashes = set(t.albumhash for t in TrackStore.tracks)
 
-        for albumhash in tqdm(albumhashes, desc=f"Loading {instance_key}"):
+        for albumhash in tqdm(albumhashes, desc=f"Loading albums"):
             if instance_key != ALBUM_LOAD_KEY:
                 return
 

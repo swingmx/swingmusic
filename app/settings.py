@@ -168,7 +168,7 @@ class FromFlags:
     PERIODIC_SCAN_INTERVAL = 300  # seconds
 
     MERGE_ALBUM_VERSIONS = False
-    ARTIST_SEPARATORS = {",", "/", ";", "&"}
+    ARTIST_SEPARATORS = set()
 
 
 # TODO: Find a way to eliminate this class without breaking typings

@@ -26,7 +26,7 @@ CREATE TABLE IF NOT EXISTS settings (
     id integer PRIMARY KEY,
     root_dirs text NOT NULL,
     exclude_dirs text,
-    artist_separators text NOT NULL default '/,;,&',
+    artist_separators text NOT NULL default '/,;',
     extract_feat integer NOT NULL DEFAULT 1,
     remove_prod integer NOT NULL DEFAULT 1,
     clean_album_title integer NOT NULL DEFAULT 1,

@@ -208,9 +208,18 @@ def set_setting():
 
     sdb.set_setting(key, value)
 
-    if mapp[key] is not False:
-        flag = mapp[key]
-        set_flag(flag, value)
-        reload_all_for_set_setting()
+    flag = mapp[key]
+
+    if key == "artist_separators":
+        value = str(value).split(",")
+        value = set(value)
+
+    set_flag(flag, value)
+    reload_all_for_set_setting()
+
+    # if value is a set, convert it to a string
+    # (artist_separators)
+    if type(value) == set:
+        value = ",".join(value)
 
     return {"result": value}
