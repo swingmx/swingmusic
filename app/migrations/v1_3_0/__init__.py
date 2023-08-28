@@ -34,12 +34,15 @@ class RemoveSmallThumbnailFolder(Migration):
 
     @staticmethod
     def migrate():
-        path = Paths.get_sm_thumb_path()
+        thumbs_sm_path = Paths.get_sm_thumb_path()
+        thumbs_lg_path = Paths.get_lg_thumb_path()
 
-        if os.path.exists(path):
-            shutil.rmtree(path)
+        for path in [thumbs_sm_path, thumbs_lg_path]:
+            if os.path.exists(path):
+                shutil.rmtree(path)
 
-        os.mkdir(path)
+        for path in [thumbs_sm_path, thumbs_lg_path]:
+            os.makedirs(path, exist_ok=True)
 
 
 class RemovePlaylistArtistHashes(Migration):
