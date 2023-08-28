@@ -36,9 +36,12 @@ def extract_thumb(filepath: str, webp_path: str, overwrite=False) -> bool:
     sm_tsize = Defaults.SM_THUMB_SIZE
 
     def save_image(img: Image.Image):
+        width, height = img.size
+        ratio = width / height
+
         img.save(original_img_path, "webp")
-        img.resize((tsize, tsize), Image.ANTIALIAS).save(lg_img_path, "webp")
-        img.resize((sm_tsize, sm_tsize), Image.ANTIALIAS).save(sm_img_path, "webp")
+        img.resize((tsize, int(tsize / ratio)), Image.ANTIALIAS).save(lg_img_path, "webp")
+        img.resize((sm_tsize, int(sm_tsize / ratio)), Image.ANTIALIAS).save(sm_img_path, "webp")
 
     if not overwrite and os.path.exists(sm_img_path):
         img_size = os.path.getsize(sm_img_path)
