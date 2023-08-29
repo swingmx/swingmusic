@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 
-from app.settings import ParserFlags, get_flag
+from app.settings import SessionVarKeys, get_flag
 from app.utils.hashing import create_hash
 from app.utils.parsers import (
     clean_title,
@@ -41,6 +41,10 @@ class Track:
     artist_hashes: str = ""
     is_favorite: bool = False
 
+    # temporary attributes
+    _pos: int = 0  # for sorting tracks by disc and track number
+    _ati: str = ""  # (album track identifier) for removing duplicates when merging album versions
+
     og_title: str = ""
     og_album: str = ""
 
@@ -53,31 +57,31 @@ class Track:
             artists = split_artists(self.artists)
             new_title = self.title
 
-            if get_flag(ParserFlags.EXTRACT_FEAT):
+            if get_flag(SessionVarKeys.EXTRACT_FEAT):
                 featured, new_title = parse_feat_from_title(self.title)
                 original_lower = "-".join([create_hash(a) for a in artists])
                 artists.extend(
                     [a for a in featured if create_hash(a) not in original_lower]
                 )
 
-            if get_flag(ParserFlags.REMOVE_PROD):
+            if get_flag(SessionVarKeys.REMOVE_PROD):
                 new_title = remove_prod(new_title)
 
             # if track is a single
             if self.og_title == self.album:
                 self.rename_album(new_title)
 
-            if get_flag(ParserFlags.REMOVE_REMASTER_FROM_TRACK):
+            if get_flag(SessionVarKeys.REMOVE_REMASTER_FROM_TRACK):
                 new_title = clean_title(new_title)
 
             self.title = new_title
 
-            if get_flag(ParserFlags.CLEAN_ALBUM_TITLE):
+            if get_flag(SessionVarKeys.CLEAN_ALBUM_TITLE):
                 self.album, _ = get_base_title_and_versions(
                     self.album, get_versions=False
                 )
 
-            if get_flag(ParserFlags.MERGE_ALBUM_VERSIONS):
+            if get_flag(SessionVarKeys.MERGE_ALBUM_VERSIONS):
                 self.recreate_albumhash()
 
             self.artist_hashes = "-".join(create_hash(a, decode=True) for a in artists)

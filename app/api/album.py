@@ -3,8 +3,6 @@ Contains all the album routes.
 """
 
 import random
-from dataclasses import asdict
-from typing import Any
 
 from flask import Blueprint, request
 
@@ -18,7 +16,6 @@ from app.serializers.track import serialize_track
 from app.store.albums import AlbumStore
 from app.store.tracks import TrackStore
 from app.utils.hashing import create_hash
-from app.utils.remove_duplicates import remove_duplicates
 
 get_albums_by_albumartist = adb.get_albums_by_albumartist
 check_is_fav = favdb.check_is_favorite
@@ -67,13 +64,12 @@ def get_album_tracks_and_info():
         return list(genres)
 
     album.genres = get_album_genres(tracks)
-    tracks = remove_duplicates(tracks)
-
     album.count = len(tracks)
+
     album.get_date_from_tracks(tracks)
 
     try:
-        album.duration = sum((t.duration for t in tracks))
+        album.duration = sum(t.duration for t in tracks)
     except AttributeError:
         album.duration = 0
 

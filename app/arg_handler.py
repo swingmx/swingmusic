@@ -3,14 +3,14 @@ Handles arguments passed to the program.
 """
 import os.path
 import sys
-
 from configparser import ConfigParser
+
 import PyInstaller.__main__ as bundler
 
 from app import settings
+from app.logger import log
 from app.print_help import HELP_MESSAGE
 from app.utils.wintools import is_windows
-from app.logger import log
 from app.utils.xdg_utils import get_xdg_config_dir
 
 # from app.api.imgserver import set_app_dir
@@ -29,10 +29,6 @@ class HandleArgs:
         self.handle_port()
         self.handle_config_path()
 
-        self.handle_no_feat()
-        self.handle_remove_prod()
-        self.handle_cleaning_albums()
-        self.handle_cleaning_tracks()
         self.handle_periodic_scan()
         self.handle_periodic_scan_interval()
 
@@ -123,30 +119,9 @@ class HandleArgs:
         settings.Paths.set_config_dir(get_xdg_config_dir())
 
     @staticmethod
-    def handle_no_feat():
-        # if ArgsEnum.no_feat in ARGS:
-        if any((a in ARGS for a in ALLARGS.show_feat)):
-            settings.FromFlags.EXTRACT_FEAT = False
-
-    @staticmethod
-    def handle_remove_prod():
-        if any((a in ARGS for a in ALLARGS.show_prod)):
-            settings.FromFlags.REMOVE_PROD = False
-
-    @staticmethod
-    def handle_cleaning_albums():
-        if any((a in ARGS for a in ALLARGS.dont_clean_albums)):
-            settings.FromFlags.CLEAN_ALBUM_TITLE = False
-
-    @staticmethod
-    def handle_cleaning_tracks():
-        if any((a in ARGS for a in ALLARGS.dont_clean_tracks)):
-            settings.FromFlags.REMOVE_REMASTER_FROM_TRACK = False
-
-    @staticmethod
     def handle_periodic_scan():
         if any((a in ARGS for a in ALLARGS.no_periodic_scan)):
-            settings.FromFlags.DO_PERIODIC_SCANS = False
+            settings.SessionVars.DO_PERIODIC_SCANS = False
 
     @staticmethod
     def handle_periodic_scan_interval():
@@ -161,8 +136,6 @@ class HandleArgs:
                 print("ERROR: Interval not specified")
                 sys.exit(0)
 
-            # psi = 0
-
             try:
                 psi = int(interval)
             except ValueError:
@@ -173,7 +146,7 @@ class HandleArgs:
                 print("WADAFUCK ARE YOU TRYING?")
                 sys.exit(0)
 
-            settings.FromFlags.PERIODIC_SCAN_INTERVAL = psi
+            settings.SessionVars.PERIODIC_SCAN_INTERVAL = psi
 
     @staticmethod
     def handle_help():

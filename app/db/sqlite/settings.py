@@ -1,8 +1,9 @@
 from pprint import pprint
 from typing import Any
+
 from app.db.sqlite.utils import SQLiteManager
+from app.settings import SessionVars
 from app.utils.wintools import win_replace_slash
-from app.settings import FromFlags
 
 
 class SettingsSQLMethods:
@@ -138,11 +139,11 @@ def load_settings():
     separators = db_separators.split(",")
 
     separators = set(separators)
-    FromFlags.ARTIST_SEPARATORS = separators
+    SessionVars.ARTIST_SEPARATORS = separators
 
     # boolean settings
-    FromFlags.EXTRACT_FEAT = bool(s[1])
-    FromFlags.REMOVE_PROD = bool(s[2])
-    FromFlags.CLEAN_ALBUM_TITLE = bool(s[3])
-    FromFlags.REMOVE_REMASTER_FROM_TRACK = bool(s[4])
-    FromFlags.MERGE_ALBUM_VERSIONS = bool(s[5])
+    SessionVars.EXTRACT_FEAT = bool(s[1])
+    SessionVars.REMOVE_PROD = bool(s[2])
+    SessionVars.CLEAN_ALBUM_TITLE = bool(s[3])
+    SessionVars.REMOVE_REMASTER_FROM_TRACK = bool(s[4])
+    SessionVars.MERGE_ALBUM_VERSIONS = bool(s[5])

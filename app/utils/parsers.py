@@ -1,14 +1,14 @@
 import re
 
 from app.enums.album_versions import AlbumVersionEnum
-from app.settings import get_flag, ParserFlags
+from app.settings import SessionVarKeys, get_flag
 
 
 def split_artists(src: str):
     """
     Splits a string of artists into a list of artists.
     """
-    separators: set = get_flag(ParserFlags.ARTIST_SEPARATORS)
+    separators: set = get_flag(SessionVarKeys.ARTIST_SEPARATORS)
     separators = separators.union({","})
 
     for sep in separators:

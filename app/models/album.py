@@ -1,13 +1,13 @@
 import dataclasses
-from dataclasses import dataclass
 import datetime
+from dataclasses import dataclass
 
-from .track import Track
-from .artist import Artist
+from app.settings import SessionVarKeys, get_flag
+
 from ..utils.hashing import create_hash
-from ..utils.parsers import parse_feat_from_title, get_base_title_and_versions
-
-from app.settings import get_flag, ParserFlags
+from ..utils.parsers import get_base_title_and_versions, parse_feat_from_title
+from .artist import Artist
+from .track import Track
 
 
 @dataclass(slots=True)
@@ -44,7 +44,7 @@ class Album:
         self.image = self.albumhash + ".webp"
 
         # Fetch album artists from title
-        if get_flag(ParserFlags.EXTRACT_FEAT):
+        if get_flag(SessionVarKeys.EXTRACT_FEAT):
             featured, self.title = parse_feat_from_title(self.title)
 
             if len(featured) > 0:
@@ -58,8 +58,8 @@ class Album:
                 TrackStore.append_track_artists(self.albumhash, featured, self.title)
 
         # Handle album version data
-        if get_flag(ParserFlags.CLEAN_ALBUM_TITLE):
-            get_versions = not get_flag(ParserFlags.MERGE_ALBUM_VERSIONS)
+        if get_flag(SessionVarKeys.CLEAN_ALBUM_TITLE):
+            get_versions = not get_flag(SessionVarKeys.MERGE_ALBUM_VERSIONS)
 
             self.title, self.versions = get_base_title_and_versions(
                 self.title, get_versions=get_versions

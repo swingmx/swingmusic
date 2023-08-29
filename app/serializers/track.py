@@ -21,7 +21,7 @@ def serialize_track(track: Track, to_remove: set = {}, remove_disc=True) -> dict
         props.remove("disc")
         props.remove("track")
 
-    props.update(key for key in album_dict.keys() if key.startswith("is_"))
+    props.update(key for key in album_dict.keys() if key.startswith(("is_", "_")))
     props.remove("is_favorite")
 
     for key in props:

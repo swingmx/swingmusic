@@ -157,7 +157,7 @@ class TrackStore:
         Returns all tracks matching the given album hash.
         """
         tracks = [t for t in cls.tracks if t.albumhash == album_hash]
-        return remove_duplicates(tracks)
+        return remove_duplicates(tracks, is_album_tracks=True)
 
     @classmethod
     def get_tracks_by_artisthash(cls, artisthash: str):

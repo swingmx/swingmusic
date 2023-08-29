@@ -150,7 +150,11 @@ class ALLARGS:
     version = ("--version", "-v")
 
 
-class FromFlags:
+class SessionVars:
+    """
+    Variables that can be altered per session.
+    """
+
     EXTRACT_FEAT = True
     """
     Whether to extract the featured artists from the song title.
@@ -165,14 +169,17 @@ class FromFlags:
     REMOVE_REMASTER_FROM_TRACK = True
 
     DO_PERIODIC_SCANS = True
-    PERIODIC_SCAN_INTERVAL = 300  # seconds
+    PERIODIC_SCAN_INTERVAL = 600  # 10 minutes
+    """
+    The interval between periodic scans in seconds.
+    """
 
     MERGE_ALBUM_VERSIONS = False
     ARTIST_SEPARATORS = set()
 
 
 # TODO: Find a way to eliminate this class without breaking typings
-class ParserFlags:
+class SessionVarKeys:
     EXTRACT_FEAT = "EXTRACT_FEAT"
     REMOVE_PROD = "REMOVE_PROD"
     CLEAN_ALBUM_TITLE = "CLEAN_ALBUM_TITLE"
@@ -183,16 +190,16 @@ class ParserFlags:
     ARTIST_SEPARATORS = "ARTIST_SEPARATORS"
 
 
-def get_flag(flag: ParserFlags) -> bool:
-    return getattr(FromFlags, flag)
+def get_flag(key: SessionVarKeys) -> bool:
+    return getattr(SessionVars, key)
 
 
-def set_flag(flag: ParserFlags, value: Any):
-    setattr(FromFlags, flag, value)
+def set_flag(key: SessionVarKeys, value: Any):
+    setattr(SessionVars, key, value)
 
 
 def get_scan_sleep_time() -> int:
-    return FromFlags.PERIODIC_SCAN_INTERVAL
+    return SessionVars.PERIODIC_SCAN_INTERVAL
 
 
 class TCOLOR:

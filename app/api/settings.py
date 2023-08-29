@@ -4,7 +4,7 @@ from app.db.sqlite.settings import SettingsSQLMethods as sdb
 from app.lib import populate
 from app.lib.watchdogg import Watcher as WatchDog
 from app.logger import log
-from app.settings import ParserFlags, Paths, set_flag
+from app.settings import Paths, SessionVarKeys, set_flag
 from app.store.albums import AlbumStore
 from app.store.artists import ArtistStore
 from app.store.tracks import TrackStore
@@ -143,12 +143,12 @@ def get_root_dirs():
 
 # maps settings to their parser flags
 mapp = {
-    "artist_separators": ParserFlags.ARTIST_SEPARATORS,
-    "extract_feat": ParserFlags.EXTRACT_FEAT,
-    "remove_prod": ParserFlags.REMOVE_PROD,
-    "clean_album_title": ParserFlags.CLEAN_ALBUM_TITLE,
-    "remove_remaster": ParserFlags.REMOVE_REMASTER_FROM_TRACK,
-    "merge_albums": ParserFlags.MERGE_ALBUM_VERSIONS,
+    "artist_separators": SessionVarKeys.ARTIST_SEPARATORS,
+    "extract_feat": SessionVarKeys.EXTRACT_FEAT,
+    "remove_prod": SessionVarKeys.REMOVE_PROD,
+    "clean_album_title": SessionVarKeys.CLEAN_ALBUM_TITLE,
+    "remove_remaster": SessionVarKeys.REMOVE_REMASTER_FROM_TRACK,
+    "merge_albums": SessionVarKeys.MERGE_ALBUM_VERSIONS,
 }
 
 

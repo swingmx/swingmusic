@@ -30,6 +30,12 @@ def validate_albums():
                 AlbumStore.remove_album(album)
             bar()
 
+def remove_duplicate_on_merge_versions(tracks: list[Track]) -> list[Track]:
+    """
+    Removes duplicate tracks when merging versions of the same album.
+    """
+    
+    pass
 
 def sort_by_track_no(tracks: list[Track]) -> list[dict[str, Any]]:
     tracks = [asdict(t) for t in tracks]
