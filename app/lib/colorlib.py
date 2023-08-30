@@ -15,6 +15,11 @@ from app.db.sqlite.utils import SQLiteManager
 
 from app.store.artists import ArtistStore
 from app.store.albums import AlbumStore
+from app.logger import log
+from app.lib.errors import PopulateCancelledError
+
+PROCESS_ALBUM_COLORS_KEY = ""
+PROCESS_ARTIST_COLORS_KEY = ""
 
 
 def get_image_colors(image: str, count=1) -> list[str]:
@@ -52,7 +57,10 @@ class ProcessAlbumColors:
     Extracts the most dominant color from the album art and saves it to the database.
     """
 
-    def __init__(self) -> None:
+    def __init__(self, instance_key: str) -> None:
+        global PROCESS_ALBUM_COLORS_KEY
+        PROCESS_ALBUM_COLORS_KEY = instance_key
+
         albums = [
             a
             for a in AlbumStore.albums
@@ -62,6 +70,15 @@ class ProcessAlbumColors:
         with SQLiteManager() as cur:
             try:
                 for album in tqdm(albums, desc="Processing missing album colors"):
+                    if PROCESS_ALBUM_COLORS_KEY != instance_key:
+                        raise PopulateCancelledError(
+                            "A newer 'ProcessAlbumColors' instance is running. Stopping this one."
+                        )
+
+                    # TODO: Stop hitting the database for every album.
+                    # Instead, fetch all the data from the database and
+                    # check from memory.
+
                     exists = aldb.exists(album.albumhash, cur=cur)
                     if exists:
                         continue
@@ -83,14 +100,22 @@ class ProcessArtistColors:
     Extracts the most dominant color from the artist art and saves it to the database.
     """
 
-    def __init__(self) -> None:
+    def __init__(self, instance_key: str) -> None:
         all_artists = [a for a in ArtistStore.artists if len(a.colors) == 0]
+
+        global PROCESS_ARTIST_COLORS_KEY
+        PROCESS_ARTIST_COLORS_KEY = instance_key
 
         with SQLiteManager() as cur:
             try:
                 for artist in tqdm(
                     all_artists, desc="Processing missing artist colors"
                 ):
+                    if PROCESS_ARTIST_COLORS_KEY != instance_key:
+                        raise PopulateCancelledError(
+                            "A newer 'ProcessArtistColors' instance is running. Stopping this one."
+                        )
+
                     exists = adb.exists(artist.artisthash, cur=cur)
 
                     if exists:

@@ -1,5 +1,6 @@
 import os
 from collections import deque
+from concurrent.futures import ThreadPoolExecutor
 from typing import Generator
 
 from requests import ConnectionError as RequestConnectionError
@@ -14,6 +15,7 @@ from app.db.sqlite.tracks import SQLiteTrackMethods
 from app.lib.albumslib import validate_albums
 from app.lib.artistlib import CheckArtistImages
 from app.lib.colorlib import ProcessAlbumColors, ProcessArtistColors
+from app.lib.errors import PopulateCancelledError
 from app.lib.taglib import extract_thumb, get_tags
 from app.lib.trackslib import validate_tracks
 from app.logger import log
@@ -31,10 +33,6 @@ insert_many_tracks = SQLiteTrackMethods.insert_many_tracks
 remove_tracks_by_filepaths = SQLiteTrackMethods.remove_tracks_by_filepaths
 
 POPULATE_KEY = ""
-
-
-class PopulateCancelledError(Exception):
-    pass
 
 
 class Populate:
@@ -84,31 +82,39 @@ class Populate:
 
         self.extract_thumb_with_overwrite(modified_tracks)
 
-        ProcessTrackThumbnails()
-        ProcessAlbumColors()
-        ProcessArtistColors()
+        try:
+            ProcessTrackThumbnails(instance_key)
+            ProcessAlbumColors(instance_key)
+            ProcessArtistColors(instance_key)
+        except PopulateCancelledError as e:
+            log.warn(e)
+            return
 
         tried_to_download_new_images = False
 
         if Ping()():
             tried_to_download_new_images = True
             try:
-                CheckArtistImages()
+                CheckArtistImages(instance_key)
             except (RequestConnectionError, ReadTimeout) as e:
                 log.error(
                     "Internet connection lost. Downloading artist images stopped."
                 )
         else:
             log.warning(
-                f"No internet connection. Downloading artist images halted for {settings.get_scan_sleep_time()} seconds."
+                f"No internet connection. Downloading artist images stopped!"
             )
 
         # Re-process the new artist images.
         if tried_to_download_new_images:
-            ProcessArtistColors()
+            ProcessArtistColors(instance_key=instance_key)
 
         if Ping()():
-            FetchSimilarArtistsLastFM()
+            try:
+                FetchSimilarArtistsLastFM(instance_key)
+            except PopulateCancelledError as e:
+                log.warn(e)
+                return
 
         ArtistStore.load_artists(instance_key)
 
@@ -151,7 +157,8 @@ class Populate:
 
         for file in tqdm(untagged, desc="Reading files"):
             if POPULATE_KEY != key:
-                raise PopulateCancelledError("Populate key changed")
+                log.warning("'Populate.tag_untagged': Populate key changed")
+                return
 
             tags = get_tags(file)
 
@@ -197,7 +204,7 @@ class Populate:
                 continue
 
 
-def get_image(album: Album):
+def get_image(_map: tuple[str, Album]):
     """
     The function retrieves an image from an album by iterating through its tracks and extracting the thumbnail from the first track that has one.
 
@@ -205,6 +212,11 @@ def get_image(album: Album):
     :type album: Album
     :return: None
     """
+
+    instance_key, album = _map
+
+    if POPULATE_KEY != instance_key:
+        raise PopulateCancelledError("'ProcessTrackThumbnails': Populate key changed")
 
     matching_tracks = filter(
         lambda t: t.albumhash == album.albumhash, TrackStore.tracks
@@ -226,7 +238,7 @@ def get_image(album: Album):
         pass
 
 
-from multiprocessing import Pool, cpu_count
+CPU_COUNT = os.cpu_count() // 2
 
 
 class ProcessTrackThumbnails:
@@ -234,11 +246,13 @@ class ProcessTrackThumbnails:
     Extracts the album art from all albums in album store.
     """
 
-    def __init__(self) -> None:
-        with Pool(processes=cpu_count()) as pool:
+    def __init__(self, instance_key: str) -> None:
+        key_album_map = ((instance_key, album) for album in AlbumStore.albums)
+
+        with ThreadPoolExecutor(max_workers=CPU_COUNT) as executor:
             results = list(
                 tqdm(
-                    pool.imap_unordered(get_image, AlbumStore.albums),
+                    executor.map(get_image, key_album_map),
                     total=len(AlbumStore.albums),
                     desc="Extracting track images",
                 )
@@ -247,10 +261,17 @@ class ProcessTrackThumbnails:
             list(results)
 
 
-def save_similar_artists(artist: Artist):
+def save_similar_artists(_map: tuple[str, Artist]):
     """
     Downloads and saves similar artists to the database.
     """
+
+    instance_key, artist = _map
+
+    if POPULATE_KEY != instance_key:
+        raise PopulateCancelledError(
+            "'FetchSimilarArtistsLastFM': Populate key changed"
+        )
 
     if lastfmdb.exists(artist.artisthash):
         return
@@ -266,17 +287,18 @@ def save_similar_artists(artist: Artist):
 
 class FetchSimilarArtistsLastFM:
     """
-    Fetches similar artists from LastFM using a process pool.
+    Fetches similar artists from LastFM using a thread pool.
     """
 
-    def __init__(self) -> None:
+    def __init__(self, instance_key: str) -> None:
         artists = ArtistStore.artists
+        key_artist_map = ((instance_key, artist) for artist in artists)
 
-        with Pool(processes=cpu_count()) as pool:
+        with ThreadPoolExecutor(max_workers=CPU_COUNT) as executor:
             try:
                 results = list(
                     tqdm(
-                        pool.imap_unordered(save_similar_artists, artists),
+                        executor.map(save_similar_artists, key_artist_map),
                         total=len(artists),
                         desc="Fetching similar artists",
                     )
@@ -284,6 +306,10 @@ class FetchSimilarArtistsLastFM:
 
                 list(results)
 
+            except PopulateCancelledError as e:
+                raise e
+
             # any exception that can be raised by the pool
-            except:
+            except Exception as e:
+                log.warn(e)
                 pass

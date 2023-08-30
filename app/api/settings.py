@@ -223,3 +223,18 @@ def set_setting():
         value = ",".join(value)
 
     return {"result": value}
+
+
+@background
+def run_populate():
+    populate.Populate(instance_key=get_random_str())
+
+
+@api.route("/settings/trigger-scan", methods=["GET"])
+def trigger_scan():
+    """
+    Triggers a scan.
+    """
+    run_populate()
+
+    return {"msg": "Scan triggered!"}

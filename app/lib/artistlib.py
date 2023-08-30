@@ -1,12 +1,11 @@
 import urllib
-from concurrent.futures import ProcessPoolExecutor as Pool
+from concurrent.futures import ThreadPoolExecutor
 from io import BytesIO
-from multiprocessing import Pool, cpu_count
 from pathlib import Path
 
 import requests
 from PIL import Image, UnidentifiedImageError
-from requests.exceptions import ConnectionError as ReqConnError
+from requests.exceptions import ConnectionError as RequestConnectionError
 from requests.exceptions import ReadTimeout
 from tqdm import tqdm
 
@@ -14,6 +13,9 @@ from app import settings
 from app.models import Album, Artist, Track
 from app.store import artists as artist_store
 from app.utils.hashing import create_hash
+
+
+CHECK_ARTIST_IMAGES_KEY = ""
 
 
 def get_artist_image_link(artist: str):
@@ -36,7 +38,7 @@ def get_artist_image_link(artist: str):
                 return res["picture_big"]
 
         return None
-    except (ReqConnError, ReadTimeout, IndexError, KeyError):
+    except (RequestConnectionError, ReadTimeout, IndexError, KeyError):
         return None
 
 
@@ -73,13 +75,18 @@ class DownloadImage:
 
 
 class CheckArtistImages:
-    def __init__(self):
-        with Pool(cpu_count()) as pool:
+    def __init__(self, instance_key: str):
+        global CHECK_ARTIST_IMAGES_KEY
+        CHECK_ARTIST_IMAGES_KEY = instance_key
+
+        key_artist_map = (
+            (instance_key, artist) for artist in artist_store.ArtistStore.artists
+        )
+
+        with ThreadPoolExecutor(max_workers=4) as executor:
             res = list(
                 tqdm(
-                    pool.imap_unordered(
-                        self.download_image, artist_store.ArtistStore.artists
-                    ),
+                    executor.map(self.download_image, key_artist_map),
                     total=len(artist_store.ArtistStore.artists),
                     desc="Downloading missing artist images",
                 )
@@ -88,12 +95,17 @@ class CheckArtistImages:
             list(res)
 
     @staticmethod
-    def download_image(artist: Artist):
+    def download_image(_map: tuple[str, Artist]):
         """
         Checks if an artist image exists and downloads it if not.
 
         :param artist: The artist name
         """
+        instance_key, artist = _map
+
+        if CHECK_ARTIST_IMAGES_KEY != instance_key:
+            return
+
         img_path = (
             Path(settings.Paths.get_artist_img_sm_path()) / f"{artist.artisthash}.webp"
         )

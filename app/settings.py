@@ -168,7 +168,7 @@ class SessionVars:
     CLEAN_ALBUM_TITLE = True
     REMOVE_REMASTER_FROM_TRACK = True
 
-    DO_PERIODIC_SCANS = True
+    DO_PERIODIC_SCANS = False
     PERIODIC_SCAN_INTERVAL = 600  # 10 minutes
     """
     The interval between periodic scans in seconds.
