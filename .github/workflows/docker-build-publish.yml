@@ -1,7 +1,7 @@
 name: Build and Push Docker Image
 
 on:
-  workflow_dispatch
+  workflow_dispatch:
   push:
     branches:
       - 'main'
@@ -42,12 +42,12 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Docker meta
-        id: <meta_id> # you'll use this in the next step
+        id: meta # you'll use this in the next step
         uses: docker/metadata-action@v3
         with:
           # list of Docker images to use as base name for tags
           images: |
-            <specify the image name>
+            ghcr.io/${{ github.repository }}
           # Docker tags based on the following events/attributes
           tags: |
             type=schedule
@@ -64,44 +64,5 @@ jobs:
           context: .
           platforms: linux/amd64,linux/arm
           push: ${{ github.event_name != 'pull_request' }}
-          tags: ${{ steps.<meta_id>.outputs.tags }}
-          labels: ${{ steps.<meta_id>.outputs.labels }}w
-
-
-
-
-
-
-
-
-
-
-
-jobs:
-  build:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v1
-
-      - name: Login to GitHub Docker Registry
-        uses: docker/login-action@v1
-        with:
-          registry: ghcr.io
-          username: ${{ github.repository_owner }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Build and push Docker image
-        id: docker_build
-        uses: docker/build-push-action@v2
-        with:
-          context: .
-          push: true
-          tags: ghcr.io/${{ github.repository }}:latest
-          platforms: linux/amd64,linux/arm64
-
-      - name: Image digest
-        run: echo ${{ steps.docker_build.outputs.digest }}
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}w
