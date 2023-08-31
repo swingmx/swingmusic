@@ -5,19 +5,21 @@ create the config directory and copy the assets to the app directory.
 
 import os
 import shutil
+import sys
 from configparser import ConfigParser
 
 from app import settings
 from app.utils.filesystem import get_home_res_path
 
 config = ConfigParser()
-config_path = get_home_res_path("pyinstaller.config.ini")
+config_path = get_home_res_path("runtime.config.ini")
 config.read(config_path)
 
 try:
     IS_BUILD = config["DEFAULT"]["BUILD"] == "True"
+    settings.Keys.LASTFM_API = config["DEFAULT"]["LASTFM_API_KEY"]
 except KeyError:
-    # If the key doesn't exist, it means that the app is being executed in dev mode.
+    # If the key doesn't exist, the app is in dev mode.
     IS_BUILD = False
 
 

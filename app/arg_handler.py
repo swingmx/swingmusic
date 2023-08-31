@@ -13,10 +13,8 @@ from app.print_help import HELP_MESSAGE
 from app.utils.wintools import is_windows
 from app.utils.xdg_utils import get_xdg_config_dir
 
-# from app.api.imgserver import set_app_dir
-
 config = ConfigParser()
-config.read("pyinstaller.config.ini")
+config.read("runtime.config.ini")
 
 ALLARGS = settings.ALLARGS
 ARGS = sys.argv[1:]
@@ -40,9 +38,20 @@ class HandleArgs:
         """
         Runs Pyinstaller.
         """
+        # get last.fm api key from env
+        last_fm_key = os.environ.get("LASTFM_API_KEY")
+
+        # if the key is not in env, exit
+        if not last_fm_key:
+            log.error("ERROR: LASTFM_API_KEY not set in environment")
+            sys.exit(0)
+
         if ALLARGS.build in ARGS:
-            with open("pyinstaller.config.ini", "w", encoding="utf-8") as file:
+            with open("runtime.config.ini", "w", encoding="utf-8") as file:
                 config["DEFAULT"]["BUILD"] = "True"
+
+                # copy the api key to the config file
+                config["DEFAULT"]["LASTFM_API_KEY"] = last_fm_key
                 config.write(file)
 
             _s = ";" if is_windows() else ":"
@@ -56,13 +65,15 @@ class HandleArgs:
                     "--clean",
                     f"--add-data=assets{_s}assets",
                     f"--add-data=client{_s}client",
-                    f"--add-data=pyinstaller.config.ini{_s}.",
+                    f"--add-data=runtime.config.ini{_s}.",
                     "-y",
                 ]
             )
 
-            with open("pyinstaller.config.ini", "w", encoding="utf-8") as file:
+            # revert build to False and remove the api key for dev mode
+            with open("runtime.config.ini", "w", encoding="utf-8") as file:
                 config["DEFAULT"]["BUILD"] = "False"
+                config["DEFAULT"]["LASTFM_API_KEY"] = ""
                 config.write(file)
 
             sys.exit(0)

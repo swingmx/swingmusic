@@ -9,14 +9,13 @@ from flask import request
 
 from app.api import create_api
 from app.arg_handler import HandleArgs
-from app.periodic_scan import run_periodic_scans
 from app.lib.watchdogg import Watcher as WatchDog
+from app.periodic_scan import run_periodic_scans
 from app.settings import FLASKVARS
 from app.setup import run_setup
 from app.start_info_logger import log_startup_info
 from app.utils.filesystem import get_home_res_path
 from app.utils.threading import background
-from alive_progress import config_handler
 
 mimetypes.add_type("text/css", ".css")
 mimetypes.add_type("text/javascript", ".js")
@@ -77,15 +76,7 @@ def start_watchdog():
     WatchDog().run()
 
 
-def configure_alive_bar():
-    """
-    Sets the default alive bar settings.
-    """
-    config_handler.set_global(spinner="classic", bar="classic2", enrich_print=False)
-
-
 if __name__ == "__main__":
-    configure_alive_bar()
     HandleArgs()
     log_startup_info()
     bg_run_setup()
