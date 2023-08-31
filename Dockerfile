@@ -24,6 +24,10 @@ VOLUME /music
 
 VOLUME /config
 
+RUN curl https://sh.rustup.rs -sSf | sh -s -- -y --default-toolchain stable
+
+ENV PATH="/root/.cargo/bin:$PATH"
+
 RUN pip install poetry
 
 RUN poetry config virtualenvs.create false
