@@ -1,15 +1,16 @@
 name: Build and Push Docker Image
 
 on:
+  workflow_dispatch:
   push:
     branches:
-      - 'main'
+      - 'master'
       - 'dev'
     tags:
       - 'v*.*.*'
   pull_request:
     branches:
-      - 'main'
+      - 'master'
       - 'dev'
 
 # permissions are needed if pushing to ghcr.io
