@@ -9,12 +9,12 @@ def split_artists(src: str):
     Splits a string of artists into a list of artists.
     """
     separators: set = get_flag(SessionVarKeys.ARTIST_SEPARATORS)
-    separators = separators.union({","})
+    # separators = separators.union({","})
 
     for sep in separators:
-        src = src.replace(sep, "߸")
+        src = src.replace(sep, ",")
 
-    artists = src.split("߸")
+    artists = src.split(",")
 
     return [a.strip() for a in artists]
 

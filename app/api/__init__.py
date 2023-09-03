@@ -25,7 +25,7 @@ def create_api():
     Creates the Flask instance, registers modules and registers all the API blueprints.
     """
     app = Flask(__name__)
-    CORS(app)
+    CORS(app, origins="*")
     Compress(app)
 
     app.config["COMPRESS_MIMETYPES"] = [

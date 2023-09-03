@@ -216,7 +216,17 @@ def get_artist(artisthash: str):
 
     artist.is_favorite = favdb.check_is_favorite(artisthash, FavType.artist)
 
-    return {"artist": artist, "tracks": serialize_tracks(tracks[:limit])}
+    genres = set()
+
+    for t in tracks:
+        if t.genre is not None:
+            genres = genres.union(t.genre)
+
+    return {
+        "artist": artist,
+        "tracks": serialize_tracks(tracks[:limit]),
+        "genres": list(genres),
+    }
 
 
 @api.route("/artist/<artisthash>/albums", methods=["GET"])

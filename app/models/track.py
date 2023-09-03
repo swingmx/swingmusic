@@ -93,8 +93,22 @@ class Track:
         self.image = self.albumhash + ".webp"
 
         if self.genre is not None and self.genre != "":
-            self.genre = str(self.genre).replace("/", ",").replace(";", ",")
-            self.genre = str(self.genre).lower().split(",")
+            self.genre = self.genre.lower()
+            separators = {"/", ";", "&"}
+
+            contains_rnb = "r&b" in self.genre
+            contains_rock = "rock & roll" in self.genre
+
+            if contains_rnb:
+                self.genre = self.genre.replace("r&b", "RnB")
+
+            if contains_rock:
+                self.genre = self.genre.replace("rock & roll", "rock")
+
+            for s in separators:
+                self.genre: str = self.genre.replace(s, ",")
+
+            self.genre = self.genre.split(",")
             self.genre = [g.strip() for g in self.genre]
 
         self.recreate_hash()
