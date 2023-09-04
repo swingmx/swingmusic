@@ -29,6 +29,7 @@ class AlbumVersionEnum(Enum):
     ARCHIVE_EDITION = ("archive",)
 
     Acoustic = ("acoustic",)
+    instrumental = ("instrumental",)
     DOUBLE_DISC = ("double disc", "double disk")
 
     SUMMER_EDITION = ("summer",)
@@ -56,3 +57,7 @@ class AlbumVersionEnum(Enum):
     REISSUE = ("reissue",)
     REMASTERED = ("remaster",)
     TAYLORS_VERSION = ("taylor's version",)
+
+
+def get_all_keywords():
+    return "|".join("|".join(i.value) for i in AlbumVersionEnum)

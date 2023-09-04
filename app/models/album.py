@@ -173,8 +173,10 @@ class Album:
 
         if (
             len(tracks) == 1
-            and create_hash(tracks[0].title)
-            == create_hash(self.title)  # if they have the same title
+            and (
+                create_hash(tracks[0].title) == create_hash(self.title)
+                or create_hash(tracks[0].title) == create_hash(self.og_title)
+            )  # if they have the same title
             # and tracks[0].track == 1
             # and tracks[0].disc == 1
             # TODO: Review -> Are the above commented checks necessary?
@@ -191,10 +193,10 @@ class Album:
         if self.date:
             return
 
-        dates = {int(t.date) for t in tracks if t.date}
+        dates = (int(t.date) for t in tracks if t.date)
 
-        if len(dates) == 0:
-            self.date = 0
-            return
+        # if len(dates) == 0:
+        #     self.date = 0
+        #     return
 
         self.date = datetime.datetime.fromtimestamp(min(dates)).year

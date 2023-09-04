@@ -3,6 +3,7 @@ Contains all the artist(s) routes.
 """
 import random
 from collections import deque
+from datetime import datetime
 
 from flask import Blueprint, request
 
@@ -14,6 +15,7 @@ from app.serializers.track import serialize_tracks
 from app.store.albums import AlbumStore
 from app.store.artists import ArtistStore
 from app.store.tracks import TrackStore
+from app.utils.bisection import UseBisection
 from app.utils.remove_duplicates import remove_duplicates
 
 api = Blueprint("artist", __name__, url_prefix="/")
@@ -115,17 +117,12 @@ class ArtistsCache:
         """
         entry = [a for a in cls.artists if a.artisthash == artisthash][0]
 
-        albums = [AlbumStore.get_album_by_hash(h) for h in entry.albumhashes]
+        src_albums = sorted(AlbumStore.albums, key=lambda x: x.albumhash)
+        albums = UseBisection(
+            source=src_albums, search_from="albumhash", queries=entry.albumhashes
+        )()
+
         entry.albums = [album for album in albums if album is not None]
-
-        store_albums = AlbumStore.get_albums_by_artisthash(artisthash)
-
-        all_albums_hash = "-".join([a.albumhash for a in entry.albums])
-
-        for album in store_albums:
-            if album.albumhash not in all_albums_hash:
-                entry.albums.append(album)
-
         entry.albums_fetched = True
 
     @classmethod
@@ -222,15 +219,45 @@ def get_artist(artisthash: str):
         if t.genre is not None:
             genres = genres.union(t.genre)
 
+    genres = list(genres)
+
+    min_stamp = min(t.date for t in tracks)
+    year = datetime.fromtimestamp(min_stamp).year
+
+    # TODO: Find a way to round a number to the nearest lower 10, and just add an "s" to get the decade
+
+    year = int(str(year)[:3])
+
+    decade = ""
+
+    if year == 196:
+        decade = "60s"
+    elif year == 197:
+        decade = "70s"
+    elif year == 198:
+        decade = "80s"
+    elif year == 199:
+        decade = "90s"
+    elif year == 200:
+        decade = "00s"
+    elif year == 201:
+        decade = "10s"
+    elif year == 202:
+        decade = "20s"
+
+    if decade:
+        genres.insert(0, decade)
+
     return {
         "artist": artist,
         "tracks": serialize_tracks(tracks[:limit]),
-        "genres": list(genres),
+        "genres": genres,
     }
 
 
 @api.route("/artist/<artisthash>/albums", methods=["GET"])
 def get_artist_albums(artisthash: str):
+    # TODO: Remove the artist cache and only process the required albums ie. not all albums. because that means processing all 355 albums for juice wrld while only less than 20 are shown in the artist page.
     limit = request.args.get("limit")
 
     if limit is None:

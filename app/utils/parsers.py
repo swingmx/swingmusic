@@ -1,6 +1,6 @@
 import re
 
-from app.enums.album_versions import AlbumVersionEnum
+from app.enums.album_versions import AlbumVersionEnum, get_all_keywords
 from app.settings import SessionVarKeys, get_flag
 
 
@@ -9,14 +9,13 @@ def split_artists(src: str):
     Splits a string of artists into a list of artists.
     """
     separators: set = get_flag(SessionVarKeys.ARTIST_SEPARATORS)
-    # separators = separators.union({","})
-
     for sep in separators:
         src = src.replace(sep, ",")
 
     artists = src.split(",")
+    artists = [a.strip() for a in artists]
 
-    return [a.strip() for a in artists]
+    return [a for a in artists if a]
 
 
 def parse_artist_from_filename(title: str):
@@ -97,12 +96,12 @@ def parse_feat_from_title(title: str) -> tuple[list[str], str]:
     return artists, new_title
 
 
-def get_base_album_title(string) -> tuple[str, str | None]:
+def get_base_album_title(string: str) -> tuple[str, str | None]:
     """
     Extracts the base album title from a string.
     """
     pattern = re.compile(
-        r"\s*(\(|\[)[^\)\]]*?(version|remaster|deluxe|edition|expanded|anniversary)[^\)\]]*?(\)|\])$",
+        rf"\s*(\(|\[)[^\)\]]*?({get_all_keywords()})[^\)\]]*?(\)|\])$",
         re.IGNORECASE,
     )
     # TODO: Fix "Redundant character escape '\]' in RegExp "
@@ -205,9 +204,3 @@ def clean_title(title: str) -> str:
     rem_2 = remove_hyphen_remasters(title)
 
     return rem_1 if len(rem_2) > len(rem_1) else rem_2
-
-    # if "[" in title or "(" in title:
-    #     return remove_bracketed_remaster(title)
-    #
-    # if "-" in title:
-    #     return remove_hyphen_remasters(title)

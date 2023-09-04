@@ -64,6 +64,16 @@ class Track:
                     [a for a in featured if create_hash(a) not in original_lower]
                 )
 
+            self.artist_hashes = "-".join(create_hash(a, decode=True) for a in artists)
+            self.artists = [ArtistMinimal(a) for a in artists]
+
+            albumartists = split_artists(self.albumartists)
+
+            if not albumartists:
+                self.albumartists = self.artists[:1]
+            else:
+                self.albumartists = [ArtistMinimal(a) for a in albumartists]
+
             if get_flag(SessionVarKeys.REMOVE_PROD):
                 new_title = remove_prod(new_title)
 
@@ -83,12 +93,6 @@ class Track:
 
             if get_flag(SessionVarKeys.MERGE_ALBUM_VERSIONS):
                 self.recreate_albumhash()
-
-            self.artist_hashes = "-".join(create_hash(a, decode=True) for a in artists)
-            self.artists = [ArtistMinimal(a) for a in artists]
-
-            albumartists = split_artists(self.albumartists)
-            self.albumartists = [ArtistMinimal(a) for a in albumartists]
 
         self.image = self.albumhash + ".webp"
 

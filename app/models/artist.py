@@ -19,6 +19,10 @@ class ArtistMinimal:
         self.artisthash = create_hash(self.name, decode=True)
         self.image = self.artisthash + ".webp"
 
+        # hack to override all the variations from unreleased files (sorry guys!)
+        if self.artisthash == "5a37d5315e":
+            self.name = "Juice WRLD"
+
 
 @dataclass(slots=True)
 class Artist(ArtistMinimal):

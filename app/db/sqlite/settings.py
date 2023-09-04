@@ -133,12 +133,14 @@ class SettingsSQLMethods:
 def load_settings():
     s = SettingsSQLMethods.get_all_settings()
 
-    # artist separators
-    db_separators: str = s[0]
-    db_separators = db_separators.replace(" ", "")
-    separators = db_separators.split(",")
+    try:
+        db_separators: str = s[0]
+        db_separators = db_separators.replace(" ", "")
+        separators = db_separators.split(",")
+        separators = set(separators)
+    except IndexError:
+        separators = {";", "/"}
 
-    separators = set(separators)
     SessionVars.ARTIST_SEPARATORS = separators
 
     # boolean settings

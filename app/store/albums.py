@@ -101,10 +101,11 @@ class AlbumStore:
         """
         Returns an album by its hash.
         """
-        try:
-            return [a for a in cls.albums if a.albumhash == albumhash][0]
-        except IndexError:
-            return None
+        for album in cls.albums:
+            if album.albumhash == albumhash:
+                return album
+
+        return None
 
     @classmethod
     def get_albums_by_hashes(cls, albumhashes: list[str]) -> list[Album]:
@@ -132,14 +133,7 @@ class AlbumStore:
         """
         Count albums for the given artisthash.
         """
-        albumartists = [a.albumartists for a in cls.albums]
-        artisthashes = []
-
-        for artist in albumartists:
-            artisthashes.extend([a.artisthash for a in artist])  # type: ignore
-
-        master_string = "-".join(artisthashes)
-
+        master_string = "-".join(a.albumartists_hashes for a in cls.albums)
         return master_string.count(artisthash)
 
     @classmethod

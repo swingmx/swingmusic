@@ -40,8 +40,12 @@ def extract_thumb(filepath: str, webp_path: str, overwrite=False) -> bool:
         ratio = width / height
 
         img.save(original_img_path, "webp")
-        img.resize((tsize, int(tsize / ratio)), Image.ANTIALIAS).save(lg_img_path, "webp")
-        img.resize((sm_tsize, int(sm_tsize / ratio)), Image.ANTIALIAS).save(sm_img_path, "webp")
+        img.resize((tsize, int(tsize / ratio)), Image.ANTIALIAS).save(
+            lg_img_path, "webp"
+        )
+        img.resize((sm_tsize, int(sm_tsize / ratio)), Image.ANTIALIAS).save(
+            sm_img_path, "webp"
+        )
 
     if not overwrite and os.path.exists(sm_img_path):
         img_size = os.path.getsize(sm_img_path)
@@ -166,6 +170,10 @@ def get_tags(filepath: str):
 
     tags.artists = tags.artist
     tags.albumartists = tags.albumartist
+
+    # sub underscore with space
+    tags.title = tags.title.replace("_", " ")
+    tags.album = tags.album.replace("_", " ")
 
     tags = tags.__dict__
 
