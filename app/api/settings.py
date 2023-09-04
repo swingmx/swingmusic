@@ -149,6 +149,7 @@ mapp = {
     "clean_album_title": SessionVarKeys.CLEAN_ALBUM_TITLE,
     "remove_remaster": SessionVarKeys.REMOVE_REMASTER_FROM_TRACK,
     "merge_albums": SessionVarKeys.MERGE_ALBUM_VERSIONS,
+    "show_albums_as_singles": SessionVarKeys.SHOW_ALBUMS_AS_SINGLES,
 }
 
 

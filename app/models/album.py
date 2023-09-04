@@ -166,10 +166,19 @@ class Album:
         Checks if the album is a single.
         """
         keywords = ["single version", "- single"]
+
+        show_albums_as_singles = get_flag(
+            SessionVarKeys.SHOW_ALBUMS_AS_SINGLES
+        )
+
         for keyword in keywords:
             if keyword in self.title.lower():
                 self.is_single = True
                 return
+
+        if show_albums_as_singles and len(tracks) == 1:
+            self.is_single = True
+            return
 
         if (
             len(tracks) == 1

@@ -149,3 +149,4 @@ def load_settings():
     SessionVars.CLEAN_ALBUM_TITLE = bool(s[3])
     SessionVars.REMOVE_REMASTER_FROM_TRACK = bool(s[4])
     SessionVars.MERGE_ALBUM_VERSIONS = bool(s[5])
+    SessionVars.SHOW_ALBUMS_AS_SINGLES = bool(s[6])

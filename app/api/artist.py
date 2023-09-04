@@ -221,13 +221,15 @@ def get_artist(artisthash: str):
 
     genres = list(genres)
 
-    min_stamp = min(t.date for t in tracks)
-    year = datetime.fromtimestamp(min_stamp).year
+    try:
+        min_stamp = min(t.date for t in tracks)
+        year = datetime.fromtimestamp(min_stamp).year
+    except ValueError:
+        year = 0
 
     # TODO: Find a way to round a number to the nearest lower 10, and just add an "s" to get the decade
 
     year = int(str(year)[:3])
-
     decade = ""
 
     if year == 196:

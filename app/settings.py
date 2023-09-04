@@ -176,6 +176,7 @@ class SessionVars:
 
     MERGE_ALBUM_VERSIONS = False
     ARTIST_SEPARATORS = set()
+    SHOW_ALBUMS_AS_SINGLES = True
 
 
 # TODO: Find a way to eliminate this class without breaking typings
@@ -188,6 +189,9 @@ class SessionVarKeys:
     PERIODIC_SCAN_INTERVAL = "PERIODIC_SCAN_INTERVAL"
     MERGE_ALBUM_VERSIONS = "MERGE_ALBUM_VERSIONS"
     ARTIST_SEPARATORS = "ARTIST_SEPARATORS"
+    SHOW_ALBUMS_AS_SINGLES = (
+        "SHOW_ALBUMS_AS_SINGLES"
+    )
 
 
 def get_flag(key: SessionVarKeys) -> bool:
