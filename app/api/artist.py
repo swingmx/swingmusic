@@ -2,6 +2,7 @@
 Contains all the artist(s) routes.
 """
 import random
+import math
 from collections import deque
 from datetime import datetime
 
@@ -227,25 +228,9 @@ def get_artist(artisthash: str):
     except ValueError:
         year = 0
 
-    # TODO: Find a way to round a number to the nearest lower 10, and just add an "s" to get the decade
-
-    year = int(str(year)[:3])
-    decade = ""
-
-    if year == 196:
-        decade = "60s"
-    elif year == 197:
-        decade = "70s"
-    elif year == 198:
-        decade = "80s"
-    elif year == 199:
-        decade = "90s"
-    elif year == 200:
-        decade = "00s"
-    elif year == 201:
-        decade = "10s"
-    elif year == 202:
-        decade = "20s"
+    if year:
+        decade = math.floor(year / 10) * 10
+        decade = str(decade)[2:] + "s"
 
     if decade:
         genres.insert(0, decade)
