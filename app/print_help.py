@@ -28,7 +28,7 @@ local audio files. Like a cooler Spotify ... but bring your own music.
 
 Usage: swingmusic [options]
 
-{tabulate(help_args_list, headers=["Option", "Short", "Description"], tablefmt="rounded_grid", maxcolwidths=[None, None, 44])}
+{tabulate(help_args_list, headers=["Option", "Short", "Description"], tablefmt="markdown", maxcolwidths=[None, None, 44])}
 """
 
 "80s, 90s, the noughties and today"

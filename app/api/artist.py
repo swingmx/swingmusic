@@ -228,6 +228,8 @@ def get_artist(artisthash: str):
     except ValueError:
         year = 0
 
+    decade = None
+
     if year:
         decade = math.floor(year / 10) * 10
         decade = str(decade)[2:] + "s"
@@ -273,8 +275,8 @@ def get_artist_albums(artisthash: str):
     eps = [a for a in all_albums if a.is_EP]
 
     def remove_EPs_and_singles(albums_: list[Album]):
-        albums_ = [a for a in albums_ if not a.is_EP]
         albums_ = [a for a in albums_ if not a.is_single]
+        albums_ = [a for a in albums_ if not a.is_EP]
         return albums_
 
     albums = filter(lambda a: artisthash in a.albumartists_hashes, all_albums)

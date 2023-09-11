@@ -1,3 +1,4 @@
+import os
 import urllib
 from concurrent.futures import ThreadPoolExecutor
 from io import BytesIO
@@ -79,15 +80,24 @@ class CheckArtistImages:
         global CHECK_ARTIST_IMAGES_KEY
         CHECK_ARTIST_IMAGES_KEY = instance_key
 
-        key_artist_map = (
-            (instance_key, artist) for artist in artist_store.ArtistStore.artists
+        # read all files in the artist image folder
+        path = settings.Paths.get_artist_img_sm_path()
+        processed = "".join(os.listdir(path)).replace("webp", "")
+
+        # filter out artists that already have an image
+        artists = filter(
+            lambda a: a.artisthash not in processed, artist_store.ArtistStore.artists
         )
+        artists = list(artists)
+
+        # process the rest
+        key_artist_map = ((instance_key, artist) for artist in artists)
 
         with ThreadPoolExecutor(max_workers=4) as executor:
             res = list(
                 tqdm(
                     executor.map(self.download_image, key_artist_map),
-                    total=len(artist_store.ArtistStore.artists),
+                    total=len(artists),
                     desc="Downloading missing artist images",
                 )
             )

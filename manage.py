@@ -5,6 +5,7 @@ import logging
 import mimetypes
 import os
 
+import setproctitle
 from flask import request
 
 from app.api import create_api
@@ -18,6 +19,7 @@ from app.utils.filesystem import get_home_res_path
 from app.utils.threading import background
 
 mimetypes.add_type("text/css", ".css")
+
 mimetypes.add_type("text/javascript", ".js")
 mimetypes.add_type("text/plain", ".txt")
 mimetypes.add_type("text/html", ".html")
@@ -74,6 +76,11 @@ def bg_run_setup() -> None:
 @background
 def start_watchdog():
     WatchDog().run()
+
+
+setproctitle.setproctitle(
+    f"swingmusic - {FLASKVARS.FLASK_HOST}:{FLASKVARS.FLASK_PORT}"
+)
 
 
 if __name__ == "__main__":

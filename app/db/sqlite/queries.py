@@ -32,7 +32,7 @@ CREATE TABLE IF NOT EXISTS settings (
     clean_album_title integer NOT NULL DEFAULT 1,
     remove_remaster integer NOT NULL DEFAULT 1,
     merge_albums integer NOT NULL DEFAULT 0,
-    show_albums_as_singles NOT NULL DEFAULT 0
+    show_albums_as_singles integer NOT NULL DEFAULT 0
 );
 
 CREATE TABLE IF NOT EXISTS lastfm_similar_artists (

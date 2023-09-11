@@ -101,9 +101,7 @@ class Populate:
                     "Internet connection lost. Downloading artist images stopped."
                 )
         else:
-            log.warning(
-                f"No internet connection. Downloading artist images stopped!"
-            )
+            log.warning(f"No internet connection. Downloading artist images stopped!")
 
         # Re-process the new artist images.
         if tried_to_download_new_images:
@@ -247,13 +245,29 @@ class ProcessTrackThumbnails:
     """
 
     def __init__(self, instance_key: str) -> None:
-        key_album_map = ((instance_key, album) for album in AlbumStore.albums)
+        """
+        Filters out albums that already have thumbnails and
+        extracts the thumbnail for the other albums.
+        """
+        path = settings.Paths.get_sm_thumb_path()
+
+        # read all the files in the thumbnail directory
+        processed = "".join(os.listdir(path)).replace("webp", "")
+
+        # filter out albums that already have thumbnails
+        albums = filter(
+            lambda album: album.albumhash not in processed, AlbumStore.albums
+        )
+        albums = list(albums)
+
+        # process the rest
+        key_album_map = ((instance_key, album) for album in albums)
 
         with ThreadPoolExecutor(max_workers=CPU_COUNT) as executor:
             results = list(
                 tqdm(
                     executor.map(get_image, key_album_map),
-                    total=len(AlbumStore.albums),
+                    total=len(albums),
                     desc="Extracting track images",
                 )
             )
@@ -291,7 +305,15 @@ class FetchSimilarArtistsLastFM:
     """
 
     def __init__(self, instance_key: str) -> None:
-        artists = ArtistStore.artists
+        # read all artists from db
+        processed = lastfmdb.get_all()
+        processed = ".".join(a.artisthash for a in processed)
+
+        # filter out artists that already have similar artists
+        artists = filter(lambda a: a.artisthash not in processed, ArtistStore.artists)
+        artists = list(artists)
+
+        # process the rest
         key_artist_map = ((instance_key, artist) for artist in artists)
 
         with ThreadPoolExecutor(max_workers=CPU_COUNT) as executor:
