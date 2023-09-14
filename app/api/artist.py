@@ -297,7 +297,7 @@ def get_artist_albums(artisthash: str):
     if artist is None:
         return {"error": "Artist not found"}, 404
 
-    if return_all is not None:
+    if return_all is not None and return_all == "true":
         limit = len(all_albums)
 
     return {

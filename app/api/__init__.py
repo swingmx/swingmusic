@@ -15,8 +15,8 @@ from app.api import (
     imgserver,
     playlist,
     search,
+    send_file,
     settings,
-    track,
 )
 
 
@@ -35,7 +35,7 @@ def create_api():
     with app.app_context():
         app.register_blueprint(album.api)
         app.register_blueprint(artist.api)
-        app.register_blueprint(track.api)
+        app.register_blueprint(send_file.api)
         app.register_blueprint(search.api)
         app.register_blueprint(folder.api)
         app.register_blueprint(playlist.api)

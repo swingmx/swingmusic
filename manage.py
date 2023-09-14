@@ -78,16 +78,15 @@ def start_watchdog():
     WatchDog().run()
 
 
-setproctitle.setproctitle(
-    f"swingmusic - {FLASKVARS.FLASK_HOST}:{FLASKVARS.FLASK_PORT}"
-)
-
-
 if __name__ == "__main__":
     HandleArgs()
     log_startup_info()
     bg_run_setup()
     start_watchdog()
+
+    setproctitle.setproctitle(
+        f"swingmusic - {FLASKVARS.FLASK_HOST}:{FLASKVARS.FLASK_PORT}"
+    )
 
     app.run(
         debug=False,

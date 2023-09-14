@@ -13,7 +13,7 @@ help_args_list = [
     [
         "--scan-interval",
         "-psi",
-        "Set the periodic scan interval in seconds. Default is 300 seconds (5 minutes)",
+        "Set the periodic scan interval in seconds. Default is 600 seconds (10 minutes)",
     ],
     [
         "--build",
