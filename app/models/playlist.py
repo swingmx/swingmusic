@@ -30,8 +30,8 @@ class Playlist:
 
         if isinstance(self.settings, str):
             self.settings = dict(json.loads(self.settings))
-            self.pinned = self.settings.get("pinned", False)
 
+        self.pinned = self.settings.get("pinned", False)
         self.has_image = (
             Path(settings.Paths.get_playlist_img_path()) / str(self.image)
         ).exists()
