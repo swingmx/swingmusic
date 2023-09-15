@@ -1,17 +1,14 @@
 # Swing music
 
-Swing Music is a beautiful, self-hosted music player for your local audio files. Like a cooler Spotify ... but bring
-your own music. Just run the app and
-enjoy your music library in a web browser.
+Swing Music is a beautiful, self-hosted music player for your local audio files. Like a cooler Spotify ... but bring your own music. Just run the app and enjoy your music library in a web browser.
 
 <a href="https://www.buymeacoffee.com/mungai/membership" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" style="height: 60px !important;width: 217px !important;" ></a>
 
-| ![SWING MUSIC PLAYER BANNER IMAGE](screenshots/readme-artist.webp)   | ![SWING MUSIC PLAYER BANNER IMAGE](screenshots/readme-album.webp)    |
-|----------------------------------------------------------------------|----------------------------------------------------------------------|
-| ![SWING MUSIC PLAYER BANNER IMAGE](screenshots/readme-playlist.webp) | ![SWING MUSIC PLAYER BANNER IMAGE](screenshots/readme-playlist.webp) |
+| ![SWING MUSIC PLAYER BANNER IMAGE](screenshots/artist.webp)  | ![SWING MUSIC PLAYER BANNER IMAGE](screenshots/album.webp)  |
+| ------------------------------------------------------------ | ----------------------------------------------------------- |
+| ![SWING MUSIC PLAYER BANNER IMAGE](screenshots/artist2.webp) | ![SWING MUSIC PLAYER BANNER IMAGE](screenshots/album2.webp) |
 
-### For more screenshots, see the [screenshots page on the website](https://swingmusic.vercel.app/screenshots.html).
-
+For full size screenshots, visit the [website](https://swingmusic.vercel.app).
 
 ### Setup
 
@@ -34,57 +31,18 @@ Usage: swingmusic [options]
 
 ### Options
 
-| Flags                    | Description                                                                                                        |
-|--------------------------|--------------------------------------------------------------------------------------------------------------------|
-| --help, -h               | Show this help message                                                                                             |
-| --version, -v            | Show the app version                                                                                               |
-| --host                   | Set the host                                                                                                       |
-| --port                   | Set the port                                                                                                       |
-| --config                 | Set the config path                                                                                                |
-| --show-feat, -sf         | Do not extract featured artists from the song  title                                                               |
-| --show-prod, -sp         | Do not hide producers in the song title                                                                            |
-| --no-clean-albums,  -nca | Don't clean album titles. Cleaning is done by     removing information in parentheses and    showing it separately |
-| --no-clean-tracks,-nct   | Don't remove remaster information from track   titles                                                              |
-| --no-periodic-scan, -nps | Disable periodic scan                                                                                              |
-| --scan-interval,    -psi | Set the periodic scan interval in seconds.       Default is 300 seconds (5 minutes)                                |
-|                          |                                                                                                                    |
-| --build                  | Build the application (in development)                                                                             |
+| Option               | Short  | Description                                                                   |
+| -------------------- | ------ | ----------------------------------------------------------------------------- |
+| `--help`             | `-h`   | Show help message                                                             |
+| `--version`          | `-v`   | Show the app version                                                          |
+| `--host`             |        | Set the host                                                                  |
+| `--port`             |        | Set the port                                                                  |
+| `--config`           |        | Set the config path                                                           |
+| `--no-periodic-scan` | `-nps` | Disable periodic scan                                                         |
+| `--scan-interval`    | `-psi` | Set the periodic scan interval in seconds. Default is 300 seconds (5 minutes) |
+| `--build`            |        | Build the application (in development)                                        |
 
 
-| Option                   | Short | Description                                           |
-|--------------------------|-------|-------------------------------------------------------|
-| `--help`         | `-h`  | Show help message                               |
-| `--version`        | `-v`  | Show the app version                                 |
-| `--host`                 |       | Set the host                                          |
-| `--port`                 |       | Set the port                                          |
-| `--config`               |       | Set the config path                                  |
-| `--no-periodic-scan`| `-nps` | Disable periodic scan                            |
-| `--scan-interval`   | `-psi` | Set the periodic scan interval in seconds. Default is 300 seconds (5 minutes) |
-| `--build`                |       | Build the application (in development)               |
-
-
-```
-╭────────────────────┬─────────┬───────────────────────────────────────────────────────────────────────────────╮
-│ Option             │ Short   │ Description                                                                   │
-├────────────────────┼─────────┼───────────────────────────────────────────────────────────────────────────────┤
-│ --help             │ -h      │ Show this help message                                                        │
-├────────────────────┼─────────┼───────────────────────────────────────────────────────────────────────────────┤
-│ --version          │ -v      │ Show the app version                                                          │
-├────────────────────┼─────────┼───────────────────────────────────────────────────────────────────────────────┤
-│ --host             │         │ Set the host                                                                  │
-├────────────────────┼─────────┼───────────────────────────────────────────────────────────────────────────────┤
-│ --port             │         │ Set the port                                                                  │
-├────────────────────┼─────────┼───────────────────────────────────────────────────────────────────────────────┤
-│ --config           │         │ Set the config path                                                           │
-├────────────────────┼─────────┼───────────────────────────────────────────────────────────────────────────────┤
-│ --no-periodic-scan │ -nps    │ Disable periodic scan                                                         │
-├────────────────────┼─────────┼───────────────────────────────────────────────────────────────────────────────┤
-│ --scan-interval    │ -psi    │ Set the periodic scan interval in seconds. Default is 300 seconds (5 minutes) │
-├────────────────────┼─────────┼───────────────────────────────────────────────────────────────────────────────┤
-│ --build            │         │ Build the application (in development)                                        │
-╰────────────────────┴─────────┴───────────────────────────────────────────────────────────────────────────────╯
-
-```
 
 To stream your music across your local network, use the `--host` flag to run the app in all ports. Like this:
 
@@ -142,7 +100,7 @@ by a colon and indicate `<external>:<internal>` respectively. For example, `-p 8
 inside the container to be accessible from the host's IP on port `8080` outside the container.
 
 |  Parameter   | Function                                                                                     |
-|:------------:|----------------------------------------------------------------------------------------------|
+| :----------: | -------------------------------------------------------------------------------------------- |
 |  `-p 1970`   | WebUI                                                                                        |
 | `-v /music`  | Recommended directory to store your music collection. You can bind other folder if you wish. |
 | `-v /config` | Configuration files.                                                                         |
