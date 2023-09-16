@@ -15,13 +15,11 @@ config = ConfigParser()
 config_path = get_home_res_path("runtime.config.ini")
 config.read(config_path)
 
-try:
-    IS_BUILD = config["DEFAULT"]["BUILD"] == "True"
-    settings.Keys.LASTFM_API = config["DEFAULT"]["LASTFM_API_KEY"]
-except KeyError:
-    # If the key doesn't exist, the app is in dev mode.
-    IS_BUILD = False
 
+IS_BUILD = config["DEFAULT"]["BUILD"] == "True"
+
+if IS_BUILD:
+    settings.Keys.LASTFM_API = config["DEFAULT"]["LASTFM_API_KEY"]
 
 class CopyFiles:
     """Copies assets to the app directory."""
