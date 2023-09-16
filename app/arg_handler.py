@@ -66,6 +66,7 @@ class HandleArgs:
                     f"--add-data=assets{_s}assets",
                     f"--add-data=client{_s}client",
                     f"--add-data=runtime.config.ini{_s}.",
+                    f"--icon=../assets/logo-fill.ico",
                     "-y",
                 ]
             )
