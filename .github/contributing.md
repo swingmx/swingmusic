@@ -4,7 +4,7 @@ Hi! We're really excited that you are interested in contributing to Swing Music.
 
 If you are interested in making a code contribution take a moment to read through the following guidelines:
 
-- [Code of Conduct](https://github.com/swing-opensource/swingmusic/.github/CODE_OF_CONDUCT.md)
+- [Code of Conduct](./CODE_OF_CONDUCT.md)
 - [Pull Request Guidelines](#pull-request-guidelines)
 
 ## Pull Request Guidelines
