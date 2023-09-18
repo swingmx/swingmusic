@@ -1,6 +1,6 @@
 # Swing Music Contributing Guide
 
-Hi! We're really excited that you are interested in contributing to Swing Music. This project uses the Python, Flask, Sqlite, Poetry, and Vue.
+Hi! We're really excited that you are interested in contributing to Swing Music. This project uses Python, [Flask](https://flask.palletsprojects.com/en/2.3.x/), Sqlite, [Poetry](https://python-poetry.org/), and [Vue](https://vuejs.org/).
 
 If you are interested in making a code contribution take a moment to read through the following guidelines:
 
@@ -25,7 +25,7 @@ This project is broken down into 2 parts. The server (this repo) and the client 
 
 To contribute to the server development, you need to install [Poetry package manager](https://python-poetry.org/docs).
 
-Fork this repo, git clone and install all the dependencies:
+Fork this repo, git clone and install the dependencies:
 
 ```sh
 git clone https://github.com/swing-opensource/swingmusic.git
@@ -45,8 +45,6 @@ Run the server. You can use a different port if you have another Swing Music ins
 poetry run python manage.py --port 1980
 ```
 
-If you are also
-
 After that, checkout into a new branch and make your changes.
 
 ```sh
@@ -57,7 +55,7 @@ Finally, commit your changes and open a pull request.
 
 ## Contributing to the client
 
-You need to have [yarn](https://yarnpkg.com/) installed in your machine. See the [install guide](https://yarnpkg.com/getting-started/install).
+You need to have [yarn](https://yarnpkg.com/) installed in your machine. See their [install guide](https://yarnpkg.com/getting-started/install).
 
 Fork the repo, git clone and install the dependencies:
 
@@ -91,4 +89,4 @@ If you need help, you can email me at: geoffreymungai45@gmail.com
 
 Our Code of Conduct means that you are responsible for treating everyone on the project with respect and courtesy regardless of their identity. If you are the victim of any inappropriate behavior or comments as described in our Code of Conduct, we are here for you and will do the best to ensure that the abuser is reprimanded appropriately, per our code.
 
-See yah!
+See you around?
