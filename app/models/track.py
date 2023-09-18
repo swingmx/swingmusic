@@ -52,6 +52,7 @@ class Track:
         self.og_title = self.title
         self.og_album = self.album
         self.last_mod = int(self.last_mod)
+        self.date = int(self.date)
 
         if self.artists is not None:
             artists = split_artists(self.artists)
