@@ -42,8 +42,14 @@ class SQLiteTrackMethods:
             :date, :disc, :duration, :filepath, :folder, :genre, :last_mod, :title, :track, :trackhash)
             """
 
-        #
         track = OrderedDict(sorted(track.items()))
+
+        def force_surrogatepass(string: str):
+            return string.encode("utf-16", "surrogatepass").decode("utf-16")
+
+        for key, value in track.items():
+            if isinstance(value, str):
+                track[key] = force_surrogatepass(value)
 
         track["artist"] = track["artists"]
         track["albumartist"] = track["albumartists"]
