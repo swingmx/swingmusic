@@ -39,7 +39,7 @@ class HandleArgs:
         Runs Pyinstaller.
         """
         # get last.fm api key from env
-        last_fm_key = os.environ.get("LASTFM_API_KEY")
+        last_fm_key = settings.Keys.LASTFM_API
 
         # if the key is not in env, exit
         if not last_fm_key:

@@ -4,11 +4,14 @@ interacting with the tracks table.
 """
 
 from collections import OrderedDict
+import random
 from sqlite3 import Cursor
 
 from app.db.sqlite.utils import tuple_to_track, tuples_to_tracks
 
 from .utils import SQLiteManager
+from app.logger import log
+from pprint import pprint
 
 
 class SQLiteTrackMethods:
@@ -44,12 +47,21 @@ class SQLiteTrackMethods:
 
         track = OrderedDict(sorted(track.items()))
 
-        def force_surrogatepass(string: str):
-            return string.encode("utf-16", "surrogatepass").decode("utf-16")
+        # def should_fail():
+        #     """
+        #     Return true randomly.
+        #     """
+        #     return random.randint(0, 1) == 1
 
-        for key, value in track.items():
-            if isinstance(value, str):
-                track[key] = force_surrogatepass(value)
+        # if should_fail():
+        #     raise Exception("Failed to insert track")
+
+        # def force_surrogatepass(string: str):
+        #     return string.encode("utf-16", "surrogatepass").decode("utf-16")
+
+        # for key, value in track.items():
+        #     if isinstance(value, str):
+        #         track[key] = force_surrogatepass(value)
 
         track["artist"] = track["artists"]
         track["albumartist"] = track["albumartists"]
@@ -64,9 +76,16 @@ class SQLiteTrackMethods:
         """
         Inserts a list of tracks into the database.
         """
+
+        log.info("Send me the JSON below for debugging.")
+
         with SQLiteManager() as cur:
             for track in tracks:
-                cls.insert_one_track(track, cur)
+                try:
+                    cls.insert_one_track(track, cur)
+                except Exception:
+                    pprint(track, indent=4)
+            log.error("Send me the JSON above for debugging. Use https://pastebin.com and share the link.")
 
     @staticmethod
     def get_all_tracks():
