@@ -4,13 +4,11 @@ interacting with the tracks table.
 """
 
 from collections import OrderedDict
-import random
 from sqlite3 import Cursor
 
 from app.db.sqlite.utils import tuple_to_track, tuples_to_tracks
 
 from .utils import SQLiteManager
-from app.logger import log
 from pprint import pprint
 
 
@@ -59,10 +57,6 @@ class SQLiteTrackMethods:
         # def force_surrogatepass(string: str):
         #     return string.encode("utf-16", "surrogatepass").decode("utf-16")
 
-        # for key, value in track.items():
-        #     if isinstance(value, str):
-        #         track[key] = force_surrogatepass(value)
-
         track["artist"] = track["artists"]
         track["albumartist"] = track["albumartists"]
 
@@ -77,7 +71,6 @@ class SQLiteTrackMethods:
         Inserts a list of tracks into the database.
         """
 
-        log.info("Send me the JSON below for debugging.")
 
         with SQLiteManager() as cur:
             for track in tracks:
@@ -85,7 +78,6 @@ class SQLiteTrackMethods:
                     cls.insert_one_track(track, cur)
                 except Exception:
                     pprint(track, indent=4)
-            log.error("Send me the JSON above for debugging. Use https://pastebin.com and share the link.")
 
     @staticmethod
     def get_all_tracks():

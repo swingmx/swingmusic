@@ -1,3 +1,6 @@
+from app.models.track import Track
+
+
 class UseBisection:
     """
     Uses bisection to find a list of items in another list.
@@ -29,11 +32,11 @@ class UseBisection:
 
         return None
 
-    def __call__(self) -> list:
+    def __call__(self):
         if len(self.source_list) == 0:
-            return [None]
+            return []
 
-        results = []
+        results: list[Track] = []
 
         for query in self.queries_list:
             res = self.find(query)

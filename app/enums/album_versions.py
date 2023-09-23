@@ -56,7 +56,6 @@ class AlbumVersionEnum(Enum):
     RE_RECORDED = ("re-recorded", "rerecorded")
     REISSUE = ("reissue",)
     REMASTERED = ("remaster",)
-    TAYLORS_VERSION = ("taylor's version",)
 
 
 def get_all_keywords():

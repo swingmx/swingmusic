@@ -28,3 +28,4 @@ logs.txt
 *.spec
 
 TODO.md
+testdata.py

@@ -69,11 +69,6 @@ class Album:
             if "super_deluxe" in self.versions:
                 self.versions.remove("deluxe")
 
-            t_ = "taylors_version"
-            if t_ in self.versions:
-                self.versions.remove(t_)
-                self.versions.insert(0, "taylor's version")
-
             self.versions = [v.replace("_", " ") for v in self.versions]
         else:
             self.base_title = get_base_title_and_versions(
@@ -167,9 +162,7 @@ class Album:
         """
         keywords = ["single version", "- single"]
 
-        show_albums_as_singles = get_flag(
-            SessionVarKeys.SHOW_ALBUMS_AS_SINGLES
-        )
+        show_albums_as_singles = get_flag(SessionVarKeys.SHOW_ALBUMS_AS_SINGLES)
 
         for keyword in keywords:
             if keyword in self.title.lower():
@@ -203,9 +196,4 @@ class Album:
             return
 
         dates = (int(t.date) for t in tracks if t.date)
-
-        # if len(dates) == 0:
-        #     self.date = 0
-        #     return
-
         self.date = datetime.datetime.fromtimestamp(min(dates)).year
