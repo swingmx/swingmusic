@@ -78,7 +78,7 @@ def start_watchdog():
     WatchDog().run()
 
 
-if __name__ == "__main__":
+def run_swingmusic():
     HandleArgs()
     log_startup_info()
     bg_run_setup()
@@ -88,6 +88,9 @@ if __name__ == "__main__":
         f"swingmusic - {FLASKVARS.FLASK_HOST}:{FLASKVARS.FLASK_PORT}"
     )
 
+
+if __name__ == "__main__":
+    run_swingmusic()
     app.run(
         debug=False,
         threaded=True,
