@@ -416,7 +416,9 @@ def save_item_as_playlist():
     if len(trackhashes) == 0:
         return {"error": "No tracks founds"}, 404
 
-    image = itemhash + ".webp" if itemtype != "folder" and itemtype != "tracks" else None
+    image = (
+        itemhash + ".webp" if itemtype != "folder" and itemtype != "tracks" else None
+    )
 
     playlist = insert_playlist(playlist_name, image)
 
@@ -441,5 +443,9 @@ def save_item_as_playlist():
             )
 
     PL.add_tracks_to_playlist(playlist.id, trackhashes)
+    playlist.set_count(len(trackhashes))
+
+    images = get_first_4_images(trackhashes=trackhashes)
+    playlist.images = [img["image"] for img in images]
 
     return {"playlist": playlist}, 201

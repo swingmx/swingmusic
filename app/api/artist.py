@@ -91,6 +91,8 @@ def get_artist_albums(artisthash: str):
     limit = int(limit)
 
     all_albums = AlbumStore.get_albums_by_artisthash(artisthash)
+
+    # start: check for missing albums. ie. compilations and features
     all_tracks = TrackStore.get_tracks_by_artisthash(artisthash)
 
     track_albums = set(t.albumhash for t in all_tracks)
@@ -100,8 +102,15 @@ def get_artist_albums(artisthash: str):
         missing_albums = AlbumStore.get_albums_by_hashes(list(missing_album_hashes))
         all_albums.extend(missing_albums)
 
+    # end check
+
     def get_album_tracks(albumhash: str):
-        return [t for t in all_tracks if t.albumhash == albumhash]
+        tracks = [t for t in all_tracks if t.albumhash == albumhash]
+
+        if len(tracks) > 0:
+            return tracks
+
+        return TrackStore.get_tracks_by_albumhash(albumhash)
 
     for a in all_albums:
         a.check_type()
