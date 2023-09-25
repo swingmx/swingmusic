@@ -5,29 +5,20 @@ create the config directory and copy the assets to the app directory.
 
 import os
 import shutil
-from configparser import ConfigParser
 
 from app import settings
 from app.utils.filesystem import get_home_res_path
 
-config = ConfigParser()
-config_path = get_home_res_path("runtime.config.ini")
-config.read(config_path)
-
-
-IS_BUILD = config["DEFAULT"]["BUILD"] == "True"
-
-if IS_BUILD:
-    settings.Keys.LASTFM_API = config["DEFAULT"]["LASTFM_API_KEY"]
-
 
 class CopyFiles:
-    """Copies assets to the app directory."""
+    """
+    Copies assets to the app directory.
+    """
 
     def __init__(self) -> None:
         assets_dir = "assets"
 
-        if IS_BUILD:
+        if settings.IS_BUILD:
             assets_dir = get_home_res_path("assets")
 
         files = [

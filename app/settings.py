@@ -2,9 +2,17 @@
 Contains default configs
 """
 import os
+import sys
 from typing import Any
 
+from app import configs
+
 join = os.path.join
+
+if getattr(sys, "frozen", False) and hasattr(sys, "_MEIPASS"):
+    IS_BUILD = True
+else:
+    IS_BUILD = False
 
 
 class Release:
@@ -224,3 +232,10 @@ class TCOLOR:
 class Keys:
     # get last fm api key from os environment
     LASTFM_API = os.environ.get("LASTFM_API_KEY")
+    POSTHOG_API_KEY = os.environ.get("POSTHOG_API_KEY")
+
+    @classmethod
+    def load(cls):
+        if IS_BUILD:
+            cls.LASTFM_API = configs.LASTFM_API_KEY
+            cls.POSTHOG_API_KEY = configs.POSTHOG_API_KEY

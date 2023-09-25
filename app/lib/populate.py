@@ -9,7 +9,8 @@ from tqdm import tqdm
 
 from app import settings
 from app.db.sqlite.favorite import SQLiteFavoriteMethods as favdb
-from app.db.sqlite.lastfm.similar_artists import SQLiteLastFMSimilarArtists as lastfmdb
+from app.db.sqlite.lastfm.similar_artists import \
+    SQLiteLastFMSimilarArtists as lastfmdb
 from app.db.sqlite.settings import SettingsSQLMethods as sdb
 from app.db.sqlite.tracks import SQLiteTrackMethods
 from app.lib.albumslib import validate_albums
@@ -26,7 +27,7 @@ from app.store.albums import AlbumStore
 from app.store.artists import ArtistStore
 from app.store.tracks import TrackStore
 from app.utils.filesystem import run_fast_scandir
-from app.utils.network import Ping
+from app.utils.network import has_connection
 
 get_all_tracks = SQLiteTrackMethods.get_all_tracks
 insert_many_tracks = SQLiteTrackMethods.insert_many_tracks
@@ -92,7 +93,7 @@ class Populate:
 
         tried_to_download_new_images = False
 
-        if Ping()():
+        if has_connection():
             tried_to_download_new_images = True
             try:
                 CheckArtistImages(instance_key)
@@ -107,7 +108,7 @@ class Populate:
         if tried_to_download_new_images:
             ProcessArtistColors(instance_key=instance_key)
 
-        if Ping()():
+        if has_connection():
             try:
                 FetchSimilarArtistsLastFM(instance_key)
             except PopulateCancelledError as e:

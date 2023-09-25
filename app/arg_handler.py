@@ -3,18 +3,13 @@ Handles arguments passed to the program.
 """
 import os.path
 import sys
-from configparser import ConfigParser
 
 import PyInstaller.__main__ as bundler
 
 from app import settings
 from app.logger import log
 from app.print_help import HELP_MESSAGE
-from app.utils.wintools import is_windows
 from app.utils.xdg_utils import get_xdg_config_dir
-
-config = ConfigParser()
-config.read("runtime.config.ini")
 
 ALLARGS = settings.ALLARGS
 ARGS = sys.argv[1:]
@@ -38,23 +33,31 @@ class HandleArgs:
         """
         Runs Pyinstaller.
         """
+
+        if settings.IS_BUILD:
+            log.error("ERROR: You can't build here!")
+            return
+
         # get last.fm api key from env
         last_fm_key = settings.Keys.LASTFM_API
+        posthog_key = settings.Keys.POSTHOG_API_KEY
 
         # if the key is not in env, exit
         if not last_fm_key:
             log.error("ERROR: LASTFM_API_KEY not set in environment")
             sys.exit(0)
 
+        if not posthog_key:
+            log.error("ERROR: POSTHOG_API_KEY not set in environment")
+            sys.exit(0)
+
         if ALLARGS.build in ARGS:
-            with open("runtime.config.ini", "w", encoding="utf-8") as file:
-                config["DEFAULT"]["BUILD"] = "True"
-
+            with open("./app/configs.py", "w", encoding="utf-8") as file:
                 # copy the api key to the config file
-                config["DEFAULT"]["LASTFM_API_KEY"] = last_fm_key
-                config.write(file)
-
-            _s = ";" if is_windows() else ":"
+                line1 = f'LASTFM_API_KEY = "{last_fm_key}"\n'
+                line2 = f'POSTHOG_API_KEY = "{posthog_key}"\n'
+                file.write(line1)
+                file.write(line2)
 
             bundler.run(
                 [
@@ -63,19 +66,19 @@ class HandleArgs:
                     "--name",
                     "swingmusic",
                     "--clean",
-                    f"--add-data=assets{_s}assets",
-                    f"--add-data=client{_s}client",
-                    f"--add-data=runtime.config.ini{_s}.",
+                    f"--add-data=assets:assets",
+                    f"--add-data=client:client",
                     f"--icon=assets/logo-fill.ico",
                     "-y",
                 ]
             )
 
             # revert build to False and remove the api key for dev mode
-            with open("runtime.config.ini", "w", encoding="utf-8") as file:
-                config["DEFAULT"]["BUILD"] = "False"
-                config["DEFAULT"]["LASTFM_API_KEY"] = ""
-                config.write(file)
+            with open("./app/configs.py", "w", encoding="utf-8") as file:
+                line1 = "LASTFM_API_KEY = ''\n"
+                line2 = "POSTHOG_API_KEY = ''\n"
+                file.write(line1)
+                file.write(line2)
 
             sys.exit(0)
 
