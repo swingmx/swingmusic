@@ -35,15 +35,13 @@ class HandleArgs:
         """
 
         if settings.IS_BUILD:
-            log.error("ERROR: You can't build here!")
-            return
+            print("Catch me if you can! 😆💬")
+            sys.exit(0)
 
-        # get last.fm api key from env
-        last_fm_key = settings.Keys.LASTFM_API
+        lastfm_key = settings.Keys.LASTFM_API
         posthog_key = settings.Keys.POSTHOG_API_KEY
 
-        # if the key is not in env, exit
-        if not last_fm_key:
+        if not lastfm_key:
             log.error("ERROR: LASTFM_API_KEY not set in environment")
             sys.exit(0)
 
@@ -52,35 +50,36 @@ class HandleArgs:
             sys.exit(0)
 
         if ALLARGS.build in ARGS:
-            with open("./app/configs.py", "w", encoding="utf-8") as file:
-                # copy the api key to the config file
-                line1 = f'LASTFM_API_KEY = "{last_fm_key}"\n'
-                line2 = f'POSTHOG_API_KEY = "{posthog_key}"\n'
-                file.write(line1)
-                file.write(line2)
+            try:
+                with open("./app/configs.py", "w", encoding="utf-8") as file:
+                    # copy the api keys to the config file
+                    line1 = f'LASTFM_API_KEY = "{lastfm_key}"\n'
+                    line2 = f'POSTHOG_API_KEY = "{posthog_key}"\n'
+                    file.write(line1)
+                    file.write(line2)
 
-            bundler.run(
-                [
-                    "manage.py",
-                    "--onefile",
-                    "--name",
-                    "swingmusic",
-                    "--clean",
-                    f"--add-data=assets:assets",
-                    f"--add-data=client:client",
-                    f"--icon=assets/logo-fill.ico",
-                    "-y",
-                ]
-            )
+                bundler.run(
+                    [
+                        "manage.py",
+                        "--onefile",
+                        "--name",
+                        "swingmusic",
+                        "--clean",
+                        f"--add-data=assets:assets",
+                        f"--add-data=client:client",
+                        f"--icon=assets/logo-fill.ico",
+                        "-y",
+                    ]
+                )
+            finally:
+            # revert and remove the api keys for dev mode
+                with open("./app/configs.py", "w", encoding="utf-8") as file:
+                    line1 = "LASTFM_API_KEY = ''\n"
+                    line2 = "POSTHOG_API_KEY = ''\n"
+                    file.write(line1)
+                    file.write(line2)
 
-            # revert build to False and remove the api key for dev mode
-            with open("./app/configs.py", "w", encoding="utf-8") as file:
-                line1 = "LASTFM_API_KEY = ''\n"
-                line2 = "POSTHOG_API_KEY = ''\n"
-                file.write(line1)
-                file.write(line2)
-
-            sys.exit(0)
+                sys.exit(0)
 
     @staticmethod
     def handle_port():
@@ -174,3 +173,4 @@ class HandleArgs:
         if any((a in ARGS for a in ALLARGS.version)):
             print(settings.Release.APP_VERSION)
             sys.exit(0)
+
