@@ -1,8 +1,5 @@
 def handle_unicode(string: str):
     """
-    Try resolving unicode characters, else escape them.
+    Handles Unicode errors by ignoring unicode characters
     """
-    return string.encode("utf-16", "replace").decode("utf-16")
-    # try:
-    # except:
-    # return string.encode("unicode_escape").decode("utf-8")
+    return string.encode("utf-16", "ignore").decode("utf-16")

@@ -80,12 +80,12 @@ def start_watchdog():
 
 
 def run_swingmusic():
+    Keys.load()
     HandleArgs()
     log_startup_info()
     bg_run_setup()
     start_watchdog()
     telemetry.create_userid()
-    Keys.load()
 
     setproctitle.setproctitle(
         f"swingmusic - {FLASKVARS.FLASK_HOST}:{FLASKVARS.FLASK_PORT}"

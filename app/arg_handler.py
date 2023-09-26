@@ -72,7 +72,7 @@ class HandleArgs:
                     ]
                 )
             finally:
-            # revert and remove the api keys for dev mode
+                # revert and remove the api keys for dev mode
                 with open("./app/configs.py", "w", encoding="utf-8") as file:
                     line1 = "LASTFM_API_KEY = ''\n"
                     line2 = "POSTHOG_API_KEY = ''\n"
@@ -173,4 +173,3 @@ class HandleArgs:
         if any((a in ARGS for a in ALLARGS.version)):
             print(settings.Release.APP_VERSION)
             sys.exit(0)
-

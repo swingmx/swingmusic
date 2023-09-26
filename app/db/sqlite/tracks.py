@@ -9,7 +9,7 @@ from sqlite3 import Cursor
 from app.db.sqlite.utils import tuple_to_track, tuples_to_tracks
 
 from .utils import SQLiteManager
-from pprint import pprint
+from app.utils.unicode import handle_unicode
 
 
 class SQLiteTrackMethods:
@@ -45,25 +45,20 @@ class SQLiteTrackMethods:
 
         track = OrderedDict(sorted(track.items()))
 
-        # def should_fail():
-        #     """
-        #     Return true randomly.
-        #     """
-        #     return random.randint(0, 1) == 1
-
-        # if should_fail():
-        #     raise Exception("Failed to insert track")
-
-        # def force_surrogatepass(string: str):
-        #     return string.encode("utf-16", "surrogatepass").decode("utf-16")
-
         track["artist"] = track["artists"]
         track["albumartist"] = track["albumartists"]
 
         del track["artists"]
         del track["albumartists"]
 
-        cur.execute(sql, track)
+        try:
+            cur.execute(sql, track)
+        except UnicodeEncodeError:
+            # for each of the values in the track, call handle_unicode on it
+            for key, value in track.items():
+                track[key] = handle_unicode(value)
+
+            cur.execute(sql, track)
 
     @classmethod
     def insert_many_tracks(cls, tracks: list[dict]):
@@ -71,13 +66,9 @@ class SQLiteTrackMethods:
         Inserts a list of tracks into the database.
         """
 
-
         with SQLiteManager() as cur:
             for track in tracks:
-                try:
-                    cls.insert_one_track(track, cur)
-                except Exception:
-                    pprint(track, indent=4)
+                cls.insert_one_track(track, cur)
 
     @staticmethod
     def get_all_tracks():
