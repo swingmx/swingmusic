@@ -34,6 +34,9 @@ class HandleArgs:
         Runs Pyinstaller.
         """
 
+        if ALLARGS.build not in ARGS:
+            return
+
         if settings.IS_BUILD:
             print("Catch me if you can! 😆💬")
             sys.exit(0)
@@ -49,37 +52,36 @@ class HandleArgs:
             log.error("ERROR: POSTHOG_API_KEY not set in environment")
             sys.exit(0)
 
-        if ALLARGS.build in ARGS:
-            try:
-                with open("./app/configs.py", "w", encoding="utf-8") as file:
-                    # copy the api keys to the config file
-                    line1 = f'LASTFM_API_KEY = "{lastfm_key}"\n'
-                    line2 = f'POSTHOG_API_KEY = "{posthog_key}"\n'
-                    file.write(line1)
-                    file.write(line2)
+        try:
+            with open("./app/configs.py", "w", encoding="utf-8") as file:
+                # copy the api keys to the config file
+                line1 = f'LASTFM_API_KEY = "{lastfm_key}"\n'
+                line2 = f'POSTHOG_API_KEY = "{posthog_key}"\n'
+                file.write(line1)
+                file.write(line2)
 
-                bundler.run(
-                    [
-                        "manage.py",
-                        "--onefile",
-                        "--name",
-                        "swingmusic",
-                        "--clean",
-                        f"--add-data=assets:assets",
-                        f"--add-data=client:client",
-                        f"--icon=assets/logo-fill.ico",
-                        "-y",
-                    ]
-                )
-            finally:
-                # revert and remove the api keys for dev mode
-                with open("./app/configs.py", "w", encoding="utf-8") as file:
-                    line1 = "LASTFM_API_KEY = ''\n"
-                    line2 = "POSTHOG_API_KEY = ''\n"
-                    file.write(line1)
-                    file.write(line2)
+            bundler.run(
+                [
+                    "manage.py",
+                    "--onefile",
+                    "--name",
+                    "swingmusic",
+                    "--clean",
+                    f"--add-data=assets:assets",
+                    f"--add-data=client:client",
+                    f"--icon=assets/logo-fill.ico",
+                    "-y",
+                ]
+            )
+        finally:
+            # revert and remove the api keys for dev mode
+            with open("./app/configs.py", "w", encoding="utf-8") as file:
+                line1 = "LASTFM_API_KEY = ''\n"
+                line2 = "POSTHOG_API_KEY = ''\n"
+                file.write(line1)
+                file.write(line2)
 
-                sys.exit(0)
+            sys.exit(0)
 
     @staticmethod
     def handle_port():

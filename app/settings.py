@@ -6,7 +6,6 @@ import sys
 from typing import Any
 
 from app import configs
-from app.logger import log
 
 join = os.path.join
 
@@ -241,14 +240,10 @@ class Keys:
             cls.LASTFM_API = configs.LASTFM_API_KEY
             cls.POSTHOG_API_KEY = configs.POSTHOG_API_KEY
 
-        cls.verify_exists()
+        cls.verify_keys()
 
     @classmethod
-    def verify_exists(cls):
+    def verify_keys(cls):
         if not cls.LASTFM_API:
-            log.error("ERROR: LASTFM_API_KEY not set in environment")
-            sys.exit(0)
-
-        if not cls.POSTHOG_API_KEY:
-            log.error("ERROR: POSTHOG_API_KEY not set in environment")
+            print("ERROR: LASTFM_API_KEY not set in environment")
             sys.exit(0)

@@ -39,7 +39,9 @@ cd swingmusic
 poetry install
 ```
 
-Run the server. You can use a different port if you have another Swing Music instance running on the default port `1970`.
+You need a LastFM API key which you can get on the [API accounts page](https://www.last.fm/api/accounts). Then set it as an environment variable under the name: `LASTFM_API_KEY`.
+
+Finally, run the server. You can use a different port if you have another Swing Music instance running on port `1970`.
 
 ```sh
 poetry run python manage.py --port 1980

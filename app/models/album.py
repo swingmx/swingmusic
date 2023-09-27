@@ -104,7 +104,7 @@ class Album:
         """
         keywords = ["motion picture", "soundtrack"]
         for keyword in keywords:
-            if keyword in self.title.lower():
+            if keyword in self.og_title.lower():
                 return True
 
         return False
@@ -145,7 +145,7 @@ class Album:
         """
         keywords = ["live from", "live at", "live in", "live on", "mtv unplugged"]
         for keyword in keywords:
-            if keyword in self.title.lower():
+            if keyword in self.og_title.lower():
                 return True
 
         return False
@@ -165,7 +165,7 @@ class Album:
         show_albums_as_singles = get_flag(SessionVarKeys.SHOW_ALBUMS_AS_SINGLES)
 
         for keyword in keywords:
-            if keyword in self.title.lower():
+            if keyword in self.og_title.lower():
                 self.is_single = True
                 return
 

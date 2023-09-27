@@ -1,11 +1,10 @@
 import json
 
-from tqdm import tqdm
-
 from app.db.sqlite.artistcolors import SQLiteArtistMethods as ardb
 from app.lib.artistlib import get_all_artists
 from app.models import Artist
 from app.utils.bisection import UseBisection
+from app.utils.progressbar import tqdm
 
 from .albums import AlbumStore
 from .tracks import TrackStore
@@ -26,9 +25,7 @@ class ArtistStore:
 
         cls.artists = get_all_artists(TrackStore.tracks, AlbumStore.albums)
 
-        # db_artists: list[tuple] = list(ardb.get_all_artists())
-
-        for artist in tqdm(ardb.get_all_artists(), desc="Loading artists"):
+        for artist in ardb.get_all_artists():
             if instance_key != ARTIST_LOAD_KEY:
                 return
 

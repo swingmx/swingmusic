@@ -1,13 +1,13 @@
 import json
 import random
 
-from tqdm import tqdm
 
 from app.db.sqlite.albumcolors import SQLiteAlbumMethods as aldb
 from app.models import Album, Track
 
 from ..utils.hashing import create_hash
 from .tracks import TrackStore
+from app.utils.progressbar import tqdm
 
 ALBUM_LOAD_KEY = ""
 
@@ -49,7 +49,7 @@ class AlbumStore:
 
         db_albums: list[tuple] = aldb.get_all_albums()
 
-        for album in tqdm(db_albums, desc="Mapping album colors"):
+        for album in db_albums:
             albumhash = album[1]
             colors = json.loads(album[2])
 

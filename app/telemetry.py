@@ -2,55 +2,69 @@ import sys
 import uuid as UUID
 
 from posthog import Posthog
-from app.settings import Paths, Keys
+
+from app.logger import log
+from app.settings import Keys, Paths, Release
 from app.utils.hashing import create_hash
 from app.utils.network import has_connection
-from app.logger import log
 
 
-USER_ID = ""
-
-try:
-    posthog = Posthog(
-        project_api_key=Keys.POSTHOG_API_KEY,
-        host="https://app.posthog.com",
-        disable_geoip=False,
-        timeout=30,
-    )
-except AssertionError:
-    log.error("ERROR: POSTHOG_API_KEY not set in environment")
-    sys.exit(0)
-
-
-def create_userid():
+class Telemetry:
     """
-    Creates a unique user id for the user and saves it to a file.
+    Handles sending telemetry data to posthog.
     """
-    uuid_path = Paths.get_app_dir() + "/userid.txt"
-    global USER_ID
 
-    try:
-        with open(uuid_path, "r") as f:
-            USER_ID = f.read().strip()
-    except FileNotFoundError:
-        uuid = str(UUID.uuid4())
-        USER_ID = "user_" + create_hash(uuid, limit=15)
+    user_id = ""
+    off = False
 
-        with open(uuid_path, "w") as f:
-            f.write(USER_ID)
+    @classmethod
+    def init(cls) -> None:
+        try:
+            cls.posthog = Posthog(
+                project_api_key=Keys.POSTHOG_API_KEY,
+                host="https://app.posthog.com",
+                disable_geoip=False,
+            )
 
+            cls.create_userid()
+        except AssertionError:
+            cls.disable_telemetry()
 
-def send_event(event: str):
-    """
-    Sends an event to posthog.
-    """
-    global USER_ID
-    if has_connection():
-        posthog.capture(USER_ID, event=f"v1.3.0-{event}")
+    @classmethod
+    def create_userid(cls):
+        """
+        Creates a unique user id for the user and saves it to a file.
+        """
+        uuid_path = Paths.get_app_dir() + "/userid.txt"
 
+        try:
+            with open(uuid_path, "r") as f:
+                cls.user_id = f.read().strip()
+        except FileNotFoundError:
+            uuid = str(UUID.uuid4())
+            cls.user_id = "user_" + create_hash(uuid, limit=15)
 
-def send_artist_visited():
-    """
-    Sends an event to posthog when an artist page is visited.
-    """
-    send_event("artist-page-visited")
+            with open(uuid_path, "w") as f:
+                f.write(cls.user_id)
+
+    @classmethod
+    def disable_telemetry(cls):
+        cls.off = True
+
+    @classmethod
+    def send_event(cls, event: str):
+        """
+        Sends an event to posthog.
+        """
+        if cls.off:
+            return
+
+        if has_connection():
+            cls.posthog.capture(cls.user_id, event=f"v{Release.APP_VERSION}-{event}")
+
+    @classmethod
+    def send_artist_visited(cls):
+        """
+        Sends an event to posthog when an artist page is visited.
+        """
+        cls.send_event("artist-page-visited")

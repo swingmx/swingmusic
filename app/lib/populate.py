@@ -5,7 +5,6 @@ from typing import Generator
 
 from requests import ConnectionError as RequestConnectionError
 from requests import ReadTimeout
-from tqdm import tqdm
 
 from app import settings
 from app.db.sqlite.favorite import SQLiteFavoriteMethods as favdb
@@ -28,6 +27,7 @@ from app.store.artists import ArtistStore
 from app.store.tracks import TrackStore
 from app.utils.filesystem import run_fast_scandir
 from app.utils.network import has_connection
+from app.utils.progressbar import tqdm
 
 get_all_tracks = SQLiteTrackMethods.get_all_tracks
 insert_many_tracks = SQLiteTrackMethods.insert_many_tracks

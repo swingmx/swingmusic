@@ -1,10 +1,11 @@
-from tqdm import tqdm
+# from tqdm import tqdm
 
 from app.db.sqlite.favorite import SQLiteFavoriteMethods as favdb
 from app.db.sqlite.tracks import SQLiteTrackMethods as tdb
 from app.models import Track
 from app.utils.bisection import UseBisection
 from app.utils.remove_duplicates import remove_duplicates
+from app.utils.progressbar import tqdm
 
 TRACKS_LOAD_KEY = ""
 
@@ -25,6 +26,7 @@ class TrackStore:
         fav_hashes = favdb.get_fav_tracks()
         fav_hashes = " ".join([t[1] for t in fav_hashes])
 
+        print("\n")  # adds space between progress bars and startup info
         for track in tqdm(cls.tracks, desc="Loading tracks"):
             if instance_key != TRACKS_LOAD_KEY:
                 return

@@ -8,7 +8,7 @@ import os
 import setproctitle
 from flask import request
 
-from app import telemetry
+from app.telemetry import Telemetry
 from app.api import create_api
 from app.arg_handler import HandleArgs
 from app.lib.watchdogg import Watcher as WatchDog
@@ -79,13 +79,18 @@ def start_watchdog():
     WatchDog().run()
 
 
+@background
+def init_telemetry():
+    Telemetry.init()
+
+
 def run_swingmusic():
     Keys.load()
     HandleArgs()
     log_startup_info()
     bg_run_setup()
     start_watchdog()
-    telemetry.create_userid()
+    init_telemetry()
 
     setproctitle.setproctitle(
         f"swingmusic - {FLASKVARS.FLASK_HOST}:{FLASKVARS.FLASK_PORT}"

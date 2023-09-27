@@ -1,7 +1,6 @@
 import os
 
-from app.settings import (FLASKVARS, TCOLOR, Paths, Release, SessionVarKeys,
-                          get_flag)
+from app.settings import FLASKVARS, TCOLOR, Paths, Release
 from app.utils.network import get_ip
 
 
@@ -25,27 +24,8 @@ def log_startup_info():
             f"➤ {TCOLOR.OKGREEN}http://{address}:{FLASKVARS.get_flask_port()}{TCOLOR.ENDC}"
         )
 
-    print(lines)
-    print("\n")
+    print(lines+"\n")
 
-    to_print = [
-        [
-            "Extract featured artists from titles",
-            get_flag(SessionVarKeys.EXTRACT_FEAT)
-        ],
-        [
-            "Remove prod. from titles",
-            get_flag(SessionVarKeys.REMOVE_PROD)
-        ]
-    ]
-
-    for item in to_print:
-        print(
-            f"{item[0]}: {TCOLOR.FAIL}{item[1]}{TCOLOR.ENDC}"
-        )
-
-    print(
-        f"{TCOLOR.YELLOW}Data folder: {Paths.get_app_dir()}{TCOLOR.ENDC}"
-    )
+    print(f"{TCOLOR.YELLOW}Data folder: {Paths.get_app_dir()}{TCOLOR.ENDC}")
 
     print("\n")

@@ -28,8 +28,6 @@ class SettingsSQLMethods:
             if settings is None:
                 return []
 
-            # print
-
             # omit id, root_dirs, and exclude_dirs
             return settings[3:]
 

@@ -15,9 +15,15 @@ from app.serializers.track import serialize_tracks
 from app.store.albums import AlbumStore
 from app.store.artists import ArtistStore
 from app.store.tracks import TrackStore
-from app import telemetry
+from app.telemetry import Telemetry
+from app.utils.threading import background
 
 api = Blueprint("artist", __name__, url_prefix="/")
+
+
+@background
+def send_event():
+    Telemetry.send_artist_visited()
 
 
 @api.route("/artist/<artisthash>", methods=["GET"])
@@ -25,7 +31,7 @@ def get_artist(artisthash: str):
     """
     Get artist data.
     """
-    telemetry.send_artist_visited()
+    send_event()
     limit = request.args.get("limit")
 
     if limit is None:

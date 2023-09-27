@@ -2,6 +2,7 @@
 Logger module
 """
 
+from app.settings import IS_BUILD
 import logging
 
 

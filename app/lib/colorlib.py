@@ -6,7 +6,6 @@ import json
 from pathlib import Path
 
 import colorgram
-from tqdm import tqdm
 
 from app import settings
 from app.db.sqlite.albumcolors import SQLiteAlbumMethods as aldb
@@ -17,6 +16,7 @@ from app.store.artists import ArtistStore
 from app.store.albums import AlbumStore
 from app.logger import log
 from app.lib.errors import PopulateCancelledError
+from app.utils.progressbar import tqdm
 
 PROCESS_ALBUM_COLORS_KEY = ""
 PROCESS_ARTIST_COLORS_KEY = ""

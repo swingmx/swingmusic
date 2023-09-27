@@ -8,12 +8,12 @@ import requests
 from PIL import Image, UnidentifiedImageError
 from requests.exceptions import ConnectionError as RequestConnectionError
 from requests.exceptions import ReadTimeout
-from tqdm import tqdm
 
 from app import settings
 from app.models import Album, Artist, Track
 from app.store import artists as artist_store
 from app.utils.hashing import create_hash
+from app.utils.progressbar import tqdm
 
 
 CHECK_ARTIST_IMAGES_KEY = ""

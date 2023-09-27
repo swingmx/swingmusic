@@ -3,11 +3,10 @@ This library contains all the functions related to tracks.
 """
 import os
 
-from tqdm import tqdm
 
 from app.db.sqlite.tracks import SQLiteTrackMethods as tdb
 from app.store.tracks import TrackStore
-
+from app.utils.progressbar import tqdm
 
 def validate_tracks() -> None:
     """

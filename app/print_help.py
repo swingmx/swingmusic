@@ -13,7 +13,7 @@ help_args_list = [
     [
         "--scan-interval",
         "-psi",
-        "Set the periodic scan interval in seconds. Default is 600 seconds (10 minutes)",
+        "Set the scan interval in seconds. Default 600s (10 minutes)",
     ],
     [
         "--build",
@@ -26,9 +26,7 @@ HELP_MESSAGE = f"""
 Swing Music is a beautiful, self-hosted music player for your 
 local audio files. Like a cooler Spotify ... but bring your own music.
 
-Usage: swingmusic [options]
+Usage: swingmusic [options] [args]
 
-{tabulate(help_args_list, headers=["Option", "Short", "Description"], tablefmt="markdown", maxcolwidths=[None, None, 44])}
+{tabulate(help_args_list, headers=["Option", "Short", "Description"], tablefmt="simple_grid", maxcolwidths=[None, None, 40])}
 """
-
-"80s, 90s, the noughties and today"
