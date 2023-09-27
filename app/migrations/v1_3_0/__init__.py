@@ -11,6 +11,8 @@ from app.migrations.base import Migration
 from app.settings import Paths
 from app.utils.decorators import coroutine
 from app.utils.hashing import create_hash
+from app.telemetry import Telemetry
+from app.utils.threading import background
 
 # playlists table
 # ---------------
@@ -21,6 +23,11 @@ from app.utils.hashing import create_hash
 # 4: last_updated
 # 5: name
 # 6: trackhashes
+
+
+@background
+def send_telemetry():
+    Telemetry.send_app_installed()
 
 
 class RemoveSmallThumbnailFolder(Migration):
@@ -34,6 +41,7 @@ class RemoveSmallThumbnailFolder(Migration):
 
     @staticmethod
     def migrate():
+        send_telemetry()
         thumbs_sm_path = Paths.get_sm_thumb_path()
         thumbs_lg_path = Paths.get_lg_thumb_path()
 

@@ -63,6 +63,13 @@ class Telemetry:
             cls.posthog.capture(cls.user_id, event=f"v{Release.APP_VERSION}-{event}")
 
     @classmethod
+    def send_app_installed(cls):
+        """
+        Sends an event to posthog when the app is installed.
+        """
+        cls.send_event("app-installed")
+
+    @classmethod
     def send_artist_visited(cls):
         """
         Sends an event to posthog when an artist page is visited.

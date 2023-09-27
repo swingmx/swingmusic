@@ -38,7 +38,8 @@ class HandleArgs:
             return
 
         if settings.IS_BUILD:
-            print("Catch me if you can! 😆💬")
+            print("Do the cha cha slide instead!")
+            print("https://www.youtube.com/watch?v=wZv62ShoStY")
             sys.exit(0)
 
         lastfm_key = settings.Keys.LASTFM_API
