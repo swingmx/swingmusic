@@ -20,10 +20,16 @@ from app.utils.threading import background
 
 api = Blueprint("artist", __name__, url_prefix="/")
 
+ARTIST_VISIT_COUNT = 0
+
 
 @background
 def send_event():
-    Telemetry.send_artist_visited()
+    global ARTIST_VISIT_COUNT
+    ARTIST_VISIT_COUNT += 1
+
+    if ARTIST_VISIT_COUNT % 5 == 0:
+        Telemetry.send_artist_visited()
 
 
 @api.route("/artist/<artisthash>", methods=["GET"])
