@@ -62,7 +62,7 @@ class Track:
                 featured, new_title = parse_feat_from_title(self.title)
                 original_lower = "-".join([create_hash(a) for a in artists])
                 artists.extend(
-                    [a for a in featured if create_hash(a) not in original_lower]
+                    a for a in featured if create_hash(a) not in original_lower
                 )
 
             self.artist_hashes = "-".join(create_hash(a, decode=True) for a in artists)
@@ -127,7 +127,7 @@ class Track:
             return
 
         self.trackhash = create_hash(
-            ", ".join([a.name for a in self.artists]), self.og_album, self.title
+            ", ".join(a.name for a in self.artists), self.og_album, self.title
         )
 
     def recreate_artists_hash(self):
@@ -140,7 +140,8 @@ class Track:
         """
         Recreates an albumhash of a track to merge all versions of an album.
         """
-        self.albumhash = create_hash(self.album, self.albumartists)
+        albumartists = (a.name for a in self.albumartists)
+        self.albumhash = create_hash(self.album, *albumartists)
 
     def rename_album(self, new_album: str):
         """

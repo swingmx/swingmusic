@@ -69,6 +69,9 @@ class Album:
             if "super_deluxe" in self.versions:
                 self.versions.remove("deluxe")
 
+            if "original" in self.versions and self.check_is_soundtrack():
+                self.versions.remove("original")
+
             self.versions = [v.replace("_", " ") for v in self.versions]
         else:
             self.base_title = get_base_title_and_versions(
