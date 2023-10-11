@@ -2,7 +2,7 @@
 
 Swing Music is a beautiful, self-hosted music player for your local audio files. Like a cooler Spotify ... but bring your own music. Just run the app and enjoy your music library in a web browser.
 
-<a href="https://swingmusic.vercel.app/support-us.html" target="_blank"><img src="screenshots/supportus.png" alt="Buy Me A Coffee" style="height: 60px !important;width: auto !important;" ></a>
+<a href="https://swingmusic-git-v130-swingmusic.vercel.app/support-us.html" target="_blank"><img src="screenshots/supportus.png" alt="Buy Me A Coffee" style="height: 60px !important;width: auto !important;" ></a>
 
 | ![SWING MUSIC PLAYER BANNER IMAGE](screenshots/artist.webp)  | ![SWING MUSIC PLAYER BANNER IMAGE](screenshots/album.webp)  |
 | ------------------------------------------------------------ | ----------------------------------------------------------- |
