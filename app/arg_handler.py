@@ -10,6 +10,7 @@ from app import settings
 from app.logger import log
 from app.print_help import HELP_MESSAGE
 from app.utils.xdg_utils import get_xdg_config_dir
+from app.utils.wintools import is_windows
 
 ALLARGS = settings.ALLARGS
 ARGS = sys.argv[1:]
@@ -61,6 +62,8 @@ class HandleArgs:
                 file.write(line1)
                 file.write(line2)
 
+            _s = ";" if is_windows() else ":"
+
             bundler.run(
                 [
                     "manage.py",
@@ -68,8 +71,8 @@ class HandleArgs:
                     "--name",
                     "swingmusic",
                     "--clean",
-                    f"--add-data=assets:assets",
-                    f"--add-data=client:client",
+                    f"--add-data=assets{_s}assets",
+                    f"--add-data=client{_s}client",
                     f"--icon=assets/logo-fill.ico",
                     "-y",
                 ]

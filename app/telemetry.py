@@ -1,4 +1,3 @@
-import sys
 import uuid as UUID
 
 from posthog import Posthog
