@@ -9,6 +9,7 @@ from sqlite3 import Cursor
 from app.db.sqlite.utils import tuple_to_track, tuples_to_tracks
 
 from .utils import SQLiteManager
+from app.utils.unicode import handle_unicode
 
 
 class SQLiteTrackMethods:
@@ -21,7 +22,7 @@ class SQLiteTrackMethods:
         """
         Inserts a single track into the database.
         """
-        sql = """INSERT INTO tracks(
+        sql = """INSERT OR REPLACE INTO tracks(
             album,
             albumartist,
             albumhash,
@@ -34,21 +35,37 @@ class SQLiteTrackMethods:
             filepath,
             folder,
             genre,
+            last_mod,
             title,
             track,
             trackhash
             ) VALUES(:album, :albumartist, :albumhash, :artist, :bitrate, :copyright, 
-            :date, :disc, :duration, :filepath, :folder, :genre, :title, :track, :trackhash)
+            :date, :disc, :duration, :filepath, :folder, :genre, :last_mod, :title, :track, :trackhash)
             """
 
         track = OrderedDict(sorted(track.items()))
-        cur.execute(sql, track)
+
+        track["artist"] = track["artists"]
+        track["albumartist"] = track["albumartists"]
+
+        del track["artists"]
+        del track["albumartists"]
+
+        try:
+            cur.execute(sql, track)
+        except UnicodeEncodeError:
+            # for each of the values in the track, call handle_unicode on it
+            for key, value in track.items():
+                track[key] = handle_unicode(value)
+
+            cur.execute(sql, track)
 
     @classmethod
     def insert_many_tracks(cls, tracks: list[dict]):
         """
         Inserts a list of tracks into the database.
         """
+
         with SQLiteManager() as cur:
             for track in tracks:
                 cls.insert_one_track(track, cur)
@@ -83,12 +100,16 @@ class SQLiteTrackMethods:
             return None
 
     @staticmethod
-    def remove_track_by_filepath(filepath: str):
+    def remove_tracks_by_filepaths(filepaths: str | set[str]):
         """
-        Removes a track from the database using its filepath.
+        Removes a track or tracks from the database using their filepaths.
         """
+        if isinstance(filepaths, str):
+            filepaths = {filepaths}
+
         with SQLiteManager() as cur:
-            cur.execute("DELETE FROM tracks WHERE filepath=?", (filepath,))
+            for filepath in filepaths:
+                cur.execute("DELETE FROM tracks WHERE filepath=?", (filepath,))
 
     @staticmethod
     def remove_tracks_by_folders(folders: set[str]):

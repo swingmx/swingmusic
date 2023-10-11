@@ -14,6 +14,7 @@ class SQLiteFavoriteMethods:
         with SQLiteManager(userdata_db=True) as cur:
             cur.execute(sql, (itemhash, fav_type))
             items = cur.fetchall()
+            cur.close()
             return len(items) > 0
 
     @classmethod
@@ -28,6 +29,7 @@ class SQLiteFavoriteMethods:
         sql = """INSERT INTO favorites(type, hash) VALUES(?,?)"""
         with SQLiteManager(userdata_db=True) as cur:
             cur.execute(sql, (fav_type, fav_hash))
+            cur.close()
 
     @classmethod
     def get_all(cls) -> list[tuple]:
@@ -37,7 +39,9 @@ class SQLiteFavoriteMethods:
         sql = """SELECT * FROM favorites"""
         with SQLiteManager(userdata_db=True) as cur:
             cur.execute(sql)
-            return cur.fetchall()
+            favs = cur.fetchall()
+            cur.close()
+            return [fav for fav in favs if fav[1] != ""]
 
     @classmethod
     def get_favorites(cls, fav_type: str) -> list[tuple]:
@@ -47,7 +51,9 @@ class SQLiteFavoriteMethods:
         sql = """SELECT * FROM favorites WHERE type = ?"""
         with SQLiteManager(userdata_db=True) as cur:
             cur.execute(sql, (fav_type,))
-            return cur.fetchall()
+            all_favs = cur.fetchall()
+            cur.close()
+            return all_favs
 
     @classmethod
     def get_fav_tracks(cls) -> list[tuple]:
@@ -79,3 +85,4 @@ class SQLiteFavoriteMethods:
 
         with SQLiteManager(userdata_db=True) as cur:
             cur.execute(sql, (fav_hash, fav_type))
+            cur.close()

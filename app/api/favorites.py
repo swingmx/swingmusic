@@ -2,11 +2,17 @@ from flask import Blueprint, request
 
 from app.db.sqlite.favorite import SQLiteFavoriteMethods as favdb
 from app.models import FavType
+from app.serializers.album import serialize_for_card_many
+from app.serializers.track import serialize_tracks
 from app.utils.bisection import UseBisection
 
 from app.store.artists import ArtistStore
 from app.store.albums import AlbumStore
 from app.store.tracks import TrackStore
+from app.serializers.favorites_serializer import (
+    recent_fav_album_serializer,
+    recent_fav_artist_serializer,
+)
 
 api = Blueprint("favorite", __name__, url_prefix="/")
 
@@ -78,7 +84,7 @@ def get_favorite_albums():
     if limit == 0:
         limit = len(albums)
 
-    return {"albums": fav_albums[:limit]}
+    return {"albums": serialize_for_card_many(fav_albums[:limit])}
 
 
 @api.route("/tracks/favorite")
@@ -101,7 +107,7 @@ def get_favorite_tracks():
     if limit == 0:
         limit = len(tracks)
 
-    return {"tracks": tracks[:limit]}
+    return {"tracks": serialize_tracks(tracks[:limit])}
 
 
 @api.route("/artists/favorite")
@@ -149,52 +155,69 @@ def get_all_favorites():
     track_limit = int(track_limit)
     album_limit = int(album_limit)
     artist_limit = int(artist_limit)
+    largest = max(track_limit, album_limit, artist_limit)
 
     favs = favdb.get_all()
     favs.reverse()
-
-    favs = [fav for fav in favs if fav[1] != ""]
 
     tracks = []
     albums = []
     artists = []
 
     for fav in favs:
-        if (
-            len(tracks) >= track_limit
-            and len(albums) >= album_limit
-            and len(artists) >= artist_limit
-        ):
-            break
-
-        if not len(tracks) >= track_limit:
+        if not len(tracks) >= largest:
             if fav[2] == FavType.track:
                 tracks.append(fav[1])
 
-        if not len(albums) >= album_limit:
-            if fav[2] == FavType.album:
-                albums.append(fav[1])
-
-        if not len(artists) >= artist_limit:
+        if not len(artists) >= largest:
             if fav[2] == FavType.artist:
                 artists.append(fav[1])
+
+        if fav[2] == FavType.album:
+            albums.append(fav[1])
 
     src_tracks = sorted(TrackStore.tracks, key=lambda x: x.trackhash)
     src_albums = sorted(AlbumStore.albums, key=lambda x: x.albumhash)
     src_artists = sorted(ArtistStore.artists, key=lambda x: x.artisthash)
 
     tracks = UseBisection(src_tracks, "trackhash", tracks)()
-    albums = UseBisection(src_albums, "albumhash", albums)()
+    albums = UseBisection(src_albums, "albumhash", albums, limit=album_limit)()
     artists = UseBisection(src_artists, "artisthash", artists)()
 
     tracks = remove_none(tracks)
     albums = remove_none(albums)
     artists = remove_none(artists)
 
+    recents = []
+    # first_n = favs
+
+    for fav in favs:
+        if len(recents) >= largest:
+            break
+
+        if fav[2] == FavType.album:
+            try:
+                album = [a for a in albums if a.albumhash == fav[1]][0]
+                recents.append(
+                    {"type": "album", "item": recent_fav_album_serializer(album)}
+                )
+            except IndexError:
+                continue
+
+        if fav[2] == FavType.artist:
+            try:
+                artist = [a for a in artists if a.artisthash == fav[1]][0]
+                recents.append(
+                    {"type": "artist", "item": recent_fav_artist_serializer(artist)}
+                )
+            except IndexError:
+                continue
+
     return {
-        "tracks": tracks,
-        "albums": albums,
-        "artists": artists,
+        "recents": recents[:album_limit],
+        "tracks": tracks[:track_limit],
+        "albums": albums[:album_limit],
+        "artists": artists[:artist_limit],
     }
 
 

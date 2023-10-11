@@ -1,19 +1,18 @@
-import requests
 import socket as Socket
 
 
-class Ping:
+def has_connection(host="8.8.8.8", port=53, timeout=3):
     """
-    Checks if there is a connection to the internet by pinging google.com
+    Host: 8.8.8.8 (google-public-dns-a.google.com)
+    OpenPort: 53/tcp
+    Service: domain (DNS/TCP)
     """
-
-    @staticmethod
-    def __call__() -> bool:
-        try:
-            requests.get("https://google.com", timeout=10)
-            return True
-        except (requests.exceptions.ConnectionError, requests.Timeout):
-            return False
+    try:
+        Socket.setdefaulttimeout(timeout)
+        Socket.socket(Socket.AF_INET, Socket.SOCK_STREAM).connect((host, port))
+        return True
+    except Socket.error as ex:
+        return False
 
 
 def get_ip():
@@ -26,4 +25,3 @@ def get_ip():
     soc.close()
 
     return ip_address
-

@@ -22,3 +22,10 @@ encoderx.py
 dist
 build
 client
+.gitignore
+
+logs.txt
+*.spec
+
+TODO.md
+testdata.py

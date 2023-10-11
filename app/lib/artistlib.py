@@ -1,19 +1,22 @@
-from concurrent.futures import ThreadPoolExecutor
-from pathlib import Path
-from io import BytesIO
-
-from PIL import Image, UnidentifiedImageError
-import requests
+import os
 import urllib
+from concurrent.futures import ThreadPoolExecutor
+from io import BytesIO
+from pathlib import Path
 
-from tqdm import tqdm
-from requests.exceptions import ConnectionError as ReqConnError, ReadTimeout
+import requests
+from PIL import Image, UnidentifiedImageError
+from requests.exceptions import ConnectionError as RequestConnectionError
+from requests.exceptions import ReadTimeout
 
 from app import settings
-from app.models import Artist, Track, Album
-from app.utils.hashing import create_hash
-
+from app.models import Album, Artist, Track
 from app.store import artists as artist_store
+from app.utils.hashing import create_hash
+from app.utils.progressbar import tqdm
+
+
+CHECK_ARTIST_IMAGES_KEY = ""
 
 
 def get_artist_image_link(artist: str):
@@ -36,7 +39,7 @@ def get_artist_image_link(artist: str):
                 return res["picture_big"]
 
         return None
-    except (ReqConnError, ReadTimeout, IndexError, KeyError):
+    except (RequestConnectionError, ReadTimeout, IndexError, KeyError):
         return None
 
 
@@ -73,24 +76,49 @@ class DownloadImage:
 
 
 class CheckArtistImages:
-    def __init__(self):
-        with ThreadPoolExecutor() as pool:
-            list(
+    def __init__(self, instance_key: str):
+        global CHECK_ARTIST_IMAGES_KEY
+        CHECK_ARTIST_IMAGES_KEY = instance_key
+
+        # read all files in the artist image folder
+        path = settings.Paths.get_artist_img_sm_path()
+        processed = "".join(os.listdir(path)).replace("webp", "")
+
+        # filter out artists that already have an image
+        artists = filter(
+            lambda a: a.artisthash not in processed, artist_store.ArtistStore.artists
+        )
+        artists = list(artists)
+
+        # process the rest
+        key_artist_map = ((instance_key, artist) for artist in artists)
+
+        with ThreadPoolExecutor(max_workers=4) as executor:
+            res = list(
                 tqdm(
-                    pool.map(self.download_image, artist_store.ArtistStore.artists),
-                    total=len(artist_store.ArtistStore.artists),
-                    desc="Downloading artist images",
+                    executor.map(self.download_image, key_artist_map),
+                    total=len(artists),
+                    desc="Downloading missing artist images",
                 )
             )
 
+            list(res)
+
     @staticmethod
-    def download_image(artist: Artist):
+    def download_image(_map: tuple[str, Artist]):
         """
         Checks if an artist image exists and downloads it if not.
 
         :param artist: The artist name
         """
-        img_path = Path(settings.Paths.get_artist_img_sm_path()) / f"{artist.artisthash}.webp"
+        instance_key, artist = _map
+
+        if CHECK_ARTIST_IMAGES_KEY != instance_key:
+            return
+
+        img_path = (
+            Path(settings.Paths.get_artist_img_sm_path()) / f"{artist.artisthash}.webp"
+        )
 
         if img_path.exists():
             return
@@ -138,7 +166,7 @@ def get_artists_from_tracks(tracks: list[Track]) -> set[str]:
     """
     artists = set()
 
-    master_artist_list = [[x.name for x in t.artist] for t in tracks]
+    master_artist_list = [[x.name for x in t.artists] for t in tracks]
     artists = artists.union(*master_artist_list)
 
     return artists
@@ -155,17 +183,22 @@ def get_albumartists(albums: list[Album]) -> set[str]:
     return artists
 
 
-def get_all_artists(
-        tracks: list[Track], albums: list[Album]
-) -> list[Artist]:
+def get_all_artists(tracks: list[Track], albums: list[Album]) -> list[Artist]:
     artists_from_tracks = get_artists_from_tracks(tracks=tracks)
     artist_from_albums = get_albumartists(albums=albums)
 
     artists = list(artists_from_tracks.union(artist_from_albums))
-    artists = sorted(artists)
+    artists.sort()
 
-    lower_artists = set(a.lower().strip() for a in artists)
-    indices = [[ar.lower().strip() for ar in artists].index(a) for a in lower_artists]
-    artists = [artists[i] for i in indices]
+    # Remove duplicates
+    artists_dup_free = set()
+    artist_hashes = set()
 
-    return [Artist(a) for a in artists]
+    for artist in artists:
+        artist_hash = create_hash(artist, decode=True)
+
+        if artist_hash not in artist_hashes:
+            artists_dup_free.add(artist)
+            artist_hashes.add(artist_hash)
+
+    return [Artist(a) for a in artists_dup_free]

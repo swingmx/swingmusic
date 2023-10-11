@@ -6,8 +6,6 @@ import sqlite3
 from pathlib import Path
 from sqlite3 import Connection as SqlConn
 
-from app.settings import Db
-
 
 def create_connection(db_file: str) -> SqlConn:
     """

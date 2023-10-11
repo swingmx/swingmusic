@@ -1,29 +1,35 @@
 import json
 
-from tqdm import tqdm
-
-from app.db.sqlite.artists import SQLiteArtistMethods as ardb
+from app.db.sqlite.artistcolors import SQLiteArtistMethods as ardb
 from app.lib.artistlib import get_all_artists
 from app.models import Artist
 from app.utils.bisection import UseBisection
-from .tracks import TrackStore
+from app.utils.progressbar import tqdm
+
 from .albums import AlbumStore
+from .tracks import TrackStore
+
+ARTIST_LOAD_KEY = ""
 
 
 class ArtistStore:
     artists: list[Artist] = []
 
     @classmethod
-    def load_artists(cls):
+    def load_artists(cls, instance_key: str):
         """
         Loads all artists from the database into the store.
         """
+        global ARTIST_LOAD_KEY
+        ARTIST_LOAD_KEY = instance_key
+
         cls.artists = get_all_artists(TrackStore.tracks, AlbumStore.albums)
 
-        db_artists: list[tuple] = list(ardb.get_all_artists())
+        for artist in ardb.get_all_artists():
+            if instance_key != ARTIST_LOAD_KEY:
+                return
 
-        for art in tqdm(db_artists, desc="Loading artists"):
-            cls.map_artist_color(art)
+            cls.map_artist_color(artist)
 
     @classmethod
     def map_artist_color(cls, artist_tuple: tuple):
@@ -61,8 +67,11 @@ class ArtistStore:
         Returns an artist by its hash.P
         """
         artists = sorted(cls.artists, key=lambda x: x.artisthash)
-        artist = UseBisection(artists, "artisthash", [artisthash])()[0]
-        return artist
+        try:
+            artist = UseBisection(artists, "artisthash", [artisthash])()[0]
+            return artist
+        except IndexError:
+            return None
 
     @classmethod
     def get_artists_by_hashes(cls, artisthashes: list[str]) -> list[Artist]:
@@ -89,7 +98,7 @@ class ArtistStore:
 
         for track in TrackStore.tracks:
             artists.update(track.artist_hashes)
-            album_artists: list[str] = [a.artisthash for a in track.albumartist]
+            album_artists: list[str] = [a.artisthash for a in track.albumartists]
             artists.update(album_artists)
 
         master_hash = "-".join(artists)

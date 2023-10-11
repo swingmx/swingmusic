@@ -1,3 +1,4 @@
+import pendulum
 from datetime import datetime
 
 _format = "%Y-%m-%d %H:%M:%S"
@@ -21,44 +22,7 @@ def date_string_to_time_passed(prev_date: str) -> str:
 
     diff = now - then
     seconds = diff.seconds
-    print(seconds)
 
-    if seconds < 0:
-        return "from the future 🛸"
+    now = pendulum.now()
+    return now.subtract(seconds=seconds).diff_for_humans()
 
-    if seconds < 15:
-        return "now"
-
-    if seconds < 60:
-        return f"{int(seconds)} seconds ago"
-
-    if seconds < 3600:
-        return f"{int(seconds // 60)} minutes ago"
-
-    if seconds < 86400:
-        return f"{int(seconds // 3600)} hours ago"
-
-    days = diff.days
-
-    if days == 1:
-        return "yesterday"
-
-    if days < 7:
-        return f"{days} days ago"
-
-    if days < 14:
-        return "1 week ago"
-
-    if days < 30:
-        return f"{int(days // 7)} weeks ago"
-
-    if days < 60:
-        return "1 month ago"
-
-    if days < 365:
-        return f"{int(days // 30)} months ago"
-
-    if days < 730:
-        return "1 year ago"
-
-    return f"{int(days // 365)} years ago"

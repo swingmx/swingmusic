@@ -1,22 +1,8 @@
-FROM node:latest AS CLIENT
+FROM ubuntu:latest
 
-RUN git clone https://github.com/swing-opensource/swingmusic-client.git client
+WORKDIR /
 
-WORKDIR /client
-
-RUN git checkout $(git describe --tags $(git rev-list --tags --max-count=1))
-
-RUN yarn install
-
-RUN yarn build
-
-FROM python:latest
-
-WORKDIR /app/swingmusic
-
-COPY . .
-
-COPY --from=CLIENT /client/dist/ client
+COPY ./dist/swingmusic /swingmusic
 
 EXPOSE 1970/tcp
 
@@ -24,10 +10,4 @@ VOLUME /music
 
 VOLUME /config
 
-RUN pip install poetry
-
-RUN poetry config virtualenvs.create false
-
-RUN poetry install
-
-ENTRYPOINT ["poetry", "run", "python", "manage.py", "--host", "0.0.0.0", "--config", "/config"]
+ENTRYPOINT ["/swingmusic", "--host", "0.0.0.0", "--config", "/config"]

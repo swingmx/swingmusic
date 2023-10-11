@@ -3,18 +3,16 @@ This library contains all the functions related to tracks.
 """
 import os
 
-from tqdm import tqdm
 
 from app.db.sqlite.tracks import SQLiteTrackMethods as tdb
 from app.store.tracks import TrackStore
-
+from app.utils.progressbar import tqdm
 
 def validate_tracks() -> None:
     """
-    Gets all songs under the ~/ directory.
+    Removes track records whose files no longer exist.
     """
-    for track in tqdm(TrackStore.tracks, desc="Removing deleted tracks"):
+    for track in tqdm(TrackStore.tracks, desc="Validating tracks"):
         if not os.path.exists(track.filepath):
-            print(f"Removing {track.filepath}")
-            TrackStore.tracks.remove(track)
-            tdb.remove_track_by_filepath(track.filepath)
+            TrackStore.remove_track_obj(track)
+            tdb.remove_tracks_by_filepaths(track.filepath)

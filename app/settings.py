@@ -2,12 +2,21 @@
 Contains default configs
 """
 import os
+import sys
+from typing import Any
+
+from app import configs
 
 join = os.path.join
 
+if getattr(sys, "frozen", False) and hasattr(sys, "_MEIPASS"):
+    IS_BUILD = True
+else:
+    IS_BUILD = False
+
 
 class Release:
-    APP_VERSION = "v1.2.1"
+    APP_VERSION = "1.3.0"
 
 
 class Paths:
@@ -26,7 +35,9 @@ class Paths:
 
     @classmethod
     def get_config_folder(cls):
-        return "swingmusic" if cls.get_config_dir() != cls.USER_HOME_DIR else ".swingmusic"
+        return (
+            "swingmusic" if cls.get_config_dir() != cls.USER_HOME_DIR else ".swingmusic"
+        )
 
     @classmethod
     def get_app_dir(cls):
@@ -65,13 +76,17 @@ class Paths:
         return join(cls.get_thumbs_path(), "large")
 
     @classmethod
+    def get_original_thumb_path(cls):
+        return join(cls.get_thumbs_path(), "original")
+
+    @classmethod
     def get_assets_path(cls):
         return join(Paths.get_app_dir(), "assets")
 
 
 # defaults
 class Defaults:
-    THUMB_SIZE = 400
+    THUMB_SIZE = 500
     SM_THUMB_SIZE = 64
     SM_ARTIST_IMG_SIZE = 64
     """
@@ -105,6 +120,22 @@ class FLASKVARS:
     FLASK_PORT = 1970
     FLASK_HOST = "localhost"
 
+    @classmethod
+    def get_flask_port(cls):
+        return cls.FLASK_PORT
+
+    @classmethod
+    def get_flask_host(cls):
+        return cls.FLASK_HOST
+
+    @classmethod
+    def set_flask_port(cls, port):
+        cls.FLASK_PORT = port
+
+    @classmethod
+    def set_flask_host(cls, host):
+        cls.FLASK_HOST = host
+
 
 class ALLARGS:
     """
@@ -115,13 +146,23 @@ class ALLARGS:
     port = "--port"
     host = "--host"
     config = "--config"
-    show_feat = ["--show-feat", "-sf"]
-    show_prod = ["--show-prod", "-sp"]
-    help = ["--help", "-h"]
-    version = ["--version", "-v"]
+
+    show_feat = ("--show-feat", "-sf")
+    show_prod = ("--show-prod", "-sp")
+    dont_clean_albums = ("--no-clean-albums", "-nca")
+    dont_clean_tracks = ("--no-clean-tracks", "-nct")
+    no_periodic_scan = ("--no-periodic-scan", "-nps")
+    periodic_scan_interval = ("--scan-interval", "-psi")
+
+    help = ("--help", "-h")
+    version = ("--version", "-v")
 
 
-class FromFlags:
+class SessionVars:
+    """
+    Variables that can be altered per session.
+    """
+
     EXTRACT_FEAT = True
     """
     Whether to extract the featured artists from the song title.
@@ -131,6 +172,44 @@ class FromFlags:
     """
     Whether to remove the producers from the song title.
     """
+
+    CLEAN_ALBUM_TITLE = True
+    REMOVE_REMASTER_FROM_TRACK = True
+
+    DO_PERIODIC_SCANS = True
+    PERIODIC_SCAN_INTERVAL = 600  # 10 minutes
+    """
+    The interval between periodic scans in seconds.
+    """
+
+    MERGE_ALBUM_VERSIONS = False
+    ARTIST_SEPARATORS = set()
+    SHOW_ALBUMS_AS_SINGLES = False
+
+
+# TODO: Find a way to eliminate this class without breaking typings
+class SessionVarKeys:
+    EXTRACT_FEAT = "EXTRACT_FEAT"
+    REMOVE_PROD = "REMOVE_PROD"
+    CLEAN_ALBUM_TITLE = "CLEAN_ALBUM_TITLE"
+    REMOVE_REMASTER_FROM_TRACK = "REMOVE_REMASTER_FROM_TRACK"
+    DO_PERIODIC_SCANS = "DO_PERIODIC_SCANS"
+    PERIODIC_SCAN_INTERVAL = "PERIODIC_SCAN_INTERVAL"
+    MERGE_ALBUM_VERSIONS = "MERGE_ALBUM_VERSIONS"
+    ARTIST_SEPARATORS = "ARTIST_SEPARATORS"
+    SHOW_ALBUMS_AS_SINGLES = "SHOW_ALBUMS_AS_SINGLES"
+
+
+def get_flag(key: SessionVarKeys) -> bool:
+    return getattr(SessionVars, key)
+
+
+def set_flag(key: SessionVarKeys, value: Any):
+    setattr(SessionVars, key, value)
+
+
+def get_scan_sleep_time() -> int:
+    return SessionVars.PERIODIC_SCAN_INTERVAL
 
 
 class TCOLOR:
@@ -153,3 +232,18 @@ class TCOLOR:
 class Keys:
     # get last fm api key from os environment
     LASTFM_API = os.environ.get("LASTFM_API_KEY")
+    POSTHOG_API_KEY = os.environ.get("POSTHOG_API_KEY")
+
+    @classmethod
+    def load(cls):
+        if IS_BUILD:
+            cls.LASTFM_API = configs.LASTFM_API_KEY
+            cls.POSTHOG_API_KEY = configs.POSTHOG_API_KEY
+
+        cls.verify_keys()
+
+    @classmethod
+    def verify_keys(cls):
+        if not cls.LASTFM_API:
+            print("ERROR: LASTFM_API_KEY not set in environment")
+            sys.exit(0)

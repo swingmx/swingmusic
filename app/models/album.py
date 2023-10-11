@@ -1,12 +1,13 @@
 import dataclasses
+import datetime
 from dataclasses import dataclass
 
-from .track import Track
-from .artist import Artist
-from ..utils.hashing import create_hash
-from ..utils.parsers import parse_feat_from_title
+from app.settings import SessionVarKeys, get_flag
 
-from app.settings import FromFlags
+from ..utils.hashing import create_hash
+from ..utils.parsers import get_base_title_and_versions, parse_feat_from_title
+from .artist import Artist
+from .track import Track
 
 
 @dataclass(slots=True)
@@ -27,27 +28,55 @@ class Album:
     date: str = ""
 
     og_title: str = ""
+    base_title: str = ""
     is_soundtrack: bool = False
     is_compilation: bool = False
     is_single: bool = False
     is_EP: bool = False
     is_favorite: bool = False
     is_live: bool = False
+
     genres: list[str] = dataclasses.field(default_factory=list)
+    versions: list[str] = dataclasses.field(default_factory=list)
 
     def __post_init__(self):
         self.og_title = self.title
         self.image = self.albumhash + ".webp"
 
-        if FromFlags.EXTRACT_FEAT:
+        # Fetch album artists from title
+        if get_flag(SessionVarKeys.EXTRACT_FEAT):
             featured, self.title = parse_feat_from_title(self.title)
 
             if len(featured) > 0:
                 original_lower = "-".join([a.name.lower() for a in self.albumartists])
-                self.albumartists.extend([Artist(a) for a in featured if a.lower() not in original_lower])
+                self.albumartists.extend(
+                    [Artist(a) for a in featured if a.lower() not in original_lower]
+                )
 
                 from ..store.tracks import TrackStore
+
                 TrackStore.append_track_artists(self.albumhash, featured, self.title)
+
+        # Handle album version data
+        if get_flag(SessionVarKeys.CLEAN_ALBUM_TITLE):
+            get_versions = not get_flag(SessionVarKeys.MERGE_ALBUM_VERSIONS)
+
+            self.title, self.versions = get_base_title_and_versions(
+                self.title, get_versions=get_versions
+            )
+            self.base_title = self.title
+
+            if "super_deluxe" in self.versions:
+                self.versions.remove("deluxe")
+
+            if "original" in self.versions and self.check_is_soundtrack():
+                self.versions.remove("original")
+
+            self.versions = [v.replace("_", " ") for v in self.versions]
+        else:
+            self.base_title = get_base_title_and_versions(
+                self.title, get_versions=False
+            )[0]
 
         self.albumartists_hashes = "-".join(a.artisthash for a in self.albumartists)
 
@@ -78,7 +107,7 @@ class Album:
         """
         keywords = ["motion picture", "soundtrack"]
         for keyword in keywords:
-            if keyword in self.title.lower():
+            if keyword in self.og_title.lower():
                 return True
 
         return False
@@ -93,10 +122,19 @@ class Album:
         if "various artists" in artists:
             return True
 
-        substrings = [
-            "the essential", "best of", "greatest hits", "#1 hits", "number ones", "super hits",
-            "ultimate collection", "anthology", "great hits", "biggest hits", "the hits"
-        ]
+        substrings = {
+            "the essential",
+            "best of",
+            "greatest hits",
+            "#1 hits",
+            "number ones",
+            "super hits",
+            "ultimate collection",
+            "anthology",
+            "great hits",
+            "biggest hits",
+            "the hits",
+        }
 
         for substring in substrings:
             if substring in self.title.lower():
@@ -108,9 +146,9 @@ class Album:
         """
         Checks if the album is a live album.
         """
-        keywords = ["live from", "live at", "live in"]
+        keywords = ["live from", "live at", "live in", "live on", "mtv unplugged"]
         for keyword in keywords:
-            if keyword in self.title.lower():
+            if keyword in self.og_title.lower():
                 return True
 
         return False
@@ -122,27 +160,43 @@ class Album:
         return self.title.strip().endswith(" EP")
 
     def check_is_single(self, tracks: list[Track]):
-
         """
         Checks if the album is a single.
         """
         keywords = ["single version", "- single"]
+
+        show_albums_as_singles = get_flag(SessionVarKeys.SHOW_ALBUMS_AS_SINGLES)
+
         for keyword in keywords:
-            if keyword in self.title.lower():
+            if keyword in self.og_title.lower():
                 self.is_single = True
                 return
 
+        if show_albums_as_singles and len(tracks) == 1:
+            self.is_single = True
+            return
+
         if (
-                len(tracks) == 1
-                and create_hash(tracks[0].title) == create_hash(self.title)  # if they have the same title
-                # and tracks[0].track == 1
-                # and tracks[0].disc == 1
-                # TODO: Review -> Are the above commented checks necessary?
+            len(tracks) == 1
+            and (
+                create_hash(tracks[0].title) == create_hash(self.title)
+                or create_hash(tracks[0].title) == create_hash(self.og_title)
+            )  # if they have the same title
+            # and tracks[0].track == 1
+            # and tracks[0].disc == 1
+            # TODO: Review -> Are the above commented checks necessary?
         ):
             self.is_single = True
 
     def get_date_from_tracks(self, tracks: list[Track]):
-        for track in tracks:
-            if track.date != "Unknown":
-                self.date = track.date
-                break
+        """
+        Gets the date of the album its tracks.
+
+        Args:
+            tracks (list[Track]): The tracks of the album.
+        """
+        if self.date:
+            return
+
+        dates = (int(t.date) for t in tracks if t.date)
+        self.date = datetime.datetime.fromtimestamp(min(dates)).year

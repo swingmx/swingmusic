@@ -1,0 +1,8 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Create new issue
+    url: https://github.com/swing-opensource/swingmusic/issues/new
+    about: Please use the following link to create a new issue.
+  - name: Support Swing Music
+    url: https://swingmusic.vercel.app/support-us
+    about: Love Swing Music? Please consider supporting this project.

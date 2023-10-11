@@ -2,17 +2,20 @@
 Contains all the folder routes.
 """
 import os
-import psutil
-
 from pathlib import Path
+
+import psutil
 from flask import Blueprint, request
+from showinfm import show_in_file_manager
 
 from app import settings
-from app.lib.folderslib import GetFilesAndDirs, get_folders
 from app.db.sqlite.settings import SettingsSQLMethods as db
-from app.utils.wintools import win_replace_slash, is_windows
+from app.lib.folderslib import GetFilesAndDirs, get_folders
+from app.serializers.track import serialize_track
+from app.store.tracks import TrackStore as store
+from app.utils.wintools import is_windows, win_replace_slash
 
-api = Blueprint("folder", __name__, url_prefix="/")
+api = Blueprint("folder", __name__, url_prefix="")
 
 
 @api.route("/folder", methods=["POST"])
@@ -115,4 +118,32 @@ def list_folders():
 
     return {
         "folders": sorted(dirs, key=lambda i: i["name"]),
+    }
+
+
+@api.route("/folder/show-in-files")
+def open_in_file_manager():
+    path = request.args.get("path")
+
+    if path is None:
+        return {"error": "No path provided."}, 400
+
+    show_in_file_manager(path)
+
+    return {"success": True}
+
+
+@api.route("/folder/tracks/all")
+def get_tracks_in_path():
+    path = request.args.get("path")
+
+    if path is None:
+        return {"error": "No path provided."}, 400
+
+    tracks = store.get_tracks_in_path(path)
+    tracks = sorted(tracks, key=lambda i: i.last_mod)
+    tracks = (serialize_track(t) for t in tracks if Path(t.filepath).exists())
+
+    return {
+        "tracks": list(tracks)[:300],
     }

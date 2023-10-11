@@ -22,6 +22,17 @@ def send_fallback_img(filename: str = "default.webp"):
     return send_from_directory(path, filename)
 
 
+@api.route("/t/o/<imgpath>")
+def send_original_thumbnail(imgpath: str):
+    path = Paths.get_original_thumb_path()
+    fpath = Path(path) / imgpath
+
+    if fpath.exists():
+        return send_from_directory(path, imgpath)
+
+    return send_fallback_img()
+
+
 @api.route("/t/<imgpath>")
 def send_lg_thumbnail(imgpath: str):
     path = Paths.get_lg_thumb_path()

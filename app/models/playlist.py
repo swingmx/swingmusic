@@ -11,12 +11,10 @@ class Playlist:
     """Creates playlist objects"""
 
     id: int
-    artisthashes: str | list[str]
-    banner_pos: int
-    has_gif: str | bool
     image: str
     last_updated: str
     name: str
+    settings: str | dict
     trackhashes: str | list[str]
 
     thumb: str = ""
@@ -24,16 +22,19 @@ class Playlist:
     duration: int = 0
     has_image: bool = False
     images: list[str] = dataclasses.field(default_factory=list)
+    pinned: bool = False
 
     def __post_init__(self):
         self.trackhashes = json.loads(str(self.trackhashes))
-        # self.artisthashes = json.loads(str(self.artisthashes))
-        # commentted until we need it 👆
-        self.artisthashes = []
-
         self.count = len(self.trackhashes)
-        self.has_gif = bool(int(self.has_gif))
-        self.has_image = (Path(settings.Paths.get_playlist_img_path()) / str(self.image)).exists()
+
+        if isinstance(self.settings, str):
+            self.settings = dict(json.loads(self.settings))
+
+        self.pinned = self.settings.get("pinned", False)
+        self.has_image = (
+            Path(settings.Paths.get_playlist_img_path()) / str(self.image)
+        ).exists()
 
         if self.image is not None:
             self.thumb = "thumb_" + self.image
@@ -44,10 +45,12 @@ class Playlist:
     def set_duration(self, duration: int):
         self.duration = duration
 
+    def set_count(self, count: int):
+        self.count = count
+
     def clear_lists(self):
         """
         Removes data from lists to make it lighter for sending
         over the API.
         """
         self.trackhashes = []
-        self.artisthashes = []

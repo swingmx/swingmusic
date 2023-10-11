@@ -1,11 +1,15 @@
 import json
 import random
 
-from tqdm import tqdm
 
+from app.db.sqlite.albumcolors import SQLiteAlbumMethods as aldb
 from app.models import Album, Track
-from app.db.sqlite.albums import SQLiteAlbumMethods as aldb
+
+from ..utils.hashing import create_hash
 from .tracks import TrackStore
+from app.utils.progressbar import tqdm
+
+ALBUM_LOAD_KEY = ""
 
 
 class AlbumStore:
@@ -18,21 +22,26 @@ class AlbumStore:
         """
         return Album(
             albumhash=track.albumhash,
-            albumartists=track.albumartist,  # type: ignore
-            title=track.album,
+            albumartists=track.albumartists,  # type: ignore
+            title=track.og_album,
         )
 
     @classmethod
-    def load_albums(cls):
+    def load_albums(cls, instance_key: str):
         """
         Loads all albums from the database into the store.
         """
+        global ALBUM_LOAD_KEY
+        ALBUM_LOAD_KEY = instance_key
 
         cls.albums = []
 
         albumhashes = set(t.albumhash for t in TrackStore.tracks)
 
-        for albumhash in tqdm(albumhashes, desc="Loading albums"):
+        for albumhash in tqdm(albumhashes, desc=f"Loading albums"):
+            if instance_key != ALBUM_LOAD_KEY:
+                return
+
             for track in TrackStore.tracks:
                 if track.albumhash == albumhash:
                     cls.albums.append(cls.create_album(track))
@@ -40,7 +49,7 @@ class AlbumStore:
 
         db_albums: list[tuple] = aldb.get_all_albums()
 
-        for album in tqdm(db_albums, desc="Mapping album colors"):
+        for album in db_albums:
             albumhash = album[1]
             colors = json.loads(album[2])
 
@@ -65,15 +74,21 @@ class AlbumStore:
 
     @classmethod
     def get_albums_by_albumartist(
-            cls, artisthash: str, limit: int, exclude: str
+        cls, artisthash: str, limit: int, exclude: str
     ) -> list[Album]:
         """
         Returns N albums by the given albumartist, excluding the specified album.
         """
 
-        albums = [album for album in cls.albums if artisthash in album.albumartists_hashes]
+        albums = [
+            album for album in cls.albums if artisthash in album.albumartists_hashes
+        ]
 
-        albums = [album for album in albums if album.albumhash != exclude]
+        albums = [
+            album
+            for album in albums
+            if create_hash(album.base_title) != create_hash(exclude)
+        ]
 
         if len(albums) > limit:
             random.shuffle(albums)
@@ -86,10 +101,11 @@ class AlbumStore:
         """
         Returns an album by its hash.
         """
-        try:
-            return [a for a in cls.albums if a.albumhash == albumhash][0]
-        except IndexError:
-            return None
+        for album in cls.albums:
+            if album.albumhash == albumhash:
+                return album
+
+        return None
 
     @classmethod
     def get_albums_by_hashes(cls, albumhashes: list[str]) -> list[Album]:
@@ -108,21 +124,16 @@ class AlbumStore:
         """
         Returns all albums by the given artist.
         """
-        return [album for album in cls.albums if artisthash in album.albumartists_hashes]
+        return [
+            album for album in cls.albums if artisthash in album.albumartists_hashes
+        ]
 
     @classmethod
     def count_albums_by_artisthash(cls, artisthash: str):
         """
         Count albums for the given artisthash.
         """
-        albumartists = [a.albumartists for a in cls.albums]
-        artisthashes = []
-
-        for artist in albumartists:
-            artisthashes.extend([a.artisthash for a in artist])  # type: ignore
-
-        master_string = "-".join(artisthashes)
-
+        master_string = "-".join(a.albumartists_hashes for a in cls.albums)
         return master_string.count(artisthash)
 
     @classmethod
@@ -131,6 +142,13 @@ class AlbumStore:
         Checks if an album exists.
         """
         return albumhash in "-".join([a.albumhash for a in cls.albums])
+
+    @classmethod
+    def remove_album(cls, album: Album):
+        """
+        Removes an album from the store.
+        """
+        cls.albums.remove(album)
 
     @classmethod
     def remove_album_by_hash(cls, albumhash: str):

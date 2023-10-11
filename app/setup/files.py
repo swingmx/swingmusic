@@ -5,29 +5,20 @@ create the config directory and copy the assets to the app directory.
 
 import os
 import shutil
-from configparser import ConfigParser
 
 from app import settings
 from app.utils.filesystem import get_home_res_path
 
-config = ConfigParser()
-config_path = get_home_res_path("pyinstaller.config.ini")
-config.read(config_path)
-
-try:
-    IS_BUILD = config["DEFAULT"]["BUILD"] == "True"
-except KeyError:
-    # If the key doesn't exist, it means that the app is being executed in dev mode.
-    IS_BUILD = False
-
 
 class CopyFiles:
-    """Copies assets to the app directory."""
+    """
+    Copies assets to the app directory.
+    """
 
     def __init__(self) -> None:
         assets_dir = "assets"
 
-        if IS_BUILD:
+        if settings.IS_BUILD:
             assets_dir = get_home_res_path("assets")
 
         files = [
@@ -63,6 +54,7 @@ def create_config_dir() -> None:
     thumb_path = os.path.join("images", "thumbnails")
     small_thumb_path = os.path.join(thumb_path, "small")
     large_thumb_path = os.path.join(thumb_path, "large")
+    original_thumb_path = os.path.join(thumb_path, "original")
 
     artist_img_path = os.path.join("images", "artists")
     small_artist_img_path = os.path.join(artist_img_path, "small")
@@ -76,6 +68,7 @@ def create_config_dir() -> None:
         thumb_path,
         small_thumb_path,
         large_thumb_path,
+        original_thumb_path,
         artist_img_path,
         small_artist_img_path,
         large_artist_img_path,
