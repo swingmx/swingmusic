@@ -73,7 +73,7 @@ class HandleArgs:
                     "--clean",
                     f"--add-data=assets{_s}assets",
                     f"--add-data=client{_s}client",
-                    f"--icon=assets/logo-fill.ico",
+                    f"--icon=assets/logo-fill.light.ico",
                     "-y",
                 ]
             )
