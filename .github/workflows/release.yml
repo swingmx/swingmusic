@@ -23,6 +23,8 @@ jobs:
       - name: Clone client
         run: |
           git clone https://github.com/swing-opensource/swingmusic-client.git --depth 1
+      - name: Change directory
+        run: |
           cd swingmusic-client
       - name: Install dependencies
         run: |
