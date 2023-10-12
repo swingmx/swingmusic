@@ -19,14 +19,15 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: 16.x
+      - name: Install yarn
+        run: |
+          npm install -g yarn
       - name: Install dependencies
-        uses: borales/actions-yarn@v2.0.0
-        with:
-          cmd: install
+        run: |
+          yarn install
       - name: Build client
-        uses: borales/actions-yarn@v2.0.0
-        with:
-          cmd: build --outDir ../swingmusic/client
+        run: |
+          yarn build --outDir ../swingmusic/client
       - name: Setup Python 3.10
         uses: actions/setup-python@v2
         with:
