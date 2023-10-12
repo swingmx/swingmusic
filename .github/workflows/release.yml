@@ -11,7 +11,7 @@ jobs:
       - name: Clone client
         uses: actions/checkout@v2
         # with:
-        #   repository:
+        #   repository: swing-opensource/swingmusic-client
         #   ref: refs/heads/master
       - name: Setup Node 16
         uses: actions/setup-node@v3
@@ -20,27 +20,20 @@ jobs:
       - name: Install yarn
         run: |
           npm install -g yarn
-      - name: Clone client
-        uses: GuillaumeFalourd/clone-github-repo-action@v2.2
-        with:
-          owner: swing-opensource
-          repository: swingmusic-client
-          branch: master
-      - name: Build client
+      - name: Clone client repo
         run: |
+          git clone https://github.com/swing-opensource/swingmusic-client.git
           cd swingmusic-client
-          ls -la
           yarn install
-          yarn build
-      - name: Move up
-        run: |
+          yarn build --outDir ../client
           cd ..
+      - name: Print working directory
+        run: |
           ls -la
       - name: Setup Python 3.10
         uses: actions/setup-python@v2
         with:
           python-version: "3.10.13"
-
       - name: Install Poetry
         run: |
           pip install poetry
@@ -52,13 +45,9 @@ jobs:
       - name: Build server
         run: |
           python -m poetry run python manage.py --build
-        env:
+        env: 
           POSTHOG_API_KEY: ${{ secrets.POSTHOG_API_KEY }}
           LASTFM_API_KEY: ${{ secrets.LASTFM_API_KEY }}
-      - name: Print CWD
-        run: |
-          pwd
-          ls -la
       - name: Verify build
         run: |
           if [ ! -f "dist/swingmusic" ]; then
