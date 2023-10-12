@@ -19,9 +19,6 @@ jobs:
         uses: actions/setup-node@v2
         with:
           node-version: 18
-      - name: cd client directory
-        run: |
-          cd swingmusic-client
       - name: Install dependencies
         uses: borales/actions-yarn@v2.0.0
         with:
