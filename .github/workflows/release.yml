@@ -105,7 +105,9 @@ jobs:
       - name: Upload binaries to GitHub Release
         uses: ncipollo/release-action@v1
         with:
-          artifacts: "swingmusic, swingmusic.exe"
+          artifacts: |
+            swingmusic
+            swingmusic.exe
           token: ${{ secrets.GITHUB_TOKEN }}
           tag: ${{ inputs.tag }}
           commit: ${{ github.sha }}
