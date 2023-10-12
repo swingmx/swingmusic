@@ -26,15 +26,11 @@ jobs:
           owner: swing-opensource
           repository: swingmusic-client
           branch: master
-      - name: Change directory
+      - name: Build client
         run: |
           cd swingmusic-client
           ls -la
-      - name: Install dependencies
-        run: |
           yarn install
-      - name: Build client
-        run: |
           yarn build
       - name: Move up
         run: |
