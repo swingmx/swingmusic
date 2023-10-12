@@ -47,9 +47,6 @@ jobs:
           yarn install
           yarn build --outDir ../client
           cd ..
-      - name: Print working directory
-        run: |
-          ls -la
       - name: Setup Python 3.10
         uses: actions/setup-python@v2
         with:
@@ -92,6 +89,8 @@ jobs:
     steps:
       - name: Download all binaries
         uses: actions/download-artifact@v3
+      - name: Checkout into repo
+        uses: actions/checkout@v2
       - name: Upload binaries to GitHub Release
         uses: ncipollo/release-action@v1
         with:
