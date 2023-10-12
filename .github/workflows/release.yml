@@ -43,12 +43,10 @@ jobs:
       - name: Build client
         run: |
           git clone https://github.com/swing-opensource/swingmusic-client.git
-      - name: Install client dependencies
+      - name: Build client
         run: |
           cd swingmusic-client
           yarn install
-      - name: Build client
-        run: |
           yarn build --outDir ../client
           cd ..
       - name: Install Python 3.10.11
