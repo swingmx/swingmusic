@@ -11,7 +11,7 @@ jobs:
       - name: Clone client
         uses: actions/checkout@v2
         # with:
-        #   repository: 
+        #   repository:
         #   ref: refs/heads/master
       - name: Setup Node 16
         uses: actions/setup-node@v3
@@ -21,21 +21,29 @@ jobs:
         run: |
           npm install -g yarn
       - name: Clone client
-        run: |
-          git clone https://github.com/swing-opensource/swingmusic-client.git --depth 1
+        uses: GuillaumeFalourd/clone-github-repo-action@v2.2
+        with:
+          owner: swing-opensource
+          repository: swingmusic-client
       - name: Change directory
         run: |
           cd swingmusic-client
+          ls -la
       - name: Install dependencies
         run: |
           yarn install
       - name: Build client
         run: |
           yarn build
+      - name: Move up
+        run: |
+          cd ..
+          ls -la
       - name: Setup Python 3.10
         uses: actions/setup-python@v2
         with:
           python-version: "3.10.13"
+
       - name: Install Poetry
         run: |
           pip install poetry
