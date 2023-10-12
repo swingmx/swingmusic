@@ -1,0 +1,55 @@
+name: New Release
+on:
+  push:
+    branches:
+      - setup-release-workflow
+jobs:
+  build:
+    runs-on: ubuntu-20.04
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - name: Clone client
+        uses: actions/checkout@master
+        with:
+          repository: swingmusic-client
+          ref: refs/heads/master
+      - name: Setup Node 18
+        uses: actions/setup-node@v2
+        with:
+          node-version: 18
+      - name: cd client directory
+        run: |
+          cd swingmusic-client
+      - name: Install dependencies
+        uses: borales/actions-yarn@v2.0.0
+        with:
+          cmd: install
+      - name: Build client
+        uses: borales/actions-yarn@v2.0.0
+        with:
+          cmd: build --outDir ../swingmusic/client
+      - name: Setup Python 3.10
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.10
+      - name: Install Poetry
+        run: |
+          pip install poetry
+      - name: Checkout server
+        uses: actions/checkout@v2
+      - name: Install dependencies
+        run: |
+          python -m poetry install
+      - name: Build server
+        run: |
+          python -m poetry run python manage.py --build
+      - name: Create Release
+        uses: ncipollo/release-action@v1
+        with:
+          artifacts: "dist/swingmusic"
+          token: ${{ secrets.GITHUB_TOKEN }}
+          draft: true
+          artifactErrorsFailBuild: true
+          name: New Release
