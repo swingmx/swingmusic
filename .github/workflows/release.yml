@@ -38,7 +38,7 @@ jobs:
       - name: Install dependencies
         run: |
           python -m poetry install
-      - name: Copy client build
+      - name: Copy client
         run: |
           cp -r ../swingmusic-client/dist ./client
       - name: Build server
