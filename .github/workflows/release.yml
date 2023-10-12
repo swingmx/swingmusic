@@ -1,0 +1,85 @@
+name: New Release
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Tag'
+        required: true
+        default: 'v1.x.x'
+      latest:
+        description: 'Set as latest'
+        required: true
+        default: 'true'
+        type: choice
+        options:
+          - true
+          - false
+      draft:
+        description: 'Set as draft'
+        required: true
+        type: choice
+        default: 'true'
+        options:
+          - true
+          - false
+
+jobs:
+  build:
+    runs-on: ubuntu-20.04
+    permissions: write-all
+    steps:
+      - name: Clone client
+        uses: actions/checkout@v2
+      - name: Setup Node 16
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16.x
+      - name: Install yarn
+        run: |
+          npm install -g yarn
+      - name: Build client
+        run: |
+          git clone https://github.com/swing-opensource/swingmusic-client.git
+          cd swingmusic-client
+          yarn install
+          yarn build --outDir ../client
+          cd ..
+      - name: Print working directory
+        run: |
+          ls -la
+      - name: Setup Python 3.10
+        uses: actions/setup-python@v2
+        with:
+          python-version: "3.10.13"
+      - name: Install Poetry
+        run: |
+          pip install poetry
+      - name: Install dependencies
+        run: |
+          python -m poetry install
+      - name: Build server
+        run: |
+          pwd
+          ls ./client
+          ls ./assets
+          python -m poetry run python manage.py --build
+        env: 
+          POSTHOG_API_KEY: ${{ secrets.POSTHOG_API_KEY }}
+          LASTFM_API_KEY: ${{ secrets.LASTFM_API_KEY }}
+      - name: Verify build success
+        run: |
+          if [ ! -f "./dist/swingmusic" ]; then
+            echo "Build failed"
+            exit 1
+          fi
+      - name: Create Release
+        uses: ncipollo/release-action@v1
+        with:
+          artifacts: "dist/swingmusic"
+          token: ${{ secrets.GITHUB_TOKEN }}
+          tag: ${{ inputs.tag }}
+          commit: ${{ github.sha }}
+          draft: ${{ inputs.draft }}
+          artifactErrorsFailBuild: true
+          name: New Release
+          bodyFile: .github/changelog.md
