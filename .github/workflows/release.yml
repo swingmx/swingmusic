@@ -44,13 +44,16 @@ jobs:
           python -m poetry install
       - name: Build server
         run: |
+          pwd
+          ls ./client
+          ls ./assets
           python -m poetry run python manage.py --build
         env: 
           POSTHOG_API_KEY: ${{ secrets.POSTHOG_API_KEY }}
           LASTFM_API_KEY: ${{ secrets.LASTFM_API_KEY }}
-      - name: Verify build
+      - name: Verify build success
         run: |
-          if [ ! -f "dist/swingmusic" ]; then
+          if [ ! -f "./dist/swingmusic" ]; then
             echo "Build failed"
             exit 1
           fi
