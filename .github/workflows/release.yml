@@ -1,8 +1,28 @@
 name: New Release
 on:
-  push:
-    branches:
-      - setup-release-workflow
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Tag'
+        required: true
+        default: 'v1.x.x'
+      latest:
+        description: 'Set as latest'
+        required: true
+        default: 'true'
+        type: choice
+        options:
+          - true
+          - false
+      draft:
+        description: 'Set as draft'
+        required: true
+        type: choice
+        default: 'true'
+        options:
+          - true
+          - false
+
 jobs:
   build:
     runs-on: ubuntu-20.04
@@ -57,8 +77,9 @@ jobs:
         with:
           artifacts: "dist/swingmusic"
           token: ${{ secrets.GITHUB_TOKEN }}
-          tag: ${{ github.ref }}
+          tag: ${{ inputs.tag }}
           commit: ${{ github.sha }}
-          draft: true
+          draft: ${{ inputs.draft }}
           artifactErrorsFailBuild: true
           name: New Release
+          bodyFile: .github/changelog.md
