@@ -40,7 +40,7 @@ jobs:
           python -m poetry install
       - name: Copy client build
         run: |
-          cp -r ../swingmusic-client/build ./client
+          cp -r ../swingmusic-client/dist ./client
       - name: Build server
         run: |
           python -m poetry run python manage.py --build
