@@ -43,11 +43,16 @@ jobs:
       - name: Build server
         run: |
           python -m poetry run python manage.py --build
+        env: 
+          POSTHOG_API_KEY: ${{ secrets.POSTHOG_API_KEY }}
+          LASTFM_API_KEY: ${{ secrets.LASTFM_API_KEY }}
       - name: Create Release
         uses: ncipollo/release-action@v1
         with:
           artifacts: "dist/swingmusic"
           token: ${{ secrets.GITHUB_TOKEN }}
+          tag: ${{ github.ref }}
+          commit: ${{ github.sha }}
           draft: true
           artifactErrorsFailBuild: true
           name: New Release
