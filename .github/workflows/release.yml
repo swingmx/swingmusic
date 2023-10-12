@@ -25,7 +25,7 @@ jobs:
           yarn install
       - name: Build client
         run: |
-          yarn build --outDir ../swingmusic/client
+          yarn build
       - name: Setup Python 3.10
         uses: actions/setup-python@v2
         with:
@@ -38,10 +38,13 @@ jobs:
       - name: Install dependencies
         run: |
           python -m poetry install
+      - name: Copy client build
+        run: |
+          cp -r ../swingmusic-client/build ./client
       - name: Build server
         run: |
           python -m poetry run python manage.py --build
-        env: 
+        env:
           POSTHOG_API_KEY: ${{ secrets.POSTHOG_API_KEY }}
           LASTFM_API_KEY: ${{ secrets.LASTFM_API_KEY }}
       - name: Print CWD
