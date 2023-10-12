@@ -25,6 +25,7 @@ jobs:
         with:
           owner: swing-opensource
           repository: swingmusic-client
+          branch: master
       - name: Change directory
         run: |
           cd swingmusic-client
