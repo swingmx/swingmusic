@@ -6,9 +6,7 @@ on:
 jobs:
   build:
     runs-on: ubuntu-20.04
-    permissions:
-      contents: read
-      packages: write
+    permissions: write-all
     steps:
       - name: Clone client
         uses: actions/checkout@master
@@ -46,6 +44,9 @@ jobs:
         env: 
           POSTHOG_API_KEY: ${{ secrets.POSTHOG_API_KEY }}
           LASTFM_API_KEY: ${{ secrets.LASTFM_API_KEY }}
+      - name: List dist directory
+        run: |
+          ls dist -la
       - name: Create Release
         uses: ncipollo/release-action@v1
         with:
