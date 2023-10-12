@@ -23,9 +23,9 @@ jobs:
       - name: Install dependencies
         run: |
           yarn install
-      - name: Build client --outDir /clientdist
+      - name: Build client
         run: |
-          yarn build
+          yarn build --outDir /clientdist
       - name: Setup Python 3.10
         uses: actions/setup-python@v2
         with:
