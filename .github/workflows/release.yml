@@ -75,10 +75,10 @@ jobs:
       - name: Verify Windows build success
         if: matrix.os == 'windows-2019'
         run: |
-          if not exist "./dist/swingmusic.exe" (
-            echo Build failed
-            exit /b 1
-          )
+          if (-not (Test-Path "./dist/swingmusic.exe")) {
+            Write-Host "Build failed"
+            exit 1
+          }
       - name: Upload Linux binary
         if: matrix.os == 'ubuntu-20.04'
         uses: actions/upload-artifact@v3
