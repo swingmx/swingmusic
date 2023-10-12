@@ -10,9 +10,6 @@ jobs:
     steps:
       - name: Clone client
         uses: actions/checkout@v2
-        # with:
-        #   repository: swing-opensource/swingmusic-client
-        #   ref: refs/heads/master
       - name: Setup Node 16
         uses: actions/setup-node@v3
         with:
@@ -37,14 +34,12 @@ jobs:
       - name: Install Poetry
         run: |
           pip install poetry
-      - name: Checkout server
-        uses: actions/checkout@v2
       - name: Install dependencies
         run: |
           python -m poetry install
       - name: Build server
         run: |
-          pwd
+          pwa
           ls ./client
           ls ./assets
           python -m poetry run python manage.py --build
