@@ -15,10 +15,10 @@ jobs:
         with:
           repository: swing-opensource/swingmusic-client
           ref: refs/heads/master
-      - name: Setup Node 18
+      - name: Setup Node 16
         uses: actions/setup-node@v2
         with:
-          node-version: 18
+          node-version: 16
       - name: Install dependencies
         uses: borales/actions-yarn@v2.0.0
         with:
