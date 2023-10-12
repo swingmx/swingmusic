@@ -3,29 +3,32 @@ on:
   workflow_dispatch:
     inputs:
       tag:
-        description: 'Tag'
+        description: "Tag"
         required: true
-        default: 'v1.x.x'
+        default: "v1.x.x"
       latest:
-        description: 'Set as latest'
+        description: "Set as latest"
         required: true
-        default: 'true'
+        default: "true"
         type: choice
         options:
           - true
           - false
-      draft:
-        description: 'Set as draft'
+      is_draft:
+        description: "Set as draft"
         required: true
         type: choice
-        default: 'true'
+        default: "true"
         options:
           - true
           - false
 
 jobs:
   build:
-    runs-on: ubuntu-20.04
+    strategy:
+      matrix:
+        os: [ubuntu-20.04, windows-2019]
+    runs-on: ${{ matrix.os }}
     permissions: write-all
     steps:
       - name: Clone client
@@ -59,11 +62,8 @@ jobs:
           python -m poetry install
       - name: Build server
         run: |
-          pwd
-          ls ./client
-          ls ./assets
           python -m poetry run python manage.py --build
-        env: 
+        env:
           POSTHOG_API_KEY: ${{ secrets.POSTHOG_API_KEY }}
           LASTFM_API_KEY: ${{ secrets.LASTFM_API_KEY }}
       - name: Verify build success
@@ -72,14 +72,34 @@ jobs:
             echo "Build failed"
             exit 1
           fi
-      - name: Create Release
+      - name: Upload Linux binary
+        if: matrix.os == 'ubuntu-20.04'
+        uses: actions/upload-artifact@v3
+        with:
+          name: swingmusic
+          path: dist/swingmusic
+          retention-days: 1
+      - name: Upload Windows binary
+        if: matrix.os == 'windows-2019'
+        uses: actions/upload-artifact@v3
+        with:
+          name: swingmusic.exe
+          path: dist/swingmusic.exe
+          retention-days: 1
+
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download all binaries
+        uses: actions/download-artifact@v3
+      - name: Upload binaries to GitHub Release
         uses: ncipollo/release-action@v1
         with:
-          artifacts: "dist/swingmusic"
+          artifacts: "dist/swingmusic*"
           token: ${{ secrets.GITHUB_TOKEN }}
           tag: ${{ inputs.tag }}
           commit: ${{ github.sha }}
-          draft: ${{ inputs.draft }}
+          draft: ${{ inputs.is_draft }}
           artifactErrorsFailBuild: true
-          name: New Release
+          name: ${{ inputs.tag }}
           bodyFile: .github/changelog.md
