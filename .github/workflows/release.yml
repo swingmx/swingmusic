@@ -40,10 +40,10 @@ jobs:
       - name: Install yarn
         run: |
           npm install -g yarn
-      - name: Build client
+      - name: Clone client
         run: |
           git clone https://github.com/swing-opensource/swingmusic-client.git
-      - name: Build client
+      - name: Install dependencies & Build client
         run: |
           cd swingmusic-client
           yarn install
@@ -75,7 +75,7 @@ jobs:
       - name: Verify Windows build success
         if: matrix.os == 'windows-2019'
         run: |
-          if not exist "./dist/swingmusic" (
+          if not exist "./dist/swingmusic.exe" (
             echo Build failed
             exit /b 1
           )
