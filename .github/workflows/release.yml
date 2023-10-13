@@ -102,6 +102,9 @@ jobs:
         uses: actions/download-artifact@v3
       - name: Checkout into repo
         uses: actions/checkout@v2
+      - name: Print current directory
+        run: |
+          ls -la
       - name: Upload binaries to GitHub Release
         uses: ncipollo/release-action@v1
         with:
