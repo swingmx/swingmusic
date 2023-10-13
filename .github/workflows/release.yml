@@ -155,7 +155,6 @@ jobs:
             type=semver,pattern={{major}}.{{minor}}
             type=semver,pattern={{major}}
             type=sha
-
       - name: print directory
         run: |
           ls -R
@@ -165,5 +164,5 @@ jobs:
           context: .
           platforms: linux/amd64,linux/arm
           push: true
-          tags: ghcr.io/swing-opensource/swingmusic:${{inputs.tag}}
+          tags: ghcr.io/${{github.repository}}:${{inputs.tag}}
           labels: ${{ steps.meta.outputs.labels }}w

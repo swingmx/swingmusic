@@ -4,6 +4,8 @@ WORKDIR /
 
 COPY ./dist/swingmusic /swingmusic
 
+RUN chmod +x /swingmusic
+
 EXPOSE 1970/tcp
 
 VOLUME /music
