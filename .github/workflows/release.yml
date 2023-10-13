@@ -165,7 +165,7 @@ jobs:
           context: .
           platforms: linux/amd64,linux/arm
           push: true
-          tags: ghcr.io/${{github.repository}}:${{inputs.tag}}, ${{env.LATEST_TAG}}
+          tags: ghcr.io/${{github.repository}}:${{inputs.tag}}
           labels: ${{ steps.meta.outputs.labels }}
         env:
-          LATEST_TAG: ${{ inputs.is_latest == 'true' && join('ghcr.io/', join(github.repository, ':latest')) || '' }}
+          LATEST_TAG: ${{ inputs.is_latest == 'true' && format('ghcr.io/{0}:latest', github.repository) || '' }}
