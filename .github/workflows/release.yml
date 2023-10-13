@@ -112,6 +112,7 @@ jobs:
           install: |
             apt-get update
             apt-get install -y ca-certificates curl gnupg git software-properties-common
+          run: |
             mkdir -p /etc/apt/keyrings
             sudo add-apt-repository ppa:deadsnakes/ppa -y
             sudo apt install Python3.10
@@ -122,7 +123,6 @@ jobs:
             apt-get install -y nodejs
             npm install -g yarn
             curl -sSL https://install.python-poetry.org | python3 -
-          run: |
             git clone https://github.com/swing-opensource/swingmusic-client.git --depth 1
             cd swingmusic-client
             yarn install
