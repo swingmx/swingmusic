@@ -82,14 +82,14 @@ jobs:
         if: matrix.os == 'ubuntu-20.04'
         uses: actions/upload-artifact@v3
         with:
-          name: swingmusic
+          name: linux
           path: dist/swingmusic
           retention-days: 1
       - name: Upload Windows binary
         if: matrix.os == 'windows-2019'
         uses: actions/upload-artifact@v3
         with:
-          name: swingmusic.exe
+          name: win32
           path: dist/swingmusic.exe
           retention-days: 1
 
@@ -105,7 +105,7 @@ jobs:
       - name: Upload binaries to GitHub Release
         uses: ncipollo/release-action@v1
         with:
-          artifacts: "./swingmusic, ./swingmusic.exe"
+          artifacts: "./linux/swingmusic, ./win32/swingmusic.exe"
           token: ${{ secrets.GITHUB_TOKEN }}
           tag: ${{ inputs.tag }}
           commit: ${{ github.sha }}
