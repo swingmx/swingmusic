@@ -151,9 +151,6 @@ jobs:
           # list of Docker images to use as base name for tags
           images: |
             ghcr.io/${{ github.repository }}
-      - name: print directory
-        run: |
-          ls -R
       - name: Build and push
         uses: docker/build-push-action@v2
         with:
@@ -162,5 +159,7 @@ jobs:
           push: true
           tags: ghcr.io/${{github.repository}}:${{inputs.tag}}, ${{env.LATEST_TAG}}
           labels: org.opencontainers.image.title=Docker
+          build-args: |
+            --provenance=false
         env:
           LATEST_TAG: ${{ inputs.is_latest == 'true' && format('ghcr.io/{0}:latest', github.repository) || '' }}
