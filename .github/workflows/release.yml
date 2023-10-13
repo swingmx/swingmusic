@@ -162,5 +162,5 @@ jobs:
           context: .
           platforms: linux/amd64,linux/arm
           push: true
-          tags: swingmusic:${{ inputs.tag }}
+          tags: swing-opensource/swingmusic:${{ inputs.tag }}
           # labels: ${{ steps.meta.outputs.labels }}w
