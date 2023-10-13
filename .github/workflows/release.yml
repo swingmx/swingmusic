@@ -147,15 +147,6 @@ jobs:
           # list of Docker images to use as base name for tags
           images: |
             ghcr.io/${{ github.repository }}
-          # Docker tags based on the following events/attributes
-          tags: |
-            type=schedule
-            type=ref,event=branch
-            type=ref,event=pr
-            type=semver,pattern={{version}}
-            type=semver,pattern={{major}}.{{minor}}
-            type=semver,pattern={{major}}
-            type=sha
       - name: print directory
         run: |
           ls -R
@@ -165,7 +156,7 @@ jobs:
           context: .
           platforms: linux/amd64,linux/arm
           push: true
-          tags: ghcr.io/${{github.repository}}:${{inputs.tag}}
-          labels: ${{ steps.meta.outputs.labels }}
+          tags: ghcr.io/${{github.repository}}:${{inputs.tag}}, ${{env.LATEST_TAG}}
+          labels: org.opencontainers.image.title=Docker Container
         env:
           LATEST_TAG: ${{ inputs.is_latest == 'true' && format('ghcr.io/{0}:latest', github.repository) || '' }}
