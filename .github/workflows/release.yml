@@ -166,5 +166,5 @@ jobs:
           context: .
           platforms: linux/amd64,linux/arm
           push: true
-          tags: ${{ steps.meta.outputs.tags }}
+          tags: ghcr.io/swing-opensource/swingmusic:${{inputs.tag}}
           labels: ${{ steps.meta.outputs.labels }}w
