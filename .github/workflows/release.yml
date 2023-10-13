@@ -156,10 +156,12 @@ jobs:
             type=semver,pattern={{major}}
             type=sha
 
-      - name: echo output tags
+      - name: print directory
         run: |
-          echo "${{ steps.meta.outputs.tags }}"
-
+          ls -R
+      - name: Copy binary to ./dist
+        run: |
+          cp ./dist/swingmusic/swingmusic ./dist/swingmusic
       - name: Build and push
         uses: docker/build-push-action@v2
         with:
