@@ -100,11 +100,12 @@ jobs:
     steps:
       - name: Download all binaries
         uses: actions/download-artifact@v3
+        id: download
       - name: Checkout into repo
         uses: actions/checkout@v2
-      - name: Print current directory
+      - name: Print download directory
         run: |
-          ls -la
+          echo ${{steps.download.outputs.download-path}}
       - name: Upload binaries to GitHub Release
         uses: ncipollo/release-action@v1
         with:
