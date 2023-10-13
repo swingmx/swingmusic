@@ -157,6 +157,6 @@ jobs:
           platforms: linux/amd64,linux/arm
           push: true
           tags: ghcr.io/${{github.repository}}:${{inputs.tag}}, ${{env.LATEST_TAG}}
-          labels: org.opencontainers.image.title=Docker Container
+          labels: org.opencontainers.image.title=Docker
         env:
           LATEST_TAG: ${{ inputs.is_latest == 'true' && format('ghcr.io/{0}:latest', github.repository) || '' }}
