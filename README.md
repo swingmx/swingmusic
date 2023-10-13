@@ -52,7 +52,11 @@ The link to access the app will be printed on your terminal. Copy it and open it
 
 ### Docker
 
-You can run Swing Music in a Docker container. To do so, clone the repository and build the image:
+Pull the latest Docker image and run it:
+
+```sh
+docker pull ghcr.io/swing-opensource/swingmusic:v1.3.0
+```
 
 ```bash
 git clone https://github.com/swing-opensource/swingmusic.git --depth 1
