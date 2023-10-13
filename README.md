@@ -48,7 +48,9 @@ To stream your music across your local network, use the `--host` flag to run the
 swingmusic --host 0.0.0.0
 ```
 
-The link to access the app will be printed on your terminal. Copy it and open it in your browser.
+The link to access the app will be printed on your terminal. Open it in your browser to use Swing Music.
+
+[Browse Docs](https://swingmusic.vercel.app)
 
 ### Docker
 
@@ -58,21 +60,27 @@ Pull the latest Docker image and run it:
 docker pull ghcr.io/swing-opensource/swingmusic:v1.3.0
 ```
 
-```bash
-git clone https://github.com/swing-opensource/swingmusic.git --depth 1
-cd swingmusic
-docker build . -t swingmusic
+```sh
+docker run --name swingmusic -p 1970:1970 \
+  -v /path/to/music:/music \
+  -v /path/to/config:/config \
+  --restart unless-stopped \
+  ghcr.io/swing-opensource/swingmusic:latest
 ```
 
-Then create the container. Here are some example snippets to help you get started creating a container.
+Don't forget to replace `/path/to/music` and `/path/to/config` with the appropriate values. In addition, specify the the `/music` directory as the root directory. Using the `Home Directory` option won't work.
 
-#### docker-compose
+For more info, see the [Docker section](https://swingmusic.vercel.app/guide/getting-started.html#docker) on the docs.
+
+#### Using Docker Compose
+
+Here's a sample Docker compose file:
 
 ```yaml
 ---
 version: "3.8"
 services:
-  swing:
+  swingmusic:
     image: swingmusic
     container_name: swingmusic
     volumes:
@@ -82,30 +90,6 @@ services:
       - "1970:1970"
     restart: unless-stopped
 ```
-
-#### docker cli
-
-```bash
-docker run -d \
-  --name=swingmusic \
-  -p 1970:1970 \
-  -v /path/to/music:/music \
-  -v /path/to/config:/config \
-  --restart unless-stopped \
-  swingmusic
-```
-
-#### Parameters
-
-Container images are configured using parameters passed at runtime (such as those above). These parameters are separated
-by a colon and indicate `<external>:<internal>` respectively. For example, `-p 8080:80` would expose port `80` from
-inside the container to be accessible from the host's IP on port `8080` outside the container.
-
-|  Parameter   | Function                                                                                     |
-| :----------: | -------------------------------------------------------------------------------------------- |
-|  `-p 1970`   | WebUI                                                                                        |
-| `-v /music`  | Recommended directory to store your music collection. You can bind other folder if you wish. |
-| `-v /config` | Configuration files.                                                                         |
 
 ### Contributing
 
