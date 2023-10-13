@@ -156,11 +156,15 @@ jobs:
             type=semver,pattern={{major}}
             type=sha
 
+      - name: echo output tags
+        run: |
+          echo "${{ steps.meta.outputs.tags }}"
+
       - name: Build and push
         uses: docker/build-push-action@v2
         with:
           context: .
           platforms: linux/amd64,linux/arm
           push: true
-          tags: swing-opensource/swingmusic:${{ inputs.tag}}
+          tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}w
