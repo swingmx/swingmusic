@@ -24,189 +24,142 @@ on:
           - false
 
 jobs:
-  # build:
-  #   strategy:
-  #     matrix:
-  #       os: [ubuntu-20.04, windows-2019]
-  #   runs-on: ${{ matrix.os }}
-  #   name: Create binary on ${{ matrix.os }}
-  #   steps:
-  #     - name: Clone client
-  #       uses: actions/checkout@v3
-  #     - name: Setup Node 16
-  #       uses: actions/setup-node@v3
-  #       with:
-  #         node-version: 16.x
-  #     - name: Install yarn
-  #       run: |
-  #         npm install -g yarn
-  #     - name: Clone client
-  #       run: |
-  #         git clone https://github.com/swing-opensource/swingmusic-client.git
-  #     - name: Install dependencies & Build client
-  #       run: |
-  #         cd swingmusic-client
-  #         yarn install
-  #         yarn build --outDir ../client
-  #         cd ..
-  #     - name: Install Python 3.10.11
-  #       uses: actions/setup-python@v2
-  #       with:
-  #         python-version: "3.10.11"
-  #     - name: Install Poetry
-  #       run: |
-  #         pip install poetry
-  #     - name: Install dependencies
-  #       run: |
-  #         python -m poetry install
-  #     - name: Build server
-  #       run: |
-  #         python -m poetry run python manage.py --build
-  #       env:
-  #         POSTHOG_API_KEY: ${{ secrets.POSTHOG_API_KEY }}
-  #         LASTFM_API_KEY: ${{ secrets.LASTFM_API_KEY }}
-  #     - name: Verify Linux build success
-  #       if: matrix.os == 'ubuntu-20.04'
-  #       run: |
-  #         if [ ! -f "./dist/swingmusic" ]; then
-  #           echo "Build failed"
-  #           exit 1
-  #         fi
-  #     - name: Verify Windows build success
-  #       if: matrix.os == 'windows-2019'
-  #       run: |
-  #         if (-not (Test-Path "./dist/swingmusic.exe")) {
-  #           Write-Host "Build failed"
-  #           exit 1
-  #         }
-  #     - name: Upload Linux binary
-  #       if: matrix.os == 'ubuntu-20.04'
-  #       uses: actions/upload-artifact@v3
-  #       with:
-  #         name: linux
-  #         path: dist/swingmusic
-  #         retention-days: 1
-  #     - name: Upload Windows binary
-  #       if: matrix.os == 'windows-2019'
-  #       uses: actions/upload-artifact@v3
-  #       with:
-  #         name: win32
-  #         path: dist/swingmusic.exe
-  #         retention-days: 1
-  build_armv7:
-    runs-on: ubuntu-latest
-    name: Create binary on armv7
+  build:
+    strategy:
+      matrix:
+        os: [ubuntu-20.04, windows-2019]
+    runs-on: ${{ matrix.os }}
+    name: Create binary on ${{ matrix.os }}
     steps:
-      - uses: actions/checkout@v4
-      - uses: uraimo/run-on-arch-action@v2
-        name: Build on armv7
+      - name: Clone client
+        uses: actions/checkout@v3
+      - name: Setup Node 16
+        uses: actions/setup-node@v3
         with:
-          arch: armv7
-          distro: ubuntu18.04
-          githubToken: ${{ secrets.GITHUB_TOKEN }}
-          setup: |
-            mkdir -p ${PWD}/armv7
-          dockerRunArgs: |
-            -v ${PWD}/armv7:/armv7
-          shell: /bin/sh
-          install: |
-            apt-get update
-            apt-get install -y ca-certificates curl gnupg git software-properties-common
-          run: |
-            mkdir -p /etc/apt/keyrings
-            sudo add-apt-repository ppa:deadsnakes/ppa -y
-            sudo apt install Python3.10
-            curl -fsSL https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key | sudo gpg --dearmor -o /etc/apt/keyrings/nodesource.gpg
-            NODE_MAJOR=16
-            echo "deb [signed-by=/etc/apt/keyrings/nodesource.gpg] https://deb.nodesource.com/node_$NODE_MAJOR.x nodistro main" | sudo tee /etc/apt/sources.list.d/nodesource.list
-            apt-get update
-            apt-get install -y nodejs
-            npm install -g yarn
-            curl -sSL https://install.python-poetry.org | python3 -
-            git clone https://github.com/swing-opensource/swingmusic-client.git --depth 1
-            cd swingmusic-client
-            yarn install
-            yarn build --outDir ../client
-            cd ..
-            python3.10 -m poetry install
-            python3.10 -m poetry run python manage.py --build
-            mv dist/swingmusic /dist/armv7swingmusic
-            mv dist/armv7swingmusic /armv7
-      - name: echo directory
+          node-version: 16.x
+      - name: Install yarn
         run: |
-          ls -R
-      - name: Upload armv7 binary
+          npm install -g yarn
+      - name: Clone client
+        run: |
+          git clone https://github.com/swing-opensource/swingmusic-client.git
+      - name: Install dependencies & Build client
+        run: |
+          cd swingmusic-client
+          yarn install
+          yarn build --outDir ../client
+          cd ..
+      - name: Install Python 3.10.11
+        uses: actions/setup-python@v2
+        with:
+          python-version: "3.10.11"
+      - name: Install Poetry
+        run: |
+          pip install poetry
+      - name: Install dependencies
+        run: |
+          python -m poetry install
+      - name: Build server
+        run: |
+          python -m poetry run python manage.py --build
+        env:
+          POSTHOG_API_KEY: ${{ secrets.POSTHOG_API_KEY }}
+          LASTFM_API_KEY: ${{ secrets.LASTFM_API_KEY }}
+      - name: Verify Linux build success
+        if: matrix.os == 'ubuntu-20.04'
+        run: |
+          if [ ! -f "./dist/swingmusic" ]; then
+            echo "Build failed"
+            exit 1
+          fi
+      - name: Verify Windows build success
+        if: matrix.os == 'windows-2019'
+        run: |
+          if (-not (Test-Path "./dist/swingmusic.exe")) {
+            Write-Host "Build failed"
+            exit 1
+          }
+      - name: Upload Linux binary
+        if: matrix.os == 'ubuntu-20.04'
         uses: actions/upload-artifact@v3
         with:
-          name: armv7
-          path: armv7/armv7swingmusic
+          name: linux
+          path: dist/swingmusic
           retention-days: 1
-  # release:
-  #   name: Create New Release
-  #   runs-on: ubuntu-latest
-  #   needs: build
-  #   permissions: write-all
-  #   steps:
-  #     - name: Checkout into repo
-  #       uses: actions/checkout@v3
-  #     - name: Download all binaries
-  #       uses: actions/download-artifact@v3
-  #     - name: Upload binaries to GitHub Release
-  #       uses: ncipollo/release-action@v1
-  #       with:
-  #         artifacts: "./linux/swingmusic, ./win32/swingmusic.exe, ./armv7/armv7swingmusic"
-  #         token: ${{ secrets.GITHUB_TOKEN }}
-  #         tag: ${{ inputs.tag }}
-  #         commit: ${{ github.sha }}
-  #         draft: ${{ inputs.is_draft }}
-  #         artifactErrorsFailBuild: true
-  #         name: ${{ inputs.tag }}
-  #         bodyFile: .github/changelog.md
-  #         makeLatest: ${{ inputs.is_latest }}
-  # docker:
-  #   name: Build and push Docker image
-  #   runs-on: ubuntu-latest
-  #   needs: build
-  #   permissions: write-all
-  #   steps:
-  #     - name: Checkout into repo
-  #       uses: actions/checkout@v3
-  #     - name: Download linux binary
-  #       uses: actions/download-artifact@v3
-  #       with:
-  #         name: linux
-  #         path: dist
-  #     - name: Set up QEMU
-  #       uses: docker/setup-qemu-action@v1
+      - name: Upload Windows binary
+        if: matrix.os == 'windows-2019'
+        uses: actions/upload-artifact@v3
+        with:
+          name: win32
+          path: dist/swingmusic.exe
+          retention-days: 1
+  
+  release:
+    name: Create New Release
+    runs-on: ubuntu-latest
+    needs: build
+    permissions: write-all
+    steps:
+      - name: Checkout into repo
+        uses: actions/checkout@v3
+      - name: Download all binaries
+        uses: actions/download-artifact@v3
+      - name: Upload binaries to GitHub Release
+        uses: ncipollo/release-action@v1
+        with:
+          artifacts: "./linux/swingmusic, ./win32/swingmusic.exe"
+          token: ${{ secrets.GITHUB_TOKEN }}
+          tag: ${{ inputs.tag }}
+          commit: ${{ github.sha }}
+          draft: ${{ inputs.is_draft }}
+          artifactErrorsFailBuild: true
+          name: ${{ inputs.tag }}
+          bodyFile: .github/changelog.md
+          makeLatest: ${{ inputs.is_latest }}
+  docker:
+    name: Build and push Docker image
+    runs-on: ubuntu-latest
+    needs: build
+    permissions: write-all
+    steps:
+      - name: Checkout into repo
+        uses: actions/checkout@v3
+      - name: Download linux binary
+        uses: actions/download-artifact@v3
+        with:
+          name: linux
+          path: dist
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v1
 
-  #     - name: Set up Docker Buildx
-  #       id: buildx
-  #       uses: docker/setup-buildx-action@v1
+      - name: Set up Docker Buildx
+        id: buildx
+        uses: docker/setup-buildx-action@v1
 
-  #     - name: Login to GHCR
-  #       uses: docker/login-action@v1
-  #       with:
-  #         registry: ghcr.io
-  #         username: ${{ github.repository_owner }}
-  #         password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Login to GHCR
+        uses: docker/login-action@v1
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.GITHUB_TOKEN }}
 
-  #     - name: Docker meta
-  #       id: meta # you'll use this in the next step
-  #       uses: docker/metadata-action@v3
-  #       with:
-  #         # list of Docker images to use as base name for tags
-  #         images: |
-  #           ghcr.io/${{ github.repository }}
-  #     - name: print directory
-  #       run: |
-  #         ls -R
-  #     - name: Build and push
-  #       uses: docker/build-push-action@v2
-  #       with:
-  #         context: .
-  #         platforms: linux/amd64,linux/arm
-  #         push: true
-  #         tags: ghcr.io/${{github.repository}}:${{inputs.tag}}, ${{env.LATEST_TAG}}
-  #         labels: org.opencontainers.image.title=Docker
-  #       env:
-  #         LATEST_TAG: ${{ inputs.is_latest == 'true' && format('ghcr.io/{0}:latest', github.repository) || '' }}
+      - name: Docker meta
+        id: meta # you'll use this in the next step
+        uses: docker/metadata-action@v3
+        with:
+          # list of Docker images to use as base name for tags
+          images: |
+            ghcr.io/${{ github.repository }}
+      - name: print directory
+        run: |
+          ls -R
+      - name: Build and push
+        uses: docker/build-push-action@v2
+        with:
+          context: .
+          platforms: linux/amd64,linux/arm
+          push: true
+          tags: ghcr.io/${{github.repository}}:${{inputs.tag}}, ${{env.LATEST_TAG}}
+          labels: org.opencontainers.image.title=Docker
+        env:
+          LATEST_TAG: ${{ inputs.is_latest == 'true' && format('ghcr.io/{0}:latest', github.repository) || '' }}
