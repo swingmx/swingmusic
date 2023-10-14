@@ -1,12 +1,10 @@
-<div style="display: flex; justify-content: center; align-items: center;">
+<div align="center" style="display: flex; justify-content: center; align-items: center;">
   <img class="lo" src='./screenshots/logo-fill.light.svg' style="height: 5rem">
 </div>
-<div style="text-align: center; font-size: 2rem"><b>Swing Music</b></div>
-<div style="text-align: center"><b><code>v1.3.0</code></b></div>
+<div align="center" style="font-size: 3rem"><b>Swing Music</b></div>
+<div align="center"><b><code>v1.3.0</code></b></div>
 
-##
-
-**<div style="text-align: center; padding-top: 1.25rem">[`Download`](https://swingmusic.vercel.app/downloads) • <a href="https://swingmusic.vercel.app/support-us.html" target="_blank">`Support Development`</a> • [Browse Docs](https://swingmusic.vercel.app/guide/introduction.html) • [Screenshots](https://swingmusic.vercel.app)</div>**
+**<div align="center" style="padding-top: 1.25rem">[Download](https://swingmusic.vercel.app/downloads) • <a href="https://swingmusic.vercel.app/support-us.html" target="_blank">Support Development</a> • [Browse Docs](https://swingmusic.vercel.app/guide/introduction.html) • [Screenshots](https://swingmusic.vercel.app)</div>**
 
 ##
 
