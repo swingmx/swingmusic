@@ -1,19 +1,21 @@
-# Swing music (v1.3.0 releasing soon!)
+<div style="display: flex; justify-content: center; align-items: center;">
+  <img class="lo" src='./screenshots/logo-fill.light.svg' style="height: 5rem">
+</div>
+<div style="text-align: center; font-size: 2rem"><b>Swing Music</b></div>
+<div style="text-align: center"><b><code>v1.3.0</code></b></div>
+
+##
+
+**<div style="text-align: center; padding-top: 1.25rem">[`Download`](https://swingmusic.vercel.app/downloads) • <a href="https://swingmusic.vercel.app/support-us.html" target="_blank">`Support Development`</a> • [Browse Docs](https://swingmusic.vercel.app/guide/introduction.html) • [Screenshots](https://swingmusic.vercel.app)</div>**
+
+##
 
 Swing Music is a beautiful, self-hosted music player for your local audio files. Like a cooler Spotify ... but bring your own music. Just run the app and enjoy your music library in a web browser.
 
-<a href="https://swingmusic.vercel.app/support-us.html" target="_blank"><img src="screenshots/supportus.png" alt="Buy Me A Coffee" style="height: 60px !important;width: auto !important;" ></a>
+### Installation
 
-| ![SWING MUSIC PLAYER BANNER IMAGE](screenshots/artist.webp)  | ![SWING MUSIC PLAYER BANNER IMAGE](screenshots/album.webp)  |
-| ------------------------------------------------------------ | ----------------------------------------------------------- |
-| ![SWING MUSIC PLAYER BANNER IMAGE](screenshots/artist2.webp) | ![SWING MUSIC PLAYER BANNER IMAGE](screenshots/album2.webp) |
+Swing Music is available as pre-compiled binaries for Windows and Linux. Just download the latest release from the [downloads page](https://swingmusic.vercel.app/downloads) and launch it.
 
-For full size screenshots, visit the [website](https://swingmusic.vercel.app).
-
-### Setup
-
-Swing Music is available as pre-compiled binaries for Windows and Linux. Just download the latest release from
-the [release page](https://github.com/geoffrey45/swingmusic/releases) and launch it.
 For Linux, you need to make the file executable first.
 
 ```bash
@@ -22,42 +24,22 @@ chmod a+x ./swingmusic
 ./swingmusic
 ```
 
-The app should start at <http://localhost:1970> by default. You can change the default port or host by using
-the `--host` and `--port` flags.
+The app should start at <http://localhost:1970> by default. Open it in your browser to use Swing Music. You can change the default port by using the `--port` flags.
 
-```
-Usage: swingmusic [options]
+```sh
+swingmusic --port 1980
 ```
 
 ### Options
 
-| Option               | Short  | Description                                                                   |
-| -------------------- | ------ | ----------------------------------------------------------------------------- |
-| `--help`             | `-h`   | Show help message                                                             |
-| `--version`          | `-v`   | Show the app version                                                          |
-| `--host`             |        | Set the host                                                                  |
-| `--port`             |        | Set the port                                                                  |
-| `--config`           |        | Set the config path                                                           |
-| `--no-periodic-scan` | `-nps` | Disable periodic scan                                                         |
-| `--scan-interval`    | `-psi` | Set the periodic scan interval in seconds. Default is 300 seconds (5 minutes) |
-| `--build`            |        | Build the application (in development)                                        |
-
-To stream your music across your local network, use the `--host` flag to run the app in all ports. Like this:
-
-```sh
-swingmusic --host 0.0.0.0
-```
-
-The link to access the app will be printed on your terminal. Open it in your browser to use Swing Music.
-
-[Browse Docs](https://swingmusic.vercel.app)
+Options are flags that can be passed when starting the app in the terminal to tweak runtime settings or perform tasks. Example: the `--port` flag. Read more about options in [the docs](https://swingmusic.vercel.app/guide/getting-started.html#options).
 
 ### Docker
 
 Pull the latest Docker image and run it:
 
 ```sh
-docker pull ghcr.io/swing-opensource/swingmusic:v1.3.0
+docker pull ghcr.io/swing-opensource/swingmusic:latest
 ```
 
 ```sh
