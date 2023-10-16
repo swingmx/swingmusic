@@ -58,8 +58,6 @@ For more info, see the [Docker section](https://swingmusic.vercel.app/guide/gett
 Here's a sample Docker compose file:
 
 ```yaml
----
-version: "3.8"
 services:
   swingmusic:
     image: swingmusic
