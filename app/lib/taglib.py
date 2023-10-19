@@ -56,6 +56,7 @@ def extract_thumb(filepath: str, webp_path: str, overwrite=False) -> bool:
     album_art = parse_album_art(filepath)
 
     if album_art is not None:
+        print("Reading image: " + filepath)
         try:
             img = Image.open(BytesIO(album_art))
         except (UnidentifiedImageError, OSError):

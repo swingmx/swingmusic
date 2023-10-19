@@ -8,8 +8,7 @@ from requests import ReadTimeout
 
 from app import settings
 from app.db.sqlite.favorite import SQLiteFavoriteMethods as favdb
-from app.db.sqlite.lastfm.similar_artists import \
-    SQLiteLastFMSimilarArtists as lastfmdb
+from app.db.sqlite.lastfm.similar_artists import SQLiteLastFMSimilarArtists as lastfmdb
 from app.db.sqlite.settings import SettingsSQLMethods as sdb
 from app.db.sqlite.tracks import SQLiteTrackMethods
 from app.lib.albumslib import validate_albums
@@ -264,16 +263,18 @@ class ProcessTrackThumbnails:
         # process the rest
         key_album_map = ((instance_key, album) for album in albums)
 
-        with ThreadPoolExecutor(max_workers=CPU_COUNT) as executor:
-            results = list(
-                tqdm(
-                    executor.map(get_image, key_album_map),
-                    total=len(albums),
-                    desc="Extracting track images",
-                )
-            )
+        # with ThreadPoolExecutor(max_workers=CPU_COUNT) as executor:
+        #     results = list(
+        #         tqdm(
+        #             executor.map(get_image, key_album_map),
+        #             total=len(albums),
+        #             desc="Extracting track images",
+        #         )
+        #     )
 
-            list(results)
+        #     list(results)
+        for album in key_album_map:
+            get_image(album)
 
 
 def save_similar_artists(_map: tuple[str, Artist]):
