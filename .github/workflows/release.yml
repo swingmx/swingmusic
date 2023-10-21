@@ -23,6 +23,14 @@ on:
         options:
           - true
           - false
+      build_docker:
+        description: "Release Docker image"
+        required: true
+        type: choice
+        default: "false"
+        options:
+          - true
+          - false
 
 jobs:
   build:
@@ -122,6 +130,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: build
     permissions: write-all
+    if: inputs.build_docker == 'true'
     steps:
       - name: Checkout into repo
         uses: actions/checkout@v3
