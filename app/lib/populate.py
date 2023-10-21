@@ -263,18 +263,16 @@ class ProcessTrackThumbnails:
         # process the rest
         key_album_map = ((instance_key, album) for album in albums)
 
-        # with ThreadPoolExecutor(max_workers=CPU_COUNT) as executor:
-        #     results = list(
-        #         tqdm(
-        #             executor.map(get_image, key_album_map),
-        #             total=len(albums),
-        #             desc="Extracting track images",
-        #         )
-        #     )
+        with ThreadPoolExecutor(max_workers=CPU_COUNT) as executor:
+            results = list(
+                tqdm(
+                    executor.map(get_image, key_album_map),
+                    total=len(albums),
+                    desc="Extracting track images",
+                )
+            )
 
-        #     list(results)
-        for album in key_album_map:
-            get_image(album)
+            list(results)
 
 
 def save_similar_artists(_map: tuple[str, Artist]):

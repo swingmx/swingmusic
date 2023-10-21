@@ -5,7 +5,7 @@ from io import BytesIO
 from pathlib import Path
 
 import requests
-from PIL import Image, UnidentifiedImageError
+from PIL import Image, PngImagePlugin, UnidentifiedImageError
 from requests.exceptions import ConnectionError as RequestConnectionError
 from requests.exceptions import ReadTimeout
 
@@ -15,8 +15,11 @@ from app.store import artists as artist_store
 from app.utils.hashing import create_hash
 from app.utils.progressbar import tqdm
 
-
 CHECK_ARTIST_IMAGES_KEY = ""
+
+LARGE_ENOUGH_NUMBER = 100
+PngImagePlugin.MAX_TEXT_CHUNK = LARGE_ENOUGH_NUMBER * (1024**2)
+# https://stackoverflow.com/a/61466412
 
 
 def get_artist_image_link(artist: str):
@@ -36,7 +39,7 @@ def get_artist_image_link(artist: str):
             artist_hash = create_hash(artist, decode=True)
 
             if res_hash == artist_hash:
-                return res["picture_big"]
+                return str(res["picture_big"]).removesuffix(".jpg") + ".png"
 
         return None
     except (RequestConnectionError, ReadTimeout, IndexError, KeyError):
