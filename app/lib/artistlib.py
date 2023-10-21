@@ -39,7 +39,7 @@ def get_artist_image_link(artist: str):
             artist_hash = create_hash(artist, decode=True)
 
             if res_hash == artist_hash:
-                return str(res["picture_big"]).removesuffix(".jpg") + ".png"
+                return str(res["picture_big"])
 
         return None
     except (RequestConnectionError, ReadTimeout, IndexError, KeyError):
@@ -96,7 +96,7 @@ class CheckArtistImages:
         # process the rest
         key_artist_map = ((instance_key, artist) for artist in artists)
 
-        with ThreadPoolExecutor(max_workers=4) as executor:
+        with ThreadPoolExecutor(max_workers=14) as executor:
             res = list(
                 tqdm(
                     executor.map(self.download_image, key_artist_map),
