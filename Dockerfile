@@ -1,4 +1,4 @@
-LABEL org.opencontainers.image.description Removes client files compressions to fix plank page on safari
+LABEL org.opencontainers.image.description "Removes client files compressions to fix plank page on safari"
 
 FROM ubuntu:latest
 
