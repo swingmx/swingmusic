@@ -45,19 +45,20 @@ def serve_client_files(path: str):
     """
     Serves the static files in the client folder.
     """
-    js_or_css = path.endswith(".js") or path.endswith(".css")
-    if not js_or_css:
-        return app.send_static_file(path)
+    # js_or_css = path.endswith(".js") or path.endswith(".css")
+    # if not js_or_css:
+    #     return app.send_static_file(path)
 
-    gzipped_path = path + ".gz"
+    # gzipped_path = path + ".gz"
 
-    if request.headers.get("Accept-Encoding", "").find("gzip") >= 0:
-        if os.path.exists(os.path.join(app.static_folder, gzipped_path)):
-            response = app.make_response(app.send_static_file(gzipped_path))
-            response.headers["Content-Encoding"] = "gzip"
-            return response
-        else:
-            return app.send_static_file(path)
+    # if request.headers.get("Accept-Encoding", "").find("gzip") >= 0:
+    #     if os.path.exists(os.path.join(app.static_folder, gzipped_path)):
+    #         response = app.make_response(app.send_static_file(gzipped_path))
+    #         response.headers["Content-Encoding"] = "gzip"
+    #         return response
+    #     else:
+    #         return app.send_static_file(path)
+    return app.send_static_file(path)
 
 
 @app.route("/")
