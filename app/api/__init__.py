@@ -17,6 +17,7 @@ from app.api import (
     search,
     send_file,
     settings,
+    lyrics
 )
 
 
@@ -43,5 +44,6 @@ def create_api():
         app.register_blueprint(imgserver.api)
         app.register_blueprint(settings.api)
         app.register_blueprint(colors.api)
+        app.register_blueprint(lyrics.api)
 
         return app
