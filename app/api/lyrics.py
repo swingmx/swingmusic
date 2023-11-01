@@ -43,3 +43,5 @@ def check_lyrics():
 
     if exists:
         return {"filepath": filepath}, 200
+
+    return {"filepath": None}
