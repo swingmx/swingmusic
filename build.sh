@@ -4,5 +4,6 @@
 
 cd ../swingmusic-client
 yarn build --outDir ../swingmusic/client
+
 cd ../swingmusic
 poetry run python manage.py --build

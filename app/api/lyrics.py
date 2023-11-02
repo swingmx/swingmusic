@@ -1,6 +1,11 @@
 from flask import Blueprint, request
 
-from app.lib.lyrics import get_lyrics, check_lyrics_file, get_lyrics_from_duplicates
+from app.lib.lyrics import (
+    get_lyrics,
+    check_lyrics_file,
+    get_lyrics_from_duplicates,
+    get_lyrics_from_tags,
+)
 
 api = Blueprint("lyrics", __name__, url_prefix="")
 
@@ -18,15 +23,19 @@ def send_lyrics():
     if filepath is None or trackhash is None:
         return {"error": "No filepath or trackhash provided"}, 400
 
-    lyrics = get_lyrics(filepath)
+    is_synced = True
+    lyrics, copyright = get_lyrics(filepath)
 
-    if lyrics is None:
-        lyrics = get_lyrics_from_duplicates(trackhash, filepath)
+    if not lyrics:
+        lyrics, copyright = get_lyrics_from_duplicates(trackhash, filepath)
 
-    if lyrics is None:
+    if not lyrics:
+        lyrics, is_synced, copyright = get_lyrics_from_tags(filepath)
+
+    if not lyrics:
         return {"error": "No lyrics found"}, 204
 
-    return {"lyrics": lyrics}, 200
+    return {"lyrics": lyrics, "synced": is_synced, "copyright": copyright}, 200
 
 
 @api.route("/lyrics/check", methods=["POST"])
@@ -39,9 +48,11 @@ def check_lyrics():
     if filepath is None or trackhash is None:
         return {"error": "No filepath or trackhash provided"}, 400
 
-    exists, filepath = check_lyrics_file(filepath, trackhash)
+    exists = check_lyrics_file(filepath, trackhash)
 
     if exists:
-        return {"filepath": filepath}, 200
+        return {"exists": exists}, 200
 
-    return {"filepath": None}
+    exists = get_lyrics_from_tags(filepath, just_check=True)
+
+    return {"exists": exists}, 200
