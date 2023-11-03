@@ -65,6 +65,8 @@ def create_config_dir() -> None:
     dirs = [
         "",  # creates the config folder
         "images",
+        "plugins",
+        "plugins/lyrics",
         thumb_path,
         small_thumb_path,
         large_thumb_path,

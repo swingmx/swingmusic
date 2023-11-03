@@ -56,3 +56,4 @@ def check_lyrics():
     exists = get_lyrics_from_tags(filepath, just_check=True)
 
     return {"exists": exists}, 200
+

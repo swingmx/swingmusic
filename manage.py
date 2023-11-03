@@ -18,6 +18,7 @@ from app.setup import run_setup
 from app.start_info_logger import log_startup_info
 from app.utils.filesystem import get_home_res_path
 from app.utils.threading import background
+from app.plugins.register import register_plugins
 
 mimetypes.add_type("text/css", ".css")
 
@@ -90,6 +91,8 @@ def run_swingmusic():
     HandleArgs()
     log_startup_info()
     bg_run_setup()
+    register_plugins()
+
     start_watchdog()
     init_telemetry()
 

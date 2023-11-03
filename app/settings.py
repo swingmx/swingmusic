@@ -83,6 +83,14 @@ class Paths:
     def get_assets_path(cls):
         return join(Paths.get_app_dir(), "assets")
 
+    @classmethod
+    def get_plugins_path(cls):
+        return join(Paths.get_app_dir(), "plugins")
+
+    @classmethod
+    def get_lyrics_plugins_path(cls):
+        return join(Paths.get_plugins_path(), "lyrics")
+
 
 # defaults
 class Defaults:
@@ -233,6 +241,8 @@ class Keys:
     # get last fm api key from os environment
     LASTFM_API = os.environ.get("LASTFM_API_KEY")
     POSTHOG_API_KEY = os.environ.get("POSTHOG_API_KEY")
+    PLUGIN_LYRICS_AUTHORITY = os.environ.get("PLUGIN_LYRICS_AUTHORITY")
+    PLUGIN_LYRICS_ROOT_URL = os.environ.get("PLUGIN_LYRICS_ROOT_URL")
 
     @classmethod
     def load(cls):

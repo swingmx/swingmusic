@@ -6,6 +6,7 @@ from flask import Flask
 from flask_compress import Compress
 from flask_cors import CORS
 
+from .plugins import lyrics as lyrics_plugin
 from app.api import (
     album,
     artist,
@@ -17,7 +18,8 @@ from app.api import (
     search,
     send_file,
     settings,
-    lyrics
+    lyrics,
+    plugins,
 )
 
 
@@ -45,5 +47,9 @@ def create_api():
         app.register_blueprint(settings.api)
         app.register_blueprint(colors.api)
         app.register_blueprint(lyrics.api)
+
+        # Plugins
+        app.register_blueprint(plugins.api)
+        app.register_blueprint(lyrics_plugin.api)
 
         return app
