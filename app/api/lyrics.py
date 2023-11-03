@@ -33,7 +33,7 @@ def send_lyrics():
         lyrics, is_synced, copyright = get_lyrics_from_tags(filepath)
 
     if not lyrics:
-        return {"error": "No lyrics found"}, 204
+        return {"error": "No lyrics found"}, 404
 
     return {"lyrics": lyrics, "synced": is_synced, "copyright": copyright}, 200
 
