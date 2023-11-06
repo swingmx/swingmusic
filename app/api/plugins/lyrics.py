@@ -1,4 +1,5 @@
 from flask import Blueprint, request
+
 from app.plugins.lyrics import Lyrics
 from app.utils.hashing import create_hash
 
@@ -19,7 +20,7 @@ def search_lyrics():
     data = finder.search_lyrics_by_title_and_artist(title, artist)
 
     if not data:
-        return {"downloaded": False, "all": []}, 404
+        return {"downloaded": False}
 
     perfect_match = data[0]
 
@@ -31,9 +32,11 @@ def search_lyrics():
             i_album
         ) == create_hash(album):
             perfect_match = track
-            break
+
+        else:
+            track["saved"] = False
 
     track_id = perfect_match["track_id"]
-    downloaded = finder.download_lyrics_to_path_by_id(track_id, filepath)
+    downloaded = finder.download_lyrics(track_id, filepath)
 
-    return {"downloaded": downloaded, "all": data}, 200
+    return {"downloaded": downloaded}, 200

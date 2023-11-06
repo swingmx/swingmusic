@@ -78,7 +78,10 @@ class LyricsProvider(LRCProvider):
         except requests.exceptions.ConnectionError:
             return None
 
-        return response
+        if response is not None and response.ok:
+            return response
+
+        return None
 
     def _get_token(self):
         # Check if token is cached and not expired
@@ -99,12 +102,17 @@ class LyricsProvider(LRCProvider):
                 return
 
         # Token not cached or expired, fetch a new token
-        d = self._get("token.get", [("user_language", "en")]).json()
-        if d["message"]["header"]["status_code"] == 401:
+        res = self._get("token.get", [("user_language", "en")])
+
+        if res is None:
+            return
+
+        res = res.json()
+        if res["message"]["header"]["status_code"] == 401:
             time.sleep(10)
             return self._get_token()
 
-        new_token = d["message"]["body"]["user_token"]
+        new_token = res["message"]["body"]["user_token"]
         expiration_time = current_time + 600  # 10 minutes expiration
 
         # Cache the new token
@@ -120,11 +128,11 @@ class LyricsProvider(LRCProvider):
             "track.subtitle.get", [("track_id", track_id), ("subtitle_format", "lrc")]
         )
 
-        if not res.ok:
+        try:
+            res = res.json()
+            body = res["message"]["body"]
+        except AttributeError:
             return None
-
-        res = res.json()
-        body = res["message"]["body"]
 
         if not body:
             return None
@@ -132,7 +140,7 @@ class LyricsProvider(LRCProvider):
         return body["subtitle"]["subtitle_body"]
 
     def get_lrc(self, title: str, artist: str) -> Optional[str]:
-        r = self._get(
+        res = self._get(
             "track.search",
             [
                 ("q_track_artist", f"{title} {artist}"),
@@ -146,7 +154,11 @@ class LyricsProvider(LRCProvider):
             ],
         )
 
-        body = r.json()["message"]["body"]
+        try:
+            body = res.json()["message"]["body"]
+        except AttributeError:
+            return []
+
         tracks = body["track_list"]
 
         return [
@@ -183,14 +195,17 @@ class Lyrics(Plugin):
         return self.provider.get_lrc(title, artist)
 
     @plugin_method
-    def download_lyrics_to_path_by_id(self, trackid: str, path: str):
+    def download_lyrics(self, trackid: str, path: str):
         lrc = self.provider.get_lrc_by_id(trackid)
+        is_valid = lrc is not None and lrc.replace("\n", "").strip() != ""
 
-        path = Path(path).with_suffix(".lrc")
-
-        if not lrc or lrc.replace("\n", "").strip() == "":
+        if not is_valid:
             return False
-        with open(path, "w", encoding="utf-8") as f:
-            f.write(lrc)
 
-        return True
+        if is_valid:
+            path = Path(path).with_suffix(".lrc")
+            with open(path, "w", encoding="utf-8") as f:
+                f.write(lrc)
+                return True
+
+        return False
