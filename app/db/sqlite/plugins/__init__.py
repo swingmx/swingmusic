@@ -1,6 +1,7 @@
 import json
 
 from app.models.plugins import Plugin
+
 from ..utils import SQLiteManager
 
 
@@ -48,7 +49,7 @@ class PluginsMethods:
             name="lyrics_finder",
             description="Find lyrics from the internet",
             active=False,
-            settings={},
+            settings={"auto_download": False},
         )
         cls.insert_plugin(plugin)
 
@@ -70,11 +71,12 @@ class PluginsMethods:
             cur.execute("UPDATE plugins SET active=? WHERE name=?", (state, name))
             cur.close()
 
-    def update_plugin_settings(self, plugin: Plugin):
+    @classmethod
+    def update_plugin_settings(cls, plugin_name: str, settings: dict):
         with SQLiteManager(userdata_db=True) as cur:
             cur.execute(
                 "UPDATE plugins SET settings=? WHERE name=?",
-                (json.dumps(plugin.settings), plugin.name),
+                (json.dumps(settings), plugin_name),
             )
             cur.close()
 

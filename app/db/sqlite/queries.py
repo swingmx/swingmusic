@@ -44,7 +44,7 @@ CREATE TABLE IF NOT EXISTS lastfm_similar_artists (
 
 CREATE TABLE IF NOT EXISTS plugins (
     id integer PRIMARY KEY,
-    name text NOT NULL,
+    name text NOT NULL UNIQUE,
     description text NOT NULL,
     active integer NOT NULL DEFAULT 0,
     settings text

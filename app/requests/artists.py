@@ -1,19 +1,20 @@
 """
 Requests related to artists
 """
+import urllib.parse
+
 import requests
+from requests import ConnectionError, HTTPError, ReadTimeout
 
 from app import settings
 from app.utils.hashing import create_hash
-from requests import ConnectionError, HTTPError, ReadTimeout
-import urllib.parse
 
 
 def fetch_similar_artists(name: str):
     """
     Fetches similar artists from Last.fm
     """
-    url = f"https://ws.audioscrobbler.com/2.0/?method=artist.getsimilar&artist={urllib.parse.quote_plus(name, safe='')}&api_key={settings.Keys.LASTFM_API}&format=json&limit=250"
+    url = f"https://ws.audioscrobbler.com/2.0/?method=artist.getsimilar&artist={urllib.parse.quote_plus(name, safe='')}&api_key={settings.Keys.LASTFM_API_KEY}&format=json&limit=250"
 
     try:
         response = requests.get(url, timeout=10)

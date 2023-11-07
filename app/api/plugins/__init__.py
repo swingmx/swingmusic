@@ -24,3 +24,19 @@ def activate_deactivate_plugin():
     PluginsMethods.plugin_set_active(name, int(state))
 
     return {"message": "OK"}, 200
+
+
+@api.route("/settings", methods=["POST"])
+def update_plugin_settings():
+    data = request.get_json()
+
+    plugin = data.get("plugin", None)
+    settings = data.get("settings", None)
+
+    if not plugin or not settings:
+        return {"error": "Missing plugin or settings"}, 400
+
+    PluginsMethods.update_plugin_settings(plugin_name=plugin, settings=settings)
+    plugin = PluginsMethods.get_plugin_by_name(plugin)
+
+    return {"status": "success", "settings": plugin.settings}

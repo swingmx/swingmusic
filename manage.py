@@ -72,7 +72,6 @@ def serve_client():
 
 @background
 def bg_run_setup() -> None:
-    run_setup()
     run_periodic_scans()
 
 
@@ -90,6 +89,7 @@ def run_swingmusic():
     Keys.load()
     HandleArgs()
     log_startup_info()
+    run_setup()
     bg_run_setup()
     register_plugins()
 

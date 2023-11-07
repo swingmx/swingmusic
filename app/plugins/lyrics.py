@@ -143,7 +143,6 @@ class LyricsProvider(LRCProvider):
         res = self._get(
             "track.search",
             [
-                ("q_track_artist", f"{title} {artist}"),
                 ("q_track", title),
                 ("q_artist", artist),
                 ("page_size", "5"),
@@ -159,7 +158,10 @@ class LyricsProvider(LRCProvider):
         except AttributeError:
             return []
 
-        tracks = body["track_list"]
+        try:
+            tracks = body["track_list"]
+        except TypeError:
+            return []
 
         return [
             {

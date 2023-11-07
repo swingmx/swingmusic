@@ -33,9 +33,6 @@ def search_lyrics():
         ) == create_hash(album):
             perfect_match = track
 
-        else:
-            track["saved"] = False
-
     track_id = perfect_match["track_id"]
     downloaded = finder.download_lyrics(track_id, filepath)
 
