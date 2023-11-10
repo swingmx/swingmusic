@@ -1,8 +1,8 @@
 """
 Contains all the artist(s) routes.
 """
-import random
 import math
+import random
 from datetime import datetime
 
 from flask import Blueprint, request
@@ -15,21 +15,8 @@ from app.serializers.track import serialize_tracks
 from app.store.albums import AlbumStore
 from app.store.artists import ArtistStore
 from app.store.tracks import TrackStore
-from app.telemetry import Telemetry
-from app.utils.threading import background
 
 api = Blueprint("artist", __name__, url_prefix="/")
-
-ARTIST_VISIT_COUNT = 0
-
-
-@background
-def send_event():
-    global ARTIST_VISIT_COUNT
-    ARTIST_VISIT_COUNT += 1
-
-    if ARTIST_VISIT_COUNT % 5 == 0:
-        Telemetry.send_artist_visited()
 
 
 @api.route("/artist/<artisthash>", methods=["GET"])
@@ -37,7 +24,6 @@ def get_artist(artisthash: str):
     """
     Get artist data.
     """
-    send_event()
     limit = request.args.get("limit")
 
     if limit is None:
@@ -211,7 +197,6 @@ def get_similar_artists(artisthash: str):
     if artist is None:
         return {"error": "Artist not found"}, 404
 
-    # result = LastFMStore.get_similar_artists_for(artist.artisthash)
     result = fmdb.get_similar_artists_for(artist.artisthash)
 
     if result is None:

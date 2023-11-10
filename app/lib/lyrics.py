@@ -3,12 +3,11 @@ from tinytag import TinyTag
 
 from app.store.tracks import TrackStore
 
-filepath = "/home/cwilvx/Music/Editor's Pick/Bad Day 😢/6 Dogs - Crying in the Rarri.m4a"
-# filepath = "/home/cwilvx/Music/90s/Ballads/All-4-One - I Swear.mp3"
-filepath = "/home/cwilvx/Music/Afrobeats/Kabusa Oriental Choir/Kabusa Oriental Choir - Bandana.m4a"
-
 
 def split_line(line: str):
+    """
+    Split a lyrics line into time and lyrics
+    """
     items = line.split("]")
     time = items[0].removeprefix("[")
     lyric = items[1] if len(items) > 1 else ""
@@ -17,6 +16,9 @@ def split_line(line: str):
 
 
 def convert_to_milliseconds(time: str):
+    """
+    Converts a lyrics time string into milliseconds.
+    """
     try:
         minutes, seconds = time.split(":")
     except ValueError:
@@ -124,9 +126,9 @@ def check_lyrics_file(filepath: str, trackhash: str):
 
 
 def test_is_synced(lyrics: list[str]):
-    # try to split lines and get milliseconds
-    # if any passes, return True
-
+    """
+    Tests if the lyric lines passed are synced.
+    """
     for line in lyrics:
         time, _ = split_line(line)
         milliseconds = convert_to_milliseconds(time)
@@ -138,6 +140,9 @@ def test_is_synced(lyrics: list[str]):
 
 
 def get_extras(filepath: str, keys: list[str]):
+    """
+    Get extra tags from an audio file.
+    """
     tags = TinyTag.get(filepath)
     extras = tags.extra
 

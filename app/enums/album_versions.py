@@ -3,7 +3,7 @@ from enum import Enum
 
 class AlbumVersionEnum(Enum):
     """
-    Enum for album versions.
+    Enum that registers supported album versions.
     """
 
     Explicit = ("explicit",)
@@ -59,4 +59,7 @@ class AlbumVersionEnum(Enum):
 
 
 def get_all_keywords():
+    """
+    Returns a joint string of all album versions.
+    """
     return "|".join("|".join(i.value) for i in AlbumVersionEnum)

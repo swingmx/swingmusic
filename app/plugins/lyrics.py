@@ -10,9 +10,6 @@ from app.db.sqlite.plugins import PluginsMethods
 from app.plugins import Plugin, plugin_method
 from app.settings import Keys, Paths
 
-# from .base import LRCProvider
-# from ..utils import get_best_match
-
 
 class LRCProvider:
     """
@@ -202,12 +199,13 @@ class Lyrics(Plugin):
         is_valid = lrc is not None and lrc.replace("\n", "").strip() != ""
 
         if not is_valid:
-            return False
+            return None
 
-        if is_valid:
-            path = Path(path).with_suffix(".lrc")
+        path = Path(path).with_suffix(".lrc")
+
+        try:
             with open(path, "w", encoding="utf-8") as f:
                 f.write(lrc)
-                return True
-
-        return False
+                return lrc
+        except:
+            return lrc

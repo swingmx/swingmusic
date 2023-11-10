@@ -1,4 +1,5 @@
 from flask import Blueprint, request
+from app.lib.lyrics import format_synced_lyrics
 
 from app.plugins.lyrics import Lyrics
 from app.utils.hashing import create_hash
@@ -10,6 +11,7 @@ api = Blueprint("lyricsplugin", __name__, url_prefix="/plugins/lyrics")
 def search_lyrics():
     data = request.get_json()
 
+    trackhash = data.get("trackhash", "")
     title = data.get("title", "")
     artist = data.get("artist", "")
     album = data.get("album", "")
@@ -20,7 +22,7 @@ def search_lyrics():
     data = finder.search_lyrics_by_title_and_artist(title, artist)
 
     if not data:
-        return {"downloaded": False}
+        return {"trackhash": trackhash, "lyrics": None}
 
     perfect_match = data[0]
 
@@ -34,6 +36,12 @@ def search_lyrics():
             perfect_match = track
 
     track_id = perfect_match["track_id"]
-    downloaded = finder.download_lyrics(track_id, filepath)
+    lrc = finder.download_lyrics(track_id, filepath)
 
-    return {"downloaded": downloaded}, 200
+    if lrc is not None:
+        lines = lrc.split("\n")
+        lyrics = format_synced_lyrics(lines)
+
+        return {"trackhash": trackhash, "lyrics": lyrics}, 200
+
+    return {"trackhash": trackhash, "lyrics": lrc}, 200

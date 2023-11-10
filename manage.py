@@ -3,22 +3,19 @@ This file is used to run the application.
 """
 import logging
 import mimetypes
-import os
 
 import setproctitle
-from flask import request
 
-from app.telemetry import Telemetry
 from app.api import create_api
 from app.arg_handler import HandleArgs
 from app.lib.watchdogg import Watcher as WatchDog
 from app.periodic_scan import run_periodic_scans
+from app.plugins.register import register_plugins
 from app.settings import FLASKVARS, Keys
 from app.setup import run_setup
 from app.start_info_logger import log_startup_info
 from app.utils.filesystem import get_home_res_path
 from app.utils.threading import background
-from app.plugins.register import register_plugins
 
 mimetypes.add_type("text/css", ".css")
 
@@ -80,11 +77,6 @@ def start_watchdog():
     WatchDog().run()
 
 
-@background
-def init_telemetry():
-    Telemetry.init()
-
-
 def run_swingmusic():
     Keys.load()
     HandleArgs()
@@ -94,7 +86,6 @@ def run_swingmusic():
     register_plugins()
 
     start_watchdog()
-    init_telemetry()
 
     setproctitle.setproctitle(
         f"swingmusic - {FLASKVARS.FLASK_HOST}:{FLASKVARS.FLASK_PORT}"
