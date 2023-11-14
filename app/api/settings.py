@@ -1,5 +1,6 @@
 from flask import Blueprint, request
 
+from app.db.sqlite.plugins import PluginsMethods as pdb
 from app.db.sqlite.settings import SettingsSQLMethods as sdb
 from app.lib import populate
 from app.lib.watchdogg import Watcher as WatchDog
@@ -11,7 +12,7 @@ from app.store.tracks import TrackStore
 from app.utils.generators import get_random_str
 from app.utils.threading import background
 
-api = Blueprint("settings", __name__, url_prefix="/")
+api = Blueprint("settings", __name__, url_prefix="")
 
 
 def get_child_dirs(parent: str, children: list[str]):
@@ -160,6 +161,7 @@ def get_all_settings():
     """
 
     settings = sdb.get_all_settings()
+    plugins = pdb.get_all_plugins()
 
     key_list = list(mapp.keys())
     s = {}
@@ -180,6 +182,7 @@ def get_all_settings():
 
     root_dirs = sdb.get_root_dirs()
     s["root_dirs"] = root_dirs
+    s['plugins'] = plugins
 
     return {
         "settings": s,

@@ -16,7 +16,7 @@ else:
 
 
 class Release:
-    APP_VERSION = "1.3.0"
+    APP_VERSION = "1.4.0"
 
 
 class Paths:
@@ -82,6 +82,14 @@ class Paths:
     @classmethod
     def get_assets_path(cls):
         return join(Paths.get_app_dir(), "assets")
+
+    @classmethod
+    def get_plugins_path(cls):
+        return join(Paths.get_app_dir(), "plugins")
+
+    @classmethod
+    def get_lyrics_plugins_path(cls):
+        return join(Paths.get_plugins_path(), "lyrics")
 
 
 # defaults
@@ -231,19 +239,25 @@ class TCOLOR:
 
 class Keys:
     # get last fm api key from os environment
-    LASTFM_API = os.environ.get("LASTFM_API_KEY")
-    POSTHOG_API_KEY = os.environ.get("POSTHOG_API_KEY")
+    LASTFM_API_KEY = os.environ.get("LASTFM_API_KEY")
+    PLUGIN_LYRICS_AUTHORITY = os.environ.get("PLUGIN_LYRICS_AUTHORITY")
+    PLUGIN_LYRICS_ROOT_URL = os.environ.get("PLUGIN_LYRICS_ROOT_URL")
 
     @classmethod
     def load(cls):
         if IS_BUILD:
-            cls.LASTFM_API = configs.LASTFM_API_KEY
-            cls.POSTHOG_API_KEY = configs.POSTHOG_API_KEY
+            cls.LASTFM_API_KEY = configs.LASTFM_API_KEY
+            cls.PLUGIN_LYRICS_AUTHORITY = configs.PLUGIN_LYRICS_AUTHORITY
+            cls.PLUGIN_LYRICS_ROOT_URL = configs.PLUGIN_LYRICS_ROOT_URL
 
         cls.verify_keys()
 
     @classmethod
     def verify_keys(cls):
-        if not cls.LASTFM_API:
+        if not cls.LASTFM_API_KEY:
             print("ERROR: LASTFM_API_KEY not set in environment")
             sys.exit(0)
+
+    @classmethod
+    def get(cls, key: str):
+        return getattr(cls, key, None)

@@ -44,7 +44,7 @@ def get_album_tracks_and_info():
     album = AlbumStore.get_album_by_hash(albumhash)
 
     if album is None:
-        return error_msg, 204
+        return error_msg, 404
 
     tracks = TrackStore.get_tracks_by_albumhash(albumhash)
 
@@ -52,7 +52,7 @@ def get_album_tracks_and_info():
         return error_msg, 404
 
     if len(tracks) == 0:
-        return error_msg, 204
+        return error_msg, 404
 
     def get_album_genres(tracks: list[Track]):
         genres = set()

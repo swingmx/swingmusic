@@ -159,6 +159,8 @@ class Album:
         """
         return self.title.strip().endswith(" EP")
 
+        # TODO: check against number of tracks
+
     def check_is_single(self, tracks: list[Track]):
         """
         Checks if the album is a single.

@@ -41,6 +41,14 @@ CREATE TABLE IF NOT EXISTS lastfm_similar_artists (
     similar_artists text NOT NULL,
     UNIQUE (artisthash)
 );
+
+CREATE TABLE IF NOT EXISTS plugins (
+    id integer PRIMARY KEY,
+    name text NOT NULL UNIQUE,
+    description text NOT NULL,
+    active integer NOT NULL DEFAULT 0,
+    settings text
+)
 """
 
 CREATE_APPDB_TABLES = """

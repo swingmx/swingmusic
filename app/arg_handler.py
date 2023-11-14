@@ -43,24 +43,27 @@ class HandleArgs:
             print("https://www.youtube.com/watch?v=wZv62ShoStY")
             sys.exit(0)
 
-        lastfm_key = settings.Keys.LASTFM_API
-        posthog_key = settings.Keys.POSTHOG_API_KEY
+        config_keys = [
+            "LASTFM_API_KEY",
+            "PLUGIN_LYRICS_AUTHORITY",
+            "PLUGIN_LYRICS_ROOT_URL",
+        ]
 
-        if not lastfm_key:
-            log.error("ERROR: LASTFM_API_KEY not set in environment")
-            sys.exit(0)
+        lines = []
 
-        if not posthog_key:
-            log.error("ERROR: POSTHOG_API_KEY not set in environment")
-            sys.exit(0)
+        for key in config_keys:
+            value = settings.Keys.get(key)
+
+            if not value:
+                log.error(f"ERROR: {key} not set in environment")
+                sys.exit(0)
+
+            lines.append(f'{key} = "{value}"\n')
 
         try:
             with open("./app/configs.py", "w", encoding="utf-8") as file:
                 # copy the api keys to the config file
-                line1 = f'LASTFM_API_KEY = "{lastfm_key}"\n'
-                line2 = f'POSTHOG_API_KEY = "{posthog_key}"\n'
-                file.write(line1)
-                file.write(line2)
+                file.writelines(lines)
 
             _s = ";" if is_windows() else ":"
 
@@ -80,10 +83,8 @@ class HandleArgs:
         finally:
             # revert and remove the api keys for dev mode
             with open("./app/configs.py", "w", encoding="utf-8") as file:
-                line1 = "LASTFM_API_KEY = ''\n"
-                line2 = "POSTHOG_API_KEY = ''\n"
-                file.write(line1)
-                file.write(line2)
+                lines = [f'{key} = ""\n' for key in config_keys]
+                file.writelines(lines)
 
             sys.exit(0)
 
