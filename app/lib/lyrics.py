@@ -143,7 +143,11 @@ def get_extras(filepath: str, keys: list[str]):
     """
     Get extra tags from an audio file.
     """
-    tags = TinyTag.get(filepath)
+    try:
+        tags = TinyTag.get(filepath)
+    except Exception:
+        return [""] * len(keys)
+
     extras = tags.extra
 
     return [extras.get(key, "").strip() for key in keys]

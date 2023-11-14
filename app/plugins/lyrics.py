@@ -68,7 +68,11 @@ class LyricsProvider(LRCProvider):
 
         t = str(int(time.time() * 1000))
         query.append(("t", t))
-        url = self.ROOT_URL + action
+
+        try:
+            url = self.ROOT_URL + action
+        except TypeError:
+            return None
 
         try:
             response = self.session.get(url, params=query)
