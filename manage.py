@@ -3,6 +3,8 @@ This file is used to run the application.
 """
 import logging
 import mimetypes
+import os
+from flask import request
 
 import setproctitle
 
@@ -37,25 +39,31 @@ app = create_api()
 app.static_folder = get_home_res_path("client")
 
 
-# @app.route("/", defaults={"path": ""})
 @app.route("/<path:path>")
 def serve_client_files(path: str):
     """
     Serves the static files in the client folder.
     """
-    # js_or_css = path.endswith(".js") or path.endswith(".css")
-    # if not js_or_css:
-    #     return app.send_static_file(path)
+    js_or_css = path.endswith(".js") or path.endswith(".css")
+    if not js_or_css:
+        return app.send_static_file(path)
 
-    # gzipped_path = path + ".gz"
+    gzipped_path = path + ".gz"
+    user_agent = request.headers.get("User-Agent")
 
-    # if request.headers.get("Accept-Encoding", "").find("gzip") >= 0:
-    #     if os.path.exists(os.path.join(app.static_folder, gzipped_path)):
-    #         response = app.make_response(app.send_static_file(gzipped_path))
-    #         response.headers["Content-Encoding"] = "gzip"
-    #         return response
-    #     else:
-    #         return app.send_static_file(path)
+    is_safari = user_agent.find("Safari") >= 0 and user_agent.find("Chrome") < 0
+
+    if is_safari:
+        return app.send_static_file(path)
+
+    accepts_gzip = request.headers.get("Accept-Encoding", "").find("gzip") >= 0
+
+    if accepts_gzip:
+        if os.path.exists(os.path.join(app.static_folder, gzipped_path)):
+            response = app.make_response(app.send_static_file(gzipped_path))
+            response.headers["Content-Encoding"] = "gzip"
+            return response
+
     return app.send_static_file(path)
 
 
