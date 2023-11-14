@@ -16,7 +16,7 @@ else:
 
 
 class Release:
-    APP_VERSION = "1.3.0"
+    APP_VERSION = "1.4.0"
 
 
 class Paths:
@@ -240,7 +240,6 @@ class TCOLOR:
 class Keys:
     # get last fm api key from os environment
     LASTFM_API_KEY = os.environ.get("LASTFM_API_KEY")
-    POSTHOG_API_KEY = os.environ.get("POSTHOG_API_KEY")
     PLUGIN_LYRICS_AUTHORITY = os.environ.get("PLUGIN_LYRICS_AUTHORITY")
     PLUGIN_LYRICS_ROOT_URL = os.environ.get("PLUGIN_LYRICS_ROOT_URL")
 

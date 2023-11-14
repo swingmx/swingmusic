@@ -45,7 +45,6 @@ class HandleArgs:
 
         config_keys = [
             "LASTFM_API_KEY",
-            "POSTHOG_API_KEY",
             "PLUGIN_LYRICS_AUTHORITY",
             "PLUGIN_LYRICS_ROOT_URL",
         ]
