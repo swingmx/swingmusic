@@ -247,7 +247,8 @@ class Keys:
     def load(cls):
         if IS_BUILD:
             cls.LASTFM_API_KEY = configs.LASTFM_API_KEY
-            cls.POSTHOG_API_KEY = configs.POSTHOG_API_KEY
+            cls.PLUGIN_LYRICS_AUTHORITY = configs.PLUGIN_LYRICS_AUTHORITY
+            cls.PLUGIN_LYRICS_ROOT_URL = configs.PLUGIN_LYRICS_ROOT_URL
 
         cls.verify_keys()
 
