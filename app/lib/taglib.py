@@ -1,5 +1,8 @@
+from dataclasses import dataclass
 import os
 from io import BytesIO
+from pathlib import Path
+import re
 
 import pendulum
 from PIL import Image, UnidentifiedImageError
@@ -7,7 +10,7 @@ from tinytag import TinyTag
 
 from app.settings import Defaults, Paths
 from app.utils.hashing import create_hash
-from app.utils.parsers import parse_artist_from_filename, parse_title_from_filename
+from app.utils.parsers import split_artists
 from app.utils.wintools import win_replace_slash
 
 
@@ -85,6 +88,45 @@ def parse_date(date_str: str | None) -> int | None:
         return None
 
 
+def clean_filename(filename: str):
+    if "official" in filename.lower():
+        return re.sub(r"\s*\([^)]*official[^)]*\)", "", filename, flags=re.IGNORECASE)
+
+    return filename
+
+
+@dataclass
+class ParseData:
+    artist: str
+    title: str
+
+    def __post_init__(self):
+        self.artist = split_artists(self.artist)
+
+
+def extract_artist_title(filename: str):
+    path = Path(filename).with_suffix("")
+
+    path = clean_filename(str(path))
+    split_result = path.split(" - ")
+    split_result = [x.strip() for x in split_result]
+
+    if len(split_result) == 1:
+        return ParseData("", split_result[0])
+
+    if len(split_result) > 2:
+        try:
+            int(split_result[0])
+
+            return ParseData(split_result[1], " - ".join(split_result[2:]))
+        except ValueError:
+            pass
+
+    artist = split_result[0]
+    title = split_result[1]
+    return ParseData(artist, title)
+
+
 def get_tags(filepath: str):
     """
     Returns the tags for a given audio file.
@@ -112,22 +154,28 @@ def get_tags(filepath: str):
     if no_artist and not no_albumartist:
         tags.artist = tags.albumartist
 
+    parse_data = None
+
     to_filename = ["title", "album"]
     for tag in to_filename:
         p = getattr(tags, tag)
         if p == "" or p is None:
-            maybe = parse_title_from_filename(filename)
-            setattr(tags, tag, maybe)
+            parse_data = extract_artist_title(filename)
+            title = parse_data.title
+            setattr(tags, tag, title)
 
     parse = ["artist", "albumartist"]
     for tag in parse:
         p = getattr(tags, tag)
 
         if p == "" or p is None:
-            maybe = parse_artist_from_filename(filename)
+            if not parse_data:
+                parse_data = extract_artist_title(filename)
 
-            if maybe:
-                setattr(tags, tag, ", ".join(maybe))
+            artist = parse_data.artist
+
+            if artist:
+                setattr(tags, tag, ", ".join(artist))
             else:
                 setattr(tags, tag, "Unknown")
 

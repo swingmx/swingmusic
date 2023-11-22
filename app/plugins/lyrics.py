@@ -75,7 +75,7 @@ class LyricsProvider(LRCProvider):
             return None
 
         try:
-            response = self.session.get(url, params=query)
+            response = self.session.get(url, params=query, timeout=10)
         except requests.exceptions.ConnectionError:
             return None
 

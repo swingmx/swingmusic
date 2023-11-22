@@ -18,39 +18,6 @@ def split_artists(src: str):
     return [a for a in artists if a]
 
 
-def parse_artist_from_filename(title: str):
-    """
-    Extracts artist names from a song title using regex.
-    """
-
-    regex = r"^(.+?)\s*[-–—]\s*(?:.+?)$"
-    match = re.search(regex, title, re.IGNORECASE)
-
-    if not match:
-        return []
-
-    artists = match.group(1)
-    artists = split_artists(artists)
-    return artists
-
-
-def parse_title_from_filename(title: str):
-    """
-    Extracts track title from a song title using regex.
-    """
-
-    regex = r"^(?:.+?)\s*[-–—]\s*(.+?)$"
-    match = re.search(regex, title, re.IGNORECASE)
-
-    if not match:
-        return title
-
-    res = match.group(1)
-    # remove text in brackets starting with "official" case-insensitive
-    res = re.sub(r"\s*\([^)]*official[^)]*\)", "", res, flags=re.IGNORECASE)
-    return res.strip()
-
-
 def remove_prod(title: str) -> str:
     """
     Removes the producer string in a track title using regex.
