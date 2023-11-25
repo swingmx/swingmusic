@@ -160,16 +160,18 @@ jobs:
         with:
           # list of Docker images to use as base name for tags
           images: |
-            ghcr.io/${{ github.repository }}
+            ghcr.io/swing-opensource/swingmusic
       - name: Build and push
         uses: docker/build-push-action@v2
         with:
           context: .
           platforms: linux/amd64,linux/arm, linux/arm64
           push: true
-          tags: ghcr.io/${{github.repository}}:${{inputs.tag}}, ${{env.LATEST_TAG}}
+          tags: ghcr.io/swing-opensource/swingmusic:${{inputs.tag}}, ${{env.LATEST_TAG}}
           labels: org.opencontainers.image.title=Docker
           build-args: |
             --provenance=false
         env:
-          LATEST_TAG: ${{ inputs.is_latest == 'true' && format('ghcr.io/{0}:latest', github.repository) || '' }}
+          LATEST_TAG: ${{ inputs.is_latest == 'true' && format('ghcr.io/{0}:latest', 'swing-opensource/swingmusic') || '' }}
+
+          # TODO: REPLACE SWING-OPENSWINGMUSIC WITH github.repository in Docker meta step and following steps

@@ -32,7 +32,11 @@ def get_artist_image_link(artist: str):
 
         url = f"https://api.deezer.com/search/artist?q={query}"
         response = requests.get(url, timeout=30)
-        data = response.json()
+        try:
+            data = response.json()
+        except requests.exceptions.JSONDecodeError:
+            print(f"Failed to decode json for {artist}")
+            return None
 
         for res in data["data"]:
             res_hash = create_hash(res["name"], decode=True)
