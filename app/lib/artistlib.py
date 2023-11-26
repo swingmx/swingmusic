@@ -35,7 +35,6 @@ def get_artist_image_link(artist: str):
         try:
             data = response.json()
         except requests.exceptions.JSONDecodeError:
-            print(f"Failed to decode json for {artist}")
             return None
 
         for res in data["data"]:

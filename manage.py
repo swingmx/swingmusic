@@ -85,6 +85,7 @@ def start_watchdog():
     WatchDog().run()
 
 
+@background
 def run_swingmusic():
     Keys.load()
     HandleArgs()
