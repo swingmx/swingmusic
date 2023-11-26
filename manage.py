@@ -87,8 +87,6 @@ def start_watchdog():
 
 @background
 def run_swingmusic():
-    Keys.load()
-    HandleArgs()
     log_startup_info()
     run_setup()
     bg_run_setup()
@@ -102,6 +100,8 @@ def run_swingmusic():
 
 
 if __name__ == "__main__":
+    Keys.load()
+    HandleArgs()
     run_swingmusic()
     app.run(
         debug=False,
