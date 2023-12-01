@@ -4,7 +4,10 @@ from app.models.artist import Artist
 
 
 def serialize_for_card(artist: Artist):
-    artist_dict = asdict(artist)
+    try:
+        artist_dict = asdict(artist)
+    except TypeError:
+        return {}
 
     props_to_remove = {
         "is_favorite",

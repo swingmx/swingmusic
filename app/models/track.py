@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from pathlib import Path
 
 from app.settings import SessionVarKeys, get_flag
 from app.utils.hashing import create_hash
@@ -47,6 +48,10 @@ class Track:
 
     og_title: str = ""
     og_album: str = ""
+    created_date: float = 0.0
+
+    def set_created_date(self):
+        self.created_date = Path(self.filepath).stat().st_ctime
 
     def __post_init__(self):
         self.og_title = self.title
@@ -117,6 +122,7 @@ class Track:
             self.genre = [g.strip() for g in self.genre]
 
         self.recreate_hash()
+        self.set_created_date()
 
     def recreate_hash(self):
         """

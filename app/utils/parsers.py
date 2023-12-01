@@ -8,7 +8,7 @@ def split_artists(src: str):
     """
     Splits a string of artists into a list of artists.
     """
-    separators: set = get_flag(SessionVarKeys.ARTIST_SEPARATORS)
+    separators: set = get_flag(SessionVarKeys.ARTIST_SEPARATORS)    
     for sep in separators:
         src = src.replace(sep, ",")
 
