@@ -20,6 +20,7 @@ from app.api import (
     settings,
     lyrics,
     plugins,
+    logger,
 )
 
 
@@ -51,5 +52,8 @@ def create_api():
         # Plugins
         app.register_blueprint(plugins.api)
         app.register_blueprint(lyrics_plugin.api)
+
+        # Logger
+        app.register_blueprint(logger.api_bp)
 
         return app

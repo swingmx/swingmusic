@@ -2,10 +2,6 @@
 This file contains the SQL queries to create the database tables.
 """
 
-
-# banner_pos integer NOT NULL,
-# has_gif integer,
-
 CREATE_USERDATA_TABLES = """
 CREATE TABLE IF NOT EXISTS playlists (
     id integer PRIMARY KEY,
@@ -48,6 +44,15 @@ CREATE TABLE IF NOT EXISTS plugins (
     description text NOT NULL,
     active integer NOT NULL DEFAULT 0,
     settings text
+);
+
+CREATE TABLE IF NOT EXISTS track_logger (
+    id integer PRIMARY KEY,
+    trackhash text NOT NULL,
+    duration integer NOT NULL,
+    timestamp integer NOT NULL,
+    source text,
+    userid integer NOT NULL DEFAULT 0
 )
 """
 
