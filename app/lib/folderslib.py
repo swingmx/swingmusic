@@ -44,8 +44,9 @@ class GetFilesAndDirs:
     Get files and folders from a directory.
     """
 
-    def __init__(self, path: str) -> None:
+    def __init__(self, path: str, tracks_only=False) -> None:
         self.path = path
+        self.tracks_only = tracks_only
 
     def __call__(self) -> tuple[list[Track], list[Folder]]:
         try:
@@ -80,6 +81,9 @@ class GetFilesAndDirs:
         files = [f["path"] for f in files_]
 
         tracks = TrackStore.get_tracks_by_filepaths(files)
-        folders = get_folders(dirs)
+
+        folders = []
+        if not self.tracks_only:
+            folders = get_folders(dirs)
 
         return tracks, folders

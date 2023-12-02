@@ -26,9 +26,11 @@ def get_folder_tree():
     data = request.get_json()
     req_dir = "$home"
 
+    tracks_only = False
     if data is not None:
         try:
             req_dir: str = data["folder"]
+            tracks_only: bool = data["tracks_only"]
         except KeyError:
             req_dir = "$home"
 
@@ -56,7 +58,7 @@ def get_folder_tree():
     else:
         req_dir = "/" + req_dir + "/" if not req_dir.startswith("/") else req_dir + "/"
 
-    tracks, folders = GetFilesAndDirs(req_dir)()
+    tracks, folders = GetFilesAndDirs(req_dir, tracks_only=tracks_only)()
 
     return {
         "tracks": tracks,
