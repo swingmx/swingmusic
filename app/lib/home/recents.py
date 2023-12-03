@@ -36,7 +36,7 @@ def calc_based_on_percent(items: list[str], total: int):
     most_common = max(items, key=items.count)
     most_common_count = items.count(most_common)
 
-    return most_common_count / total >= 0.85, most_common, most_common_count
+    return most_common_count / total >= 0.7, most_common, most_common_count
 
 
 def check_is_album_folder(group: group_type):
@@ -163,7 +163,7 @@ def group_track_by_folders(tracks: Track) -> (str, list[Track]):
     return sorted(groups, key=lambda g: os.path.getctime(g[0]), reverse=True)
 
 
-def get_recent_items(cutoff_days: int):
+def get_recent_items(cutoff_days: int, limit: int = 7):
     timestamp = timestamp_from_days_ago(cutoff_days)
     tracks: list[Track] = []
 
@@ -181,7 +181,7 @@ def get_recent_items(cutoff_days: int):
 
     recent_items = []
 
-    for group in groups:
+    for group in groups[:limit]:
         item = check_folder_type(group)
 
         if item not in recent_items:
@@ -192,4 +192,11 @@ def get_recent_items(cutoff_days: int):
                 item
             )
 
-    return recent_items
+    return recent_items[:limit]
+
+
+def get_recent_tracks(cutoff_days: int):
+    tracks = sorted(TrackStore.tracks, key=lambda t: t.created_date, reverse=True)
+    timestamp = timestamp_from_days_ago(cutoff_days)
+
+    return [t for t in tracks if t.created_date > timestamp]

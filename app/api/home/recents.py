@@ -13,6 +13,5 @@ class RecentlyAdded(Resource):
 
         args = parser.parse_args()
         limit = args["limit"]
-        print(limit)
 
-        return {"items": get_recent_items(cutoff)[:limit], "cutoff": cutoff}
+        return {"items": get_recent_items(cutoff, limit), "cutoff": cutoff}

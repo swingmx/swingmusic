@@ -1,11 +1,8 @@
 import json
 from collections import OrderedDict
 
-from app.db.sqlite.tracks import SQLiteTrackMethods
 from app.db.sqlite.utils import SQLiteManager, tuple_to_playlist, tuples_to_playlists
-from app.models import Artist
 from app.utils.dates import create_new_date
-from app.utils.threading import background
 
 
 class SQLitePlaylistMethods:

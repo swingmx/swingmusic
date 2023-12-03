@@ -12,6 +12,7 @@ from app import models
 from app.db.sqlite.playlists import SQLitePlaylistMethods
 from app.lib import playlistlib
 from app.lib.albumslib import sort_by_track_no
+from app.lib.home.recents import get_recent_tracks
 from app.models.track import Track
 from app.store.albums import AlbumStore
 from app.store.tracks import TrackStore
@@ -206,14 +207,31 @@ def get_playlist(playlistid: str):
     no_tracks = request.args.get("no_tracks", False)
     no_tracks = no_tracks == "true"
 
-    playlist = PL.get_playlist_by_id(int(playlistid))
+    is_recently_added = playlistid == "recentlyadded"
+
+    if not is_recently_added:
+        playlist = PL.get_playlist_by_id(int(playlistid))
+    else:
+        playlist = models.Playlist(
+            id="recentlyadded",
+            name="Recently Added",
+            image=None,
+            last_updated="Now",
+            settings={},
+            trackhashes=[],
+        )
 
     if playlist is None:
         return {"msg": "Playlist not found"}, 404
 
-    tracks = TrackStore.get_tracks_by_trackhashes(list(playlist.trackhashes))
-    tracks = remove_duplicates(tracks)
+    if is_recently_added:
+        tracks = get_recent_tracks(cutoff_days=14)
+        date = datetime.fromtimestamp(tracks[0].created_date)
+        playlist.last_updated = create_new_date(date)
+    else:
+        tracks = TrackStore.get_tracks_by_trackhashes(list(playlist.trackhashes))
 
+    tracks = remove_duplicates(tracks)
     duration = sum(t.duration for t in tracks)
     playlist.last_updated = date_string_to_time_passed(playlist.last_updated)
 
