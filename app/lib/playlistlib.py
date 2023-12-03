@@ -4,11 +4,18 @@ This library contains all the functions related to playlists.
 import os
 import random
 import string
+from datetime import datetime
 from typing import Any
 
 from PIL import Image, ImageSequence
 
 from app import settings
+from app.lib.home.recentlyadded import get_recent_tracks
+from app.models.playlist import Playlist
+from app.models.track import Track
+from app.store.albums import AlbumStore
+from app.store.tracks import TrackStore
+from app.utils.dates import create_new_date
 
 
 def create_thumbnail(image: Any, img_path: str) -> str:
@@ -86,33 +93,63 @@ def save_p_image(
     return filename
 
 
-#
-# class ValidatePlaylistThumbs:
-#     """
-#     Removes all unused images in the images/playlists folder.
-#     """
-#
-#     def __init__(self) -> None:
-#         images = []
-#         playlists = Get.get_all_playlists()
-#
-#         log.info("Validating playlist thumbnails")
-#         for playlist in playlists:
-#             if playlist.image:
-#                 img_path = playlist.image.split("/")[-1]
-#                 thumb_path = playlist.thumb.split("/")[-1]
-#
-#                 images.append(img_path)
-#                 images.append(thumb_path)
-#
-#         p_path = os.path.join(settings.APP_DIR, "images", "playlists")
-#
-#         for image in os.listdir(p_path):
-#             if image not in images:
-#                 os.remove(os.path.join(p_path, image))
-#
-#         log.info("Validating playlist thumbnails ... ✅")
-#
+def duplicate_images(images: list):
+    if len(images) == 1:
+        images *= 4
+    elif len(images) == 2:
+        images += list(reversed(images))
+    elif len(images) == 3:
+        images = images + images[:1]
+
+    return images
 
 
-# TODO: Fix ValidatePlaylistThumbs
+def get_first_4_images(
+    tracks: list[Track] = [], trackhashes: list[str] = []
+) -> list[dict["str", str]]:
+    if len(trackhashes) > 0:
+        tracks = TrackStore.get_tracks_by_trackhashes(trackhashes)
+
+    albums = []
+
+    for track in tracks:
+        if track.albumhash not in albums:
+            albums.append(track.albumhash)
+
+            if len(albums) == 4:
+                break
+
+    albums = AlbumStore.get_albums_by_hashes(albums)
+    images = [
+        {
+            "image": album.image,
+            "color": "".join(album.colors),
+        }
+        for album in albums
+    ]
+
+    if len(images) == 4:
+        return images
+
+    return duplicate_images(images)
+
+
+def get_recently_added_playlist(cutoff: int = 14):
+    playlist = Playlist(
+        id="recentlyplayed",
+        name="Recently Added",
+        image=None,
+        last_updated="Now",
+        settings={},
+        trackhashes=[],
+    )
+
+    tracks = get_recent_tracks(cutoff)
+    date = datetime.fromtimestamp(tracks[0].created_date)
+    playlist.last_updated = create_new_date(date)
+
+    images = get_first_4_images(tracks=tracks)
+    playlist.images = images
+    playlist.set_count(len(tracks))
+
+    return playlist, tracks

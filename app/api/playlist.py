@@ -12,9 +12,7 @@ from app import models
 from app.db.sqlite.playlists import SQLitePlaylistMethods
 from app.lib import playlistlib
 from app.lib.albumslib import sort_by_track_no
-from app.lib.home.recents import get_recent_tracks
-from app.models.track import Track
-from app.store.albums import AlbumStore
+from app.serializers.playlist import serialize_for_card
 from app.store.tracks import TrackStore
 from app.utils.dates import create_new_date, date_string_to_time_passed
 from app.utils.remove_duplicates import remove_duplicates
@@ -23,47 +21,6 @@ from app.settings import Paths
 api = Blueprint("playlist", __name__, url_prefix="/")
 
 PL = SQLitePlaylistMethods
-
-
-def duplicate_images(images: list):
-    if len(images) == 1:
-        images *= 4
-    elif len(images) == 2:
-        images += list(reversed(images))
-    elif len(images) == 3:
-        images = images + images[:1]
-
-    return images
-
-
-def get_first_4_images(
-    tracks: list[Track] = [], trackhashes: list[str] = []
-) -> list[dict["str", str]]:
-    if len(trackhashes) > 0:
-        tracks = TrackStore.get_tracks_by_trackhashes(trackhashes)
-
-    albums = []
-
-    for track in tracks:
-        if track.albumhash not in albums:
-            albums.append(track.albumhash)
-
-            if len(albums) == 4:
-                break
-
-    albums = AlbumStore.get_albums_by_hashes(albums)
-    images = [
-        {
-            "image": album.image,
-            "color": "".join(album.colors),
-        }
-        for album in albums
-    ]
-
-    if len(images) == 4:
-        return images
-
-    return duplicate_images(images)
 
 
 @api.route("/playlists", methods=["GET"])
@@ -78,7 +35,9 @@ def send_all_playlists():
 
     for playlist in playlists:
         if not no_images:
-            playlist.images = get_first_4_images(trackhashes=playlist.trackhashes)
+            playlist.images = playlistlib.get_first_4_images(
+                trackhashes=playlist.trackhashes
+            )
             playlist.images = [img["image"] for img in playlist.images]
 
         playlist.clear_lists()
@@ -204,32 +163,28 @@ def get_playlist(playlistid: str):
     """
     Gets a playlist by id, and if it exists, it gets all the tracks in the playlist and returns them.
     """
-    no_tracks = request.args.get("no_tracks", False)
+    no_tracks = request.args.get("no_tracks", "false")
     no_tracks = no_tracks == "true"
 
     is_recently_added = playlistid == "recentlyadded"
 
-    if not is_recently_added:
-        playlist = PL.get_playlist_by_id(int(playlistid))
-    else:
-        playlist = models.Playlist(
-            id="recentlyadded",
-            name="Recently Added",
-            image=None,
-            last_updated="Now",
-            settings={},
-            trackhashes=[],
-        )
+    if is_recently_added:
+        playlist, tracks = playlistlib.get_recently_added_playlist()
+
+        tracks = remove_duplicates(tracks)
+        duration = sum(t.duration for t in tracks)
+
+        playlist.set_duration(duration)
+        playlist = serialize_for_card(playlist)
+
+        return {"info": playlist, "tracks": tracks}
+
+    playlist = PL.get_playlist_by_id(int(playlistid))
 
     if playlist is None:
         return {"msg": "Playlist not found"}, 404
 
-    if is_recently_added:
-        tracks = get_recent_tracks(cutoff_days=14)
-        date = datetime.fromtimestamp(tracks[0].created_date)
-        playlist.last_updated = create_new_date(date)
-    else:
-        tracks = TrackStore.get_tracks_by_trackhashes(list(playlist.trackhashes))
+    tracks = TrackStore.get_tracks_by_trackhashes(list(playlist.trackhashes))
 
     tracks = remove_duplicates(tracks)
     duration = sum(t.duration for t in tracks)
@@ -239,7 +194,7 @@ def get_playlist(playlistid: str):
     playlist.set_count(len(tracks))
 
     if not playlist.has_image:
-        playlist.images = get_first_4_images(tracks)
+        playlist.images = playlistlib.get_first_4_images(tracks)
 
     playlist.clear_lists()
 
@@ -342,7 +297,7 @@ def remove_playlist_image(playlistid: str):
     playlist.settings["has_gif"] = False
     playlist.has_image = False
 
-    playlist.images = get_first_4_images(trackhashes=playlist.trackhashes)
+    playlist.images = playlistlib.get_first_4_images(trackhashes=playlist.trackhashes)
     playlist.last_updated = date_string_to_time_passed(playlist.last_updated)
 
     return {"playlist": playlist}, 200
@@ -463,7 +418,7 @@ def save_item_as_playlist():
     PL.add_tracks_to_playlist(playlist.id, trackhashes)
     playlist.set_count(len(trackhashes))
 
-    images = get_first_4_images(trackhashes=trackhashes)
+    images = playlistlib.get_first_4_images(trackhashes=trackhashes)
     playlist.images = [img["image"] for img in images]
 
     return {"playlist": playlist}, 201

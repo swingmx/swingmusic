@@ -24,3 +24,17 @@ class SQLiteTrackLogger:
             lastrowid = cur.lastrowid
 
             return lastrowid
+
+    @classmethod
+    def get_all(cls):
+        """
+        Returns all tracks from the database
+        """
+
+        with SQLiteManager(userdata_db=True) as cur:
+            sql = """SELECT * FROM track_logger ORDER BY timestamp DESC"""
+
+            cur.execute(sql)
+            rows = cur.fetchall()
+
+            return rows

@@ -11,13 +11,13 @@ class Playlist:
     """Creates playlist objects"""
 
     id: int
-    image: str
+    image: str | None
     last_updated: str
     name: str
     settings: str | dict
     trackhashes: str | list[str]
 
-    thumb: str = ""
+    thumb: str | None = ""
     count: int = 0
     duration: int = 0
     has_image: bool = False
