@@ -2,17 +2,15 @@ from flask import Blueprint, request
 
 from app.db.sqlite.favorite import SQLiteFavoriteMethods as favdb
 from app.models import FavType
-from app.serializers.album import serialize_for_card_many
-from app.serializers.track import serialize_tracks
+from app.serializers.album import serialize_for_card, serialize_for_card_many
+from app.serializers.artist import serialize_for_card as serialize_artist
+from app.serializers.track import serialize_track, serialize_tracks
 from app.utils.bisection import UseBisection
 
 from app.store.artists import ArtistStore
 from app.store.albums import AlbumStore
 from app.store.tracks import TrackStore
-from app.serializers.favorites_serializer import (
-    recent_fav_album_serializer,
-    recent_fav_artist_serializer,
-)
+
 
 api = Blueprint("favorite", __name__, url_prefix="/")
 
@@ -196,22 +194,27 @@ def get_all_favorites():
             break
 
         if fav[2] == FavType.album:
-            try:
-                album = [a for a in albums if a.albumhash == fav[1]][0]
-                recents.append(
-                    {"type": "album", "item": recent_fav_album_serializer(album)}
-                )
-            except IndexError:
+            album = next((a for a in albums if a.albumhash == fav[1]), None)
+
+            if album is None:
                 continue
+            recents.append({"type": "album", "item": serialize_for_card(album)})
 
         if fav[2] == FavType.artist:
-            try:
-                artist = [a for a in artists if a.artisthash == fav[1]][0]
-                recents.append(
-                    {"type": "artist", "item": recent_fav_artist_serializer(artist)}
-                )
-            except IndexError:
+            artist = next((a for a in artists if a.artisthash == fav[1]), None)
+
+            if artist is None:
                 continue
+
+            recents.append({"type": "artist", "item": serialize_artist(artist)})
+
+        if fav[2] == FavType.track:
+            track = next((t for t in tracks if t.trackhash == fav[1]), None)
+
+            if track is None:
+                continue
+
+            recents.append({"type": "track", "item": serialize_track(track)})
 
     return {
         "recents": recents[:album_limit],

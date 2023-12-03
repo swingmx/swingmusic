@@ -37,7 +37,6 @@ class Track:
     trackhash: str
     last_mod: str | int
 
-    filetype: str = ""
     image: str = ""
     artist_hashes: str = ""
     is_favorite: bool = False

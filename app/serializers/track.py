@@ -15,6 +15,7 @@ def serialize_track(track: Track, to_remove: set = {}, remove_disc=True) -> dict
         "disc",
         "track",
         "artist_hashes",
+        "created_date",
     }.union(to_remove)
 
     if not remove_disc:
