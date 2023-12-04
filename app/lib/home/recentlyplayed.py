@@ -1,18 +1,18 @@
-from dataclasses import asdict
-
-from tomlkit import item
+import os
+from app.models.logger import Track as TrackLog
 
 from app.db.sqlite.logger.tracks import SQLiteTrackLogger as db
 from app.db.sqlite.playlists import SQLitePlaylistMethods as pdb
-from app.lib.playlistlib import get_first_4_images, get_recently_added_playlist
-from app.models.logger import Track as TrackLog
+
+from app.serializers.track import serialize_track
 from app.serializers.album import album_serializer
 from app.serializers.artist import serialize_for_card
 from app.serializers.playlist import serialize_for_card as serialize_playlist
-from app.serializers.track import serialize_track
+from app.lib.playlistlib import get_first_4_images, get_recently_added_playlist
+
 from app.store.albums import AlbumStore
-from app.store.artists import ArtistStore
 from app.store.tracks import TrackStore
+from app.store.artists import ArtistStore
 
 
 def get_recently_played(limit=7):
@@ -77,7 +77,13 @@ def get_recently_played(limit=7):
             continue
 
         if entry.type == "folder":
-            count = len([t for t in TrackStore.tracks if t.folder == entry.type_src])
+            folder = entry.type_src
+            is_home_dir = entry.type_src == "$home"
+
+            if is_home_dir:
+                folder = os.path.expanduser("~")
+
+            count = len([t for t in TrackStore.tracks if t.folder == folder])
             items.append(
                 {
                     "type": "folder",
