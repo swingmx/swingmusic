@@ -213,7 +213,6 @@ def get_tags(filepath: str):
 
     tags.date = parse_date(tags.year) or int(last_mod)
     tags.filepath = win_replace_slash(filepath)
-    tags.filetype = filetype
     tags.last_mod = last_mod
 
     tags.artists = tags.artist

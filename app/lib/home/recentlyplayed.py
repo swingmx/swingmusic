@@ -78,6 +78,9 @@ def get_recently_played(limit=7):
 
         if entry.type == "folder":
             folder = entry.type_src
+            if not folder:
+                continue
+
             is_home_dir = entry.type_src == "$home"
 
             if is_home_dir:

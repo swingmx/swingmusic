@@ -158,11 +158,26 @@ def get_all_favorites():
     favs = favdb.get_all()
     favs.reverse()
 
+    count = {
+        "tracks": 0,
+        "albums": 0,
+        "artists": 0,
+    }
+
     tracks = []
     albums = []
     artists = []
 
     for fav in favs:
+        if fav[2] == FavType.track:
+            count["tracks"] += 1
+
+        if fav[2] == FavType.album:
+            count["albums"] += 1
+
+        if fav[2] == FavType.artist:
+            count["artists"] += 1
+
         if not len(tracks) >= largest:
             if fav[2] == FavType.track:
                 tracks.append(fav[1])
@@ -198,7 +213,16 @@ def get_all_favorites():
 
             if album is None:
                 continue
-            recents.append({"type": "album", "item": serialize_for_card(album)})
+
+            album = serialize_for_card(album)
+            album["help_text"] = "album"
+
+            recents.append(
+                {
+                    "type": "album",
+                    "item": album,
+                }
+            )
 
         if fav[2] == FavType.artist:
             artist = next((a for a in artists if a.artisthash == fav[1]), None)
@@ -206,7 +230,15 @@ def get_all_favorites():
             if artist is None:
                 continue
 
-            recents.append({"type": "artist", "item": serialize_artist(artist)})
+            artist = serialize_artist(artist)
+            artist["help_text"] = "artist"
+
+            recents.append(
+                {
+                    "type": "artist",
+                    "item": artist,
+                }
+            )
 
         if fav[2] == FavType.track:
             track = next((t for t in tracks if t.trackhash == fav[1]), None)
@@ -214,13 +246,17 @@ def get_all_favorites():
             if track is None:
                 continue
 
-            recents.append({"type": "track", "item": serialize_track(track)})
+            track = serialize_track(track)
+            track["help_text"] = "track"
+
+            recents.append({"type": "track", "item": track})
 
     return {
         "recents": recents[:album_limit],
         "tracks": tracks[:track_limit],
         "albums": albums[:album_limit],
         "artists": artists[:artist_limit],
+        "count": count,
     }
 
 
