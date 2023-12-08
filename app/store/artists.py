@@ -23,8 +23,9 @@ class ArtistStore:
         global ARTIST_LOAD_KEY
         ARTIST_LOAD_KEY = instance_key
 
+        print("Loading artists... ", end=" ")
         cls.artists = get_all_artists(TrackStore.tracks, AlbumStore.albums)
-
+        print("Done!")
         for artist in ardb.get_all_artists():
             if instance_key != ARTIST_LOAD_KEY:
                 return

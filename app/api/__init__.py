@@ -22,6 +22,7 @@ from app.api import (
     plugins,
     logger,
     home,
+    getall,
 )
 
 
@@ -59,5 +60,8 @@ def create_api():
 
         # Home
         app.register_blueprint(home.api_bp)
+
+        # Flask Restful
+        app.register_blueprint(getall.api_bp)
 
         return app

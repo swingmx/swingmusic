@@ -27,6 +27,7 @@ class Album:
     colors: list[str] = dataclasses.field(default_factory=list)
     date: str = ""
 
+    created_date: int = 0
     og_title: str = ""
     base_title: str = ""
     is_soundtrack: bool = False
@@ -40,6 +41,7 @@ class Album:
     versions: list[str] = dataclasses.field(default_factory=list)
 
     def __post_init__(self):
+        self.title = self.title.strip()
         self.og_title = self.title
         self.image = self.albumhash + ".webp"
 
@@ -202,3 +204,12 @@ class Album:
 
         dates = (int(t.date) for t in tracks if t.date)
         self.date = datetime.datetime.fromtimestamp(min(dates)).year
+
+    def set_count(self, count: int):
+        self.count = count
+
+    def set_duration(self, duration: int):
+        self.duration = duration
+
+    def set_created_date(self, created_date: int):
+        self.created_date = created_date

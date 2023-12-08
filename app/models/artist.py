@@ -36,6 +36,7 @@ class Artist(ArtistMinimal):
     duration: int = 0
     colors: list[str] = dataclasses.field(default_factory=list)
     is_favorite: bool = False
+    created_date: float = 0.0
 
     def __post_init__(self):
         super(Artist, self).__init__(self.name)
@@ -51,3 +52,6 @@ class Artist(ArtistMinimal):
 
     def set_colors(self, colors: list[str]):
         self.colors = colors
+
+    def set_created_date(self, created_date: float):
+        self.created_date = created_date

@@ -1,3 +1,5 @@
+from collections import namedtuple
+from itertools import groupby
 import os
 import urllib
 from concurrent.futures import ThreadPoolExecutor
@@ -12,6 +14,7 @@ from requests.exceptions import ReadTimeout
 from app import settings
 from app.models import Album, Artist, Track
 from app.store import artists as artist_store
+from app.store.tracks import TrackStore
 from app.utils.hashing import create_hash
 from app.utils.progressbar import tqdm
 
@@ -190,21 +193,63 @@ def get_albumartists(albums: list[Album]) -> set[str]:
 
 
 def get_all_artists(tracks: list[Track], albums: list[Album]) -> list[Artist]:
-    artists_from_tracks = get_artists_from_tracks(tracks=tracks)
-    artist_from_albums = get_albumartists(albums=albums)
+    TrackInfo = namedtuple(
+        "TrackInfo",
+        [
+            "artisthash",
+            "albumhash",
+            "trackhash",
+            "duration",
+            "artistname",
+            "created_date",
+        ],
+    )
+    src_tracks = TrackStore.tracks
+    all_tracks: set[TrackInfo] = set()
 
-    artists = list(artists_from_tracks.union(artist_from_albums))
-    artists.sort()
+    for track in src_tracks:
+        artist_hashes = {(a.name, a.artisthash) for a in track.artists}.union(
+            (a.name, a.artisthash) for a in track.albumartists
+        )
 
-    # Remove duplicates
-    artists_dup_free = set()
-    artist_hashes = set()
+        for artist in artist_hashes:
+            track_info = TrackInfo(
+                artistname=artist[0],
+                artisthash=artist[1],
+                albumhash=track.albumhash,
+                trackhash=track.trackhash,
+                duration=track.duration,
+                created_date=track.created_date,
+                # work on created date
+            )
 
-    for artist in artists:
-        artist_hash = create_hash(artist, decode=True)
+            all_tracks.add(track_info)
 
-        if artist_hash not in artist_hashes:
-            artists_dup_free.add(artist)
-            artist_hashes.add(artist_hash)
+    all_tracks = sorted(all_tracks, key=lambda x: x.artisthash)
+    all_tracks = groupby(all_tracks, key=lambda x: x.artisthash)
 
-    return [Artist(a) for a in artists_dup_free]
+    artists = []
+
+    for artisthash, tracks in all_tracks:
+        tracks: list[TrackInfo] = list(tracks)
+
+        artistname = (
+            sorted({t.artistname for t in tracks})[0]
+            if len(tracks) > 1
+            else tracks[0].artistname
+        )
+
+        albumcount = len({t.albumhash for t in tracks})
+        duration = sum(t.duration for t in tracks)
+        created_date = min(t.created_date for t in tracks)
+
+        artist = Artist(name=artistname)
+
+        artist.set_trackcount(len(tracks))
+        artist.set_albumcount(albumcount)
+        artist.set_duration(duration)
+        artist.set_created_date(created_date)
+
+        artists.append(artist)
+
+    return artists

@@ -1,9 +1,10 @@
+from itertools import groupby
 import json
 import random
 
-
 from app.db.sqlite.albumcolors import SQLiteAlbumMethods as aldb
 from app.models import Album, Track
+from app.utils.remove_duplicates import remove_duplicates
 
 from ..utils.hashing import create_hash
 from .tracks import TrackStore
@@ -36,16 +37,29 @@ class AlbumStore:
 
         cls.albums = []
 
-        albumhashes = set(t.albumhash for t in TrackStore.tracks)
+        tracks = remove_duplicates(TrackStore.tracks)
+        tracks = sorted(tracks, key=lambda t: t.albumhash)
+        grouped = groupby(tracks, lambda t: t.albumhash)
 
-        for albumhash in tqdm(albumhashes, desc=f"Loading albums"):
-            if instance_key != ALBUM_LOAD_KEY:
-                return
+        for albumhash, tracks in grouped:
+            tracks = list(tracks)
+            sample = tracks[0]
 
-            for track in TrackStore.tracks:
-                if track.albumhash == albumhash:
-                    cls.albums.append(cls.create_album(track))
-                    break
+            if sample is None:
+                continue
+
+            count = len(list(tracks))
+            duration = sum(t.duration for t in tracks)
+            created_date = min(t.created_date for t in tracks)
+
+            album = AlbumStore.create_album(sample)
+
+            album.get_date_from_tracks(tracks)
+            album.set_count(count)
+            album.set_duration(duration)
+            album.set_created_date(created_date)
+
+            cls.albums.append(album)
 
         db_albums: list[tuple] = aldb.get_all_albums()
 

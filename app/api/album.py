@@ -67,11 +67,7 @@ def get_album_tracks_and_info():
     album.count = len(tracks)
 
     album.get_date_from_tracks(tracks)
-
-    try:
-        album.duration = sum(t.duration for t in tracks)
-    except AttributeError:
-        album.duration = 0
+    album.duration = sum(t.duration for t in tracks)
 
     album.check_is_single(tracks)
 
