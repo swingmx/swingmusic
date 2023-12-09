@@ -242,6 +242,7 @@ class Keys:
     LASTFM_API_KEY = os.environ.get("LASTFM_API_KEY")
     PLUGIN_LYRICS_AUTHORITY = os.environ.get("PLUGIN_LYRICS_AUTHORITY")
     PLUGIN_LYRICS_ROOT_URL = os.environ.get("PLUGIN_LYRICS_ROOT_URL")
+    SWINGMUSIC_APP_VERSION = os.environ.get("SWINGMUSIC_APP_VERSION")
 
     @classmethod
     def load(cls):
@@ -249,6 +250,7 @@ class Keys:
             cls.LASTFM_API_KEY = configs.LASTFM_API_KEY
             cls.PLUGIN_LYRICS_AUTHORITY = configs.PLUGIN_LYRICS_AUTHORITY
             cls.PLUGIN_LYRICS_ROOT_URL = configs.PLUGIN_LYRICS_ROOT_URL
+            cls.SWINGMUSIC_APP_VERSION = Release.APP_VERSION
 
         cls.verify_keys()
 

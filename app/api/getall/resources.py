@@ -42,9 +42,9 @@ class Albums(Resource):
 
         sort_is_count = sort == "count"
         sort_is_duration = sort == "duration"
+        sort_is_create_date = sort == "created_date"
 
         sort_is_date = is_albums and sort == "date"
-        sort_is_create_date = is_albums and sort == "created_date"
         sort_is_artist = is_albums and sort == "albumartists"
 
         sort_is_artist_trackcount = is_artists and sort == "trackcount"

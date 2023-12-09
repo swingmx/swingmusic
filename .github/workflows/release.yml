@@ -6,7 +6,7 @@ on:
       tag:
         description: "Tag"
         required: true
-        default: "v1.x.x"
+        default: "1.x.x"
       is_latest:
         description: "Set as latest"
         required: true
@@ -75,6 +75,7 @@ jobs:
           LASTFM_API_KEY: ${{ secrets.LASTFM_API_KEY }}
           PLUGIN_LYRICS_AUTHORITY: ${{ secrets.PLUGIN_LYRICS_AUTHORITY }}
           PLUGIN_LYRICS_ROOT_URL: ${{ secrets.PLUGIN_LYRICS_ROOT_URL }}
+          SWINGMUSIC_APP_VERSION: ${{ inputs.tag }}
       - name: Verify Linux build success
         if: matrix.os == 'ubuntu-20.04'
         run: |
@@ -119,11 +120,11 @@ jobs:
         with:
           artifacts: "./linux/swingmusic, ./win32/swingmusic.exe"
           token: ${{ secrets.GITHUB_TOKEN }}
-          tag: ${{ inputs.tag }}
+          tag: ${{ format('v{0}',inputs.tag) }}
           commit: ${{ github.sha }}
           draft: ${{ inputs.is_draft }}
           artifactErrorsFailBuild: true
-          name: ${{ inputs.tag }}
+          name: ${{ format('v{0}',inputs.tag) }}
           bodyFile: .github/changelog.md
           makeLatest: ${{ inputs.is_latest }}
   docker:
@@ -167,7 +168,7 @@ jobs:
           context: .
           platforms: linux/amd64,linux/arm, linux/arm64
           push: true
-          tags: ghcr.io/${{github.repository}}:${{inputs.tag}}, ${{env.LATEST_TAG}}
+          tags: ghcr.io/${{github.repository}}:${{format('v{0}', inputs.tag)}}, ${{env.LATEST_TAG}}
           labels: org.opencontainers.image.title=Docker
           build-args: |
             --provenance=false

@@ -48,6 +48,7 @@ def get_recently_played(limit=7):
                     "og_title",
                 },
             )
+            album["help_text"] = "album"
 
             items.append({"type": "album", "item": album})
             continue
@@ -59,6 +60,7 @@ def get_recently_played(limit=7):
                 continue
 
             artist = serialize_for_card(artist)
+            artist["help_text"] = "artist"
 
             items.append({"type": "artist", "item": artist})
 
@@ -71,6 +73,7 @@ def get_recently_played(limit=7):
                 continue
 
             track = serialize_track(track)
+            track["help_text"] = "track"
 
             items.append({"type": "track", "item": track})
 
@@ -93,6 +96,7 @@ def get_recently_played(limit=7):
                     "item": {
                         "path": entry.type_src,
                         "count": count,
+                        "help_text": "folder",
                     },
                 }
             )
@@ -104,12 +108,16 @@ def get_recently_played(limit=7):
             if is_recently_added:
                 playlist, _ = get_recently_added_playlist()
                 playlist.images = [i["image"] for i in playlist.images]
+
+                playlist = serialize_playlist(
+                    playlist, to_remove={"settings", "duration"}
+                )
+
+                playlist["help_text"] = "playlist"
                 items.append(
                     {
                         "type": "playlist",
-                        "item": serialize_playlist(
-                            playlist, to_remove={"settings", "duration"}
-                        ),
+                        "item": playlist,
                     }
                 )
                 continue
@@ -126,6 +134,11 @@ def get_recently_played(limit=7):
                 images = [i["image"] for i in images]
                 playlist.images = images
 
-            items.append({"type": "playlist", "item": serialize_playlist(playlist)})
+            items.append(
+                {
+                    "type": "playlist",
+                    "item": {"help_text": "playlist", **serialize_playlist(playlist)},
+                }
+            )
 
     return items

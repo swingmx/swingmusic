@@ -176,7 +176,6 @@ def get_recent_items(cutoff_days: int, limit: int = 7):
         older_artists.add(t.artist_hashes)
 
     tracks = sorted(tracks, key=lambda t: t.created_date)
-
     groups = group_track_by_folders(tracks)
 
     recent_items = []
