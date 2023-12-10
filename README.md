@@ -9,7 +9,7 @@
 
 ##
 
-![Image showing the Swing Music playlists page](.github/images/homepage.webp)
+[![Image showing the Swing Music playlists page](.github/images/homepage.webp)](https://raw.githubusercontent.com/swing-opensource/swingmusic/master/.github/images/homepage.webp)
 
 ##
 
