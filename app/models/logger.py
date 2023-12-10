@@ -24,6 +24,7 @@ class Track:
             "ar:": "artist",
             "pl:": "playlist",
             "fo:": "folder",
+            "favorite": "favorite",
         }
 
         for prefix, srctype in prefix_map.items():
@@ -31,6 +32,7 @@ class Track:
                 try:
                     self.type_src = self.source.split(":", 1)[1]
                 except IndexError:
-                    pass
+                    self.type_src = None
+
                 self.type = srctype
                 break

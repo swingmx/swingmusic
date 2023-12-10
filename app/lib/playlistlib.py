@@ -15,7 +15,7 @@ from app.models.playlist import Playlist
 from app.models.track import Track
 from app.store.albums import AlbumStore
 from app.store.tracks import TrackStore
-from app.utils.dates import create_new_date
+from app.utils.dates import create_new_date, date_string_to_time_passed
 
 
 def create_thumbnail(image: Any, img_path: str) -> str:
@@ -146,7 +146,7 @@ def get_recently_added_playlist(cutoff: int = 14):
 
     tracks = get_recent_tracks(cutoff)
     date = datetime.fromtimestamp(tracks[0].created_date)
-    playlist.last_updated = create_new_date(date)
+    playlist.last_updated = date_string_to_time_passed(create_new_date(date))
 
     images = get_first_4_images(tracks=tracks)
     playlist.images = images

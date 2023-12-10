@@ -3,6 +3,7 @@ from app.models.logger import Track as TrackLog
 
 from app.db.sqlite.logger.tracks import SQLiteTrackLogger as db
 from app.db.sqlite.playlists import SQLitePlaylistMethods as pdb
+from app.db.sqlite.favorite import SQLiteFavoriteMethods as fdb
 
 from app.serializers.track import serialize_track
 from app.serializers.album import album_serializer
@@ -63,19 +64,6 @@ def get_recently_played(limit=7):
             artist["help_text"] = "artist"
 
             items.append({"type": "artist", "item": artist})
-
-            continue
-
-        if entry.type == "track":
-            try:
-                track = TrackStore.get_tracks_by_trackhashes([entry.trackhash])[0]
-            except IndexError:
-                continue
-
-            track = serialize_track(track)
-            track["help_text"] = "track"
-
-            items.append({"type": "track", "item": track})
 
             continue
 
@@ -140,5 +128,27 @@ def get_recently_played(limit=7):
                     "item": {"help_text": "playlist", **serialize_playlist(playlist)},
                 }
             )
+
+        if entry.type == "favorite":
+            items.append(
+                {
+                    "type": "favorite_tracks",
+                    "item": {
+                        "help_text": "playlist",
+                        "count": fdb.get_track_count(),
+                    },
+                }
+            )
+            continue
+
+        try:
+            track = TrackStore.get_tracks_by_trackhashes([entry.trackhash])[0]
+        except IndexError:
+            continue
+
+        track = serialize_track(track)
+        track["help_text"] = "track"
+
+        items.append({"type": "track", "item": track})
 
     return items

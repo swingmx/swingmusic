@@ -86,3 +86,16 @@ class SQLiteFavoriteMethods:
         with SQLiteManager(userdata_db=True) as cur:
             cur.execute(sql, (fav_hash, fav_type))
             cur.close()
+
+    @classmethod
+    def get_track_count(cls) -> int:
+        """
+        Returns the number of favorite tracks.
+        """
+        sql = """SELECT COUNT(*) FROM favorites WHERE type = ?"""
+
+        with SQLiteManager(userdata_db=True) as cur:
+            cur.execute(sql, (FavType.track,))
+            count = cur.fetchone()[0]
+            cur.close()
+            return count
