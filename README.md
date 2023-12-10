@@ -1,14 +1,16 @@
 <div align="center" style="display: flex; justify-content: center; align-items: center;">
-  <img class="lo" src='./gh_images/logo-fill.light.svg' style="height: 4rem">
+  <img class="lo" src='.github/images/logo-fill.light.svg' style="height: 4rem">
 </div>
 <div align="center" style="font-size: 2rem"><b>Swing Music</b></div>
 
-<div align="center"><b><sub><code>v1.4.0</code></sub></b></div>
+<div align="center"><b><sub><code>1.4.3</code></sub></b></div>
  
 **<div align="center" style="padding-top: 1.25rem">[Download](https://swingmusic.vercel.app/downloads) • <a href="https://swingmusic.vercel.app/support-us.html" target="_blank">Support Development</a> • [Browse Docs](https://swingmusic.vercel.app/guide/introduction.html) • [Screenshots](https://swingmusic.vercel.app)</div>**
 
 ##
-![Image showing the Swing Music playlists page](./gh_images/playlistlist.webp)
+
+![Image showing the Swing Music playlists page](.github/images/homepage.webp)
+
 ##
 
 Swing Music is a beautiful, self-hosted music player for your local audio files. Like a cooler Spotify ... but bring your own music. Just run the app and enjoy your music library in a web browser.

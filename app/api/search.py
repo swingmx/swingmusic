@@ -11,7 +11,7 @@ from app.store.tracks import TrackStore
 
 api = Blueprint("search", __name__, url_prefix="/")
 
-SEARCH_COUNT = 12
+SEARCH_COUNT = 30
 """The max amount of items to return per request"""
 
 
