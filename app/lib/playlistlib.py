@@ -136,7 +136,7 @@ def get_first_4_images(
 
 def get_recently_added_playlist(cutoff: int = 14):
     playlist = Playlist(
-        id="recentlyplayed",
+        id="recentlyadded",
         name="Recently Added",
         image=None,
         last_updated="Now",
