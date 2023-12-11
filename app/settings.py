@@ -15,10 +15,6 @@ else:
     IS_BUILD = False
 
 
-class Release:
-    APP_VERSION = "1.4.0"
-
-
 class Paths:
     XDG_CONFIG_DIR = ""
     USER_HOME_DIR = os.path.expanduser("~")
@@ -250,7 +246,7 @@ class Keys:
             cls.LASTFM_API_KEY = configs.LASTFM_API_KEY
             cls.PLUGIN_LYRICS_AUTHORITY = configs.PLUGIN_LYRICS_AUTHORITY
             cls.PLUGIN_LYRICS_ROOT_URL = configs.PLUGIN_LYRICS_ROOT_URL
-            cls.SWINGMUSIC_APP_VERSION = Release.APP_VERSION
+            cls.SWINGMUSIC_APP_VERSION = configs.SWINGMUSIC_APP_VERSION
 
         cls.verify_keys()
 

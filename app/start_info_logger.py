@@ -1,6 +1,6 @@
 import os
 
-from app.settings import FLASKVARS, TCOLOR, Paths, Release
+from app.settings import FLASKVARS, TCOLOR, Keys, Paths
 from app.utils.network import get_ip
 
 
@@ -10,7 +10,7 @@ def log_startup_info():
     os.system("cls" if os.name == "nt" else "echo -e \\\\033c")
 
     print(lines)
-    print(f"{TCOLOR.HEADER}SwingMusic {Release.APP_VERSION} {TCOLOR.ENDC}")
+    print(f"{TCOLOR.HEADER}SwingMusic {Keys.SWINGMUSIC_APP_VERSION} {TCOLOR.ENDC}")
 
     adresses = [FLASKVARS.get_flask_host()]
 
@@ -24,6 +24,6 @@ def log_startup_info():
             f"➤ {TCOLOR.OKGREEN}http://{address}:{FLASKVARS.get_flask_port()}{TCOLOR.ENDC}"
         )
 
-    print(lines+"\n")
+    print(lines + "\n")
 
     print(f"{TCOLOR.YELLOW}Data folder: {Paths.get_app_dir()}{TCOLOR.ENDC}")
