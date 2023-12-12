@@ -131,7 +131,7 @@ class Album:
             "#1 hits",
             "number ones",
             "super hits",
-            "ultimate collection",
+            "collection",
             "anthology",
             "great hits",
             "biggest hits",
