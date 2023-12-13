@@ -145,7 +145,11 @@ def get_recently_added_playlist(cutoff: int = 14):
     )
 
     tracks = get_recent_tracks(cutoff)
-    date = datetime.fromtimestamp(tracks[0].created_date)
+    try:
+        date = datetime.fromtimestamp(tracks[0].created_date)
+    except IndexError:
+        return playlist, []
+
     playlist.last_updated = date_string_to_time_passed(create_new_date(date))
 
     images = get_first_4_images(tracks=tracks)

@@ -50,7 +50,10 @@ class Track:
     created_date: float = 0.0
 
     def set_created_date(self):
-        self.created_date = Path(self.filepath).stat().st_ctime
+        try:
+            self.created_date = Path(self.filepath).stat().st_ctime
+        except FileNotFoundError:
+            pass
 
     def __post_init__(self):
         self.og_title = self.title

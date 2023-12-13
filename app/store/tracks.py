@@ -18,6 +18,8 @@ class TrackStore:
         """
         Loads all tracks from the database into the store.
         """
+
+        print("Loading tracks... ", end="")
         global TRACKS_LOAD_KEY
         TRACKS_LOAD_KEY = instance_key
 
@@ -26,13 +28,14 @@ class TrackStore:
         fav_hashes = favdb.get_fav_tracks()
         fav_hashes = " ".join([t[1] for t in fav_hashes])
 
-        print("\n")  # adds space between progress bars and startup info
-        for track in tqdm(cls.tracks, desc="Loading tracks"):
+        for track in cls.tracks:
             if instance_key != TRACKS_LOAD_KEY:
                 return
 
             if track.trackhash in fav_hashes:
                 track.is_favorite = True
+
+        print("Done!")
 
     @classmethod
     def add_track(cls, track: Track):

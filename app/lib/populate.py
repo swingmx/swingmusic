@@ -92,6 +92,10 @@ class Populate:
 
         tried_to_download_new_images = False
 
+        ArtistStore.load_artists(instance_key)
+        AlbumStore.load_albums(instance_key)
+        TrackStore.load_all_tracks(instance_key)
+
         if has_connection():
             tried_to_download_new_images = True
             try:
@@ -113,8 +117,6 @@ class Populate:
             except PopulateCancelledError as e:
                 log.warn(e)
                 return
-
-        ArtistStore.load_artists(instance_key)
 
     @staticmethod
     def remove_modified(tracks: Generator[Track, None, None]):

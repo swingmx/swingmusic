@@ -37,6 +37,7 @@ class AlbumStore:
 
         cls.albums = []
 
+        print("Loading albums... ", end="")
         tracks = remove_duplicates(TrackStore.tracks)
         tracks = sorted(tracks, key=lambda t: t.albumhash)
         grouped = groupby(tracks, lambda t: t.albumhash)
@@ -71,6 +72,8 @@ class AlbumStore:
                 if _al.albumhash == albumhash:
                     _al.set_colors(colors)
                     break
+
+        print("Done!")
 
     @classmethod
     def add_album(cls, album: Album):
