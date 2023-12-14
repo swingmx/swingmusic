@@ -7,6 +7,7 @@ class AlbumVersionEnum(Enum):
     """
 
     Explicit = ("explicit",)
+    _360_AUDIO = ("360 audio",)
 
     ANNIVERSARY_EDITION = ("anniversary",)
     DIAMOND_EDITION = ("diamond",)
@@ -31,6 +32,7 @@ class AlbumVersionEnum(Enum):
     Acoustic = ("acoustic",)
     instrumental = ("instrumental",)
     DOUBLE_DISC = ("double disc", "double disk")
+    Unplugged = ("unplugged",)
 
     SUMMER_EDITION = ("summer",)
     WINTER_EDITION = ("winter",)
