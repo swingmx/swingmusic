@@ -1,4 +1,4 @@
-![The new homepage](./images/homepage.webp)
+
 *<div align="center">The new homepage</div>*
 
 ## 
@@ -16,7 +16,6 @@ This release features a lot of enhancements and bug fixes, together with some re
 - This version will start tracking your listening activity. Basically what you listen to and how long.
 
 ## BUG FIXES & IMPROVEMENTS
-
 - Artist discography page redesign to make it more intuitive
 - Incorrect last updated time on playlist page
 - Removed scrolling on horizontal card lists
@@ -29,6 +28,3 @@ This release features a lot of enhancements and bug fixes, together with some re
 - Default to no sidebar (I think it looks better that way!). You can
 
 Enjoy!
-
-![The browse albums page](./images/albumlist.webp)
-*<div align="center">The browse albums page</div>*

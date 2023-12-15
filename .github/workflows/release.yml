@@ -1,5 +1,5 @@
 name: New Release
-run-name: Release ${{ github.event.inputs.tag }}
+run-name: Release v${{ github.event.inputs.tag }}
 on:
   workflow_dispatch:
     inputs:
