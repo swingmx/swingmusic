@@ -35,7 +35,10 @@ swingmusic --port 1980
 
 ### Options
 
-Options are flags that can be passed when starting the app in the terminal to tweak runtime settings or perform tasks. Example: the `--port` flag. Read more about options in [the docs](https://swingmusic.vercel.app/guide/getting-started.html#options).
+Options are flags that can be passed when starting the app in the terminal to tweak runtime settings or perform tasks. You can use the `-h` flag to see all supported options. 
+
+> [!TIP]
+> You can read more about options in [the docs](https://swingmusic.vercel.app/guide/getting-started.html#options). 
 
 ### Docker
 
@@ -55,7 +58,8 @@ docker run --name swingmusic -p 1970:1970 \
 
 Don't forget to replace `/path/to/music` and `/path/to/config` with the appropriate values. In addition, specify the the `/music` directory as the root directory. Using the `Home Directory` option won't work.
 
-For more info, see the [Docker section](https://swingmusic.vercel.app/guide/getting-started.html#docker) on the docs.
+> [!TIP]
+> For more info, see the [Docker section](https://swingmusic.vercel.app/guide/getting-started.html#docker) on the docs.
 
 #### Using Docker Compose
 
