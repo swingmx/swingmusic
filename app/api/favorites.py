@@ -153,49 +153,45 @@ def get_all_favorites():
     track_limit = int(track_limit)
     album_limit = int(album_limit)
     artist_limit = int(artist_limit)
+
+    # largest is x2 to accound for broken hashes if any
     largest = max(track_limit, album_limit, artist_limit)
 
     favs = favdb.get_all()
     favs.reverse()
 
-    count = {
-        "tracks": 0,
-        "albums": 0,
-        "artists": 0,
-    }
-
     tracks = []
     albums = []
     artists = []
 
-    for fav in favs:
-        if fav[2] == FavType.track:
-            count["tracks"] += 1
+    track_master_hash = set(t.trackhash for t in TrackStore.tracks)
+    album_master_hash = set(a.albumhash for a in AlbumStore.albums)
+    artist_master_hash = set(a.artisthash for a in ArtistStore.artists)
 
-        if fav[2] == FavType.album:
-            count["albums"] += 1
+    for fav in favs:
+        hash = fav[1]
+        if fav[2] == FavType.track:
+            tracks.append(hash) if hash in track_master_hash else None
 
         if fav[2] == FavType.artist:
-            count["artists"] += 1
-
-        if not len(tracks) >= largest:
-            if fav[2] == FavType.track:
-                tracks.append(fav[1])
-
-        if not len(artists) >= largest:
-            if fav[2] == FavType.artist:
-                artists.append(fav[1])
+            artists.append(hash) if hash in artist_master_hash else None
 
         if fav[2] == FavType.album:
-            albums.append(fav[1])
+            albums.append(hash) if hash in album_master_hash else None
+
+    count = {
+        "tracks": len(tracks),
+        "albums": len(albums),
+        "artists": len(artists),
+    }
 
     src_tracks = sorted(TrackStore.tracks, key=lambda x: x.trackhash)
     src_albums = sorted(AlbumStore.albums, key=lambda x: x.albumhash)
     src_artists = sorted(ArtistStore.artists, key=lambda x: x.artisthash)
 
-    tracks = UseBisection(src_tracks, "trackhash", tracks)()
+    tracks = UseBisection(src_tracks, "trackhash", tracks, limit=track_limit)()
     albums = UseBisection(src_albums, "albumhash", albums, limit=album_limit)()
-    artists = UseBisection(src_artists, "artisthash", artists)()
+    artists = UseBisection(src_artists, "artisthash", artists, limit=artist_limit)()
 
     tracks = remove_none(tracks)
     albums = remove_none(albums)

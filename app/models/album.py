@@ -118,7 +118,7 @@ class Album:
         """
         Checks if the album is a compilation.
         """
-        artists = [a.name for a in self.albumartists]  # type: ignore
+        artists = [a.name for a in self.albumartists]
         artists = "".join(artists).lower()
 
         if "various artists" in artists:
@@ -136,6 +136,8 @@ class Album:
             "great hits",
             "biggest hits",
             "the hits",
+            "the ultimate",
+            "compilation"
         }
 
         for substring in substrings:

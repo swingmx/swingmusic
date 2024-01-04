@@ -4,6 +4,7 @@ Contains all the track routes.
 import os
 
 from flask import Blueprint, send_file, request
+from app.lib.trackslib import get_silence_paddings
 
 from app.store.tracks import TrackStore
 
@@ -53,3 +54,15 @@ def send_track_file(trackhash: str):
             return msg, 404
 
     return msg, 404
+
+
+@api.route("/file/silence", methods=["POST"])
+def get_audio_silence():
+    data = request.get_json()
+    ending_file = data.get("end", None)  # ending file's filepath
+    starting_file = data.get("start", None)  # starting file's filepath
+
+    if ending_file is None or starting_file is None:
+        return {"msg": "No filepath provided"}, 400
+
+    return get_silence_paddings(ending_file, starting_file)
