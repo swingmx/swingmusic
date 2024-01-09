@@ -1,30 +1,20 @@
+# What's New?
 
-*<div align="center">The new homepage</div>*
+- Silence removal: Remove silence less than -40 dB between tracks
+- Crossfade (labeled experimental on Firefox, because some tracks stutter when crossfade ends)
+- Automatic preloading of next track, meaning reduced delay between tracks. Impact most noticable on reverse proxy.
+- Quick settings on settings page
+- CTRL + B to toggle right sidebar
+- Remove from queue option in track context menu in Now playing page
 
-## 
+> [!TIP]
+> Settings in the Audio tab are not saved to the database. 
 
-This release features a lot of enhancements and bug fixes, together with some really cool features. AKA. a homepage! Most of the enhancements you won't be able to see it, but hopefully, you will feel it.
+# Bug fixes
 
-# What's new?
-
-- A homepage showing recently added and played items
-- Pages to browse your library by artists and albums. You can sort by properties like duration, track count, added date.
-- Recently added items on homepage
-- Recently played items on homepage
-- Add Google, YouTube, Wikipedia and Last.fm to artist and album search
-- Artist discography and favorites pages.
-- This version will start tracking your listening activity. Basically what you listen to and how long.
-
-## BUG FIXES & IMPROVEMENTS
-- Artist discography page redesign to make it more intuitive
-- Incorrect last updated time on playlist page
-- Removed scrolling on horizontal card lists
-- Increase spacing in compact and wide screen mode
-- Fix duplicate requests in album and artist page
-- More UI consistency across pagest
-- Artists, albums and playlist duration calculated incorrectly for hours > 24\
-- Add infinite scroll to search page to remove the big blue load more button
-- Change settings text for (hopefully ...) simplicity
-- Default to no sidebar (I think it looks better that way!). You can
-
-Enjoy!
+- Tracks not being removed from queue when you click the ✕ button
+- Consistent design on playlist list page
+- Playlist cards are now larger on playlist list page
+- Save queue as playlist now works as expected
+- Keyboard shortcuts not working on first attempt
+- Misc. code improvements
