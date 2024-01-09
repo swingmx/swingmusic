@@ -7,9 +7,6 @@
 - CTRL + B to toggle right sidebar
 - Remove from queue option in track context menu in Now playing page
 
-> [!TIP]
-> Settings in the Audio tab are not saved to the database. 
-
 # Bug fixes
 
 - Tracks not being removed from queue when you click the ✕ button
