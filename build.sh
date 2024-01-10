@@ -2,8 +2,9 @@
 
 # builds the latest version of the client and server
 
-cd ../swingmusic-client
-yarn build --outDir ../swingmusic/client
+git submodule update --init
+cd swingmusic-client
+yarn build --outDir ../client
 
-cd ../swingmusic
+cd ..
 poetry run python manage.py --build
