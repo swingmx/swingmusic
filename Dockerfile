@@ -1,5 +1,5 @@
 ##### CLIENT #####
-FROM node:16 as build-client
+FROM --platform=$BUILDPLATFORM node:16 as build-client
 
 COPY ./swingmusic-client/ /build
 
