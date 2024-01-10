@@ -20,8 +20,8 @@ ENV SWINGMUSIC_APP_VERSION "missing"
 
 RUN apt update && apt install -y ffmpeg && apt autoclean -y && rm -rf /var/lib/apt/lists/*
 RUN pip install poetry
-RUN python -m poetry install && \
- python -m poetry config virtualenvs.create false && \
+RUN python -m poetry config virtualenvs.create false && \
+ python -m poetry install && \
  python -m poetry run python manage.py --build
 
 # Release
