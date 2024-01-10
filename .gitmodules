@@ -1,0 +1,3 @@
+[submodule "swingmusic-client"]
+	path = swingmusic-client
+	url = https://github.com/swing-opensource/swingmusic-client.git
