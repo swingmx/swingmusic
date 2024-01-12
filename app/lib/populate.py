@@ -238,7 +238,8 @@ def get_image(_map: tuple[str, Album]):
         pass
 
 
-CPU_COUNT = os.cpu_count() // 2
+_cpu_count = os.cpu_count()
+CPU_COUNT = _cpu_count // 2 if _cpu_count > 2 else _cpu_count
 
 
 class ProcessTrackThumbnails:
