@@ -207,7 +207,7 @@ class Album:
         dates = (int(t.date) for t in tracks if t.date)
         try:
             self.date = datetime.datetime.fromtimestamp(min(dates)).year
-        except ValueError:
+        except:
             self.date = datetime.datetime.now().year
 
     def set_count(self, count: int):
