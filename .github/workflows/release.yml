@@ -118,6 +118,7 @@ jobs:
       - name: Upload binaries to GitHub Release
         uses: ncipollo/release-action@v1
         with:
+          allowUpdates: true
           artifacts: "./linux/swingmusic, ./win32/swingmusic.exe"
           token: ${{ secrets.GITHUB_TOKEN }}
           tag: ${{ format('v{0}',inputs.tag) }}
