@@ -8,7 +8,7 @@ def create_hash(*args: str, decode=False, limit=10) -> str:
     This function creates a case-insensitive, non-alphanumeric chars ignoring hash from the given arguments.
 
     Example use case:
-        - Creating computable IDs for duplicate artists Juice WRLD and Juice Wrld should have the same ID.
+        - Creating computable IDs for duplicate artists. eg. Juice WRLD and Juice Wrld should have the same ID.
 
     :param args: The arguments to hash.
     :param decode: Whether to decode the arguments before hashing.
