@@ -5,7 +5,16 @@ from unidecode import unidecode
 
 def create_hash(*args: str, decode=False, limit=10) -> str:
     """
-    Creates a simple hash for an album
+    This function creates a case-insensitive, non-alphanumeric chars ignoring hash from the given arguments.
+
+    Example use case:
+        - Creating computable IDs for duplicate artists Juice WRLD and Juice Wrld should have the same ID.
+
+    :param args: The arguments to hash.
+    :param decode: Whether to decode the arguments before hashing.
+    :param limit: The number of characters to return.
+
+    :return: The hash.
     """
 
     def remove_non_alnum(token: str) -> str:
