@@ -242,6 +242,9 @@ class Keys:
 
     @classmethod
     def load(cls):
+        # TODO Remove this. Just an handy flag to test the app without the API key
+        # IS_BUILD = True
+
         if IS_BUILD:
             cls.LASTFM_API_KEY = configs.LASTFM_API_KEY
             cls.PLUGIN_LYRICS_AUTHORITY = configs.PLUGIN_LYRICS_AUTHORITY
@@ -253,7 +256,8 @@ class Keys:
     @classmethod
     def verify_keys(cls):
         if not cls.LASTFM_API_KEY:
-            print("ERROR: LASTFM_API_KEY not set in environment")
+            # REVIEW Ideally, this shouldn't be fatal
+            print("WARNING: LASTFM_API_KEY not set in environment. Experimental API calls will be implemented")
             sys.exit(0)
 
     @classmethod

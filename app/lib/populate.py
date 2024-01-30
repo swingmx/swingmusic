@@ -104,8 +104,9 @@ class Populate:
                 log.error(
                     "Internet connection lost. Downloading artist images stopped."
                 )
+                log.error(e)  # REVIEW More informations = good
         else:
-            log.warning(f"No internet connection. Downloading artist images stopped!")
+            log.warning("No internet connection. Downloading artist images stopped!")
 
         # Re-process the new artist images.
         if tried_to_download_new_images:
@@ -135,6 +136,7 @@ class Populate:
                     unmodified_paths.add(track.filepath)
                     continue
             except (FileNotFoundError, OSError) as e:
+                log.warning(e) # REVIEW More informations = good
                 TrackStore.remove_track_obj(track)
                 remove_tracks_by_filepaths(track.filepath)
 
