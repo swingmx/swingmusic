@@ -54,7 +54,8 @@ def rebuild_store(db_dirs: list[str]):
 
     try:
         populate.Populate(instance_key=instance_key)
-    except populate.PopulateCancelledError:
+    except populate.PopulateCancelledError as e:
+        print(e)
         reload_everything(instance_key)
         return
 
@@ -63,7 +64,7 @@ def rebuild_store(db_dirs: list[str]):
     log.info("Rebuilding library... ✅")
 
 
-# I freaking don't know what this function does anymore
+# I freaking don't know what this function does anymore 
 def finalize(new_: list[str], removed_: list[str], db_dirs_: list[str]):
     """
     Params:

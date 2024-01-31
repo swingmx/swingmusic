@@ -114,6 +114,7 @@ class Populate:
 
         if has_connection():
             try:
+                print("Attempting to download similar artists...")
                 FetchSimilarArtistsLastFM(instance_key)
             except PopulateCancelledError as e:
                 log.warn(e)
@@ -288,6 +289,7 @@ def save_similar_artists(_map: tuple[str, Artist]):
     instance_key, artist = _map
 
     if POPULATE_KEY != instance_key:
+        print("Warning: Populate key changed")
         raise PopulateCancelledError(
             "'FetchSimilarArtistsLastFM': Populate key changed"
         )
@@ -323,6 +325,7 @@ class FetchSimilarArtistsLastFM:
 
         with ThreadPoolExecutor(max_workers=CPU_COUNT) as executor:
             try:
+                print("Processing similar artists")
                 results = list(
                     tqdm(
                         executor.map(save_similar_artists, key_artist_map),

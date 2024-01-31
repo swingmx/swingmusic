@@ -258,7 +258,7 @@ class Keys:
         if not cls.LASTFM_API_KEY:
             # REVIEW Ideally, this shouldn't be fatal
             print("WARNING: LASTFM_API_KEY not set in environment. Experimental API calls will be implemented")
-            sys.exit(0)
+            #sys.exit(0)
 
     @classmethod
     def get(cls, key: str):

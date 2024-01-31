@@ -56,8 +56,8 @@ class HandleArgs:
             value = settings.Keys.get(key)
 
             if not value:
-                log.error(f"ERROR: {key} not set in environment")
-                sys.exit(0)
+                log.error(f"WARNING: {key} not set in environment")
+                #sys.exit(0)
 
             lines.append(f'{key} = "{value}"\n')
 
