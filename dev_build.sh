@@ -3,8 +3,8 @@
 
 # builds the latest version of the client and server
 
+# NOTE Changes   directory to the webclient directory and builds it
 cd ../swingmusic-client || exit # REVIEW Failsafe exit
-
 yarn build --outDir ../swingmusic/client
 cd ../swingmusic || exit # REVIEW Failsafe exit
 

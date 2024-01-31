@@ -12,7 +12,7 @@
 rm -rf build dist
 
 # REVIEW Install poetry & requirements
-pip install poetry
+poetry || pip install poetry
 poetry install --no-root
 
 # Build the app
