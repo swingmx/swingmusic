@@ -32,6 +32,6 @@ def create_hash(*args: str, decode=False, limit=10) -> str:
         str_ = unidecode(str_)
 
     str_ = str_.encode("utf-8")
-    str_ = hashlib.md5(str_).hexdigest()
-    # REVIEW Switched to md5 hashlib.sha256(str_).hexdigest()
+    str_ = hashlib.sha1(str_).hexdigest()
+    # REVIEW Switched to sha1 hashlib.sha256(str_).hexdigest()
     return str_[-limit:]
