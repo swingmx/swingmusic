@@ -34,4 +34,9 @@ def create_hash(*args: str, decode=False, limit=10) -> str:
     str_ = str_.encode("utf-8")
     str_ = hashlib.sha1(str_).hexdigest()
     # REVIEW Switched to sha1 hashlib.sha256(str_).hexdigest()
-    return str_[-limit:]
+
+    # REVIEW Take the first limit/2 and last limit/2 characters
+    # This is to avoid collisions
+    return str_[:limit // 2] + str_[-limit // 2:] if limit % 2 == 0 else str_[:limit // 2] + str_[-limit // 2 - 1:]
+
+    # return str_[-limit:]
