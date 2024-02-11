@@ -7,6 +7,7 @@ from app.db.sqlite.favorite import SQLiteFavoriteMethods as fdb
 
 from app.serializers.track import serialize_track
 from app.serializers.album import album_serializer
+from app.utils.dates import timestamp_to_time_passed
 from app.serializers.artist import serialize_for_card
 from app.serializers.playlist import serialize_for_card as serialize_playlist
 from app.lib.playlistlib import get_first_4_images, get_recently_added_playlist
@@ -40,7 +41,7 @@ def get_recently_played(limit=7):
 
             album = album_serializer(
                 album,
-                {
+                to_remove={
                     "genres",
                     "date",
                     "count",
@@ -50,8 +51,14 @@ def get_recently_played(limit=7):
                 },
             )
             album["help_text"] = "album"
+            album["time"] = timestamp_to_time_passed(entry.timestamp)
 
-            items.append({"type": "album", "item": album})
+            items.append(
+                {
+                    "type": "album",
+                    "item": album,
+                }
+            )
             continue
 
         if entry.type == "artist":
@@ -62,8 +69,14 @@ def get_recently_played(limit=7):
 
             artist = serialize_for_card(artist)
             artist["help_text"] = "artist"
+            artist["time"] = timestamp_to_time_passed(entry.timestamp)
 
-            items.append({"type": "artist", "item": artist})
+            items.append(
+                {
+                    "type": "artist",
+                    "item": artist,
+                }
+            )
 
             continue
 
@@ -85,6 +98,7 @@ def get_recently_played(limit=7):
                         "path": entry.type_src,
                         "count": count,
                         "help_text": "folder",
+                        "time": timestamp_to_time_passed(entry.timestamp),
                     },
                 }
             )
@@ -102,6 +116,8 @@ def get_recently_played(limit=7):
                 )
 
                 playlist["help_text"] = "playlist"
+                playlist["time"] = timestamp_to_time_passed(entry.timestamp)
+
                 items.append(
                     {
                         "type": "playlist",
@@ -125,7 +141,11 @@ def get_recently_played(limit=7):
             items.append(
                 {
                     "type": "playlist",
-                    "item": {"help_text": "playlist", **serialize_playlist(playlist)},
+                    "item": {
+                        "help_text": "playlist",
+                        "time": timestamp_to_time_passed(entry.timestamp),
+                        **serialize_playlist(playlist),
+                    },
                 }
             )
 
@@ -136,6 +156,7 @@ def get_recently_played(limit=7):
                     "item": {
                         "help_text": "playlist",
                         "count": fdb.get_track_count(),
+                        "time": timestamp_to_time_passed(entry.timestamp),
                     },
                 }
             )
@@ -148,7 +169,13 @@ def get_recently_played(limit=7):
 
         track = serialize_track(track)
         track["help_text"] = "track"
+        track["time"] = timestamp_to_time_passed(entry.timestamp)
 
-        items.append({"type": "track", "item": track})
+        items.append(
+            {
+                "type": "track",
+                "item": track,
+            }
+        )
 
     return items

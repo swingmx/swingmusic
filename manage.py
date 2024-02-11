@@ -6,6 +6,7 @@ import mimetypes
 import os
 from flask import request
 
+import waitress
 import setproctitle
 
 from app.api import create_api
@@ -94,19 +95,15 @@ def run_swingmusic():
 
     start_watchdog()
 
-    setproctitle.setproctitle(
-        f"swingmusic - {FLASKVARS.FLASK_HOST}:{FLASKVARS.FLASK_PORT}"
-    )
+    setproctitle.setproctitle(f"swingmusic ::{FLASKVARS.get_flask_port()}")
 
 
 if __name__ == "__main__":
     Keys.load()
     HandleArgs()
     run_swingmusic()
-    app.run(
-        debug=False,
-        threaded=True,
-        host=FLASKVARS.get_flask_host(),
-        port=FLASKVARS.get_flask_port(),
-        use_reloader=False,
-    )
+
+    host = FLASKVARS.get_flask_host()
+    port = FLASKVARS.get_flask_port()
+
+    waitress.serve(app, host=host, port=port, threads=10, ipv6=True, ipv4=True,)
