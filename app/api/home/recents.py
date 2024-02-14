@@ -10,12 +10,10 @@ parser.add_argument("limit", type=int, required=False, default=7, location="args
 
 class RecentlyAdded(Resource):
     def get(self):
-        cutoff = 14
-
         args = parser.parse_args()
         limit = args["limit"]
 
-        return {"items": get_recent_items(cutoff, limit), "cutoff": cutoff}
+        return {"items": get_recent_items(limit)}
 
 
 class RecentlyPlayed(Resource):

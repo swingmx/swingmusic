@@ -153,7 +153,7 @@ class Populate:
         tagged_count = 0
 
         fav_tracks = favdb.get_fav_tracks()
-        fav_tracks = "-".join([t[1] for t in fav_tracks])
+        fav_tracks = set(t[1] for t in fav_tracks)
 
         for file in tqdm(untagged, desc="Reading files"):
             if POPULATE_KEY != key:

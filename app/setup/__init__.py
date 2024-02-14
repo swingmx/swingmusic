@@ -1,6 +1,7 @@
 """
 Prepares the server for use.
 """
+
 from app.db.sqlite.settings import load_settings
 from app.setup.files import create_config_dir
 from app.setup.sqlite import run_migrations, setup_sqlite
@@ -23,6 +24,7 @@ def run_setup():
 
     instance_key = get_random_str()
 
+    # INFO: Load all tracks, albums, and artists into memory
     TrackStore.load_all_tracks(instance_key)
     AlbumStore.load_albums(instance_key)
     ArtistStore.load_artists(instance_key)

@@ -34,6 +34,7 @@ def check_is_album_folder(tracks: list[Track]):
 
 
 def check_is_artist_folder(tracks: list[Track]):
+    # INFO: flatten artist hashes using "-" as a separator
     artisthashes = "-".join(t.artist_hashes for t in tracks).split("-")
     return calc_based_on_percent(artisthashes, len(tracks))
 
@@ -46,24 +47,27 @@ def check_is_track_folder(tracks: list[Track]):
     return [create_track(t) for t in tracks]
 
 
-def check_is_new_artist(artisthash: str):
+def check_is_new_artist(artisthash: str, timestamp: int):
     """
     Checks if an artist already exists in the library.
     """
-    if artisthash in older_artists:
-        return False
+    tracks = filter(
+        lambda t: t.last_mod < timestamp and artisthash in t.artist_hashes,
+        TrackStore.tracks,
+    )
 
-    return True
+    return next(tracks, None) is None
 
 
-def check_is_new_album(albumhash: str):
+def check_is_new_album(albumhash: str, timestamp: int):
     """
     Checks if an album already exists in the library.
     """
-    if albumhash in older_albums:
-        return False
+    tracks = filter(
+        lambda t: t.last_mod < timestamp and t.albumhash == albumhash, TrackStore.tracks
+    )
 
-    return True
+    return next(tracks, None) is None
 
 
 def create_track(t: Track):
@@ -115,7 +119,7 @@ def check_folder_type(group_: group_type) -> str:
             },
         )
         album["help_text"] = (
-            "NEW ALBUM" if check_is_new_album(albumhash) else "NEW TRACKS"
+            "NEW ALBUM" if check_is_new_album(albumhash, time) else "NEW TRACKS"
         )
         album["time"] = timestamp_to_time_passed(time)
 
@@ -134,7 +138,7 @@ def check_folder_type(group_: group_type) -> str:
         artist = serialize_for_card(artist)
         artist["trackcount"] = trackcount
         artist["help_text"] = (
-            "NEW ARTIST" if check_is_new_artist(artisthash) else "NEW MUSIC"
+            "NEW ARTIST" if check_is_new_artist(artisthash, time) else "NEW MUSIC"
         )
         artist["time"] = timestamp_to_time_passed(time)
 
@@ -167,25 +171,12 @@ def group_track_by_folders(tracks: Track):
         {"folder": folder, "tracks": list(tracks), "time": os.path.getctime(folder)}
         for folder, tracks in groups
     )
-    print(groups)
-
     # sort groups by last modified date
     return sorted(groups, key=lambda group: group["time"], reverse=True)
 
 
-def get_recent_items(cutoff_days: int, limit: int = 7):
-    timestamp = timestamp_from_days_ago(cutoff_days)
-    tracks: list[Track] = []
-
-    for t in TrackStore.tracks:
-        if t.created_date > timestamp:
-            tracks.append(t)
-            continue
-
-        older_albums.add(t.albumhash)
-        older_artists.add(t.artist_hashes)
-
-    tracks = sorted(tracks, key=lambda t: t.created_date)
+def get_recent_items(limit: int = 7):
+    tracks = sorted(TrackStore.tracks, key=lambda t: t.created_date)
     groups = group_track_by_folders(tracks)
 
     recent_items = []

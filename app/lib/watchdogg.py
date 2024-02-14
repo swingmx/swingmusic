@@ -1,6 +1,7 @@
 """
 This library contains the classes and functions related to the watchdog file watcher.
 """
+
 import json
 import os
 import sqlite3
