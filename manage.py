@@ -1,10 +1,12 @@
 """
 This file is used to run the application.
 """
-import logging
-import mimetypes
+
 import os
-from flask import request
+import logging
+import psutil
+import mimetypes
+from flask import Response, request
 
 import waitress
 import setproctitle
@@ -14,7 +16,7 @@ from app.arg_handler import HandleArgs
 from app.lib.watchdogg import Watcher as WatchDog
 from app.periodic_scan import run_periodic_scans
 from app.plugins.register import register_plugins
-from app.settings import FLASKVARS, Keys
+from app.settings import FLASKVARS, TCOLOR, Keys
 from app.setup import run_setup
 from app.start_info_logger import log_startup_info
 from app.utils.filesystem import get_home_res_path
@@ -76,6 +78,34 @@ def serve_client():
     return app.send_static_file("index.html")
 
 
+prev_memory = 0
+
+
+# INFO: For debugging memory usage
+# @app.after_request
+def print_memory_usage(response: Response):
+    # INFO: Ignore assets
+    if (
+        request.path.startswith("/img")
+        or request.path.endswith(".js")
+        or request.path.endswith(".css")
+    ):
+        return response
+
+    process = psutil.Process(os.getpid())
+    global prev_memory
+    current_mem = process.memory_info().rss
+    diff = (current_mem - prev_memory) / 1024**2
+    prev_memory = current_mem
+
+    # INFO: Print memory usage (highlights if diff is more than 0.1 MB)
+    print(
+        f"\n{request.path} | TOTAL: {current_mem/1024**2} MB | DIFF: {TCOLOR.FAIL if diff > 0.1 else ''}{diff} MB{TCOLOR.ENDC if diff > 0.1 else ''} \n"
+    )
+
+    return response
+
+
 @background
 def bg_run_setup() -> None:
     run_periodic_scans()
@@ -106,4 +136,11 @@ if __name__ == "__main__":
     host = FLASKVARS.get_flask_host()
     port = FLASKVARS.get_flask_port()
 
-    waitress.serve(app, host=host, port=port, threads=10, ipv6=True, ipv4=True,)
+    waitress.serve(
+        app,
+        host=host,
+        port=port,
+        threads=10,
+        ipv6=True,
+        ipv4=True,
+    )

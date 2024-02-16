@@ -4,14 +4,14 @@ from app.db.sqlite.favorite import SQLiteFavoriteMethods as favdb
 from app.db.sqlite.tracks import SQLiteTrackMethods as tdb
 from app.models import Track
 from app.utils.bisection import UseBisection
+from app.utils.customlist import CustomList
 from app.utils.remove_duplicates import remove_duplicates
-from app.utils.progressbar import tqdm
 
 TRACKS_LOAD_KEY = ""
 
 
 class TrackStore:
-    tracks: list[Track] = []
+    tracks: list[Track] = CustomList()
 
     @classmethod
     def load_all_tracks(cls, instance_key: str):
@@ -23,7 +23,7 @@ class TrackStore:
         global TRACKS_LOAD_KEY
         TRACKS_LOAD_KEY = instance_key
 
-        cls.tracks = list(tdb.get_all_tracks())
+        cls.tracks = CustomList(tdb.get_all_tracks())
 
         fav_hashes = favdb.get_fav_tracks()
         fav_hashes = " ".join([t[1] for t in fav_hashes])
@@ -44,6 +44,7 @@ class TrackStore:
         """
 
         cls.tracks.append(track)
+        print(f"\n A: Current track count:, {len(cls.tracks)} \n")
 
     @classmethod
     def add_tracks(cls, tracks: list[Track]):
@@ -52,6 +53,7 @@ class TrackStore:
         """
 
         cls.tracks.extend(tracks)
+        print(f"\n E: Current track count:, {len(cls.tracks)} \n")
 
     @classmethod
     def remove_track_obj(cls, track: Track):

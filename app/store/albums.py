@@ -4,6 +4,7 @@ import random
 
 from app.db.sqlite.albumcolors import SQLiteAlbumMethods as aldb
 from app.models import Album, Track
+from app.utils.customlist import CustomList
 from app.utils.remove_duplicates import remove_duplicates
 
 from ..utils.hashing import create_hash
@@ -14,7 +15,7 @@ ALBUM_LOAD_KEY = ""
 
 
 class AlbumStore:
-    albums: list[Album] = []
+    albums: list[Album] = CustomList()
 
     @staticmethod
     def create_album(track: Track):
@@ -35,7 +36,7 @@ class AlbumStore:
         global ALBUM_LOAD_KEY
         ALBUM_LOAD_KEY = instance_key
 
-        cls.albums = []
+        cls.albums = CustomList()
 
         print("Loading albums... ", end="")
         tracks = remove_duplicates(TrackStore.tracks)
@@ -172,4 +173,4 @@ class AlbumStore:
         """
         Removes an album from the store.
         """
-        cls.albums = [a for a in cls.albums if a.albumhash != albumhash]
+        cls.albums = CustomList(a for a in cls.albums if a.albumhash != albumhash)

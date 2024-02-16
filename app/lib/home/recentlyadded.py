@@ -165,12 +165,28 @@ def check_folder_type(group_: group_type) -> str:
 
 
 def group_track_by_folders(tracks: Track):
+    """
+    Groups tracks by folder and returns a list of groups sorted by last modified date.
+
+    Uses generator expressions to avoid creating intermediate lists.
+    """
+
+    # INFO: sort tracks by folder name, then group by folder name
     tracks = sorted(tracks, key=lambda t: t.folder)
     groups = groupby(tracks, lambda t: t.folder)
+
+    # INFO: sort tracks by last modified date in descending order to get the most recent last modified date
     groups = (
-        {"folder": folder, "tracks": list(tracks), "time": os.path.getctime(folder)}
+        (folder, sorted(tracks, key=lambda t: t.last_mod, reverse=True))
         for folder, tracks in groups
     )
+
+    # INFO: Return a generator of the groups
+    groups = (
+        {"folder": folder, "tracks": list(tracks), "time": tracks[0].last_mod}
+        for folder, tracks in groups
+    )
+
     # sort groups by last modified date
     return sorted(groups, key=lambda group: group["time"], reverse=True)
 

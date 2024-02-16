@@ -4,6 +4,7 @@ from app.db.sqlite.artistcolors import SQLiteArtistMethods as ardb
 from app.lib.artistlib import get_all_artists
 from app.models import Artist
 from app.utils.bisection import UseBisection
+from app.utils.customlist import CustomList
 from app.utils.progressbar import tqdm
 
 from .albums import AlbumStore
@@ -13,7 +14,7 @@ ARTIST_LOAD_KEY = ""
 
 
 class ArtistStore:
-    artists: list[Artist] = []
+    artists: list[Artist] = CustomList()
 
     @classmethod
     def load_artists(cls, instance_key: str):
@@ -24,7 +25,9 @@ class ArtistStore:
         ARTIST_LOAD_KEY = instance_key
 
         print("Loading artists... ", end="")
-        cls.artists = get_all_artists(TrackStore.tracks, AlbumStore.albums)
+        cls.artists.extend(
+            get_all_artists(TrackStore.tracks, AlbumStore.albums)
+        )
         print("Done!")
         for artist in ardb.get_all_artists():
             if instance_key != ARTIST_LOAD_KEY:
@@ -110,4 +113,4 @@ class ArtistStore:
         """
         Removes an artist from the store.
         """
-        cls.artists = [a for a in cls.artists if a.artisthash != artisthash]
+        cls.artists = CustomList(a for a in cls.artists if a.artisthash != artisthash)
