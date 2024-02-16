@@ -14,7 +14,7 @@ def fetch_similar_artists(name: str):
     """
     Fetches similar artists from Last.fm
     """
-    url = f"https://ws.audioscrobbler.com/2.0/?method=artist.getsimilar&artist={urllib.parse.quote_plus(name, safe='')}&api_key={settings.Keys.LASTFM_API_KEY}&format=json&limit=250"
+    url = f"https://kerve.last.fm/kerve/similarartists?artist={urllib.parse.quote_plus(name, safe='')}&autocorrect=1&tracks=1&image_size=large&limit=250&format=json"
 
     try:
         response = requests.get(url, timeout=10)
@@ -25,7 +25,7 @@ def fetch_similar_artists(name: str):
     data = response.json()
 
     try:
-        artists = data["similarartists"]["artist"]
+        artists = data["results"]["artist"]
     except KeyError:
         return []
 

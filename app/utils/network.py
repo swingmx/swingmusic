@@ -1,7 +1,7 @@
 import socket as Socket
 
 
-def has_connection(host="8.8.8.8", port=53, timeout=3):
+def has_connection(host="google.it", port=80, timeout=3):
     """
     Host: 8.8.8.8 (google-public-dns-a.google.com)
     OpenPort: 53/tcp

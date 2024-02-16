@@ -235,26 +235,23 @@ class TCOLOR:
 
 class Keys:
     # get last fm api key from os environment
-    LASTFM_API_KEY = os.environ.get("LASTFM_API_KEY")
-    PLUGIN_LYRICS_AUTHORITY = os.environ.get("PLUGIN_LYRICS_AUTHORITY")
-    PLUGIN_LYRICS_ROOT_URL = os.environ.get("PLUGIN_LYRICS_ROOT_URL")
+    PLUGIN_LYRICS_AUTHORITY = os.environ.get("apic-desktop.musixmatch.com")
+    PLUGIN_LYRICS_ROOT_URL = os.environ.get("https://apic-desktop.musixmatch.com/ws/1.1/")
     SWINGMUSIC_APP_VERSION = os.environ.get("SWINGMUSIC_APP_VERSION")
 
     @classmethod
     def load(cls):
         if IS_BUILD:
-            cls.LASTFM_API_KEY = configs.LASTFM_API_KEY
-            cls.PLUGIN_LYRICS_AUTHORITY = configs.PLUGIN_LYRICS_AUTHORITY
-            cls.PLUGIN_LYRICS_ROOT_URL = configs.PLUGIN_LYRICS_ROOT_URL
             cls.SWINGMUSIC_APP_VERSION = configs.SWINGMUSIC_APP_VERSION
 
         cls.verify_keys()
 
     @classmethod
     def verify_keys(cls):
-        if not cls.LASTFM_API_KEY:
-            print("ERROR: LASTFM_API_KEY not set in environment")
-            sys.exit(0)
+        # if not cls.LASTFM_API_KEY:
+        #     print("ERROR: LASTFM_API_KEY not set in environment")
+        #     sys.exit(0)
+        pass
 
     @classmethod
     def get(cls, key: str):

@@ -44,9 +44,6 @@ class HandleArgs:
             sys.exit(0)
 
         config_keys = [
-            "LASTFM_API_KEY",
-            "PLUGIN_LYRICS_AUTHORITY",
-            "PLUGIN_LYRICS_ROOT_URL",
             "SWINGMUSIC_APP_VERSION",
         ]
 

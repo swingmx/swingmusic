@@ -44,7 +44,6 @@ class TrackStore:
         """
 
         cls.tracks.append(track)
-        print(f"\n A: Current track count:, {len(cls.tracks)} \n")
 
     @classmethod
     def add_tracks(cls, tracks: list[Track]):
@@ -53,7 +52,6 @@ class TrackStore:
         """
 
         cls.tracks.extend(tracks)
-        print(f"\n E: Current track count:, {len(cls.tracks)} \n")
 
     @classmethod
     def remove_track_obj(cls, track: Track):

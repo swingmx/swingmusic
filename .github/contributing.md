@@ -39,8 +39,6 @@ cd swingmusic
 poetry install
 ```
 
-You need a LastFM API key which you can get on the [API accounts page](https://www.last.fm/api/accounts). Then set it as an environment variable under the name: `LASTFM_API_KEY`.
-
 Finally, run the server. You can use a different port if you have another Swing Music instance running on port `1970`.
 
 ```sh
