@@ -234,9 +234,6 @@ class TCOLOR:
 
 
 class Keys:
-    # get last fm api key from os environment
-    PLUGIN_LYRICS_AUTHORITY = os.environ.get("apic-desktop.musixmatch.com")
-    PLUGIN_LYRICS_ROOT_URL = os.environ.get("https://apic-desktop.musixmatch.com/ws/1.1/")
     SWINGMUSIC_APP_VERSION = os.environ.get("SWINGMUSIC_APP_VERSION")
 
     @classmethod

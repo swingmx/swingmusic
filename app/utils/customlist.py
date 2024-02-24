@@ -7,8 +7,12 @@ class CustomList(list):
 
     def __getitem__(self, index):
         # Do some shared memory stuff here
+        # print the length of the list
+        # print(f"__getitem__ Length of the list: {len(self)}")
         return super().__getitem__(index)
 
     def __iter__(self) -> Iterator:
         # Do some shared memory stuff here
+        # print the length of the list
+        # print(f"__iter__ Length of the list: {len(self)}")
         return super().__iter__()

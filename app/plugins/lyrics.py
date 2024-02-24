@@ -46,15 +46,14 @@ class LyricsProvider(LRCProvider):
     Musixmatch provider class
     """
 
-    ROOT_URL = Keys.PLUGIN_LYRICS_ROOT_URL
-    get_token_trials = 0
+    ROOT_URL = "https://apic-desktop.musixmatch.com/ws/1.1/"
 
     def __init__(self) -> None:
         super().__init__()
         self.token = None
         self.session.headers.update(
             {
-                "authority": Keys.PLUGIN_LYRICS_AUTHORITY,
+                "authority": "apic-desktop.musixmatch.com",
                 "cookie": "AWSELBCORS=0; AWSELB=0",
             }
         )
@@ -86,10 +85,6 @@ class LyricsProvider(LRCProvider):
         return None
 
     def _get_token(self):
-        if self.get_token_trials > 3:
-            self.get_token_trials = 0
-            return
-
         # Check if token is cached and not expired
         plugin_path = Paths.get_lyrics_plugins_path()
         token_path = os.path.join(plugin_path, "token.json")
@@ -116,12 +111,10 @@ class LyricsProvider(LRCProvider):
         res = res.json()
         if res["message"]["header"]["status_code"] == 401:
             time.sleep(13)
-            self.get_token_trials += 1
             return self._get_token()
 
         new_token = res["message"]["body"]["user_token"]
         expiration_time = current_time + 600  # 10 minutes expiration
-        self.get_token_trials = 0
 
         # Cache the new token
         self.token = new_token

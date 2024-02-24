@@ -102,10 +102,10 @@ class Populate:
                 CheckArtistImages(instance_key)
             except (RequestConnectionError, ReadTimeout) as e:
                 log.error(
-                    "Internet connection lost. Downloading artist images stopped."
+                    "Internet connection lost. Downloading artist images suspended."
                 )
         else:
-            log.warning(f"No internet connection. Downloading artist images stopped!")
+            log.warning(f"No internet connection. Downloading artist images suspended!")
 
         # Re-process the new artist images.
         if tried_to_download_new_images:
