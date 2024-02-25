@@ -134,11 +134,11 @@ jobs:
     steps:
       - name: Checkout into repo
         uses: actions/checkout@v3
-      - name: Download linux binary
-        uses: actions/download-artifact@v3
-        with:
-          name: linux
-          path: dist
+      # - name: Download linux binary
+      #   uses: actions/download-artifact@v3
+      #   with:
+      #     name: linux
+      #     path: dist
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v1
 

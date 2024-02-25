@@ -1,10 +1,8 @@
 # What's New?
 
-- New alternative (no sidebar) layout
-- Added search bar on the top bar
-- Automatic preloading of next track, meaning reduced delay between tracks. Impact most noticable on reverse proxy.
-- Quick actions in settings page
-- Toggle right sidebar using CTRL + B
+- New opt-in alternate (no sidebar) layout
+- Added search bar to the top bar (all layouts)
+- Move browse options to homepage bottom
 - Move to a stronger WSGI server ([waitress](https://docs.pylonsproject.org/projects/waitress/en/stable/))
 - Proper ARM64 and other platforms support
 - A Proper timezone fix. Thanks to @tcsenpai on #170
