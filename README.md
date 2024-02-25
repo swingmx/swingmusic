@@ -3,7 +3,7 @@
 </div>
 <div align="center" style="font-size: 2rem"><b>Swing Music</b></div>
 
-<div align="center"><b><sub><code>v1.4.6</code></sub></b></div>
+<div align="center"><b><sub><code>v1.4.7</code></sub></b></div>
  
 **<div align="center" style="padding-top: 1.25rem">[Download](https://swingmusic.vercel.app/downloads) • <a href="https://swingmusic.vercel.app/support-us.html" target="_blank">Support Development</a> • [Docs](https://swingmusic.vercel.app/guide/introduction.html) • [Screenshots](https://swingmusic.vercel.app) • [r/SwingMusicApp](https://www.reddit.com/r/SwingMusicApp)</div>**
 
@@ -80,7 +80,10 @@ services:
 
 ### Contributing
 
-See [contributing guidelines](.github/contributing.md).
+Swing Music is looking for contributors. If you're interested, please join us at the [Swing Music Community](https://t.me/+9n61PFcgKhozZDE0) group on Telegram. For more information, take a look at https://github.com/swing-opensource/swingmusic/issues/186. 
+
+[Contributing Guidelines](.github/contributing.md).
+
 
 ### License
 
