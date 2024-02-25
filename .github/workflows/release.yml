@@ -169,6 +169,6 @@ jobs:
           tags: ghcr.io/${{github.repository}}:${{format('v{0}', inputs.tag)}}, ${{env.LATEST_TAG}}
           labels: org.opencontainers.image.title=Docker
           build-args: |
-            --provenance=false client_tag=${{inputs.tag}}
+            --provenance=false client_tag=v${{inputs.tag}}
         env:
           LATEST_TAG: ${{ inputs.is_latest == 'true' && format('ghcr.io/{0}:latest', github.repository) || '' }}
