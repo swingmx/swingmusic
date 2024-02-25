@@ -1,16 +1,20 @@
 FROM node:latest AS CLIENT
 
-RUN git clone --depth 1 https://github.com/swing-opensource/swingmusic-client.git client
+ARG client_tag
+
+RUN git clone --branch $client_tag --depth 1 https://github.com/swing-opensource/swingmusic-client.git client
 
 WORKDIR /client
 
 # RUN git checkout $(git describe --tags $(git rev-list --tags --max-count=1))
+# checkout the latest tag
+# RUN git checkout $client_tag
 
 RUN yarn install
 
 RUN yarn build
 
-FROM python:latest
+FROM python:3.10
 
 WORKDIR /app/swingmusic
 
