@@ -83,7 +83,7 @@ You can see the client at http://localhost:5173.
 
 ## Where can I go for help?
 
-If you need help, you can email me at: geoffreymungai45@gmail.com
+If you need help, you can find other contributors on the [Swing Music Community](https://t.me/+9n61PFcgKhozZDE0) group on Telegram. 
 
 ## What does the Code of Conduct mean for me?
 
