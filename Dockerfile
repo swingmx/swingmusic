@@ -28,6 +28,8 @@ VOLUME /music
 
 VOLUME /config
 
+RUN mkdir -p /root/.cache/pypoetry/virtualenvs
+
 RUN pip install poetry
 
 RUN poetry config virtualenvs.create false
