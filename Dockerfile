@@ -1,6 +1,6 @@
 FROM node:latest AS CLIENT
 
-ARG client_tag
+ARG client_tag=master
 
 RUN git clone --branch $client_tag --depth 1 https://github.com/swing-opensource/swingmusic-client.git client
 
