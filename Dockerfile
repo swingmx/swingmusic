@@ -14,7 +14,7 @@ RUN yarn install
 
 RUN yarn build
 
-FROM python:3.10
+FROM python:3.10-slim
 
 WORKDIR /app/swingmusic
 
@@ -28,12 +28,12 @@ VOLUME /music
 
 VOLUME /config
 
+RUN apt-get update && apt-get install -y ffmpeg libavcodec-extra gcc-aarch64-linux-gnu
+
 RUN pip install poetry
 
 RUN poetry config virtualenvs.create false
 
 RUN poetry install
-
-RUN apt-get update && apt-get install -y ffmpeg libavcodec-extra
 
 ENTRYPOINT ["poetry", "run", "python", "manage.py", "--host", "0.0.0.0", "--config", "/config"]
