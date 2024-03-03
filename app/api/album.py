@@ -2,9 +2,12 @@
 Contains all the album routes.
 """
 
+from operator import length_hint
 import random
 
-from flask import Blueprint, request
+from flask_openapi3 import Tag
+from flask_openapi3 import APIBlueprint
+from pydantic import BaseModel, Field
 
 from app.db.sqlite.albumcolors import SQLiteAlbumMethods as adb
 from app.db.sqlite.favorite import SQLiteFavoriteMethods as favdb
@@ -13,6 +16,7 @@ from app.lib.albumslib import sort_by_track_no
 from app.models import FavType, Track
 from app.serializers.album import serialize_for_card
 from app.serializers.track import serialize_track
+from app.settings import Defaults
 from app.store.albums import AlbumStore
 from app.store.tracks import TrackStore
 from app.utils.hashing import create_hash
@@ -20,25 +24,25 @@ from app.utils.hashing import create_hash
 get_albums_by_albumartist = adb.get_albums_by_albumartist
 check_is_fav = favdb.check_is_favorite
 
-api = Blueprint("album", __name__, url_prefix="")
+book_tag = Tag(name="Album", description="Single album")
+api = APIBlueprint("album", __name__, url_prefix="", abp_tags=[book_tag])
 
 
-@api.route("/album", methods=["POST"])
-def get_album_tracks_and_info():
+class GetAlbumBody(BaseModel):
+    albumhash: str = Field(
+        description="The hash of the album to get",
+        example="49e4819273",
+        min_length=Defaults.HASH_LENGTH,
+        max_length=Defaults.HASH_LENGTH,
+    )
+
+
+@api.post("/album", summary="Get album")
+def get_album_tracks_and_info(body: GetAlbumBody):
     """
-    Returns all the tracks in the given album
+    Returns album info and tracks for the given albumhash.
     """
-
-    data = request.get_json()
-    error_msg = {"msg": "No hash provided"}
-
-    if data is None:
-        return error_msg, 400
-
-    try:
-        albumhash: str = data["albumhash"]
-    except KeyError:
-        return error_msg, 400
+    albumhash = body.albumhash
 
     error_msg = {"error": "Album not created yet."}
     album = AlbumStore.get_album_by_hash(albumhash)
@@ -81,28 +85,48 @@ def get_album_tracks_and_info():
         "info": album,
     }
 
+class GetAlbumTracksQuery(BaseModel):
+    albumhash: str = Field(
+        description="The hash of the album",
+        example="49e4819273",
+        min_length=Defaults.HASH_LENGTH,
+        max_length=Defaults.HASH_LENGTH,
+    )
 
-@api.route("/album/<albumhash>/tracks", methods=["GET"])
-def get_album_tracks(albumhash: str):
+@api.get("/album/<albumhash>/tracks", summary="Get album tracks")
+def get_album_tracks(query: GetAlbumTracksQuery):
     """
     Returns all the tracks in the given album, sorted by disc and track number.
     """
-    tracks = TrackStore.get_tracks_by_albumhash(albumhash)
+    tracks = TrackStore.get_tracks_by_albumhash(query.albumhash)
     tracks = sort_by_track_no(tracks)
 
     return {"tracks": tracks}
 
+class GetMoreFromArtistsBody(BaseModel):
+    albumartists: str = Field(
+        description="The artist hashes to get more albums from",
+        example=Defaults.API_ARTISTHASH
+    )
+    limit: int = Field(
+        description="The maximum number of albums to return per artist",
+        example=7,
+        default=7,
+    )
+    base_title: str = Field(
+        description="The base title of the album to exclude from the results.",
+        example=Defaults.API_ALBUMNAME,
+        default=None,
+    )
 
-@api.route("/album/from-artist", methods=["POST"])
-def get_artist_albums():
-    data = request.get_json()
-
-    if data is None:
-        return {"msg": "No albumartist provided"}
-
-    albumartists: str = data["albumartists"]
-    limit: int = data.get("limit")
-    base_title: str = data.get("base_title")
+@api.post("/album/from-artist", summary="More from artist")
+def get_more_from_artist(body: GetMoreFromArtistsBody):
+    """
+    Returns more albums from the given artist hashes.
+    """
+    albumartists = body.albumartists
+    limit = body.limit
+    base_title = body.base_title
 
     albumartists: list[str] = albumartists.split(",")
 
@@ -128,20 +152,28 @@ def get_artist_albums():
     return {"data": albums}
 
 
-@api.route("/album/versions", methods=["POST"])
-def get_album_versions():
+class GetAlbumVersionsBody(BaseModel):
+    og_album_title: str = Field(
+        description="The original album title (album.og_title)",
+        example=Defaults.API_ALBUMNAME,
+    )
+    base_title: str = Field(
+        description="The base title of the album to exclude from the results.",
+        example=Defaults.API_ALBUMNAME,
+    )
+    artisthash: str = Field(
+        description="The artist hash",
+        example=Defaults.API_ARTISTHASH,
+    )
+
+@api.post("/album/versions", summary="Get other versions")
+def get_album_versions(body: GetAlbumVersionsBody):
     """
     Returns other versions of the given album.
     """
-
-    data = request.get_json()
-
-    if data is None:
-        return {"msg": "No albumartist provided"}
-
-    og_album_title: str = data["og_album_title"]
-    base_title: str = data["base_title"]
-    artisthash: str = data["artisthash"]
+    og_album_title = body.og_album_title
+    base_title = body.base_title
+    artisthash = body.artisthash
 
     albums = AlbumStore.get_albums_by_artisthash(artisthash)
 
@@ -158,24 +190,24 @@ def get_album_versions():
 
     return {"data": albums}
 
+class GetSimilarAlbumsQuery(BaseModel):
+    artisthash: str = Field(
+        description="The artist hash",
+        example=Defaults.API_ARTISTHASH,
+    )
+    limit: int = Field(
+        description="The maximum number of albums to return",
+        example=Defaults.API_CARD_LIMIT,
+        default=Defaults.API_CARD_LIMIT,
+    )
 
-@api.route("/album/similar", methods=["GET"])
-def get_similar_albums():
+@api.get("/album/similar", summary="Get similar albums")
+def get_similar_albums(query: GetSimilarAlbumsQuery):
     """
     Returns similar albums to the given album.
     """
-    data = request.args
-
-    if data is None:
-        return {"msg": "No artisthash provided"}
-
-    artisthash: str = data["artisthash"]
-    limit: int = data.get("limit")
-
-    if limit is None:
-        limit = 6
-
-    limit = int(limit)
+    artisthash = query.artisthash
+    limit = query.limit
 
     similar_artists = lastfmdb.get_similar_artists_for(artisthash)
 
