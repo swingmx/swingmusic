@@ -2,7 +2,6 @@
 Contains all the album routes.
 """
 
-from operator import length_hint
 import random
 
 from flask_openapi3 import Tag
@@ -101,7 +100,7 @@ def get_album_tracks(query: GetAlbumTracksQuery):
     tracks = TrackStore.get_tracks_by_albumhash(query.albumhash)
     tracks = sort_by_track_no(tracks)
 
-    return {"tracks": tracks}
+    return tracks
 
 class GetMoreFromArtistsBody(BaseModel):
     albumartists: str = Field(
@@ -149,7 +148,7 @@ def get_more_from_artist(body: GetMoreFromArtistsBody):
         if len(a["albums"]) > 0
     ]
 
-    return {"data": albums}
+    return albums
 
 
 class GetAlbumVersionsBody(BaseModel):
@@ -166,7 +165,7 @@ class GetAlbumVersionsBody(BaseModel):
         example=Defaults.API_ARTISTHASH,
     )
 
-@api.post("/album/versions", summary="Get other versions")
+@api.post("/album/other-versions", summary="Get other versions")
 def get_album_versions(body: GetAlbumVersionsBody):
     """
     Returns other versions of the given album.
@@ -188,7 +187,7 @@ def get_album_versions(body: GetAlbumVersionsBody):
         tracks = TrackStore.get_tracks_by_albumhash(a.albumhash)
         a.get_date_from_tracks(tracks)
 
-    return {"data": albums}
+    return albums
 
 class GetSimilarAlbumsQuery(BaseModel):
     artisthash: str = Field(
@@ -229,4 +228,4 @@ def get_similar_albums(query: GetSimilarAlbumsQuery):
     except ValueError:
         pass
 
-    return {"albums": [serialize_for_card(a) for a in albums[:limit]]}
+    return [serialize_for_card(a) for a in albums[:limit]]
