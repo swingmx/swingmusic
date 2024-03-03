@@ -6,9 +6,8 @@ import math
 import random
 from datetime import datetime
 
-from flask import request
 from flask_openapi3 import APIBlueprint, Tag
-from pydantic import BaseModel, Field
+from pydantic import Field
 from app.api.apischemas import AlbumLimitSchema, ArtistHashSchema, ArtistLimitSchema, TrackLimitSchema
 
 from app.db.sqlite.favorite import SQLiteFavoriteMethods as favdb
@@ -21,10 +20,10 @@ from app.store.artists import ArtistStore
 from app.store.tracks import TrackStore
 
 bp_tag = Tag(name="Artist", description="Single artist")
-api = APIBlueprint("artist", __name__, url_prefix="/", abp_tags=[bp_tag])
+api = APIBlueprint("artist", __name__, url_prefix="/artist", abp_tags=[bp_tag])
 
 
-@api.get("/artist/<string:artisthash>")
+@api.get("/<string:artisthash>")
 def get_artist(path: ArtistHashSchema, query: TrackLimitSchema):
     """
     Get artist data.
@@ -88,7 +87,7 @@ class GetArtistAlbumsQuery(AlbumLimitSchema):
     )
 
 
-@api.get("/artist/<artisthash>/albums")
+@api.get("/<artisthash>/albums")
 def get_artist_albums(path: ArtistHashSchema, query: GetArtistAlbumsQuery):
     return_all = query.all
     artisthash = path.artisthash
@@ -175,7 +174,7 @@ def get_artist_albums(path: ArtistHashSchema, query: GetArtistAlbumsQuery):
     }
 
 
-@api.get("/artist/<artisthash>/tracks")
+@api.get("/<artisthash>/tracks")
 def get_all_artist_tracks(path: ArtistHashSchema):
     """
     Get all artist tracks
@@ -187,7 +186,7 @@ def get_all_artist_tracks(path: ArtistHashSchema):
     return {"tracks": serialize_tracks(tracks)}
 
 
-@api.get("/artist/<artisthash>/similar")
+@api.get("/<artisthash>/similar")
 def get_similar_artists(path: ArtistHashSchema, query: ArtistLimitSchema):
     """
     Returns similar artists.

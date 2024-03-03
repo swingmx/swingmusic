@@ -4,31 +4,32 @@ Contains all the album routes.
 
 import random
 
+from pydantic import Field
 from flask_openapi3 import Tag
 from flask_openapi3 import APIBlueprint
-from pydantic import BaseModel, Field
 from app.api.apischemas import AlbumHashSchema, AlbumLimitSchema, ArtistHashSchema
 
-from app.db.sqlite.albumcolors import SQLiteAlbumMethods as adb
-from app.db.sqlite.favorite import SQLiteFavoriteMethods as favdb
-from app.db.sqlite.lastfm.similar_artists import SQLiteLastFMSimilarArtists as lastfmdb
-from app.lib.albumslib import sort_by_track_no
-from app.models import FavType, Track
-from app.serializers.album import serialize_for_card
-from app.serializers.track import serialize_track
 from app.settings import Defaults
+from app.models import FavType, Track
 from app.store.albums import AlbumStore
 from app.store.tracks import TrackStore
 from app.utils.hashing import create_hash
+from app.lib.albumslib import sort_by_track_no
+from app.serializers.album import serialize_for_card
+from app.serializers.track import serialize_track
+from app.db.sqlite.albumcolors import SQLiteAlbumMethods as adb
+from app.db.sqlite.favorite import SQLiteFavoriteMethods as favdb
+from app.db.sqlite.lastfm.similar_artists import SQLiteLastFMSimilarArtists as lastfmdb
 
 get_albums_by_albumartist = adb.get_albums_by_albumartist
 check_is_fav = favdb.check_is_favorite
 
 bp_tag = Tag(name="Album", description="Single album")
-api = APIBlueprint("album", __name__, url_prefix="", abp_tags=[bp_tag])
+api = APIBlueprint("album", __name__, url_prefix="/album", abp_tags=[bp_tag])
 
 
-@api.post("/album")
+# NOTE: Don't use "/" as it will cause redirects (failure)
+@api.post("")
 def get_album_tracks_and_info(body: AlbumHashSchema):
     """
     Get album and tracks
@@ -79,7 +80,7 @@ def get_album_tracks_and_info(body: AlbumHashSchema):
     }
 
 
-@api.get("/album/<albumhash>/tracks")
+@api.get("/<albumhash>/tracks")
 def get_album_tracks(path: AlbumHashSchema):
     """
     Get album tracks
@@ -106,7 +107,7 @@ class GetMoreFromArtistsBody(AlbumLimitSchema):
     )
 
 
-@api.post("/album/from-artist")
+@api.post("/from-artist")
 def get_more_from_artist(body: GetMoreFromArtistsBody):
     """
     Get more from artist
@@ -152,7 +153,7 @@ class GetAlbumVersionsBody(ArtistHashSchema):
     )
 
 
-@api.post("/album/other-versions")
+@api.post("/other-versions")
 def get_album_versions(body: GetAlbumVersionsBody):
     """
     Get other versions
@@ -183,7 +184,7 @@ class GetSimilarAlbumsQuery(ArtistHashSchema, AlbumLimitSchema):
     pass
 
 
-@api.get("/album/similar")
+@api.get("/similar")
 def get_similar_albums(query: GetSimilarAlbumsQuery):
     """
     Get similar albums
