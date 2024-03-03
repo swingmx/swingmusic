@@ -7,7 +7,6 @@ from pydantic import BaseModel, Field
 from app.settings import Defaults
 
 
-
 class AlbumHashSchema(BaseModel):
     """
     Extending this class will give you a model with the `albumhash` field
@@ -34,6 +33,19 @@ class ArtistHashSchema(BaseModel):
     )
 
 
+class TrackHashSchema(BaseModel):
+    """
+    Extending this class will give you a model with the `trackhash` field
+    """
+
+    trackhash: str = Field(
+        description="The track hash",
+        example=Defaults.API_TRACKHASH,
+        min_length=Defaults.HASH_LENGTH,
+        max_length=Defaults.HASH_LENGTH,
+    )
+
+
 class GenericLimitSchema(BaseModel):
     """
     Extending this class will give you a model with the `limit` field
@@ -42,7 +54,7 @@ class GenericLimitSchema(BaseModel):
     limit: int = Field(
         description="The number of items to return",
         example=Defaults.API_CARD_LIMIT,
-        default=Defaults.API_CARD_LIMIT
+        default=Defaults.API_CARD_LIMIT,
     )
 
 
@@ -55,7 +67,7 @@ class TrackLimitSchema(BaseModel):
     limit: int = Field(
         description="The number of tracks to return",
         example=Defaults.API_CARD_LIMIT,
-        default=Defaults.API_CARD_LIMIT
+        default=Defaults.API_CARD_LIMIT,
     )
 
 
@@ -67,7 +79,7 @@ class AlbumLimitSchema(BaseModel):
     limit: int = Field(
         description="The number of albums to return",
         example=Defaults.API_CARD_LIMIT,
-        default=Defaults.API_CARD_LIMIT
+        default=Defaults.API_CARD_LIMIT,
     )
 
 
@@ -79,5 +91,5 @@ class ArtistLimitSchema(BaseModel):
     limit: int = Field(
         description="The number of artists to return",
         example=Defaults.API_CARD_LIMIT,
-        default=Defaults.API_CARD_LIMIT
+        default=Defaults.API_CARD_LIMIT,
     )

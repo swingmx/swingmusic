@@ -29,6 +29,7 @@ from app.api import (
     getall,
 )
 
+# TODO: Move this description to a separate file
 open_api_description = f"""
 The REST API exposed by your Swing Music server
 
@@ -65,7 +66,7 @@ def create_api():
     with app.app_context():
         app.register_api(album.api)
         app.register_api(artist.api)
-        app.register_blueprint(send_file.api)
+        app.register_api(send_file.api)
         app.register_blueprint(search.api)
         app.register_blueprint(folder.api)
         app.register_blueprint(playlist.api)
