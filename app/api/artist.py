@@ -1,11 +1,15 @@
 """
 Contains all the artist(s) routes.
 """
+
 import math
 import random
 from datetime import datetime
 
-from flask import Blueprint, request
+from flask import request
+from flask_openapi3 import APIBlueprint, Tag
+from pydantic import BaseModel, Field
+from app.api.apischemas import AlbumLimitSchema, ArtistHashSchema, ArtistLimitSchema, TrackLimitSchema
 
 from app.db.sqlite.favorite import SQLiteFavoriteMethods as favdb
 from app.db.sqlite.lastfm.similar_artists import SQLiteLastFMSimilarArtists as fmdb
@@ -16,20 +20,19 @@ from app.store.albums import AlbumStore
 from app.store.artists import ArtistStore
 from app.store.tracks import TrackStore
 
-api = Blueprint("artist", __name__, url_prefix="/")
+bp_tag = Tag(name="Artist", description="Single artist")
+api = APIBlueprint("artist", __name__, url_prefix="/", abp_tags=[bp_tag])
 
 
-@api.route("/artist/<artisthash>", methods=["GET"])
-def get_artist(artisthash: str):
+@api.get("/artist/<string:artisthash>")
+def get_artist(path: ArtistHashSchema, query: TrackLimitSchema):
     """
     Get artist data.
+
+    Returns artist data, tracks and genres for the given artisthash.
     """
-    limit = request.args.get("limit")
-
-    if limit is None:
-        limit = 6
-
-    limit = int(limit)
+    artisthash = path.artisthash
+    limit = query.limit
 
     artist = ArtistStore.get_artist_by_hash(artisthash)
 
@@ -79,16 +82,18 @@ def get_artist(artisthash: str):
     }
 
 
-@api.route("/artist/<artisthash>/albums", methods=["GET"])
-def get_artist_albums(artisthash: str):
-    limit = request.args.get("limit")
+class GetArtistAlbumsQuery(AlbumLimitSchema):
+    all: bool = Field(
+        description="Whether to ignore limit and return all albums", default=False
+    )
 
-    if limit is None:
-        limit = 6
 
-    return_all = request.args.get("all")
+@api.get("/artist/<artisthash>/albums")
+def get_artist_albums(path: ArtistHashSchema, query: GetArtistAlbumsQuery):
+    return_all = query.all
+    artisthash = path.artisthash
 
-    limit = int(limit)
+    limit = query.limit
 
     all_albums = AlbumStore.get_albums_by_artisthash(artisthash)
 
@@ -170,29 +175,26 @@ def get_artist_albums(artisthash: str):
     }
 
 
-@api.route("/artist/<artisthash>/tracks", methods=["GET"])
-def get_all_artist_tracks(artisthash: str):
+@api.get("/artist/<artisthash>/tracks")
+def get_all_artist_tracks(path: ArtistHashSchema):
     """
+    Get all artist tracks
+
     Returns all artists by a given artist.
     """
-    tracks = TrackStore.get_tracks_by_artisthash(artisthash)
+    tracks = TrackStore.get_tracks_by_artisthash(path.artisthash)
 
     return {"tracks": serialize_tracks(tracks)}
 
 
-@api.route("/artist/<artisthash>/similar", methods=["GET"])
-def get_similar_artists(artisthash: str):
+@api.get("/artist/<artisthash>/similar")
+def get_similar_artists(path: ArtistHashSchema, query: ArtistLimitSchema):
     """
     Returns similar artists.
     """
-    limit = request.args.get("limit")
+    limit = query.limit
 
-    if limit is None:
-        limit = 6
-
-    limit = int(limit)
-
-    artist = ArtistStore.get_artist_by_hash(artisthash)
+    artist = ArtistStore.get_artist_by_hash(path.artisthash)
 
     if artist is None:
         return {"error": "Artist not found"}, 404

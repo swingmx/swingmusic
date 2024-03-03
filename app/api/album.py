@@ -7,6 +7,7 @@ import random
 from flask_openapi3 import Tag
 from flask_openapi3 import APIBlueprint
 from pydantic import BaseModel, Field
+from app.api.apischemas import AlbumHashSchema, AlbumLimitSchema, ArtistHashSchema
 
 from app.db.sqlite.albumcolors import SQLiteAlbumMethods as adb
 from app.db.sqlite.favorite import SQLiteFavoriteMethods as favdb
@@ -23,22 +24,15 @@ from app.utils.hashing import create_hash
 get_albums_by_albumartist = adb.get_albums_by_albumartist
 check_is_fav = favdb.check_is_favorite
 
-book_tag = Tag(name="Album", description="Single album")
-api = APIBlueprint("album", __name__, url_prefix="", abp_tags=[book_tag])
+bp_tag = Tag(name="Album", description="Single album")
+api = APIBlueprint("album", __name__, url_prefix="", abp_tags=[bp_tag])
 
 
-class GetAlbumBody(BaseModel):
-    albumhash: str = Field(
-        description="The hash of the album to get",
-        example="49e4819273",
-        min_length=Defaults.HASH_LENGTH,
-        max_length=Defaults.HASH_LENGTH,
-    )
-
-
-@api.post("/album", summary="Get album")
-def get_album_tracks_and_info(body: GetAlbumBody):
+@api.post("/album")
+def get_album_tracks_and_info(body: AlbumHashSchema):
     """
+    Get album and tracks
+
     Returns album info and tracks for the given albumhash.
     """
     albumhash = body.albumhash
@@ -84,43 +78,39 @@ def get_album_tracks_and_info(body: GetAlbumBody):
         "info": album,
     }
 
-class GetAlbumTracksQuery(BaseModel):
-    albumhash: str = Field(
-        description="The hash of the album",
-        example="49e4819273",
-        min_length=Defaults.HASH_LENGTH,
-        max_length=Defaults.HASH_LENGTH,
-    )
 
-@api.get("/album/<albumhash>/tracks", summary="Get album tracks")
-def get_album_tracks(query: GetAlbumTracksQuery):
+@api.get("/album/<albumhash>/tracks")
+def get_album_tracks(path: AlbumHashSchema):
     """
+    Get album tracks
+
     Returns all the tracks in the given album, sorted by disc and track number.
+    NOTE: No album info is returned.
     """
-    tracks = TrackStore.get_tracks_by_albumhash(query.albumhash)
+    tracks = TrackStore.get_tracks_by_albumhash(path.albumhash)
     tracks = sort_by_track_no(tracks)
 
     return tracks
 
-class GetMoreFromArtistsBody(BaseModel):
+
+class GetMoreFromArtistsBody(AlbumLimitSchema):
     albumartists: str = Field(
         description="The artist hashes to get more albums from",
-        example=Defaults.API_ARTISTHASH
+        example=Defaults.API_ARTISTHASH,
     )
-    limit: int = Field(
-        description="The maximum number of albums to return per artist",
-        example=7,
-        default=7,
-    )
+
     base_title: str = Field(
         description="The base title of the album to exclude from the results.",
         example=Defaults.API_ALBUMNAME,
         default=None,
     )
 
-@api.post("/album/from-artist", summary="More from artist")
+
+@api.post("/album/from-artist")
 def get_more_from_artist(body: GetMoreFromArtistsBody):
     """
+    Get more from artist
+
     Returns more albums from the given artist hashes.
     """
     albumartists = body.albumartists
@@ -151,7 +141,7 @@ def get_more_from_artist(body: GetMoreFromArtistsBody):
     return albums
 
 
-class GetAlbumVersionsBody(BaseModel):
+class GetAlbumVersionsBody(ArtistHashSchema):
     og_album_title: str = Field(
         description="The original album title (album.og_title)",
         example=Defaults.API_ALBUMNAME,
@@ -160,14 +150,13 @@ class GetAlbumVersionsBody(BaseModel):
         description="The base title of the album to exclude from the results.",
         example=Defaults.API_ALBUMNAME,
     )
-    artisthash: str = Field(
-        description="The artist hash",
-        example=Defaults.API_ARTISTHASH,
-    )
 
-@api.post("/album/other-versions", summary="Get other versions")
+
+@api.post("/album/other-versions")
 def get_album_versions(body: GetAlbumVersionsBody):
     """
+    Get other versions
+
     Returns other versions of the given album.
     """
     og_album_title = body.og_album_title
@@ -189,20 +178,16 @@ def get_album_versions(body: GetAlbumVersionsBody):
 
     return albums
 
-class GetSimilarAlbumsQuery(BaseModel):
-    artisthash: str = Field(
-        description="The artist hash",
-        example=Defaults.API_ARTISTHASH,
-    )
-    limit: int = Field(
-        description="The maximum number of albums to return",
-        example=Defaults.API_CARD_LIMIT,
-        default=Defaults.API_CARD_LIMIT,
-    )
 
-@api.get("/album/similar", summary="Get similar albums")
+class GetSimilarAlbumsQuery(ArtistHashSchema, AlbumLimitSchema):
+    pass
+
+
+@api.get("/album/similar")
 def get_similar_albums(query: GetSimilarAlbumsQuery):
     """
+    Get similar albums
+
     Returns similar albums to the given album.
     """
     artisthash = query.artisthash
