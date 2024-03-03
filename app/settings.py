@@ -1,6 +1,7 @@
 """
 Contains default configs
 """
+
 import os
 import sys
 from typing import Any
@@ -96,6 +97,12 @@ class Defaults:
     """
     The size of extracted images in pixels
     """
+    HASH_LENGTH = 10
+    API_ALBUMHASH = "c5bcec6cb3"
+    API_ARTISTHASH = "fc6f0acac5"
+    API_ALBUMNAME = "Rumours"
+
+    API_CARD_LIMIT = 6
 
 
 FILES = ["flac", "mp3", "wav", "m4a", "ogg", "wma", "opus", "alac", "aiff"]

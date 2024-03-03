@@ -2,10 +2,13 @@
 This module combines all API blueprints into a single Flask app instance.
 """
 
-from flask import Flask
-from flask_compress import Compress
 from flask_cors import CORS
+from flask_compress import Compress
 
+from flask_openapi3 import Info
+from flask_openapi3 import OpenAPI
+
+from app.settings import Keys
 from .plugins import lyrics as lyrics_plugin
 from app.api import (
     album,
@@ -30,7 +33,16 @@ def create_api():
     """
     Creates the Flask instance, registers modules and registers all the API blueprints.
     """
-    app = Flask(__name__)
+    api_info = Info(
+        title=f"Swing Music",
+        version=f"v{Keys.SWINGMUSIC_APP_VERSION}",
+        license={"name": "MIT", "url": "https://github.com/swing-opensource/swingmusic?tab=MIT-1-ov-file#MIT-1-ov-file"},
+        contact={"name": "Mungai Njoroge", "url": "https://mungai.vercel.app", "email": "geoffreymungai45@gmail.com"},
+        description="The REST API exposed by your Swing Music server",
+    )
+
+    app = OpenAPI(__name__, info=api_info)
+
     CORS(app, origins="*")
     Compress(app)
 
@@ -39,7 +51,7 @@ def create_api():
     ]
 
     with app.app_context():
-        app.register_blueprint(album.api)
+        app.register_api(album.api)
         app.register_blueprint(artist.api)
         app.register_blueprint(send_file.api)
         app.register_blueprint(search.api)
