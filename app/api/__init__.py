@@ -2,6 +2,7 @@
 This module combines all API blueprints into a single Flask app instance.
 """
 
+import datetime
 from flask_cors import CORS
 from flask_compress import Compress
 
@@ -28,6 +29,19 @@ from app.api import (
     getall,
 )
 
+open_api_description = f"""
+The REST API exposed by your Swing Music server
+
+### Definition of terms:
+
+#### 1. `limit`: The number of items to return.
+
+In endpoints that request multiple lists of items, this represents the number of items to return for each list.
+
+---
+
+[MIT License](https://github.com/swing-opensource/swingmusic?tab=MIT-1-ov-file#MIT-1-ov-file) | Copyright (c) {datetime.datetime.now().year} [Mungai Njoroge](https://mungai.vercel.app)
+"""
 
 def create_api():
     """
@@ -36,9 +50,7 @@ def create_api():
     api_info = Info(
         title=f"Swing Music",
         version=f"v{Keys.SWINGMUSIC_APP_VERSION}",
-        license={"name": "MIT", "url": "https://github.com/swing-opensource/swingmusic?tab=MIT-1-ov-file#MIT-1-ov-file"},
-        contact={"name": "Mungai Njoroge", "url": "https://mungai.vercel.app", "email": "geoffreymungai45@gmail.com"},
-        description="The REST API exposed by your Swing Music server",
+        description=open_api_description,
     )
 
     app = OpenAPI(__name__, info=api_info)
@@ -52,7 +64,7 @@ def create_api():
 
     with app.app_context():
         app.register_api(album.api)
-        app.register_blueprint(artist.api)
+        app.register_api(artist.api)
         app.register_blueprint(send_file.api)
         app.register_blueprint(search.api)
         app.register_blueprint(folder.api)
