@@ -17,6 +17,7 @@ from app.store.tracks import TrackStore
 from app.utils.dates import create_new_date, date_string_to_time_passed
 from app.utils.remove_duplicates import remove_duplicates
 from app.settings import Paths
+from app.utils.m3u_importer import parse_tracks, match_track
 
 api = Blueprint("playlist", __name__, url_prefix="/")
 
@@ -90,6 +91,45 @@ def create_playlist():
         return {"error": "Playlist could not be created"}, 500
 
     return {"playlist": playlist}, 201
+
+@api.route("/playlist/import", methods=["POST"])
+def import_playlist():
+
+    # Expecting {'name':'playlist name', 'data':m3u file as string}
+    data = request.get_json()
+
+    if data is None:
+        return {"error": "Playlist name not provided"}, 400
+
+    existing_playlist_count = PL.count_playlist_by_name(data["name"])
+
+    if existing_playlist_count > 0:
+        return {"error": "Playlist already exists"}, 409
+
+    playlist = insert_playlist(data["name"])
+
+    if playlist is None:
+        return {"error": "Playlist could not be created"}, 500
+    
+    parse_tracks(data['data'])
+
+    matched_tracks = []
+    unmatched_tracks = []
+
+    for track in parse_tracks:
+        result = match_track(track)
+
+        if result is None:
+            track.append(unmatched_tracks)
+            continue
+            
+        track.append(matched_tracks)
+    
+    track_hashes = [track.trackhash for track in matched_tracks]
+
+    _ = PL.add_tracks_to_playlist(int(playlist.id), track_hashes)
+
+    return {"msg": "Done", "umatched_tracks":unmatched_tracks}, 200
 
 
 def get_path_trackhashes(path: str):

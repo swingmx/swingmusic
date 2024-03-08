@@ -48,3 +48,15 @@ def get_home_res_path(filename: str):
         return (CWD / ".." / ".." / filename).resolve()
     except ValueError:
         return None
+
+def get_path_depth(path: str):
+    components = path.split('/')
+    # Initialize an empty list to store the constructed paths
+    paths = []
+    for i in range(len(components)):
+        # Construct the path from the current component onwards
+        path = '/'.join(components[i:])
+        paths.append(path)
+    
+    # Return the list of constructed paths
+    return paths
