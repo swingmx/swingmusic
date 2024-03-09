@@ -50,6 +50,7 @@ def get_home_res_path(filename: str):
         return None
 
 def get_path_depth(path: str):
+    path = os.path.splitext(path)[0]
     components = path.split('/')
     # Initialize an empty list to store the constructed paths
     paths = []
@@ -59,4 +60,4 @@ def get_path_depth(path: str):
         paths.append(path)
     
     # Return the list of constructed paths
-    return paths
+    return paths[::-1]

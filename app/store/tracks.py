@@ -158,6 +158,22 @@ class TrackStore:
         return tracks
 
     @classmethod
+    def get_tracks_containing_filepaths(cls, paths: list[str]) -> list[Track]:
+        """
+        Returns all tracks having/matching given paths
+        """
+
+        # Someone plz improve this. Sorry
+        results = []
+        for path in paths:
+            tracks = [track for track in cls.tracks if track.filepath in path or path in track.filepath]
+            for track in tracks:
+                if track not in results:
+                    results.append(track)
+        
+        return results
+
+    @classmethod
     def get_tracks_by_filepaths(cls, paths: list[str]) -> list[Track]:
         """
         Returns all tracks matching the given paths.

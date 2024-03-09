@@ -111,22 +111,24 @@ def import_playlist():
     if playlist is None:
         return {"error": "Playlist could not be created"}, 500
     
-    parse_tracks(data['data'])
 
     matched_tracks = []
     unmatched_tracks = []
 
-    for track in parse_tracks:
-        result = match_track(track)
+    for track in parse_tracks(data['data']):
+        _result = match_track(track)
 
-        if result is None:
-            track.append(unmatched_tracks)
+
+        if _result is None:
+            unmatched_tracks.append(track)
             continue
-            
-        track.append(matched_tracks)
+
+        matched_tracks.append(_result)
+    
+    if not matched_tracks:
+        return {"msg","Could not match any tracks"}, 200
     
     track_hashes = [track.trackhash for track in matched_tracks]
-
     _ = PL.add_tracks_to_playlist(int(playlist.id), track_hashes)
 
     return {"msg": "Done", "umatched_tracks":unmatched_tracks}, 200

@@ -35,7 +35,6 @@ def parse_tracks(m3u_file_string):
                 continue
 
             track = {}
-            
 
             # Might not be the best way to deal with improper formatting. Needs Improvement
             # NOTE: Certain tags like: Duration, Artist and Title are necessary. Track will not be processed in any of these are missing.
@@ -62,19 +61,26 @@ def match_track_filename(track):
         return False, None
     
     file_path = track['file_path']
-    path_patterns = get_path_depth(file_path)
 
     filter_results = []
 
-    for result in TrackStore.get_tracks_by_filepaths(path_patterns):
-        if track['artist'].lower() in [artist.name.lower() for artist in result.artists]:
-            # Artist matches up
-                
-            if abs(int(track['duration']) - int(result.duration)) <= 10:
-                # Duration matches up
-                return True, result
-        
-            filter_results.append(result)
+    store_results = TrackStore.get_tracks_containing_filepaths(get_path_depth(file_path))
+
+    # check for multiple artists in m3u
+    # TODO: Make use of delimiters in settings
+    artists = track['artist'].split(';')
+    if len(artists) == 1:
+        artists = artists[0].split(',')
+
+    for result in store_results:
+        for _artist in artists:
+            if _artist.lower() in [artist.name.lower() for artist in result.artists]:
+                # Artist matches up
+                if abs(int(track['duration']) - int(result.duration)) <= 10:
+                    # Duration matches up
+                    return True, result
+
+                filter_results.append(result)
     
     return False, filter_results
 
@@ -89,15 +95,22 @@ def match_track(track):
     if matched:
         return result_track
     
-            
     # Compare by Track > Artist
-    for result in TrackStore.get_tracks_by_trackname(track['title']):
+    store_results = TrackStore.get_tracks_by_trackname(track['title'])
 
-        if track['artist'].lower() in [artist.name.lower() for artist in result.artists]:
+    for result in store_results:
+        # check for multiple artists in m3u
+        artists = track['artist'].split(';')
+        if len(artists) == 1:
+            artists = artists[0].split(',')
+        
+        for _artist in artists:
+            if _artist.lower() in [artist.name.lower() for artist in result.artists]:
 
-            duration_delta = abs(int(track['duration']) - int(result.duration)) <= 10
-            
-            return result_track if duration_delta else None
+                duration_delta = abs(int(track['duration']) - int(result.duration)) <= 10
+                
+                if duration_delta:
+                    return result
     
     # Some other patterns that can be added in the future
     return None
