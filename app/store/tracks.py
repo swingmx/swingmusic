@@ -134,6 +134,16 @@ class TrackStore:
     # ================================================
     # ================== GETTERS =====================
     # ================================================
+            
+    @classmethod
+    def get_tracks_by_trackname(cls, trackname: str) -> list[Track]:
+        """
+        Returns a list of tracks by their title.
+        """
+
+        tracks = [track for track in cls.tracks if track.title in trackname or trackname in track.title]
+        return tracks
+    
 
     @classmethod
     def get_tracks_by_trackhashes(cls, trackhashes: list[str]) -> list[Track]:

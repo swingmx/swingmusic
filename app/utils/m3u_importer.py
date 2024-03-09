@@ -3,6 +3,7 @@ import os
 
 from app.utils.filesystem import get_path_depth
 from app.db.sqlite.tracks import SQLiteTrackMethods
+from app.store.tracks import TrackStore
  
 def parse_tracks(m3u_file_string):
 
@@ -61,11 +62,11 @@ def match_track_filename(track):
         return False, None
     
     file_path = track['file_path']
-    file_name = os.path.splitext(get_path_depth(file_path)[-1])[0]
+    path_patterns = get_path_depth(file_path)
 
     filter_results = []
 
-    for result in SQLiteTrackMethods.get_tracks_by_filename(file_name):
+    for result in TrackStore.get_tracks_by_filepaths(path_patterns):
         if track['artist'].lower() in [artist.name.lower() for artist in result.artists]:
             # Artist matches up
                 
@@ -90,7 +91,7 @@ def match_track(track):
     
             
     # Compare by Track > Artist
-    for result in SQLiteTrackMethods.get_tracks_by_title(track['title']):
+    for result in TrackStore.get_tracks_by_trackname(track['title']):
 
         if track['artist'].lower() in [artist.name.lower() for artist in result.artists]:
 

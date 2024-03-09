@@ -86,21 +86,6 @@ class SQLiteTrackMethods:
             return []
     
     @staticmethod
-    def get_tracks_by_filename(filename: str):
-        """
-        Gets a track using its filename. Returns a list of Track Objects or None.
-        """
-
-        with SQLiteManager() as cur:
-            cur.execute(f"SELECT * FROM tracks WHERE '{filename}' in filename OR filename in '{filename}'")
-            row = cur.fetchmany()
-
-            if row is not None:
-                return tuples_to_tracks(row)
-
-            return None
-
-    @staticmethod
     def get_track_by_trackhash(trackhash: str):
         """
         Gets a track using its trackhash. Returns a Track object or None.
@@ -113,21 +98,6 @@ class SQLiteTrackMethods:
                 return tuple_to_track(row)
 
             return None
-
-    @staticmethod
-    def get_tracks_by_title(title: str):
-        """
-        Gets tracks using its title. Returns a Track object or None.
-        """
-        with SQLiteManager() as cur:
-            cur.execute(f"SELECT * FROM tracks WHERE '{title}' in title OR title in '{title}'")
-            row = cur.fetchmany()
-
-            if row is not None:
-                return tuples_to_tracks(row)
-
-            return None
-
 
     @staticmethod
     def remove_tracks_by_filepaths(filepaths: str | set[str]):
