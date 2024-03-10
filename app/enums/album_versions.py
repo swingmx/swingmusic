@@ -42,7 +42,7 @@ class AlbumVersionEnum(Enum):
     BONUS_EDITION = ("bonus",)
     BONUS_TRACK = ("bonus track",)
 
-    ORIGINAL = ("original", "og")
+    ORIGINAL = ("original", " og ")
     INTL_VERSION = ("international",)
     UK_VERSION = ("uk version",)
     US_VERSION = ("us version",)
@@ -54,7 +54,7 @@ class AlbumVersionEnum(Enum):
     STEREO = ("stereo",)
 
     HI_RES = ("Hi-Res",)
-    RE_MIX = ("re-mix",)
+    RE_MIX = ("re-mix", " remixes ")
     RE_RECORDED = ("re-recorded", "rerecorded")
     REISSUE = ("reissue",)
     REMASTERED = ("remaster",)
