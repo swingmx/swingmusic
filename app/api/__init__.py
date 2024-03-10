@@ -67,7 +67,7 @@ def create_api():
         app.register_api(album.api)
         app.register_api(artist.api)
         app.register_api(send_file.api)
-        app.register_blueprint(search.api)
+        app.register_api(search.api)
         app.register_blueprint(folder.api)
         app.register_blueprint(playlist.api)
         app.register_blueprint(favorites.api)

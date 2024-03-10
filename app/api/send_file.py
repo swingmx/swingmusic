@@ -12,7 +12,7 @@ from app.lib.trackslib import get_silence_paddings
 
 from app.store.tracks import TrackStore
 
-bp_tag = Tag(name="File", description="Single artist")
+bp_tag = Tag(name="File", description="Audio files")
 api = APIBlueprint("track", __name__, url_prefix="/file", abp_tags=[bp_tag])
 
 
