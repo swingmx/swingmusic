@@ -26,7 +26,7 @@ api = APIBlueprint("artist", __name__, url_prefix="/artist", abp_tags=[bp_tag])
 @api.get("/<string:artisthash>")
 def get_artist(path: ArtistHashSchema, query: TrackLimitSchema):
     """
-    Get artist data.
+    Get artist
 
     Returns artist data, tracks and genres for the given artisthash.
     """
@@ -89,6 +89,9 @@ class GetArtistAlbumsQuery(AlbumLimitSchema):
 
 @api.get("/<artisthash>/albums")
 def get_artist_albums(path: ArtistHashSchema, query: GetArtistAlbumsQuery):
+    """
+    Get artist albums.
+    """
     return_all = query.all
     artisthash = path.artisthash
 
@@ -177,7 +180,7 @@ def get_artist_albums(path: ArtistHashSchema, query: GetArtistAlbumsQuery):
 @api.get("/<artisthash>/tracks")
 def get_all_artist_tracks(path: ArtistHashSchema):
     """
-    Get all artist tracks
+    Get artist tracks
 
     Returns all artists by a given artist.
     """
@@ -189,7 +192,7 @@ def get_all_artist_tracks(path: ArtistHashSchema):
 @api.get("/<artisthash>/similar")
 def get_similar_artists(path: ArtistHashSchema, query: ArtistLimitSchema):
     """
-    Returns similar artists.
+    Get similar artists.
     """
     limit = query.limit
 

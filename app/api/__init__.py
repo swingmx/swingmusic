@@ -8,6 +8,8 @@ from flask_compress import Compress
 
 from flask_openapi3 import Info
 from flask_openapi3 import OpenAPI
+from pydantic import BaseModel, Field
+from flask_openapi3 import FileStorage
 
 from app.settings import Keys
 from .plugins import lyrics as lyrics_plugin
@@ -68,8 +70,8 @@ def create_api():
         app.register_api(artist.api)
         app.register_api(send_file.api)
         app.register_api(search.api)
-        app.register_blueprint(folder.api)
-        app.register_blueprint(playlist.api)
+        app.register_api(folder.api)
+        app.register_api(playlist.api)
         app.register_blueprint(favorites.api)
         app.register_blueprint(imgserver.api)
         app.register_blueprint(settings.api)

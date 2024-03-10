@@ -1,11 +1,14 @@
 """
 Contains all the folder routes.
 """
+
 import os
 from pathlib import Path
 
 import psutil
-from flask import Blueprint, request
+from pydantic import BaseModel, Field
+from flask_openapi3 import Tag
+from flask_openapi3 import APIBlueprint
 from showinfm import show_in_file_manager
 
 from app import settings
@@ -15,24 +18,24 @@ from app.serializers.track import serialize_track
 from app.store.tracks import TrackStore as store
 from app.utils.wintools import is_windows, win_replace_slash
 
-api = Blueprint("folder", __name__, url_prefix="")
+tag = Tag(name="Folders", description="Get folders and tracks in a directory")
+api = APIBlueprint("folder", __name__, url_prefix="/folder", abp_tags=[tag])
 
 
-@api.route("/folder", methods=["POST"])
-def get_folder_tree():
+class FolderTree(BaseModel):
+    folder: str = Field("$home", description="The folder to things from")
+    tracks_only: bool = Field(False, description="Whether to only get tracks")
+
+
+@api.post("")
+def get_folder_tree(body: FolderTree):
     """
+    Get folder
+
     Returns a list of all the folders and tracks in the given folder.
     """
-    data = request.get_json()
-    req_dir = "$home"
-
-    tracks_only = False
-    if data is not None:
-        try:
-            req_dir: str = data["folder"]
-            tracks_only: bool = data["tracks_only"]
-        except KeyError:
-            req_dir = "$home"
+    req_dir = body.folder
+    tracks_only = body.tracks_only
 
     root_dirs = db.get_root_dirs()
     root_dirs.sort()
@@ -92,18 +95,23 @@ def get_all_drives(is_win: bool = False):
     return drives
 
 
-@api.route("/folder/dir-browser", methods=["POST"])
-def list_folders():
-    """
-    Returns a list of all the folders in the given folder.
-    """
-    data = request.get_json()
-    is_win = is_windows()
+class DirBrowserBody(BaseModel):
+    folder: str = Field(
+        "$root",
+        description="The folder to list directories from",
+    )
 
-    try:
-        req_dir: str = data["folder"]
-    except KeyError:
-        req_dir = "$root"
+
+@api.post("/folder/dir-browser")
+def list_folders(body: DirBrowserBody):
+    """
+    List folders
+
+    Returns a list of all the folders in the given folder.
+    Used when selecting root dirs.
+    """
+    req_dir = body.folder
+    is_win = is_windows()
 
     if req_dir == "$root":
         return {
@@ -131,26 +139,40 @@ def list_folders():
     }
 
 
-@api.route("/folder/show-in-files")
-def open_in_file_manager():
-    path = request.args.get("path")
+class FolderOpenInFileManagerQuery(BaseModel):
+    path: str = Field(
+        description="The path to open in the file manager",
+    )
 
-    if path is None:
-        return {"error": "No path provided."}, 400
 
-    show_in_file_manager(path)
+@api.get("/folder/show-in-files")
+def open_in_file_manager(query: FolderOpenInFileManagerQuery):
+    """
+    Open in file manager
+
+    Opens the given path in the file manager on the host machine.
+    """
+    show_in_file_manager(query.path)
 
     return {"success": True}
 
 
-@api.route("/folder/tracks/all")
-def get_tracks_in_path():
-    path = request.args.get("path")
+class GetTracksInPathQuery(BaseModel):
+    path: str = Field(
+        description="The path to get tracks from",
+    )
 
-    if path is None:
-        return {"error": "No path provided."}, 400
 
-    tracks = store.get_tracks_in_path(path)
+@api.get("/folder/tracks/all")
+def get_tracks_in_path(query: GetTracksInPathQuery):
+    """
+    Get tracks in path
+
+    Gets all (or a max of 300) tracks from the given path and its subdirectories.
+
+    Used when adding tracks to the queue.
+    """
+    tracks = store.get_tracks_in_path(query.path)
     tracks = sorted(tracks, key=lambda i: i.last_mod)
     tracks = (serialize_track(t) for t in tracks if Path(t.filepath).exists())
 
