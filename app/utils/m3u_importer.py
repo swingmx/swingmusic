@@ -39,14 +39,16 @@ def parse_tracks(m3u_file_string):
             # Might not be the best way to deal with improper formatting. Needs Improvement
             # NOTE: Certain tags like: Duration, Artist and Title are necessary. Track will not be processed in any of these are missing.
 
-            try:track['duration'] = match.group('duration')
-            except: continue
-            try:track['artist'] = match.group('artist')
-            except: continue
-            try:track['title'] = match.group('title')
-            except: continue
-            try:track['file_path'] = match.group('file_path')
-            except: pass
+            try:
+                track['duration'] = match.group('duration')
+                track['artist'] = match.group('artist')
+                track['title'] = match.group('title')
+            except: 
+                continue
+            try:
+                track['file_path'] = match.group('file_path')
+            except: 
+                pass
 
             track['file_exists'] = False
 
