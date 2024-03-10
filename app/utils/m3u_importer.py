@@ -50,7 +50,6 @@ def parse_tracks(m3u_file_string):
 def filter_by_path(track):
     if 'file_path' not in track.keys():
         return []
-
     file_path = track['file_path']
 
     # Check if there are any tracks with exact path, if duration matches, skip artist matching
