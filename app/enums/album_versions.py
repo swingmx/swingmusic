@@ -54,7 +54,7 @@ class AlbumVersionEnum(Enum):
     STEREO = ("stereo",)
 
     HI_RES = ("Hi-Res",)
-    RE_MIX = ("re-mix", " remixes ")
+    RE_MIX = ("re-mix", "remixes")
     RE_RECORDED = ("re-recorded", "rerecorded")
     REISSUE = ("reissue",)
     REMASTERED = ("remaster",)
