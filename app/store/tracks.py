@@ -3,7 +3,7 @@
 from app.db.sqlite.favorite import SQLiteFavoriteMethods as favdb
 from app.db.sqlite.tracks import SQLiteTrackMethods as tdb
 from app.models import Track
-from app.utils.bisection import UseBisection
+from app.utils.bisection import use_bisection
 from app.utils.customlist import CustomList
 from app.utils.remove_duplicates import remove_duplicates
 
@@ -153,7 +153,7 @@ class TrackStore:
         Returns all tracks matching the given paths.
         """
         tracks = sorted(cls.tracks, key=lambda x: x.filepath)
-        tracks = UseBisection(tracks, "filepath", paths)()
+        tracks = use_bisection(tracks, "filepath", paths)
         return [track for track in tracks if track is not None]
 
     @classmethod

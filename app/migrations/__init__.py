@@ -13,7 +13,7 @@ PS: Fuck that! Do what you want.
 
 from app.db.sqlite.migrations import MigrationManager
 from app.logger import log
-from app.migrations import v1_3_0
+from app.migrations import v1_3_0, v1_4_9
 from app.migrations.base import Migration
 
 migrations: list[list[Migration]] = [
@@ -26,6 +26,9 @@ migrations: list[list[Migration]] = [
         v1_3_0.MovePlaylistsAndFavoritesTo10BitHashes,
         v1_3_0.RemoveAllTracks,
         v1_3_0.UpdateAppSettingsTable,
+    ],
+    [
+        v1_4_9.AddTimestampToFavoritesTable
     ]
 ]
 

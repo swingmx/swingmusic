@@ -183,7 +183,7 @@ def get_all_artist_tracks(path: ArtistHashSchema):
     """
     tracks = TrackStore.get_tracks_by_artisthash(path.artisthash)
 
-    return {"tracks": serialize_tracks(tracks)}
+    return serialize_tracks(tracks)
 
 
 @api.get("/<artisthash>/similar")
@@ -208,7 +208,7 @@ def get_similar_artists(path: ArtistHashSchema, query: ArtistLimitSchema):
     if len(similar) > limit:
         similar = random.sample(similar, limit)
 
-    return {"artists": similar[:limit]}
+    return similar[:limit]
 
 
 # TODO: Rewrite this file using generators where possible
