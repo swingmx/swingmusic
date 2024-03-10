@@ -15,7 +15,8 @@ CREATE TABLE IF NOT EXISTS playlists (
 CREATE TABLE IF NOT EXISTS favorites (
     id integer PRIMARY KEY,
     hash text not null,
-    type text not null
+    type text not null,
+    timestamp integer not null default 0
 );
 
 CREATE TABLE IF NOT EXISTS settings (

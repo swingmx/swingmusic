@@ -3,7 +3,7 @@ import json
 from app.db.sqlite.artistcolors import SQLiteArtistMethods as ardb
 from app.lib.artistlib import get_all_artists
 from app.models import Artist
-from app.utils.bisection import UseBisection
+from app.utils.bisection import use_bisection
 from app.utils.customlist import CustomList
 from app.utils.progressbar import tqdm
 
@@ -72,7 +72,7 @@ class ArtistStore:
         """
         artists = sorted(cls.artists, key=lambda x: x.artisthash)
         try:
-            artist = UseBisection(artists, "artisthash", [artisthash])()[0]
+            artist = use_bisection(artists, "artisthash", [artisthash])[0]
             return artist
         except IndexError:
             return None
@@ -83,7 +83,7 @@ class ArtistStore:
         Returns artists by their hashes.
         """
         artists = sorted(cls.artists, key=lambda x: x.artisthash)
-        artists = UseBisection(artists, "artisthash", artisthashes)()
+        artists = use_bisection(artists, "artisthash", artisthashes)
         return [a for a in artists if a is not None]
 
     @classmethod
