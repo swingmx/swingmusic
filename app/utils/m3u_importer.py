@@ -77,8 +77,8 @@ def match_track(track):
 
     filtered_results = []
 
-    filtered_results.append(filter_track_by_filename(track))
-    filtered_results.append(filter_track_by_tags(track))
+    filtered_results.extend(filter_track_by_filename(track))
+    filtered_results.extend(filter_track_by_tags(track))
 
     for result in filtered_results:
         artists = track['artist'].split(';')
