@@ -49,15 +49,23 @@ def get_home_res_path(filename: str):
     except ValueError:
         return None
 
-def get_path_depth(path: str):
-    path = os.path.splitext(path)[0]
+def get_path_depth(path: str, strip_ext: bool=True):
+    """
+    If given a path "foo/bar/song.mp3"
+    it will iterate and return their components:
+    [
+        'foo/bar/song.mp3',
+        'bar/song.mp3',
+        'song.mp3'
+    ]
+    """
+    if strip_ext:
+        path = os.path.splitext(path)[0]
     components = path.split('/')
-    # Initialize an empty list to store the constructed paths
+
     paths = []
     for i in range(len(components)):
-        # Construct the path from the current component onwards
         path = '/'.join(components[i:])
         paths.append(path)
-    
-    # Return the list of constructed paths
+
     return paths[::-1]

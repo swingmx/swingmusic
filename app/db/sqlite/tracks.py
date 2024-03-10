@@ -84,7 +84,7 @@ class SQLiteTrackMethods:
                 return tuples_to_tracks(rows)
 
             return []
-    
+
     @staticmethod
     def get_track_by_trackhash(trackhash: str):
         """
