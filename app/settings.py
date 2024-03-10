@@ -102,6 +102,7 @@ class Defaults:
     API_ARTISTHASH = "fc6f0acac5"
     API_TRACKHASH = "0853280a12"
     API_ALBUMNAME = "Rumours"
+    API_ARTISTNAME = "girl in red"
 
     API_CARD_LIMIT = 6
 
