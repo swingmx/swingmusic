@@ -3,8 +3,8 @@ Contains all the search routes.
 """
 
 from flask import request
-from pydantic import BaseModel, Field
 from unidecode import unidecode
+from pydantic import BaseModel, Field
 from flask_openapi3 import Tag
 from flask_openapi3 import APIBlueprint
 
@@ -75,7 +75,7 @@ class SearchQuery(BaseModel):
 @api.get("/tracks")
 def search_tracks(query: SearchQuery):
     """
-    Searches for tracks
+    Search tracks
     """
 
     query = query.q
@@ -92,7 +92,7 @@ def search_tracks(query: SearchQuery):
 @api.get("/albums")
 def search_albums(query: SearchQuery):
     """
-    Searches for albums.
+    Search albums.
     """
 
     query = query.q
@@ -109,7 +109,7 @@ def search_albums(query: SearchQuery):
 @api.get("/artists")
 def search_artists(query: SearchQuery):
     """
-    Searches for artists.
+    Search artists.
     """
 
     query = query.q
@@ -134,7 +134,9 @@ class TopResultsQuery(SearchQuery):
 @api.get("/top")
 def get_top_results(query: TopResultsQuery):
     """
-    Returns the top results for the search query.
+    Get top results
+
+    Returns the top results for the given query.
     """
 
     query = query.q
@@ -156,6 +158,8 @@ class SearchLoadMoreQuery(SearchQuery):
 @api.get("/loadmore")
 def search_load_more(query: SearchLoadMoreQuery):
     """
+    Load more
+
     Returns more songs, albums or artists from a search query.
 
     NOTE: You must first initiate a search using the `/search` endpoint.

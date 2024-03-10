@@ -1,6 +1,7 @@
 """
 This library contains all the functions related to playlists.
 """
+
 import os
 import random
 import string
@@ -62,7 +63,7 @@ def create_gif_thumbnail(image: Any, img_path: str):
 
 
 def save_p_image(
-    img: Image, pid: str, content_type: str = None, filename: str = None
+    img: Image, pid: int, content_type: str = None, filename: str = None
 ) -> str:
     """
     Saves a playlist banner image and returns the filepath.
@@ -72,7 +73,7 @@ def save_p_image(
     random_str = "".join(random.choices(string.ascii_letters + string.digits, k=5))
 
     if not filename:
-        filename = pid + str(random_str) + ".webp"
+        filename = str(pid) + str(random_str) + ".webp"
 
     full_img_path = os.path.join(settings.Paths.get_playlist_img_path(), filename)
 
@@ -134,7 +135,7 @@ def get_first_4_images(
     return duplicate_images(images)
 
 
-def get_recently_added_playlist(cutoff: int = 14):
+def get_recently_added_playlist(limit: int = 100):
     playlist = Playlist(
         id="recentlyadded",
         name="Recently Added",
@@ -144,8 +145,10 @@ def get_recently_added_playlist(cutoff: int = 14):
         trackhashes=[],
     )
 
-    tracks = get_recent_tracks(cutoff)
+    tracks = get_recent_tracks(limit=limit)
+
     try:
+        # Create date to show as last updated
         date = datetime.fromtimestamp(tracks[0].created_date)
     except IndexError:
         return playlist, []
