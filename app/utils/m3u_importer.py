@@ -58,7 +58,7 @@ def parse_tracks(m3u_file_string):
 
 def filter_track_by_filename(track):
     if 'file_path' not in track.keys():
-        return False, None
+        return []
     
     file_path = track['file_path']
 
