@@ -10,7 +10,6 @@ ONLY MODIFY OLD MIGRATIONS FOR BUG FIXES OR ENHANCEMENTS ONLY
 PS: Fuck that! Do what you want.
 """
 
-
 from app.db.sqlite.migrations import MigrationManager
 from app.logger import log
 from app.migrations import v1_3_0, v1_4_9
@@ -27,9 +26,7 @@ migrations: list[list[Migration]] = [
         v1_3_0.RemoveAllTracks,
         v1_3_0.UpdateAppSettingsTable,
     ],
-    [
-        v1_4_9.AddTimestampToFavoritesTable
-    ]
+    [v1_4_9.AddTimestampToFavoritesTable],
 ]
 
 
@@ -41,8 +38,8 @@ def apply_migrations():
     version = MigrationManager.get_version()
 
     if version != len(migrations):
-        # run migrations after the previous migration version
-        for migration in migrations[(version - 1) :]:
+        # INFO: Apply new migrations
+        for migration in migrations[version:]:
             for m in migration:
                 try:
                     m.migrate()

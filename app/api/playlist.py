@@ -26,12 +26,11 @@ api = APIBlueprint("playlists", __name__, url_prefix="/playlists", abp_tags=[tag
 
 PL = SQLitePlaylistMethods
 
-
 class SendAllPlaylistsQuery(BaseModel):
     no_images: bool = Field(False, description="Whether to include images")
 
 
-@api.get("", methods=["GET"])
+@api.get("")
 def send_all_playlists(query: SendAllPlaylistsQuery):
     """
     Gets all the playlists.

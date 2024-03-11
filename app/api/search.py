@@ -138,9 +138,8 @@ def get_top_results(query: TopResultsQuery):
 
     Returns the top results for the given query.
     """
-
-    query = query.q
     limit = query.limit
+    query = query.q
 
     in_quotes = query_in_quotes(query)
 
