@@ -8,8 +8,6 @@ from flask_compress import Compress
 
 from flask_openapi3 import Info
 from flask_openapi3 import OpenAPI
-from pydantic import BaseModel, Field
-from flask_openapi3 import FileStorage
 
 from app.settings import Keys
 from .plugins import lyrics as lyrics_plugin
@@ -46,6 +44,7 @@ In endpoints that request multiple lists of items, this represents the number of
 [MIT License](https://github.com/swing-opensource/swingmusic?tab=MIT-1-ov-file#MIT-1-ov-file) | Copyright (c) {datetime.datetime.now().year} [Mungai Njoroge](https://mungai.vercel.app)
 """
 
+
 def create_api():
     """
     Creates the Flask instance, registers modules and registers all the API blueprints.
@@ -72,23 +71,23 @@ def create_api():
         app.register_api(search.api)
         app.register_api(folder.api)
         app.register_api(playlist.api)
-        app.register_blueprint(favorites.api)
-        app.register_blueprint(imgserver.api)
-        app.register_blueprint(settings.api)
-        app.register_blueprint(colors.api)
-        app.register_blueprint(lyrics.api)
+        app.register_api(favorites.api)
+        app.register_api(imgserver.api)
+        app.register_api(settings.api)
+        app.register_api(colors.api)
+        app.register_api(lyrics.api)
 
         # Plugins
-        app.register_blueprint(plugins.api)
-        app.register_blueprint(lyrics_plugin.api)
+        app.register_api(plugins.api)
+        app.register_api(lyrics_plugin.api)
 
         # Logger
-        app.register_blueprint(logger.api_bp)
+        app.register_api(logger.api)
 
         # Home
-        app.register_blueprint(home.api_bp)
+        app.register_api(home.api)
 
         # Flask Restful
-        app.register_blueprint(getall.api_bp)
+        app.register_api(getall.api)
 
         return app

@@ -1,7 +1,12 @@
 from typing import List, TypeVar
-from flask import Blueprint, request
 
+from flask_openapi3 import Tag
+from flask_openapi3 import APIBlueprint
+from pydantic import BaseModel, Field
+
+from app.api.apischemas import GenericLimitSchema
 from app.models import FavType
+from app.settings import Defaults
 from app.utils.bisection import use_bisection
 from app.db.sqlite.favorite import SQLiteFavoriteMethods as favdb
 from app.serializers.track import serialize_track, serialize_tracks
@@ -13,8 +18,8 @@ from app.store.tracks import TrackStore
 from app.store.artists import ArtistStore
 from app.utils.dates import timestamp_to_time_passed
 
-
-api = Blueprint("favorite", __name__, url_prefix="/")
+bp_tag = Tag(name="Favorites", description="Your favorite items")
+api = APIBlueprint("favorites", __name__, url_prefix="/favorites", abp_tags=[bp_tag])
 
 
 T = TypeVar("T")
@@ -24,18 +29,23 @@ def remove_none(items: List[T]) -> List[T]:
     return [i for i in items if i is not None]
 
 
-@api.route("/favorite/add", methods=["POST"])
-def add_favorite():
+class FavoritesAddBody(BaseModel):
+    hash: str = Field(
+        description="The hash of the item",
+        min_length=Defaults.HASH_LENGTH,
+        max_length=Defaults.HASH_LENGTH,
+        example=Defaults.API_ALBUMHASH,
+    )
+    type: str = Field(description="The type of the item", example=FavType.album)
+
+
+@api.post("/add")
+def add_favorite(body: FavoritesAddBody):
     """
     Adds a favorite to the database.
     """
-    data = request.get_json()
-
-    if data is None:
-        return {"error": "No data provided"}, 400
-
-    itemhash = data.get("hash")
-    itemtype = data.get("type")
+    itemhash = body.hash
+    itemtype = body.type
 
     favdb.insert_one_favorite(itemtype, itemhash)
 
@@ -45,18 +55,13 @@ def add_favorite():
     return {"msg": "Added to favorites"}
 
 
-@api.route("/favorite/remove", methods=["POST"])
-def remove_favorite():
+@api.post("/remove")
+def remove_favorite(body: FavoritesAddBody):
     """
     Removes a favorite from the database.
     """
-    data = request.get_json()
-
-    if data is None:
-        return {"error": "No data provided"}, 400
-
-    itemhash = data.get("hash")
-    itemtype = data.get("type")
+    itemhash = body.hash
+    itemtype = body.type
 
     favdb.delete_favorite(itemtype, itemhash)
 
@@ -66,15 +71,12 @@ def remove_favorite():
     return {"msg": "Removed from favorites"}
 
 
-@api.route("/albums/favorite")
-def get_favorite_albums():
-    limit = request.args.get("limit")
-
-    if limit is None:
-        limit = 6
-
-    limit = int(limit)
-
+@api.get("/albums")
+def get_favorite_albums(query: GenericLimitSchema):
+    """
+    Get favorite albums
+    """
+    limit = query.limit
     albums = favdb.get_fav_albums()
     albumhashes = [a[1] for a in albums]
     albumhashes.reverse()
@@ -90,15 +92,12 @@ def get_favorite_albums():
     return {"albums": serialize_for_card_many(fav_albums[:limit])}
 
 
-@api.route("/tracks/favorite")
-def get_favorite_tracks():
-    limit = request.args.get("limit")
-
-    if limit is None:
-        limit = 6
-
-    limit = int(limit)
-
+@api.get("/tracks")
+def get_favorite_tracks(query: GenericLimitSchema):
+    """
+    Get favorite tracks
+    """
+    limit = query.limit
     tracks = favdb.get_fav_tracks()
     trackhashes = [t[1] for t in tracks]
     trackhashes.reverse()
@@ -113,15 +112,12 @@ def get_favorite_tracks():
     return {"tracks": serialize_tracks(tracks[:limit])}
 
 
-@api.route("/artists/favorite")
-def get_favorite_artists():
-    limit = request.args.get("limit")
-
-    if limit is None:
-        limit = 6
-
-    limit = int(limit)
-
+@api.get("/artists")
+def get_favorite_artists(query: GenericLimitSchema):
+    """
+    Get favorite artists
+    """
+    limit = query.limit
     artists = favdb.get_fav_artists()
     artisthashes = [a[1] for a in artists]
     artisthashes.reverse()
@@ -137,27 +133,38 @@ def get_favorite_artists():
     return {"artists": artists[:limit]}
 
 
-@api.route("/favorites")
-def get_all_favorites():
+class GetAllFavoritesQuery(BaseModel):
+    """
+    Extending this class will give you a model with the `limit` field
+    """
+
+    track_limit: int = Field(
+        description="The number of tracks to return",
+        example=Defaults.API_CARD_LIMIT,
+        default=Defaults.API_CARD_LIMIT,
+    )
+
+    album_limit: int = Field(
+        description="The number of albums to return",
+        example=Defaults.API_CARD_LIMIT,
+        default=Defaults.API_CARD_LIMIT,
+    )
+
+    artist_limit: int = Field(
+        description="The number of artists to return",
+        example=Defaults.API_CARD_LIMIT,
+        default=Defaults.API_CARD_LIMIT,
+    )
+
+
+@api.get("")
+def get_all_favorites(query: GetAllFavoritesQuery):
     """
     Returns all the favorites in the database.
     """
-    track_limit = request.args.get("track_limit")
-    album_limit = request.args.get("album_limit")
-    artist_limit = request.args.get("artist_limit")
-
-    if track_limit is None:
-        track_limit = 6
-
-    if album_limit is None:
-        album_limit = 6
-
-    if artist_limit is None:
-        artist_limit = 6
-
-    track_limit = int(track_limit)
-    album_limit = int(album_limit)
-    artist_limit = int(artist_limit)
+    track_limit = query.track_limit
+    album_limit = query.album_limit
+    artist_limit = query.artist_limit
 
     # largest is x2 to accound for broken hashes if any
     largest = max(track_limit, album_limit, artist_limit)
@@ -266,20 +273,13 @@ def get_all_favorites():
     }
 
 
-@api.route("/favorites/check")
-def check_favorite():
+@api.get("/check")
+def check_favorite(query: FavoritesAddBody):
     """
     Checks if a favorite exists in the database.
     """
-    itemhash = request.args.get("hash")
-    itemtype = request.args.get("type")
-
-    if itemhash is None:
-        return {"error": "No hash provided"}, 400
-
-    if itemtype is None:
-        return {"error": "No type provided"}, 400
-
+    itemhash = query.hash
+    itemtype = query.type
     exists = favdb.check_is_favorite(itemhash, itemtype)
 
     return {"is_favorite": exists}
