@@ -28,11 +28,14 @@ VOLUME /music
 
 VOLUME /config
 
-RUN pip install poetry
+# RUN pip install poetry
+RUN python -m venv /venv
 
-RUN poetry config virtualenvs.create false
+# RUN poetry config virtualenvs.create false
+RUN . /venv/bin/activate
 
-RUN poetry install
+# RUN poetry install
+RUN pip install -r requirements.txt
 
 RUN apt-get update && apt-get install -y ffmpeg libavcodec-extra
 
