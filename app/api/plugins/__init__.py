@@ -1,37 +1,60 @@
 from flask import Blueprint, request
 
+from flask_openapi3 import Tag
+from flask_openapi3 import APIBlueprint
+from pydantic import BaseModel, Field
 from app.db.sqlite.plugins import PluginsMethods
 
+bp_tag = Tag(name="Plugins", description="Manage plugins")
+api = APIBlueprint("plugins", __name__, url_prefix="/plugins", abp_tags=[bp_tag])
 
-api = Blueprint("plugins", __name__, url_prefix="/plugins")
 
-
-@api.route("/", methods=["GET"])
+@api.get("/")
 def get_all_plugins():
+    """
+    List all plugins
+    """
     plugins = PluginsMethods.get_all_plugins()
 
     return {"plugins": plugins}
 
 
-@api.route("/setactive", methods=["GET"])
-def activate_deactivate_plugin():
-    name = request.args.get("plugin", None)
-    state = request.args.get("state", None)
+class PluginBody(BaseModel):
+    plugin: str = Field(description="The plugin name", example="lyrics")
 
-    if not name or not state:
-        return {"error": "Missing plugin or state"}, 400
 
-    PluginsMethods.plugin_set_active(name, int(state))
+class PluginActivateBody(PluginBody):
+    active: bool = Field(
+        description="New plugin active state", example=False, default=False
+    )
+
+
+@api.post("/setactive")
+def activate_deactivate_plugin(body: PluginActivateBody):
+    """
+    Activate/Deactivate plugin
+    """
+    name = body.plugin
+    active = 1 if body.active else 0
+
+    PluginsMethods.plugin_set_active(name, active)
 
     return {"message": "OK"}, 200
 
 
-@api.route("/settings", methods=["POST"])
-def update_plugin_settings():
-    data = request.get_json()
+class PluginSettingsBody(PluginBody):
+    settings: dict = Field(
+        description="The new plugin settings", example={"key": "value"}
+    )
 
-    plugin = data.get("plugin", None)
-    settings = data.get("settings", None)
+
+@api.post("/settings")
+def update_plugin_settings(body: PluginSettingsBody):
+    """
+    Update plugin settings
+    """
+    plugin = body.plugin
+    settings = body.settings
 
     if not plugin or not settings:
         return {"error": "Missing plugin or settings"}, 400

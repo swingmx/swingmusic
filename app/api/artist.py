@@ -98,7 +98,6 @@ def get_artist_albums(path: ArtistHashSchema, query: GetArtistAlbumsQuery):
     limit = query.limit
 
     all_albums = AlbumStore.get_albums_by_artisthash(artisthash)
-
     # start: check for missing albums. ie. compilations and features
     all_tracks = TrackStore.get_tracks_by_artisthash(artisthash)
 
@@ -163,7 +162,7 @@ def get_artist_albums(path: ArtistHashSchema, query: GetArtistAlbumsQuery):
     if artist is None:
         return {"error": "Artist not found"}, 404
 
-    if return_all is not None and return_all == "true":
+    if return_all:
         limit = len(all_albums)
 
     singles_and_eps = singles + eps

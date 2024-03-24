@@ -3,6 +3,7 @@ Contains default configs
 """
 
 import os
+import subprocess
 import sys
 from typing import Any
 
@@ -103,6 +104,7 @@ class Defaults:
     API_TRACKHASH = "0853280a12"
     API_ALBUMNAME = "Rumours"
     API_ARTISTNAME = "girl in red"
+    API_TRACKNAME = "Apartment 402"
 
     API_CARD_LIMIT = 6
 
@@ -242,21 +244,49 @@ class TCOLOR:
     # credits: https://stackoverflow.com/a/287944
 
 
+def getLatestCommitHash():
+    """
+    Returns the latest git commit hash for the current branch
+    """
+
+    try:
+        hash = subprocess.check_output(["git", "rev-parse", "--short", "HEAD"])
+        return hash.decode("utf-8").strip()
+    except:
+        return ""
+
+
+def getCurrentBranch():
+    """
+    Returns the current git branch
+    """
+
+    try:
+        branch = subprocess.check_output(["git", "rev-parse", "--abbrev-ref", "HEAD"])
+        return branch.decode("utf-8").strip()
+    except:
+        return ""
+
+
 class Keys:
     SWINGMUSIC_APP_VERSION = os.environ.get("SWINGMUSIC_APP_VERSION")
+    GIT_LATEST_COMMIT_HASH = "<unset>"
+    GIT_CURRENT_BRANCH = "<unset>"
 
     @classmethod
     def load(cls):
         if IS_BUILD:
             cls.SWINGMUSIC_APP_VERSION = configs.SWINGMUSIC_APP_VERSION
+            cls.GIT_LATEST_COMMIT_HASH = configs.GIT_LATEST_COMMIT_HASH
+            cls.GIT_CURRENT_BRANCH = configs.GIT_CURRENT_BRANCH
+        else:
+            cls.GIT_LATEST_COMMIT_HASH = getLatestCommitHash()
+            cls.GIT_CURRENT_BRANCH = getCurrentBranch()
 
         cls.verify_keys()
 
     @classmethod
     def verify_keys(cls):
-        # if not cls.LASTFM_API_KEY:
-        #     print("ERROR: LASTFM_API_KEY not set in environment")
-        #     sys.exit(0)
         pass
 
     @classmethod

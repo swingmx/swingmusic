@@ -1,24 +1,41 @@
-from flask import Blueprint, request
+from flask_openapi3 import Tag
+from flask_openapi3 import APIBlueprint
+from pydantic import Field
+from app.api.apischemas import TrackHashSchema
 from app.lib.lyrics import format_synced_lyrics
 
 from app.plugins.lyrics import Lyrics
+from app.settings import Defaults
 from app.utils.hashing import create_hash
 
-api = Blueprint("lyricsplugin", __name__, url_prefix="/plugins/lyrics")
+bp_tag = Tag(name="Lyrics Plugin", description="Musixmatch lyrics plugin")
+api = APIBlueprint(
+    "lyricsplugin", __name__, url_prefix="/plugins/lyrics", abp_tags=[bp_tag]
+)
 
 
-@api.route("/search", methods=["POST"])
-def search_lyrics():
-    data = request.get_json()
+class LyricsSearchBody(TrackHashSchema):
+    title: str = Field(description="The track title ", example=Defaults.API_TRACKNAME)
+    artist: str = Field(description="The track artist ", example=Defaults.API_ARTISTNAME)
+    album: str = Field(description="The track track album ", example=Defaults.API_ALBUMNAME)
+    filepath: str = Field(
+        description="Track filepath to save the lyrics file relative to",
+        example="/home/cwilvx/temp/crazy song.mp3",
+    )
 
-    trackhash = data.get("trackhash", "")
-    title = data.get("title", "")
-    artist = data.get("artist", "")
-    album = data.get("album", "")
-    filepath = data.get("filepath", None)
+
+@api.post("/search")
+def search_lyrics(body: LyricsSearchBody):
+    """
+    Search for lyrics by title and artist
+    """
+    title = body.title
+    artist = body.artist
+    album = body.album
+    filepath = body.filepath
+    trackhash = body.trackhash
 
     finder = Lyrics()
-
     data = finder.search_lyrics_by_title_and_artist(title, artist)
 
     if not data:
