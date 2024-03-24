@@ -55,7 +55,7 @@ def create_api():
         description=open_api_description,
     )
 
-    app = OpenAPI(__name__, info=api_info)
+    app = OpenAPI(__name__, info=api_info, doc_prefix="/docs")
 
     CORS(app, origins="*")
     Compress(app)

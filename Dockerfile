@@ -39,4 +39,5 @@ RUN pip install -r requirements.txt
 
 RUN apt-get update && apt-get install -y ffmpeg libavcodec-extra
 
-ENTRYPOINT ["poetry", "run", "python", "manage.py", "--host", "0.0.0.0", "--config", "/config"]
+# ENTRYPOINT ["poetry", "run", "python", "manage.py", "--host", "0.0.0.0", "--config", "/config"]
+ENTRYPOINT ["python", "manage.py", "--host", "0.0.0.0", "--config", "/config"]
