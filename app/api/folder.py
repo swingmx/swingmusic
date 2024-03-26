@@ -47,12 +47,15 @@ def get_folder_tree(body: FolderTree):
         pass
 
     if req_dir == "$home":
-        folders = get_folders(root_dirs)
+        if len(root_dirs) == 1:
+            req_dir = root_dirs[0]
+        else:
+            folders = get_folders(root_dirs)
 
-        return {
-            "folders": folders,
-            "tracks": [],
-        }
+            return {
+                "folders": folders,
+                "tracks": [],
+            }
 
     if is_windows():
         # Trailing slash needed when drive letters are passed,
@@ -102,7 +105,7 @@ class DirBrowserBody(BaseModel):
     )
 
 
-@api.post("/folder/dir-browser")
+@api.post("/dir-browser")
 def list_folders(body: DirBrowserBody):
     """
     List folders
@@ -145,7 +148,7 @@ class FolderOpenInFileManagerQuery(BaseModel):
     )
 
 
-@api.get("/folder/show-in-files")
+@api.get("/show-in-files")
 def open_in_file_manager(query: FolderOpenInFileManagerQuery):
     """
     Open in file manager
@@ -163,7 +166,7 @@ class GetTracksInPathQuery(BaseModel):
     )
 
 
-@api.get("/folder/tracks/all")
+@api.get("/tracks/all")
 def get_tracks_in_path(query: GetTracksInPathQuery):
     """
     Get tracks in path
