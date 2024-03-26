@@ -1,6 +1,7 @@
 """
 Handles arguments passed to the program.
 """
+
 import os.path
 import sys
 
@@ -9,6 +10,7 @@ import PyInstaller.__main__ as bundler
 from app import settings
 from app.logger import log
 from app.print_help import HELP_MESSAGE
+from app.utils.paths import getFlaskOpenApiPath
 from app.utils.xdg_utils import get_xdg_config_dir
 from app.utils.wintools import is_windows
 
@@ -45,6 +47,8 @@ class HandleArgs:
 
         config_keys = [
             "SWINGMUSIC_APP_VERSION",
+            "GIT_LATEST_COMMIT_HASH",
+            "GIT_CURRENT_BRANCH",
         ]
 
         lines = []
@@ -65,6 +69,8 @@ class HandleArgs:
 
             _s = ";" if is_windows() else ":"
 
+            flask_openapi_path = getFlaskOpenApiPath()
+
             bundler.run(
                 [
                     "manage.py",
@@ -74,6 +80,7 @@ class HandleArgs:
                     "--clean",
                     f"--add-data=assets{_s}assets",
                     f"--add-data=client{_s}client",
+                    f"--add-data={flask_openapi_path}/templates/static{_s}flask_openapi3/templates/static",
                     f"--icon=assets/logo-fill.light.ico",
                     "-y",
                 ]
@@ -176,5 +183,8 @@ class HandleArgs:
     @staticmethod
     def handle_version():
         if any((a in ARGS for a in ALLARGS.version)):
-            print(settings.Keys.SWINGMUSIC_APP_VERSION)
+            print(f"VERSION: v{settings.Keys.SWINGMUSIC_APP_VERSION}")
+            print(
+                f"COMMIT#: {settings.Keys.GIT_CURRENT_BRANCH}/{settings.Keys.GIT_LATEST_COMMIT_HASH}"
+            )
             sys.exit(0)

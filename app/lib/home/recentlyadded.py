@@ -12,7 +12,7 @@ from app.serializers.artist import serialize_for_card
 
 from itertools import groupby
 
-from app.utils.dates import timestamp_from_days_ago, timestamp_to_time_passed
+from app.utils.dates import timestamp_to_time_passed
 
 older_albums = set()
 older_artists = set()
@@ -216,8 +216,6 @@ def get_recent_items(limit: int = 7):
     return recent_items
 
 
-def get_recent_tracks(cutoff_days: int):
+def get_recent_tracks(limit: int):
     tracks = sorted(TrackStore.tracks, key=lambda t: t.created_date, reverse=True)
-    timestamp = timestamp_from_days_ago(cutoff_days)
-
-    return [t for t in tracks if t.created_date > timestamp]
+    return tracks[:limit]

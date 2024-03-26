@@ -1,12 +1,18 @@
-from flask import Blueprint
+from flask_openapi3 import Tag
+from flask_openapi3 import APIBlueprint
+from app.api.apischemas import AlbumHashSchema
 from app.store.albums import AlbumStore as Store
 
-api = Blueprint("colors", __name__, url_prefix="/colors")
+bp_tag = Tag(name="Colors", description="Get item colors")
+api = APIBlueprint("colors", __name__, url_prefix="/colors", abp_tags=[bp_tag])
 
 
-@api.route("/album/<albumhash>")
-def get_album_color(albumhash: str):
-    album = Store.get_album_by_hash(albumhash)
+@api.get("/album/<albumhash>")
+def get_album_color(path: AlbumHashSchema):
+    """
+    Get album color
+    """
+    album = Store.get_album_by_hash(path.albumhash)
 
     msg = {"color": ""}
 

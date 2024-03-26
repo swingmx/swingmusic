@@ -66,9 +66,9 @@ class PluginsMethods:
         return []
 
     @classmethod
-    def plugin_set_active(cls, name: str, state: int):
+    def plugin_set_active(cls, name: str, active: int):
         with SQLiteManager(userdata_db=True) as cur:
-            cur.execute("UPDATE plugins SET active=? WHERE name=?", (state, name))
+            cur.execute("UPDATE plugins SET active=? WHERE name=?", (active, name))
             cur.close()
 
     @classmethod

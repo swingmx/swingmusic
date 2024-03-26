@@ -1,4 +1,8 @@
-from flask import Blueprint, request
+from typing import Any
+from flask import request
+from flask_openapi3 import Tag
+from flask_openapi3 import APIBlueprint
+from pydantic import BaseModel, Field
 
 from app.db.sqlite.plugins import PluginsMethods as pdb
 from app.db.sqlite.settings import SettingsSQLMethods as sdb
@@ -12,7 +16,8 @@ from app.store.tracks import TrackStore
 from app.utils.generators import get_random_str
 from app.utils.threading import background
 
-api = Blueprint("settings", __name__, url_prefix="")
+bp_tag = Tag(name="Settings", description="Customize stuff")
+api = APIBlueprint("settings", __name__, url_prefix="/notsettings", abp_tags=[bp_tag])
 
 
 def get_child_dirs(parent: str, children: list[str]):
@@ -77,23 +82,24 @@ def finalize(new_: list[str], removed_: list[str], db_dirs_: list[str]):
     rebuild_store(db_dirs_)
 
 
-@api.route("/settings/add-root-dirs", methods=["POST"])
-def add_root_dirs():
+class AddRootDirsBody(BaseModel):
+    new_dirs: list[str] = Field(
+        description="The new directories to add",
+        example=["/home/user/Music", "/home/user/Downloads"],
+    )
+    removed: list[str] = Field(
+        description="The directories to remove",
+        example=["/home/user/Downloads"],
+    )
+
+
+@api.post("/add-root-dirs")
+def add_root_dirs(body: AddRootDirsBody):
     """
     Add custom root directories to the database.
     """
-    msg = {"msg": "Failed! No directories were given."}
-
-    data = request.get_json()
-
-    if data is None:
-        return msg, 400
-
-    try:
-        new_dirs: list[str] = data["new_dirs"]
-        removed_dirs: list[str] = data["removed"]
-    except KeyError:
-        return msg, 400
+    new_dirs = body.new_dirs
+    removed_dirs = body.removed
 
     db_dirs = sdb.get_root_dirs()
     _h = "$home"
@@ -132,10 +138,10 @@ def add_root_dirs():
     return {"root_dirs": db_dirs}
 
 
-@api.route("/settings/get-root-dirs", methods=["GET"])
+@api.get("/get-root-dirs")
 def get_root_dirs():
     """
-    Get custom root directories from the database.
+    Get root directories
     """
     dirs = sdb.get_root_dirs()
 
@@ -154,10 +160,10 @@ mapp = {
 }
 
 
-@api.route("/settings/", methods=["GET"])
+@api.get("")
 def get_all_settings():
     """
-    Get all settings from the database.
+    Get all settings
     """
 
     settings = sdb.get_all_settings()
@@ -195,10 +201,24 @@ def reload_all_for_set_setting():
     reload_everything(get_random_str())
 
 
-@api.route("/settings/set", methods=["POST"])
-def set_setting():
-    key = request.get_json().get("key")
-    value = request.get_json().get("value")
+class SetSettingBody(BaseModel):
+    key: str = Field(
+        description="The setting key",
+        example="artist_separators",
+    )
+    value: Any = Field(
+        description="The setting value",
+        example=",",
+    )
+
+
+@api.post("/set")
+def set_setting(body: SetSettingBody):
+    """
+    Set a setting.
+    """
+    key = body.key
+    value = body.value
 
     if key is None or value is None or key == "root_dirs":
         return {"msg": "Invalid arguments!"}, 400
@@ -235,10 +255,10 @@ def run_populate():
     populate.Populate(instance_key=get_random_str())
 
 
-@api.route("/settings/trigger-scan", methods=["GET"])
+@api.get("/trigger-scan")
 def trigger_scan():
     """
-    Triggers a scan.
+    Triggers scan for new music
     """
     run_populate()
 

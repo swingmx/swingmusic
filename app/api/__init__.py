@@ -2,10 +2,14 @@
 This module combines all API blueprints into a single Flask app instance.
 """
 
-from flask import Flask
-from flask_compress import Compress
+import datetime
 from flask_cors import CORS
+from flask_compress import Compress
 
+from flask_openapi3 import Info
+from flask_openapi3 import OpenAPI
+
+from app.settings import Keys
 from .plugins import lyrics as lyrics_plugin
 from app.api import (
     album,
@@ -25,12 +29,34 @@ from app.api import (
     getall,
 )
 
+# TODO: Move this description to a separate file
+open_api_description = f"""
+The REST API exposed by your Swing Music server
+
+### Definition of terms:
+
+#### 1. `limit`: The number of items to return.
+
+In endpoints that request multiple lists of items, this represents the number of items to return for each list.
+
+---
+
+[MIT License](https://github.com/swing-opensource/swingmusic?tab=MIT-1-ov-file#MIT-1-ov-file) | Copyright (c) {datetime.datetime.now().year} [Mungai Njoroge](https://mungai.vercel.app)
+"""
+
 
 def create_api():
     """
     Creates the Flask instance, registers modules and registers all the API blueprints.
     """
-    app = Flask(__name__)
+    api_info = Info(
+        title=f"Swing Music",
+        version=f"v{Keys.SWINGMUSIC_APP_VERSION}",
+        description=open_api_description,
+    )
+
+    app = OpenAPI(__name__, info=api_info, doc_prefix="/docs")
+
     CORS(app, origins="*")
     Compress(app)
 
@@ -39,29 +65,29 @@ def create_api():
     ]
 
     with app.app_context():
-        app.register_blueprint(album.api)
-        app.register_blueprint(artist.api)
-        app.register_blueprint(send_file.api)
-        app.register_blueprint(search.api)
-        app.register_blueprint(folder.api)
-        app.register_blueprint(playlist.api)
-        app.register_blueprint(favorites.api)
-        app.register_blueprint(imgserver.api)
-        app.register_blueprint(settings.api)
-        app.register_blueprint(colors.api)
-        app.register_blueprint(lyrics.api)
+        app.register_api(album.api)
+        app.register_api(artist.api)
+        app.register_api(send_file.api)
+        app.register_api(search.api)
+        app.register_api(folder.api)
+        app.register_api(playlist.api)
+        app.register_api(favorites.api)
+        app.register_api(imgserver.api)
+        app.register_api(settings.api)
+        app.register_api(colors.api)
+        app.register_api(lyrics.api)
 
         # Plugins
-        app.register_blueprint(plugins.api)
-        app.register_blueprint(lyrics_plugin.api)
+        app.register_api(plugins.api)
+        app.register_api(lyrics_plugin.api)
 
         # Logger
-        app.register_blueprint(logger.api_bp)
+        app.register_api(logger.api)
 
         # Home
-        app.register_blueprint(home.api_bp)
+        app.register_api(home.api)
 
         # Flask Restful
-        app.register_blueprint(getall.api_bp)
+        app.register_api(getall.api)
 
         return app

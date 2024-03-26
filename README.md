@@ -19,7 +19,15 @@ Swing Music is a beautiful, self-hosted music player for your local audio files.
 
 Swing Music is available as pre-compiled binaries for Windows and Linux. Just download the latest release from the [downloads page](https://swingmusic.vercel.app/downloads) and launch it.
 
-For Linux, you need to make the file executable first.
+[FFmpeg](https://ffmpeg.org/) is needed for the audio silence skip feature, so you need to install it first. On windows, you can follows [this tutorial](https://phoenixnap.com/kb/ffmpeg-windows) to install FFmpeg.
+
+On Linux, you can install FFmpeg using:
+
+```sh
+sudo apt-get install ffmpeg libavcodec-extra -y
+```
+
+Then make the file executable first.
 
 ```bash
 chmod a+x ./swingmusic
@@ -35,10 +43,10 @@ swingmusic --port 1980
 
 ### Options
 
-Options are flags that can be passed when starting the app in the terminal to tweak runtime settings or perform tasks. You can use the `-h` flag to see all supported options. 
+Options are flags that can be passed when starting the app in the terminal to tweak runtime settings or perform tasks. You can use the `-h` flag to see all supported options.
 
 > [!TIP]
-> You can read more about options in [the docs](https://swingmusic.vercel.app/guide/getting-started.html#options). 
+> You can read more about options in [the docs](https://swingmusic.vercel.app/guide/getting-started.html#options).
 
 ### Docker
 
@@ -80,10 +88,9 @@ services:
 
 ### Contributing
 
-Swing Music is looking for contributors. If you're interested, please join us at the [Swing Music Community](https://t.me/+9n61PFcgKhozZDE0) group on Telegram. For more information, take a look at https://github.com/swing-opensource/swingmusic/issues/186. 
+Swing Music is looking for contributors. If you're interested, please join us at the [Swing Music Community](https://t.me/+9n61PFcgKhozZDE0) group on Telegram. For more information, take a look at https://github.com/swing-opensource/swingmusic/issues/186.
 
-[Contributing Guidelines](.github/contributing.md).
-
+[**CONTRIBUTING GUIDELINES**](.github/contributing.md).
 
 ### License
 

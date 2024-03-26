@@ -1,52 +1,45 @@
-from app.models.track import Track
+from typing import List, Optional, TypeVar
 
+T = TypeVar("T")
 
-class UseBisection:
+def use_bisection(
+    source: List[T], key: str, queries: List[str], limit: int = -1
+) -> List[Optional[T]]:
     """
     Uses bisection to find a list of items in another list.
 
-    returns a list of found items with `None` items being not found
-    items.
+    Returns a list of found items with `None` items being not found items.
     """
 
-    def __init__(
-        self, source: list, search_from: str, queries: list[str], limit=-1
-    ) -> None:
-        self.source_list = source
-        self.queries_list = queries
-        self.attr = search_from
-        self.limit = limit
-
-    def find(self, query: str):
+    def find(query: str):
         left = 0
-        right = len(self.source_list) - 1
+        right = len(source) - 1
 
         while left <= right:
             mid = (left + right) // 2
-            if self.source_list[mid].__getattribute__(self.attr) == query:
-                return self.source_list[mid]
-            elif self.source_list[mid].__getattribute__(self.attr) > query:
+            if source[mid].__getattribute__(key) == query:
+                return source[mid]
+            elif source[mid].__getattribute__(key) > query:
                 right = mid - 1
             else:
                 left = mid + 1
 
         return None
 
-    def __call__(self):
-        if len(self.source_list) == 0:
-            return []
+    if len(source) == 0:
+        return []
 
-        results: list[Track] = []
+    results = []
 
-        for query in self.queries_list:
-            res = self.find(query)
+    for query in queries:
+        res = find(query)
 
-            if res is None:
-                continue
+        if res is None:
+            continue
 
-            results.append(res)
+        results.append(res)
 
-            if self.limit != -1 and len(results) >= self.limit:
-                break
+        if limit != -1 and len(results) >= limit:
+            break
 
-        return results
+    return results

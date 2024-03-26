@@ -1,7 +1,7 @@
 # local env files
 .env.local
 .env.*.local
-
+venv
 
 # Editor directories and files
 .idea

@@ -60,7 +60,7 @@ def get_silence_paddings(ending_file: str, starting_file: str):
     """
     Returns the ending silence of a track and the starting silence of the next.
     """
-    silence = {"start": 0, "end": 0}
+    silence = {"starting_file": 0, "ending_file": 0}
     ending_thread = None
     starting_thread = None
 
@@ -77,9 +77,9 @@ def get_silence_paddings(ending_file: str, starting_file: str):
         starting_thread.start()
 
     if ending_thread:
-        silence["end"] = ending_thread.join()
+        silence["ending_file"] = ending_thread.join()
 
     if starting_thread:
-        silence["start"] = starting_thread.join()
+        silence["starting_file"] = starting_thread.join()
 
     return silence

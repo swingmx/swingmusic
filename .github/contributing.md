@@ -79,7 +79,9 @@ yarn dev
 
 You can see the client at http://localhost:5173.
 
-> The client is hardcoded to hook into the server on port `1980` (to allow the another server instance to be running on the default port). You can follow the instructions above to set up the server in that port, or you can change the port in `swingmusic-client/config.ts`. Don't forget to change it back when in the PR.
+> The client is hardcoded to hook into the server on port `1980` (to allow the another server instance to be running on the default port).
+> 
+> You can follow the instructions above to set up the server in that port, or you can change the port in `swingmusic-client/config.ts`. Don't forget to change it back when in the PR.
 
 ## Where can I go for help?
 

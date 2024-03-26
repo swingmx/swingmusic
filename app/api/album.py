@@ -4,41 +4,39 @@ Contains all the album routes.
 
 import random
 
-from flask import Blueprint, request
+from pydantic import Field
+from flask_openapi3 import Tag
+from flask_openapi3 import APIBlueprint
+from app.api.apischemas import AlbumHashSchema, AlbumLimitSchema, ArtistHashSchema
 
-from app.db.sqlite.albumcolors import SQLiteAlbumMethods as adb
-from app.db.sqlite.favorite import SQLiteFavoriteMethods as favdb
-from app.db.sqlite.lastfm.similar_artists import SQLiteLastFMSimilarArtists as lastfmdb
-from app.lib.albumslib import sort_by_track_no
+from app.settings import Defaults
 from app.models import FavType, Track
-from app.serializers.album import serialize_for_card
-from app.serializers.track import serialize_track
 from app.store.albums import AlbumStore
 from app.store.tracks import TrackStore
 from app.utils.hashing import create_hash
+from app.lib.albumslib import sort_by_track_no
+from app.serializers.album import serialize_for_card
+from app.serializers.track import serialize_track
+from app.db.sqlite.albumcolors import SQLiteAlbumMethods as adb
+from app.db.sqlite.favorite import SQLiteFavoriteMethods as favdb
+from app.db.sqlite.lastfm.similar_artists import SQLiteLastFMSimilarArtists as lastfmdb
 
 get_albums_by_albumartist = adb.get_albums_by_albumartist
 check_is_fav = favdb.check_is_favorite
 
-api = Blueprint("album", __name__, url_prefix="")
+bp_tag = Tag(name="Album", description="Single album")
+api = APIBlueprint("album", __name__, url_prefix="/album", abp_tags=[bp_tag])
 
 
-@api.route("/album", methods=["POST"])
-def get_album_tracks_and_info():
+# NOTE: Don't use "/" as it will cause redirects (failure)
+@api.post("")
+def get_album_tracks_and_info(body: AlbumHashSchema):
     """
-    Returns all the tracks in the given album
+    Get album and tracks
+
+    Returns album info and tracks for the given albumhash.
     """
-
-    data = request.get_json()
-    error_msg = {"msg": "No hash provided"}
-
-    if data is None:
-        return error_msg, 400
-
-    try:
-        albumhash: str = data["albumhash"]
-    except KeyError:
-        return error_msg, 400
+    albumhash = body.albumhash
 
     error_msg = {"error": "Album not created yet."}
     album = AlbumStore.get_album_by_hash(albumhash)
@@ -82,27 +80,43 @@ def get_album_tracks_and_info():
     }
 
 
-@api.route("/album/<albumhash>/tracks", methods=["GET"])
-def get_album_tracks(albumhash: str):
+@api.get("/<albumhash>/tracks")
+def get_album_tracks(path: AlbumHashSchema):
     """
+    Get album tracks
+
     Returns all the tracks in the given album, sorted by disc and track number.
+    NOTE: No album info is returned.
     """
-    tracks = TrackStore.get_tracks_by_albumhash(albumhash)
+    tracks = TrackStore.get_tracks_by_albumhash(path.albumhash)
     tracks = sort_by_track_no(tracks)
 
-    return {"tracks": tracks}
+    return tracks
 
 
-@api.route("/album/from-artist", methods=["POST"])
-def get_artist_albums():
-    data = request.get_json()
+class GetMoreFromArtistsBody(AlbumLimitSchema):
+    albumartists: str = Field(
+        description="The artist hashes to get more albums from",
+        example=Defaults.API_ARTISTHASH,
+    )
 
-    if data is None:
-        return {"msg": "No albumartist provided"}
+    base_title: str = Field(
+        description="The base title of the album to exclude from the results.",
+        example=Defaults.API_ALBUMNAME,
+        default=None,
+    )
 
-    albumartists: str = data["albumartists"]
-    limit: int = data.get("limit")
-    base_title: str = data.get("base_title")
+
+@api.post("/from-artist")
+def get_more_from_artist(body: GetMoreFromArtistsBody):
+    """
+    Get more from artist
+
+    Returns more albums from the given artist hashes.
+    """
+    albumartists = body.albumartists
+    limit = body.limit
+    base_title = body.base_title
 
     albumartists: list[str] = albumartists.split(",")
 
@@ -125,23 +139,30 @@ def get_artist_albums():
         if len(a["albums"]) > 0
     ]
 
-    return {"data": albums}
+    return albums
 
 
-@api.route("/album/versions", methods=["POST"])
-def get_album_versions():
+class GetAlbumVersionsBody(ArtistHashSchema):
+    og_album_title: str = Field(
+        description="The original album title (album.og_title)",
+        example=Defaults.API_ALBUMNAME,
+    )
+    base_title: str = Field(
+        description="The base title of the album to exclude from the results.",
+        example=Defaults.API_ALBUMNAME,
+    )
+
+
+@api.post("/other-versions")
+def get_album_versions(body: GetAlbumVersionsBody):
     """
+    Get other versions
+
     Returns other versions of the given album.
     """
-
-    data = request.get_json()
-
-    if data is None:
-        return {"msg": "No albumartist provided"}
-
-    og_album_title: str = data["og_album_title"]
-    base_title: str = data["base_title"]
-    artisthash: str = data["artisthash"]
+    og_album_title = body.og_album_title
+    base_title = body.base_title
+    artisthash = body.artisthash
 
     albums = AlbumStore.get_albums_by_artisthash(artisthash)
 
@@ -156,26 +177,22 @@ def get_album_versions():
         tracks = TrackStore.get_tracks_by_albumhash(a.albumhash)
         a.get_date_from_tracks(tracks)
 
-    return {"data": albums}
+    return albums
 
 
-@api.route("/album/similar", methods=["GET"])
-def get_similar_albums():
+class GetSimilarAlbumsQuery(ArtistHashSchema, AlbumLimitSchema):
+    pass
+
+
+@api.get("/similar")
+def get_similar_albums(query: GetSimilarAlbumsQuery):
     """
+    Get similar albums
+
     Returns similar albums to the given album.
     """
-    data = request.args
-
-    if data is None:
-        return {"msg": "No artisthash provided"}
-
-    artisthash: str = data["artisthash"]
-    limit: int = data.get("limit")
-
-    if limit is None:
-        limit = 6
-
-    limit = int(limit)
+    artisthash = query.artisthash
+    limit = query.limit
 
     similar_artists = lastfmdb.get_similar_artists_for(artisthash)
 
@@ -197,4 +214,4 @@ def get_similar_albums():
     except ValueError:
         pass
 
-    return {"albums": [serialize_for_card(a) for a in albums[:limit]]}
+    return [serialize_for_card(a) for a in albums[:limit]]

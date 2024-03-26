@@ -62,15 +62,29 @@ jobs:
         uses: actions/setup-python@v2
         with:
           python-version: "3.10.11"
-      - name: Install Poetry
+      - name: Create virtualenv
         run: |
-          pip install poetry
+          python -m venv .venv
+      - name: Activate virtualenv (linux)
+        if: matrix.os == 'ubuntu-20.04'
+        run: |
+          source .venv/bin/activate
+      - name: Activate virtualenv (windows)
+        if: matrix.os == 'windows-2019'
+        run: |
+          .venv\Scripts\Activate
       - name: Install dependencies
         run: |
-          python -m poetry install
+          pip install -r requirements.txt
+      # - name: Install Poetry
+      #   run: |
+      #     pip install poetry
+      # - name: Install dependencies
+      #   run: |
+      #     python -m poetry install
       - name: Build server
         run: |
-          python -m poetry run python manage.py --build
+          python manage.py --build
         env:
           SWINGMUSIC_APP_VERSION: ${{ inputs.tag }}
       - name: Verify Linux build success
@@ -169,6 +183,6 @@ jobs:
           tags: ghcr.io/${{github.repository}}:${{format('v{0}', inputs.tag)}}, ${{env.LATEST_TAG}}
           labels: org.opencontainers.image.title=Docker
           build-args: |
-            client_tag=v${{inputs.tag}}
+            app_version=${{inputs.tag}}
         env:
           LATEST_TAG: ${{ inputs.is_latest == 'true' && format('ghcr.io/{0}:latest', github.repository) || '' }}

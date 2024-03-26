@@ -28,12 +28,15 @@ VOLUME /music
 
 VOLUME /config
 
+RUN python -m venv /venv
+
+# RUN poetry config virtualenvs.create false
+RUN . /venv/bin/activate
+
+# RUN poetry install
+RUN pip install -r requirements.txt
+
 RUN apt-get update && apt-get install -y ffmpeg libavcodec-extra gcc-aarch64-linux-gnu
 
-RUN pip install poetry
-
-RUN poetry config virtualenvs.create false
-
-RUN poetry install
-
-ENTRYPOINT ["poetry", "run", "python", "manage.py", "--host", "0.0.0.0", "--config", "/config"]
+# ENTRYPOINT ["poetry", "run", "python", "manage.py", "--host", "0.0.0.0", "--config", "/config"]
+ENTRYPOINT ["python", "manage.py", "--host", "0.0.0.0", "--config", "/config"]

@@ -1,3 +1,4 @@
+from datetime import datetime
 from app.models import FavType
 from .utils import SQLiteManager
 
@@ -26,9 +27,10 @@ class SQLiteFavoriteMethods:
         if cls.check_is_favorite(fav_hash, fav_type):
             return
 
-        sql = """INSERT INTO favorites(type, hash) VALUES(?,?)"""
+        sql = """INSERT INTO favorites(type, hash, timestamp) VALUES(?,?,?)"""
+        current_timestamp = datetime.now().timestamp()
         with SQLiteManager(userdata_db=True) as cur:
-            cur.execute(sql, (fav_type, fav_hash))
+            cur.execute(sql, (fav_type, fav_hash, current_timestamp))
             cur.close()
 
     @classmethod

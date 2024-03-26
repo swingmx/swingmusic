@@ -1,12 +1,15 @@
 """
 All playlist-related routes.
 """
+
 import json
 from datetime import datetime
 import pathlib
 
-from flask import Blueprint, request
 from PIL import UnidentifiedImageError, Image
+from pydantic import BaseModel, Field
+from flask_openapi3 import Tag
+from flask_openapi3 import APIBlueprint, FileStorage
 
 from app import models
 from app.db.sqlite.playlists import SQLitePlaylistMethods
@@ -18,23 +21,25 @@ from app.utils.dates import create_new_date, date_string_to_time_passed
 from app.utils.remove_duplicates import remove_duplicates
 from app.settings import Paths
 
-api = Blueprint("playlist", __name__, url_prefix="/")
+tag = Tag(name="Playlists", description="Get and manage playlists")
+api = APIBlueprint("playlists", __name__, url_prefix="/playlists", abp_tags=[tag])
 
 PL = SQLitePlaylistMethods
 
+class SendAllPlaylistsQuery(BaseModel):
+    no_images: bool = Field(False, description="Whether to include images")
 
-@api.route("/playlists", methods=["GET"])
-def send_all_playlists():
+
+@api.get("")
+def send_all_playlists(query: SendAllPlaylistsQuery):
     """
     Gets all the playlists.
     """
-    no_images = request.args.get("no_images", False)
-
     playlists = PL.get_all_playlists()
     playlists = list(playlists)
 
     for playlist in playlists:
-        if not no_images:
+        if not query.no_images:
             playlist.images = playlistlib.get_first_4_images(
                 trackhashes=playlist.trackhashes
             )
@@ -69,22 +74,23 @@ def insert_playlist(name: str, image: str = None):
     return PL.insert_one_playlist(playlist)
 
 
-@api.route("/playlist/new", methods=["POST"])
-def create_playlist():
+class CreatePlaylistBody(BaseModel):
+    name: str = Field(..., description="The name of the playlist")
+
+
+@api.post("/new")
+def create_playlist(body: CreatePlaylistBody):
     """
+    New playlist
+
     Creates a new playlist. Accepts POST method with a JSON body.
     """
-    data = request.get_json()
-
-    if data is None:
-        return {"error": "Playlist name not provided"}, 400
-
-    existing_playlist_count = PL.count_playlist_by_name(data["name"])
+    existing_playlist_count = PL.count_playlist_by_name(body.name)
 
     if existing_playlist_count > 0:
         return {"error": "Playlist already exists"}, 409
 
-    playlist = insert_playlist(data["name"])
+    playlist = insert_playlist(body.name)
 
     if playlist is None:
         return {"error": "Playlist could not be created"}, 500
@@ -119,25 +125,30 @@ def get_artist_trackhashes(artisthash: str):
     return [t.trackhash for t in tracks]
 
 
-@api.route("/playlist/<playlist_id>/add", methods=["POST"])
-def add_item_to_playlist(playlist_id: str):
+class PlaylistIDPath(BaseModel):
+    # INFO: playlistid string examples: "recentlyadded"
+    playlistid: int | str = Field(..., description="The ID of the playlist")
+
+
+class AddItemToPlaylistBody(BaseModel):
+    itemtype: str = Field(
+        default="tracks",
+        description="The type of item to add",
+        examples=["tracks", "folder", "album", "artist"],
+    )
+    itemhash: str = Field(..., description="The hash of the item to add")
+
+
+@api.post("/<playlistid>/add")
+def add_item_to_playlist(path: PlaylistIDPath, body: AddItemToPlaylistBody):
     """
-    Takes a playlist ID and a track hash, and adds the track to the playlist
+    Add to playlist.
+
+    If itemtype is not "tracks", itemhash is expected to be a folder, album or artist hash.
     """
-    data = request.get_json()
-
-    if data is None:
-        return {"error": "Track hash not provided"}, 400
-
-    try:
-        itemtype = data["itemtype"]
-    except KeyError:
-        itemtype = None
-
-    try:
-        itemhash: str = data["itemhash"]
-    except KeyError:
-        itemhash = None
+    itemtype = body.itemtype
+    itemhash = body.itemhash
+    playlist_id = path.playlistid
 
     if itemtype == "tracks":
         trackhashes = itemhash.split(",")
@@ -158,13 +169,17 @@ def add_item_to_playlist(playlist_id: str):
     return {"msg": "Done"}, 200
 
 
-@api.route("/playlist/<playlistid>")
-def get_playlist(playlistid: str):
+class GetPlaylistQuery(BaseModel):
+    no_tracks: bool = Field(False, description="Whether to include tracks")
+
+
+@api.get("/<playlistid>")
+def get_playlist(path: PlaylistIDPath, query: GetPlaylistQuery):
     """
-    Gets a playlist by id, and if it exists, it gets all the tracks in the playlist and returns them.
+    Get playlist by id
     """
-    no_tracks = request.args.get("no_tracks", "false")
-    no_tracks = no_tracks == "true"
+    no_tracks = query.no_tracks
+    playlistid = path.playlistid
 
     is_recently_added = playlistid == "recentlyadded"
 
@@ -201,31 +216,40 @@ def get_playlist(playlistid: str):
     return {"info": playlist, "tracks": tracks if not no_tracks else []}
 
 
-@api.route("/playlist/<playlistid>/update", methods=["PUT"])
-def update_playlist_info(playlistid: str):
-    if playlistid is None:
-        return {"error": "Playlist ID not provided"}, 400
+class UpdatePlaylistForm(BaseModel):
+    image: FileStorage = Field(None, description="The image file")
+    name: str = Field(..., description="The name of the playlist")
+    settings: str = Field(
+        ...,
+        description="The settings of the playlist",
+        example='{"has_gif": false, "banner_pos": 50, "square_img": false, "pinned": false}',
+    )
 
-    db_playlist = PL.get_playlist_by_id(int(playlistid))
+
+@api.put("/<playlistid>/update", methods=["PUT"])
+def update_playlist_info(path: PlaylistIDPath, form: UpdatePlaylistForm):
+    """
+    Update playlist
+    """
+    playlistid = path.playlistid
+    db_playlist = PL.get_playlist_by_id(playlistid)
 
     if db_playlist is None:
         return {"error": "Playlist not found"}, 404
 
-    image = None
+    image = form.image
 
-    if "image" in request.files:
-        image = request.files["image"]
+    if form.image:
+        image = form.image
 
-    data = request.form
-
-    settings = json.loads(data.get("settings"))
+    settings = json.loads(form.settings)
     settings["has_gif"] = False
 
     playlist = {
-        "id": int(playlistid),
+        "id": playlistid,
         "image": db_playlist.image,
         "last_updated": create_new_date(),
-        "name": str(data.get("name")).strip(),
+        "name": str(form.name).strip(),
         "settings": settings,
         "trackhashes": json.dumps([]),
     }
@@ -247,7 +271,7 @@ def update_playlist_info(playlistid: str):
 
     p_tuple = (*playlist.values(),)
 
-    PL.update_playlist(int(playlistid), playlist)
+    PL.update_playlist(playlistid, playlist)
 
     playlist = models.Playlist(*p_tuple)
     playlist.last_updated = date_string_to_time_passed(playlist.last_updated)
@@ -257,12 +281,12 @@ def update_playlist_info(playlistid: str):
     }
 
 
-@api.route("/playlist/<playlistid>/pin_unpin", methods=["GET"])
-def pin_unpin_playlist(playlistid: str):
+@api.post("/<playlistid>/pin_unpin")
+def pin_unpin_playlist(path: PlaylistIDPath):
     """
-    Pins or unpins a playlist.
+    Pin playlist.
     """
-    playlist = PL.get_playlist_by_id(int(playlistid))
+    playlist = PL.get_playlist_by_id(path.playlistid)
 
     if playlist is None:
         return {"error": "Playlist not found"}, 404
@@ -274,23 +298,22 @@ def pin_unpin_playlist(playlistid: str):
     except KeyError:
         settings["pinned"] = True
 
-    PL.update_settings(int(playlistid), settings)
+    PL.update_settings(path.playlistid, settings)
 
     return {"msg": "Done"}, 200
 
 
-@api.route("/playlist/<playlistid>/remove-img", methods=["GET"])
-def remove_playlist_image(playlistid: str):
+@api.delete("/<playlistid>/remove-img")
+def remove_playlist_image(path: PlaylistIDPath):
     """
-    Removes the playlist image.
+    Clear playlist image.
     """
-    pid = int(playlistid)
-    playlist = PL.get_playlist_by_id(pid)
+    playlist = PL.get_playlist_by_id(path.playlistid)
 
     if playlist is None:
         return {"error": "Playlist not found"}, 404
 
-    PL.remove_banner(pid)
+    PL.remove_banner(path.playlistid)
 
     playlist.image = None
     playlist.thumb = None
@@ -303,77 +326,61 @@ def remove_playlist_image(playlistid: str):
     return {"playlist": playlist}, 200
 
 
-@api.route("/playlist/delete", methods=["POST"])
-def remove_playlist():
+@api.delete("/<playlistid>/delete", methods=["DELETE"])
+def remove_playlist(path: PlaylistIDPath):
     """
-    Deletes a playlist by ID.
+    Delete playlist
     """
-    message = {"error": "Playlist ID not provided"}
-    data = request.get_json()
-
-    if data is None:
-        return message, 400
-
-    try:
-        pid = data["pid"]
-    except KeyError:
-        return message, 400
-
-    PL.delete_playlist(pid)
+    PL.delete_playlist(path.playlistid)
 
     return {"msg": "Done"}, 200
 
 
-@api.route("/playlist/<pid>/remove-tracks", methods=["POST"])
-def remove_tracks_from_playlist(pid: int):
-    data = request.get_json()
+class RemoveTracksFromPlaylistBody(BaseModel):
+    tracks: list[dict] = Field(..., description="A list of trackhashes to remove")
 
-    if data is None:
-        return {"error": "Track index not provided"}, 400
 
+@api.post("/<playlistid>/remove-tracks")
+def remove_tracks_from_playlist(
+    path: PlaylistIDPath, body: RemoveTracksFromPlaylistBody
+):
+    """
+    Remove track from playlist
+    """
+    # A track looks like this:
     # {
     #    trackhash: str;
     #    index: int;
     # }
 
-    tracks = data["tracks"]
-    PL.remove_tracks_from_playlist(pid, tracks)
+    PL.remove_tracks_from_playlist(path.playlistid, body.tracks)
 
     return {"msg": "Done"}, 200
 
 
-def playlist_exists(name: str) -> bool:
+def playlist_name_exists(name: str) -> bool:
     return PL.count_playlist_by_name(name) > 0
 
 
-@api.route("/playlist/save-item", methods=["POST"])
-def save_item_as_playlist():
-    data = request.get_json()
-    msg = {"error": "'itemtype', 'playlist_name' and 'itemhash' not provided"}, 400
+class SavePlaylistAsItemBody(BaseModel):
+    itemtype: str = Field(..., description="The type of item", example="tracks")
+    playlist_name: str = Field(..., description="The name of the playlist")
+    itemhash: str = Field(..., description="The hash of the item to save")
 
-    if data is None:
-        return msg
 
-    try:
-        playlist_name = data["playlist_name"]
-    except KeyError:
-        playlist_name = None
+@api.post("/save-item")
+def save_item_as_playlist(body: SavePlaylistAsItemBody):
+    """
+    Save as playlist
 
-    if playlist_exists(playlist_name):
+    Saves a track, album, artist or folder as a playlist
+    """
+    itemtype = body.itemtype
+    playlist_name = body.playlist_name
+    itemhash = body.itemhash
+
+    if playlist_name_exists(playlist_name):
         return {"error": "Playlist already exists"}, 409
-
-    try:
-        itemtype = data["itemtype"]
-    except KeyError:
-        itemtype = None
-
-    try:
-        itemhash: str = data["itemhash"]
-    except KeyError:
-        itemhash = None
-
-    if itemtype is None or playlist_name is None or itemhash is None:
-        return msg
 
     if itemtype == "tracks":
         trackhashes = itemhash.split(",")
