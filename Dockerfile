@@ -1,8 +1,6 @@
 FROM node:latest AS CLIENT
 
-ARG client_tag
-
-RUN git clone --branch $client_tag --depth 1 https://github.com/swing-opensource/swingmusic-client.git client
+RUN git clone --depth 1 https://github.com/swing-opensource/swingmusic-client.git client
 
 WORKDIR /client
 
@@ -11,13 +9,12 @@ WORKDIR /client
 # RUN git checkout $client_tag
 
 RUN yarn install
-
 RUN yarn build
 
-FROM python:3.10-slim
-
+FROM python:3.11-slim
 WORKDIR /app/swingmusic
 
+# Copy the files in the current dir into the container
 COPY . .
 
 COPY --from=CLIENT /client/dist/ client
@@ -28,15 +25,13 @@ VOLUME /music
 
 VOLUME /config
 
-RUN python -m venv /venv
-
-# RUN poetry config virtualenvs.create false
-RUN . /venv/bin/activate
-
-# RUN poetry install
 RUN pip install -r requirements.txt
 
-RUN apt-get update && apt-get install -y ffmpeg libavcodec-extra gcc-aarch64-linux-gnu
+RUN apt-get update && apt-get install -y ffmpeg libavcodec-extra gcc-aarch64-linux-gnu && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
 
-# ENTRYPOINT ["poetry", "run", "python", "manage.py", "--host", "0.0.0.0", "--config", "/config"]
+ARG app_version
+ENV SWINGMUSIC_APP_VERSION=$app_version
+
 ENTRYPOINT ["python", "manage.py", "--host", "0.0.0.0", "--config", "/config"]
