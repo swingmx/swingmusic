@@ -10,15 +10,21 @@ class AddTimestampToFavoritesTable(Migration):
     @staticmethod
     def migrate():
         # INFO: add timestamp column with automatic current timestamp
-        sql = f"ALTER TABLE favorites ADD COLUMN timestamp INTEGER NOT NULL DEFAULT 0"
+        sql = f"ALTER TABLE favorites ADD COLUMN IF NOT EXISTS timestamp INTEGER NOT NULL DEFAULT 0"
 
         # INFO: execute the sql
         with SQLiteManager(userdata_db=True) as cur:
-            cur.execute(sql)
+            try:
+                # INFO: Add the timestamp column to the favorites table
+                cur.execute(sql)
 
-            # INFO: Update the timestamp column with the current timestamp
-            cur.execute("UPDATE favorites SET timestamp = strftime('%s', 'now')")
-            cur.close()
+                # INFO: Set all the timestamps to the current time
+                cur.execute("UPDATE favorites SET timestamp = strftime('%s', 'now')")
+            except Exception as e:
+                # INFO: timestamp column already exists
+                pass
+            finally:
+                cur.close()
 
 
 class MoveHashesToSha1(Migration):
@@ -28,6 +34,7 @@ class MoveHashesToSha1(Migration):
 
     Thanks to [@tcsenpai](https:github.com/tcsenpai) for the contribution.
     """
+
     pass
 
     # INFO: Apparentlly, every single table is affected by this migration.

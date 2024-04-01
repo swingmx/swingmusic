@@ -58,7 +58,7 @@ class HandleArgs:
 
             if not value:
                 log.error(f"WARNING: {key} not set in environment")
-                #sys.exit(0)
+                sys.exit(0)
 
             lines.append(f'{key} = "{value}"\n')
 
@@ -132,12 +132,13 @@ class HandleArgs:
 
             try:
                 config_path = ARGS[index + 1]
+                resolved = os.path.abspath(config_path)
 
-                if os.path.exists(config_path):
-                    settings.Paths.set_config_dir(config_path)
+                if os.path.exists(resolved):
+                    settings.Paths.set_config_dir(resolved)
                     return
 
-                log.warn(f"Config path {config_path} doesn't exist")
+                log.warn(f"Config path {resolved} doesn't exist")
                 sys.exit(0)
             except IndexError:
                 pass

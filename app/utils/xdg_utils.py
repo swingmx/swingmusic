@@ -1,7 +1,7 @@
 import os
 
 
-def get_xdg_config_dir():
+def get_xdg_config_dir() -> str:
     """
     Returns the XDG_CONFIG_HOME environment variable if it exists, otherwise
     returns the default config directory. If none of those exist, returns the
@@ -19,3 +19,6 @@ def get_xdg_config_dir():
             return alt_dir
     except TypeError:
         return os.path.expanduser("~")
+
+    # Fallback to current directory
+    return os.path.abspath(".")

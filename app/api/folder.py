@@ -64,12 +64,16 @@ def get_folder_tree(body: FolderTree):
     else:
         req_dir = "/" + req_dir + "/" if not req_dir.startswith("/") else req_dir + "/"
 
-    tracks, folders = GetFilesAndDirs(req_dir, tracks_only=tracks_only)()
+    res = GetFilesAndDirs(req_dir, tracks_only=tracks_only)()
+    res['folders'] = sorted(res['folders'], key=lambda i: i.name)
 
-    return {
-        "tracks": tracks,
-        "folders": sorted(folders, key=lambda i: i.name),
-    }
+    return res
+
+    # return {
+    #     "path": req_dir,
+    #     "tracks": tracks,
+    #     "folders": sorted(folders, key=lambda i: i.name),
+    # }
 
 
 def get_all_drives(is_win: bool = False):

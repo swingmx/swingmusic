@@ -48,11 +48,20 @@ class GetFilesAndDirs:
         self.path = path
         self.tracks_only = tracks_only
 
-    def __call__(self) -> tuple[list[Track], list[Folder]]:
+    def get_files_and_dirs(self, path: str, skip_empty_folders=True):
+        """
+        Given a path, returns a list of tracks and folders in that immediate path.
+
+        Can recursively call itself to skip through empty folders.
+        """
         try:
-            entries = os.scandir(self.path)
+            entries = os.scandir(path)
         except FileNotFoundError:
-            return [], []
+            return {
+                "path": path,
+                "tracks": [],
+                "folders": [],
+            }
 
         dirs, files = [], []
 
@@ -86,4 +95,17 @@ class GetFilesAndDirs:
         if not self.tracks_only:
             folders = get_folders(dirs)
 
-        return tracks, folders
+        if skip_empty_folders and len(folders) == 1 and len(tracks) == 0:
+            # INFO: When we only have one folder and no tracks,
+            # skip through empty folders.
+            # Call recursively with the first folder in the list.
+            return self.get_files_and_dirs(folders[0].path)
+
+        return {
+            "path": path,
+            "tracks": tracks,
+            "folders": folders,
+        }
+
+    def __call__(self):
+        return self.get_files_and_dirs(self.path)

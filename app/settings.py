@@ -275,9 +275,6 @@ class Keys:
 
     @classmethod
     def load(cls):
-        # TODO Remove this. Just an handy flag to test the app without the API key
-        # IS_BUILD = True
-
         if IS_BUILD:
             cls.SWINGMUSIC_APP_VERSION = configs.SWINGMUSIC_APP_VERSION
             cls.GIT_LATEST_COMMIT_HASH = configs.GIT_LATEST_COMMIT_HASH
