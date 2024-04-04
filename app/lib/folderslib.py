@@ -3,6 +3,7 @@ from pathlib import Path
 
 from app.logger import log
 from app.models import Folder, Track
+from app.serializers.track import serialize_tracks
 from app.settings import SUPPORTED_FILES
 from app.utils.wintools import win_replace_slash
 
@@ -103,7 +104,7 @@ class GetFilesAndDirs:
 
         return {
             "path": path,
-            "tracks": tracks,
+            "tracks": serialize_tracks(tracks),
             "folders": folders,
         }
 
