@@ -10,7 +10,7 @@ from app.utils.wintools import win_replace_slash
 from app.store.tracks import TrackStore
 
 
-def create_folder(path: str, count=0) -> Folder:
+def create_folder(path: str, trackcount=0, foldercount=0) -> Folder:
     """
     Creates a folder object from a path.
     """
@@ -20,7 +20,8 @@ def create_folder(path: str, count=0) -> Folder:
         name=folder.name,
         path=win_replace_slash(str(folder)),
         is_sym=folder.is_symlink(),
-        count=count,
+        trackcount=trackcount,
+        foldercount=foldercount,
     )
 
 
@@ -29,15 +30,36 @@ def get_folders(paths: list[str]):
     Filters out folders that don't have any tracks and
     returns a list of folder objects.
     """
-    count_dict = {path: 0 for path in paths}
+    count_dict = {
+        "tracks": {path: 0 for path in paths},
+        # folders are immediate children of the root folder
+        "folders": {path: 0 for path in paths},
+    }
 
     for track in TrackStore.tracks:
         for path in paths:
             if track.folder.startswith(path):
-                count_dict[path] += 1
+                count_dict["tracks"][path] += 1
+            # increment folder count by counting the number of slashes
 
-    folders = [{"path": path, "count": count_dict[path]} for path in paths]
-    return [create_folder(f["path"], f["count"]) for f in folders if f["count"] > 0]
+            print("slash count", track.folder.count("/"), path.count("/"))
+            if track.folder.count("/") == path.count("/"):
+                count_dict["folders"][path] += 1
+
+    folders = [
+        {
+            "path": path,
+            "trackcount": count_dict["tracks"][path],
+            "foldercount": count_dict["folders"][path],
+        }
+        for path in paths
+    ]
+
+    return [
+        create_folder(f["path"], f["trackcount"], f["foldercount"])
+        for f in folders
+        if f["trackcount"] > 0
+    ]
 
 
 class GetFilesAndDirs:
