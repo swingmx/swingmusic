@@ -39,6 +39,9 @@ The REST API exposed by your Swing Music server
 
 In endpoints that request multiple lists of items, this represents the number of items to return for each list.
 
+#### Other infos
+
+- In the folders endpoint, you can request `'$home'` to get the root directories.
 ---
 
 [MIT License](https://github.com/swing-opensource/swingmusic?tab=MIT-1-ov-file#MIT-1-ov-file) | Copyright (c) {datetime.datetime.now().year} [Mungai Njoroge](https://mungai.vercel.app)

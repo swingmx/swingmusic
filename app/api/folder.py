@@ -23,7 +23,9 @@ api = APIBlueprint("folder", __name__, url_prefix="/folder", abp_tags=[tag])
 
 
 class FolderTree(BaseModel):
-    folder: str = Field("$home", description="The folder to things from")
+    folder: str = Field(
+        "$home", example="$home", description="The folder to things from"
+    )
     tracks_only: bool = Field(False, description="Whether to only get tracks")
 
 
@@ -62,10 +64,10 @@ def get_folder_tree(body: FolderTree):
         # Remember, the trailing slash is removed in the client.
         req_dir += "/"
     else:
-        req_dir = "/" + req_dir + "/" if not req_dir.startswith("/") else req_dir + "/"
+        req_dir = "/" + req_dir if not req_dir.startswith("/") else req_dir
 
     res = GetFilesAndDirs(req_dir, tracks_only=tracks_only)()
-    res['folders'] = sorted(res['folders'], key=lambda i: i.name)
+    res["folders"] = sorted(res["folders"], key=lambda i: i.name)
 
     return res
 

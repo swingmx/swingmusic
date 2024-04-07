@@ -90,6 +90,9 @@ def get_recently_played(limit=7):
             if is_home_dir:
                 folder = os.path.expanduser("~")
 
+            # print(folder)
+            # folder = os.path.join("/", folder, "")
+            # print(folder)
             count = len([t for t in TrackStore.tracks if t.folder == folder])
             items.append(
                 {

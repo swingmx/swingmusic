@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+import os
 from pathlib import Path
 
 from app.settings import SessionVarKeys, get_flag
@@ -60,6 +61,11 @@ class Track:
         self.og_album = self.album
         self.last_mod = int(self.last_mod)
         self.date = int(self.date)
+
+        # add a trailing slash to the folder path
+        # to avoid matching a folder starting with the same name as the root path
+        # eg. .../Music and .../Music Videos
+        self.folder = os.path.join(self.folder, "")
 
         if self.artists is not None:
             artists = split_artists(self.artists)

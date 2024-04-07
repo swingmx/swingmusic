@@ -25,6 +25,18 @@ def create_folder(path: str, trackcount=0, foldercount=0) -> Folder:
     )
 
 
+def get_first_child_from_path(root: str, maybe_child: str):
+    """
+    Given a root path and a path, returns the first child from the root path.
+    """
+    if not maybe_child.startswith(root) or maybe_child == root:
+        return None
+
+    children = maybe_child.replace(root, "")
+    first = Path(children).parts[0]
+
+    return os.path.join(root, first)
+
 def get_folders(paths: list[str]):
     """
     Filters out folders that don't have any tracks and
@@ -33,24 +45,27 @@ def get_folders(paths: list[str]):
     count_dict = {
         "tracks": {path: 0 for path in paths},
         # folders are immediate children of the root folder
-        "folders": {path: 0 for path in paths},
+        "folders": {path: set() for path in paths},
     }
 
     for track in TrackStore.tracks:
         for path in paths:
-            if track.folder.startswith(path):
-                count_dict["tracks"][path] += 1
-            # increment folder count by counting the number of slashes
 
-            print("slash count", track.folder.count("/"), path.count("/"))
-            if track.folder.count("/") == path.count("/"):
-                count_dict["folders"][path] += 1
+            # a child path should be longer than the root path
+            if len(track.folder) >= len(path) and track.folder.startswith(path):
+                count_dict["tracks"][path] += 1
+
+                # counting subfolders
+                p = get_first_child_from_path(path, track.folder)
+
+                if p:
+                    count_dict["folders"][path].add(p)
 
     folders = [
         {
             "path": path,
             "trackcount": count_dict["tracks"][path],
-            "foldercount": count_dict["folders"][path],
+            "foldercount": len(count_dict["folders"][path]),
         }
         for path in paths
     ]
@@ -92,7 +107,11 @@ class GetFilesAndDirs:
             ext = os.path.splitext(entry.name)[1].lower()
 
             if entry.is_dir() and not entry.name.startswith("."):
-                dirs.append(win_replace_slash(entry.path))
+                dir = win_replace_slash(entry.path)
+                # add a trailing slash to the folder path
+                # to avoid matching a folder starting with the same name as the root path
+                # eg. .../Music and .../Music VideosI
+                dirs.append(os.path.join(dir, ""))
             elif entry.is_file() and ext in SUPPORTED_FILES:
                 files.append(win_replace_slash(entry.path))
 
