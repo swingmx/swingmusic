@@ -29,18 +29,18 @@ class ImagePath(BaseModel):
     )
 
 
-@api.get("/t/o/<imgpath>")
-def send_original_thumbnail(path: ImagePath):
-    """
-    Get original thumbnail
-    """
-    folder = Paths.get_original_thumb_path()
-    fpath = Path(folder) / path.imgpath
+# @api.get("/t/o/<imgpath>")
+# def send_original_thumbnail(path: ImagePath):
+#     """
+#     Get original thumbnail
+#     """
+#     folder = Paths.get_original_thumb_path()
+#     fpath = Path(folder) / path.imgpath
 
-    if fpath.exists():
-        return send_from_directory(folder, path.imgpath)
+#     if fpath.exists():
+#         return send_from_directory(folder, path.imgpath)
 
-    return send_fallback_img()
+#     return send_fallback_img()
 
 
 @api.get("/t/<imgpath>")

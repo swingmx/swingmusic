@@ -74,10 +74,6 @@ class Paths:
         return join(cls.get_thumbs_path(), "large")
 
     @classmethod
-    def get_original_thumb_path(cls):
-        return join(cls.get_thumbs_path(), "original")
-
-    @classmethod
     def get_assets_path(cls):
         return join(Paths.get_app_dir(), "assets")
 
@@ -92,7 +88,7 @@ class Paths:
 
 # defaults
 class Defaults:
-    THUMB_SIZE = 500
+    THUMB_SIZE = 512
     SM_THUMB_SIZE = 128
     SM_ARTIST_IMG_SIZE = 128
     """

@@ -39,3 +39,11 @@ class MoveHashesToSha1(Migration):
 
     # INFO: Apparentlly, every single table is affected by this migration.
     # NOTE: Use generators to avoid memory issues.
+
+
+class DeleteOriginalThumbnails(Migration):
+    """
+    Original thumbnails are too large and are not needed.
+    """
+    # TODO: Implement this migration
+    pass

@@ -31,7 +31,6 @@ def extract_thumb(filepath: str, webp_path: str, overwrite=False) -> bool:
     Extracts the thumbnail from an audio file.
     Returns the path to the thumbnail.
     """
-    original_img_path = os.path.join(Paths.get_original_thumb_path(), webp_path)
     lg_img_path = os.path.join(Paths.get_lg_thumb_path(), webp_path)
     sm_img_path = os.path.join(Paths.get_sm_thumb_path(), webp_path)
 
@@ -42,7 +41,6 @@ def extract_thumb(filepath: str, webp_path: str, overwrite=False) -> bool:
         width, height = img.size
         ratio = width / height
 
-        img.save(original_img_path, "webp")
         img.resize((tsize, int(tsize / ratio)), Image.ANTIALIAS).save(
             lg_img_path, "webp"
         )
