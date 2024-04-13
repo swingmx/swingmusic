@@ -93,18 +93,18 @@ class Paths:
 # defaults
 class Defaults:
     THUMB_SIZE = 500
-    SM_THUMB_SIZE = 64
-    SM_ARTIST_IMG_SIZE = 64
+    SM_THUMB_SIZE = 128
+    SM_ARTIST_IMG_SIZE = 128
     """
     The size of extracted images in pixels
     """
     HASH_LENGTH = 10
-    API_ALBUMHASH = "c5bcec6cb3"
-    API_ARTISTHASH = "fc6f0acac5"
+    API_ALBUMHASH = "bfe300e966"
+    API_ARTISTHASH = "cae59f1fc5"
     API_TRACKHASH = "0853280a12"
-    API_ALBUMNAME = "Rumours"
-    API_ARTISTNAME = "girl in red"
-    API_TRACKNAME = "Apartment 402"
+    API_ALBUMNAME = "The Goat"
+    API_ARTISTNAME = "Polo G"
+    API_TRACKNAME = "Martin & Gina"
 
     API_CARD_LIMIT = 6
 
