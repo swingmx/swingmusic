@@ -26,7 +26,7 @@ migrations: list[list[Migration]] = [
         v1_3_0.RemoveAllTracks,
         v1_3_0.UpdateAppSettingsTable,
     ],
-    [v1_4_9.AddTimestampToFavoritesTable],
+    [v1_4_9.AddTimestampToFavoritesTable, v1_4_9.DeleteOriginalThumbnails],
 ]
 
 
@@ -46,6 +46,8 @@ def apply_migrations():
                     log.info("Applied migration: %s", m.__name__)
                 except:
                     log.error("Failed to run migration: %s", m.__name__)
-
+    
+    print("Migrations applied successfully.")
+    print("Current migration version: ", len(migrations))
     # bump migration version
     MigrationManager.set_version(len(migrations))

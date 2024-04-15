@@ -29,7 +29,7 @@ class Paths:
 
     @classmethod
     def get_config_dir(cls):
-        return cls.XDG_CONFIG_DIR
+        return cls.XDG_CONFIG_DIR or os.path.realpath(".")
 
     @classmethod
     def get_config_folder(cls):

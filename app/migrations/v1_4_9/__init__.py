@@ -1,5 +1,8 @@
+import os
+import shutil
 from app.db.sqlite.utils import SQLiteManager
 from app.migrations.base import Migration
+from app.settings import Paths
 
 
 class AddTimestampToFavoritesTable(Migration):
@@ -45,5 +48,13 @@ class DeleteOriginalThumbnails(Migration):
     """
     Original thumbnails are too large and are not needed.
     """
+
     # TODO: Implement this migration
-    pass
+
+    @staticmethod
+    def migrate():
+        imgpath = Paths.get_thumbs_path()
+        og_imgpath = os.path.join(imgpath, "original")
+
+        if os.path.exists(og_imgpath):
+            shutil.rmtree(og_imgpath)
