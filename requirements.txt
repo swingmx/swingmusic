@@ -15,6 +15,7 @@ Flask==2.3.3
 Flask-BasicAuth==0.2.0
 Flask-Compress==1.14
 Flask-Cors==3.0.10
+Flask-JWT-Extended==4.6.0
 flask-openapi3==3.0.2
 gevent==23.9.1
 geventhttpclient==2.0.11
@@ -42,6 +43,7 @@ pydantic==2.6.3
 pydantic_core==2.16.3
 pyinstaller==5.13.2
 pyinstaller-hooks-contrib==2023.9
+PyJWT==2.8.0
 pylint==2.17.7
 pytest==7.4.2
 python-dateutil==2.8.2

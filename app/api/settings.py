@@ -162,6 +162,7 @@ mapp = {
 
 
 @api.get("")
+
 def get_all_settings():
     """
     Get all settings

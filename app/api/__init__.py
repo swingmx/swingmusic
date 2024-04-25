@@ -8,6 +8,7 @@ from flask_compress import Compress
 
 from flask_openapi3 import Info
 from flask_openapi3 import OpenAPI
+from flask_jwt_extended import JWTManager
 
 from app.settings import Keys
 from .plugins import lyrics as lyrics_plugin
@@ -27,6 +28,7 @@ from app.api import (
     logger,
     home,
     getall,
+    auth,
 )
 
 # TODO: Move this description to a separate file
@@ -60,13 +62,34 @@ def create_api():
 
     app = OpenAPI(__name__, info=api_info, doc_prefix="/docs")
 
-    CORS(app, origins="*")
-    Compress(app)
+    # JWT CONFIGS
+    app.config["JWT_SECRET_KEY"] = Keys.JWT_SECRET_KEY
+    app.config["JWT_TOKEN_LOCATION"] = ["cookies"]
+    app.config["JWT_COOKIE_CSRF_PROTECT"] = False
+    app.config["JWT_ACCESS_TOKEN_EXPIRES"] = datetime.timedelta(days=1)
 
+    # CORS
+    CORS(app, origins="*", supports_credentials=True)
+
+    # RESPONSE COMPRESSION
+    Compress(app)
     app.config["COMPRESS_MIMETYPES"] = [
         "application/json",
     ]
 
+    # JWT
+    jwt = JWTManager(app)
+
+    @jwt.user_identity_loader
+    def user_identity_lookup(user):
+        return user
+
+    @jwt.user_lookup_loader
+    def user_lookup_callback(_jwt_header, jwt_data):
+        identity = jwt_data["sub"]
+        return identity
+
+    # Register all the API blueprints
     with app.app_context():
         app.register_api(album.api)
         app.register_api(artist.api)
@@ -89,8 +112,9 @@ def create_api():
 
         # Home
         app.register_api(home.api)
-
-        # Flask Restful
         app.register_api(getall.api)
+
+        # Auth
+        app.register_api(auth.api)
 
         return app

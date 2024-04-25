@@ -268,6 +268,7 @@ class Keys:
     SWINGMUSIC_APP_VERSION = os.environ.get("SWINGMUSIC_APP_VERSION")
     GIT_LATEST_COMMIT_HASH = "<unset>"
     GIT_CURRENT_BRANCH = "<unset>"
+    JWT_SECRET_KEY = "swingmusic_secret_key" # REVIEW: This should be set in the environment
 
     @classmethod
     def load(cls):

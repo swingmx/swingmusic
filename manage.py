@@ -4,6 +4,7 @@ This file is used to run the application.
 
 import os
 import logging
+from flask_jwt_extended import verify_jwt_in_request
 import psutil
 import mimetypes
 from flask import Response, request
@@ -20,6 +21,7 @@ from app.settings import FLASKVARS, TCOLOR, Keys
 from app.setup import run_setup
 from app.start_info_logger import log_startup_info
 from app.utils.filesystem import get_home_res_path
+from app.utils.paths import getClientFilesExtensions
 from app.utils.threading import background
 
 mimetypes.add_type("text/css", ".css")
@@ -40,6 +42,32 @@ werkzeug.setLevel(logging.ERROR)
 
 app = create_api()
 app.static_folder = get_home_res_path("client")
+
+# INFO: Routes that don't need authentication
+blacklist_routes = {"/auth/login", "/auth/users"}
+blacklist_extensions = {".webp"}.union(getClientFilesExtensions())
+
+
+@app.before_request
+def verify_auth():
+    """
+    Verifies the JWT token before each request.
+    """
+    print(request.path)
+    if request.path == "/" or any(
+        request.path.endswith(ext) for ext in blacklist_extensions
+    ):
+        return
+
+    # if request path starts with any of the blacklisted routes, don't verify jwt
+    if any(request.path.startswith(route) for route in blacklist_routes):
+        print(
+            "Found blacklisted route: ", request.path, "... Skipping jwt verification"
+        )
+        return
+
+    data = verify_jwt_in_request()
+    print(data)
 
 
 @app.route("/<path:path>")

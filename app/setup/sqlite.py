@@ -4,6 +4,7 @@ Applies migrations.
 """
 
 from app.db.sqlite import create_connection, create_tables, queries
+from app.db.sqlite.auth import SQLiteAuthMethods as authdb
 from app.migrations import apply_migrations
 from app.settings import Db
 
@@ -28,6 +29,9 @@ def setup_sqlite():
     create_tables(app_db_conn, queries.CREATE_APPDB_TABLES)
     create_tables(user_db_conn, queries.CREATE_USERDATA_TABLES)
     create_tables(app_db_conn, queries.CREATE_MIGRATIONS_TABLE)
+
+    if not authdb.get_all_users():
+        authdb.insert_default_user()
 
     app_db_conn.close()
     user_db_conn.close()
