@@ -10,6 +10,33 @@ class SQLiteAuthMethods:
     """
 
     @staticmethod
+    def insert_user(user: dict[str, str]):
+        """
+        Insert a user into the database.
+
+        :param user: A dict with the username, password and roles.
+        """
+        sql = """INSERT INTO users(
+        username,
+        password,
+        roles
+        ) VALUES(:username, :password, :roles)
+        """
+
+        user_tuple = tuple(user.values())
+
+        with SQLiteManager(userdata_db=True) as cur:
+            cur = cur.execute(sql, user_tuple)
+            userid = cur.lastrowid
+
+            if userid:
+                user = SQLiteAuthMethods.get_user_by_id(userid).todict_simplified()
+                cur.close()
+                return user
+
+        raise Exception(f"Failed to insert user: {user}")
+
+    @staticmethod
     def insert_default_user():
         """
         Inserts the default admin user.
@@ -19,18 +46,7 @@ class SQLiteAuthMethods:
             "password": encode_password("admin"),
             "roles": json.dumps(["admin"]),
         }
-        user_tuple = tuple(user.values())
-
-        sql = """INSERT INTO users(
-        username,
-        password,
-        roles
-        ) VALUES(:username, :password, :roles)
-        """
-
-        with SQLiteManager(userdata_db=True) as cur:
-            cur.execute(sql, user_tuple)
-            cur.close()
+        return SQLiteAuthMethods.insert_user(user)
 
     @staticmethod
     def insert_guest_user():
@@ -40,24 +56,30 @@ class SQLiteAuthMethods:
         user = {
             "username": "guest",
             "password": encode_password("guest"),
-            "firstname": "Guest",
-            "lastname": "User",
             "roles": json.dumps(["guest"]),
         }
-        user_tuple = tuple(user.values())
 
-        sql = """INSERT INTO users(
-        username,
-        password,
-        firstname,
-        lastname,
-        roles
-        ) VALUES(:username, :password, :firstname, :lastname, :roles)
+        return SQLiteAuthMethods.insert_user(user)
+
+    @staticmethod
+    def update_user(user: dict[str, str]):
+        """
+        Update a user in the database.
+
+        :param user: A dict with the username, password and roles.
+        """
+        # get all user dict keys
+        keys = list(user.keys())
+        sql = f"""UPDATE users SET
+        {', '.join([f"{key} = :{key}" for key in keys if key != 'id'])}
+        WHERE id = :id
         """
 
         with SQLiteManager(userdata_db=True) as cur:
-            cur.execute(sql, user_tuple)
+            cur.execute(sql, user)
             cur.close()
+
+        return SQLiteAuthMethods.get_user_by_id(user["id"]).todict()
 
     @staticmethod
     def get_all_users():
@@ -83,6 +105,24 @@ class SQLiteAuthMethods:
 
         with SQLiteManager(userdata_db=True) as cur:
             cur.execute(sql, (username,))
+
+            data = cur.fetchone()
+            cur.close()
+
+            if data is not None:
+                return User(*data)
+
+            return None
+
+    @staticmethod
+    def get_user_by_id(userid: int):
+        """
+        Get a user by id.
+        """
+        sql = "SELECT * FROM users WHERE id = ?"
+
+        with SQLiteManager(userdata_db=True) as cur:
+            cur.execute(sql, (userid,))
 
             data = cur.fetchone()
             cur.close()

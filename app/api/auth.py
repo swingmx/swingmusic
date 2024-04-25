@@ -1,4 +1,5 @@
 from dataclasses import asdict
+import json
 from flask import jsonify
 from flask_jwt_extended import create_access_token, current_user, set_access_cookies
 from pydantic import BaseModel, Field
@@ -37,6 +38,39 @@ def login(body: LoginBody):
     access_token = create_access_token(identity=user.todict())
     set_access_cookies(res, access_token)
     return res
+
+
+class UpdateProfileBody(BaseModel):
+    email: str = Field("", description="The email")
+    username: str = Field("", description="The username", example="user0")
+    password: str = Field("", description="The password", example="password0")
+    roles: list[str] = Field([], description="The roles")
+
+
+@api.put("/profile/update")
+def update_profile(body: UpdateProfileBody):
+
+    user = {
+        "id": current_user["id"],
+        "email": body.email,
+        "username": body.username,
+        "password": body.password,
+        "roles": body.roles,
+    }
+
+    # only admins can update roles
+    if body.roles:
+        if "admin" in current_user["roles"]:
+            # prevent admin from locking themselves out
+            roles = set(body.roles)
+            roles.add("admin")
+            user["roles"] = json.dumps(list(roles))
+        else:
+            user.pop("roles")
+
+    # remove empty values
+    clean_user = {k: v for k, v in user.items() if v}
+    return authdb.update_user(clean_user)
 
 
 @api.get("/logout")

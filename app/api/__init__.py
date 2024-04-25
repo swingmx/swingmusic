@@ -12,6 +12,7 @@ from flask_jwt_extended import JWTManager
 
 from app.settings import Keys
 from .plugins import lyrics as lyrics_plugin
+from app.db.sqlite.auth import SQLiteAuthMethods as authdb
 from app.api import (
     album,
     artist,
@@ -80,14 +81,16 @@ def create_api():
     # JWT
     jwt = JWTManager(app)
 
-    @jwt.user_identity_loader
-    def user_identity_lookup(user):
-        return user
+    # @jwt.user_identity_loader
+    # def user_identity_lookup(user):
+    #     return user
 
     @jwt.user_lookup_loader
     def user_lookup_callback(_jwt_header, jwt_data):
         identity = jwt_data["sub"]
-        return identity
+        userid = identity["id"]
+        user = authdb.get_user_by_id(userid)
+        return user.todict()
 
     # Register all the API blueprints
     with app.app_context():

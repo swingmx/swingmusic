@@ -53,7 +53,6 @@ def verify_auth():
     """
     Verifies the JWT token before each request.
     """
-    print(request.path)
     if request.path == "/" or any(
         request.path.endswith(ext) for ext in blacklist_extensions
     ):
@@ -66,8 +65,7 @@ def verify_auth():
         )
         return
 
-    data = verify_jwt_in_request()
-    print(data)
+    verify_jwt_in_request()
 
 
 @app.route("/<path:path>")
