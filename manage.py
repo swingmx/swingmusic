@@ -60,9 +60,9 @@ def verify_auth():
 
     # if request path starts with any of the blacklisted routes, don't verify jwt
     if any(request.path.startswith(route) for route in blacklist_routes):
-        print(
-            "Found blacklisted route: ", request.path, "... Skipping jwt verification"
-        )
+        # print(
+        #     "Found blacklisted route: ", request.path, "... Skipping jwt verification"
+        # )
         return
 
     verify_jwt_in_request()

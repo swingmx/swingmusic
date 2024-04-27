@@ -28,11 +28,12 @@ class SQLiteAuthMethods:
         with SQLiteManager(userdata_db=True) as cur:
             cur = cur.execute(sql, user_tuple)
             userid = cur.lastrowid
-
-            if userid:
-                user = SQLiteAuthMethods.get_user_by_id(userid).todict_simplified()
-                cur.close()
-                return user
+            return userid
+            # if userid:
+            #     # sleep
+            #     user = SQLiteAuthMethods.get_user_by_id(userid).todict_simplified()
+            #     cur.close()
+            #     return user
 
         raise Exception(f"Failed to insert user: {user}")
 
@@ -131,3 +132,14 @@ class SQLiteAuthMethods:
                 return User(*data)
 
             return None
+
+    @staticmethod
+    def delete_user_by_username(username: str):
+        """
+        Delete a user by username.
+        """
+        sql = "DELETE FROM users WHERE username = ?"
+
+        with SQLiteManager(userdata_db=True) as cur:
+            cur.execute(sql, (username,))
+            cur.close()
