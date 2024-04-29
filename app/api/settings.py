@@ -3,6 +3,7 @@ from flask import request
 from flask_openapi3 import Tag
 from flask_openapi3 import APIBlueprint
 from pydantic import BaseModel, Field
+from app.api.auth import admin_required
 
 from app.db.sqlite.plugins import PluginsMethods as pdb
 from app.db.sqlite.settings import SettingsSQLMethods as sdb
@@ -15,6 +16,7 @@ from app.store.artists import ArtistStore
 from app.store.tracks import TrackStore
 from app.utils.generators import get_random_str
 from app.utils.threading import background
+from app.config import UserConfig
 
 bp_tag = Tag(name="Settings", description="Customize stuff")
 api = APIBlueprint("settings", __name__, url_prefix="/notsettings", abp_tags=[bp_tag])
@@ -69,7 +71,7 @@ def rebuild_store(db_dirs: list[str]):
     log.info("Rebuilding library... ✅")
 
 
-# I freaking don't know what this function does anymore 
+# I freaking don't know what this function does anymore
 def finalize(new_: list[str], removed_: list[str], db_dirs_: list[str]):
     """
     Params:
@@ -162,7 +164,6 @@ mapp = {
 
 
 @api.get("")
-
 def get_all_settings():
     """
     Get all settings
@@ -265,3 +266,28 @@ def trigger_scan():
     run_populate()
 
     return {"msg": "Scan triggered!"}
+
+
+class UpdateConfigBody(BaseModel):
+    key: str = Field(
+        description="The setting key",
+        example="usersOnLogin",
+    )
+    value: Any = Field(
+        description="The setting value",
+        example=False,
+    )
+
+
+@api.put("/update")
+@admin_required()
+def update_config(body: UpdateConfigBody):
+    """
+    Update the config file
+    """
+    config = UserConfig()
+    setattr(config, body.key, body.value)
+
+    return {
+        "msg": "Config updated!",
+    }

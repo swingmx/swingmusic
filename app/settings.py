@@ -85,6 +85,10 @@ class Paths:
     def get_lyrics_plugins_path(cls):
         return join(Paths.get_plugins_path(), "lyrics")
 
+    @classmethod
+    def get_config_file_path(cls):
+        return join(cls.get_app_dir(), "settings.json")
+
 
 # defaults
 class Defaults:
@@ -268,7 +272,9 @@ class Keys:
     SWINGMUSIC_APP_VERSION = os.environ.get("SWINGMUSIC_APP_VERSION")
     GIT_LATEST_COMMIT_HASH = "<unset>"
     GIT_CURRENT_BRANCH = "<unset>"
-    JWT_SECRET_KEY = "swingmusic_secret_key" # REVIEW: This should be set in the environment
+    JWT_SECRET_KEY = (
+        "swingmusic_secret_key"  # REVIEW: This should be set in the environment
+    )
 
     @classmethod
     def load(cls):

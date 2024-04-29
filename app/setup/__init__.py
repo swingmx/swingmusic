@@ -2,6 +2,7 @@
 Prepares the server for use.
 """
 
+from dataclasses import asdict
 from app.db.sqlite.settings import load_settings
 from app.setup.files import create_config_dir
 from app.setup.sqlite import run_migrations, setup_sqlite
@@ -9,6 +10,7 @@ from app.store.albums import AlbumStore
 from app.store.artists import ArtistStore
 from app.store.tracks import TrackStore
 from app.utils.generators import get_random_str
+from app.config import UserConfig
 
 
 def run_setup():
@@ -21,6 +23,10 @@ def run_setup():
     except IndexError:
         # settings table is empty
         pass
+
+    # setup config file
+    config = UserConfig()
+    config.setup_config_file()
 
     instance_key = get_random_str()
 
