@@ -83,26 +83,33 @@ def update_profile(body: UpdateProfileBody):
         "roles": body.roles,
     }
 
+    # prevent updating guest
+    if current_user["username"] == "guest" or user["username"] == "guest":
+        return {"msg": "Cannot update guest user"}, 400
+
     # if not id, update self
     if not user["id"]:
         user["id"] = current_user["id"]
 
-    print("current_user: ", current_user)
-
-    # only admins can update roles
-
     if body.roles is not None:
+        # only admins can update roles
         if "admin" not in current_user["roles"]:
             return {"msg": "Only admins can update roles"}, 403
 
+        all_users = authdb.get_all_users()
         if "admin" not in body.roles:
             # check if we're removing the last admin
-            users = authdb.get_all_users()
-            admins = [user for user in users if "admin" in user.roles]
+            admins = [user for user in all_users if "admin" in user.roles]
 
             if len(admins) == 1 and admins[0].id == user["id"]:
                 return {"msg": "Cannot remove the only admin"}, 400
 
+        # guest roles cannot be updated
+        _user = [u for u in all_users if u.id == user["id"]][0]
+        if "guest" in _user.roles:
+            return {"msg": "Cannot update guest user"}, 400
+
+        # finally, convert roles to json string
         user["roles"] = json.dumps(body.roles)
 
     if user["password"]:
@@ -227,8 +234,10 @@ def get_all_users(query: GetAllUsersQuery):
         "users": [],
     }
 
+    is_admin = current_user and "admin" in current_user["roles"]
+
     # if user is admin, also return settings
-    if current_user and "admin" in current_user["roles"]:
+    if is_admin:
         res = {
             "settings": settings,
         }
@@ -248,11 +257,10 @@ def get_all_users(query: GetAllUsersQuery):
     users = authdb.get_all_users()
 
     # remove guest user
-    print("settings: ", settings["enableGuest"])
-    if not settings["enableGuest"]:
-        users = [user for user in users if user.username != "guest"]
+    # if not settings["enableGuest"]:
+    #     users = [user for user in users if user.username != "guest"]
 
-    if not settings["usersOnLogin"]:
+    if not is_admin or not settings["usersOnLogin"]:
         users = [user for user in users if user.username == "guest"]
 
     # reverse list to show latest users first

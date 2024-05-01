@@ -97,6 +97,7 @@ class AddRootDirsBody(BaseModel):
 
 
 @api.post("/add-root-dirs")
+@admin_required()
 def add_root_dirs(body: AddRootDirsBody):
     """
     Add custom root directories to the database.
@@ -216,6 +217,7 @@ class SetSettingBody(BaseModel):
 
 
 @api.post("/set")
+@admin_required()
 def set_setting(body: SetSettingBody):
     """
     Set a setting.

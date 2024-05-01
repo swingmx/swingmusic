@@ -44,7 +44,7 @@ app = create_api()
 app.static_folder = get_home_res_path("client")
 
 # INFO: Routes that don't need authentication
-blacklist_routes = {"/auth/login", "/auth/users", "/auth/logout"}
+whitelisted_routes = {"/auth/login", "/auth/users", "/auth/logout", "/docs"}
 blacklist_extensions = {".webp"}.union(getClientFilesExtensions())
 
 
@@ -59,9 +59,9 @@ def verify_auth():
         return
 
     # if request path starts with any of the blacklisted routes, don't verify jwt
-    if any(request.path.startswith(route) for route in blacklist_routes):
+    if any(request.path.startswith(route) for route in whitelisted_routes):
         # print(
-        #     "Found blacklisted route: ", request.path, "... Skipping jwt verification"
+        #     "Found whitelisted route: ", request.path, "... Skipping jwt verification"
         # )
         return
 
