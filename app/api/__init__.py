@@ -9,8 +9,9 @@ from flask_compress import Compress
 from flask_openapi3 import Info
 from flask_openapi3 import OpenAPI
 from flask_jwt_extended import JWTManager
+from app.config import UserConfig
 
-from app.settings import Keys
+from app.settings import Info as AppInfo
 from .plugins import lyrics as lyrics_plugin
 from app.db.sqlite.auth import SQLiteAuthMethods as authdb
 from app.api import (
@@ -57,14 +58,14 @@ def create_api():
     """
     api_info = Info(
         title=f"Swing Music",
-        version=f"v{Keys.SWINGMUSIC_APP_VERSION}",
+        version=f"v{AppInfo.SWINGMUSIC_APP_VERSION}",
         description=open_api_description,
     )
 
     app = OpenAPI(__name__, info=api_info, doc_prefix="/docs")
-
+    print("userid", UserConfig().userId)
     # JWT CONFIGS
-    app.config["JWT_SECRET_KEY"] = Keys.JWT_SECRET_KEY
+    app.config["JWT_SECRET_KEY"] = UserConfig().userId
     app.config["JWT_TOKEN_LOCATION"] = ["cookies"]
     app.config["JWT_COOKIE_CSRF_PROTECT"] = False
     app.config["JWT_ACCESS_TOKEN_EXPIRES"] = datetime.timedelta(days=1)

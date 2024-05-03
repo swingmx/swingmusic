@@ -1,8 +1,7 @@
 """
 Prepares the server for use.
 """
-
-from dataclasses import asdict
+import uuid
 from app.db.sqlite.settings import load_settings
 from app.setup.files import create_config_dir
 from app.setup.sqlite import run_migrations, setup_sqlite
@@ -27,6 +26,9 @@ def run_setup():
     # setup config file
     config = UserConfig()
     config.setup_config_file()
+
+    if not config.userId:
+        config.userId = str(uuid.uuid4())
 
     instance_key = get_random_str()
 

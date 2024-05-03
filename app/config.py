@@ -1,7 +1,6 @@
 from dataclasses import dataclass, asdict, field
 import json
 import os
-import time
 from typing import Any
 from .settings import Paths
 
@@ -14,6 +13,8 @@ class UserConfig:
     # TODO: Move the rest of the settings to the config file
 
     # auth stuff
+    # NOTE: Don't expose the userId via the API
+    userId: str = ""
     usersOnLogin: bool = True
     enableGuest: bool = False
 
@@ -57,8 +58,6 @@ class UserConfig:
         Creates the config file with the default settings
         if it doesn't exist
         """
-        print("config path: ", self._config_path)
-
         # if not exists, create the config file
         if not os.path.exists(self._config_path):
             self.write_to_file(asdict(self))

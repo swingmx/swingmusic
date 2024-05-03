@@ -45,7 +45,7 @@ class HandleArgs:
             print("https://www.youtube.com/watch?v=wZv62ShoStY")
             sys.exit(0)
 
-        config_keys = [
+        info_keys = [
             "SWINGMUSIC_APP_VERSION",
             "GIT_LATEST_COMMIT_HASH",
             "GIT_CURRENT_BRANCH",
@@ -53,8 +53,8 @@ class HandleArgs:
 
         lines = []
 
-        for key in config_keys:
-            value = settings.Keys.get(key)
+        for key in info_keys:
+            value = settings.Info.get(key)
 
             if not value:
                 log.error(f"WARNING: {key} not set in environment")
@@ -88,7 +88,7 @@ class HandleArgs:
         finally:
             # revert and remove the api keys for dev mode
             with open("./app/configs.py", "w", encoding="utf-8") as file:
-                lines = [f'{key} = ""\n' for key in config_keys]
+                lines = [f'{key} = ""\n' for key in info_keys]
                 file.writelines(lines)
 
             sys.exit(0)
@@ -184,8 +184,8 @@ class HandleArgs:
     @staticmethod
     def handle_version():
         if any((a in ARGS for a in ALLARGS.version)):
-            print(f"VERSION: v{settings.Keys.SWINGMUSIC_APP_VERSION}")
+            print(f"VERSION: v{settings.Info.SWINGMUSIC_APP_VERSION}")
             print(
-                f"COMMIT#: {settings.Keys.GIT_CURRENT_BRANCH}/{settings.Keys.GIT_LATEST_COMMIT_HASH}"
+                f"COMMIT#: {settings.Info.GIT_CURRENT_BRANCH}/{settings.Info.GIT_LATEST_COMMIT_HASH}"
             )
             sys.exit(0)

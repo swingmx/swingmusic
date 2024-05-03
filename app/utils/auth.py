@@ -1,4 +1,7 @@
+import hmac
 import hashlib
+
+from app.config import UserConfig
 
 
 def encode_password(password: str) -> str:
@@ -10,7 +13,10 @@ def encode_password(password: str) -> str:
     :return: The encoded password.
     """
 
-    return hashlib.sha256(password.encode("utf-8")).hexdigest()
+    return hashlib.pbkdf2_hmac(
+        "sha256", password.encode("utf-8"), UserConfig().userId.encode("utf-8"), 100000
+    ).hex()
+
 
 def check_password(password: str, encoded: str) -> bool:
     """
@@ -22,4 +28,4 @@ def check_password(password: str, encoded: str) -> bool:
     :return: Whether the password matches.
     """
 
-    return encode_password(password) == encoded
+    return hmac.compare_digest(encode_password(password), encoded)

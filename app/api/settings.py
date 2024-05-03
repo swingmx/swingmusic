@@ -10,7 +10,7 @@ from app.db.sqlite.settings import SettingsSQLMethods as sdb
 from app.lib import populate
 from app.lib.watchdogg import Watcher as WatchDog
 from app.logger import log
-from app.settings import Keys, Paths, SessionVarKeys, set_flag
+from app.settings import Info, Paths, SessionVarKeys, set_flag
 from app.store.albums import AlbumStore
 from app.store.artists import ArtistStore
 from app.store.tracks import TrackStore
@@ -193,7 +193,7 @@ def get_all_settings():
     root_dirs = sdb.get_root_dirs()
     s["root_dirs"] = root_dirs
     s["plugins"] = plugins
-    s["version"] = Keys.SWINGMUSIC_APP_VERSION
+    s["version"] = Info.SWINGMUSIC_APP_VERSION
 
     return {
         "settings": s,

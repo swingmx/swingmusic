@@ -17,7 +17,7 @@ from app.arg_handler import HandleArgs
 from app.lib.watchdogg import Watcher as WatchDog
 from app.periodic_scan import run_periodic_scans
 from app.plugins.register import register_plugins
-from app.settings import FLASKVARS, TCOLOR, Keys
+from app.settings import FLASKVARS, TCOLOR, Info
 from app.setup import run_setup
 from app.start_info_logger import log_startup_info
 from app.utils.filesystem import get_home_res_path
@@ -39,6 +39,8 @@ mimetypes.add_type("application/manifest+json", ".webmanifest")
 
 werkzeug = logging.getLogger("werkzeug")
 werkzeug.setLevel(logging.ERROR)
+
+HandleArgs()
 
 app = create_api()
 app.static_folder = get_home_res_path("client")
@@ -155,8 +157,7 @@ def run_swingmusic():
 
 
 if __name__ == "__main__":
-    Keys.load()
-    HandleArgs()
+    Info.load()
     run_swingmusic()
 
     host = FLASKVARS.get_flask_host()
