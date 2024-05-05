@@ -68,15 +68,31 @@ def send_track_file(path: TrackHashSchema, query: SendTrackFileQuery):
 
 
 def send_file_as_chunks(filepath: str, audio_type: str) -> Response:
+    """
+    Returns a Response object that streams the file in chunks.
+    """
+    # NOTE: +1 makes sure the last byte is included in the range.
+    # NOTE: -1 is used to convert the end index to a 0-based index.
+    chunk_size = 1024 * 512
+
+    # Get file size
     file_size = os.path.getsize(filepath)
     start = 0
-    end = file_size - 1
+    end = chunk_size
 
+    # Read range header
     range_header = request.headers.get("Range")
     if range_header:
-        start, end = parse_range_header(range_header, file_size)
+        start = get_start_range(range_header)
 
-    chunk_size = 1024 * 1024  # 1MB chunk size (adjust as needed)
+        # If start + chunk_size is greater than file_size,
+        # set end to file_size - 1
+        _end = start + chunk_size - 1
+
+        if _end > file_size:
+            end = file_size - 1
+        else:
+            end = _end
 
     def generate_chunks():
         with open(filepath, "rb") as file:
@@ -84,8 +100,11 @@ def send_file_as_chunks(filepath: str, audio_type: str) -> Response:
             remaining_bytes = end - start + 1
 
             while remaining_bytes > 0:
+                # Read the chunk size or all the remaining bytes
                 chunk = file.read(min(chunk_size, remaining_bytes))
                 yield chunk
+
+                # Update the remaining bytes
                 remaining_bytes -= len(chunk)
 
     response = Response(
@@ -102,15 +121,13 @@ def send_file_as_chunks(filepath: str, audio_type: str) -> Response:
     return response
 
 
-def parse_range_header(range_header: str, file_size: int) -> tuple[int, int]:
+def get_start_range(range_header: str):
     try:
         range_start, range_end = range_header.strip().split("=")[1].split("-")
-        start = int(range_start)
-        end = min(int(range_end), file_size - 1)
-    except ValueError:
-        return 0, file_size - 1
+        return int(range_start)
 
-    return start, end
+    except ValueError:
+        return 0
 
 
 class GetAudioSilenceBody(BaseModel):

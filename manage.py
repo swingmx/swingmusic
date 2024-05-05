@@ -2,9 +2,16 @@
 This file is used to run the application.
 """
 
+from datetime import datetime, timezone
 import os
 import logging
-from flask_jwt_extended import verify_jwt_in_request
+from flask_jwt_extended import (
+    create_access_token,
+    get_jwt,
+    get_jwt_identity,
+    set_access_cookies,
+    verify_jwt_in_request,
+)
 import psutil
 import mimetypes
 from flask import Response, request
@@ -68,6 +75,25 @@ def verify_auth():
         return
 
     verify_jwt_in_request()
+
+
+@app.after_request
+def refresh_expiring_jwt(response: Response):
+    """
+    Refreshes the JWT token after each request.
+    """
+    try:
+        exp_timestamp = get_jwt()["exp"]
+        now = datetime.now(timezone.utc)
+        target_timestamp = datetime.timestamp(now) + 60 * 60 * 24 * 7  # 7 days
+
+        if target_timestamp > exp_timestamp:
+            access_token = create_access_token(identity=get_jwt_identity())
+            set_access_cookies(response, access_token)
+
+        return response
+    except (RuntimeError, KeyError):
+        return response
 
 
 @app.route("/<path:path>")

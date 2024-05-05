@@ -191,11 +191,6 @@ def delete_user(body: DeleteUseBody):
         return {"msg": "Cannot delete the only admin"}, 400
 
     authdb.delete_user_by_username(body.username)
-
-    # if user is guest, update config
-    if body.username == "guest":
-        UserConfig().enableGuest = False
-
     return {"msg": f"User {body.username} deleted"}
 
 
@@ -225,7 +220,7 @@ def get_all_users(query: GetAllUsersQuery):
     # config.enableGuest = True
     # config.usersOnLogin = True
     settings = {
-        "enableGuest": config.enableGuest,
+        "enableGuest": False,
         "usersOnLogin": config.usersOnLogin,
     }
 
@@ -234,7 +229,10 @@ def get_all_users(query: GetAllUsersQuery):
         "users": [],
     }
 
+    users = authdb.get_all_users()
+
     is_admin = current_user and "admin" in current_user["roles"]
+    settings['enableGuest'] = [user for user in users if user.username == "guest"].__len__() > 0
 
     # if user is admin, also return settings
     if is_admin:
@@ -254,13 +252,12 @@ def get_all_users(query: GetAllUsersQuery):
     ):
         return res
 
-    users = authdb.get_all_users()
 
     # remove guest user
     # if not settings["enableGuest"]:
     #     users = [user for user in users if user.username != "guest"]
 
-    if not is_admin or not settings["usersOnLogin"]:
+    if not settings["usersOnLogin"]:
         users = [user for user in users if user.username == "guest"]
 
     # reverse list to show latest users first
@@ -268,7 +265,6 @@ def get_all_users(query: GetAllUsersQuery):
 
     # bring admins to the front
     users = sorted(users, key=lambda x: "admin" in x.roles, reverse=True)
-
     # bring current user to index 0
     if current_user:
         users = sorted(

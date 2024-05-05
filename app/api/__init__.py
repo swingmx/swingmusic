@@ -63,12 +63,11 @@ def create_api():
     )
 
     app = OpenAPI(__name__, info=api_info, doc_prefix="/docs")
-    print("userid", UserConfig().userId)
     # JWT CONFIGS
     app.config["JWT_SECRET_KEY"] = UserConfig().userId
     app.config["JWT_TOKEN_LOCATION"] = ["cookies"]
     app.config["JWT_COOKIE_CSRF_PROTECT"] = False
-    app.config["JWT_ACCESS_TOKEN_EXPIRES"] = datetime.timedelta(days=1)
+    app.config["JWT_ACCESS_TOKEN_EXPIRES"] = datetime.timedelta(days=30)
 
     # CORS
     CORS(app, origins="*", supports_credentials=True)

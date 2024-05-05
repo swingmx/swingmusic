@@ -16,7 +16,6 @@ class UserConfig:
     # NOTE: Don't expose the userId via the API
     userId: str = ""
     usersOnLogin: bool = True
-    enableGuest: bool = False
 
     # lists
     rootDirs: list[str] = field(default_factory=list)

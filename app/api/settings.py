@@ -7,6 +7,7 @@ from app.api.auth import admin_required
 
 from app.db.sqlite.plugins import PluginsMethods as pdb
 from app.db.sqlite.settings import SettingsSQLMethods as sdb
+from app.db.sqlite.tracks import SQLiteTrackMethods as trackdb
 from app.lib import populate
 from app.lib.watchdogg import Watcher as WatchDog
 from app.logger import log
@@ -51,12 +52,12 @@ def reload_everything(instance_key: str):
 @background
 def rebuild_store(db_dirs: list[str]):
     """
-    Restarts the watchdog and rebuilds the music library.
+    Restarts watchdog and rebuilds the music library.
     """
     instance_key = get_random_str()
 
     log.info("Rebuilding library...")
-    TrackStore.remove_tracks_by_dir_except(db_dirs)
+    trackdb.remove_tracks_not_in_folders(db_dirs)
     reload_everything(instance_key)
 
     try:
@@ -106,10 +107,10 @@ def add_root_dirs(body: AddRootDirsBody):
     removed_dirs = body.removed
 
     db_dirs = sdb.get_root_dirs()
-    _h = "$home"
+    home = "$home"
 
-    db_home = any([d == _h for d in db_dirs])  # if $home is in db
-    incoming_home = any([d == _h for d in new_dirs])  # if $home is in incoming
+    db_home = any([d == home for d in db_dirs])  # if $home is in db
+    incoming_home = any([d == home for d in new_dirs])  # if $home is in incoming
 
     # handle $home case
     if db_home and incoming_home:
@@ -119,8 +120,8 @@ def add_root_dirs(body: AddRootDirsBody):
         sdb.remove_root_dirs(db_dirs)
 
     if incoming_home:
-        finalize([_h], [], [Paths.USER_HOME_DIR])
-        return {"root_dirs": [_h]}
+        finalize([home], [], [Paths.USER_HOME_DIR])
+        return {"root_dirs": [home]}
 
     # ---
 
@@ -135,7 +136,7 @@ def add_root_dirs(body: AddRootDirsBody):
             pass
 
     db_dirs.extend(new_dirs)
-    db_dirs = [dir_ for dir_ in db_dirs if dir_ != _h]
+    db_dirs = [dir_ for dir_ in db_dirs if dir_ != home]
 
     finalize(new_dirs, removed_dirs, db_dirs)
 
