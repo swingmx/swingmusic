@@ -18,7 +18,7 @@ ALLARGS = settings.ALLARGS
 ARGS = sys.argv[1:]
 
 
-class HandleArgs:
+class ProcessArgs:
     def __init__(self) -> None:
         self.handle_build()
         self.handle_host()

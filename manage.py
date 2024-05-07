@@ -20,7 +20,7 @@ import waitress
 import setproctitle
 
 from app.api import create_api
-from app.arg_handler import HandleArgs
+from app.arg_handler import ProcessArgs
 from app.lib.watchdogg import Watcher as WatchDog
 from app.periodic_scan import run_periodic_scans
 from app.plugins.register import register_plugins
@@ -47,9 +47,8 @@ mimetypes.add_type("application/manifest+json", ".webmanifest")
 werkzeug = logging.getLogger("werkzeug")
 werkzeug.setLevel(logging.ERROR)
 
-# Set up the application
-HandleArgs()
 
+# Background tasks
 @background
 def bg_run_setup() -> None:
     run_periodic_scans()
@@ -63,7 +62,6 @@ def start_watchdog():
 @background
 def run_swingmusic():
     log_startup_info()
-    run_setup()
     bg_run_setup()
     register_plugins()
 
@@ -72,6 +70,9 @@ def run_swingmusic():
     setproctitle.setproctitle(f"swingmusic ::{FLASKVARS.get_flask_port()}")
 
 
+# Setup function calls
+ProcessArgs()
+run_setup()
 Info.load()
 run_swingmusic()
 
@@ -189,10 +190,7 @@ def print_memory_usage(response: Response):
     return response
 
 
-
-
 if __name__ == "__main__":
-
     host = FLASKVARS.get_flask_host()
     port = FLASKVARS.get_flask_port()
 
