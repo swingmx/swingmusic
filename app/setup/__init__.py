@@ -1,6 +1,7 @@
 """
 Prepares the server for use.
 """
+
 import uuid
 from app.db.sqlite.settings import load_settings
 from app.setup.files import create_config_dir
@@ -14,6 +15,14 @@ from app.config import UserConfig
 
 def run_setup():
     create_config_dir()
+
+    # setup config file
+    config = UserConfig()
+    config.setup_config_file()
+
+    if not config.userId:
+        config.userId = str(uuid.uuid4())
+
     setup_sqlite()
     run_migrations()
 
@@ -22,13 +31,6 @@ def run_setup():
     except IndexError:
         # settings table is empty
         pass
-
-    # setup config file
-    config = UserConfig()
-    config.setup_config_file()
-
-    if not config.userId:
-        config.userId = str(uuid.uuid4())
 
     instance_key = get_random_str()
 

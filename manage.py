@@ -47,7 +47,36 @@ mimetypes.add_type("application/manifest+json", ".webmanifest")
 werkzeug = logging.getLogger("werkzeug")
 werkzeug.setLevel(logging.ERROR)
 
+# Set up the application
 HandleArgs()
+
+@background
+def bg_run_setup() -> None:
+    run_periodic_scans()
+
+
+@background
+def start_watchdog():
+    WatchDog().run()
+
+
+@background
+def run_swingmusic():
+    log_startup_info()
+    run_setup()
+    bg_run_setup()
+    register_plugins()
+
+    start_watchdog()
+
+    setproctitle.setproctitle(f"swingmusic ::{FLASKVARS.get_flask_port()}")
+
+
+Info.load()
+run_swingmusic()
+
+
+# Create the Flask app
 
 app = create_api()
 app.static_folder = get_home_res_path("client")
@@ -160,31 +189,9 @@ def print_memory_usage(response: Response):
     return response
 
 
-@background
-def bg_run_setup() -> None:
-    run_periodic_scans()
-
-
-@background
-def start_watchdog():
-    WatchDog().run()
-
-
-@background
-def run_swingmusic():
-    log_startup_info()
-    run_setup()
-    bg_run_setup()
-    register_plugins()
-
-    start_watchdog()
-
-    setproctitle.setproctitle(f"swingmusic ::{FLASKVARS.get_flask_port()}")
 
 
 if __name__ == "__main__":
-    Info.load()
-    run_swingmusic()
 
     host = FLASKVARS.get_flask_host()
     port = FLASKVARS.get_flask_port()
