@@ -11,6 +11,7 @@ from app.api.apischemas import TrackHashSchema
 from app.lib.trackslib import get_silence_paddings
 
 from app.store.tracks import TrackStore
+from app.utils.files import guess_mime_type
 
 bp_tag = Tag(name="File", description="Audio files")
 api = APIBlueprint("track", __name__, url_prefix="/file", abp_tags=[bp_tag])
@@ -33,10 +34,6 @@ def send_track_file(path: TrackHashSchema, query: SendTrackFileQuery):
     filepath = query.filepath
     msg = {"msg": "File Not Found"}
 
-    def get_mime(filename: str) -> str:
-        ext = filename.rsplit(".", maxsplit=1)[-1]
-        return f"audio/{ext}"
-
     # If filepath is provided, try to send that
     if filepath is not None:
         try:
@@ -47,7 +44,7 @@ def send_track_file(path: TrackHashSchema, query: SendTrackFileQuery):
         track_exists = track is not None and os.path.exists(track.filepath)
 
         if track_exists:
-            audio_type = get_mime(filepath)
+            audio_type = guess_mime_type(filepath)
             return send_file_as_chunks(track.filepath, audio_type)
 
     # Else, find file by trackhash
@@ -57,7 +54,7 @@ def send_track_file(path: TrackHashSchema, query: SendTrackFileQuery):
         if track is None:
             return msg, 404
 
-        audio_type = get_mime(track.filepath)
+        audio_type = guess_mime_type(track.filepath)
 
         try:
             return send_file_as_chunks(track.filepath, audio_type)
