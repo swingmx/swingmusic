@@ -53,7 +53,7 @@ Options are flags that can be passed when starting the app in the terminal to tw
 Pull the latest Docker image and run it:
 
 ```sh
-docker pull ghcr.io/swing-opensource/swingmusic:latest
+docker pull ghcr.io/swingmx/swingmusic:latest
 ```
 
 ```sh
@@ -61,7 +61,7 @@ docker run --name swingmusic -p 1970:1970 \
   -v /path/to/music:/music \
   -v /path/to/config:/config \
   --restart unless-stopped \
-  ghcr.io/swing-opensource/swingmusic:latest
+  ghcr.io/swingmx/swingmusic:latest
 ```
 
 Don't forget to replace `/path/to/music` and `/path/to/config` with the appropriate values. In addition, specify the the `/music` directory as the root directory. Using the `Home Directory` option won't work.
