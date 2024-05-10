@@ -23,7 +23,6 @@ from app.api import (
     imgserver,
     playlist,
     search,
-    send_file,
     settings,
     lyrics,
     plugins,
@@ -31,6 +30,7 @@ from app.api import (
     home,
     getall,
     auth,
+    stream,
 )
 
 # TODO: Move this description to a separate file
@@ -96,7 +96,7 @@ def create_api():
     with app.app_context():
         app.register_api(album.api)
         app.register_api(artist.api)
-        app.register_api(send_file.api)
+        app.register_api(stream.api)
         app.register_api(search.api)
         app.register_api(folder.api)
         app.register_api(playlist.api)
