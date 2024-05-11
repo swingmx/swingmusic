@@ -51,28 +51,28 @@ def create_config_dir() -> None:
     """
     Creates the config directory if it doesn't exist.
     """
-    thumb_path = os.path.join("images", "thumbnails")
-    small_thumb_path = os.path.join(thumb_path, "small")
-    large_thumb_path = os.path.join(thumb_path, "large")
+    sm_thumb_path = settings.Paths.get_sm_thumb_path()
+    lg_thumb_path = settings.Paths.get_lg_thumb_path()
+    md_thumb_path = settings.Paths.get_md_thumb_path()
+    xsm_thumb_path = settings.Paths.get_xsm_thumb_path()
 
-    artist_img_path = os.path.join("images", "artists")
-    small_artist_img_path = os.path.join(artist_img_path, "small")
-    large_artist_img_path = os.path.join(artist_img_path, "large")
+    small_artist_img_path = settings.Paths.get_sm_artist_img_path()
+    md_artist_img_path = settings.Paths.get_md_artist_img_path()
+    large_artist_img_path = settings.Paths.get_lg_artist_img_path()
 
     playlist_img_path = os.path.join("images", "playlists")
 
     dirs = [
         "",  # creates the config folder
-        "images",
-        "plugins",
+        sm_thumb_path,
+        lg_thumb_path,
+        md_thumb_path,
+        xsm_thumb_path,
         "plugins/lyrics",
-        thumb_path,
-        small_thumb_path,
-        large_thumb_path,
-        artist_img_path,
+        playlist_img_path,
+        md_artist_img_path,
         small_artist_img_path,
         large_artist_img_path,
-        playlist_img_path,
     ]
 
     for _dir in dirs:
@@ -80,7 +80,9 @@ def create_config_dir() -> None:
         exists = os.path.exists(path)
 
         if not exists:
-            os.makedirs(path)
+            # exist_ok=True to create parent directories if they don't exist
+            os.makedirs(path, exist_ok=True)
             os.chmod(path, 0o755)
 
+    # copy assets to the app directory
     CopyFiles()

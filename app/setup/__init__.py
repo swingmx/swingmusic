@@ -14,6 +14,9 @@ from app.config import UserConfig
 
 
 def run_setup():
+    """
+    Creates the config directory, runs migrations, and loads settings.
+    """
     create_config_dir()
 
     # setup config file
@@ -32,6 +35,11 @@ def run_setup():
         # settings table is empty
         pass
 
+
+def load_into_mem():
+    """
+    Load all tracks, albums, and artists into memory.
+    """
     instance_key = get_random_str()
 
     # INFO: Load all tracks, albums, and artists into memory

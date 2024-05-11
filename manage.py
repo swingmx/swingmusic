@@ -25,7 +25,7 @@ from app.lib.watchdogg import Watcher as WatchDog
 from app.periodic_scan import run_periodic_scans
 from app.plugins.register import register_plugins
 from app.settings import FLASKVARS, TCOLOR, Info
-from app.setup import run_setup
+from app.setup import load_into_mem, run_setup
 from app.start_info_logger import log_startup_info
 from app.utils.filesystem import get_home_res_path
 from app.utils.paths import getClientFilesExtensions
@@ -47,10 +47,9 @@ mimetypes.add_type("application/manifest+json", ".webmanifest")
 werkzeug = logging.getLogger("werkzeug")
 werkzeug.setLevel(logging.ERROR)
 
-
 # Background tasks
 @background
-def bg_run_setup() -> None:
+def bg_run_setup():
     run_periodic_scans()
 
 
@@ -71,9 +70,10 @@ def run_swingmusic():
 
 
 # Setup function calls
+Info.load()
 ProcessArgs()
 run_setup()
-Info.load()
+load_into_mem()
 run_swingmusic()
 
 

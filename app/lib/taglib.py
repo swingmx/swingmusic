@@ -33,20 +33,22 @@ def extract_thumb(filepath: str, webp_path: str, overwrite=False) -> bool:
     """
     lg_img_path = os.path.join(Paths.get_lg_thumb_path(), webp_path)
     sm_img_path = os.path.join(Paths.get_sm_thumb_path(), webp_path)
+    xms_img_path = os.path.join(Paths.get_xsm_thumb_path(), webp_path)
+    md_img_path = os.path.join(Paths.get_md_thumb_path(), webp_path)
 
-    tsize = Defaults.THUMB_SIZE
-    sm_tsize = Defaults.SM_THUMB_SIZE
+    images = [
+        (lg_img_path, Defaults.LG_THUMB_SIZE),
+        (sm_img_path, Defaults.SM_THUMB_SIZE),
+        (xms_img_path, Defaults.XSM_THUMB_SIZE),
+        (md_img_path, Defaults.MD_THUMB_SIZE),
+    ]
 
     def save_image(img: Image.Image):
         width, height = img.size
         ratio = width / height
 
-        img.resize((tsize, int(tsize / ratio)), Image.ANTIALIAS).save(
-            lg_img_path, "webp"
-        )
-        img.resize((sm_tsize, int(sm_tsize / ratio)), Image.ANTIALIAS).save(
-            sm_img_path, "webp"
-        )
+        for path, size in images:
+            img.resize((size, int(size / ratio)), Image.ANTIALIAS).save(path, "webp")
 
     if not overwrite and os.path.exists(sm_img_path):
         img_size = os.path.getsize(sm_img_path)

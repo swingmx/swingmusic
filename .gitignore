@@ -27,7 +27,7 @@ client
 logs.txt
 *.spec
 
-TODO.md
+# TODO.md
 testdata.py
 test.py
 nohup.out

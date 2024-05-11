@@ -14,7 +14,7 @@ from flask_openapi3 import Tag
 from flask_openapi3 import APIBlueprint
 
 from app.db.sqlite.auth import SQLiteAuthMethods as authdb
-from app.utils.auth import check_password, encode_password
+from app.utils.auth import check_password, hash_password
 from app.config import UserConfig
 
 bp_tag = Tag(name="Auth", description="Authentication stuff")
@@ -113,7 +113,7 @@ def update_profile(body: UpdateProfileBody):
         user["roles"] = json.dumps(body.roles)
 
     if user["password"]:
-        user["password"] = encode_password(user["password"])
+        user["password"] = hash_password(user["password"])
 
     # remove empty values
     clean_user = {k: v for k, v in user.items() if v}
@@ -132,7 +132,7 @@ def create_user(body: UpdateProfileBody):
 
     user = {
         "username": body.username,
-        "password": encode_password(body.password),
+        "password": hash_password(body.password),
         "roles": json.dumps([]),
     }
 
@@ -232,7 +232,9 @@ def get_all_users(query: GetAllUsersQuery):
     users = authdb.get_all_users()
 
     is_admin = current_user and "admin" in current_user["roles"]
-    settings['enableGuest'] = [user for user in users if user.username == "guest"].__len__() > 0
+    settings["enableGuest"] = [
+        user for user in users if user.username == "guest"
+    ].__len__() > 0
 
     # if user is admin, also return settings
     if is_admin:
@@ -251,7 +253,6 @@ def get_all_users(query: GetAllUsersQuery):
         and not settings["enableGuest"]
     ):
         return res
-
 
     # remove guest user
     # if not settings["enableGuest"]:

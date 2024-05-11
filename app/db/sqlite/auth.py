@@ -1,6 +1,6 @@
 import json
 from app.models.user import User
-from app.utils.auth import encode_password
+from app.utils.auth import hash_password
 from app.db.sqlite.utils import SQLiteManager
 
 
@@ -44,7 +44,7 @@ class SQLiteAuthMethods:
         """
         user = {
             "username": "admin",
-            "password": encode_password("admin"),
+            "password": hash_password("admin"),
             "roles": json.dumps(["admin"]),
         }
         return SQLiteAuthMethods.insert_user(user)
@@ -56,7 +56,7 @@ class SQLiteAuthMethods:
         """
         user = {
             "username": "guest",
-            "password": encode_password("guest"),
+            "password": hash_password("guest"),
             "roles": json.dumps(["guest"]),
         }
 
@@ -67,7 +67,7 @@ class SQLiteAuthMethods:
         """
         Update a user in the database.
 
-        :param user: A dict with the username, password and roles.
+        :param user: A dict with the user id and the fields to update. Ommited fields will not be updated.
         """
         # get all user dict keys
         keys = list(user.keys())
@@ -75,6 +75,7 @@ class SQLiteAuthMethods:
         {', '.join([f"{key} = :{key}" for key in keys if key != 'id'])}
         WHERE id = :id
         """
+        print(sql, user)
 
         with SQLiteManager(userdata_db=True) as cur:
             cur.execute(sql, user)

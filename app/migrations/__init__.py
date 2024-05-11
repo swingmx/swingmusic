@@ -2,12 +2,6 @@
 Migrations module.
 
 Reads and applies the latest database migrations.
-
-PLEASE NOTE: OLDER MIGRATIONS CAN NEVER BE DELETED.
-ONLY MODIFY OLD MIGRATIONS FOR BUG FIXES OR ENHANCEMENTS ONLY
-[TRY NOT TO MODIFY BEHAVIOR, UNLESS YOU KNOW WHAT YOU'RE DOING].
-
-PS: Fuck that! Do what you want.
 """
 
 from app.db.sqlite.migrations import MigrationManager
@@ -33,21 +27,32 @@ migrations: list[list[Migration]] = [
 def apply_migrations():
     """
     Applies the latest database migrations.
+
+    The length of all the migrations is stored in the database
+    and used to check for new migrations. When the length of the
+    migrations list is larger than the number stored in the db,
+    migrations past that index are applied and the new length
+    is stored as the new migration index.
     """
 
-    version = MigrationManager.get_version()
+    index = MigrationManager.get_index()
+    all_migrations = [migration for sublist in migrations for migration in sublist]
 
-    if version != len(migrations):
-        # INFO: Apply new migrations
-        for migration in migrations[version:]:
-            for m in migration:
-                try:
-                    m.migrate()
-                    log.info("Applied migration: %s", m.__name__)
-                except:
-                    log.error("Failed to run migration: %s", m.__name__)
-    
-    print("Migrations applied successfully.")
-    print("Current migration version: ", len(migrations))
-    # bump migration version
-    MigrationManager.set_version(len(migrations))
+    to_apply: list[Migration] = []
+
+    # if index is from old release,
+    # get migrations from the "migrations" list
+    if index < 3:
+        _migrations = migrations[index:]
+        to_apply = [migration for sublist in _migrations for migration in sublist]
+    else:
+        to_apply = all_migrations[index:]
+
+    for migration in to_apply:
+        try:
+            migration.migrate()
+            log.info("Applied migration: %s", migration.__name__)
+        except:
+            log.error("Failed to run migration: %s", migration.__name__)
+
+    MigrationManager.set_index(len(all_migrations))

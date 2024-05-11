@@ -10,7 +10,7 @@ def log_startup_info():
     # os.system("cls" if os.name == "nt" else "echo -e \\\\033c")
 
     print(lines)
-    print(f"{TCOLOR.HEADER}SwingMusic {Info.SWINGMUSIC_APP_VERSION} {TCOLOR.ENDC}")
+    print(f"{TCOLOR.HEADER}Swing Music v{Info.SWINGMUSIC_APP_VERSION} {TCOLOR.ENDC}")
 
     adresses = [FLASKVARS.get_flask_host()]
 

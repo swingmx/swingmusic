@@ -4,13 +4,13 @@ import hashlib
 from app.config import UserConfig
 
 
-def encode_password(password: str) -> str:
+def hash_password(password: str) -> str:
     """
-    This function encodes the given password.
+    Hashes the given password using sha256 algorithm and the user id as salt.
 
-    :param password: The password to encode.
+    :param password: The password to hash.
 
-    :return: The encoded password.
+    :return: The hashed password.
     """
 
     return hashlib.pbkdf2_hmac(
@@ -18,14 +18,14 @@ def encode_password(password: str) -> str:
     ).hex()
 
 
-def check_password(password: str, encoded: str) -> bool:
+def check_password(password: str, hashed: str) -> bool:
     """
-    This function checks if the given password matches the encoded password.
+    This function checks if the given password matches the hashed password.
 
     :param password: The password to check.
-    :param encoded: The encoded password.
+    :param hashed: The hashed password.
 
     :return: Whether the password matches.
     """
 
-    return hmac.compare_digest(encode_password(password), encoded)
+    return hmac.compare_digest(hash_password(password), hashed)
