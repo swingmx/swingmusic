@@ -45,22 +45,24 @@ class Paths:
     def get_img_path(cls):
         return join(cls.get_app_dir(), "images")
 
+    # ARTISTS
     @classmethod
     def get_artist_img_path(cls):
         return join(cls.get_img_path(), "artists")
 
     @classmethod
-    def get_artist_img_sm_path(cls):
+    def get_sm_artist_img_path(cls):
         return join(cls.get_artist_img_path(), "small")
 
     @classmethod
-    def get_artist_img_lg_path(cls):
-        return join(cls.get_artist_img_path(), "large")
+    def get_md_artist_img_path(cls):
+        return join(cls.get_artist_img_path(), "medium")
 
     @classmethod
-    def get_playlist_img_path(cls):
-        return join(cls.get_img_path(), "playlists")
+    def get_lg_artist_img_path(cls):
+        return join(cls.get_artist_img_path(), "large")
 
+    # TRACK THUMBNAILS
     @classmethod
     def get_thumbs_path(cls):
         return join(cls.get_img_path(), "thumbnails")
@@ -70,8 +72,21 @@ class Paths:
         return join(cls.get_thumbs_path(), "small")
 
     @classmethod
+    def get_xsm_thumb_path(cls):
+        return join(cls.get_thumbs_path(), "xsmall")
+
+    @classmethod
+    def get_md_thumb_path(cls):
+        return join(cls.get_thumbs_path(), "medium")
+
+    @classmethod
     def get_lg_thumb_path(cls):
         return join(cls.get_thumbs_path(), "large")
+
+    # OTHERS
+    @classmethod
+    def get_playlist_img_path(cls):
+        return join(cls.get_img_path(), "playlists")
 
     @classmethod
     def get_assets_path(cls):
@@ -85,15 +100,32 @@ class Paths:
     def get_lyrics_plugins_path(cls):
         return join(Paths.get_plugins_path(), "lyrics")
 
+    @classmethod
+    def get_config_file_path(cls):
+        return join(cls.get_app_dir(), "settings.json")
+
 
 # defaults
 class Defaults:
-    THUMB_SIZE = 512
-    SM_THUMB_SIZE = 128
+    """
+    Contains default values for various settings.
+
+    XSM_THUMB_SIZE: extra small thumbnail size for web client tracklist
+    SM_THUMB_SIZE: small thumbnail size for android client tracklist
+    MD_THUMB_SIZE: medium thumbnail size for web client album cards
+    LG_THUMB_SIZE: large thumbnail size for web client now playing album art
+
+    NOTE: LG_ARTIST_IMG_SIZE is not defined as the images are saved in the original size (500px)
+    """
+
+    XSM_THUMB_SIZE = 64
+    SM_THUMB_SIZE = 96
+    MD_THUMB_SIZE = 256
+    LG_THUMB_SIZE = 512
+
     SM_ARTIST_IMG_SIZE = 128
-    """
-    The size of extracted images in pixels
-    """
+    MD_ARTIST_IMG_SIZE = 256
+
     HASH_LENGTH = 10
     API_ALBUMHASH = "bfe300e966"
     API_ARTISTHASH = "cae59f1fc5"
@@ -101,7 +133,6 @@ class Defaults:
     API_ALBUMNAME = "The Goat"
     API_ARTISTNAME = "Polo G"
     API_TRACKNAME = "Martin & Gina"
-
     API_CARD_LIMIT = 6
 
 
@@ -157,6 +188,8 @@ class ALLARGS:
     port = "--port"
     host = "--host"
     config = "--config"
+
+    pswd = "--pswd"
 
     show_feat = ("--show-feat", "-sf")
     show_prod = ("--show-prod", "-sp")
@@ -264,7 +297,14 @@ def getCurrentBranch():
         return ""
 
 
-class Keys:
+class Info:
+    """
+    Contains information about the app
+
+    NOTE: This class initially written to load keys when running in build mode.
+    TODO: Remove this class entirely, and implement functionality where needed.
+    """
+
     SWINGMUSIC_APP_VERSION = os.environ.get("SWINGMUSIC_APP_VERSION")
     GIT_LATEST_COMMIT_HASH = "<unset>"
     GIT_CURRENT_BRANCH = "<unset>"
@@ -278,12 +318,6 @@ class Keys:
         else:
             cls.GIT_LATEST_COMMIT_HASH = getLatestCommitHash()
             cls.GIT_CURRENT_BRANCH = getCurrentBranch()
-
-        cls.verify_keys()
-
-    @classmethod
-    def verify_keys(cls):
-        pass
 
     @classmethod
     def get(cls, key: str):

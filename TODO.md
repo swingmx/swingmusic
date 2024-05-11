@@ -1,0 +1,2 @@
+- Fix migrations!
+    - Use total length instead of release version length

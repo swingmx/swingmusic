@@ -1,7 +1,7 @@
 # from tqdm import tqdm
 
 from app.db.sqlite.favorite import SQLiteFavoriteMethods as favdb
-from app.db.sqlite.tracks import SQLiteTrackMethods as tdb
+from app.db.sqlite.tracks import SQLiteTrackMethods as trackdb
 from app.models import Track
 from app.utils.bisection import use_bisection
 from app.utils.customlist import CustomList
@@ -23,7 +23,7 @@ class TrackStore:
         global TRACKS_LOAD_KEY
         TRACKS_LOAD_KEY = instance_key
 
-        cls.tracks = CustomList(tdb.get_all_tracks())
+        cls.tracks = CustomList(trackdb.get_all_tracks())
 
         fav_hashes = favdb.get_fav_tracks()
         fav_hashes = " ".join([t[1] for t in fav_hashes])
@@ -83,17 +83,6 @@ class TrackStore:
         for track in cls.tracks:
             if track.filepath in filepaths:
                 cls.remove_track_obj(track)
-
-    @classmethod
-    def remove_tracks_by_dir_except(cls, dirs: list[str]):
-        """Removes all tracks not in the root directories."""
-        to_remove = set()
-
-        for track in cls.tracks:
-            if not track.folder.startswith(tuple(dirs)):
-                to_remove.add(track.folder)
-
-        tdb.remove_tracks_by_folders(to_remove)
 
     @classmethod
     def count_tracks_by_trackhash(cls, trackhash: str) -> int:

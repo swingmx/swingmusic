@@ -42,7 +42,7 @@ def process_color(item_hash: str, is_album=True):
     path = (
         settings.Paths.get_sm_thumb_path()
         if is_album
-        else settings.Paths.get_artist_img_sm_path()
+        else settings.Paths.get_sm_artist_img_path()
     )
     path = Path(path) / (item_hash + ".webp")
 

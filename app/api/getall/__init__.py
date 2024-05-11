@@ -22,7 +22,7 @@ bp_tag = Tag(name="Get all", description="List all items")
 api = APIBlueprint("getall", __name__, url_prefix="/getall", abp_tags=[bp_tag])
 
 
-class GetAllItemsBody(GenericLimitSchema):
+class GetAllItemsQuery(GenericLimitSchema):
     start: int = Field(
         description="The start index of the items to return",
         example=0,
@@ -34,10 +34,10 @@ class GetAllItemsBody(GenericLimitSchema):
         default="created_date",
     )
 
-    reverse: int = Field(
+    reverse: str = Field(
         description="Reverse the sort",
         example=1,
-        default=1,
+        default="1",
     )
 
 
@@ -50,7 +50,7 @@ class GetAllItemsPath(BaseModel):
 
 
 @api.get("/<itemtype>")
-def get_all_items(path: GetAllItemsPath, query: GetAllItemsBody):
+def get_all_items(path: GetAllItemsPath, query: GetAllItemsQuery):
     """
     Get all items
 
@@ -67,10 +67,7 @@ def get_all_items(path: GetAllItemsPath, query: GetAllItemsBody):
     start = query.start
     limit = query.limit
     sort = query.sortby
-    reverse = query.reverse == 1
-
-    # if sort == "":
-    #     sort = "created_date"
+    reverse = query.reverse == "1"
 
     sort_is_count = sort == "count"
     sort_is_duration = sort == "duration"

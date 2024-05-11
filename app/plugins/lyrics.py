@@ -8,7 +8,7 @@ import requests
 
 from app.db.sqlite.plugins import PluginsMethods
 from app.plugins import Plugin, plugin_method
-from app.settings import Keys, Paths
+from app.settings import Paths
 
 
 class LRCProvider:

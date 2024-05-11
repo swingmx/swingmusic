@@ -2,8 +2,16 @@
 This file is used to run the application.
 """
 
+from datetime import datetime, timezone
 import os
 import logging
+from flask_jwt_extended import (
+    create_access_token,
+    get_jwt,
+    get_jwt_identity,
+    set_access_cookies,
+    verify_jwt_in_request,
+)
 import psutil
 import mimetypes
 from flask import Response, request
@@ -12,14 +20,15 @@ import waitress
 import setproctitle
 
 from app.api import create_api
-from app.arg_handler import HandleArgs
+from app.arg_handler import ProcessArgs
 from app.lib.watchdogg import Watcher as WatchDog
 from app.periodic_scan import run_periodic_scans
 from app.plugins.register import register_plugins
-from app.settings import FLASKVARS, TCOLOR, Keys
-from app.setup import run_setup
+from app.settings import FLASKVARS, TCOLOR, Info
+from app.setup import load_into_mem, run_setup
 from app.start_info_logger import log_startup_info
 from app.utils.filesystem import get_home_res_path
+from app.utils.paths import getClientFilesExtensions
 from app.utils.threading import background
 
 mimetypes.add_type("text/css", ".css")
@@ -38,8 +47,83 @@ mimetypes.add_type("application/manifest+json", ".webmanifest")
 werkzeug = logging.getLogger("werkzeug")
 werkzeug.setLevel(logging.ERROR)
 
+# Background tasks
+@background
+def bg_run_setup():
+    run_periodic_scans()
+
+
+@background
+def start_watchdog():
+    WatchDog().run()
+
+
+@background
+def run_swingmusic():
+    log_startup_info()
+    bg_run_setup()
+    register_plugins()
+
+    start_watchdog()
+
+    setproctitle.setproctitle(f"swingmusic ::{FLASKVARS.get_flask_port()}")
+
+
+# Setup function calls
+Info.load()
+ProcessArgs()
+run_setup()
+load_into_mem()
+run_swingmusic()
+
+
+# Create the Flask app
+
 app = create_api()
 app.static_folder = get_home_res_path("client")
+
+# INFO: Routes that don't need authentication
+whitelisted_routes = {"/auth/login", "/auth/users", "/auth/logout", "/docs"}
+blacklist_extensions = {".webp"}.union(getClientFilesExtensions())
+
+
+@app.before_request
+def verify_auth():
+    """
+    Verifies the JWT token before each request.
+    """
+    if request.path == "/" or any(
+        request.path.endswith(ext) for ext in blacklist_extensions
+    ):
+        return
+
+    # if request path starts with any of the blacklisted routes, don't verify jwt
+    if any(request.path.startswith(route) for route in whitelisted_routes):
+        # print(
+        #     "Found whitelisted route: ", request.path, "... Skipping jwt verification"
+        # )
+        return
+
+    verify_jwt_in_request()
+
+
+@app.after_request
+def refresh_expiring_jwt(response: Response):
+    """
+    Refreshes the JWT token after each request.
+    """
+    try:
+        exp_timestamp = get_jwt()["exp"]
+        now = datetime.now(timezone.utc)
+        target_timestamp = datetime.timestamp(now) + 60 * 60 * 24 * 7  # 7 days
+
+        if target_timestamp > exp_timestamp:
+            access_token = create_access_token(identity=get_jwt_identity())
+            set_access_cookies(response, access_token)
+
+        return response
+    except (RuntimeError, KeyError):
+        return response
 
 
 @app.route("/<path:path>")
@@ -106,33 +190,7 @@ def print_memory_usage(response: Response):
     return response
 
 
-@background
-def bg_run_setup() -> None:
-    run_periodic_scans()
-
-
-@background
-def start_watchdog():
-    WatchDog().run()
-
-
-@background
-def run_swingmusic():
-    log_startup_info()
-    run_setup()
-    bg_run_setup()
-    register_plugins()
-
-    start_watchdog()
-
-    setproctitle.setproctitle(f"swingmusic ::{FLASKVARS.get_flask_port()}")
-
-
 if __name__ == "__main__":
-    Keys.load()
-    HandleArgs()
-    run_swingmusic()
-
     host = FLASKVARS.get_flask_host()
     port = FLASKVARS.get_flask_port()
 

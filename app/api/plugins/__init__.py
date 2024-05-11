@@ -3,6 +3,7 @@ from flask import Blueprint, request
 from flask_openapi3 import Tag
 from flask_openapi3 import APIBlueprint
 from pydantic import BaseModel, Field
+from app.api.auth import admin_required
 from app.db.sqlite.plugins import PluginsMethods
 
 bp_tag = Tag(name="Plugins", description="Manage plugins")
@@ -30,6 +31,7 @@ class PluginActivateBody(PluginBody):
 
 
 @api.post("/setactive")
+@admin_required()
 def activate_deactivate_plugin(body: PluginActivateBody):
     """
     Activate/Deactivate plugin
@@ -49,6 +51,7 @@ class PluginSettingsBody(PluginBody):
 
 
 @api.post("/settings")
+@admin_required()
 def update_plugin_settings(body: PluginSettingsBody):
     """
     Update plugin settings

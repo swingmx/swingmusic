@@ -54,6 +54,17 @@ CREATE TABLE IF NOT EXISTS track_logger (
     timestamp integer NOT NULL,
     source text,
     userid integer NOT NULL DEFAULT 0
+);
+
+CREATE TABLE IF NOT EXISTS users (
+    id integer PRIMARY KEY,
+    username text NOT NULL UNIQUE,
+    firstname text,
+    lastname text,
+    password text NOT NULL,
+    email text,
+    image text,
+    roles text NOT NULL DEFAULT '["user"]'
 )
 """
 

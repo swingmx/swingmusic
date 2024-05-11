@@ -58,3 +58,19 @@ class DeleteOriginalThumbnails(Migration):
 
         if os.path.exists(og_imgpath):
             shutil.rmtree(og_imgpath)
+
+class DeleteOriginalThumbnailsa(Migration):
+    """
+    Original thumbnails are too large and are not needed.
+    """
+
+    # TODO: Implement this migration
+
+    @staticmethod
+    def migrate():
+        imgpath = Paths.get_thumbs_path()
+        og_imgpath = os.path.join(imgpath, "original")
+
+        if os.path.exists(og_imgpath):
+            shutil.rmtree(og_imgpath)
+

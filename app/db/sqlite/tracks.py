@@ -112,9 +112,10 @@ class SQLiteTrackMethods:
                 cur.execute("DELETE FROM tracks WHERE filepath=?", (filepath,))
 
     @staticmethod
-    def remove_tracks_by_folders(folders: set[str]):
-        sql = "DELETE FROM tracks WHERE folder = ?"
+    def remove_tracks_not_in_folders(folders: set[str]):
+        sql = "DELETE FROM tracks WHERE folder NOT IN ({})".format(
+            ",".join("?" * len(folders))
+        )
 
         with SQLiteManager() as cur:
-            for folder in folders:
-                cur.execute(sql, (folder,))
+            cur.execute(sql, tuple(folders))

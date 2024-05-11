@@ -3,18 +3,21 @@ from flask import request
 from flask_openapi3 import Tag
 from flask_openapi3 import APIBlueprint
 from pydantic import BaseModel, Field
+from app.api.auth import admin_required
 
 from app.db.sqlite.plugins import PluginsMethods as pdb
 from app.db.sqlite.settings import SettingsSQLMethods as sdb
+from app.db.sqlite.tracks import SQLiteTrackMethods as trackdb
 from app.lib import populate
 from app.lib.watchdogg import Watcher as WatchDog
 from app.logger import log
-from app.settings import Keys, Paths, SessionVarKeys, set_flag
+from app.settings import Info, Paths, SessionVarKeys, set_flag
 from app.store.albums import AlbumStore
 from app.store.artists import ArtistStore
 from app.store.tracks import TrackStore
 from app.utils.generators import get_random_str
 from app.utils.threading import background
+from app.config import UserConfig
 
 bp_tag = Tag(name="Settings", description="Customize stuff")
 api = APIBlueprint("settings", __name__, url_prefix="/notsettings", abp_tags=[bp_tag])
@@ -49,12 +52,12 @@ def reload_everything(instance_key: str):
 @background
 def rebuild_store(db_dirs: list[str]):
     """
-    Restarts the watchdog and rebuilds the music library.
+    Restarts watchdog and rebuilds the music library.
     """
     instance_key = get_random_str()
 
     log.info("Rebuilding library...")
-    TrackStore.remove_tracks_by_dir_except(db_dirs)
+    trackdb.remove_tracks_not_in_folders(db_dirs)
     reload_everything(instance_key)
 
     try:
@@ -69,7 +72,7 @@ def rebuild_store(db_dirs: list[str]):
     log.info("Rebuilding library... ✅")
 
 
-# I freaking don't know what this function does anymore 
+# I freaking don't know what this function does anymore
 def finalize(new_: list[str], removed_: list[str], db_dirs_: list[str]):
     """
     Params:
@@ -95,6 +98,7 @@ class AddRootDirsBody(BaseModel):
 
 
 @api.post("/add-root-dirs")
+@admin_required()
 def add_root_dirs(body: AddRootDirsBody):
     """
     Add custom root directories to the database.
@@ -103,10 +107,10 @@ def add_root_dirs(body: AddRootDirsBody):
     removed_dirs = body.removed
 
     db_dirs = sdb.get_root_dirs()
-    _h = "$home"
+    home = "$home"
 
-    db_home = any([d == _h for d in db_dirs])  # if $home is in db
-    incoming_home = any([d == _h for d in new_dirs])  # if $home is in incoming
+    db_home = any([d == home for d in db_dirs])  # if $home is in db
+    incoming_home = any([d == home for d in new_dirs])  # if $home is in incoming
 
     # handle $home case
     if db_home and incoming_home:
@@ -116,8 +120,8 @@ def add_root_dirs(body: AddRootDirsBody):
         sdb.remove_root_dirs(db_dirs)
 
     if incoming_home:
-        finalize([_h], [], [Paths.USER_HOME_DIR])
-        return {"root_dirs": [_h]}
+        finalize([home], [], [Paths.USER_HOME_DIR])
+        return {"root_dirs": [home]}
 
     # ---
 
@@ -132,7 +136,7 @@ def add_root_dirs(body: AddRootDirsBody):
             pass
 
     db_dirs.extend(new_dirs)
-    db_dirs = [dir_ for dir_ in db_dirs if dir_ != _h]
+    db_dirs = [dir_ for dir_ in db_dirs if dir_ != home]
 
     finalize(new_dirs, removed_dirs, db_dirs)
 
@@ -190,7 +194,7 @@ def get_all_settings():
     root_dirs = sdb.get_root_dirs()
     s["root_dirs"] = root_dirs
     s["plugins"] = plugins
-    s["version"] = Keys.SWINGMUSIC_APP_VERSION
+    s["version"] = Info.SWINGMUSIC_APP_VERSION
 
     return {
         "settings": s,
@@ -214,6 +218,7 @@ class SetSettingBody(BaseModel):
 
 
 @api.post("/set")
+@admin_required()
 def set_setting(body: SetSettingBody):
     """
     Set a setting.
@@ -264,3 +269,28 @@ def trigger_scan():
     run_populate()
 
     return {"msg": "Scan triggered!"}
+
+
+class UpdateConfigBody(BaseModel):
+    key: str = Field(
+        description="The setting key",
+        example="usersOnLogin",
+    )
+    value: Any = Field(
+        description="The setting value",
+        example=False,
+    )
+
+
+@api.put("/update")
+@admin_required()
+def update_config(body: UpdateConfigBody):
+    """
+    Update the config file
+    """
+    config = UserConfig()
+    setattr(config, body.key, body.value)
+
+    return {
+        "msg": "Config updated!",
+    }

@@ -13,6 +13,12 @@ from app.logger import log
 def run_periodic_scans():
     """
     Runs periodic scans.
+
+    Periodic scans are checks that run every few minutes
+    in the background to do stuff like:
+    - checking for new music
+    - delete deleted entries
+    - downloading artist images, and other data.
     """
     # ValidateAlbumThumbs()
     # ValidatePlaylistThumbs()

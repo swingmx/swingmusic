@@ -1,4 +1,4 @@
-from app.settings import ALLARGS
+from app.settings import ALLARGS, Info
 from tabulate import tabulate
 
 args = ALLARGS
@@ -10,6 +10,7 @@ help_args_list = [
     ["--port", "", "Set the port"],
     ["--config", "", "Set the config path"],
     ["--no-periodic-scan", "-nps", "Disable periodic scan"],
+    ["--pswd", "", "Recover a password"],
     [
         "--scan-interval",
         "-psi",
@@ -23,10 +24,12 @@ help_args_list = [
 ]
 
 HELP_MESSAGE = f"""
-Swing Music is a beautiful, self-hosted music player for your 
-local audio files. Like a cooler Spotify ... but bring your own music.
+Swing Music v{Info.SWINGMUSIC_APP_VERSION}
 
-Usage: swingmusic [options] [args]
+A beautiful, self-hosted music player for your local audio files.
+Like Spotify ... but bring your own music.
 
-{tabulate(help_args_list, headers=["Option", "Short", "Description"], tablefmt="simple_grid", maxcolwidths=[None, None, 40])}
+Usage: ./swingmusic [options] [args]
+
+{tabulate(help_args_list, headers=["Option", "Alias", "Description"], tablefmt="psql", maxcolwidths=[None, None, 40])}
 """

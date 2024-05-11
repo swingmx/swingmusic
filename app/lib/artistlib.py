@@ -55,13 +55,22 @@ def get_artist_image_link(artist: str):
 # TODO: Move network calls to utils/network.py
 class DownloadImage:
     def __init__(self, url: str, name: str) -> None:
-        sm_path = Path(settings.Paths.get_artist_img_sm_path()) / name
-        lg_path = Path(settings.Paths.get_artist_img_lg_path()) / name
-
         img = self.download(url)
 
-        if img is not None:
-            self.save_img(img, sm_path, lg_path)
+        if img is None:
+            return
+
+        sm_path = Path(settings.Paths.get_sm_artist_img_path()) / name
+        lg_path = Path(settings.Paths.get_lg_artist_img_path()) / name
+        md_path = Path(settings.Paths.get_md_artist_img_path()) / name
+
+        entries = [
+            (lg_path, None),  # save in the original size
+            (sm_path, settings.Defaults.SM_ARTIST_IMG_SIZE),
+            (md_path, settings.Defaults.MD_ARTIST_IMG_SIZE),
+        ]
+
+        self.save_img(img, entries)
 
     @staticmethod
     def download(url: str) -> Image.Image | None:
@@ -74,14 +83,21 @@ class DownloadImage:
             return None
 
     @staticmethod
-    def save_img(img: Image.Image, sm_path: Path, lg_path: Path):
+    def save_img(img: Image.Image, entries: list[tuple[Path, int | None]]):
         """
         Saves the image to the destinations.
         """
-        img.save(lg_path, format="webp")
+        ratio = img.width / img.height
+        for entry in entries:
+            path, size = entry
 
-        sm_size = settings.Defaults.SM_ARTIST_IMG_SIZE
-        img.resize((sm_size, sm_size), Image.ANTIALIAS).save(sm_path, format="webp")
+            if size is None:
+                img.save(path, format="webp")
+                continue
+
+            img.resize((size, int(size / ratio)), Image.ANTIALIAS).save(
+                path, format="webp"
+            )
 
 
 class CheckArtistImages:
@@ -90,7 +106,7 @@ class CheckArtistImages:
         CHECK_ARTIST_IMAGES_KEY = instance_key
 
         # read all files in the artist image folder
-        path = settings.Paths.get_artist_img_sm_path()
+        path = settings.Paths.get_sm_artist_img_path()
         processed = "".join(os.listdir(path)).replace("webp", "")
 
         # filter out artists that already have an image
@@ -126,7 +142,7 @@ class CheckArtistImages:
             return
 
         img_path = (
-            Path(settings.Paths.get_artist_img_sm_path()) / f"{artist.artisthash}.webp"
+            Path(settings.Paths.get_sm_artist_img_path()) / f"{artist.artisthash}.webp"
         )
 
         if img_path.exists():

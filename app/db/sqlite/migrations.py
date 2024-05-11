@@ -7,9 +7,9 @@ from app.db.sqlite.utils import SQLiteManager
 
 class MigrationManager:
     @staticmethod
-    def get_version() -> int:
+    def get_index() -> int:
         """
-        Returns the latest userdata database version.
+        Returns the latest databases migrations index.
         """
         sql = "SELECT * FROM dbmigrations"
         with SQLiteManager() as cur:
@@ -21,9 +21,9 @@ class MigrationManager:
 
     # 👇 Setters 👇
     @staticmethod
-    def set_version(version: int):
+    def set_index(version: int):
         """
-        Sets the userdata pre-init database version.
+        Updates the databases migrations index.
         """
         sql = "UPDATE dbmigrations SET version = ? WHERE id = 1"
         with SQLiteManager() as cur:

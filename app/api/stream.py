@@ -3,14 +3,17 @@ Contains all the track routes.
 """
 
 import os
+import time
 
 from flask import Blueprint, send_file, request, Response
 from flask_openapi3 import APIBlueprint, Tag
 from pydantic import BaseModel, Field
 from app.api.apischemas import TrackHashSchema
+from app.lib.pydub.pydub.audio_segment import AudioSegment
 from app.lib.trackslib import get_silence_paddings
 
 from app.store.tracks import TrackStore
+from app.utils.files import guess_mime_type
 
 bp_tag = Tag(name="File", description="Audio files")
 api = APIBlueprint("track", __name__, url_prefix="/file", abp_tags=[bp_tag])
@@ -33,10 +36,6 @@ def send_track_file(path: TrackHashSchema, query: SendTrackFileQuery):
     filepath = query.filepath
     msg = {"msg": "File Not Found"}
 
-    def get_mime(filename: str) -> str:
-        ext = filename.rsplit(".", maxsplit=1)[-1]
-        return f"audio/{ext}"
-
     # If filepath is provided, try to send that
     if filepath is not None:
         try:
@@ -47,7 +46,7 @@ def send_track_file(path: TrackHashSchema, query: SendTrackFileQuery):
         track_exists = track is not None and os.path.exists(track.filepath)
 
         if track_exists:
-            audio_type = get_mime(filepath)
+            audio_type = guess_mime_type(filepath)
             return send_file_as_chunks(track.filepath, audio_type)
 
     # Else, find file by trackhash
@@ -57,7 +56,7 @@ def send_track_file(path: TrackHashSchema, query: SendTrackFileQuery):
         if track is None:
             return msg, 404
 
-        audio_type = get_mime(track.filepath)
+        audio_type = guess_mime_type(track.filepath)
 
         try:
             return send_file_as_chunks(track.filepath, audio_type)
@@ -68,15 +67,31 @@ def send_track_file(path: TrackHashSchema, query: SendTrackFileQuery):
 
 
 def send_file_as_chunks(filepath: str, audio_type: str) -> Response:
+    """
+    Returns a Response object that streams the file in chunks.
+    """
+    # NOTE: +1 makes sure the last byte is included in the range.
+    # NOTE: -1 is used to convert the end index to a 0-based index.
+    chunk_size = 1024 * 360  # 360 KB
+
+    # Get file size
     file_size = os.path.getsize(filepath)
     start = 0
-    end = file_size - 1
+    end = chunk_size
 
+    # Read range header
     range_header = request.headers.get("Range")
     if range_header:
-        start, end = parse_range_header(range_header, file_size)
+        start = get_start_range(range_header)
 
-    chunk_size = 1024 * 1024  # 1MB chunk size (adjust as needed)
+        # If start + chunk_size is greater than file_size,
+        # set end to file_size - 1
+        _end = start + chunk_size - 1
+
+        if _end > file_size:
+            end = file_size - 1
+        else:
+            end = _end
 
     def generate_chunks():
         with open(filepath, "rb") as file:
@@ -84,8 +99,11 @@ def send_file_as_chunks(filepath: str, audio_type: str) -> Response:
             remaining_bytes = end - start + 1
 
             while remaining_bytes > 0:
+                # Read the chunk size or all the remaining bytes
                 chunk = file.read(min(chunk_size, remaining_bytes))
                 yield chunk
+
+                # Update the remaining bytes
                 remaining_bytes -= len(chunk)
 
     response = Response(
@@ -102,15 +120,13 @@ def send_file_as_chunks(filepath: str, audio_type: str) -> Response:
     return response
 
 
-def parse_range_header(range_header: str, file_size: int) -> tuple[int, int]:
+def get_start_range(range_header: str):
     try:
         range_start, range_end = range_header.strip().split("=")[1].split("-")
-        start = int(range_start)
-        end = min(int(range_end), file_size - 1)
-    except ValueError:
-        return 0, file_size - 1
+        return int(range_start)
 
-    return start, end
+    except ValueError:
+        return 0
 
 
 class GetAudioSilenceBody(BaseModel):

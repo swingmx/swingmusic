@@ -26,6 +26,7 @@ api = APIBlueprint("playlists", __name__, url_prefix="/playlists", abp_tags=[tag
 
 PL = SQLitePlaylistMethods
 
+
 class SendAllPlaylistsQuery(BaseModel):
     no_images: bool = Field(False, description="Whether to include images")
 
@@ -410,7 +411,7 @@ def save_item_as_playlist(body: SavePlaylistAsItemBody):
         filename = itemhash + ".webp"
 
         base_path = (
-            Paths.get_artist_img_lg_path()
+            Paths.get_lg_artist_img_path()
             if itemtype == "artist"
             else Paths.get_lg_thumb_path()
         )

@@ -82,8 +82,12 @@ def get_recently_played(limit=7):
 
         if entry.type == "folder":
             folder = entry.type_src
+
             if not folder:
                 continue
+
+            if not folder.endswith("/"):
+                folder += "/"
 
             is_home_dir = entry.type_src == "$home"
 
@@ -98,7 +102,7 @@ def get_recently_played(limit=7):
                 {
                     "type": "folder",
                     "item": {
-                        "path": entry.type_src,
+                        "path": folder,
                         "count": count,
                         "help_text": "folder",
                         "time": timestamp_to_time_passed(entry.timestamp),
