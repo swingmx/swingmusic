@@ -67,7 +67,8 @@ def create_api():
     app.config["JWT_SECRET_KEY"] = UserConfig().userId
     app.config["JWT_TOKEN_LOCATION"] = ["cookies"]
     app.config["JWT_COOKIE_CSRF_PROTECT"] = False
-    app.config["JWT_ACCESS_TOKEN_EXPIRES"] = datetime.timedelta(days=30)
+    app.config["JWT_SESSION_COOKIE"] = False
+    app.config["JWT_ACCESS_TOKEN_EXPIRES"] = int(datetime.timedelta(days=30).total_seconds())
 
     # CORS
     CORS(app, origins="*", supports_credentials=True)

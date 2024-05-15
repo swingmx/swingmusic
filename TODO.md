@@ -1,2 +1,4 @@
-- Fix migrations!
-    - Use total length instead of release version length
+- Move user track logs to user zero
+    - Move future logs to appropriate user id
+- Migrations:
+    - Move userdata to new hashing algorithm

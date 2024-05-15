@@ -1,8 +1,7 @@
 import json
-from dataclasses import asdict
 from functools import wraps
 import sqlite3
-from flask import jsonify
+from flask import current_app, jsonify
 from flask_jwt_extended import (
     create_access_token,
     current_user,
@@ -61,7 +60,10 @@ def login(body: LoginBody):
         return {"msg": "Hehe! invalid password"}, 401
 
     access_token = create_access_token(identity=user.todict())
-    set_access_cookies(res, access_token)
+
+    max_age: int = current_app.config.get("JWT_ACCESS_TOKEN_EXPIRES")
+    set_access_cookies(res, access_token, max_age=max_age)
+
     return res
 
 
