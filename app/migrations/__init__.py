@@ -4,24 +4,28 @@ Migrations module.
 Reads and applies the latest database migrations.
 """
 
+import inspect
+from types import ModuleType
 from app.db.sqlite.migrations import MigrationManager
 from app.logger import log
 from app.migrations import v1_3_0, v1_4_9
 from app.migrations.base import Migration
 
-migrations: list[list[Migration]] = [
-    [
-        # v1.3.0
-        v1_3_0.RemoveSmallThumbnailFolder,
-        v1_3_0.RemovePlaylistArtistHashes,
-        v1_3_0.AddSettingsToPlaylistTable,
-        v1_3_0.AddLastUpdatedToTrackTable,
-        v1_3_0.MovePlaylistsAndFavoritesTo10BitHashes,
-        v1_3_0.RemoveAllTracks,
-        v1_3_0.UpdateAppSettingsTable,
-    ],
-    [v1_4_9.AddTimestampToFavoritesTable, v1_4_9.DeleteOriginalThumbnails],
-]
+
+def get_all_migrations(module: ModuleType) -> list[Migration]:
+    """
+    Extracts all migration classes from a module.
+    """
+    predicate = (
+        lambda obj: inspect.isclass(obj)
+        and issubclass(obj, Migration)
+        and obj.enabled
+        and obj.__module__ == module.__name__
+    )
+
+    # INFO: I couldn't find how to sort the classes in order of appearance
+    # so I just renamed them to be sortable by name
+    return [obj for name, obj in inspect.getmembers(module, predicate)]
 
 
 def apply_migrations():
@@ -34,6 +38,8 @@ def apply_migrations():
     migrations past that index are applied and the new length
     is stored as the new migration index.
     """
+    modules = [v1_3_0, v1_4_9]
+    migrations = [get_all_migrations(m) for m in modules]
 
     index = MigrationManager.get_index()
     all_migrations = [migration for sublist in migrations for migration in sublist]

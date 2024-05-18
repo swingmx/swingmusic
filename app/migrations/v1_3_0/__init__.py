@@ -23,7 +23,7 @@ from app.utils.hashing import create_hash
 # 6: trackhashes
 
 
-class RemoveSmallThumbnailFolder(Migration):
+class m1_RemoveSmallThumbnailFolder(Migration):
     """
     Removes the small thumbnail folder.
 
@@ -45,7 +45,7 @@ class RemoveSmallThumbnailFolder(Migration):
             os.makedirs(path, exist_ok=True)
 
 
-class RemovePlaylistArtistHashes(Migration):
+class m2_RemovePlaylistArtistHashes(Migration):
     """
     removes the artisthashes column from the playlists table.
     """
@@ -64,7 +64,7 @@ class RemovePlaylistArtistHashes(Migration):
             cur.close()
 
 
-class AddSettingsToPlaylistTable(Migration):
+class m3_AddSettingsToPlaylistTable(Migration):
     """
     adds the settings column and removes the banner_pos and has_gif columns
     to the playlists table.
@@ -141,7 +141,7 @@ class AddSettingsToPlaylistTable(Migration):
             cur.close()
 
 
-class AddLastUpdatedToTrackTable(Migration):
+class m4_AddLastUpdatedToTrackTable(Migration):
     """
     adds the last modified column to the tracks table.
     """
@@ -161,7 +161,7 @@ class AddLastUpdatedToTrackTable(Migration):
             cur.close()
 
 
-class MovePlaylistsAndFavoritesTo10BitHashes(Migration):
+class m5_MovePlaylistsAndFavoritesTo10BitHashes(Migration):
     """
     moves the playlists and favorites to 10 bit hashes.
     """
@@ -268,7 +268,7 @@ class MovePlaylistsAndFavoritesTo10BitHashes(Migration):
             cur.close()
 
 
-class RemoveAllTracks(Migration):
+class m6_RemoveAllTracks(Migration):
     """
     removes all tracks from the tracks table.
     """
@@ -282,7 +282,7 @@ class RemoveAllTracks(Migration):
             cur.close()
 
 
-class UpdateAppSettingsTable(Migration):
+class m7_UpdateAppSettingsTable(Migration):
     @staticmethod
     def migrate():
         drop_table_sql = "DROP TABLE settings"

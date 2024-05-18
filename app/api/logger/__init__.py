@@ -1,3 +1,4 @@
+from flask_jwt_extended import current_user
 from flask_openapi3 import Tag
 from flask_openapi3 import APIBlueprint
 from pydantic import Field
@@ -31,8 +32,15 @@ def log_track(body: LogTrackBody):
     duration = body.duration
     source = body.source
 
+    if not timestamp or duration < 5:
+        return {"msg": "Invalid entry."}, 400
+
     last_row = db.insert_track(
-        trackhash=trackhash, timestamp=timestamp, duration=duration, source=source
+        trackhash=trackhash,
+        timestamp=timestamp,
+        duration=duration,
+        source=source,
+        userid=current_user["id"],
     )
 
-    return {"last_row": last_row}
+    return {"total entries": last_row}

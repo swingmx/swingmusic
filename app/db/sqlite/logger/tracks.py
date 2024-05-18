@@ -3,7 +3,7 @@ from app.db.sqlite.utils import SQLiteManager
 
 class SQLiteTrackLogger:
     @classmethod
-    def insert_track(cls, trackhash: str, duration: int, source: str, timestamp: int):
+    def insert_track(cls, trackhash: str, duration: int, source: str, timestamp: int, userid: int):
         """
         Inserts a track into the database
         """
@@ -18,7 +18,7 @@ class SQLiteTrackLogger:
                 ) VALUES(?,?,?,?,?)
                 """
 
-            cur.execute(sql, (trackhash, duration, timestamp, source, 0))
+            cur.execute(sql, (trackhash, duration, timestamp, source, userid))
             lastrowid = cur.lastrowid
 
             return lastrowid

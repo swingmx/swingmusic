@@ -5,7 +5,7 @@ from app.migrations.base import Migration
 from app.settings import Paths
 
 
-class AddTimestampToFavoritesTable(Migration):
+class _1AddTimestampToFavoritesTable(Migration):
     """
     Adds a timestamp column to the favorites table.
     """
@@ -30,7 +30,7 @@ class AddTimestampToFavoritesTable(Migration):
                 cur.close()
 
 
-class MoveHashesToSha1(Migration):
+class _4MoveHashesToSha1(Migration):
     """
     Moves the 10 bit item hashes from sha256 to sha1 which is
     faster and more lenient on less powerful devices.
@@ -38,13 +38,15 @@ class MoveHashesToSha1(Migration):
     Thanks to [@tcsenpai](https:github.com/tcsenpai) for the contribution.
     """
 
+    enabled: bool = False
+
     pass
 
     # INFO: Apparentlly, every single table is affected by this migration.
     # NOTE: Use generators to avoid memory issues.
 
 
-class DeleteOriginalThumbnails(Migration):
+class _2DeleteOriginalThumbnails(Migration):
     """
     Original thumbnails are too large and are not needed.
     """
@@ -59,18 +61,15 @@ class DeleteOriginalThumbnails(Migration):
         if os.path.exists(og_imgpath):
             shutil.rmtree(og_imgpath)
 
-class DeleteOriginalThumbnailsa(Migration):
-    """
-    Original thumbnails are too large and are not needed.
-    """
 
-    # TODO: Implement this migration
+class _3MoveScrobbleToUserId1(Migration):
+    """
+    Updates all track logs from user id = 0 to user id = 1
+    """
 
     @staticmethod
     def migrate():
-        imgpath = Paths.get_thumbs_path()
-        og_imgpath = os.path.join(imgpath, "original")
-
-        if os.path.exists(og_imgpath):
-            shutil.rmtree(og_imgpath)
-
+        # INFO: Move the scrobble table to the user id 1
+        with SQLiteManager(userdata_db=True) as cur:
+            cur.execute("UPDATE track_logger SET userid = 1 WHERE userid = 0")
+            cur.close()
