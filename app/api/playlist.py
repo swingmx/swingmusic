@@ -15,6 +15,8 @@ from app import models
 from app.db.sqlite.playlists import SQLitePlaylistMethods
 from app.lib import playlistlib
 from app.lib.albumslib import sort_by_track_no
+from app.lib.home.recentlyadded import get_recently_added_playlist
+from app.lib.home.recentlyplayed import get_recently_played_playlist
 from app.serializers.playlist import serialize_for_card
 from app.store.tracks import TrackStore
 from app.utils.dates import create_new_date, date_string_to_time_passed
@@ -174,6 +176,18 @@ class GetPlaylistQuery(BaseModel):
     no_tracks: bool = Field(False, description="Whether to include tracks")
 
 
+def format_custom_playlist(playlist: models.Playlist, tracks: list[models.Track]):
+    duration = sum(t.duration for t in tracks)
+
+    playlist.set_duration(duration)
+    playlist = serialize_for_card(playlist)
+
+    return {
+        "info": playlist,
+        "tracks": tracks,
+    }
+
+
 @api.get("/<playlistid>")
 def get_playlist(path: PlaylistIDPath, query: GetPlaylistQuery):
     """
@@ -182,18 +196,18 @@ def get_playlist(path: PlaylistIDPath, query: GetPlaylistQuery):
     no_tracks = query.no_tracks
     playlistid = path.playlistid
 
-    is_recently_added = playlistid == "recentlyadded"
+    custom_playlists = [
+        {"name": "recentlyadded", "handler": get_recently_added_playlist},
+        {"name": "recentlyplayed", "handler": get_recently_played_playlist},
+    ]
+    is_custom = playlistid in {p["name"] for p in custom_playlists}
 
-    if is_recently_added:
-        playlist, tracks = playlistlib.get_recently_added_playlist()
-
-        tracks = remove_duplicates(tracks)
-        duration = sum(t.duration for t in tracks)
-
-        playlist.set_duration(duration)
-        playlist = serialize_for_card(playlist)
-
-        return {"info": playlist, "tracks": tracks}
+    if is_custom:
+        handler = next(
+            p["handler"] for p in custom_playlists if p["name"] == playlistid
+        )
+        playlist, tracks = handler()
+        return format_custom_playlist(playlist, tracks)
 
     playlist = PL.get_playlist_by_id(int(playlistid))
 
@@ -247,7 +261,7 @@ def update_playlist_info(path: PlaylistIDPath, form: UpdatePlaylistForm):
     settings["has_gif"] = False
 
     playlist = {
-        "id": playlistid,
+        "id": int(playlistid),
         "image": db_playlist.image,
         "last_updated": create_new_date(),
         "name": str(form.name).strip(),

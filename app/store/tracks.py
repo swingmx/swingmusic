@@ -129,10 +129,18 @@ class TrackStore:
         """
         Returns a list of tracks by their hashes.
         """
+        hash_set = set(trackhashes)
+        set_len = len(hash_set)
 
-        trackhashes = " ".join(trackhashes)
-        tracks = [track for track in cls.tracks if track.trackhash in trackhashes]
+        tracks = []
+        for track in cls.tracks:
+            if track.trackhash in hash_set:
+                tracks.append(track)
 
+            if len(tracks) == set_len:
+                break
+
+        # sort the tracks in the order of the given trackhashes
         tracks.sort(key=lambda t: trackhashes.index(t.trackhash))
         return tracks
 

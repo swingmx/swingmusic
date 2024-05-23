@@ -3,7 +3,7 @@ from typing import Literal
 
 
 @dataclass
-class Track:
+class TrackLog:
     """
     Track play logger model
     """

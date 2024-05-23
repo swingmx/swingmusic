@@ -1,6 +1,7 @@
-import os
+from datetime import datetime
 
-from flask import g
+from app.lib.playlistlib import get_first_4_images
+from app.models.playlist import Playlist
 from app.models.track import Track
 from app.store.tracks import TrackStore
 from app.store.albums import AlbumStore
@@ -12,7 +13,7 @@ from app.serializers.artist import serialize_for_card
 
 from itertools import groupby
 
-from app.utils.dates import timestamp_to_time_passed
+from app.utils.dates import create_new_date, date_string_to_time_passed, timestamp_to_time_passed
 
 older_albums = set()
 older_artists = set()
@@ -191,7 +192,7 @@ def group_track_by_folders(tracks: Track):
     return sorted(groups, key=lambda group: group["time"], reverse=True)
 
 
-def get_recent_items(limit: int = 7):
+def get_recently_added_items(limit: int = 7):
     tracks = sorted(TrackStore.tracks, key=lambda t: t.created_date)
     groups = group_track_by_folders(tracks)
 
@@ -216,6 +217,33 @@ def get_recent_items(limit: int = 7):
     return recent_items
 
 
-def get_recent_tracks(limit: int):
+
+def get_recently_added_playlist(limit: int = 100):
+    playlist = Playlist(
+        id="recentlyadded",
+        name="Recently Added",
+        image=None,
+        last_updated="Now",
+        settings={},
+        trackhashes=[],
+    )
+
+    tracks = get_recently_added_tracks(limit=limit)
+
+    try:
+        # Create date to show as last updated
+        date = datetime.fromtimestamp(tracks[0].created_date)
+    except IndexError:
+        return playlist, []
+
+    playlist.last_updated = date_string_to_time_passed(create_new_date(date))
+
+    images = get_first_4_images(tracks=tracks)
+    playlist.images = images
+    playlist.set_count(len(tracks))
+
+    return playlist, tracks
+
+def get_recently_added_tracks(limit: int):
     tracks = sorted(TrackStore.tracks, key=lambda t: t.created_date, reverse=True)
     return tracks[:limit]

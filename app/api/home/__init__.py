@@ -2,7 +2,7 @@ from flask_openapi3 import Tag
 from flask_openapi3 import APIBlueprint
 
 from app.api.apischemas import GenericLimitSchema
-from app.lib.home.recentlyadded import get_recent_items
+from app.lib.home.recentlyadded import get_recently_added_items
 from app.lib.home.recentlyplayed import get_recently_played
 
 bp_tag = Tag(name="Home", description="Homepage items")
@@ -14,7 +14,7 @@ def get_recently_added(query: GenericLimitSchema):
     """
     Get recently added
     """
-    return {"items": get_recent_items(query.limit)}
+    return {"items": get_recently_added_items(query.limit)}
 
 
 @api.get("/recents/played")

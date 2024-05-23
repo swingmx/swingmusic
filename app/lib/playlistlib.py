@@ -5,18 +5,14 @@ This library contains all the functions related to playlists.
 import os
 import random
 import string
-from datetime import datetime
 from typing import Any
 
 from PIL import Image, ImageSequence
 
 from app import settings
-from app.lib.home.recentlyadded import get_recent_tracks
-from app.models.playlist import Playlist
 from app.models.track import Track
 from app.store.albums import AlbumStore
 from app.store.tracks import TrackStore
-from app.utils.dates import create_new_date, date_string_to_time_passed
 
 
 def create_thumbnail(image: Any, img_path: str) -> str:
@@ -133,30 +129,3 @@ def get_first_4_images(
         return images
 
     return duplicate_images(images)
-
-
-def get_recently_added_playlist(limit: int = 100):
-    playlist = Playlist(
-        id="recentlyadded",
-        name="Recently Added",
-        image=None,
-        last_updated="Now",
-        settings={},
-        trackhashes=[],
-    )
-
-    tracks = get_recent_tracks(limit=limit)
-
-    try:
-        # Create date to show as last updated
-        date = datetime.fromtimestamp(tracks[0].created_date)
-    except IndexError:
-        return playlist, []
-
-    playlist.last_updated = date_string_to_time_passed(create_new_date(date))
-
-    images = get_first_4_images(tracks=tracks)
-    playlist.images = images
-    playlist.set_count(len(tracks))
-
-    return playlist, tracks

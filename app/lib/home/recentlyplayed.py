@@ -1,26 +1,36 @@
+from datetime import datetime
 import os
-from app.models.logger import Track as TrackLog
+from app.models.logger import TrackLog
 
 from app.db.sqlite.logger.tracks import SQLiteTrackLogger as db
 from app.db.sqlite.playlists import SQLitePlaylistMethods as pdb
 from app.db.sqlite.favorite import SQLiteFavoriteMethods as fdb
 
+from app.models.playlist import Playlist
 from app.serializers.track import serialize_track
 from app.serializers.album import album_serializer
-from app.utils.dates import timestamp_to_time_passed
+from app.lib.playlistlib import get_first_4_images
+from app.utils.dates import create_new_date, date_string_to_time_passed, timestamp_to_time_passed
 from app.serializers.artist import serialize_for_card
 from app.serializers.playlist import serialize_for_card as serialize_playlist
-from app.lib.playlistlib import get_first_4_images, get_recently_added_playlist
+from app.lib.home.recentlyadded import get_recently_added_playlist
 
 from app.store.albums import AlbumStore
 from app.store.tracks import TrackStore
 from app.store.artists import ArtistStore
 
 
+
 def get_recently_played(limit=7):
+    # TODO: Paginate this
     entries = db.get_all()
     items = []
     added = set()
+
+    custom_playlists = [
+        {"name": "recentlyadded", "handler": get_recently_added_playlist},
+        {"name": "recentlyplayed", "handler": get_recently_played_playlist},
+    ]
 
     for entry in entries:
         if len(items) >= limit:
@@ -112,10 +122,13 @@ def get_recently_played(limit=7):
             continue
 
         if entry.type == "playlist":
-            is_recently_added = entry.type_src == "recentlyadded"
+            is_custom = entry.type_src in [i["name"] for i in custom_playlists]
+            # is_recently_added = entry.type_src == "recentlyadded"
 
-            if is_recently_added:
-                playlist, _ = get_recently_added_playlist()
+            if is_custom:
+                playlist, _ = next(
+                    i["handler"]() for i in custom_playlists if i["name"] == entry.type_src
+                )
                 playlist.images = [i["image"] for i in playlist.images]
 
                 playlist = serialize_playlist(
@@ -186,3 +199,31 @@ def get_recently_played(limit=7):
         )
 
     return items
+
+
+def get_recently_played_tracks(limit: int):
+    records = db.get_recently_played(start=0, limit=limit)
+    last_updated = records[0].timestamp
+    tracks = TrackStore.get_tracks_by_trackhashes([r.trackhash for r in records])
+    return tracks, last_updated
+
+def get_recently_played_playlist(limit: int = 100):
+    playlist = Playlist(
+        id="recentlyplayed",
+        name="Recently Played",
+        image=None,
+        last_updated="Now",
+        settings={},
+        trackhashes=[],
+    )
+
+    tracks, timestamp = get_recently_played_tracks(limit)
+
+    date = datetime.fromtimestamp(timestamp)
+    playlist.last_updated = date_string_to_time_passed(create_new_date(date))
+
+    images = get_first_4_images(tracks=tracks)
+    playlist.images = images
+    playlist.set_count(len(tracks))
+
+    return playlist, tracks
