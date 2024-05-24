@@ -5,6 +5,7 @@ from pathlib import Path
 from typing import List, Optional
 
 import requests
+from unidecode import unidecode
 
 from app.db.sqlite.plugins import PluginsMethods
 from app.plugins import Plugin, plugin_method
@@ -145,7 +146,7 @@ class LyricsProvider(LRCProvider):
             "track.search",
             [
                 ("q_track", title),
-                ("q_artist", artist),
+                ("q_artist", unidecode(artist)),
                 ("page_size", "5"),
                 ("page", "1"),
                 ("f_has_lyrics", "1"),
