@@ -141,12 +141,12 @@ class LyricsProvider(LRCProvider):
 
         return body["subtitle"]["subtitle_body"]
 
-    def get_lrc(self, title: str, artist: str) -> Optional[str]:
+    def get_lrc(self, title: str, artist: str):
         res = self._get(
             "track.search",
             [
                 ("q_track", title),
-                ("q_artist", unidecode(artist)),
+                ("q_artist", artist),
                 ("page_size", "5"),
                 ("page", "1"),
                 ("f_has_lyrics", "1"),
@@ -164,6 +164,17 @@ class LyricsProvider(LRCProvider):
             tracks = body["track_list"]
         except TypeError:
             return []
+
+        if not tracks:
+            # if the artist name contains non-ascii characters, try to decode it
+            decoded = unidecode(artist)
+
+            # if the decoded artist name is the same as the original, return an empty list
+            if decoded == artist:
+                return []
+
+            # if the decoded artist name is different, retry!
+            return self.get_lrc(title, decoded)
 
         return [
             {
