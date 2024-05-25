@@ -25,11 +25,12 @@ VOLUME /music
 
 VOLUME /config
 
-RUN pip install -r requirements.txt
 
-RUN apt-get update && apt-get install -y ffmpeg libavcodec-extra gcc-aarch64-linux-gnu && \
-    apt-get clean && \
-    rm -rf /var/lib/apt/lists/*
+RUN apt-get update && apt-get install -y gcc python3-dev -y ffmpeg libavcodec-extra gcc-aarch64-linux-gnu && \
+apt-get clean && \
+rm -rf /var/lib/apt/lists/*
+
+RUN pip install -r requirements.txt
 
 ARG app_version
 ENV SWINGMUSIC_APP_VERSION=$app_version
