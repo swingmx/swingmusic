@@ -7,10 +7,10 @@ on:
         description: "Tag"
         required: true
         default: "1.x.x"
-      build_windows:
-        description: "Build Windows binary"
+      skip_binary_build:
+        description: "Skip binary build"
         required: true
-        default: "true"
+        default: "false"
         type: choice
         options:
           - true
@@ -45,12 +45,10 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-20.04, windows-2019]
+    if: ${{ github.event.inputs.skip_binary_build == 'false' }}
     runs-on: ${{ matrix.os }}
     name: Create binary on ${{ matrix.os }}
     steps:
-      - name: Skip windows build
-        if: matrix.os == 'windows-2019' && inputs.build_windows == 'false'
-        run: exit 0
       - name: Clone client
         uses: actions/checkout@v3
       - name: Setup Node 16
