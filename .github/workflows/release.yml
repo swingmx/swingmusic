@@ -44,10 +44,13 @@ jobs:
   build:
     strategy:
       matrix:
-        os: ${{inputs.build_windows == 'true' && toJson('[ubuntu-20.04, windows-2019]') || toJson('[ubuntu-20.04]')}}
+        os: [ubuntu-20.04, windows-2019]
     runs-on: ${{ matrix.os }}
     name: Create binary on ${{ matrix.os }}
     steps:
+      - name: Skip windows build
+        if: matrix.os == 'windows-2019' && inputs.build_windows == 'false'
+        run: exit 0
       - name: Clone client
         uses: actions/checkout@v3
       - name: Setup Node 16
