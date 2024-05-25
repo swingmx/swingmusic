@@ -38,7 +38,7 @@ pendulum==3.0.0
 Pillow==9.5.0
 platformdirs==3.11.0
 pluggy==1.3.0
-psutil==5.9.5
+psutil==5.9.3
 pydantic==2.6.3
 pydantic_core==2.16.3
 pyinstaller==5.13.2

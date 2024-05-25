@@ -7,6 +7,14 @@ on:
         description: "Tag"
         required: true
         default: "1.x.x"
+      build_windows:
+        description: "Build Windows binary"
+        required: true
+        default: "true"
+        type: choice
+        options:
+          - true
+          - false
       is_latest:
         description: "Set as latest"
         required: true
@@ -36,7 +44,7 @@ jobs:
   build:
     strategy:
       matrix:
-        os: [ubuntu-20.04, windows-2019]
+        os: ${{inputs.build_windows == 'true' && toJson('[ubuntu-20.04, windows-2019]') || toJson('[ubuntu-20.04]')}}
     runs-on: ${{ matrix.os }}
     name: Create binary on ${{ matrix.os }}
     steps:
