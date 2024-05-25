@@ -1,6 +1,9 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 import os
 from pathlib import Path
+
+from flask_jwt_extended import current_user
+
 
 from app.settings import SessionVarKeys, get_flag
 from app.utils.hashing import create_hash
@@ -40,11 +43,22 @@ class Track:
 
     image: str = ""
     artist_hashes: str = ""
-    is_favorite: bool = False
+
+    fav_userids: list = field(default_factory=list)
+    """
+    A string of user ids separated by commas.
+    """
+    # is_favorite: bool = False
+
+    @property
+    def is_favorite(self):
+        return current_user['id'] in self.fav_userids
 
     # temporary attributes
     _pos: int = 0  # for sorting tracks by disc and track number
-    _ati: str = ""  # (album track identifier) for removing duplicates when merging album versions
+    _ati: str = (
+        ""  # (album track identifier) for removing duplicates when merging album versions
+    )
 
     og_title: str = ""
     og_album: str = ""

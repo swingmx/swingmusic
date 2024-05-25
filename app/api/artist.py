@@ -6,6 +6,7 @@ import math
 import random
 from datetime import datetime
 
+from flask_jwt_extended import current_user
 from flask_openapi3 import APIBlueprint, Tag
 from pydantic import Field
 from app.api.apischemas import AlbumLimitSchema, ArtistHashSchema, ArtistLimitSchema, TrackLimitSchema

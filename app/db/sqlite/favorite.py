@@ -1,4 +1,6 @@
 from datetime import datetime
+
+from flask_jwt_extended import current_user
 from app.models import FavType
 from .utils import SQLiteManager
 
@@ -11,12 +13,14 @@ class SQLiteFavoriteMethods:
         """
         Checks if an item is favorited.
         """
-        sql = """SELECT * FROM favorites WHERE hash = ? AND type = ?"""
+        userid = current_user["id"]
+
+        sql = """SELECT * FROM favorites WHERE hash = ? AND type = ? AND userid = ?"""
         with SQLiteManager(userdata_db=True) as cur:
-            cur.execute(sql, (itemhash, fav_type))
-            items = cur.fetchall()
+            cur.execute(sql, (itemhash, fav_type, userid))
+            item = cur.fetchone()
             cur.close()
-            return len(items) > 0
+            return item is not None
 
     @classmethod
     def insert_one_favorite(cls, fav_type: str, fav_hash: str):
@@ -27,10 +31,11 @@ class SQLiteFavoriteMethods:
         if cls.check_is_favorite(fav_hash, fav_type):
             return
 
-        sql = """INSERT INTO favorites(type, hash, timestamp) VALUES(?,?,?)"""
-        current_timestamp = datetime.now().timestamp()
+        sql = """INSERT INTO favorites(type, hash, timestamp, userid) VALUES(?,?,?,?)"""
+        current_timestamp = int(datetime.now().timestamp())
         with SQLiteManager(userdata_db=True) as cur:
-            cur.execute(sql, (fav_type, fav_hash, current_timestamp))
+            userid = current_user["id"]
+            cur.execute(sql, (fav_type, fav_hash, current_timestamp, userid))
             cur.close()
 
     @classmethod
@@ -38,55 +43,67 @@ class SQLiteFavoriteMethods:
         """
         Returns a list of all favorites.
         """
-        sql = """SELECT * FROM favorites"""
+        sql = """SELECT * FROM favorites WHERE userid = ?"""
         with SQLiteManager(userdata_db=True) as cur:
-            cur.execute(sql)
+            userid = current_user["id"]
+            cur.execute(sql, (userid,))
             favs = cur.fetchall()
             cur.close()
             return [fav for fav in favs if fav[1] != ""]
 
     @classmethod
-    def get_favorites(cls, fav_type: str) -> list[tuple]:
+    def get_favorites(cls, fav_type: str, userid: int = None) -> list[tuple]:
         """
         Returns a list of favorite tracks.
+
+        If userid is None, all favorites are returned.
         """
         sql = """SELECT * FROM favorites WHERE type = ?"""
+        params = (fav_type,)
+
+        if not userid:
+            sql += " AND userid = ?"
+            params = (fav_type, userid)
+
         with SQLiteManager(userdata_db=True) as cur:
-            cur.execute(sql, (fav_type,))
+            cur.execute(sql, params)
             all_favs = cur.fetchall()
             cur.close()
             return all_favs
 
     @classmethod
-    def get_fav_tracks(cls) -> list[tuple]:
+    def get_fav_tracks(cls, userid: int = None) -> list[tuple]:
         """
         Returns a list of favorite tracks.
         """
-        return cls.get_favorites(FavType.track)
+        return cls.get_favorites(FavType.track, userid)
 
     @classmethod
     def get_fav_albums(cls) -> list[tuple]:
         """
         Returns a list of favorite albums.
         """
-        return cls.get_favorites(FavType.album)
+        userid = current_user["id"]
+        return cls.get_favorites(FavType.album, userid)
 
     @classmethod
     def get_fav_artists(cls) -> list[tuple]:
         """
         Returns a list of favorite artists.
         """
-        return cls.get_favorites(FavType.artist)
+        userid = current_user["id"]
+        return cls.get_favorites(FavType.artist, userid)
 
     @classmethod
     def delete_favorite(cls, fav_type: str, fav_hash: str):
         """
         Deletes a favorite from the database.
         """
-        sql = """DELETE FROM favorites WHERE hash = ? AND type = ?"""
+        sql = """DELETE FROM favorites WHERE hash = ? AND type = ? AND userid = ?"""
 
         with SQLiteManager(userdata_db=True) as cur:
-            cur.execute(sql, (fav_hash, fav_type))
+            userid = current_user["id"]
+            cur.execute(sql, (fav_hash, fav_type, userid))
             cur.close()
 
     @classmethod
@@ -94,10 +111,11 @@ class SQLiteFavoriteMethods:
         """
         Returns the number of favorite tracks.
         """
-        sql = """SELECT COUNT(*) FROM favorites WHERE type = ?"""
+        sql = """SELECT COUNT(*) FROM favorites WHERE type = ? AND userid = ?"""
 
         with SQLiteManager(userdata_db=True) as cur:
-            cur.execute(sql, (FavType.track,))
+            userid = current_user["id"]
+            cur.execute(sql, (FavType.track, userid))
             count = cur.fetchone()[0]
             cur.close()
             return count

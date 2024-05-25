@@ -1,6 +1,7 @@
 """
 This library contains all the functions related to the search functionality.
 """
+
 from typing import Any, Generator, List, TypeVar
 
 from rapidfuzz import process, utils

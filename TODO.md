@@ -5,6 +5,7 @@
     1. Playlists
     2. Favorites
 - Package jsoni and publish on PyPi
+- Rewrite stores to use dictionaries instead of list pools
 
 # DONE
 - Add recently played playlist

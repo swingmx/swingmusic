@@ -1,5 +1,6 @@
 # from tqdm import tqdm
 
+from flask_jwt_extended import current_user
 from app.db.sqlite.favorite import SQLiteFavoriteMethods as favdb
 from app.db.sqlite.tracks import SQLiteTrackMethods as trackdb
 from app.models import Track
@@ -25,15 +26,32 @@ class TrackStore:
 
         cls.tracks = CustomList(trackdb.get_all_tracks())
 
-        fav_hashes = favdb.get_fav_tracks()
-        fav_hashes = " ".join([t[1] for t in fav_hashes])
+        favs = favdb.get_fav_tracks()
+
+        records = dict()
+
+        for fav in favs:
+            if fav[1] not in records:
+                # if trackhash not in dict, add it
+                # and set the value to a set containing the userid
+                records[fav[1]] = {fav[4]}
+
+            # if trackhash is in dict, add the userid to the set
+            records[fav[1]].add(fav[4])
 
         for track in cls.tracks:
             if instance_key != TRACKS_LOAD_KEY:
                 return
 
-            if track.trackhash in fav_hashes:
-                track.is_favorite = True
+            try:
+                track.fav_userids = list(records[track.trackhash])
+            except KeyError:
+                track.fav_userids = []
+
+            # if track.trackhash in fav_hashes:
+            #     fav = [t for t in favs if t["hash"] == track.trackhash][0]
+            #     print(fav)
+            #     track.favorite_data = [i["userid"] for i in fav]
 
         print("Done!")
 
@@ -99,7 +117,8 @@ class TrackStore:
 
         for track in cls.tracks:
             if track.trackhash == trackhash:
-                track.is_favorite = True
+                if current_user["id"] not in track.fav_userids:
+                    track.fav_userids.append(current_user["id"])
 
     @classmethod
     def remove_track_from_fav(cls, trackhash: str):
@@ -109,7 +128,8 @@ class TrackStore:
 
         for track in cls.tracks:
             if track.trackhash == trackhash:
-                track.is_favorite = False
+                if current_user["id"] in track.fav_userids:
+                    track.fav_userids.remove(current_user["id"])
 
     @classmethod
     def append_track_artists(

@@ -4,6 +4,7 @@ Contains all the album routes.
 
 import random
 
+from flask_jwt_extended import current_user
 from pydantic import Field
 from flask_openapi3 import Tag
 from flask_openapi3 import APIBlueprint

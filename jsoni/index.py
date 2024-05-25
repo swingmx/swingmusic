@@ -78,9 +78,9 @@ class MyConfig(Jsoni):
     name: str = "John"
     # _configpath: str = "notconfig.json"
 
-    # @property
-    # def _configpath(self):
-    #     return "notconfig.json"
+    @property
+    def _configpath(self):
+        return "notconfig.json"
 
 
 config = MyConfig("notconfig.json")

@@ -1,5 +1,6 @@
 from typing import List, TypeVar
 
+from flask_jwt_extended import current_user
 from flask_openapi3 import Tag
 from flask_openapi3 import APIBlueprint
 from pydantic import BaseModel, Field
@@ -10,7 +11,7 @@ from app.settings import Defaults
 from app.utils.bisection import use_bisection
 from app.db.sqlite.favorite import SQLiteFavoriteMethods as favdb
 from app.serializers.track import serialize_track, serialize_tracks
-from app.serializers.artist import serialize_for_card as serialize_artist
+from app.serializers.artist import serialize_for_card as serialize_artist, serialize_for_cards
 from app.serializers.album import serialize_for_card, serialize_for_card_many
 
 from app.store.albums import AlbumStore
@@ -98,7 +99,9 @@ def get_favorite_tracks(query: GenericLimitSchema):
     Get favorite tracks
     """
     limit = query.limit
-    tracks = favdb.get_fav_tracks()
+    userid = current_user['id']
+
+    tracks = favdb.get_fav_tracks(userid)
     trackhashes = [t[1] for t in tracks]
     trackhashes.reverse()
     src_tracks = sorted(TrackStore.tracks, key=lambda x: x.trackhash)
@@ -118,6 +121,7 @@ def get_favorite_artists(query: GenericLimitSchema):
     Get favorite artists
     """
     limit = query.limit
+
     artists = favdb.get_fav_artists()
     artisthashes = [a[1] for a in artists]
     artisthashes.reverse()
@@ -266,9 +270,9 @@ def get_all_favorites(query: GetAllFavoritesQuery):
 
     return {
         "recents": recents[:album_limit],
-        "tracks": tracks[:track_limit],
-        "albums": albums[:album_limit],
-        "artists": artists[:artist_limit],
+        "tracks": serialize_tracks(tracks[:track_limit]),
+        "albums": serialize_for_card_many(albums[:album_limit]),
+        "artists": serialize_for_cards(artists[:artist_limit]),
         "count": count,
     }
 

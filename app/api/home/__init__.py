@@ -1,3 +1,4 @@
+from flask_jwt_extended import current_user
 from flask_openapi3 import Tag
 from flask_openapi3 import APIBlueprint
 

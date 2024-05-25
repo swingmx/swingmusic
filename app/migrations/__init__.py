@@ -58,7 +58,8 @@ def apply_migrations():
         try:
             migration.migrate()
             log.info("Applied migration: %s", migration.__name__)
-        except:
+        except Exception as e:
             log.error("Failed to run migration: %s", migration.__name__)
+            log.error(e)
 
     MigrationManager.set_index(len(all_migrations))

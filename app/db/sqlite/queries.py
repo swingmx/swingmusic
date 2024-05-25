@@ -16,7 +16,9 @@ CREATE TABLE IF NOT EXISTS favorites (
     id integer PRIMARY KEY,
     hash text not null,
     type text not null,
-    timestamp integer not null default 0
+    timestamp integer not null default 0,
+    userid integer not null,
+    foreign key (userid) references users(id) on delete cascade
 );
 
 CREATE TABLE IF NOT EXISTS settings (

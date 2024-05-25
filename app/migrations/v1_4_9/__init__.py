@@ -73,3 +73,25 @@ class _3MoveScrobbleToUserId1(Migration):
         with SQLiteManager(userdata_db=True) as cur:
             cur.execute("UPDATE track_logger SET userid = 1 WHERE userid = 0")
             cur.close()
+
+
+class _4AddUserIdToFavoritesTable(Migration):
+    """
+    Adds a userid column to the favorites table.
+    """
+
+    @staticmethod
+    def migrate():
+        # check if userid column exists
+        exists_sql = "select count(*) from pragma_table_info('favorites') where name = 'userid'"
+        sql = "ALTER TABLE favorites ADD userid INTEGER NOT NULL DEFAULT 1 REFERENCES users(id) ON DELETE CASCADE"
+
+        with SQLiteManager(userdata_db=True) as cur:
+            data = cur.execute(exists_sql)
+            data = data.fetchone()
+
+            if data[0] == 1:
+                return# INFO: column already exists
+
+            cur.executescript(sql)
+ 

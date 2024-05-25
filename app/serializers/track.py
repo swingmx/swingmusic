@@ -5,6 +5,9 @@ from app.models.track import Track
 
 def serialize_track(track: Track, to_remove: set = {}, remove_disc=True) -> dict:
     album_dict = asdict(track)
+    # is_favorite @property is not included in asdict
+    album_dict["is_favorite"] = track.is_favorite
+
     props = {
         "date",
         "genre",
@@ -16,6 +19,7 @@ def serialize_track(track: Track, to_remove: set = {}, remove_disc=True) -> dict
         "track",
         "artist_hashes",
         "created_date",
+        "fav_userids",
     }.union(to_remove)
 
     if not remove_disc:
