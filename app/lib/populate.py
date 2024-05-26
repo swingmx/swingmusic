@@ -137,7 +137,7 @@ class Populate:
                     unmodified_paths.add(track.filepath)
                     continue
             except (FileNotFoundError, OSError) as e:
-                log.warning(e) # REVIEW More informations = good
+                log.warning(e)  # REVIEW More informations = good
                 TrackStore.remove_track_obj(track)
                 remove_tracks_by_filepaths(track.filepath)
 
@@ -155,8 +155,14 @@ class Populate:
         tagged_tracks: deque[dict] = deque()
         tagged_count = 0
 
-        fav_tracks = favdb.get_fav_tracks()
-        fav_tracks = set(t[1] for t in fav_tracks)
+        favs = favdb.get_fav_tracks()
+
+        records = dict()
+
+        for fav in favs:
+            r = records.setdefault(fav[1], set())
+            r.add(fav[4])
+
 
         for file in tqdm(untagged, desc="Reading files"):
             if POPULATE_KEY != key:
@@ -168,7 +174,8 @@ class Populate:
             if tags is not None:
                 tagged_tracks.append(tags)
                 track = Track(**tags)
-                track.is_favorite = track.trackhash in fav_tracks
+
+                track.fav_userids = list(records.get(track.trackhash, set()))
 
                 TrackStore.add_track(track)
 

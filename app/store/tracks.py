@@ -31,27 +31,15 @@ class TrackStore:
         records = dict()
 
         for fav in favs:
-            if fav[1] not in records:
-                # if trackhash not in dict, add it
-                # and set the value to a set containing the userid
-                records[fav[1]] = {fav[4]}
-
-            # if trackhash is in dict, add the userid to the set
-            records[fav[1]].add(fav[4])
+            r = records.setdefault(fav[1], set())
+            r.add(fav[4])
 
         for track in cls.tracks:
             if instance_key != TRACKS_LOAD_KEY:
                 return
 
-            try:
-                track.fav_userids = list(records[track.trackhash])
-            except KeyError:
-                track.fav_userids = []
-
-            # if track.trackhash in fav_hashes:
-            #     fav = [t for t in favs if t["hash"] == track.trackhash][0]
-            #     print(fav)
-            #     track.favorite_data = [i["userid"] for i in fav]
+            userids = records.get(track.trackhash, set())
+            track.fav_userids = list(userids)
 
         print("Done!")
 

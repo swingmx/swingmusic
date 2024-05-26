@@ -5,7 +5,7 @@ description = ""
 authors = ["geoffrey45 <geoffreymungai45@gmail.com>"]
 
 [tool.poetry.dependencies]
-python = ">=3.11,<3.12"
+python = ">=3.10,<3.12"
 Flask = "^2.0.2"
 Flask-Cors = "^3.0.10"
 requests = "^2.27.1"
