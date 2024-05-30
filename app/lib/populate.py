@@ -156,7 +156,6 @@ class Populate:
         tagged_count = 0
 
         favs = favdb.get_fav_tracks()
-
         records = dict()
 
         for fav in favs:

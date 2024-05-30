@@ -4,7 +4,9 @@ import sqlite3
 from flask import current_app, jsonify
 from flask_jwt_extended import (
     create_access_token,
+    create_refresh_token,
     current_user,
+    get_jwt_identity,
     jwt_required,
     set_access_cookies,
 )
@@ -37,6 +39,21 @@ def admin_required():
     return wrapper
 
 
+def create_new_token(user: dict):
+    """
+    Create a new token response
+    """
+    access_token = create_access_token(identity=user)
+    max_age: int = current_app.config.get("JWT_ACCESS_TOKEN_EXPIRES")
+
+    return {
+        "msg": f"Logged in as {user['username']}",
+        "acccesstoken": access_token,
+        "refreshtoken": create_refresh_token(identity=user),
+        "maxage": max_age,
+    }
+
+
 class LoginBody(BaseModel):
     username: str = Field(description="The username", example="user0")
     password: str = Field(description="The password", example="password0")
@@ -47,7 +64,6 @@ def login(body: LoginBody):
     """
     Authenticate using username and password
     """
-    res = jsonify({"msg": f"Logged in as {body.username}"})
 
     user = authdb.get_user_by_username(body.username)
 
@@ -59,12 +75,26 @@ def login(body: LoginBody):
     if not password_ok:
         return {"msg": "Hehe! invalid password"}, 401
 
-    access_token = create_access_token(identity=user.todict())
-
-    max_age: int = current_app.config.get("JWT_ACCESS_TOKEN_EXPIRES")
-    set_access_cookies(res, access_token, max_age=max_age)
+    res = create_new_token(user.todict())
+    token = res["acccesstoken"]
+    age = res["maxage"]
+    res = jsonify(res)
+    set_access_cookies(res, token, max_age=age)
 
     return res
+
+
+@api.post("/refresh")
+@jwt_required(refresh=True)
+def refresh():
+    """
+    Refresh an access token by sending a refresh token in the Authorization header
+
+    >>> Headers:
+    >>> Authorization: Bearer <refresh_token>
+    """
+    user = get_jwt_identity()
+    return create_new_token(user)
 
 
 class UpdateProfileBody(BaseModel):
@@ -77,6 +107,9 @@ class UpdateProfileBody(BaseModel):
 
 @api.put("/profile/update")
 def update_profile(body: UpdateProfileBody):
+    """
+    Update user profile
+    """
     user = {
         "id": body.id,
         "email": body.email,
@@ -129,6 +162,9 @@ def update_profile(body: UpdateProfileBody):
 @api.post("/profile/create")
 @admin_required()
 def create_user(body: UpdateProfileBody):
+    """
+    Create a new user
+    """
     if not body.username or not body.password:
         return {"msg": "Username and password are required"}, 400
 
@@ -199,7 +235,7 @@ def delete_user(body: DeleteUseBody):
 @api.get("/logout")
 def logout():
     """
-    Log out
+    Log out and clear the access token cookie
     """
     res = jsonify({"msg": "Logged out"})
     res.delete_cookie("access_token_cookie")

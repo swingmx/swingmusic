@@ -47,6 +47,7 @@ mimetypes.add_type("application/manifest+json", ".webmanifest")
 werkzeug = logging.getLogger("werkzeug")
 werkzeug.setLevel(logging.ERROR)
 
+
 # Background tasks
 @background
 def bg_run_setup():
@@ -83,8 +84,24 @@ app = create_api()
 app.static_folder = get_home_res_path("client")
 
 # INFO: Routes that don't need authentication
-whitelisted_routes = {"/auth/login", "/auth/users", "/auth/logout", "/docs"}
+whitelisted_routes = {"/auth/login", "/auth/users", "/auth/logout", "/auth/refresh", "/docs"}
 blacklist_extensions = {".webp"}.union(getClientFilesExtensions())
+
+
+def skipAuthAction():
+    """
+    Skips the JWT verification for the current request.
+    """
+    if request.path == "/" or any(
+        request.path.endswith(ext) for ext in blacklist_extensions
+    ):
+        return True
+
+    # if request path starts with any of the blacklisted routes, don't verify jwt
+    if any(request.path.startswith(route) for route in whitelisted_routes):
+        return True
+
+    return False
 
 
 @app.before_request
@@ -92,16 +109,7 @@ def verify_auth():
     """
     Verifies the JWT token before each request.
     """
-    if request.path == "/" or any(
-        request.path.endswith(ext) for ext in blacklist_extensions
-    ):
-        return
-
-    # if request path starts with any of the blacklisted routes, don't verify jwt
-    if any(request.path.startswith(route) for route in whitelisted_routes):
-        # print(
-        #     "Found whitelisted route: ", request.path, "... Skipping jwt verification"
-        # )
+    if skipAuthAction():
         return
 
     verify_jwt_in_request()
@@ -110,8 +118,14 @@ def verify_auth():
 @app.after_request
 def refresh_expiring_jwt(response: Response):
     """
-    Refreshes the JWT token after each request.
+    Refreshes the cookies JWT token after each request.
     """
+
+    # INFO: If the request has an Authorization header, don't refresh the jwt
+    # Request is probably from the mobile client or a third party
+    if skipAuthAction() or request.headers.get("Authorization"):
+        return response
+
     try:
         exp_timestamp = get_jwt()["exp"]
         now = datetime.now(timezone.utc)
