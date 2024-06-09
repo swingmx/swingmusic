@@ -69,9 +69,25 @@ class _3MoveScrobbleToUserId1(Migration):
 
     @staticmethod
     def migrate():
+        sql = """
+        UPDATE track_logger SET userid = 1 WHERE userid = 0;
+        ALTER TABLE track_logger RENAME TO _track_logger;
+        CREATE TABLE IF NOT EXISTS track_logger (
+            id integer PRIMARY KEY,
+            trackhash text NOT NULL,
+            duration integer NOT NULL,
+            timestamp integer NOT NULL,
+            source text,
+            userid integer NOT NULL DEFAULT 1,
+            constraint fk_users foreign key (userid) references users(id) on delete cascade
+        );
+
+        INSERT INTO track_logger SELECT * FROM _track_logger;
+        DROP TABLE _track_logger;
+        """
         # INFO: Move the scrobble table to the user id 1
         with SQLiteManager(userdata_db=True) as cur:
-            cur.execute("UPDATE track_logger SET userid = 1 WHERE userid = 0")
+            cur.executescript(sql)
             cur.close()
 
 
@@ -108,7 +124,7 @@ class _4AddUserIdToFavoritesTable(Migration):
             data = data.fetchone()
 
             if data[0] == 1:
-                return # INFO: column already exists
+                return  # INFO: column already exists
 
             cur.executescript(sql)
 

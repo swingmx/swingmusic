@@ -1,4 +1,3 @@
-from flask_jwt_extended import current_user
 from flask_openapi3 import Tag
 from flask_openapi3 import APIBlueprint
 from pydantic import Field
@@ -40,7 +39,6 @@ def log_track(body: LogTrackBody):
         timestamp=timestamp,
         duration=duration,
         source=source,
-        userid=current_user["id"],
     )
 
     return {"total entries": last_row}

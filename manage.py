@@ -84,7 +84,14 @@ app = create_api()
 app.static_folder = get_home_res_path("client")
 
 # INFO: Routes that don't need authentication
-whitelisted_routes = {"/auth/login", "/auth/users", "/auth/logout", "/auth/refresh", "/docs"}
+whitelisted_routes = {
+    "/auth/login",
+    "/auth/users",
+    "/auth/pair",
+    "/auth/logout",
+    "/auth/refresh",
+    "/docs",
+}
 blacklist_extensions = {".webp"}.union(getClientFilesExtensions())
 
 

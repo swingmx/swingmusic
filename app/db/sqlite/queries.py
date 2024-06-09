@@ -55,7 +55,8 @@ CREATE TABLE IF NOT EXISTS track_logger (
     duration integer NOT NULL,
     timestamp integer NOT NULL,
     source text,
-    userid integer NOT NULL DEFAULT 0
+    userid integer NOT NULL DEFAULT 1,
+    constraint fk_users foreign key (userid) references users(id) on delete cascade
 );
 
 CREATE TABLE IF NOT EXISTS users (

@@ -1,10 +1,11 @@
+from flask_jwt_extended import current_user
 from app.db.sqlite.utils import SQLiteManager
 from app.models.logger import TrackLog as TrackLog
 
 
 class SQLiteTrackLogger:
     @classmethod
-    def insert_track(cls, trackhash: str, duration: int, source: str, timestamp: int, userid: int):
+    def insert_track(cls, trackhash: str, duration: int, source: str, timestamp: int):
         """
         Inserts a track play record into the database
         """
@@ -19,7 +20,9 @@ class SQLiteTrackLogger:
                 ) VALUES(?,?,?,?,?)
                 """
 
-            cur.execute(sql, (trackhash, duration, timestamp, source, userid))
+            cur.execute(
+                sql, (trackhash, duration, timestamp, source, current_user["id"])
+            )
             lastrowid = cur.lastrowid
 
             return lastrowid
@@ -31,7 +34,7 @@ class SQLiteTrackLogger:
         """
 
         with SQLiteManager(userdata_db=True) as cur:
-            sql = """SELECT * FROM track_logger ORDER BY timestamp DESC"""
+            sql = f"""SELECT * FROM track_logger WHERE userid = {current_user['id']} ORDER BY timestamp DESC"""
 
             cur.execute(sql)
             rows = cur.fetchall()
@@ -45,7 +48,7 @@ class SQLiteTrackLogger:
         """
 
         with SQLiteManager(userdata_db=True) as cur:
-            sql = """SELECT * FROM track_logger ORDER BY timestamp DESC LIMIT ?,?"""
+            sql = f"""SELECT * FROM track_logger WHERE userid = {current_user['id']} ORDER BY timestamp DESC LIMIT ?,?"""
 
             cur.execute(sql, (start, limit))
             rows = cur.fetchall()

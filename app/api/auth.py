@@ -48,7 +48,7 @@ def create_new_token(user: dict):
 
     return {
         "msg": f"Logged in as {user['username']}",
-        "acccesstoken": access_token,
+        "accesstoken": access_token,
         "refreshtoken": create_refresh_token(identity=user),
         "maxage": max_age,
     }
@@ -76,12 +76,44 @@ def login(body: LoginBody):
         return {"msg": "Hehe! invalid password"}, 401
 
     res = create_new_token(user.todict())
-    token = res["acccesstoken"]
+    token = res["accesstoken"]
     age = res["maxage"]
     res = jsonify(res)
     set_access_cookies(res, token, max_age=age)
 
     return res
+
+
+pair_token = dict()
+
+
+class PairDeviceQuery(BaseModel):
+    code: str = Field("", description="The code")
+
+
+@api.get("/pair")
+@jwt_required(optional=True)
+def pair_device(query: PairDeviceQuery):
+    """
+    Pair the Swing Music mobile app with this server
+
+    Send a code to get an access token. Send an authenticated request without the code to generate a new token.
+    """
+    if current_user:
+        token = create_new_token(get_jwt_identity())
+        key = token["accesstoken"][-6:]
+
+        global pair_token
+        pair_token = {
+            key: token,
+        }
+
+        return {"code": key}
+
+    if query.code:
+        return pair_token.get(query.code, {"msg": "Invalid code"})
+
+    return {"msg": "No code provided"}, 400
 
 
 @api.post("/refresh")

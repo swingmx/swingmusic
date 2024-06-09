@@ -18,7 +18,7 @@ def create_folder(path: str, trackcount=0, foldercount=0) -> Folder:
 
     return Folder(
         name=folder.name,
-        path=win_replace_slash(str(folder)),
+        path=win_replace_slash(str(folder)) + "/",
         is_sym=folder.is_symlink(),
         trackcount=trackcount,
         foldercount=foldercount,
