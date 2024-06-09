@@ -139,8 +139,8 @@ class SQLiteAuthMethods:
         """
         Delete a user by username.
         """
-        sql = "DELETE FROM users WHERE username = ?"
-
+        sql = "DELETE FROM users WHERE id = ?"
+        print("deleting user: ", username)
         with SQLiteManager(userdata_db=True) as cur:
-            cur.execute(sql, (username,))
+            cur.execute(sql, (3,))
             cur.close()

@@ -83,7 +83,9 @@ class SQLiteManager:
 
     def __enter__(self) -> Cursor:
         if self.conn is not None:
-            return self.conn.cursor()
+            cur = self.conn.cursor()
+            cur.execute("PRAGMA foreign_keys = ON")
+            return cur
 
         if self.test_db_path:
             db_path = self.test_db_path
@@ -97,7 +99,10 @@ class SQLiteManager:
             db_path,
             timeout=15,
         )
-        return self.conn.cursor()
+
+        cur = self.conn.cursor()
+        cur.execute("PRAGMA foreign_keys = ON")
+        return cur
 
     def __exit__(self, exc_type, exc_value, exc_traceback):
         trial_count = 0

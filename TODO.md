@@ -8,9 +8,9 @@
 - Rewrite stores to use dictionaries instead of list pools
 - last updated date on tracks added via watchdog is broken
 - hide "remove from playlist" option on system playlists
-- Support auth headers
 
 # DONE
+- Support auth headers
 - Add recently played playlist
 - Move user track logs to user zero
 - Move future logs to appropriate user id

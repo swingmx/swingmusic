@@ -9,16 +9,16 @@ CREATE TABLE IF NOT EXISTS playlists (
     last_updated text not null,
     name text not null,
     settings text,
-    trackhashes text
+    trackhashes text,
+    userid integer not null,
+    constraint fk_users foreign key (userid) references users(id) on delete cascade
 );
 
 CREATE TABLE IF NOT EXISTS favorites (
     id integer PRIMARY KEY,
     hash text not null,
     type text not null,
-    timestamp integer not null default 0,
-    userid integer not null,
-    foreign key (userid) references users(id) on delete cascade
+    timestamp integer not null default 0
 );
 
 CREATE TABLE IF NOT EXISTS settings (

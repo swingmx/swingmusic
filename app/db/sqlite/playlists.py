@@ -1,6 +1,8 @@
 import json
 from collections import OrderedDict
 
+from flask_jwt_extended import current_user
+
 from app.db.sqlite.utils import SQLiteManager, tuple_to_playlist, tuples_to_playlists
 from app.utils.dates import create_new_date
 
@@ -27,10 +29,12 @@ class SQLitePlaylistMethods:
         last_updated,
         name,
         settings,
-        trackhashes
-        ) VALUES(:image, :last_updated, :name, :settings, :trackhashes)
+        trackhashes,
+        userid
+        ) VALUES(:image, :last_updated, :name, :settings, :trackhashes, :userid)
         """
 
+        playlist["userid"] = current_user["id"]
         playlist = OrderedDict(sorted(playlist.items()))
 
         with SQLiteManager(userdata_db=True) as cur:
@@ -42,23 +46,8 @@ class SQLitePlaylistMethods:
             return tuple_to_playlist(p_tuple)
 
     @staticmethod
-    def get_playlist_by_name(name: str):
-        sql = "SELECT * FROM playlists WHERE name = ?"
-
-        with SQLiteManager(userdata_db=True) as cur:
-            cur.execute(sql, (name,))
-
-            data = cur.fetchone()
-            cur.close()
-
-            if data is not None:
-                return tuple_to_playlist(data)
-
-            return None
-
-    @staticmethod
     def count_playlist_by_name(name: str):
-        sql = "SELECT COUNT(*) FROM playlists WHERE name = ?"
+        sql = f"SELECT COUNT(*) FROM playlists WHERE name = ? and userid = {current_user['id']}"
 
         with SQLiteManager(userdata_db=True) as cur:
             cur.execute(sql, (name,))
@@ -71,7 +60,7 @@ class SQLitePlaylistMethods:
     @staticmethod
     def get_all_playlists():
         with SQLiteManager(userdata_db=True) as cur:
-            cur.execute("SELECT * FROM playlists")
+            cur.execute(f"SELECT * FROM playlists WHERE userid = {current_user['id']}")
             playlists = cur.fetchall()
             cur.close()
 
@@ -82,7 +71,7 @@ class SQLitePlaylistMethods:
 
     @staticmethod
     def get_playlist_by_id(playlist_id: int):
-        sql = "SELECT * FROM playlists WHERE id = ?"
+        sql = f"SELECT * FROM playlists WHERE id = ? and userid = {current_user['id']}"
 
         with SQLiteManager(userdata_db=True) as cur:
             cur.execute(sql, (playlist_id,))
@@ -103,7 +92,7 @@ class SQLitePlaylistMethods:
         Adds a string item to a json dumped list using a playlist id and field name.
         Takes the playlist ID, a field name, an item to add to the field.
         """
-        sql = f"SELECT {field} FROM playlists WHERE id = ?"
+        sql = f"SELECT {field} FROM playlists WHERE id = ? and userid = {current_user['id']}"
 
         with SQLiteManager(userdata_db=True) as cur:
             cur.execute(sql, (playlist_id,))
@@ -134,12 +123,12 @@ class SQLitePlaylistMethods:
 
     @classmethod
     def update_playlist(cls, playlist_id: int, playlist: dict):
-        sql = """UPDATE playlists SET
+        sql = f"""UPDATE playlists SET
             image = ?,
             last_updated = ?,
             name = ?,
             settings = ?
-            WHERE id = ?
+            WHERE id = ? and userid = {current_user['id']}
             """
 
         del playlist["id"]
@@ -156,7 +145,7 @@ class SQLitePlaylistMethods:
 
     @classmethod
     def update_settings(cls, playlist_id: int, settings: dict):
-        sql = """UPDATE playlists SET settings = ? WHERE id = ?"""
+        sql = f"""UPDATE playlists SET settings = ? WHERE id = ? and userid = {current_user['id']}"""
 
         with SQLiteManager(userdata_db=True) as cur:
             cur.execute(sql, (json.dumps(settings), playlist_id))
@@ -165,14 +154,14 @@ class SQLitePlaylistMethods:
 
     @staticmethod
     def delete_playlist(pid: str):
-        sql = "DELETE FROM playlists WHERE id = ?"
+        sql = f"DELETE FROM playlists WHERE id = ? and userid = {current_user['id']}"
 
         with SQLiteManager(userdata_db=True) as cur:
             cur.execute(sql, (pid,))
 
     @staticmethod
     def remove_banner(playlistid: int):
-        sql = """UPDATE playlists SET image = NULL WHERE id = ?"""
+        sql = f"""UPDATE playlists SET image = NULL WHERE id = ? and userid = {current_user['id']}"""
 
         with SQLiteManager(userdata_db=True) as cur:
             cur.execute(sql, (playlistid,))
@@ -186,7 +175,10 @@ class SQLitePlaylistMethods:
         sql = """UPDATE playlists SET trackhashes = ? WHERE id = ?"""
 
         with SQLiteManager(userdata_db=True) as cur:
-            cur.execute("SELECT trackhashes FROM playlists WHERE id = ?", (playlistid,))
+            cur.execute(
+                f"SELECT trackhashes FROM playlists WHERE id = ? and userid = {current_user['id']}",
+                (playlistid,),
+            )
             data = cur.fetchone()
 
             if data is None:
