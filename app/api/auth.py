@@ -111,7 +111,10 @@ def pair_device(query: PairDeviceQuery):
         return {"code": key}
 
     if query.code:
-        return pair_token.get(query.code, {"msg": "Invalid code"})
+        token = pair_token.get(query.code, {"msg": "Invalid code"})
+        pair_token = {}
+
+        return token
 
     return {"msg": "No code provided"}, 400
 
