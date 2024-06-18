@@ -3,13 +3,11 @@ Contains all the track routes.
 """
 
 import os
-import time
 
-from flask import Blueprint, send_file, request, Response
+from flask import send_file, request, Response
 from flask_openapi3 import APIBlueprint, Tag
 from pydantic import BaseModel, Field
 from app.api.apischemas import TrackHashSchema
-from app.lib.pydub.pydub.audio_segment import AudioSegment
 from app.lib.trackslib import get_silence_paddings
 
 from app.store.tracks import TrackStore
@@ -25,10 +23,55 @@ class SendTrackFileQuery(BaseModel):
     )
 
 
+@api.get("/<trackhash>/classic")
+def send_track_file_classic(path: TrackHashSchema, query: SendTrackFileQuery):
+    """
+    Get a playable audio file without Range support
+
+    Returns a playable audio file that corresponds to the given filepath. Falls back to track hash if filepath is not found.
+    """
+    trackhash = path.trackhash
+    filepath = query.filepath
+    msg = {"msg": "File Not Found"}
+
+    def get_mime(filename: str) -> str:
+        ext = filename.rsplit(".", maxsplit=1)[-1]
+        return f"audio/{ext}"
+
+    # If filepath is provide, try to send that
+    if filepath is not None:
+        try:
+            track = TrackStore.get_tracks_by_filepaths([filepath])[0]
+        except IndexError:
+            track = None
+
+        track_exists = track is not None and os.path.exists(track.filepath)
+
+        if track_exists:
+            audio_type = get_mime(filepath)
+            return send_file(filepath, mimetype=audio_type)
+
+    # Else, find file by trackhash
+    tracks = TrackStore.get_tracks_by_trackhashes([trackhash])
+
+    for track in tracks:
+        if track is None:
+            return msg, 404
+
+        audio_type = get_mime(track.filepath)
+
+        try:
+            return send_file(track.filepath, mimetype=audio_type)
+        except (FileNotFoundError, OSError) as e:
+            return msg, 404
+
+    return msg, 404
+
+
 @api.get("/<trackhash>")
 def send_track_file(path: TrackHashSchema, query: SendTrackFileQuery):
     """
-    Get file
+    Get a playable audio file with Range headers support
 
     Returns a playable audio file that corresponds to the given filepath. Falls back to track hash if filepath is not found.
     """

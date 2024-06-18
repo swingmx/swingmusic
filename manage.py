@@ -49,23 +49,24 @@ werkzeug.setLevel(logging.ERROR)
 
 
 # Background tasks
-@background
-def bg_run_setup():
-    run_periodic_scans()
+# @background
+# def bg_run_setup():
+#     pass
+    # run_periodic_scans()
 
 
-@background
-def start_watchdog():
-    WatchDog().run()
+# @background
+# def start_watchdog():
+#     WatchDog().run()
 
 
 @background
 def run_swingmusic():
     log_startup_info()
-    bg_run_setup()
+    # bg_run_setup()
     register_plugins()
 
-    start_watchdog()
+    # start_watchdog()
 
     setproctitle.setproctitle(f"swingmusic ::{FLASKVARS.get_flask_port()}")
 
