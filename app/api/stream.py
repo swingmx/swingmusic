@@ -23,8 +23,8 @@ class SendTrackFileQuery(BaseModel):
     )
 
 
-@api.get("/<trackhash>/classic")
-def send_track_file_classic(path: TrackHashSchema, query: SendTrackFileQuery):
+@api.get("/<trackhash>/legacy")
+def send_track_file_legacy(path: TrackHashSchema, query: SendTrackFileQuery):
     """
     Get a playable audio file without Range support
 
@@ -49,7 +49,7 @@ def send_track_file_classic(path: TrackHashSchema, query: SendTrackFileQuery):
 
         if track_exists:
             audio_type = get_mime(filepath)
-            return send_file(filepath, mimetype=audio_type)
+            return send_file(filepath, mimetype=audio_type, conditional=True)
 
     # Else, find file by trackhash
     tracks = TrackStore.get_tracks_by_trackhashes([trackhash])
@@ -61,7 +61,7 @@ def send_track_file_classic(path: TrackHashSchema, query: SendTrackFileQuery):
         audio_type = get_mime(track.filepath)
 
         try:
-            return send_file(track.filepath, mimetype=audio_type)
+            return send_file(track.filepath, mimetype=audio_type, conditional=True)
         except (FileNotFoundError, OSError) as e:
             return msg, 404
 
