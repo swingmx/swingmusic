@@ -99,6 +99,7 @@ def pair_device(query: PairDeviceQuery):
 
     Send a code to get an access token. Send an authenticated request without the code to generate a new token.
     """
+    # INFO: if user is already logged in, create a new pair code
     if current_user:
         token = create_new_token(get_jwt_identity())
         key = token["accesstoken"][-6:]
@@ -110,11 +111,16 @@ def pair_device(query: PairDeviceQuery):
 
         return {"code": key}
 
+    # INFO: if there's a pair code, return the token
     if query.code:
-        token = pair_token.get(query.code, {"msg": "Invalid code"})
-        pair_token = {}
+        token = pair_token.get(query.code, None)
 
-        return token
+        if token:
+            # INFO: reset pair_token
+            pair_token = {}
+            return token
+
+        return {"msg": "Invalid code"}, 400
 
     return {"msg": "No code provided"}, 400
 
@@ -355,7 +361,7 @@ def get_all_users(query: GetAllUsersQuery):
     return res
 
 
-@api.route("/user")
+@api.get("/user")
 def get_logged_in_user():
     """
     Get logged in user
