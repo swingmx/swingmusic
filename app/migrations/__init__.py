@@ -5,6 +5,7 @@ Reads and applies the latest database migrations.
 """
 
 import inspect
+import sys
 from types import ModuleType
 from app.db.sqlite.migrations import MigrationManager
 from app.logger import log
@@ -55,11 +56,12 @@ def apply_migrations():
         to_apply = all_migrations[index:]
 
     for migration in to_apply:
-        try:
+        # try:
             migration.migrate()
             log.info("Applied migration: %s", migration.__name__)
-        except Exception as e:
-            log.error("Failed to run migration: %s", migration.__name__)
-            log.error(e)
+        # except Exception as e:
+        #     log.error("Failed to run migration: %s", migration.__name__)
+        #     log.error(e)
 
+    # sys.exit(0)
     MigrationManager.set_index(len(all_migrations))

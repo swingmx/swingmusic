@@ -195,7 +195,7 @@ class TopResults:
             except AttributeError:
                 item.duration = 0
 
-            item.check_is_single(tracks)
+            item.is_single(tracks)
 
             if not item.is_single:
                 item.check_type()

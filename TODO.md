@@ -1,6 +1,11 @@
 # TODO
 - Migrations:
     1. Move userdata to new hashing algorithm
+        - favorites ✅
+        - playlists
+        - scrobble
+        - images
+        - remove image colors
 
 - Package jsoni and publish on PyPi
 - Rewrite stores to use dictionaries instead of list pools
@@ -8,6 +13,8 @@
 - Disable the watchdog by default, and mark it as experimental
 - rename userid to server id in config file
 - Look into seeding jwts using user password + server id
+- Recreate album hash if featured artists are discover
+- Implement checking if is clean install and skip migrations!
 
 # DONE
 - Support auth headers

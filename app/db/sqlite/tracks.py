@@ -98,6 +98,20 @@ class SQLiteTrackMethods:
                 return tuple_to_track(row)
 
             return None
+        
+    @staticmethod
+    def get_track_by_albumhash(albumhash: str):
+        """
+        Gets a track using its albumhash. Returns a Track object or None.
+        """
+        with SQLiteManager() as cur:
+            cur.execute("SELECT * FROM tracks WHERE albumhash=?", (albumhash,))
+            row = cur.fetchone()
+
+            if row is not None:
+                return tuple_to_track(row)
+
+            return None
 
     @staticmethod
     def remove_tracks_by_filepaths(filepaths: str | set[str]):

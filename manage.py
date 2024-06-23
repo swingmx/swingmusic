@@ -21,6 +21,7 @@ import setproctitle
 
 from app.api import create_api
 from app.arg_handler import ProcessArgs
+from app.lib.tagger import IndexEverything
 from app.lib.watchdogg import Watcher as WatchDog
 from app.periodic_scan import run_periodic_scans
 from app.plugins.register import register_plugins
@@ -49,10 +50,11 @@ werkzeug.setLevel(logging.ERROR)
 
 
 # Background tasks
-# @background
-# def bg_run_setup():
-#     pass
+@background
+def bg_run_setup():
+    pass
     # run_periodic_scans()
+    IndexEverything()
 
 
 # @background
@@ -63,7 +65,7 @@ werkzeug.setLevel(logging.ERROR)
 @background
 def run_swingmusic():
     log_startup_info()
-    # bg_run_setup()
+    bg_run_setup()
     register_plugins()
 
     # start_watchdog()

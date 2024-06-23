@@ -6,6 +6,7 @@ from pydantic import BaseModel, Field
 
 from datetime import datetime
 from app.api.apischemas import GenericLimitSchema
+from app.db import AlbumTable, ArtistTable
 from app.store.albums import AlbumStore
 from app.store.artists import ArtistStore
 
@@ -59,17 +60,19 @@ def get_all_items(path: GetAllItemsPath, query: GetAllItemsQuery):
     is_albums = path.itemtype == "albums"
     is_artists = path.itemtype == "artists"
 
-    items = AlbumStore.albums
+    if is_albums:
+        items = AlbumTable.get_all(query.start, query.limit)
+    elif is_artists:
+        items = ArtistTable.get_all(query.start, query.limit)
 
-    if is_artists:
-        items = ArtistStore.artists
+    print(items)
 
     start = query.start
     limit = query.limit
     sort = query.sortby
     reverse = query.reverse == "1"
 
-    sort_is_count = sort == "count"
+    sort_is_count = sort == "trackcount"
     sort_is_duration = sort == "duration"
     sort_is_create_date = sort == "created_date"
 
@@ -81,7 +84,7 @@ def get_all_items(path: GetAllItemsPath, query: GetAllItemsQuery):
 
     lambda_sort = lambda x: getattr(x, sort)
     if sort_is_artist:
-        lambda_sort = lambda x: getattr(x, sort)[0].name
+        lambda_sort = lambda x: getattr(x, sort)[0]["name"]
 
     sorted_items = sorted(items, key=lambda_sort, reverse=reverse)
     items = sorted_items[start : start + limit]
@@ -101,7 +104,7 @@ def get_all_items(path: GetAllItemsPath, query: GetAllItemsQuery):
 
         if sort_is_count:
             item_dict["help_text"] = (
-                f"{format_number(item.count)} track{'' if item.count == 1 else 's'}"
+                f"{format_number(item.trackcount)} track{'' if item.trackcount == 1 else 's'}"
             )
 
         if sort_is_duration:
@@ -114,7 +117,7 @@ def get_all_items(path: GetAllItemsPath, query: GetAllItemsQuery):
 
         if sort_is_artist_albumcount:
             item_dict["help_text"] = (
-                f"{format_number(item.albumcount)} album{'' if item.albumcount == 1 else 's'}"
+                f"{format_number(item['albumcount'])} album{'' if item['albumcount'] == 1 else 's'}"
             )
 
         album_list.append(item_dict)

@@ -2,6 +2,7 @@
 Contains all the album routes.
 """
 
+from itertools import groupby
 import random
 
 from flask_jwt_extended import current_user
@@ -10,13 +11,15 @@ from flask_openapi3 import Tag
 from flask_openapi3 import APIBlueprint
 from app.api.apischemas import AlbumHashSchema, AlbumLimitSchema, ArtistHashSchema
 
+from app.config import UserConfig
+from app.db import AlbumTable as AlbumDb, TrackTable as TrackDb
 from app.settings import Defaults
 from app.models import FavType, Track
 from app.store.albums import AlbumStore
 from app.store.tracks import TrackStore
 from app.utils.hashing import create_hash
 from app.lib.albumslib import sort_by_track_no
-from app.serializers.album import serialize_for_card
+from app.serializers.album import serialize_for_card, serialize_for_card_many
 from app.serializers.track import serialize_track
 from app.db.sqlite.albumcolors import SQLiteAlbumMethods as adb
 from app.db.sqlite.favorite import SQLiteFavoriteMethods as favdb
@@ -38,47 +41,20 @@ def get_album_tracks_and_info(body: AlbumHashSchema):
     Returns album info and tracks for the given albumhash.
     """
     albumhash = body.albumhash
-
-    error_msg = {"error": "Album not created yet."}
-    album = AlbumStore.get_album_by_hash(albumhash)
+    album = AlbumDb.get_album_by_albumhash(albumhash)
 
     if album is None:
-        return error_msg, 404
+        return {"error": "Album not found"}, 404
 
-    tracks = TrackStore.get_tracks_by_albumhash(albumhash)
-
-    if tracks is None:
-        return error_msg, 404
-
-    if len(tracks) == 0:
-        return error_msg, 404
-
-    def get_album_genres(tracks: list[Track]):
-        genres = set()
-
-        for track in tracks:
-            if track.genre is not None:
-                genres.update(track.genre)
-
-        return list(genres)
-
-    album.genres = get_album_genres(tracks)
-    album.count = len(tracks)
-
-    album.get_date_from_tracks(tracks)
+    tracks = TrackDb.get_tracks_by_albumhash(albumhash)
+    album.trackcount = len(tracks)
     album.duration = sum(t.duration for t in tracks)
+    album.type = album.check_type(
+        tracks=tracks, singleTrackAsSingle=UserConfig().showAlbumsAsSingles
+    )
+    album.populate_versions()
 
-    album.check_is_single(tracks)
-
-    if not album.is_single:
-        album.check_type()
-
-    album.is_favorite = check_is_fav(albumhash, FavType.album)
-
-    return {
-        "tracks": [serialize_track(t, remove_disc=False) for t in tracks],
-        "info": album,
-    }
+    return {"info": album, "tracks": tracks}
 
 
 @api.get("/<albumhash>/tracks")
@@ -89,16 +65,16 @@ def get_album_tracks(path: AlbumHashSchema):
     Returns all the tracks in the given album, sorted by disc and track number.
     NOTE: No album info is returned.
     """
-    tracks = TrackStore.get_tracks_by_albumhash(path.albumhash)
+    tracks = TrackDb.get_tracks_by_albumhash(path.albumhash)
     tracks = sort_by_track_no(tracks)
 
     return tracks
 
 
 class GetMoreFromArtistsBody(AlbumLimitSchema):
-    albumartists: str = Field(
+    albumartists: list = Field(
         description="The artist hashes to get more albums from",
-        example=Defaults.API_ARTISTHASH,
+        example='[{"name": "Khalid", "artisthash": "94ca2dba1c"}]',
     )
 
     base_title: str = Field(
@@ -119,28 +95,24 @@ def get_more_from_artist(body: GetMoreFromArtistsBody):
     limit = body.limit
     base_title = body.base_title
 
-    albumartists: list[str] = albumartists.split(",")
+    all_albums = AlbumDb.get_albums_by_artisthashes(albumartists)
 
-    albums = [
-        {
-            "artisthash": a,
-            "albums": AlbumStore.get_albums_by_albumartist(
-                a, limit, exclude=base_title
-            ),
-        }
-        for a in albumartists
+    # filter out albums with the same base title
+    all_albums = filter(
+        lambda a: create_hash(a.base_title) != create_hash(base_title), all_albums
+    )
+    all_albums = list(all_albums)
+
+    if not len(all_albums):
+        return []
+
+    # group by first albumartist's artisthash
+    groups = groupby(all_albums, lambda a: a.albumartists[0]["artisthash"])
+
+    return [
+        {"artisthash": g[0], "albums": serialize_for_card_many(list(g[1])[:limit])}
+        for g in groups
     ]
-
-    albums = [
-        {
-            "artisthash": a["artisthash"],
-            "albums": [serialize_for_card(a_) for a_ in (a["albums"])],
-        }
-        for a in albums
-        if len(a["albums"]) > 0
-    ]
-
-    return albums
 
 
 class GetAlbumVersionsBody(ArtistHashSchema):
@@ -165,18 +137,29 @@ def get_album_versions(body: GetAlbumVersionsBody):
     base_title = body.base_title
     artisthash = body.artisthash
 
-    albums = AlbumStore.get_albums_by_artisthash(artisthash)
-
+    albums = AlbumDb.get_albums_by_base_title(base_title)
+    print(albums)
     albums = [
         a
         for a in albums
-        if create_hash(a.base_title) == create_hash(base_title)
-        and create_hash(og_album_title) != create_hash(a.og_title)
+        if a.og_title != og_album_title
+        and artisthash in {a["artisthash"] for a in a.albumartists}
     ]
 
-    for a in albums:
-        tracks = TrackStore.get_tracks_by_albumhash(a.albumhash)
-        a.get_date_from_tracks(tracks)
+    print(albums)
+
+    # albums = AlbumStore.get_albums_by_artisthash(artisthash)
+
+    # albums = [
+    #     a
+    #     for a in albums
+    #     if create_hash(a.base_title) == create_hash(base_title)
+    #     and create_hash(og_album_title) != create_hash(a.og_title)
+    # ]
+
+    # for a in albums:
+    #     tracks = TrackStore.get_tracks_by_albumhash(a.albumhash)
+    #     a.get_date_from_tracks(tracks)
 
     return albums
 

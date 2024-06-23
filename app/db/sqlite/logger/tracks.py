@@ -1,6 +1,7 @@
 from flask_jwt_extended import current_user
 from app.db.sqlite.utils import SQLiteManager
 from app.models.logger import TrackLog as TrackLog
+from app.utils.auth import get_current_userid
 
 
 class SQLiteTrackLogger:
@@ -10,6 +11,7 @@ class SQLiteTrackLogger:
         Inserts a track play record into the database
         """
 
+        userid = get_current_userid()
         with SQLiteManager(userdata_db=True) as cur:
             sql = """INSERT OR REPLACE INTO track_logger(
                 trackhash,
@@ -21,7 +23,7 @@ class SQLiteTrackLogger:
                 """
 
             cur.execute(
-                sql, (trackhash, duration, timestamp, source, current_user["id"])
+                sql, (trackhash, duration, timestamp, source, userid)
             )
             lastrowid = cur.lastrowid
 
@@ -34,7 +36,8 @@ class SQLiteTrackLogger:
         """
 
         with SQLiteManager(userdata_db=True) as cur:
-            sql = f"""SELECT * FROM track_logger WHERE userid = {current_user['id']} ORDER BY timestamp DESC"""
+            userid = get_current_userid()
+            sql = f"""SELECT * FROM track_logger WHERE userid = {userid} ORDER BY timestamp DESC"""
 
             cur.execute(sql)
             rows = cur.fetchall()

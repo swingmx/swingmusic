@@ -8,9 +8,16 @@ import pendulum
 from PIL import Image, UnidentifiedImageError
 from tinytag import TinyTag
 
+from app.config import UserConfig
 from app.settings import Defaults, Paths
 from app.utils.hashing import create_hash
-from app.utils.parsers import split_artists
+from app.utils.parsers import (
+    clean_title,
+    get_base_title_and_versions,
+    parse_feat_from_title,
+    remove_prod,
+    split_artists,
+)
 from app.utils.wintools import win_replace_slash
 
 
@@ -206,9 +213,7 @@ def get_tags(filepath: str):
     except KeyError:
         tags.copyright = None
 
-    tags.albumhash = create_hash(tags.album, tags.albumartist)
-    tags.trackhash = create_hash(tags.artist, tags.album, tags.title)
-    tags.image = f"{tags.albumhash}.webp"
+    # tags.image = f"{tags.albumhash}.webp"
     tags.folder = win_replace_slash(os.path.dirname(filepath))
 
     tags.date = parse_date(tags.year) or int(last_mod)
@@ -218,9 +223,100 @@ def get_tags(filepath: str):
     tags.artists = tags.artist
     tags.albumartists = tags.albumartist
 
+    split_artist = split_artists(tags.artist)
+    split_albumartists = split_artists(tags.albumartist)
+    new_title = tags.title
+
+    # TODO: Figure out which is the best spot to create these hashes
+    # create albumhash using og_album
+    tags.albumhash = create_hash(tags.album or "", tags.albumartist)
+
+    config = UserConfig()
+
+    # extract featured artists
+    if config.extractFeaturedArtists:
+        feat, new_title = parse_feat_from_title(tags.title)
+        original_lower = "-".join([create_hash(a) for a in split_artist])
+        split_artist.extend(a for a in feat if create_hash(a) not in original_lower)
+
+    # if no albumartist, assign to the first artist
+    if not tags.albumartist:
+        tags.albumartist = split_artist[:1]
+
+    # create json objects for artists and albumartists
+    tags.artists = [
+        {
+            "artisthash": create_hash(a, decode=True),
+            "name": a,
+        }
+        for a in split_artist
+    ]
+
+    tags.albumartists = [
+        {
+            "artisthash": create_hash(a, decode=True),
+            "name": a,
+        }
+        for a in split_albumartists
+    ]
+
+    # remove prod by
+    if config.removeProdBy:
+        new_title = remove_prod(new_title)
+
+    # if track is a single, ie.
+    # if og_title == album, rename album to new_title
+    if tags.title == tags.album:
+        tags.album = new_title
+
+    # remove remaster from track title
+    if config.removeRemasterInfo:
+        new_title = clean_title(new_title)
+
+    # save final title
+    tags.og_title = tags.title
+    tags.title = new_title
+    tags.og_album = tags.album
+
+    # clean album title
+    if config.cleanAlbumTitle:
+        tags.album, _ = get_base_title_and_versions(tags.album, get_versions=False)
+
+    # merge album versions
+    if config.mergeAlbums:
+        tags.albumhash = create_hash(
+            tags.album, *(a["name"] for a in tags.albumartists)
+        )
+
+    # process genres
+    if tags.genre:
+        tags.genre = tags.genre.lower()
+        # separators = {"/", ";", "&"}
+        separators = set(config.genreSeparators)
+
+        contains_rnb = "r&b" in tags.genre
+        contains_rock = "rock & roll" in tags.genre
+
+        if contains_rnb:
+            tags.genre = tags.genre.replace("r&b", "RnB")
+
+        if contains_rock:
+            tags.genre = tags.genre.replace("rock & roll", "rock")
+
+        for s in separators:
+            tags.genre = tags.genre.replace(s, ",")
+
+        tags.genre = tags.genre.split(",")
+        tags.genre = [
+            {"name": g.strip(), "genrehash": create_hash(g.strip())} for g in tags.genre
+        ]
+
     # sub underscore with space
     tags.title = tags.title.replace("_", " ")
     tags.album = tags.album.replace("_", " ")
+    tags.trackhash = create_hash(
+        *[a["name"] for a in tags.artists], tags.album, tags.title
+    )
 
     tags = tags.__dict__
 

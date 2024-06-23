@@ -7,6 +7,7 @@ from requests import ConnectionError as RequestConnectionError
 from requests import ReadTimeout
 
 from app import settings
+from app.db import TrackTable
 from app.db.sqlite.favorite import SQLiteFavoriteMethods as favdb
 from app.db.sqlite.lastfm.similar_artists import SQLiteLastFMSimilarArtists as lastfmdb
 from app.db.sqlite.settings import SettingsSQLMethods as sdb
@@ -121,14 +122,14 @@ class Populate:
                 return
 
     @staticmethod
-    def remove_modified(tracks: Generator[Track, None, None]):
+    def remove_modified(tracks: Generator[TrackTable, None, None]):
         """
         Removes tracks from the database that have been modified
         since they were added to the database.
         """
 
         unmodified_paths = set()
-        modified_tracks: list[Track] = []
+        modified_tracks: list[TrackTable] = []
         modified_paths = set()
 
         for track in tracks:
@@ -151,18 +152,6 @@ class Populate:
 
     @staticmethod
     def tag_untagged(untagged: set[str], key: str):
-        log.info("Found %s new tracks", len(untagged))
-        tagged_tracks: deque[dict] = deque()
-        tagged_count = 0
-
-        favs = favdb.get_fav_tracks()
-        records = dict()
-
-        for fav in favs:
-            r = records.setdefault(fav[1], set())
-            r.add(fav[4])
-
-
         for file in tqdm(untagged, desc="Reading files"):
             if POPULATE_KEY != key:
                 log.warning("'Populate.tag_untagged': Populate key changed")
@@ -171,36 +160,49 @@ class Populate:
             tags = get_tags(file)
 
             if tags is not None:
-                tagged_tracks.append(tags)
-                track = Track(**tags)
+                TrackTable.insert_one(tags)
 
-                track.fav_userids = list(records.get(track.trackhash, set()))
+        # log.info("Found %s new tracks", len(untagged))
+        # # tagged_tracks: deque[dict] = deque()
+        # # tagged_count = 0
 
-                TrackStore.add_track(track)
+        # favs = favdb.get_fav_tracks()
+        # records = dict()
 
-                if not AlbumStore.album_exists(track.albumhash):
-                    AlbumStore.add_album(AlbumStore.create_album(track))
+        # for fav in favs:
+        #     r = records.setdefault(fav[1], set())
+        #     r.add(fav[4])
 
-                for artist in track.artists:
-                    if not ArtistStore.artist_exists(artist.artisthash):
-                        ArtistStore.add_artist(Artist(artist.name))
+            #     tagged_tracks.append(tags)
+            #     track = Track(**tags)
 
-                for artist in track.albumartists:
-                    if not ArtistStore.artist_exists(artist.artisthash):
-                        ArtistStore.add_artist(Artist(artist.name))
+            #     track.fav_userids = list(records.get(track.trackhash, set()))
 
-                tagged_count += 1
-            else:
-                log.warning("Could not read file: %s", file)
+            #     TrackStore.add_track(track)
 
-        if len(tagged_tracks) > 0:
-            log.info("Adding %s tracks to database", len(tagged_tracks))
-            insert_many_tracks(tagged_tracks)
+            #     if not AlbumStore.album_exists(track.albumhash):
+            #         AlbumStore.add_album(AlbumStore.create_album(track))
 
-        log.info("Added %s/%s tracks", tagged_count, len(untagged))
+            #     for artist in track.artists:
+            #         if not ArtistStore.artist_exists(artist.artisthash):
+            #             ArtistStore.add_artist(Artist(artist.name))
+
+            #     for artist in track.albumartists:
+            #         if not ArtistStore.artist_exists(artist.artisthash):
+            #             ArtistStore.add_artist(Artist(artist.name))
+
+            #     tagged_count += 1
+            # else:
+            #     log.warning("Could not read file: %s", file)
+
+        # if len(tagged_tracks) > 0:
+        #     log.info("Adding %s tracks to database", len(tagged_tracks))
+        #     insert_many_tracks(tagged_tracks)
+
+        # log.info("Added %s/%s tracks", tagged_count, len(untagged))
 
     @staticmethod
-    def extract_thumb_with_overwrite(tracks: list[Track]):
+    def extract_thumb_with_overwrite(tracks: list[TrackTable]):
         """
         Extracts the thumbnail from a list of filepaths,
         overwriting the existing thumbnail if it exists,

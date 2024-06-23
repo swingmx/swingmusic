@@ -75,7 +75,6 @@ class SQLiteAuthMethods:
         {', '.join([f"{key} = :{key}" for key in keys if key != 'id'])}
         WHERE id = :id
         """
-        print(sql, user)
 
         with SQLiteManager(userdata_db=True) as cur:
             cur.execute(sql, user)
@@ -140,7 +139,6 @@ class SQLiteAuthMethods:
         Delete a user by username.
         """
         sql = "DELETE FROM users WHERE id = ?"
-        print("deleting user: ", username)
         with SQLiteManager(userdata_db=True) as cur:
             cur.execute(sql, (3,))
             cur.close()

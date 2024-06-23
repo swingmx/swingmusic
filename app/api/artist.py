@@ -133,7 +133,7 @@ def get_artist_albums(path: ArtistHashSchema, query: GetArtistAlbumsQuery):
             AlbumStore.remove_album_by_hash(a.albumhash)
             continue
 
-        a.check_is_single(album_tracks)
+        a.is_single(album_tracks)
 
     all_albums = sorted(all_albums, key=lambda a: str(a.date), reverse=True)
 

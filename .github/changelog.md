@@ -12,3 +12,16 @@
 - 
 
 ## Development
+
+
+## THE BIG ONE API CHANGES
+
+- genre is no longer a string, but a struct:
+
+```ts
+interface Genre {
+    name: str;
+    genrehash: str;
+}
+```
+

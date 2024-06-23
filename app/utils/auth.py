@@ -1,6 +1,8 @@
 import hmac
 import hashlib
 
+from flask_jwt_extended import current_user
+
 from app.config import UserConfig
 
 
@@ -29,3 +31,14 @@ def check_password(password: str, hashed: str) -> bool:
     """
 
     return hmac.compare_digest(hash_password(password), hashed)
+
+
+def get_current_userid() -> int:
+    """
+    Get the current session user.
+    """
+    try:
+        return current_user["id"]
+    except RuntimeError:
+        # Catch this error raised during migration execution
+        return 1

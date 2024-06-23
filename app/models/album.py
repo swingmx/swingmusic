@@ -2,6 +2,7 @@ import dataclasses
 import datetime
 from dataclasses import dataclass
 
+from app.config import UserConfig
 from app.settings import SessionVarKeys, get_flag
 
 from ..utils.hashing import create_hash
@@ -16,94 +17,111 @@ class Album:
     Creates an album object
     """
 
+    id: int
+    albumartists: list[dict[str, str]]
     albumhash: str
+    base_title: str
+    color: str
+    created_date: int
+    date: int
+    duration: int
+    genres: list[dict[str, str]]
+    og_title: str
     title: str
-    albumartists: list[Artist]
+    trackcount: int
 
-    albumartists_hashes: str = ""
-    image: str = ""
-    count: int = 0
-    duration: int = 0
-    colors: list[str] = dataclasses.field(default_factory=list)
-    date: str = ""
-
-    created_date: int = 0
-    og_title: str = ""
-    base_title: str = ""
-    is_soundtrack: bool = False
-    is_compilation: bool = False
-    is_single: bool = False
-    is_EP: bool = False
-    is_favorite: bool = False
-    is_live: bool = False
-
-    genres: list[str] = dataclasses.field(default_factory=list)
+    type: str = "album"
     versions: list[str] = dataclasses.field(default_factory=list)
 
     def __post_init__(self):
-        self.title = self.title.strip()
-        self.og_title = self.title
-        self.image = self.albumhash + ".webp"
+        self.date = datetime.datetime.fromtimestamp(self.date).year
 
-        # Fetch album artists from title
-        if get_flag(SessionVarKeys.EXTRACT_FEAT):
-            featured, self.title = parse_feat_from_title(self.title)
+    # albumhash: str
+    # title: str
+    # albumartists: list[Artist]
 
-            if len(featured) > 0:
-                original_lower = "-".join([a.name.lower() for a in self.albumartists])
-                self.albumartists.extend(
-                    [Artist(a) for a in featured if a.lower() not in original_lower]
-                )
+    # albumartists_hashes: str = ""
+    # image: str = ""
+    # count: int = 0
+    # duration: int = 0
+    # colors: list[str] = dataclasses.field(default_factory=list)
+    # date: str = ""
 
-                from ..store.tracks import TrackStore
+    # created_date: int = 0
+    # og_title: str = ""
+    # base_title: str = ""
+    # is_soundtrack: bool = False
+    # is_compilation: bool = False
+    # is_single: bool = False
+    # is_EP: bool = False
+    # is_favorite: bool = False
+    # is_live: bool = False
 
-                TrackStore.append_track_artists(self.albumhash, featured, self.title)
+    # genres: list[str] = dataclasses.field(default_factory=list)
 
-        # Handle album version data
-        if get_flag(SessionVarKeys.CLEAN_ALBUM_TITLE):
-            get_versions = not get_flag(SessionVarKeys.MERGE_ALBUM_VERSIONS)
+    # def __post_init__(self):
+    #     self.title = self.title.strip()
+    #     self.og_title = self.title
+    #     self.image = self.albumhash + ".webp"
 
-            self.title, self.versions = get_base_title_and_versions(
-                self.title, get_versions=get_versions
-            )
-            self.base_title = self.title
+    #     # Fetch album artists from title
+    #     if get_flag(SessionVarKeys.EXTRACT_FEAT):
+    #         featured, self.title = parse_feat_from_title(self.title)
 
-            if "super_deluxe" in self.versions:
-                self.versions.remove("deluxe")
+    #         if len(featured) > 0:
+    #             original_lower = "-".join([a.name.lower() for a in self.albumartists])
+    #             self.albumartists.extend(
+    #                 [Artist(a) for a in featured if a.lower() not in original_lower]
+    #             )
 
-            if "original" in self.versions and self.check_is_soundtrack():
-                self.versions.remove("original")
+    #             from ..store.tracks import TrackStore
 
-            self.versions = [v.replace("_", " ") for v in self.versions]
-        else:
-            self.base_title = get_base_title_and_versions(
-                self.title, get_versions=False
-            )[0]
+    #             TrackStore.append_track_artists(self.albumhash, featured, self.title)
 
-        self.albumartists_hashes = "-".join(a.artisthash for a in self.albumartists)
+    #     # Handle album version data
+    #     else:
+    #         self.base_title = get_base_title_and_versions(
+    #             self.title, get_versions=False
+    #         )[0]
 
-    def set_colors(self, colors: list[str]):
-        self.colors = colors
+    #     self.albumartists_hashes = "-".join(a.artisthash for a in self.albumartists)
 
-    def check_type(self):
+    # # def set_colors(self, colors: list[str]):
+    # #     self.colors = colors
+    def populate_versions(self):
+        _, self.versions = get_base_title_and_versions(self.og_title, get_versions=True)
+
+        if "super_deluxe" in self.versions:
+            self.versions.remove("deluxe")
+
+        # at this point, we should know the type of album
+        if "original" in self.versions and self.type == "soundtrack":
+            self.versions.remove("original")
+
+        self.versions = [v.replace("_", " ") for v in self.versions]
+
+    def check_type(self, tracks: list[Track], singleTrackAsSingle: bool):
         """
         Runs all the checks to determine the type of album.
         """
-        self.is_soundtrack = self.check_is_soundtrack()
-        if self.is_soundtrack:
-            return
+        if self.is_single(tracks, singleTrackAsSingle):
+            return "single"
 
-        self.is_live = self.check_is_live_album()
-        if self.is_live:
-            return
+        if self.is_soundtrack():
+            return "soundtrack"
 
-        self.is_compilation = self.check_is_compilation()
-        if self.is_compilation:
-            return
+        if self.is_live_album():
+            return "live album"
 
-        self.is_EP = self.check_is_ep()
+        if self.is_compilation():
+            return "compilation"
 
-    def check_is_soundtrack(self) -> bool:
+        if self.is_ep():
+            return "ep"
+
+        return "album"
+
+    def is_soundtrack(self) -> bool:
         """
         Checks if the album is a soundtrack.
         """
@@ -114,11 +132,11 @@ class Album:
 
         return False
 
-    def check_is_compilation(self) -> bool:
+    def is_compilation(self) -> bool:
         """
         Checks if the album is a compilation.
         """
-        artists = [a.name for a in self.albumartists]
+        artists = [a["name"] for a in self.albumartists]
         artists = "".join(artists).lower()
 
         if "various artists" in artists:
@@ -137,7 +155,7 @@ class Album:
             "biggest hits",
             "the hits",
             "the ultimate",
-            "compilation"
+            "compilation",
         }
 
         for substring in substrings:
@@ -146,7 +164,7 @@ class Album:
 
         return False
 
-    def check_is_live_album(self):
+    def is_live_album(self):
         """
         Checks if the album is a live album.
         """
@@ -157,7 +175,7 @@ class Album:
 
         return False
 
-    def check_is_ep(self) -> bool:
+    def is_ep(self) -> bool:
         """
         Checks if the album is an EP.
         """
@@ -165,22 +183,22 @@ class Album:
 
         # TODO: check against number of tracks
 
-    def check_is_single(self, tracks: list[Track]):
+    def is_single(self, tracks: list[Track], singleTrackAsSingle: bool):
         """
         Checks if the album is a single.
         """
         keywords = ["single version", "- single"]
 
-        show_albums_as_singles = get_flag(SessionVarKeys.SHOW_ALBUMS_AS_SINGLES)
+        # show_albums_as_singles = get_flag(SessionVarKeys.SHOW_ALBUMS_AS_SINGLES)
 
         for keyword in keywords:
             if keyword in self.og_title.lower():
-                self.is_single = True
-                return
+                return True
 
-        if show_albums_as_singles and len(tracks) == 1:
-            self.is_single = True
-            return
+        # REVIEW: Reading from the config file in a for loop will be slow
+        # TODO: Find a
+        if singleTrackAsSingle and len(tracks) == 1:
+            return True
 
         if (
             len(tracks) == 1
@@ -192,29 +210,29 @@ class Album:
             # and tracks[0].disc == 1
             # TODO: Review -> Are the above commented checks necessary?
         ):
-            self.is_single = True
+            return True
 
-    def get_date_from_tracks(self, tracks: list[Track]):
-        """
-        Gets the date of the album its tracks.
+    # def get_date_from_tracks(self, tracks: list[Track]):
+    #     """
+    #     Gets the date of the album its tracks.
 
-        Args:
-            tracks (list[Track]): The tracks of the album.
-        """
-        if self.date:
-            return
+    #     Args:
+    #         tracks (list[Track]): The tracks of the album.
+    #     """
+    #     if self.date:
+    #         return
 
-        dates = (int(t.date) for t in tracks if t.date)
-        try:
-            self.date = datetime.datetime.fromtimestamp(min(dates)).year
-        except:
-            self.date = datetime.datetime.now().year
+    #     dates = (int(t.date) for t in tracks if t.date)
+    #     try:
+    #         self.date = datetime.datetime.fromtimestamp(min(dates)).year
+    #     except:
+    #         self.date = datetime.datetime.now().year
 
-    def set_count(self, count: int):
-        self.count = count
+    # def set_count(self, count: int):
+    #     self.count = count
 
-    def set_duration(self, duration: int):
-        self.duration = duration
+    # def set_duration(self, duration: int):
+    #     self.duration = duration
 
-    def set_created_date(self, created_date: int):
-        self.created_date = created_date
+    # def set_created_date(self, created_date: int):
+    #     self.created_date = created_date

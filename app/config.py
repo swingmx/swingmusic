@@ -21,6 +21,7 @@ class UserConfig:
     rootDirs: list[str] = field(default_factory=list)
     excludeDirs: list[str] = field(default_factory=list)
     artistSeparators: set[str] = field(default_factory=list)
+    genreSeparators: set[str] = field(default_factory=lambda: {"/", ";", "&"})
 
     # tracks
     extractFeaturedArtists: bool = True

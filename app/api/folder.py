@@ -66,7 +66,9 @@ def get_folder_tree(body: FolderTree):
     else:
         req_dir = "/" + req_dir if not req_dir.startswith("/") else req_dir
 
+    print('stuff!')
     res = GetFilesAndDirs(req_dir, tracks_only=tracks_only)()
+    print(res['folders'])
     res["folders"] = sorted(res["folders"], key=lambda i: i.name)
 
     return res

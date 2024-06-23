@@ -23,6 +23,12 @@ class ArtistMinimal:
         if self.artisthash == "5a37d5315e":
             self.name = "Juice WRLD"
 
+    def to_json(self):
+        return {
+            "name": self.name,
+            "artisthash": self.artisthash,
+        }
+
 
 @dataclass(slots=True)
 class Artist(ArtistMinimal):

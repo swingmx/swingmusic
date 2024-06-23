@@ -60,7 +60,15 @@ class SQLitePlaylistMethods:
     @staticmethod
     def get_all_playlists():
         with SQLiteManager(userdata_db=True) as cur:
-            cur.execute(f"SELECT * FROM playlists WHERE userid = {current_user['id']}")
+            userid = 1
+
+            try:
+                userid = current_user["id"]
+            except RuntimeError:
+                # Catch this error raised during migration execution
+                pass
+
+            cur.execute(f"SELECT * FROM playlists WHERE userid = {userid}")
             playlists = cur.fetchall()
             cur.close()
 
@@ -92,7 +100,15 @@ class SQLitePlaylistMethods:
         Adds a string item to a json dumped list using a playlist id and field name.
         Takes the playlist ID, a field name, an item to add to the field.
         """
-        sql = f"SELECT {field} FROM playlists WHERE id = ? and userid = {current_user['id']}"
+        userid = 1
+
+        try:
+            userid = current_user["id"]
+        except RuntimeError:
+            # Catch this error raised during migration execution
+            pass
+
+        sql = f"SELECT {field} FROM playlists WHERE id = ? and userid = {userid}"
 
         with SQLiteManager(userdata_db=True) as cur:
             cur.execute(sql, (playlist_id,))
@@ -173,10 +189,17 @@ class SQLitePlaylistMethods:
         """
 
         sql = """UPDATE playlists SET trackhashes = ? WHERE id = ?"""
+        userid = 1
+
+        try:
+            userid = current_user["id"]
+        except RuntimeError:
+            # Catch this error raised during migration execution
+            pass
 
         with SQLiteManager(userdata_db=True) as cur:
             cur.execute(
-                f"SELECT trackhashes FROM playlists WHERE id = ? and userid = {current_user['id']}",
+                f"SELECT trackhashes FROM playlists WHERE id = ? and userid = {userid}",
                 (playlistid,),
             )
             data = cur.fetchone()
@@ -185,17 +208,20 @@ class SQLitePlaylistMethods:
                 return
 
             trackhashes: list[str] = json.loads(data[0])
+            to_remove = []
 
             for track in tracks:
                 # {
                 #    trackhash: str;
                 #    index: int;
                 # }
-
                 index = trackhashes.index(track["trackhash"])
 
                 if index == track["index"]:
-                    trackhashes.remove(track["trackhash"])
+                    to_remove.append(track["trackhash"])
+
+            for trackhash in to_remove:
+                trackhashes.remove(trackhash)
 
             cur.execute(sql, (json.dumps(trackhashes), playlistid))
 
