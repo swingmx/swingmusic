@@ -41,6 +41,7 @@ class IndexAlbums:
             if track.albumhash not in albums:
                 albums[track.albumhash] = {
                     "albumartists": track.albumartists,
+                    "artisthashes": [a['artisthash'] for a in track.albumartists],
                     "albumhash": track.albumhash,
                     "base_title": None,
                     "color": None,
@@ -107,7 +108,7 @@ class IndexArtists:
                         "dates": [track.date],
                         "date": None,
                         "duration": track.duration,
-                        "genres": [*track.genre] if track.genre else [],
+                        "genres": track.genre if track.genre else [],
                         "name": artist["name"],
                         "trackcount": None,
                         "tracks": {track.trackhash},
@@ -121,7 +122,7 @@ class IndexArtists:
                     artist["created_dates"].append(track.last_mod)
 
                     if track.genre:
-                        artist["genres"].append(track.genre)
+                        artist["genres"].extend(track.genre)
 
 
         for artist in artists.values():

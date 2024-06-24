@@ -20,6 +20,7 @@ class Album:
     id: int
     albumartists: list[dict[str, str]]
     albumhash: str
+    artisthashes: list[str]
     base_title: str
     color: str
     created_date: int

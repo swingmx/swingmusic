@@ -24,6 +24,7 @@ from sqlalchemy.orm import (
 
 from app.models import Track as TrackModel
 from app.models import Album as AlbumModel
+from app.models import Artist as ArtistModel
 from app.utils.remove_duplicates import remove_duplicates
 
 
@@ -100,12 +101,21 @@ class ArtistTable(Base):
             result = conn.execute(select(cls).offset(start).limit(limit))
             return albums_to_dataclasses(result.fetchall())
 
+    @classmethod
+    def get_artist_by_hash(cls, artisthash: str):
+        with DbManager() as conn:
+            result = conn.execute(
+                select(ArtistTable).where(ArtistTable.artisthash == artisthash)
+            )
+            return artist_to_dataclass(result.fetchone())
+
 
 class AlbumTable(Base):
     __tablename__ = "album"
 
     id: Mapped[int] = mapped_column(primary_key=True)
     albumartists: Mapped[list[dict[str, str]]] = mapped_column(JSON(), index=True)
+    artisthashes: Mapped[list[str]] = mapped_column(JSON(), index=True)
     albumhash: Mapped[str] = mapped_column(String(), unique=True, index=True)
     base_title: Mapped[str] = mapped_column(String())
     color: Mapped[Optional[str]] = mapped_column(String())
@@ -127,6 +137,14 @@ class AlbumTable(Base):
 
             if album:
                 return album_to_dataclass(album)
+
+    @classmethod
+    def get_albums_by_hash(cls, hashes: set[str]):
+        with DbManager() as conn:
+            result = conn.execute(
+                select(AlbumTable).where(AlbumTable.albumhash.in_(hashes))
+            )
+            return albums_to_dataclasses(result.fetchall())
 
     @classmethod
     def get_all(cls, start: int, limit: int):
@@ -157,6 +175,14 @@ class AlbumTable(Base):
             )
             return albums_to_dataclasses(result.fetchall())
 
+    @classmethod
+    def get_albums_by_artisthash(cls, artisthash: str):
+        with DbManager() as conn:
+            result = conn.execute(
+                select(AlbumTable).where(AlbumTable.artisthashes.contains(artisthash))
+            )
+            return albums_to_dataclasses(result.all())
+
 
 class TrackTable(Base):
     __tablename__ = "track"
@@ -165,6 +191,7 @@ class TrackTable(Base):
     album: Mapped[str] = mapped_column(String())
     albumartists: Mapped[list[dict[str, str]]] = mapped_column(JSON())
     albumhash: Mapped[str] = mapped_column(String(), index=True)
+    artisthashes: Mapped[list[str]] = mapped_column(JSON(), index=True)
     artists: Mapped[list[dict[str, str]]] = mapped_column(JSON(), index=True)
     bitrate: Mapped[int] = mapped_column(Integer())
     copyright: Mapped[Optional[str]] = mapped_column(String())
@@ -237,8 +264,24 @@ class TrackTable(Base):
             if track:
                 return track_to_dataclass(track)
 
+    @classmethod
+    def get_tracks_by_artisthash(cls, artisthash: str):
+        with DbManager() as conn:
+            result = conn.execute(
+                select(TrackTable).where(TrackTable.artists.contains(artisthash))
+            )
+            return tracks_to_dataclasses(result.fetchall())
+
 
 # SECTION: HELPER FUNCTIONS
+
+
+def artist_to_dataclass(artist: Any):
+    return ArtistModel(**artist._asdict())
+
+
+def artists_to_dataclasses(artists: Any):
+    return [artist_to_dataclass(artist) for artist in artists]
 
 
 def album_to_dataclass(album: Any):

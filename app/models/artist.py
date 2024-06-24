@@ -31,33 +31,19 @@ class ArtistMinimal:
 
 
 @dataclass(slots=True)
-class Artist(ArtistMinimal):
+class Artist:
     """
     Artist class
     """
 
-    name: str = ""
-    trackcount: int = 0
-    albumcount: int = 0
-    duration: int = 0
-    colors: list[str] = dataclasses.field(default_factory=list)
-    is_favorite: bool = False
-    created_date: float = 0.0
-
-    def __post_init__(self):
-        super(Artist, self).__init__(self.name)
-
-    def set_trackcount(self, count: int):
-        self.trackcount = count
-
-    def set_albumcount(self, count: int):
-        self.albumcount = count
-
-    def set_duration(self, duration: int):
-        self.duration = duration
-
-    def set_colors(self, colors: list[str]):
-        self.colors = colors
-
-    def set_created_date(self, created_date: float):
-        self.created_date = created_date
+    id: str
+    name: str
+    albumcount: int
+    artisthash: str
+    created_date: int
+    date: int
+    duration: int
+    genres: list[dict[str, str]]
+    name: str
+    trackcount: int
+    is_favorite: bool

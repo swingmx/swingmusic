@@ -27,6 +27,7 @@ class Track:
     album: str
     albumartists: list[dict[str, str]]
     albumhash: str
+    artisthashes: list[str]
     artists: str
     bitrate: int
     copyright: str
@@ -44,8 +45,10 @@ class Track:
     trackhash: str
     extra: dict
 
+    is_favorite: bool = False
     _pos: int = 0
     _ati: str = ""
+
 
     # album: str
     # albumartists: str | list[ArtistMinimal]

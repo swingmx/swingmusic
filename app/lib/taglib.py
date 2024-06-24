@@ -262,6 +262,9 @@ def get_tags(filepath: str):
         for a in split_albumartists
     ]
 
+    tags.artisthashes = list({a["artisthash"] for a in tags.artists + tags.albumartists})
+
+
     # remove prod by
     if config.removeProdBy:
         new_title = remove_prod(new_title)
