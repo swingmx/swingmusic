@@ -42,6 +42,7 @@ class Track:
     title: str
     track: int
     trackhash: str
+    extra: dict
 
     _pos: int = 0
     _ati: str = ""

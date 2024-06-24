@@ -9,6 +9,7 @@ from sqlalchemy import (
     Row,
     String,
     Tuple,
+    and_,
     create_engine,
     insert,
     select,
@@ -39,7 +40,8 @@ def todicts(tracks: list[Any]):
 
 
 class DbManager:
-    def __init__(self):
+    def __init__(self, commit: bool = False):
+        self.commit = commit
         self.engine = create_engine(f"sqlite+pysqlite:///{fullpath}", echo=True)
         self.conn = self.engine.connect()
 
@@ -47,7 +49,8 @@ class DbManager:
         return self.conn.execution_options(preserve_rowcount=True)
 
     def __exit__(self, exc_type, exc_val, exc_tb):
-        self.conn.commit()
+        if self.commit:
+            self.conn.commit()
         self.conn.close()
 
 
@@ -57,7 +60,7 @@ class Base(MappedAsDataclass, DeclarativeBase):
         """
         Inserts multiple items into the database.
         """
-        with DbManager() as conn:
+        with DbManager(commit=True) as conn:
             conn.execute(insert(cls).values(items))
 
     @classmethod
@@ -177,6 +180,7 @@ class TrackTable(Base):
     title: Mapped[str] = mapped_column(String())
     track: Mapped[int] = mapped_column(Integer())
     trackhash: Mapped[str] = mapped_column(String(), index=True)
+    extra: Mapped[Optional[dict[str, Any]]] = mapped_column(JSON())
 
     @classmethod
     def get_tracks_by_filepaths(cls, filepaths: list[str]):
@@ -209,23 +213,47 @@ class TrackTable(Base):
             tracks = tracks_to_dataclasses(result.fetchall())
             return remove_duplicates(tracks, is_album_tracks=True)
 
+    @classmethod
+    def get_track_by_trackhash(cls, hash: str, filepath: str = ""):
+        with DbManager() as conn:
+            if filepath:
+                result = conn.execute(
+                    select(TrackTable)
+                    .where(
+                        and_(
+                            TrackTable.trackhash == hash,
+                            TrackTable.filepath == filepath,
+                        )
+                    )
+                    .order_by(TrackTable.bitrate.desc())
+                )
+            else:
+                result = conn.execute(
+                    select(TrackTable).where(TrackTable.trackhash == hash)
+                )
+
+            track = result.fetchone()
+
+            if track:
+                return track_to_dataclass(track)
+
 
 # SECTION: HELPER FUNCTIONS
 
 
-def album_to_dataclass(album: Row[AlbumTable]):
+def album_to_dataclass(album: Any):
     return AlbumModel(**album._asdict())
 
 
-def albums_to_dataclasses(albums: list[Row[AlbumTable]]):
+def albums_to_dataclasses(albums: Any):
     return [album_to_dataclass(album) for album in albums]
 
 
-def track_to_dataclass(track: Row[TrackTable]):
+def track_to_dataclass(track: Any):
     return TrackModel(**track._asdict())
 
 
-def tracks_to_dataclasses(tracks: list[Row[TrackTable]]):
+def tracks_to_dataclasses(tracks: Any):
     return [track_to_dataclass(track) for track in tracks]
 
 

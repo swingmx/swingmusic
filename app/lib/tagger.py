@@ -62,7 +62,7 @@ class IndexAlbums:
                 album["created_dates"].append(track.last_mod)
 
                 if track.genre:
-                    album["genres"].append(track.genre)
+                    album["genres"].extend(track.genre)
 
         for album in albums.values():
             album["date"] = min(album["dates"])

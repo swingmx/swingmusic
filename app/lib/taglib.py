@@ -2,7 +2,9 @@ from dataclasses import dataclass
 import os
 from io import BytesIO
 from pathlib import Path
+from pprint import pprint
 import re
+import sys
 
 import pendulum
 from PIL import Image, UnidentifiedImageError
@@ -318,6 +320,20 @@ def get_tags(filepath: str):
         *[a["name"] for a in tags.artists], tags.album, tags.title
     )
 
+    more_extra = {
+        "audio_offset": tags.audio_offset,
+        "bitdepth": tags.bitdepth,
+        "composer": tags.composer,
+        "channels": tags.channels,
+        "comment": tags.comment,
+        "disc_total": tags.disc_total,
+        "filesize": tags.filesize,
+        "samplerate": tags.samplerate,
+        "track_total": tags.track_total,
+    }
+
+    tags.extra = {**tags.extra, **more_extra}
+
     tags = tags.__dict__
 
     # delete all tag properties that start with _ (tinytag internals)
@@ -332,7 +348,6 @@ def get_tags(filepath: str):
         "comment",
         "composer",
         "disc_total",
-        "extra",
         "samplerate",
         "track_total",
         "year",

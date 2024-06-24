@@ -16,6 +16,10 @@
 - Recreate album hash if featured artists are discover
 - Implement checking if is clean install and skip migrations!
 
+
+<!-- CHECKPOINT -->
+<!-- ALBUM PAGE! -->
+
 # DONE
 - Support auth headers
 - Add recently played playlist

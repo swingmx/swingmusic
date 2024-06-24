@@ -10,7 +10,8 @@ from pydantic import BaseModel, Field
 from app.api.apischemas import TrackHashSchema
 from app.lib.trackslib import get_silence_paddings
 
-from app.store.tracks import TrackStore
+# from app.store.tracks import TrackStore
+from app.db import TrackTable
 from app.utils.files import guess_mime_type
 
 bp_tag = Tag(name="File", description="Audio files")
@@ -34,36 +35,12 @@ def send_track_file_legacy(path: TrackHashSchema, query: SendTrackFileQuery):
     filepath = query.filepath
     msg = {"msg": "File Not Found"}
 
-    def get_mime(filename: str) -> str:
-        ext = filename.rsplit(".", maxsplit=1)[-1]
-        return f"audio/{ext}"
+    track = TrackTable.get_track_by_trackhash(trackhash, filepath)
+    track_exists = track is not None and os.path.exists(track.filepath)
 
-    # If filepath is provide, try to send that
-    if filepath is not None:
-        try:
-            track = TrackStore.get_tracks_by_filepaths([filepath])[0]
-        except IndexError:
-            track = None
-
-        track_exists = track is not None and os.path.exists(track.filepath)
-
-        if track_exists:
-            audio_type = get_mime(filepath)
-            return send_file(filepath, mimetype=audio_type, conditional=True)
-
-    # Else, find file by trackhash
-    tracks = TrackStore.get_tracks_by_trackhashes([trackhash])
-
-    for track in tracks:
-        if track is None:
-            return msg, 404
-
-        audio_type = get_mime(track.filepath)
-
-        try:
-            return send_file(track.filepath, mimetype=audio_type, conditional=True)
-        except (FileNotFoundError, OSError) as e:
-            return msg, 404
+    if track_exists:
+        audio_type = guess_mime_type(filepath)
+        return send_file(filepath, mimetype=audio_type, conditional=True)
 
     return msg, 404
 
@@ -80,31 +57,12 @@ def send_track_file(path: TrackHashSchema, query: SendTrackFileQuery):
     msg = {"msg": "File Not Found"}
 
     # If filepath is provided, try to send that
-    if filepath is not None:
-        try:
-            track = TrackStore.get_tracks_by_filepaths([filepath])[0]
-        except IndexError:
-            track = None
+    track = TrackTable.get_track_by_trackhash(trackhash, filepath)
+    track_exists = track is not None and os.path.exists(track.filepath)
 
-        track_exists = track is not None and os.path.exists(track.filepath)
-
-        if track_exists:
-            audio_type = guess_mime_type(filepath)
-            return send_file_as_chunks(track.filepath, audio_type)
-
-    # Else, find file by trackhash
-    tracks = TrackStore.get_tracks_by_trackhashes([trackhash])
-
-    for track in tracks:
-        if track is None:
-            return msg, 404
-
-        audio_type = guess_mime_type(track.filepath)
-
-        try:
-            return send_file_as_chunks(track.filepath, audio_type)
-        except (FileNotFoundError, OSError) as e:
-            return msg, 404
+    if track_exists:
+        audio_type = guess_mime_type(filepath)
+        return send_file_as_chunks(track.filepath, audio_type)
 
     return msg, 404
 
