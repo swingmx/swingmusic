@@ -23,8 +23,8 @@ def run_setup():
     config = UserConfig()
     config.setup_config_file()
 
-    if not config.userId:
-        config.userId = str(uuid.uuid4())
+    if not config.serverId:
+        config.serverId = str(uuid.uuid4())
 
     setup_sqlite()
     run_migrations()

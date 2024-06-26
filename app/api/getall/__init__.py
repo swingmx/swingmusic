@@ -61,11 +61,11 @@ def get_all_items(path: GetAllItemsPath, query: GetAllItemsQuery):
     is_artists = path.itemtype == "artists"
 
     if is_albums:
-        items = AlbumTable.get_all(query.start, query.limit)
+        items, total = AlbumTable.get_all(query.start, query.limit)
     elif is_artists:
-        items = ArtistTable.get_all(query.start, query.limit)
+        items, total = ArtistTable.get_all(query.start, query.limit)
 
-    print(items)
+    # print(items)
 
     start = query.start
     limit = query.limit
@@ -93,6 +93,7 @@ def get_all_items(path: GetAllItemsPath, query: GetAllItemsQuery):
 
     for item in items:
         item_dict = serialize_album(item) if is_albums else serialize_artist(item)
+        print(item_dict)
 
         if sort_is_date:
             item_dict["help_text"] = item.date
@@ -117,9 +118,9 @@ def get_all_items(path: GetAllItemsPath, query: GetAllItemsQuery):
 
         if sort_is_artist_albumcount:
             item_dict["help_text"] = (
-                f"{format_number(item['albumcount'])} album{'' if item['albumcount'] == 1 else 's'}"
+                f"{format_number(item.albumcount)} album{'' if item.albumcount == 1 else 's'}"
             )
 
         album_list.append(item_dict)
 
-    return {"items": album_list, "total": len(sorted_items)}
+    return {"items": album_list, "total": total}

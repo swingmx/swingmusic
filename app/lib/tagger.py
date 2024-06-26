@@ -30,6 +30,7 @@ class IndexTracks:
             if tags is not None:
                 TrackTable.insert_one(tags)
 
+            del tags
 
 class IndexAlbums:
     def __init__(self) -> None:
@@ -84,6 +85,7 @@ class IndexAlbums:
         pprint(albums)
 
         AlbumTable.insert_many(list(albums.values()))
+        del albums
 
 
 class IndexArtists:
@@ -146,10 +148,11 @@ class IndexArtists:
 
         pprint(artists)
         ArtistTable.insert_many(list(artists.values()))
+        del artists
 
 class IndexEverything:
     def __init__(self) -> None:
-        # IndexTracks()
-        # IndexAlbums()
-        # IndexArtists()
+        IndexTracks()
+        IndexAlbums()
+        IndexArtists()
         pass

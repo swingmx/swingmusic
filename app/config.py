@@ -14,13 +14,13 @@ class UserConfig:
 
     # auth stuff
     # NOTE: Don't expose the userId via the API
-    userId: str = ""
+    serverId: str = ""
     usersOnLogin: bool = True
 
     # lists
     rootDirs: list[str] = field(default_factory=list)
     excludeDirs: list[str] = field(default_factory=list)
-    artistSeparators: set[str] = field(default_factory=list)
+    artistSeparators: set[str] = field(default_factory=set)
     genreSeparators: set[str] = field(default_factory=lambda: {"/", ";", "&"})
 
     # tracks
@@ -80,7 +80,7 @@ class UserConfig:
         settings = {k: v for k, v in settings.items() if not k.startswith("_")}
 
         with open(self._config_path, "w") as f:
-            json.dump(settings, f, indent=4)
+            json.dump(settings, f, indent=4, default=list)
 
     def __setattr__(self, key: str, value: Any) -> None:
         """

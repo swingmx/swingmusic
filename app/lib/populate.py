@@ -45,6 +45,8 @@ class Populate:
     """
 
     def __init__(self, instance_key: str) -> None:
+        return
+
         global POPULATE_KEY
         POPULATE_KEY = instance_key
 
@@ -152,15 +154,18 @@ class Populate:
 
     @staticmethod
     def tag_untagged(untagged: set[str], key: str):
-        for file in tqdm(untagged, desc="Reading files"):
-            if POPULATE_KEY != key:
-                log.warning("'Populate.tag_untagged': Populate key changed")
-                return
+        pass
+        # for file in tqdm(untagged, desc="Reading files"):
+        #     if POPULATE_KEY != key:
+        #         log.warning("'Populate.tag_untagged': Populate key changed")
+        #         return
 
-            tags = get_tags(file)
+        #     tags = get_tags(file)
 
-            if tags is not None:
-                TrackTable.insert_one(tags)
+        #     if tags is not None:
+        #         TrackTable.insert_one(tags)
+
+        # =============================================
 
         # log.info("Found %s new tracks", len(untagged))
         # # tagged_tracks: deque[dict] = deque()

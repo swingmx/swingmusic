@@ -45,8 +45,12 @@ mimetypes.add_type("image/gif", ".gif")
 mimetypes.add_type("font/woff", ".woff")
 mimetypes.add_type("application/manifest+json", ".webmanifest")
 
-werkzeug = logging.getLogger("werkzeug")
-werkzeug.setLevel(logging.ERROR)
+logging.disable(logging.CRITICAL)
+# werkzeug = logging.getLogger("werkzeug")
+# werkzeug.setLevel(logging.ERROR)
+
+# # logging.basicConfig()
+# logging.getLogger("sqlalchemy.engine").setLevel(logging.ERROR)
 
 
 # Background tasks

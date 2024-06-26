@@ -10,12 +10,13 @@ from pydantic import BaseModel, Field
 from flask_openapi3 import Tag
 from flask_openapi3 import APIBlueprint
 from showinfm import show_in_file_manager
+from memory_profiler import profile
 
 from app import settings
+from app.db import TrackTable
 from app.db.sqlite.settings import SettingsSQLMethods as db
 from app.lib.folderslib import GetFilesAndDirs, get_folders
 from app.serializers.track import serialize_track
-from app.store.tracks import TrackStore as store
 from app.utils.wintools import is_windows, win_replace_slash
 
 tag = Tag(name="Folders", description="Get folders and tracks in a directory")
@@ -66,9 +67,7 @@ def get_folder_tree(body: FolderTree):
     else:
         req_dir = "/" + req_dir if not req_dir.startswith("/") else req_dir
 
-    print('stuff!')
     res = GetFilesAndDirs(req_dir, tracks_only=tracks_only)()
-    print(res['folders'])
     res["folders"] = sorted(res["folders"], key=lambda i: i.name)
 
     return res
@@ -183,8 +182,7 @@ def get_tracks_in_path(query: GetTracksInPathQuery):
 
     Used when adding tracks to the queue.
     """
-    tracks = store.get_tracks_in_path(query.path)
-    tracks = sorted(tracks, key=lambda i: i.last_mod)
+    tracks = TrackTable.get_tracks_in_path(query.path)
     tracks = (serialize_track(t) for t in tracks if Path(t.filepath).exists())
 
     return {

@@ -2,12 +2,11 @@ import os
 from pathlib import Path
 
 from app.logger import log
-from app.models import Folder, Track
+from app.models import Folder
 from app.serializers.track import serialize_tracks
 from app.settings import SUPPORTED_FILES
 from app.utils.wintools import win_replace_slash
 
-from app.store.tracks import TrackStore
 from app.db import TrackTable as TrackDB
 
 
@@ -51,39 +50,6 @@ def get_folders(paths: list[str]):
         for f in folders
         if f["trackcount"] > 0
     ]
-    # count_dict = {
-    #     "tracks": {path: 0 for path in paths},
-    #     # folders are immediate children of the root folder
-    #     "folders": {path: set() for path in paths},
-    # }
-
-    # for track in TrackStore.tracks:
-    #     for path in paths:
-
-    #         # a child path should be longer than the root path
-    #         if len(track.folder) >= len(path) and track.folder.startswith(path):
-    #             count_dict["tracks"][path] += 1
-
-    #             # counting subfolders
-    #             p = get_first_child_from_path(path, track.folder)
-
-    #             if p:
-    #                 count_dict["folders"][path].add(p)
-
-    # folders = [
-    #     {
-    #         "path": path,
-    #         "trackcount": count_dict["tracks"][path],
-    #         "foldercount": len(count_dict["folders"][path]),
-    #     }
-    #     for path in paths
-    # ]
-
-    # return [
-    #     create_folder(f["path"], f["trackcount"], f["foldercount"])
-    #     for f in folders
-    #     if f["trackcount"] > 0
-    # ]
 
 
 class GetFilesAndDirs:
@@ -143,10 +109,6 @@ class GetFilesAndDirs:
         tracks = []
         if files:
             tracks = TrackDB.get_tracks_by_filepaths(files)
-            print("printing files")
-            print(tracks)
-
-        # tracks = TrackStore.get_tracks_by_filepaths(files)
 
         folders = []
         if not self.tracks_only:
@@ -160,7 +122,7 @@ class GetFilesAndDirs:
 
         return {
             "path": path,
-            "tracks": tracks,
+            "tracks": serialize_tracks(tracks),
             "folders": folders,
         }
 
