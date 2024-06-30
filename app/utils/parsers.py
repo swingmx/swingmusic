@@ -1,14 +1,12 @@
 import re
 
 from app.enums.album_versions import AlbumVersionEnum, get_all_keywords
-from app.settings import SessionVarKeys, get_flag
 
 
-def split_artists(src: str):
+def split_artists(src: str, separators: set[str]):
     """
     Splits a string of artists into a list of artists.
     """
-    separators: set = get_flag(SessionVarKeys.ARTIST_SEPARATORS)    
     for sep in separators:
         src = src.replace(sep, ",")
 
@@ -38,7 +36,7 @@ def remove_prod(title: str) -> str:
     return title.strip()
 
 
-def parse_feat_from_title(title: str) -> tuple[list[str], str]:
+def parse_feat_from_title(title: str, separators: set[str]) -> tuple[list[str], str]:
     """
     Extracts featured artists from a song title using regex.
     """
@@ -56,7 +54,7 @@ def parse_feat_from_title(title: str) -> tuple[list[str], str]:
         return [], title
 
     artists = match.group(1)
-    artists = split_artists(artists)
+    artists = split_artists(artists, separators)
 
     # remove "feat" group from title
     new_title = re.sub(regex, "", title, flags=re.IGNORECASE)

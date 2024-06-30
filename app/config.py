@@ -6,6 +6,7 @@ from .settings import Paths
 
 # TODO: Publish this on PyPi
 
+
 @dataclass
 class UserConfig:
     _config_path: str = ""
@@ -20,7 +21,7 @@ class UserConfig:
     # lists
     rootDirs: list[str] = field(default_factory=list)
     excludeDirs: list[str] = field(default_factory=list)
-    artistSeparators: set[str] = field(default_factory=set)
+    artistSeparators: set[str] = field(default_factory=lambda: {";", "/"})
     genreSeparators: set[str] = field(default_factory=lambda: {"/", ";", "&"})
 
     # tracks
@@ -32,6 +33,13 @@ class UserConfig:
     mergeAlbums: bool = False
     cleanAlbumTitle: bool = True
     showAlbumsAsSingles: bool = False
+
+    # misc
+    enablePeriodicScans: bool = False
+    scanInterval: int = 60 * 10  # 10 minutes
+
+    # plugins
+    enablePlugins: bool = True
 
     def __post_init__(self):
         """

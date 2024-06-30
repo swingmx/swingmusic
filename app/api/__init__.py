@@ -11,9 +11,9 @@ from flask_openapi3 import OpenAPI
 from flask_jwt_extended import JWTManager
 from app.config import UserConfig
 
+from app.db.userdata import UserTable
 from app.settings import Info as AppInfo
 from .plugins import lyrics as lyrics_plugin
-from app.db.sqlite.auth import SQLiteAuthMethods as authdb
 from app.api import (
     album,
     artist,
@@ -92,8 +92,10 @@ def create_api():
     def user_lookup_callback(_jwt_header, jwt_data):
         identity = jwt_data["sub"]
         userid = identity["id"]
-        user = authdb.get_user_by_id(userid)
-        return user.todict()
+        user = UserTable.get_by_id(userid)
+
+        if user:
+            return user.todict()
 
     # Register all the API blueprints
     with app.app_context():

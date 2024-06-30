@@ -1,3 +1,4 @@
+from dataclasses import asdict
 import os
 from collections import deque
 from concurrent.futures import ThreadPoolExecutor
@@ -7,27 +8,25 @@ from requests import ConnectionError as RequestConnectionError
 from requests import ReadTimeout
 
 from app import settings
-from app.db import TrackTable
+from app.db.libdata import ArtistTable
+from app.db.libdata import AlbumTable, TrackTable
 from app.db.sqlite.favorite import SQLiteFavoriteMethods as favdb
-from app.db.sqlite.lastfm.similar_artists import SQLiteLastFMSimilarArtists as lastfmdb
-from app.db.sqlite.settings import SettingsSQLMethods as sdb
+
+# from app.db.sqlite.lastfm.similar_artists import SQLiteLastFMSimilarArtists as lastfmdb
 from app.db.sqlite.tracks import SQLiteTrackMethods
-from app.lib.albumslib import validate_albums
 from app.lib.artistlib import CheckArtistImages
-from app.lib.colorlib import ProcessAlbumColors, ProcessArtistColors
+from app.lib.colorlib import ProcessArtistColors
 from app.lib.errors import PopulateCancelledError
-from app.lib.taglib import extract_thumb, get_tags
-from app.lib.trackslib import validate_tracks
+from app.lib.taglib import extract_thumb
 from app.logger import log
 from app.models import Album, Artist, Track
 from app.models.lastfm import SimilarArtist
 from app.requests.artists import fetch_similar_artists
-from app.store.albums import AlbumStore
-from app.store.artists import ArtistStore
-from app.store.tracks import TrackStore
 from app.utils.filesystem import run_fast_scandir
 from app.utils.network import has_connection
 from app.utils.progressbar import tqdm
+
+from app.db.userdata import SimilarArtistTable
 
 get_all_tracks = SQLiteTrackMethods.get_all_tracks
 insert_many_tracks = SQLiteTrackMethods.insert_many_tracks
@@ -44,60 +43,55 @@ class Populate:
     also checks if the album art exists in the image path, if not tries to extract it.
     """
 
-    def __init__(self, instance_key: str) -> None:
-        return
+    # def __init__(self, instance_key: str) -> None:
+    # return
 
+    # if len(dirs_to_scan) == 0:
+    #     log.warning(
+    #         (
+    #             "The root directory is not configured. "
+    #             + "Open the app in your webbrowser to configure."
+    #         )
+    #     )
+    #     return
+
+    # try:
+    #     if dirs_to_scan[0] == "$home":
+    #         dirs_to_scan = [settings.Paths.USER_HOME_DIR]
+    # except IndexError:
+    #     pass
+
+    # files = set()
+
+    # for _dir in dirs_to_scan:
+    #     files = files.union(run_fast_scandir(_dir, full=True)[1])
+
+    # unmodified, modified_tracks = self.remove_modified(tracks)
+    # untagged = files - unmodified
+
+    # if len(untagged) != 0:
+    #     self.tag_untagged(untagged, instance_key)
+
+    # self.extract_thumb_with_overwrite(modified_tracks)
+
+
+class CordinateMedia:
+    """
+    Cordinates the extracting of thumbnails
+    """
+
+    def __init__(self, instance_key: str):
         global POPULATE_KEY
         POPULATE_KEY = instance_key
 
-        validate_tracks()
-        validate_albums()
-
-        tracks = get_all_tracks()
-
-        dirs_to_scan = sdb.get_root_dirs()
-
-        if len(dirs_to_scan) == 0:
-            log.warning(
-                (
-                    "The root directory is not configured. "
-                    + "Open the app in your webbrowser to configure."
-                )
-            )
-            return
-
-        try:
-            if dirs_to_scan[0] == "$home":
-                dirs_to_scan = [settings.Paths.USER_HOME_DIR]
-        except IndexError:
-            pass
-
-        files = set()
-
-        for _dir in dirs_to_scan:
-            files = files.union(run_fast_scandir(_dir, full=True)[1])
-
-        unmodified, modified_tracks = self.remove_modified(tracks)
-        untagged = files - unmodified
-
-        if len(untagged) != 0:
-            self.tag_untagged(untagged, instance_key)
-
-        self.extract_thumb_with_overwrite(modified_tracks)
-
         try:
             ProcessTrackThumbnails(instance_key)
-            ProcessAlbumColors(instance_key)
             ProcessArtistColors(instance_key)
         except PopulateCancelledError as e:
             log.warn(e)
             return
 
         tried_to_download_new_images = False
-
-        ArtistStore.load_artists(instance_key)
-        AlbumStore.load_albums(instance_key)
-        TrackStore.load_all_tracks(instance_key)
 
         if has_connection():
             tried_to_download_new_images = True
@@ -123,101 +117,101 @@ class Populate:
                 log.warn(e)
                 return
 
-    @staticmethod
-    def remove_modified(tracks: Generator[TrackTable, None, None]):
-        """
-        Removes tracks from the database that have been modified
-        since they were added to the database.
-        """
+    # @staticmethod
+    # def remove_modified(tracks: Generator[TrackTable, None, None]):
+    #     """
+    #     Removes tracks from the database that have been modified
+    #     since they were added to the database.
+    #     """
 
-        unmodified_paths = set()
-        modified_tracks: list[TrackTable] = []
-        modified_paths = set()
+    #     unmodified_paths = set()
+    #     modified_tracks: list[TrackTable] = []
+    #     modified_paths = set()
 
-        for track in tracks:
-            try:
-                if track.last_mod == round(os.path.getmtime(track.filepath)):
-                    unmodified_paths.add(track.filepath)
-                    continue
-            except (FileNotFoundError, OSError) as e:
-                log.warning(e)  # REVIEW More informations = good
-                TrackStore.remove_track_obj(track)
-                remove_tracks_by_filepaths(track.filepath)
+    #     for track in tracks:
+    #         try:
+    #             if track.last_mod == round(os.path.getmtime(track.filepath)):
+    #                 unmodified_paths.add(track.filepath)
+    #                 continue
+    #         except (FileNotFoundError, OSError) as e:
+    #             log.warning(e)  # REVIEW More informations = good
+    #             TrackStore.remove_track_obj(track)
+    #             remove_tracks_by_filepaths(track.filepath)
 
-            modified_paths.add(track.filepath)
-            modified_tracks.append(track)
+    #         modified_paths.add(track.filepath)
+    #         modified_tracks.append(track)
 
-        TrackStore.remove_tracks_by_filepaths(modified_paths)
-        remove_tracks_by_filepaths(modified_paths)
+    #     TrackStore.remove_tracks_by_filepaths(modified_paths)
+    #     remove_tracks_by_filepaths(modified_paths)
 
-        return unmodified_paths, modified_tracks
+    #     return unmodified_paths, modified_tracks
 
-    @staticmethod
-    def tag_untagged(untagged: set[str], key: str):
-        pass
-        # for file in tqdm(untagged, desc="Reading files"):
-        #     if POPULATE_KEY != key:
-        #         log.warning("'Populate.tag_untagged': Populate key changed")
-        #         return
+    # @staticmethod
+    # def tag_untagged(untagged: set[str], key: str):
+    #     pass
+    # for file in tqdm(untagged, desc="Reading files"):
+    #     if POPULATE_KEY != key:
+    #         log.warning("'Populate.tag_untagged': Populate key changed")
+    #         return
 
-        #     tags = get_tags(file)
+    #     tags = get_tags(file)
 
-        #     if tags is not None:
-        #         TrackTable.insert_one(tags)
+    #     if tags is not None:
+    #         TrackTable.insert_one(tags)
 
-        # =============================================
+    # =============================================
 
-        # log.info("Found %s new tracks", len(untagged))
-        # # tagged_tracks: deque[dict] = deque()
-        # # tagged_count = 0
+    # log.info("Found %s new tracks", len(untagged))
+    # # tagged_tracks: deque[dict] = deque()
+    # # tagged_count = 0
 
-        # favs = favdb.get_fav_tracks()
-        # records = dict()
+    # favs = favdb.get_fav_tracks()
+    # records = dict()
 
-        # for fav in favs:
-        #     r = records.setdefault(fav[1], set())
-        #     r.add(fav[4])
+    # for fav in favs:
+    #     r = records.setdefault(fav[1], set())
+    #     r.add(fav[4])
 
-            #     tagged_tracks.append(tags)
-            #     track = Track(**tags)
+    #     tagged_tracks.append(tags)
+    #     track = Track(**tags)
 
-            #     track.fav_userids = list(records.get(track.trackhash, set()))
+    #     track.fav_userids = list(records.get(track.trackhash, set()))
 
-            #     TrackStore.add_track(track)
+    #     TrackStore.add_track(track)
 
-            #     if not AlbumStore.album_exists(track.albumhash):
-            #         AlbumStore.add_album(AlbumStore.create_album(track))
+    #     if not AlbumStore.album_exists(track.albumhash):
+    #         AlbumStore.add_album(AlbumStore.create_album(track))
 
-            #     for artist in track.artists:
-            #         if not ArtistStore.artist_exists(artist.artisthash):
-            #             ArtistStore.add_artist(Artist(artist.name))
+    #     for artist in track.artists:
+    #         if not ArtistStore.artist_exists(artist.artisthash):
+    #             ArtistStore.add_artist(Artist(artist.name))
 
-            #     for artist in track.albumartists:
-            #         if not ArtistStore.artist_exists(artist.artisthash):
-            #             ArtistStore.add_artist(Artist(artist.name))
+    #     for artist in track.albumartists:
+    #         if not ArtistStore.artist_exists(artist.artisthash):
+    #             ArtistStore.add_artist(Artist(artist.name))
 
-            #     tagged_count += 1
-            # else:
-            #     log.warning("Could not read file: %s", file)
+    #     tagged_count += 1
+    # else:
+    #     log.warning("Could not read file: %s", file)
 
-        # if len(tagged_tracks) > 0:
-        #     log.info("Adding %s tracks to database", len(tagged_tracks))
-        #     insert_many_tracks(tagged_tracks)
+    # if len(tagged_tracks) > 0:
+    #     log.info("Adding %s tracks to database", len(tagged_tracks))
+    #     insert_many_tracks(tagged_tracks)
 
-        # log.info("Added %s/%s tracks", tagged_count, len(untagged))
+    # log.info("Added %s/%s tracks", tagged_count, len(untagged))
 
-    @staticmethod
-    def extract_thumb_with_overwrite(tracks: list[TrackTable]):
-        """
-        Extracts the thumbnail from a list of filepaths,
-        overwriting the existing thumbnail if it exists,
-        for modified files.
-        """
-        for track in tracks:
-            try:
-                extract_thumb(track.filepath, track.image, overwrite=True)
-            except FileNotFoundError:
-                continue
+    # @staticmethod
+    # def extract_thumb_with_overwrite(tracks: list[TrackTable]):
+    #     """
+    #     Extracts the thumbnail from a list of filepaths,
+    #     overwriting the existing thumbnail if it exists,
+    #     for modified files.
+    #     """
+    #     for track in tracks:
+    #         try:
+    #             extract_thumb(track.filepath, track.image, overwrite=True)
+    #         except FileNotFoundError:
+    #             continue
 
 
 def get_image(_map: tuple[str, Album]):
@@ -235,7 +229,8 @@ def get_image(_map: tuple[str, Album]):
         raise PopulateCancelledError("'ProcessTrackThumbnails': Populate key changed")
 
     matching_tracks = filter(
-        lambda t: t.albumhash == album.albumhash, TrackStore.tracks
+        lambda t: t.albumhash == album.albumhash,
+        TrackTable.get_tracks_by_albumhash(album.albumhash),
     )
 
     try:
@@ -254,8 +249,12 @@ def get_image(_map: tuple[str, Album]):
         pass
 
 
-_cpu_count = os.cpu_count()
-CPU_COUNT = _cpu_count // 2 if _cpu_count > 2 else _cpu_count
+def get_cpu_count():
+    """
+    Returns the number of CPUs on the machine.
+    """
+    cpu_count = os.cpu_count() or 0
+    return cpu_count // 2 if cpu_count > 2 else cpu_count
 
 
 class ProcessTrackThumbnails:
@@ -275,14 +274,14 @@ class ProcessTrackThumbnails:
 
         # filter out albums that already have thumbnails
         albums = filter(
-            lambda album: album.albumhash not in processed, AlbumStore.albums
+            lambda album: album.albumhash not in processed, AlbumTable.get_all()
         )
         albums = list(albums)
 
         # process the rest
         key_album_map = ((instance_key, album) for album in albums)
 
-        with ThreadPoolExecutor(max_workers=CPU_COUNT) as executor:
+        with ThreadPoolExecutor(max_workers=get_cpu_count()) as executor:
             results = list(
                 tqdm(
                     executor.map(get_image, key_album_map),
@@ -307,16 +306,17 @@ def save_similar_artists(_map: tuple[str, Artist]):
             "'FetchSimilarArtistsLastFM': Populate key changed"
         )
 
-    if lastfmdb.exists(artist.artisthash):
+    if SimilarArtistTable.exists(artist.artisthash):
         return
 
-    artist_hashes = fetch_similar_artists(artist.name)
-    artist_ = SimilarArtist(artist.artisthash, "~".join(artist_hashes))
+    artists = fetch_similar_artists(artist.name)
 
-    if len(artist_.similar_artist_hashes) == 0:
+    # INFO: Nones mean there was a connection error
+    if artists is None:
         return
 
-    lastfmdb.insert_one(artist_)
+    artist_ = SimilarArtist(artist.artisthash, artists)
+    SimilarArtistTable.insert_one(asdict(artist_))
 
 
 class FetchSimilarArtistsLastFM:
@@ -326,17 +326,17 @@ class FetchSimilarArtistsLastFM:
 
     def __init__(self, instance_key: str) -> None:
         # read all artists from db
-        processed = lastfmdb.get_all()
+        processed = SimilarArtistTable.get_all()
         processed = ".".join(a.artisthash for a in processed)
 
         # filter out artists that already have similar artists
-        artists = filter(lambda a: a.artisthash not in processed, ArtistStore.artists)
+        artists = filter(lambda a: a.artisthash not in processed, ArtistTable.get_all())
         artists = list(artists)
 
         # process the rest
         key_artist_map = ((instance_key, artist) for artist in artists)
 
-        with ThreadPoolExecutor(max_workers=CPU_COUNT) as executor:
+        with ThreadPoolExecutor(max_workers=get_cpu_count()) as executor:
             try:
                 print("Processing similar artists")
                 results = list(

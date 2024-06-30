@@ -8,7 +8,6 @@ from ..utils import SQLiteManager
 def plugin_tuple_to_obj(plugin_tuple: tuple) -> Plugin:
     return Plugin(
         name=plugin_tuple[1],
-        description=plugin_tuple[2],
         active=bool(plugin_tuple[3]),
         settings=json.loads(plugin_tuple[4]),
     )
@@ -43,15 +42,6 @@ class PluginsMethods:
 
             return lastrowid
 
-    @classmethod
-    def insert_lyrics_plugin(cls):
-        plugin = Plugin(
-            name="lyrics_finder",
-            description="Find lyrics from the internet",
-            active=False,
-            settings={"auto_download": False},
-        )
-        cls.insert_plugin(plugin)
 
     @classmethod
     def get_all_plugins(cls):

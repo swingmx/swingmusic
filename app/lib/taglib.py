@@ -5,6 +5,7 @@ from pathlib import Path
 from pprint import pprint
 import re
 import sys
+from typing import Any
 
 import pendulum
 from PIL import Image, UnidentifiedImageError
@@ -86,7 +87,7 @@ def extract_thumb(filepath: str, webp_path: str, overwrite=False) -> bool:
     return False
 
 
-def parse_date(date_str: str | None) -> int | None:
+def parse_date(date_str: str) -> int | None:
     """
     Extracts the date from a string and returns a timestamp.
     """
@@ -108,12 +109,13 @@ def clean_filename(filename: str):
 class ParseData:
     artist: str
     title: str
+    artist_separators: set[str]
 
     def __post_init__(self):
-        self.artist = split_artists(self.artist)
+        self.artist = split_artists(self.artist, self.artist_separators)
 
 
-def extract_artist_title(filename: str):
+def extract_artist_title(filename: str, artist_separators: set[str]):
     path = Path(filename).with_suffix("")
 
     path = clean_filename(str(path))
@@ -121,22 +123,24 @@ def extract_artist_title(filename: str):
     split_result = [x.strip() for x in split_result]
 
     if len(split_result) == 1:
-        return ParseData("", split_result[0])
+        return ParseData("", split_result[0], artist_separators)
 
     if len(split_result) > 2:
         try:
             int(split_result[0])
 
-            return ParseData(split_result[1], " - ".join(split_result[2:]))
+            return ParseData(
+                split_result[1], " - ".join(split_result[2:]), artist_separators
+            )
         except ValueError:
             pass
 
     artist = split_result[0]
     title = split_result[1]
-    return ParseData(artist, title)
+    return ParseData(artist, title, artist_separators)
 
 
-def get_tags(filepath: str):
+def get_tags(filepath: str, artist_separators: set[str]):
     """
     Returns the tags for a given audio file.
     """
@@ -150,7 +154,7 @@ def get_tags(filepath: str):
         return None
 
     try:
-        tags = TinyTag.get(filepath)
+        tags: Any = TinyTag.get(filepath)
     except:  # noqa: E722
         return None
 
@@ -169,7 +173,7 @@ def get_tags(filepath: str):
     for tag in to_filename:
         p = getattr(tags, tag)
         if p == "" or p is None:
-            parse_data = extract_artist_title(filename)
+            parse_data = extract_artist_title(filename, artist_separators)
             title = parse_data.title
             setattr(tags, tag, title)
 
@@ -179,7 +183,7 @@ def get_tags(filepath: str):
 
         if p == "" or p is None:
             if not parse_data:
-                parse_data = extract_artist_title(filename)
+                parse_data = extract_artist_title(filename, artist_separators)
 
             artist = parse_data.artist
 
@@ -225,8 +229,8 @@ def get_tags(filepath: str):
     tags.artists = tags.artist
     tags.albumartists = tags.albumartist
 
-    split_artist = split_artists(tags.artist)
-    split_albumartists = split_artists(tags.albumartist)
+    split_artist = split_artists(tags.artist, separators=artist_separators)
+    split_albumartists = split_artists(tags.albumartist, separators=artist_separators)
     new_title = tags.title
 
     # TODO: Figure out which is the best spot to create these hashes
@@ -237,7 +241,9 @@ def get_tags(filepath: str):
 
     # extract featured artists
     if config.extractFeaturedArtists:
-        feat, new_title = parse_feat_from_title(tags.title)
+        feat, new_title = parse_feat_from_title(
+            tags.title, separators=artist_separators
+        )
         original_lower = "-".join([create_hash(a) for a in split_artist])
         split_artist.extend(a for a in feat if create_hash(a) not in original_lower)
 
@@ -262,8 +268,9 @@ def get_tags(filepath: str):
         for a in split_albumartists
     ]
 
-    tags.artisthashes = list({a["artisthash"] for a in tags.artists + tags.albumartists})
-
+    tags.artisthashes = list(
+        {a["artisthash"] for a in tags.artists + tags.albumartists}
+    )
 
     # remove prod by
     if config.removeProdBy:
@@ -295,26 +302,32 @@ def get_tags(filepath: str):
 
     # process genres
     if tags.genre:
-        tags.genre = tags.genre.lower()
+        src_genres: str = tags.genre
+        src_genres = src_genres.lower()
         # separators = {"/", ";", "&"}
         separators = set(config.genreSeparators)
 
-        contains_rnb = "r&b" in tags.genre
-        contains_rock = "rock & roll" in tags.genre
+        contains_rnb = "r&b" in src_genres
+        contains_rock = "rock & roll" in src_genres
 
         if contains_rnb:
-            tags.genre = tags.genre.replace("r&b", "RnB")
+            src_genres = src_genres.replace("r&b", "RnB")
 
         if contains_rock:
-            tags.genre = tags.genre.replace("rock & roll", "rock")
+            src_genres = src_genres.replace("rock & roll", "rock")
 
         for s in separators:
-            tags.genre = tags.genre.replace(s, ",")
+            src_genres = src_genres.replace(s, ",")
 
-        tags.genre = tags.genre.split(",")
-        tags.genre = [
-            {"name": g.strip(), "genrehash": create_hash(g.strip())} for g in tags.genre
+        genres_list: list[str] = src_genres.split(",")
+        tags.genres = [
+            {"name": g.strip(), "genrehash": create_hash(g.strip())}
+            for g in genres_list
         ]
+        tags.genrehashes = [g["genrehash"] for g in tags.genres]
+    else:
+        tags.genres = []
+        tags.genrehashes = []
 
     # sub underscore with space
     tags.title = tags.title.replace("_", " ")
@@ -333,6 +346,10 @@ def get_tags(filepath: str):
         "filesize": tags.filesize,
         "samplerate": tags.samplerate,
         "track_total": tags.track_total,
+        "hashinfo": {
+            "algo": "sha1",
+            "format": "[:5]+[-5:]",  # first 5 + last 5 chars
+        },
     }
 
     tags.extra = {**tags.extra, **more_extra}
@@ -357,6 +374,7 @@ def get_tags(filepath: str):
         "bitdepth",
         "artist",
         "albumartist",
+        "genre",
     ]
 
     for tag in to_delete:

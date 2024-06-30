@@ -10,11 +10,10 @@ from pydantic import BaseModel, Field
 from flask_openapi3 import Tag
 from flask_openapi3 import APIBlueprint
 from showinfm import show_in_file_manager
-from memory_profiler import profile
 
 from app import settings
-from app.db import TrackTable
-from app.db.sqlite.settings import SettingsSQLMethods as db
+from app.config import UserConfig
+from app.db.libdata import TrackTable
 from app.lib.folderslib import GetFilesAndDirs, get_folders
 from app.serializers.track import serialize_track
 from app.utils.wintools import is_windows, win_replace_slash
@@ -40,8 +39,9 @@ def get_folder_tree(body: FolderTree):
     req_dir = body.folder
     tracks_only = body.tracks_only
 
-    root_dirs = db.get_root_dirs()
-    root_dirs.sort()
+
+    config = UserConfig()
+    root_dirs = config.rootDirs
 
     try:
         if req_dir == "$home" and root_dirs[0] == "$home":
@@ -71,12 +71,6 @@ def get_folder_tree(body: FolderTree):
     res["folders"] = sorted(res["folders"], key=lambda i: i.name)
 
     return res
-
-    # return {
-    #     "path": req_dir,
-    #     "tracks": tracks,
-    #     "folders": sorted(folders, key=lambda i: i.name),
-    # }
 
 
 def get_all_drives(is_win: bool = False):

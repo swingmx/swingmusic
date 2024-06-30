@@ -28,6 +28,7 @@ flask-openapi3 = "^3.0.2"
 flask-jwt-extended = "^4.6.0"
 sqlalchemy = "^2.0.31"
 memory-profiler = "^0.61.0"
+sortedcontainers = "^2.4.0"
 
 [tool.poetry.dev-dependencies]
 pylint = "^2.15.5"

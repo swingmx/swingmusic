@@ -1,20 +1,4 @@
-from dataclasses import dataclass, field
-import os
-from pathlib import Path
-
-from flask_jwt_extended import current_user
-
-from app.settings import SessionVarKeys, get_flag
-from app.utils.hashing import create_hash
-from app.utils.parsers import (
-    clean_title,
-    get_base_title_and_versions,
-    parse_feat_from_title,
-    remove_prod,
-    split_artists,
-)
-
-from .artist import ArtistMinimal
+from dataclasses import dataclass
 
 
 @dataclass(slots=True)
@@ -28,7 +12,7 @@ class Track:
     albumartists: list[dict[str, str]]
     albumhash: str
     artisthashes: list[str]
-    artists: str
+    artists: list[dict[str, str]]
     bitrate: int
     copyright: str
     date: int
@@ -36,7 +20,8 @@ class Track:
     duration: int
     filepath: str
     folder: str
-    genre: list[dict[str, str]]
+    genres: list[dict[str, str]]
+    genrehashes: list[str]
     last_mod: int
     og_album: str
     og_title: str
@@ -48,7 +33,15 @@ class Track:
     is_favorite: bool = False
     _pos: int = 0
     _ati: str = ""
+    image: str = ""
 
+    def __post_init__(self):
+        self.image = self.albumhash + ".webp"
+        self.extra = {
+            "disc_total": self.extra.get("disc_total", 0),
+            "track_total": self.extra.get("track_total", 0),
+            "samplerate": self.extra.get("samplerate", -1),
+        }
 
     # album: str
     # albumartists: str | list[ArtistMinimal]

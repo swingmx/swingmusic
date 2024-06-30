@@ -45,7 +45,7 @@ mimetypes.add_type("image/gif", ".gif")
 mimetypes.add_type("font/woff", ".woff")
 mimetypes.add_type("application/manifest+json", ".webmanifest")
 
-logging.disable(logging.CRITICAL)
+# logging.disable(logging.CRITICAL)
 # werkzeug = logging.getLogger("werkzeug")
 # werkzeug.setLevel(logging.ERROR)
 

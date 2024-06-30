@@ -1,7 +1,6 @@
 import json
 
 from app.db.sqlite.artistcolors import SQLiteArtistMethods as ardb
-from app.lib.artistlib import get_all_artists
 from app.models import Artist
 from app.utils.bisection import use_bisection
 from app.utils.customlist import CustomList

@@ -244,17 +244,6 @@ class SessionVarKeys:
     SHOW_ALBUMS_AS_SINGLES = "SHOW_ALBUMS_AS_SINGLES"
 
 
-def get_flag(key: SessionVarKeys) -> bool:
-    return getattr(SessionVars, key)
-
-
-def set_flag(key: SessionVarKeys, value: Any):
-    setattr(SessionVars, key, value)
-
-
-def get_scan_sleep_time() -> int:
-    return SessionVars.PERIODIC_SCAN_INTERVAL
-
 
 class TCOLOR:
     """

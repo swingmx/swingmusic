@@ -5,9 +5,10 @@ from app.logger import log
 from app.models import Folder
 from app.serializers.track import serialize_tracks
 from app.settings import SUPPORTED_FILES
+from app.store.folder import FolderStore
 from app.utils.wintools import win_replace_slash
 
-from app.db import TrackTable as TrackDB
+from app.db.libdata import TrackTable as TrackDB
 
 
 def create_folder(path: str, trackcount=0, foldercount=0) -> Folder:
@@ -43,8 +44,7 @@ def get_folders(paths: list[str]):
     Filters out folders that don't have any tracks and
     returns a list of folder objects.
     """
-    folders = TrackDB.count_tracks_containing_paths(paths)
-
+    folders = FolderStore.count_tracks_containing_paths(paths)
     return [
         create_folder(f["path"], f["trackcount"], foldercount=0)
         for f in folders

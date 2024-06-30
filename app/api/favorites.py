@@ -6,18 +6,19 @@ from flask_openapi3 import APIBlueprint
 from pydantic import BaseModel, Field
 
 from app.api.apischemas import GenericLimitSchema
+from app.db.libdata import ArtistTable
+from app.db.libdata import AlbumTable, TrackTable
+from app.db.userdata import FavoritesTable
 from app.models import FavType
 from app.settings import Defaults
 from app.utils.bisection import use_bisection
-from app.db.sqlite.favorite import SQLiteFavoriteMethods as favdb
 from app.serializers.track import serialize_track, serialize_tracks
-from app.serializers.artist import serialize_for_card as serialize_artist, serialize_for_cards
-from app.serializers.album import serialize_for_card, serialize_for_card_many
-
-from app.store.albums import AlbumStore
-from app.store.tracks import TrackStore
-from app.store.artists import ArtistStore
+from app.serializers.artist import (
+    serialize_for_card as serialize_artist,
+    serialize_for_cards,
+)
 from app.utils.dates import timestamp_to_time_passed
+from app.serializers.album import serialize_for_card, serialize_for_card_many
 
 bp_tag = Tag(name="Favorites", description="Your favorite items")
 api = APIBlueprint("favorites", __name__, url_prefix="/favorites", abp_tags=[bp_tag])
@@ -41,17 +42,18 @@ class FavoritesAddBody(BaseModel):
 
 
 @api.post("/add")
-def add_favorite(body: FavoritesAddBody):
+def toggle_favorite(body: FavoritesAddBody):
     """
     Adds a favorite to the database.
     """
-    itemhash = body.hash
-    itemtype = body.type
+    FavoritesTable.insert_item({"hash": body.hash, "type": body.type})
 
-    favdb.insert_one_favorite(itemtype, itemhash)
-
-    if itemtype == FavType.track:
-        TrackStore.make_track_fav(itemhash)
+    if body.type == FavType.track:
+        TrackTable.set_is_favorite(body.hash, True)
+    elif body.type == FavType.album:
+        AlbumTable.set_is_favorite(body.hash, True)
+    elif body.type == FavType.artist:
+        ArtistTable.set_is_favorite(body.hash, True)
 
     return {"msg": "Added to favorites"}
 
@@ -61,80 +63,62 @@ def remove_favorite(body: FavoritesAddBody):
     """
     Removes a favorite from the database.
     """
-    itemhash = body.hash
-    itemtype = body.type
+    FavoritesTable.remove_item({"hash": body.hash, "type": body.type})
 
-    favdb.delete_favorite(itemtype, itemhash)
-
-    if itemtype == FavType.track:
-        TrackStore.remove_track_from_fav(itemhash)
+    if body.type == FavType.track:
+        TrackTable.set_is_favorite(body.hash, False)
+    elif body.type == FavType.album:
+        AlbumTable.set_is_favorite(body.hash, False)
+    elif body.type == FavType.artist:
+        ArtistTable.set_is_favorite(body.hash, False)
 
     return {"msg": "Removed from favorites"}
 
 
+class GetAllOfTypeQuery(GenericLimitSchema):
+    """
+    Extending this class will give you a model with the `limit` field
+    """
+
+    start: int = Field(
+        description="Where to start from",
+        example=Defaults.API_CARD_LIMIT,
+        default=Defaults.API_CARD_LIMIT,
+    )
+
+
 @api.get("/albums")
-def get_favorite_albums(query: GenericLimitSchema):
+def get_favorite_albums(query: GetAllOfTypeQuery):
     """
     Get favorite albums
     """
-    limit = query.limit
-    albums = favdb.get_fav_albums()
-    albumhashes = [a[1] for a in albums]
-    albumhashes.reverse()
+    fav_albums, total = FavoritesTable.get_fav_albums(query.start, query.limit)
+    fav_albums.reverse()
 
-    src_albums = sorted(AlbumStore.albums, key=lambda x: x.albumhash)
-
-    fav_albums = use_bisection(src_albums, "albumhash", albumhashes)
-    fav_albums = remove_none(fav_albums)
-
-    if limit == 0:
-        limit = len(albums)
-
-    return {"albums": serialize_for_card_many(fav_albums[:limit])}
+    return {"albums": serialize_for_card_many(fav_albums), "total": total}
 
 
 @api.get("/tracks")
-def get_favorite_tracks(query: GenericLimitSchema):
+def get_favorite_tracks(query: GetAllOfTypeQuery):
     """
     Get favorite tracks
     """
-    limit = query.limit
-    userid = current_user['id']
-
-    tracks = favdb.get_fav_tracks(userid)
-    trackhashes = [t[1] for t in tracks]
-    trackhashes.reverse()
-    src_tracks = sorted(TrackStore.tracks, key=lambda x: x.trackhash)
-
-    tracks = use_bisection(src_tracks, "trackhash", trackhashes)
-    tracks = remove_none(tracks)
-
-    if limit == 0:
-        limit = len(tracks)
-
-    return {"tracks": serialize_tracks(tracks[:limit])}
+    tracks, total = FavoritesTable.get_fav_tracks(query.start, query.limit)
+    return {"tracks": serialize_tracks(tracks), "total": total}
 
 
 @api.get("/artists")
-def get_favorite_artists(query: GenericLimitSchema):
+def get_favorite_artists(query: GetAllOfTypeQuery):
     """
     Get favorite artists
     """
-    limit = query.limit
+    artists, total = FavoritesTable.get_fav_artists(
+        start=query.start,
+        limit=query.limit,
+    )
+    artists.reverse()
 
-    artists = favdb.get_fav_artists()
-    artisthashes = [a[1] for a in artists]
-    artisthashes.reverse()
-
-    src_artists = sorted(ArtistStore.artists, key=lambda x: x.artisthash)
-
-    artists = use_bisection(src_artists, "artisthash", artisthashes)
-    artists = remove_none(artists)
-
-    if limit == 0:
-        limit = len(artists)
-
-    return {"artists": artists[:limit]}
+    return {"artists": [serialize_artist(a) for a in artists], "total": total}
 
 
 class GetAllFavoritesQuery(BaseModel):
@@ -173,27 +157,29 @@ def get_all_favorites(query: GetAllFavoritesQuery):
     # largest is x2 to accound for broken hashes if any
     largest = max(track_limit, album_limit, artist_limit)
 
-    favs = favdb.get_all()
+    favs = FavoritesTable.get_all()
     favs.reverse()
 
     tracks = []
     albums = []
     artists = []
 
-    track_master_hash = set(t.trackhash for t in TrackStore.tracks)
-    album_master_hash = set(a.albumhash for a in AlbumStore.albums)
-    artist_master_hash = set(a.artisthash for a in ArtistStore.artists)
+    track_master_hash = TrackTable.get_all_hashes()
+    album_master_hash = AlbumTable.get_all_hashes()
+    artist_master_hash = ArtistTable.get_all_hashes()
 
+    # INFO: Filter out invalid hashes (file not found or tags edited)
     for fav in favs:
-        # INFO: hash is [1], type is [2], timestamp is [3]
-        hash = fav[1]
-        if fav[2] == FavType.track:
+        hash = fav.hash
+        type = fav.type
+
+        if type == FavType.track:
             tracks.append(hash) if hash in track_master_hash else None
 
-        if fav[2] == FavType.artist:
+        if type == FavType.artist:
             artists.append(hash) if hash in artist_master_hash else None
 
-        if fav[2] == FavType.album:
+        if type == FavType.album:
             albums.append(hash) if hash in album_master_hash else None
 
     count = {
@@ -202,35 +188,26 @@ def get_all_favorites(query: GetAllFavoritesQuery):
         "artists": len(artists),
     }
 
-    src_tracks = sorted(TrackStore.tracks, key=lambda x: x.trackhash)
-    src_albums = sorted(AlbumStore.albums, key=lambda x: x.albumhash)
-    src_artists = sorted(ArtistStore.artists, key=lambda x: x.artisthash)
-
-    tracks = use_bisection(src_tracks, "trackhash", tracks, limit=track_limit)
-    albums = use_bisection(src_albums, "albumhash", albums, limit=album_limit)
-    artists = use_bisection(src_artists, "artisthash", artists, limit=artist_limit)
-
-    tracks = remove_none(tracks)
-    albums = remove_none(albums)
-    artists = remove_none(artists)
+    tracks = TrackTable.get_tracks_by_trackhashes(tracks, limit=track_limit)
+    albums = AlbumTable.get_albums_by_albumhashes(albums, limit=album_limit)
+    artists = ArtistTable.get_artists_by_artisthashes(artists, limit=artist_limit)
 
     recents = []
     # first_n = favs
 
     for fav in favs:
-        # INFO: hash is [1], type is [2], timestamp is [3]
         if len(recents) >= largest:
             break
 
-        if fav[2] == FavType.album:
-            album = next((a for a in albums if a.albumhash == fav[1]), None)
+        if fav.type == FavType.album:
+            album = next((a for a in albums if a.albumhash == fav.hash), None)
 
             if album is None:
                 continue
 
             album = serialize_for_card(album)
             album["help_text"] = "album"
-            album["time"] = timestamp_to_time_passed(fav[3])
+            album["time"] = timestamp_to_time_passed(fav.timestamp)
 
             recents.append(
                 {
@@ -239,15 +216,15 @@ def get_all_favorites(query: GetAllFavoritesQuery):
                 }
             )
 
-        if fav[2] == FavType.artist:
-            artist = next((a for a in artists if a.artisthash == fav[1]), None)
+        if fav.type == FavType.artist:
+            artist = next((a for a in artists if a.artisthash == fav.hash), None)
 
             if artist is None:
                 continue
 
             artist = serialize_artist(artist)
             artist["help_text"] = "artist"
-            artist["time"] = timestamp_to_time_passed(fav[3])
+            artist["time"] = timestamp_to_time_passed(fav.timestamp)
 
             recents.append(
                 {
@@ -256,15 +233,15 @@ def get_all_favorites(query: GetAllFavoritesQuery):
                 }
             )
 
-        if fav[2] == FavType.track:
-            track = next((t for t in tracks if t.trackhash == fav[1]), None)
+        if fav.type == FavType.track:
+            track = next((t for t in tracks if t.trackhash == fav.hash), None)
 
             if track is None:
                 continue
 
             track = serialize_track(track)
             track["help_text"] = "track"
-            track["time"] = timestamp_to_time_passed(fav[3])
+            track["time"] = timestamp_to_time_passed(fav.timestamp)
 
             recents.append({"type": "track", "item": track})
 
@@ -284,6 +261,5 @@ def check_favorite(query: FavoritesAddBody):
     """
     itemhash = query.hash
     itemtype = query.type
-    exists = favdb.check_is_favorite(itemhash, itemtype)
 
-    return {"is_favorite": exists}
+    return {"is_favorite": FavoritesTable.check_exists(itemhash, itemtype)}

@@ -25,3 +25,8 @@ interface Genre {
 }
 ```
 
+- Pairing via QR Code has been split into 2 endpoint:
+    1. `/getpaircode`
+    2. `/pair`
+
+- 

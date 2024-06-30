@@ -2,9 +2,6 @@ import dataclasses
 import datetime
 from dataclasses import dataclass
 
-from app.config import UserConfig
-from app.settings import SessionVarKeys, get_flag
-
 from ..utils.hashing import create_hash
 from ..utils.parsers import get_base_title_and_versions, parse_feat_from_title
 from .artist import Artist
@@ -27,15 +24,21 @@ class Album:
     date: int
     duration: int
     genres: list[dict[str, str]]
+    genrehashes: list[str]
     og_title: str
     title: str
     trackcount: int
+    is_favorite: bool
+    extra: dict
 
     type: str = "album"
+    image: str = ""
     versions: list[str] = dataclasses.field(default_factory=list)
 
     def __post_init__(self):
-        self.date = datetime.datetime.fromtimestamp(self.date).year
+        # self.date = datetime.datetime.fromtimestamp(self.date).year
+        self.image = self.albumhash + ".webp"
+        self.populate_versions()
 
     # albumhash: str
     # title: str

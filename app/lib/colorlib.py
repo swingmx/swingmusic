@@ -52,47 +52,47 @@ def process_color(item_hash: str, is_album=True):
     return get_image_colors(str(path))
 
 
-class ProcessAlbumColors:
-    """
-    Extracts the most dominant color from the album art and saves it to the database.
-    """
+# class ProcessAlbumColors:
+#     """
+#     Extracts the most dominant color from the album art and saves it to the database.
+#     """
 
-    def __init__(self, instance_key: str) -> None:
-        global PROCESS_ALBUM_COLORS_KEY
-        PROCESS_ALBUM_COLORS_KEY = instance_key
+#     def __init__(self, instance_key: str) -> None:
+#         global PROCESS_ALBUM_COLORS_KEY
+#         PROCESS_ALBUM_COLORS_KEY = instance_key
 
-        albums = [
-            a
-            for a in AlbumStore.albums
-            if a is not None and a.colors is not None and len(a.colors) == 0
-        ]
+#         albums = [
+#             a
+#             for a in AlbumStore.albums
+#             if a is not None and a.colors is not None and len(a.colors) == 0
+#         ]
 
-        with SQLiteManager() as cur:
-            try:
-                for album in tqdm(albums, desc="Processing missing album colors"):
-                    if PROCESS_ALBUM_COLORS_KEY != instance_key:
-                        raise PopulateCancelledError(
-                            "A newer 'ProcessAlbumColors' instance is running. Stopping this one."
-                        )
+#         with SQLiteManager() as cur:
+#             try:
+#                 for album in tqdm(albums, desc="Processing missing album colors"):
+#                     if PROCESS_ALBUM_COLORS_KEY != instance_key:
+#                         raise PopulateCancelledError(
+#                             "A newer 'ProcessAlbumColors' instance is running. Stopping this one."
+#                         )
 
-                    # TODO: Stop hitting the database for every album.
-                    # Instead, fetch all the data from the database and
-                    # check from memory.
+#                     # TODO: Stop hitting the database for every album.
+#                     # Instead, fetch all the data from the database and
+#                     # check from memory.
 
-                    exists = aldb.exists(album.albumhash, cur=cur)
-                    if exists:
-                        continue
+#                     exists = aldb.exists(album.albumhash, cur=cur)
+#                     if exists:
+#                         continue
 
-                    colors = process_color(album.albumhash)
+#                     colors = process_color(album.albumhash)
 
-                    if colors is None:
-                        continue
+#                     if colors is None:
+#                         continue
 
-                    album.set_colors(colors)
-                    color_str = json.dumps(colors)
-                    aldb.insert_one_album(cur, album.albumhash, color_str)
-            finally:
-                cur.close()
+#                     album.set_colors(colors)
+#                     color_str = json.dumps(colors)
+#                     aldb.insert_one_album(cur, album.albumhash, color_str)
+#             finally:
+#                 cur.close()
 
 
 class ProcessArtistColors:

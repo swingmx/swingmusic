@@ -11,7 +11,7 @@ from app.api.apischemas import TrackHashSchema
 from app.lib.trackslib import get_silence_paddings
 
 # from app.store.tracks import TrackStore
-from app.db import TrackTable
+from app.db.libdata import TrackTable
 from app.utils.files import guess_mime_type
 
 bp_tag = Tag(name="File", description="Audio files")

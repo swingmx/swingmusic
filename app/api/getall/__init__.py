@@ -6,7 +6,8 @@ from pydantic import BaseModel, Field
 
 from datetime import datetime
 from app.api.apischemas import GenericLimitSchema
-from app.db import AlbumTable, ArtistTable
+from app.db.libdata import ArtistTable
+from app.db.libdata import AlbumTable
 from app.store.albums import AlbumStore
 from app.store.artists import ArtistStore
 
@@ -61,11 +62,11 @@ def get_all_items(path: GetAllItemsPath, query: GetAllItemsQuery):
     is_artists = path.itemtype == "artists"
 
     if is_albums:
-        items, total = AlbumTable.get_all(query.start, query.limit)
+        items = AlbumTable.get_all()
     elif is_artists:
-        items, total = ArtistTable.get_all(query.start, query.limit)
+        items = ArtistTable.get_all()
 
-    # print(items)
+    total = len(items)
 
     start = query.start
     limit = query.limit

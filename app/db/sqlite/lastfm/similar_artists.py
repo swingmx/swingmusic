@@ -16,7 +16,7 @@ class SQLiteLastFMSimilarArtists:
         sql = """INSERT OR REPLACE INTO lastfm_similar_artists(artisthash, similar_artists) VALUES(?,?)"""
 
         with SQLiteManager(userdata_db=True) as cur:
-            cur.execute(sql, (artist.artisthash, artist.similar_artist_hashes))
+            cur.execute(sql, (artist.artisthash, artist.similar_artists))
             cur.close()
 
     @classmethod

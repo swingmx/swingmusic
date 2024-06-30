@@ -34,6 +34,7 @@ def create_hash(*args: str, decode=False, limit=10) -> str:
     str_ = str_.encode("utf-8")
     str_ = hashlib.sha1(str_).hexdigest()
 
+    # INFO: Return first 5 + last 5 characters
     return (
         str_[: limit // 2] + str_[-limit // 2 :]
         if limit % 2 == 0

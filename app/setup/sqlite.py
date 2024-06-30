@@ -3,10 +3,14 @@ Module to setup Sqlite databases and tables.
 Applies migrations.
 """
 
+from app.db.userdata import UserTable
 from app.db.sqlite import create_connection, create_tables, queries
 from app.db.sqlite.auth import SQLiteAuthMethods as authdb
 from app.migrations import apply_migrations
 from app.settings import Db
+
+from app.db import create_all
+from app.db.libdata import create_all as create_all_libdata
 
 
 def run_migrations():
@@ -20,18 +24,8 @@ def setup_sqlite():
     """
     Create Sqlite databases and tables.
     """
-    # if os.path.exists(DB_PATH):
-    #     os.remove(DB_PATH)
+    create_all()
+    create_all_libdata()
 
-    app_db_conn = create_connection(Db.get_app_db_path())
-    user_db_conn = create_connection(Db.get_userdata_db_path())
-
-    create_tables(app_db_conn, queries.CREATE_APPDB_TABLES)
-    create_tables(user_db_conn, queries.CREATE_USERDATA_TABLES)
-    create_tables(app_db_conn, queries.CREATE_MIGRATIONS_TABLE)
-
-    if not authdb.get_all_users():
-        authdb.insert_default_user()
-
-    app_db_conn.close()
-    user_db_conn.close()
+    if not UserTable.get_all():
+        UserTable.insert_default_user()

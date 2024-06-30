@@ -1,3 +1,4 @@
+from dataclasses import asdict
 from typing import Any
 from flask import request
 from flask_openapi3 import Tag
@@ -6,12 +7,13 @@ from pydantic import BaseModel, Field
 from app.api.auth import admin_required
 
 from app.db.sqlite.plugins import PluginsMethods as pdb
-from app.db.sqlite.settings import SettingsSQLMethods as sdb
 from app.db.sqlite.tracks import SQLiteTrackMethods as trackdb
+from app.db.userdata import PluginTable
 from app.lib import populate
+from app.lib.tagger import index_everything
 from app.lib.watchdogg import Watcher as WatchDog
 from app.logger import log
-from app.settings import Info, Paths, SessionVarKeys, set_flag
+from app.settings import Info, Paths, SessionVarKeys
 from app.store.albums import AlbumStore
 from app.store.artists import ArtistStore
 from app.store.tracks import TrackStore
@@ -48,42 +50,43 @@ def reload_everything(instance_key: str):
     except Exception as e:
         log.error(e)
 
+# CHECKPOINT: TEST SETTINGS API ENDPOINTS
 
-@background
-def rebuild_store(db_dirs: list[str]):
-    """
-    Restarts watchdog and rebuilds the music library.
-    """
-    instance_key = get_random_str()
+# @background
+# def rebuild_store(db_dirs: list[str]):
+#     """
+#     Restarts watchdog and rebuilds the music library.
+#     """
+#     instance_key = get_random_str()
 
-    log.info("Rebuilding library...")
-    trackdb.remove_tracks_not_in_folders(db_dirs)
-    reload_everything(instance_key)
+#     log.info("Rebuilding library...")
+#     trackdb.remove_tracks_not_in_folders(db_dirs)
+#     reload_everything(instance_key)
 
-    try:
-        populate.Populate(instance_key=instance_key)
-    except populate.PopulateCancelledError as e:
-        print(e)
-        reload_everything(instance_key)
-        return
+#     try:
+#         populate.Populate(instance_key=instance_key)
+#     except populate.PopulateCancelledError as e:
+#         print(e)
+#         reload_everything(instance_key)
+#         return
 
-    WatchDog().restart()
+#     WatchDog().restart()
 
-    log.info("Rebuilding library... ✅")
+#     log.info("Rebuilding library... ✅")
 
 
-# I freaking don't know what this function does anymore
-def finalize(new_: list[str], removed_: list[str], db_dirs_: list[str]):
-    """
-    Params:
-        new_: will be added to the database
-        removed_: will be removed from the database
-        db_dirs_: will be used to remove tracks that
-        are outside these directories from the database and store.
-    """
-    sdb.remove_root_dirs(removed_)
-    sdb.add_root_dirs(new_)
-    rebuild_store(db_dirs_)
+# # I freaking don't know what this function does anymore
+# def finalize(new_: list[str], removed_: list[str], db_dirs_: list[str]):
+#     """
+#     Params:
+#         new_: will be added to the database
+#         removed_: will be removed from the database
+#         db_dirs_: will be used to remove tracks that
+#         are outside these directories from the database and store.
+#     """
+#     sdb.remove_root_dirs(removed_)
+#     sdb.add_root_dirs(new_)
+#     rebuild_store(db_dirs_)
 
 
 class AddRootDirsBody(BaseModel):
@@ -106,7 +109,8 @@ def add_root_dirs(body: AddRootDirsBody):
     new_dirs = body.new_dirs
     removed_dirs = body.removed
 
-    db_dirs = sdb.get_root_dirs()
+    config = UserConfig()
+    db_dirs = config.rootDirs
     home = "$home"
 
     db_home = any([d == home for d in db_dirs])  # if $home is in db
@@ -114,13 +118,16 @@ def add_root_dirs(body: AddRootDirsBody):
 
     # handle $home case
     if db_home and incoming_home:
-        return {"msg": "Not changed!"}
+        return {"msg": "Not changed!"}, 304
 
+    # if $home is the current root dir or the incoming root dir
+    # is $home, remove all root dirs
     if db_home or incoming_home:
-        sdb.remove_root_dirs(db_dirs)
+        config.rootDirs = []
 
     if incoming_home:
-        finalize([home], [], [Paths.USER_HOME_DIR])
+        config.rootDirs = [home]
+        index_everything()
         return {"root_dirs": [home]}
 
     # ---
@@ -136,11 +143,10 @@ def add_root_dirs(body: AddRootDirsBody):
             pass
 
     db_dirs.extend(new_dirs)
-    db_dirs = [dir_ for dir_ in db_dirs if dir_ != home]
+    config.rootDirs = [dir_ for dir_ in db_dirs if dir_ != home]
 
-    finalize(new_dirs, removed_dirs, db_dirs)
-
-    return {"root_dirs": db_dirs}
+    index_everything()
+    return {"root_dirs": config.rootDirs}
 
 
 @api.get("/get-root-dirs")
@@ -148,9 +154,7 @@ def get_root_dirs():
     """
     Get root directories
     """
-    dirs = sdb.get_root_dirs()
-
-    return {"dirs": dirs}
+    return {"dirs": UserConfig().rootDirs}
 
 
 # maps settings to their parser flags
@@ -170,35 +174,12 @@ def get_all_settings():
     """
     Get all settings
     """
+    config = asdict(UserConfig())
+    plugins = PluginTable.get_all()
+    config["plugins"] = plugins
+    config["version"] = Info.SWINGMUSIC_APP_VERSION
 
-    settings = sdb.get_all_settings()
-    plugins = pdb.get_all_plugins()
-
-    key_list = list(mapp.keys())
-    s = {}
-
-    for key in key_list:
-        val_index = key_list.index(key)
-
-        try:
-            s[key] = settings[val_index]
-
-            if type(s[key]) == int:
-                s[key] = bool(s[key])
-            if type(s[key]) == str:
-                s[key] = str(s[key]).split(",")
-
-        except IndexError:
-            s[key] = None
-
-    root_dirs = sdb.get_root_dirs()
-    s["root_dirs"] = root_dirs
-    s["plugins"] = plugins
-    s["version"] = Info.SWINGMUSIC_APP_VERSION
-
-    return {
-        "settings": s,
-    }
+    return config
 
 
 @background
@@ -245,7 +226,6 @@ def set_setting(body: SetSettingBody):
         value = str(value).split(",")
         value = set(value)
 
-    set_flag(flag, value)
     reload_all_for_set_setting()
 
     # if value is a set, convert it to a string

@@ -14,13 +14,6 @@ CREATE TABLE IF NOT EXISTS playlists (
     constraint fk_users foreign key (userid) references users(id) on delete cascade
 );
 
-CREATE TABLE IF NOT EXISTS favorites (
-    id integer PRIMARY KEY,
-    hash text not null,
-    type text not null,
-    timestamp integer not null default 0
-);
-
 CREATE TABLE IF NOT EXISTS settings (
     id integer PRIMARY KEY,
     root_dirs text NOT NULL,

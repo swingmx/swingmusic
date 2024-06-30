@@ -11,8 +11,10 @@ from watchdog.events import PatternMatchingEventHandler
 from watchdog.observers import Observer
 
 from app import settings
+from app.config import UserConfig
 from app.db.sqlite.albumcolors import SQLiteAlbumMethods as aldb
-from app.db.sqlite.settings import SettingsSQLMethods as sdb
+
+# from app.db.sqlite.settings import SettingsSQLMethods as sdb
 from app.db.sqlite.tracks import SQLiteManager
 from app.db.sqlite.tracks import SQLiteTrackMethods as db
 from app.lib.colorlib import process_color
@@ -43,7 +45,8 @@ class Watcher:
 
         while trials < 10:
             try:
-                dirs = sdb.get_root_dirs()
+                # dirs = sdb.get_root_dirs()
+                dirs = UserConfig().rootDirs
                 dirs = [rf"{d}" for d in dirs]
 
                 dir_map = [
@@ -152,7 +155,8 @@ def add_track(filepath: str) -> None:
 
     TrackStore.remove_track_by_filepath(filepath)
 
-    tags = get_tags(filepath)
+    config = UserConfig()
+    tags = get_tags(filepath, artist_separators=config.artistSeparators)
 
     # if the track is somehow invalid, return
     if tags is None or tags["bitrate"] == 0 or tags["duration"] == 0:

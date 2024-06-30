@@ -44,6 +44,13 @@ class Artist:
     date: int
     duration: int
     genres: list[dict[str, str]]
+    genrehashes: list[str]
     name: str
     trackcount: int
     is_favorite: bool
+    extra: dict
+
+    image: str = ""
+
+    def __post_init__(self):
+        self.image = self.artisthash + ".webp"

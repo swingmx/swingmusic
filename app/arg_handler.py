@@ -9,6 +9,7 @@ import sys
 import PyInstaller.__main__ as bundler
 
 from app import settings
+from app.config import UserConfig
 from app.logger import log
 from app.print_help import HELP_MESSAGE
 from app.utils.auth import hash_password
@@ -160,7 +161,7 @@ class ProcessArgs:
     @staticmethod
     def handle_periodic_scan():
         if any((a in ARGS for a in ALLARGS.no_periodic_scan)):
-            settings.SessionVars.DO_PERIODIC_SCANS = False
+            UserConfig().enablePeriodicScans = False
 
     @staticmethod
     def handle_periodic_scan_interval():
@@ -182,10 +183,10 @@ class ProcessArgs:
                 sys.exit(0)
 
             if psi < 0:
-                print("WADAFUCK ARE YOU TRYING?")
+                print("WHAT ARE YOU TRYING?")
                 sys.exit(0)
 
-            settings.SessionVars.PERIODIC_SCAN_INTERVAL = psi
+            UserConfig().scanInterval = psi
 
     @staticmethod
     def handle_help():
