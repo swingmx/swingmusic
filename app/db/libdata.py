@@ -35,9 +35,13 @@ class Base(MasterBase, DeclarativeBase):
             if cls.__tablename__ == "track":
                 stmt = select(TrackTable.trackhash).where(cls.last_mod < create_date)
             elif cls.__tablename__ == "album":
-                stmt = select(AlbumTable.albumhash).where(cls.created_date < create_date)
+                stmt = select(AlbumTable.albumhash).where(
+                    cls.created_date < create_date
+                )
             elif cls.__tablename__ == "artist":
-                stmt = select(ArtistTable.artisthash).where(cls.created_date < create_date)
+                stmt = select(ArtistTable.artisthash).where(
+                    cls.created_date < create_date
+                )
 
             result = conn.execute(stmt)
             return {row[0] for row in result.fetchall()}
@@ -207,6 +211,11 @@ class TrackTable(Base):
             return tracks_to_dataclasses(result.fetchall())
 
     @classmethod
+    def get_recently_played(cls, limit: int):
+        result = cls.execute(select(cls).order_by(cls.lastplayed.desc()).limit(limit))
+        return tracks_to_dataclasses(result.fetchall())
+
+    @classmethod
     def remove_tracks_by_filepaths(cls, filepaths: set[str]):
         with DbManager(commit=True) as conn:
             conn.execute(delete(TrackTable).where(TrackTable.filepath.in_(filepaths)))
@@ -249,7 +258,6 @@ class AlbumTable(Base):
             result = conn.execute(select(AlbumTable))
             all = result.fetchall()
             return albums_to_dataclasses(all)
-
 
     @classmethod
     def get_album_by_albumhash(cls, hash: str):

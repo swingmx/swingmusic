@@ -1,3 +1,4 @@
+import gc
 import os
 from pprint import pprint
 from time import time
@@ -280,6 +281,7 @@ class IndexEverything:
         # pass
 
         CordinateMedia(instance_key=str(time()))
+        gc.collect()
 
 
 @background

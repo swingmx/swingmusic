@@ -47,3 +47,4 @@
 - Remove duplicates on artist page (test with Hanson)
 - Test foreign keys on delete
 - Map scrobble info on app start
+- Make home page recent items faster!

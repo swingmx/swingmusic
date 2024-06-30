@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Literal
+from typing import Any, Literal
 
 
 @dataclass
@@ -14,6 +14,7 @@ class TrackLog:
     timestamp: int
     source: str
     userid: int
+    extra: dict[str, Any]
 
     type = "track"
     type_src = None

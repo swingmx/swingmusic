@@ -3,6 +3,7 @@ from typing import Any
 from sqlalchemy import (
     create_engine,
     delete,
+    func,
     insert,
     select,
 )
@@ -80,6 +81,10 @@ class Base(MappedAsDataclass, DeclarativeBase):
     @classmethod
     def all(cls):
         return cls.execute(select(cls))
+
+    @classmethod
+    def count(cls):
+        return cls.execute(select(func.count()).select_from(cls)).scalar()
 
 
 def create_all():

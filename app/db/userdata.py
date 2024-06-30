@@ -25,6 +25,8 @@ from app.db.utils import (
     plugin_to_dataclasses,
     similar_artist_to_dataclass,
     similar_artists_to_dataclass,
+    tracklog_to_dataclass,
+    tracklog_to_dataclasses,
     tracks_to_dataclasses,
     user_to_dataclass,
     user_to_dataclasses,
@@ -166,6 +168,7 @@ class FavoritesTable(Base):
         JSON(), nullable=True, default_factory=dict
     )
 
+
     @classmethod
     def get_all(cls):
         with DbManager() as conn:
@@ -259,3 +262,15 @@ class ScrobbleTable(Base):
     def add(cls, item: dict[str, Any]):
         item["userid"] = get_current_userid()
         return cls.insert_one(item)
+
+    @classmethod
+    def get_all(cls, start: int, limit: int):
+        result = cls.execute(
+            select(cls)
+            .where(cls.userid == get_current_userid())
+            .order_by(cls.timestamp.desc())
+            .offset(start)
+            .limit(limit)
+        )
+
+        return tracklog_to_dataclasses(result.fetchall())

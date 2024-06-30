@@ -10,10 +10,8 @@ from typing import Any
 from PIL import Image, ImageSequence
 
 from app import settings
+from app.db.libdata import AlbumTable, TrackTable
 from app.models.track import Track
-from app.store.albums import AlbumStore
-from app.store.tracks import TrackStore
-
 
 def create_thumbnail(image: Any, img_path: str) -> str:
     """
@@ -105,7 +103,8 @@ def get_first_4_images(
     tracks: list[Track] = [], trackhashes: list[str] = []
 ) -> list[dict["str", str]]:
     if len(trackhashes) > 0:
-        tracks = TrackStore.get_tracks_by_trackhashes(trackhashes)
+        # tracks = TrackStore.get_tracks_by_trackhashes(trackhashes)
+        tracks = TrackTable.get_tracks_by_trackhashes(trackhashes)
 
     albums = []
 
@@ -116,11 +115,12 @@ def get_first_4_images(
             if len(albums) == 4:
                 break
 
-    albums = AlbumStore.get_albums_by_hashes(albums)
+    # albums = AlbumStore.get_albums_by_hashes(albums)
+    albums  = AlbumTable.get_albums_by_albumhashes(albums)
     images = [
         {
             "image": album.image,
-            "color": "".join(album.colors),
+            "color": album.color,
         }
         for album in albums
     ]
