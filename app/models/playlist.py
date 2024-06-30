@@ -10,7 +10,7 @@ from app import settings
 class Playlist:
     """Creates playlist objects"""
 
-    id: int
+    id: int | str
     image: str | None
     last_updated: str
     name: str
@@ -21,7 +21,7 @@ class Playlist:
     count: int = 0
     duration: int = 0
     has_image: bool = False
-    images: list[str] = dataclasses.field(default_factory=list)
+    images: list[dict[str, str]] = dataclasses.field(default_factory=list)
     pinned: bool = False
 
     def __post_init__(self):
