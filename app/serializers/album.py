@@ -27,6 +27,7 @@ def serialize_for_card(album: Album):
         "og_title",
         "base_title",
         "genres",
+        "playcount"
     }
 
     return album_serializer(album, props_to_remove)

@@ -26,7 +26,7 @@ from app.api import (
     settings,
     lyrics,
     plugins,
-    logger,
+    scrobble,
     home,
     getall,
     auth,
@@ -116,7 +116,7 @@ def create_api():
         app.register_api(lyrics_plugin.api)
 
         # Logger
-        app.register_api(logger.api)
+        app.register_api(scrobble.api)
 
         # Home
         app.register_api(home.api)

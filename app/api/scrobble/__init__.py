@@ -3,7 +3,8 @@ from flask_openapi3 import APIBlueprint
 from pydantic import Field
 from app.api.apischemas import TrackHashSchema
 
-from app.db.sqlite.logger.tracks import SQLiteTrackLogger as db
+from app.db.libdata import AlbumTable, ArtistTable, TrackTable
+from app.db.userdata import ScrobbleTable
 from app.settings import Defaults
 
 bp_tag = Tag(name="Logger", description="Log item plays")
@@ -26,19 +27,20 @@ def log_track(body: LogTrackBody):
     """
     Log a track play to the database.
     """
-    trackhash = body.trackhash
     timestamp = body.timestamp
     duration = body.duration
-    source = body.source
 
     if not timestamp or duration < 5:
         return {"msg": "Invalid entry."}, 400
 
-    last_row = db.insert_track(
-        trackhash=trackhash,
-        timestamp=timestamp,
-        duration=duration,
-        source=source,
-    )
+    track = TrackTable.get_track_by_trackhash(body.trackhash)
 
-    return {"total entries": last_row}
+    if track is None:
+        return {"msg": "Track not found."}, 404
+
+    ScrobbleTable.add(dict(body))
+    TrackTable.increment_playcount(body.trackhash, duration, timestamp)
+    AlbumTable.increment_playcount(track.albumhash, duration, timestamp)
+    ArtistTable.increment_playcount(track.artisthashes, duration, timestamp)
+
+    return {"msg": "recorded"}, 201

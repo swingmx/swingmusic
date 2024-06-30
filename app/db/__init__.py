@@ -48,7 +48,7 @@ class DbManager:
         if self.commit:
             self.conn.commit()
 
-        self.conn.close()
+        # self.conn.close()
 
 
 class Base(MappedAsDataclass, DeclarativeBase):

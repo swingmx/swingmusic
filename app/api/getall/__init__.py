@@ -18,6 +18,7 @@ from app.utils.dates import (
     create_new_date,
     date_string_to_time_passed,
     seconds_to_time_string,
+    timestamp_to_time_passed,
 )
 
 bp_tag = Tag(name="Get all", description="List all items")
@@ -57,6 +58,13 @@ def get_all_items(path: GetAllItemsPath, query: GetAllItemsQuery):
     Get all items
 
     Used to show all albums or artists in the library
+
+    Sort keys:
+    -
+    Both albums and artists: `duration`, `created_date`, `playcount`, `playduration`, `lastplayed`, `trackcount`
+
+    Albums only: `title`, `albumartists`, `date`
+    Artists only: `name`, `albumcount`
     """
     is_albums = path.itemtype == "albums"
     is_artists = path.itemtype == "artists"
@@ -76,6 +84,9 @@ def get_all_items(path: GetAllItemsPath, query: GetAllItemsQuery):
     sort_is_count = sort == "trackcount"
     sort_is_duration = sort == "duration"
     sort_is_create_date = sort == "created_date"
+    sort_is_playcount = sort == "playcount"
+    sort_is_playduration = sort == "playduration"
+    sort_is_lastplayed = sort == "lastplayed"
 
     sort_is_date = is_albums and sort == "date"
     sort_is_artist = is_albums and sort == "albumartists"
@@ -94,7 +105,6 @@ def get_all_items(path: GetAllItemsPath, query: GetAllItemsQuery):
 
     for item in items:
         item_dict = serialize_album(item) if is_albums else serialize_artist(item)
-        print(item_dict)
 
         if sort_is_date:
             item_dict["help_text"] = item.date
@@ -121,6 +131,20 @@ def get_all_items(path: GetAllItemsPath, query: GetAllItemsQuery):
             item_dict["help_text"] = (
                 f"{format_number(item.albumcount)} album{'' if item.albumcount == 1 else 's'}"
             )
+
+        if sort_is_playcount:
+            item_dict["help_text"] = (
+                f"{format_number(item.playcount)} play{'' if item.playcount == 1 else 's'}"
+            )
+
+        if sort_is_lastplayed:
+            if item.playduration == 0:
+                item_dict["help_text"] = "Never played"
+            else:
+                item_dict["help_text"] = timestamp_to_time_passed(item.lastplayed)
+
+        if sort_is_playduration:
+            item_dict["help_text"] = seconds_to_time_string(item.playduration)
 
         album_list.append(item_dict)
 

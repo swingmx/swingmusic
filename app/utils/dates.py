@@ -63,4 +63,4 @@ def seconds_to_time_string(seconds):
     if minutes > 0:
         return f"{minutes} minute{'s' if minutes > 1 else ''}"
 
-    return f"{remaining_seconds} second{'s' if remaining_seconds > 1 else ''}"
+    return f"{remaining_seconds} second{'' if remaining_seconds == 1 else 's'}"

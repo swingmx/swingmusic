@@ -48,6 +48,9 @@ class Artist:
     name: str
     trackcount: int
     is_favorite: bool
+    lastplayed: int
+    playcount: int
+    playduration: int
     extra: dict
 
     image: str = ""

@@ -29,6 +29,9 @@ class Track:
     track: int
     trackhash: str
     extra: dict
+    lastplayed: int
+    playcount: int
+    playduration: int
 
     is_favorite: bool = False
     _pos: int = 0

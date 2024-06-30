@@ -156,32 +156,32 @@ class IndexAlbums:
                     "albumhash": track.albumhash,
                     "base_title": None,
                     "color": None,
-                    "created_date": None,
-                    "date": None,
+                    "created_date": track.last_mod,
+                    "date": track.date,
                     "duration": track.duration,
                     "genres": [*track.genres] if track.genres else [],
                     "og_title": track.og_album,
+                    "lastplayed": track.lastplayed,
+                    "playcount": track.playcount,
+                    "playduration": track.playduration,
                     "title": track.album,
                     "trackcount": 1,
-                    "dates": [track.date],
-                    "created_dates": [track.last_mod],
                 }
             else:
                 album = albums[track.albumhash]
                 album["trackcount"] += 1
+                album["playcount"] += track.playcount
+                album["playduration"] += track.playduration
+                album["lastplayed"] = max(album["lastplayed"], track.lastplayed)
                 album["duration"] += track.duration
-                album["dates"].append(track.date)
-                album["created_dates"].append(track.last_mod)
+                album["date"] = min(album["date"], track.date)
+                album["created_date"] = min(album["created_date"], track.last_mod)
 
                 if track.genres:
                     album["genres"].extend(track.genres)
 
         for album in albums.values():
-            album["date"] = min(album["dates"])
-            album["created_date"] = min(album["created_dates"])
-
             genres = []
-
             for genre in album["genres"]:
                 if genre not in genres:
                     genres.append(genre)
@@ -190,8 +190,6 @@ class IndexAlbums:
             album["base_title"], _ = get_base_album_title(album["og_title"])
 
             del genres
-            del album["dates"]
-            del album["created_dates"]
 
         AlbumTable.remove_all()
         AlbumTable.insert_many(list(albums.values()))
@@ -219,23 +217,28 @@ class IndexArtists:
                         "albumcount": None,
                         "albums": {track.albumhash},
                         "artisthash": thisartist["artisthash"],
-                        "created_dates": [track.last_mod],
-                        "dates": [track.date],
-                        "date": None,
+                        "created_date": track.last_mod,
+                        "date": track.date,
                         "duration": track.duration,
                         "genres": track.genres if track.genres else [],
                         "name": None,
                         "names": {thisartist["name"]},
+                        "lastplayed": track.lastplayed,
+                        "playcount": track.playcount,
+                        "playduration": track.playduration,
                         "trackcount": None,
                         "tracks": {track.trackhash},
                     }
                 else:
                     artist = artists[thisartist["artisthash"]]
                     artist["duration"] += track.duration
+                    artist["playcount"] += track.playcount
+                    artist["playduration"] += track.playduration
                     artist["albums"].add(track.albumhash)
                     artist["tracks"].add(track.trackhash)
-                    artist["dates"].append(track.date)
-                    artist["created_dates"].append(track.last_mod)
+                    artist["date"] = min(artist["date"], track.date)
+                    artist["lastplayed"] = max(artist["lastplayed"], track.lastplayed)
+                    artist["created_date"] = min(artist["created_date"], track.last_mod)
                     artist["names"].add(thisartist["name"])
 
                     if track.genres:
@@ -244,8 +247,6 @@ class IndexArtists:
         for artist in artists.values():
             artist["albumcount"] = len(artist["albums"])
             artist["trackcount"] = len(artist["tracks"])
-            artist["date"] = min(artist["dates"])
-            artist["created_date"] = min(artist["created_dates"])
 
             genres = []
 
@@ -260,8 +261,6 @@ class IndexArtists:
             del artist["names"]
             del artist["tracks"]
             del artist["albums"]
-            del artist["dates"]
-            del artist["created_dates"]
 
             # INFO: Delete local variables
             del genres

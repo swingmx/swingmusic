@@ -45,3 +45,5 @@
 - What about our migrations?
 - Add userid to queries
 - Remove duplicates on artist page (test with Hanson)
+- Test foreign keys on delete
+- Map scrobble info on app start

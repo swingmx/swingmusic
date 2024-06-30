@@ -73,6 +73,21 @@ class Base(MasterBase, DeclarativeBase):
 
             conn.execute(stmt)
 
+    @classmethod
+    def increment_scrobblecount(
+        cls, table: Any, field: Any, hash: str, duration: int, timestamp: int
+    ):
+        cls.execute(
+            update(table)
+            .where(field == hash)
+            .values(
+                playcount=table.playcount + 1,
+                playduration=table.playduration + duration,
+                lastplayed=timestamp,
+            ),
+            commit=True,
+        )
+
 
 class TrackTable(Base):
     __tablename__ = "track"
@@ -99,8 +114,12 @@ class TrackTable(Base):
     track: Mapped[int] = mapped_column(Integer())
     trackhash: Mapped[str] = mapped_column(String(), index=True)
     is_favorite: Mapped[Optional[bool]] = mapped_column(Boolean())
-    playcount: Mapped[int] = mapped_column(Integer())
-    extra: Mapped[Optional[dict[str, Any]]] = mapped_column(JSON())
+    lastplayed: Mapped[int] = mapped_column(Integer(), default=0)
+    playcount: Mapped[int] = mapped_column(Integer(), default=0)
+    playduration: Mapped[int] = mapped_column(Integer(), default=0)
+    extra: Mapped[Optional[dict[str, Any]]] = mapped_column(
+        JSON(), default_factory=dict
+    )
 
     @classmethod
     def get_all(cls):
@@ -180,6 +199,12 @@ class TrackTable(Base):
         with DbManager(commit=True) as conn:
             conn.execute(delete(TrackTable).where(TrackTable.filepath.in_(filepaths)))
 
+    @classmethod
+    def increment_playcount(cls, trackhash: str, duration: int, timestamp: int):
+        cls.increment_scrobblecount(
+            TrackTable, TrackTable.trackhash, trackhash, duration, timestamp
+        )
+
 
 class AlbumTable(Base):
     __tablename__ = "album"
@@ -199,7 +224,12 @@ class AlbumTable(Base):
     title: Mapped[str] = mapped_column(String())
     trackcount: Mapped[int] = mapped_column(Integer())
     is_favorite: Mapped[Optional[bool]] = mapped_column(Boolean())
-    extra: Mapped[Optional[dict[str, Any]]] = mapped_column(JSON())
+    lastplayed: Mapped[int] = mapped_column(Integer(), default=0)
+    playcount: Mapped[int] = mapped_column(Integer(), default=0)
+    playduration: Mapped[int] = mapped_column(Integer(), default=0)
+    extra: Mapped[Optional[dict[str, Any]]] = mapped_column(
+        JSON(), default_factory=dict
+    )
 
     @classmethod
     def get_all(cls):
@@ -257,6 +287,12 @@ class AlbumTable(Base):
             )
             return albums_to_dataclasses(result.all())
 
+    @classmethod
+    def increment_playcount(cls, albumhash: str, duration: int, timestamp: int):
+        return cls.increment_scrobblecount(
+            AlbumTable, AlbumTable.albumhash, albumhash, duration, timestamp
+        )
+
 
 class ArtistTable(Base):
     __tablename__ = "artist"
@@ -272,7 +308,12 @@ class ArtistTable(Base):
     name: Mapped[str] = mapped_column(String(), index=True)
     trackcount: Mapped[int] = mapped_column(Integer())
     is_favorite: Mapped[Optional[bool]] = mapped_column(Boolean())
-    extra: Mapped[Optional[dict[str, Any]]] = mapped_column(JSON())
+    lastplayed: Mapped[int] = mapped_column(Integer(), default=0)
+    playcount: Mapped[int] = mapped_column(Integer(), default=0)
+    playduration: Mapped[int] = mapped_column(Integer(), default=0)
+    extra: Mapped[Optional[dict[str, Any]]] = mapped_column(
+        JSON(), default_factory=dict
+    )
 
     @classmethod
     def get_all(cls):
@@ -310,3 +351,18 @@ class ArtistTable(Base):
                 .limit(limit)
             )
             return artists_to_dataclasses(result.fetchall())
+
+    @classmethod
+    def increment_playcount(
+        cls, artisthashes: list[str], duration: int, timestamp: int
+    ):
+        cls.execute(
+            update(cls)
+            .where(ArtistTable.artisthash.in_(artisthashes))
+            .values(
+                playcount=ArtistTable.playcount + 1,
+                playduration=ArtistTable.playduration + duration,
+                lastplayed=timestamp,
+            ),
+            commit=True,
+        )

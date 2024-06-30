@@ -31,7 +31,7 @@ from app.db.utils import (
 )
 
 from app.db import Base, DbManager
-from app.utils.auth import hash_password
+from app.utils.auth import get_current_userid, hash_password
 
 
 class UserTable(Base):
@@ -160,7 +160,7 @@ class FavoritesTable(Base):
     type: Mapped[str] = mapped_column(String(), index=True)
     timestamp: Mapped[int] = mapped_column(Integer(), index=True)
     userid: Mapped[int] = mapped_column(
-        Integer(), ForeignKey("user.id"), default=1, index=True
+        Integer(), ForeignKey("user.id", ondelete="cascade"), default=1, index=True
     )
     extra: Mapped[dict[str, Any]] = mapped_column(
         JSON(), nullable=True, default_factory=dict
@@ -175,7 +175,7 @@ class FavoritesTable(Base):
     @classmethod
     def insert_item(cls, item: dict[str, Any]):
         item["timestamp"] = int(datetime.datetime.now().timestamp())
-        item["userid"] = current_user["id"]
+        item["userid"] = get_current_userid()
 
         with DbManager(commit=True) as conn:
             conn.execute(insert(cls).values(item))
@@ -199,7 +199,7 @@ class FavoritesTable(Base):
         result = cls.execute(
             select(table)
             .select_from(join(table, cls, field == cls.hash))
-            .where(and_(cls.type == type, cls.userid == current_user["id"]))
+            .where(and_(cls.type == type, cls.userid == get_current_userid()))
             .offset(start)
             # INFO: If start is 0, fetch all so we can get the total count
             .limit(limit if start != 0 else None)
@@ -238,3 +238,24 @@ class FavoritesTable(Base):
             ArtistTable, ArtistTable.artisthash, "artist", start, limit
         )
         return artists_to_dataclasses(result), total
+
+
+class ScrobbleTable(Base):
+    __tablename__ = "scrobble"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    trackhash: Mapped[str] = mapped_column(String(), index=True)
+    duration: Mapped[int] = mapped_column(Integer())
+    timestamp: Mapped[int] = mapped_column(Integer())
+    source: Mapped[str] = mapped_column(String())
+    userid: Mapped[int] = mapped_column(
+        Integer(), ForeignKey("user.id", ondelete="cascade"), index=True
+    )
+    extra: Mapped[dict[str, Any]] = mapped_column(
+        JSON(), nullable=True, default_factory=dict
+    )
+
+    @classmethod
+    def add(cls, item: dict[str, Any]):
+        item["userid"] = get_current_userid()
+        return cls.insert_one(item)
