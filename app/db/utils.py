@@ -4,6 +4,7 @@ from app.models import Album as AlbumModel, Artist as ArtistModel, Track as Trac
 from app.models.favorite import Favorite
 from app.models.lastfm import SimilarArtist
 from app.models.logger import TrackLog
+from app.models.playlist import Playlist
 from app.models.plugins import Plugin
 from app.models.user import User
 
@@ -75,9 +76,20 @@ def plugin_to_dataclass(entry: Any):
 def plugin_to_dataclasses(entries: Any):
     return [plugin_to_dataclass(entry) for entry in entries]
 
+
 def tracklog_to_dataclass(entry: Any):
     entry_dict = entry._asdict()
     return TrackLog(**entry_dict)
 
+
 def tracklog_to_dataclasses(entries: Any):
     return [tracklog_to_dataclass(entry) for entry in entries]
+
+
+def playlist_to_dataclass(entry: Any):
+    entry_dict = entry._asdict()
+    return Playlist(**entry_dict)
+
+
+def playlists_to_dataclasses(entries: Any):
+    return [playlist_to_dataclass(entry) for entry in entries]

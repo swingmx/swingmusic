@@ -12,21 +12,20 @@ from flask_openapi3 import Tag
 from flask_openapi3 import APIBlueprint, FileStorage
 
 from app import models
-from app.db.sqlite.playlists import SQLitePlaylistMethods
+from app.db.libdata import TrackTable
+from app.db.userdata import PlaylistTable
 from app.lib import playlistlib
 from app.lib.albumslib import sort_by_track_no
 from app.lib.home.recentlyadded import get_recently_added_playlist
 from app.lib.home.recentlyplayed import get_recently_played_playlist
+from app.models.playlist import Playlist
 from app.serializers.playlist import serialize_for_card
-from app.store.tracks import TrackStore
 from app.utils.dates import create_new_date, date_string_to_time_passed
 from app.utils.remove_duplicates import remove_duplicates
 from app.settings import Paths
 
 tag = Tag(name="Playlists", description="Get and manage playlists")
 api = APIBlueprint("playlists", __name__, url_prefix="/playlists", abp_tags=[tag])
-
-PL = SQLitePlaylistMethods
 
 
 class SendAllPlaylistsQuery(BaseModel):
@@ -38,7 +37,7 @@ def send_all_playlists(query: SendAllPlaylistsQuery):
     """
     Gets all the playlists.
     """
-    playlists = PL.get_all_playlists()
+    playlists = PlaylistTable.get_all()
     playlists = list(playlists)
 
     for playlist in playlists:
@@ -63,18 +62,21 @@ def insert_playlist(name: str, image: str = None):
         "image": image,
         "last_updated": create_new_date(),
         "name": name,
-        "trackhashes": json.dumps([]),
-        "settings": json.dumps(
-            {
-                "has_gif": False,
-                "banner_pos": 50,
-                "square_img": True if image else False,
-                "pinned": False,
-            }
-        ),
+        "trackhashes": [],
+        "settings": {
+            "has_gif": False,
+            "banner_pos": 50,
+            "square_img": True if image else False,
+            "pinned": False,
+        },
     }
 
-    return PL.insert_one_playlist(playlist)
+    rowid = PlaylistTable.add_one(playlist)
+    if rowid:
+        playlist["id"] = rowid
+        return Playlist(**playlist)
+
+    return None
 
 
 class CreatePlaylistBody(BaseModel):
@@ -88,9 +90,10 @@ def create_playlist(body: CreatePlaylistBody):
 
     Creates a new playlist. Accepts POST method with a JSON body.
     """
-    existing_playlist_count = PL.count_playlist_by_name(body.name)
+    # existing_playlist_count = PL.count_playlist_by_name(body.name)
+    exists = PlaylistTable.check_exists_by_name(body.name)
 
-    if existing_playlist_count > 0:
+    if exists:
         return {"error": "Playlist already exists"}, 409
 
     playlist = insert_playlist(body.name)
@@ -105,8 +108,7 @@ def get_path_trackhashes(path: str):
     """
     Returns a list of trackhashes in a folder.
     """
-    tracks = TrackStore.get_tracks_in_path(path)
-    tracks = sorted(tracks, key=lambda t: t.last_mod)
+    tracks = TrackTable.get_tracks_in_path(path)
     return [t.trackhash for t in tracks]
 
 
@@ -114,17 +116,17 @@ def get_album_trackhashes(albumhash: str):
     """
     Returns a list of trackhashes in an album.
     """
-    tracks = TrackStore.get_tracks_by_albumhash(albumhash)
+    tracks = TrackTable.get_tracks_by_albumhash(albumhash)
     tracks = sort_by_track_no(tracks)
 
-    return [t["trackhash"] for t in tracks]
+    return [t.trackhash for t in tracks]
 
 
 def get_artist_trackhashes(artisthash: str):
     """
     Returns a list of trackhashes for an artist.
     """
-    tracks = TrackStore.get_tracks_by_artisthash(artisthash)
+    tracks = TrackTable.get_tracks_by_artisthash(artisthash)
     return [t.trackhash for t in tracks]
 
 
@@ -164,10 +166,11 @@ def add_item_to_playlist(path: PlaylistIDPath, body: AddItemToPlaylistBody):
     else:
         trackhashes = []
 
-    insert_count = PL.add_tracks_to_playlist(int(playlist_id), trackhashes)
+    # insert_count = PL.add_tracks_to_playlist(int(playlist_id), trackhashes)
+    PlaylistTable.append_to_playlist(int(playlist_id), trackhashes)
 
-    if insert_count == 0:
-        return {"error": "Item already exists in playlist"}, 409
+    # if insert_count == 0:
+    #     return {"error": "Item already exists in playlist"}, 409
 
     return {"msg": "Done"}, 200
 
@@ -179,11 +182,10 @@ class GetPlaylistQuery(BaseModel):
 def format_custom_playlist(playlist: models.Playlist, tracks: list[models.Track]):
     duration = sum(t.duration for t in tracks)
 
-    playlist.set_duration(duration)
-    playlist = serialize_for_card(playlist)
+    playlist.duration = duration
 
     return {
-        "info": playlist,
+        "info": serialize_for_card(playlist),
         "tracks": tracks,
     }
 
@@ -209,19 +211,20 @@ def get_playlist(path: PlaylistIDPath, query: GetPlaylistQuery):
         playlist, tracks = handler()
         return format_custom_playlist(playlist, tracks)
 
-    playlist = PL.get_playlist_by_id(int(playlistid))
+    # playlist = PL.get_playlist_by_id(int(playlistid))
+    playlist = PlaylistTable.get_by_id(playlistid)
 
     if playlist is None:
         return {"msg": "Playlist not found"}, 404
 
-    tracks = TrackStore.get_tracks_by_trackhashes(list(playlist.trackhashes))
-
+    # tracks = TrackStore.get_tracks_by_trackhashes(list(playlist.trackhashes))
+    tracks = TrackTable.get_tracks_by_trackhashes(playlist.trackhashes)
     tracks = remove_duplicates(tracks)
+
     duration = sum(t.duration for t in tracks)
     playlist.last_updated = date_string_to_time_passed(playlist.last_updated)
 
-    playlist.set_duration(duration)
-    playlist.set_count(len(tracks))
+    playlist.duration = duration
 
     if not playlist.has_image:
         playlist.images = playlistlib.get_first_4_images(tracks)
@@ -247,7 +250,8 @@ def update_playlist_info(path: PlaylistIDPath, form: UpdatePlaylistForm):
     Update playlist
     """
     playlistid = path.playlistid
-    db_playlist = PL.get_playlist_by_id(playlistid)
+    # db_playlist = PL.get_playlist_by_id(playlistid)
+    db_playlist = PlaylistTable.get_by_id(playlistid)
 
     if db_playlist is None:
         return {"error": "Playlist not found"}, 404
@@ -286,7 +290,8 @@ def update_playlist_info(path: PlaylistIDPath, form: UpdatePlaylistForm):
 
     p_tuple = (*playlist.values(),)
 
-    PL.update_playlist(playlistid, playlist)
+    # PL.update_playlist(playlistid, playlist)
+    PlaylistTable.update_one(playlistid, playlist)
 
     playlist = models.Playlist(*p_tuple)
     playlist.last_updated = date_string_to_time_passed(playlist.last_updated)
@@ -301,7 +306,9 @@ def pin_unpin_playlist(path: PlaylistIDPath):
     """
     Pin playlist.
     """
-    playlist = PL.get_playlist_by_id(path.playlistid)
+    # playlist = PL.get_playlist_by_id(path.playlistid)
+
+    playlist = PlaylistTable.get_by_id(path.playlistid)
 
     if playlist is None:
         return {"error": "Playlist not found"}, 404
@@ -313,8 +320,8 @@ def pin_unpin_playlist(path: PlaylistIDPath):
     except KeyError:
         settings["pinned"] = True
 
-    PL.update_settings(path.playlistid, settings)
-
+    # PL.update_settings(path.playlistid, settings)
+    PlaylistTable.update_settings(path.playlistid, settings)
     return {"msg": "Done"}, 200
 
 
@@ -323,12 +330,14 @@ def remove_playlist_image(path: PlaylistIDPath):
     """
     Clear playlist image.
     """
-    playlist = PL.get_playlist_by_id(path.playlistid)
+    # playlist = PL.get_playlist_by_id(path.playlistid)
+    playlist = PlaylistTable.get_by_id(path.playlistid)
 
     if playlist is None:
         return {"error": "Playlist not found"}, 404
 
-    PL.remove_banner(path.playlistid)
+    # PL.remove_banner(path.playlistid)
+    PlaylistTable.remove_image(path.playlistid)
 
     playlist.image = None
     playlist.thumb = None
@@ -346,7 +355,8 @@ def remove_playlist(path: PlaylistIDPath):
     """
     Delete playlist
     """
-    PL.delete_playlist(path.playlistid)
+    # PL.delete_playlist(path.playlistid)
+    PlaylistTable.remove_one(path.playlistid)
 
     return {"msg": "Done"}, 200
 
@@ -368,13 +378,10 @@ def remove_tracks_from_playlist(
     #    index: int;
     # }
 
-    PL.remove_tracks_from_playlist(path.playlistid, body.tracks)
+    # PL.remove_tracks_from_playlist(path.playlistid, body.tracks)
+    PlaylistTable.remove_from_playlist(path.playlistid, body.tracks)
 
     return {"msg": "Done"}, 200
-
-
-def playlist_name_exists(name: str) -> bool:
-    return PL.count_playlist_by_name(name) > 0
 
 
 class SavePlaylistAsItemBody(BaseModel):
@@ -394,7 +401,7 @@ def save_item_as_playlist(body: SavePlaylistAsItemBody):
     playlist_name = body.playlist_name
     itemhash = body.itemhash
 
-    if playlist_name_exists(playlist_name):
+    if PlaylistTable.check_exists_by_name(playlist_name):
         return {"error": "Playlist already exists"}, 409
 
     if itemtype == "tracks":
@@ -437,8 +444,9 @@ def save_item_as_playlist(body: SavePlaylistAsItemBody):
                 img, str(playlist.id), "image/webp", filename=filename
             )
 
-    PL.add_tracks_to_playlist(playlist.id, trackhashes)
-    playlist.set_count(len(trackhashes))
+    # PL.add_tracks_to_playlist(playlist.id, trackhashes)
+    PlaylistTable.append_to_playlist(playlist.id, trackhashes)
+    playlist.count = len(trackhashes)
 
     images = playlistlib.get_first_4_images(trackhashes=trackhashes)
     playlist.images = [img["image"] for img in images]

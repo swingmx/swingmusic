@@ -79,6 +79,10 @@ class Base(MappedAsDataclass, DeclarativeBase):
             conn.execute(delete(cls))
 
     @classmethod
+    def remove_one(cls, id: int):
+        cls.execute(delete(cls).where(cls.id == id), commit=True)
+
+    @classmethod
     def all(cls):
         return cls.execute(select(cls))
 

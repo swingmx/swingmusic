@@ -22,6 +22,8 @@ from app.db.utils import (
     albums_to_dataclasses,
     artists_to_dataclasses,
     favorites_to_dataclass,
+    playlist_to_dataclass,
+    playlists_to_dataclasses,
     plugin_to_dataclasses,
     similar_artist_to_dataclass,
     similar_artists_to_dataclass,
@@ -168,7 +170,6 @@ class FavoritesTable(Base):
         JSON(), nullable=True, default_factory=dict
     )
 
-
     @classmethod
     def get_all(cls):
         with DbManager() as conn:
@@ -274,3 +275,109 @@ class ScrobbleTable(Base):
         )
 
         return tracklog_to_dataclasses(result.fetchall())
+
+
+class PlaylistTable(Base):
+    __tablename__ = "playlist"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    name: Mapped[str] = mapped_column(String(), index=True)
+    last_updated: Mapped[int] = mapped_column(Integer())
+    image: Mapped[str] = mapped_column(String(), nullable=True)
+    userid: Mapped[int] = mapped_column(
+        Integer(), ForeignKey("user.id", ondelete="cascade")
+    )
+    settings: Mapped[dict[str, Any]] = mapped_column(JSON())
+    trackhashes: Mapped[list[str]] = mapped_column(JSON(), default_factory=list)
+    extra: Mapped[dict[str, Any]] = mapped_column(
+        JSON(), nullable=True, default_factory=dict
+    )
+
+    @classmethod
+    def get_all(cls):
+        result = cls.all()
+        return playlists_to_dataclasses(result)
+
+    @classmethod
+    def add_one(cls, playlist: dict[str, Any]):
+        playlist["userid"] = get_current_userid()
+        result = cls.insert_one(playlist)
+        return result.lastrowid
+
+    @classmethod
+    def check_exists_by_name(cls, name: str):
+        result = cls.execute(
+            select(cls).where((cls.name == name) & (cls.userid == get_current_userid()))
+        )
+        return result.fetchone() is not None
+
+    @classmethod
+    def append_to_playlist(cls, id: int, trackhashes: list[str]):
+        print("type(trackhashes):", type(trackhashes))
+        return cls.execute(
+            update(cls)
+            .where((cls.id == id) & (cls.userid == get_current_userid()))
+            .values(trackhashes=cls.trackhashes + trackhashes),
+            commit=True,
+        )
+
+    @classmethod
+    def remove_from_playlist(cls, id: int, trackhashes: list[dict[str, Any]]):
+        # CHECKPOINT: Properly remove tracks from a playlist
+        # Without messing up the order in case of duplicates
+        tracks = cls.execute(
+            select(cls.trackhashes).where(
+                (cls.id == id) & (cls.userid == get_current_userid())
+            )
+        )
+
+        results = tracks.fetchone()
+        if results:
+            dbhashes: list[str] = results[0]
+
+            for item in trackhashes:
+                if dbhashes.index(item["trackhash"]) == item["index"]:
+                    dbhashes.remove(item["trackhash"])
+
+            return cls.execute(
+                update(cls)
+                .where((cls.id == id) & (cls.userid == get_current_userid()))
+                .values(trackhashes=dbhashes),
+                commit=True,
+            )
+
+    @classmethod
+    def get_by_id(cls, id: int):
+        result = cls.execute(
+            select(cls).where((cls.id == id) & (cls.userid == get_current_userid()))
+        )
+        result = result.fetchone()
+        if result:
+            return playlist_to_dataclass(result)
+
+    @classmethod
+    def update_one(cls, id: int, playlist: dict[str, Any]):
+        return cls.execute(
+            update(cls)
+            .where((cls.id == id) & (cls.userid == get_current_userid()))
+            .values(playlist),
+            commit=True,
+        )
+
+    @classmethod
+    def update_settings(cls, id: int, settings: dict[str, Any]):
+        return cls.execute(
+            update(cls)
+            .where((cls.id == id) & (cls.userid == get_current_userid()))
+            .values(settings=settings),
+            commit=True,
+        )
+
+    @classmethod
+    def remove_image(cls, id: int):
+        return cls.execute(
+            update(cls)
+            .where((cls.id == id) & (cls.userid == get_current_userid()))
+            .values(image=None),
+            commit=True,
+        )

@@ -2,6 +2,7 @@ import dataclasses
 import json
 from dataclasses import dataclass
 from pathlib import Path
+from typing import Any
 
 from app import settings
 
@@ -14,10 +15,12 @@ class Playlist:
     image: str | None
     last_updated: str
     name: str
-    settings: str | dict
-    trackhashes: str | list[str]
+    settings: dict
+    userid: int
+    trackhashes: list[str]
+    extra: dict[str, Any] = dataclasses.field(default_factory=dict)
 
-    thumb: str | None = ""
+    thumb: str = ""
     count: int = 0
     duration: int = 0
     has_image: bool = False
@@ -25,11 +28,11 @@ class Playlist:
     pinned: bool = False
 
     def __post_init__(self):
-        self.trackhashes = json.loads(str(self.trackhashes))
-        self.count = len(self.trackhashes)
+        # self.trackhashes = json.loads(str(self.trackhashes))
+        # self.count = len(self.trackhashes)
 
-        if isinstance(self.settings, str):
-            self.settings = dict(json.loads(self.settings))
+        # if isinstance(self.settings, str):
+        #     self.settings = dict(json.loads(self.settings))
 
         self.pinned = self.settings.get("pinned", False)
         self.has_image = (
@@ -42,11 +45,11 @@ class Playlist:
             self.image = "None"
             self.thumb = "None"
 
-    def set_duration(self, duration: int):
-        self.duration = duration
+    # def set_duration(self, duration: int):
+    #     self.duration = duration
 
-    def set_count(self, count: int):
-        self.count = count
+    # def set_count(self, count: int):
+    #     self.count = count
 
     def clear_lists(self):
         """
