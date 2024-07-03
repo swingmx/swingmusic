@@ -1,7 +1,7 @@
 import datetime
+import enum
 from shlex import join
 from typing import Any
-from flask_jwt_extended import current_user
 from sqlalchemy import (
     JSON,
     Boolean,
@@ -313,36 +313,41 @@ class PlaylistTable(Base):
 
     @classmethod
     def append_to_playlist(cls, id: int, trackhashes: list[str]):
-        print("type(trackhashes):", type(trackhashes))
+        dbtrackhashes = cls.get_trackhashes(id)
+        if not dbtrackhashes:
+            dbtrackhashes = []
+
         return cls.execute(
             update(cls)
             .where((cls.id == id) & (cls.userid == get_current_userid()))
-            .values(trackhashes=cls.trackhashes + trackhashes),
+            .values(trackhashes=dbtrackhashes + trackhashes),
             commit=True,
         )
 
     @classmethod
-    def remove_from_playlist(cls, id: int, trackhashes: list[dict[str, Any]]):
-        # CHECKPOINT: Properly remove tracks from a playlist
-        # Without messing up the order in case of duplicates
-        tracks = cls.execute(
+    def get_trackhashes(cls, id: int) -> list[str]:
+        result = cls.execute(
             select(cls.trackhashes).where(
                 (cls.id == id) & (cls.userid == get_current_userid())
             )
         )
+        result = result.fetchone()
+        if result:
+            return result[0]
 
-        results = tracks.fetchone()
-        if results:
-            dbhashes: list[str] = results[0]
-
+    @classmethod
+    def remove_from_playlist(cls, id: int, trackhashes: list[dict[str, Any]]):
+        # INFO: Get db trackhashes
+        dbtrackhashes = cls.get_trackhashes(id)
+        if dbtrackhashes:
             for item in trackhashes:
-                if dbhashes.index(item["trackhash"]) == item["index"]:
-                    dbhashes.remove(item["trackhash"])
+                if dbtrackhashes.index(item["trackhash"]) == item["index"]:
+                    dbtrackhashes.remove(item["trackhash"])
 
             return cls.execute(
                 update(cls)
                 .where((cls.id == id) & (cls.userid == get_current_userid()))
-                .values(trackhashes=dbhashes),
+                .values(trackhashes=dbtrackhashes),
                 commit=True,
             )
 
@@ -381,3 +386,34 @@ class PlaylistTable(Base):
             .values(image=None),
             commit=True,
         )
+
+
+# class PlaylistTrackTable(Base):
+#     __tablename__ = "playlisttrack"
+
+#     id: Mapped[int] = mapped_column(primary_key=True)
+#     trackhash: Mapped[str] = mapped_column(String(), index=True)
+#     playlistid: Mapped[int] = mapped_column(
+#         Integer(), ForeignKey("playlist.id", ondelete="cascade")
+#     )
+#     index: Mapped[int] = mapped_column(Integer())
+#     userid: Mapped[int] = mapped_column(
+#         Integer(), ForeignKey("user.id", ondelete="cascade")
+#     )
+
+#     @classmethod
+#     def count_by_playlist()
+
+#     @classmethod
+#     def insert_many(cls, playlistid: int, trackhashes: list[str]):
+#         userid = get_current_userid()
+#         items = [
+#             {
+#                 "index": index,
+#                 "userid": userid,
+#                 "trackhash": trackhash,
+#                 "playlistid": playlistid,
+#             }
+#             for index, trackhash in enumerate(trackhashes)
+#         ]
+#         return cls.execute(insert(cls).values(items), commit=True)

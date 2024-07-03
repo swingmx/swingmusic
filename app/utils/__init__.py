@@ -1,5 +1,5 @@
 import locale
-from typing import TypeVar
+from typing import Iterable, TypeVar
 
 T = TypeVar("T")
 
@@ -16,5 +16,5 @@ def format_number(number: float) -> str:
 
 
 
-def flatten(list_: list[list[T]]) -> list[T]:
+def flatten(list_: Iterable[list[T]]) -> list[T]:
     return [item for sublist in list_ for item in sublist]

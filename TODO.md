@@ -48,3 +48,11 @@
 - Test foreign keys on delete
 - Map scrobble info on app start
 - Make home page recent items faster!
+- Normalize playlists table:
+  - New table to hold playlist entries
+- Normalize similar artists:
+  - New table to hold similar artist entries
+  - Create 2 way relationships, such that if an artist A is similar to another B with a certain weight,
+    then artist B is similar to A with the same weight, unless overwritten.
+- Figure out how to update album/artist tables instead of deleting all rows when the app starts
+- Move get all filtering and sorting operations to the database since all sort keys are table columns

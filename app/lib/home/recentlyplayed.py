@@ -215,14 +215,6 @@ def get_recently_played(limit=7):
     return items
 
 
-def get_recently_played_tracks(limit: int):
-    # records = db.get_recently_played(start=0, limit=limit)
-    # last_updated = records[0].timestamp
-    # tracks = TrackStore.get_tracks_by_trackhashes([r.trackhash for r in records])
-    # return tracks, last_updated
-    return TrackTable.get_recently_played(limit)
-
-
 def get_recently_played_playlist(limit: int = 100):
     playlist = Playlist(
         id="recentlyplayed",
@@ -233,12 +225,12 @@ def get_recently_played_playlist(limit: int = 100):
         trackhashes=[],
     )
 
-    tracks = get_recently_played_tracks(limit)
+    tracks = TrackTable.get_recently_played(limit)
     date = datetime.fromtimestamp(tracks[0].lastplayed)
     playlist.last_updated = date_string_to_time_passed(create_new_date(date))
 
     images = get_first_4_images(tracks=tracks)
     playlist.images = images
-    playlist.set_count(len(tracks))
+    playlist.count = len(tracks)
 
     return playlist, tracks

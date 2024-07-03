@@ -166,12 +166,7 @@ def add_item_to_playlist(path: PlaylistIDPath, body: AddItemToPlaylistBody):
     else:
         trackhashes = []
 
-    # insert_count = PL.add_tracks_to_playlist(int(playlist_id), trackhashes)
     PlaylistTable.append_to_playlist(int(playlist_id), trackhashes)
-
-    # if insert_count == 0:
-    #     return {"error": "Item already exists in playlist"}, 409
-
     return {"msg": "Done"}, 200
 
 
@@ -211,15 +206,12 @@ def get_playlist(path: PlaylistIDPath, query: GetPlaylistQuery):
         playlist, tracks = handler()
         return format_custom_playlist(playlist, tracks)
 
-    # playlist = PL.get_playlist_by_id(int(playlistid))
     playlist = PlaylistTable.get_by_id(playlistid)
 
     if playlist is None:
         return {"msg": "Playlist not found"}, 404
 
-    # tracks = TrackStore.get_tracks_by_trackhashes(list(playlist.trackhashes))
     tracks = TrackTable.get_tracks_by_trackhashes(playlist.trackhashes)
-    tracks = remove_duplicates(tracks)
 
     duration = sum(t.duration for t in tracks)
     playlist.last_updated = date_string_to_time_passed(playlist.last_updated)
@@ -250,7 +242,6 @@ def update_playlist_info(path: PlaylistIDPath, form: UpdatePlaylistForm):
     Update playlist
     """
     playlistid = path.playlistid
-    # db_playlist = PL.get_playlist_by_id(playlistid)
     db_playlist = PlaylistTable.get_by_id(playlistid)
 
     if db_playlist is None:
@@ -270,7 +261,6 @@ def update_playlist_info(path: PlaylistIDPath, form: UpdatePlaylistForm):
         "last_updated": create_new_date(),
         "name": str(form.name).strip(),
         "settings": settings,
-        "trackhashes": json.dumps([]),
     }
 
     if image:
@@ -290,7 +280,6 @@ def update_playlist_info(path: PlaylistIDPath, form: UpdatePlaylistForm):
 
     p_tuple = (*playlist.values(),)
 
-    # PL.update_playlist(playlistid, playlist)
     PlaylistTable.update_one(playlistid, playlist)
 
     playlist = models.Playlist(*p_tuple)
@@ -306,8 +295,6 @@ def pin_unpin_playlist(path: PlaylistIDPath):
     """
     Pin playlist.
     """
-    # playlist = PL.get_playlist_by_id(path.playlistid)
-
     playlist = PlaylistTable.get_by_id(path.playlistid)
 
     if playlist is None:
@@ -320,7 +307,6 @@ def pin_unpin_playlist(path: PlaylistIDPath):
     except KeyError:
         settings["pinned"] = True
 
-    # PL.update_settings(path.playlistid, settings)
     PlaylistTable.update_settings(path.playlistid, settings)
     return {"msg": "Done"}, 200
 
@@ -330,13 +316,11 @@ def remove_playlist_image(path: PlaylistIDPath):
     """
     Clear playlist image.
     """
-    # playlist = PL.get_playlist_by_id(path.playlistid)
     playlist = PlaylistTable.get_by_id(path.playlistid)
 
     if playlist is None:
         return {"error": "Playlist not found"}, 404
 
-    # PL.remove_banner(path.playlistid)
     PlaylistTable.remove_image(path.playlistid)
 
     playlist.image = None
@@ -355,7 +339,6 @@ def remove_playlist(path: PlaylistIDPath):
     """
     Delete playlist
     """
-    # PL.delete_playlist(path.playlistid)
     PlaylistTable.remove_one(path.playlistid)
 
     return {"msg": "Done"}, 200
@@ -378,7 +361,6 @@ def remove_tracks_from_playlist(
     #    index: int;
     # }
 
-    # PL.remove_tracks_from_playlist(path.playlistid, body.tracks)
     PlaylistTable.remove_from_playlist(path.playlistid, body.tracks)
 
     return {"msg": "Done"}, 200

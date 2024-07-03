@@ -2,6 +2,7 @@
 
 <!-- TODO: ELABORATE -->
 - Auth
+- New artists/albums Sort by: last played, no. of streams, total stream duration
 
 ## Improvements
 - The context menu now doesn't take forever to open up
@@ -12,6 +13,7 @@
 - 
 
 ## Development
+- Rewritten the whole DB layer to move stores from memory to the database.
 
 
 ## THE BIG ONE API CHANGES

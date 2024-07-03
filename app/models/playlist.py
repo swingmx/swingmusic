@@ -5,6 +5,7 @@ from pathlib import Path
 from typing import Any
 
 from app import settings
+from app.utils.auth import get_current_userid
 
 
 @dataclass(slots=True)
@@ -16,10 +17,10 @@ class Playlist:
     last_updated: str
     name: str
     settings: dict
-    userid: int
-    trackhashes: list[str]
+    trackhashes: list[str] = dataclasses.field(default_factory=list)
     extra: dict[str, Any] = dataclasses.field(default_factory=dict)
 
+    userid: int | None = None
     thumb: str = ""
     count: int = 0
     duration: int = 0
@@ -28,11 +29,10 @@ class Playlist:
     pinned: bool = False
 
     def __post_init__(self):
-        # self.trackhashes = json.loads(str(self.trackhashes))
-        # self.count = len(self.trackhashes)
+        self.count = len(self.trackhashes)
 
-        # if isinstance(self.settings, str):
-        #     self.settings = dict(json.loads(self.settings))
+        if self.userid is None:
+            self.userid = get_current_userid()
 
         self.pinned = self.settings.get("pinned", False)
         self.has_image = (
@@ -44,12 +44,6 @@ class Playlist:
         else:
             self.image = "None"
             self.thumb = "None"
-
-    # def set_duration(self, duration: int):
-    #     self.duration = duration
-
-    # def set_count(self, count: int):
-    #     self.count = count
 
     def clear_lists(self):
         """

@@ -73,7 +73,7 @@ def send_file_as_chunks(filepath: str, audio_type: str) -> Response:
     """
     # NOTE: +1 makes sure the last byte is included in the range.
     # NOTE: -1 is used to convert the end index to a 0-based index.
-    chunk_size = 1024 * 360  # 360 KB
+    chunk_size = 1024 * 512  # 0.5MB
 
     # Get file size
     file_size = os.path.getsize(filepath)

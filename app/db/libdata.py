@@ -14,7 +14,7 @@ from app.models import Album as AlbumModel
 from app.utils.remove_duplicates import remove_duplicates
 from app.db import engine
 
-from sqlalchemy import JSON, Boolean, Integer, String, and_, delete, select, update
+from sqlalchemy import JSON, Boolean, Integer, String, delete, select, update
 from sqlalchemy.orm import Mapped, mapped_column, DeclarativeBase
 
 
@@ -32,16 +32,26 @@ class Base(MasterBase, DeclarativeBase):
     @classmethod
     def get_all_hashes(cls, create_date: int | None = None):
         with DbManager() as conn:
-            if cls.__tablename__ == "track":
-                stmt = select(TrackTable.trackhash).where(cls.last_mod < create_date)
-            elif cls.__tablename__ == "album":
-                stmt = select(AlbumTable.albumhash).where(
-                    cls.created_date < create_date
-                )
-            elif cls.__tablename__ == "artist":
-                stmt = select(ArtistTable.artisthash).where(
-                    cls.created_date < create_date
-                )
+            if create_date:
+                if cls.__tablename__ == "track":
+                    stmt = select(TrackTable.trackhash).where(
+                        cls.last_mod < create_date
+                    )
+                elif cls.__tablename__ == "album":
+                    stmt = select(AlbumTable.albumhash).where(
+                        cls.created_date < create_date
+                    )
+                elif cls.__tablename__ == "artist":
+                    stmt = select(ArtistTable.artisthash).where(
+                        cls.created_date < create_date
+                    )
+            else:
+                if cls.__tablename__ == "track":
+                    stmt = select(TrackTable.trackhash)
+                elif cls.__tablename__ == "album":
+                    stmt = select(AlbumTable.albumhash)
+                elif cls.__tablename__ == "artist":
+                    stmt = select(ArtistTable.artisthash)
 
             result = conn.execute(stmt)
             return {row[0] for row in result.fetchall()}
@@ -135,7 +145,9 @@ class TrackTable(Base):
     def get_tracks_by_filepaths(cls, filepaths: list[str]):
         with DbManager() as conn:
             result = conn.execute(
-                select(TrackTable).where(TrackTable.filepath.in_(filepaths))
+                select(TrackTable)
+                .where(TrackTable.filepath.in_(filepaths))
+                .order_by(TrackTable.last_mod)
             )
             return tracks_to_dataclasses(result.fetchall())
 
@@ -155,10 +167,8 @@ class TrackTable(Base):
                 result = conn.execute(
                     select(TrackTable)
                     .where(
-                        and_(
-                            TrackTable.trackhash == hash,
-                            TrackTable.filepath == filepath,
-                        )
+                        (TrackTable.trackhash == hash)
+                        & (TrackTable.filepath == filepath),
                     )
                     .order_by(TrackTable.bitrate.desc())
                 )
@@ -194,9 +204,18 @@ class TrackTable(Base):
     def get_tracks_by_trackhashes(cls, hashes: Iterable[str], limit: int | None = None):
         with DbManager() as conn:
             result = conn.execute(
-                select(TrackTable).where(TrackTable.trackhash.in_(hashes)).limit(limit)
+                select(TrackTable)
+                .where(TrackTable.trackhash.in_(hashes))
+                .group_by(TrackTable.trackhash)
+                .limit(limit)
             )
-            return tracks_to_dataclasses(result.fetchall())
+            tracks = tracks_to_dataclasses(result.fetchall())
+
+            # order the tracks in the same order as the hashes
+            if type(hashes) == list:
+                return sorted(tracks, key=lambda x: hashes.index(x.trackhash))
+
+            return tracks
 
     @classmethod
     def get_recently_added(cls, start: int, limit: int):
@@ -212,7 +231,12 @@ class TrackTable(Base):
 
     @classmethod
     def get_recently_played(cls, limit: int):
-        result = cls.execute(select(cls).order_by(cls.lastplayed.desc()).limit(limit))
+        result = cls.execute(
+            select(cls)
+            .group_by(cls.trackhash)
+            .order_by(cls.lastplayed.desc())
+            .limit(limit)
+        )
         return tracks_to_dataclasses(result.fetchall())
 
     @classmethod
@@ -276,7 +300,13 @@ class AlbumTable(Base):
             result = conn.execute(
                 select(AlbumTable).where(AlbumTable.albumhash.in_(hashes)).limit(limit)
             )
-            return albums_to_dataclasses(result.fetchall())
+            albums = albums_to_dataclasses(result.fetchall())
+
+            # order the albums in the same order as the hashes
+            if type(hashes) == list:
+                return sorted(albums, key=lambda x: hashes.index(x.albumhash))
+
+            return albums
 
     @classmethod
     def get_albums_by_artisthashes(cls, artisthashes: list[str]):

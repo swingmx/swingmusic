@@ -112,21 +112,26 @@ class Album:
         Runs all the checks to determine the type of album.
         """
         if self.is_single(tracks, singleTrackAsSingle):
-            return "single"
+            self.type = "single"
+            return
 
         if self.is_soundtrack():
-            return "soundtrack"
+            self.type = "soundtrack"
+            return
 
         if self.is_live_album():
-            return "live album"
+            self.type = "live album"
+            return
 
         if self.is_compilation():
-            return "compilation"
+            self.type = "compilation"
+            return
 
         if self.is_ep():
-            return "ep"
+            self.type = "ep"
+            return
 
-        return "album"
+        self.type = "album"
 
     def is_soundtrack(self) -> bool:
         """
