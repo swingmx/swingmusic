@@ -48,7 +48,7 @@ def get_album_tracks_and_info(body: AlbumHashSchema):
     tracks = TrackDb.get_tracks_by_albumhash(albumhash)
     album.trackcount = len(tracks)
     album.duration = sum(t.duration for t in tracks)
-    album.type = album.check_type(
+    album.check_type(
         tracks=tracks, singleTrackAsSingle=UserConfig().showAlbumsAsSingles
     )
 

@@ -210,6 +210,7 @@ class IndexArtists:
 
             for a in track.albumartists:
                 if a not in this_artists:
+                    a["in_track"] = False
                     this_artists.append(a)
 
             for thisartist in this_artists:
@@ -228,7 +229,11 @@ class IndexArtists:
                         "playcount": track.playcount,
                         "playduration": track.playduration,
                         "trackcount": None,
-                        "tracks": {track.trackhash},
+                        "tracks": (
+                            {track.trackhash}
+                            if thisartist.get("in_track", True)
+                            else set()
+                        ),
                     }
                 else:
                     artist = artists[thisartist["artisthash"]]
@@ -236,11 +241,14 @@ class IndexArtists:
                     artist["playcount"] += track.playcount
                     artist["playduration"] += track.playduration
                     artist["albums"].add(track.albumhash)
-                    artist["tracks"].add(track.trackhash)
                     artist["date"] = min(artist["date"], track.date)
                     artist["lastplayed"] = max(artist["lastplayed"], track.lastplayed)
                     artist["created_date"] = min(artist["created_date"], track.last_mod)
                     artist["names"].add(thisartist["name"])
+
+
+                    if thisartist.get("in_track", True):
+                        artist["tracks"].add(track.trackhash)
 
                     if track.genres:
                         artist["genres"].extend(track.genres)

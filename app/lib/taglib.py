@@ -269,7 +269,7 @@ def get_tags(filepath: str, artist_separators: set[str]):
     ]
 
     tags.artisthashes = list(
-        {a["artisthash"] for a in tags.artists + tags.albumartists}
+        {a["artisthash"] for a in tags.artists}
     )
 
     # remove prod by

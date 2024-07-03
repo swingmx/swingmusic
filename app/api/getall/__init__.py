@@ -107,7 +107,7 @@ def get_all_items(path: GetAllItemsPath, query: GetAllItemsQuery):
         item_dict = serialize_album(item) if is_albums else serialize_artist(item)
 
         if sort_is_date:
-            item_dict["help_text"] = item.date
+            item_dict["help_text"] = datetime.fromtimestamp(item.date).year
 
         if sort_is_create_date:
             date = create_new_date(datetime.fromtimestamp(item.created_date))
