@@ -39,62 +39,9 @@ class Album:
     versions: list[str] = dataclasses.field(default_factory=list)
 
     def __post_init__(self):
-        # self.date = datetime.datetime.fromtimestamp(self.date).year
         self.image = self.albumhash + ".webp"
         self.populate_versions()
 
-    # albumhash: str
-    # title: str
-    # albumartists: list[Artist]
-
-    # albumartists_hashes: str = ""
-    # image: str = ""
-    # count: int = 0
-    # duration: int = 0
-    # colors: list[str] = dataclasses.field(default_factory=list)
-    # date: str = ""
-
-    # created_date: int = 0
-    # og_title: str = ""
-    # base_title: str = ""
-    # is_soundtrack: bool = False
-    # is_compilation: bool = False
-    # is_single: bool = False
-    # is_EP: bool = False
-    # is_favorite: bool = False
-    # is_live: bool = False
-
-    # genres: list[str] = dataclasses.field(default_factory=list)
-
-    # def __post_init__(self):
-    #     self.title = self.title.strip()
-    #     self.og_title = self.title
-    #     self.image = self.albumhash + ".webp"
-
-    #     # Fetch album artists from title
-    #     if get_flag(SessionVarKeys.EXTRACT_FEAT):
-    #         featured, self.title = parse_feat_from_title(self.title)
-
-    #         if len(featured) > 0:
-    #             original_lower = "-".join([a.name.lower() for a in self.albumartists])
-    #             self.albumartists.extend(
-    #                 [Artist(a) for a in featured if a.lower() not in original_lower]
-    #             )
-
-    #             from ..store.tracks import TrackStore
-
-    #             TrackStore.append_track_artists(self.albumhash, featured, self.title)
-
-    #     # Handle album version data
-    #     else:
-    #         self.base_title = get_base_title_and_versions(
-    #             self.title, get_versions=False
-    #         )[0]
-
-    #     self.albumartists_hashes = "-".join(a.artisthash for a in self.albumartists)
-
-    # # def set_colors(self, colors: list[str]):
-    # #     self.colors = colors
     def populate_versions(self):
         _, self.versions = get_base_title_and_versions(self.og_title, get_versions=True)
 
@@ -223,28 +170,3 @@ class Album:
             # TODO: Review -> Are the above commented checks necessary?
         ):
             return True
-
-    # def get_date_from_tracks(self, tracks: list[Track]):
-    #     """
-    #     Gets the date of the album its tracks.
-
-    #     Args:
-    #         tracks (list[Track]): The tracks of the album.
-    #     """
-    #     if self.date:
-    #         return
-
-    #     dates = (int(t.date) for t in tracks if t.date)
-    #     try:
-    #         self.date = datetime.datetime.fromtimestamp(min(dates)).year
-    #     except:
-    #         self.date = datetime.datetime.now().year
-
-    # def set_count(self, count: int):
-    #     self.count = count
-
-    # def set_duration(self, duration: int):
-    #     self.duration = duration
-
-    # def set_created_date(self, created_date: int):
-    #     self.created_date = created_date
