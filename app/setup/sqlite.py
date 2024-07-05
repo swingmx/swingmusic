@@ -3,6 +3,7 @@ Module to setup Sqlite databases and tables.
 Applies migrations.
 """
 
+from sqlalchemy import create_engine
 from app.db.userdata import UserTable
 from app.db.sqlite import create_connection, create_tables, queries
 from app.db.sqlite.auth import SQLiteAuthMethods as authdb
@@ -11,6 +12,8 @@ from app.settings import Db
 
 from app.db import create_all
 from app.db.libdata import create_all as create_all_libdata
+
+from app.db.engine import DbEngine
 
 
 def run_migrations():
@@ -24,6 +27,13 @@ def setup_sqlite():
     """
     Create Sqlite databases and tables.
     """
+    DbEngine.engine = create_engine(
+        f"sqlite+pysqlite:///{Db.get_app_db_path()}",
+        echo=False,
+        max_overflow=0,
+        pool_size=25,
+    )
+
     create_all()
     create_all_libdata()
 

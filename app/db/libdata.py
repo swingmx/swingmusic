@@ -12,8 +12,7 @@ from app.db.utils import (
 )
 from app.models import Album as AlbumModel
 from app.utils.remove_duplicates import remove_duplicates
-from app.db import engine
-
+from app.db.engine import DbEngine
 from sqlalchemy import JSON, Boolean, Integer, String, delete, select, update
 from sqlalchemy.orm import Mapped, mapped_column, DeclarativeBase
 
@@ -25,7 +24,7 @@ def create_all():
     """
     Create all the tables defined in this file.
     """
-    Base.metadata.create_all(engine)
+    Base.metadata.create_all(DbEngine.engine)
 
 
 class Base(MasterBase, DeclarativeBase):

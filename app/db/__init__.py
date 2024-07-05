@@ -1,7 +1,6 @@
 from typing import Any
 
 from sqlalchemy import (
-    create_engine,
     delete,
     func,
     insert,
@@ -15,18 +14,7 @@ from sqlalchemy.orm import (
     MappedAsDataclass,
 )
 
-# ============================================================
-# TODO: Make sure the database is created before we run this.
-fullpath = "/home/cwilvx/temp/swingmusic/swing.db"
-engine = create_engine(
-    f"sqlite+pysqlite:///{fullpath}",
-    echo=False,
-    max_overflow=0,
-    pool_size=5,
-)
-
-# connection = engine.connect()
-
+from app.db.engine import DbEngine
 
 @event.listens_for(Engine, "connect")
 def set_sqlite_pragma(dbapi_connection, connection_record):
@@ -38,12 +26,10 @@ def set_sqlite_pragma(dbapi_connection, connection_record):
 class DbManager:
     def __init__(self, commit: bool = False):
         self.commit = commit
-        self.engine = create_engine(f"sqlite+pysqlite:///{fullpath}", echo=True)
-        self.conn = self.engine.connect()
+        self.conn = DbEngine.engine.connect()
 
     def __enter__(self):
         return self.conn.execution_options(preserve_rowcount=True)
-        # return connection
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         if self.commit:
@@ -92,4 +78,4 @@ class Base(MappedAsDataclass, DeclarativeBase):
 
 
 def create_all():
-    Base().metadata.create_all(engine)
+    Base().metadata.create_all(DbEngine.engine)
