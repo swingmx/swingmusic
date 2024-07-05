@@ -116,7 +116,7 @@ class TrackTable(Base):
     date: Mapped[int] = mapped_column(Integer(), nullable=True)
     disc: Mapped[int] = mapped_column(Integer())
     duration: Mapped[int] = mapped_column(Integer())
-    filepath: Mapped[str] = mapped_column(String(), unique=True)
+    filepath: Mapped[str] = mapped_column(String(), index=True, unique=True)
     folder: Mapped[str] = mapped_column(String(), index=True)
     genrehashes: Mapped[list[str]] = mapped_column(JSON(), index=True)
     genres: Mapped[Optional[list[dict[str, str]]]] = mapped_column(JSON())

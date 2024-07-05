@@ -5,7 +5,6 @@ Applies migrations.
 
 from sqlalchemy import create_engine
 from app.db.userdata import UserTable
-from app.db.sqlite import create_connection, create_tables, queries
 from app.db.sqlite.auth import SQLiteAuthMethods as authdb
 from app.migrations import apply_migrations
 from app.settings import Db
