@@ -30,8 +30,8 @@ def setup_sqlite():
     DbEngine.engine = create_engine(
         f"sqlite+pysqlite:///{Db.get_app_db_path()}",
         echo=False,
-        max_overflow=0,
-        pool_size=25,
+        max_overflow=20,
+        pool_size=10,
     )
 
     create_all()
