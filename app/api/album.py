@@ -2,10 +2,8 @@
 Contains all the album routes.
 """
 
-from itertools import groupby
 import random
 
-from flask_jwt_extended import current_user
 from pydantic import Field
 from flask_openapi3 import Tag
 from flask_openapi3 import APIBlueprint
@@ -16,10 +14,11 @@ from app.db.libdata import ArtistTable
 from app.db.libdata import AlbumTable as AlbumDb, TrackTable as TrackDb
 from app.db.userdata import SimilarArtistTable
 from app.settings import Defaults
+from app.utils import flatten
 from app.utils.hashing import create_hash
 from app.lib.albumslib import sort_by_track_no
-from app.serializers.album import serialize_for_card, serialize_for_card_many
-from app.serializers.track import serialize_track, serialize_tracks
+from app.serializers.album import serialize_for_card_many
+from app.serializers.track import serialize_tracks
 from app.db.sqlite.albumcolors import SQLiteAlbumMethods as adb
 from app.db.sqlite.favorite import SQLiteFavoriteMethods as favdb
 from app.db.sqlite.lastfm.similar_artists import SQLiteLastFMSimilarArtists as lastfmdb
@@ -86,7 +85,6 @@ def get_album_tracks(path: AlbumHashSchema):
 class GetMoreFromArtistsBody(AlbumLimitSchema):
     albumartists: list = Field(
         description="The artist hashes to get more albums from",
-        example='[{"name": "Khalid", "artisthash": "94ca2dba1c"}]',
     )
 
     base_title: str = Field(
@@ -108,23 +106,26 @@ def get_more_from_artist(body: GetMoreFromArtistsBody):
     base_title = body.base_title
 
     all_albums = AlbumDb.get_albums_by_artisthashes(albumartists)
+    seen_hashes = set()
 
-    # filter out albums with the same base title
-    all_albums = filter(
-        lambda a: create_hash(a.base_title) != create_hash(base_title), all_albums
-    )
-    all_albums = list(all_albums)
+    for artisthash, albums in all_albums.items():
+        albums = [
+            a
+            for a in albums
+            # INFO: filter out albums added to other artists
+            if a.albumhash not in seen_hashes
+            # INFO: filter out albums with the same base title
+            and create_hash(a.base_title) != create_hash(base_title)
+        ]
+        all_albums[artisthash] = serialize_for_card_many(
+            [a for a in albums if create_hash(a.base_title) != create_hash(base_title)][
+                :limit
+            ]
+        )
+        # INFO: record albums added to other artists
+        seen_hashes.update([a.albumhash for a in albums][:limit])
 
-    if not len(all_albums):
-        return []
-
-    # group by first albumartist's artisthash
-    groups = groupby(all_albums, lambda a: a.albumartists[0]["artisthash"])
-
-    return [
-        {"artisthash": g[0], "albums": serialize_for_card_many(list(g[1])[:limit])}
-        for g in groups
-    ]
+    return all_albums
 
 
 class GetAlbumVersionsBody(ArtistHashSchema):
@@ -183,6 +184,7 @@ def get_similar_albums(query: GetSimilarAlbumsQuery):
     artists = ArtistTable.get_artists_by_artisthashes(artisthashes)
 
     albums = AlbumDb.get_albums_by_artisthashes([a.artisthash for a in artists])
+    albums = flatten(albums.values())
     sample = random.sample(albums, min(len(albums), limit))
 
     return serialize_for_card_many(sample[:limit])

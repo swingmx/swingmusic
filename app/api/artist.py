@@ -22,6 +22,7 @@ from app.db.libdata import AlbumTable, TrackTable
 from app.db.userdata import SimilarArtistTable
 
 from app.serializers.album import serialize_for_card_many
+from app.serializers.artist import serialize_for_cards
 from app.serializers.track import serialize_tracks
 
 bp_tag = Tag(name="Artist", description="Single artist")
@@ -166,4 +167,4 @@ def get_similar_artists(path: ArtistHashSchema, query: ArtistLimitSchema):
     if len(similar) > limit:
         similar = random.sample(similar, min(limit, len(similar)))
 
-    return similar[:limit]
+    return serialize_for_cards(similar[:limit])

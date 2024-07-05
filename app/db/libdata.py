@@ -311,14 +311,14 @@ class AlbumTable(Base):
     @classmethod
     def get_albums_by_artisthashes(cls, artisthashes: list[str]):
         with DbManager() as conn:
-            albums: list[AlbumModel] = []
+            albums: dict[str, list[AlbumModel]] = {}
 
             for artist in artisthashes:
                 result = conn.execute(
                     # NOTE: The artist dict keys need to in the same order they appear in the db for this to work!
-                    select(AlbumTable).where(AlbumTable.albumartists.contains(artist))
+                    select(AlbumTable).where(AlbumTable.artisthashes.contains(artist))
                 )
-                albums.extend(albums_to_dataclasses(result.fetchall()))
+                albums[artist] = (albums_to_dataclasses(result.fetchall()))
 
             return albums
 
