@@ -12,6 +12,7 @@ from sqlalchemy import event
 from sqlalchemy.orm import (
     DeclarativeBase,
     MappedAsDataclass,
+    Session
 )
 
 from app.db.engine import DbEngine
@@ -27,6 +28,8 @@ class DbManager:
     def __init__(self, commit: bool = False):
         self.commit = commit
         self.conn = DbEngine.engine.connect()
+        with Session(DbEngine.engine) as session:
+            session.connection
 
     def __enter__(self):
         return self.conn.execution_options(preserve_rowcount=True)
@@ -35,7 +38,7 @@ class DbManager:
         if self.commit:
             self.conn.commit()
 
-        # self.conn.close()
+        self.conn.close()
 
 
 class Base(MappedAsDataclass, DeclarativeBase):
