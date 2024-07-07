@@ -42,7 +42,7 @@ class FolderStore:
                 track = TrackStore.trackhashmap.get(trackhash)
 
                 if track:
-                    yield [t for t in track.tracks if t.filepath == filepath][0]
+                    yield track.tracks[0]
 
     @classmethod
     def count_tracks_containing_paths(cls, paths: list[str]):
