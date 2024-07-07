@@ -2,6 +2,7 @@ from sortedcontainers import SortedSet
 from concurrent.futures import ThreadPoolExecutor
 
 from app.db.libdata import TrackTable
+from app.store.tracks import TrackStore
 
 
 class FolderStore:
@@ -13,6 +14,10 @@ class FolderStore:
     """
 
     filepaths: SortedSet = SortedSet()
+    map: dict[str, str] = {}
+    """
+    The map above is a dictionary that maps the folder path to the track hash, which can be used to fetch the track from the track store (a dict of track hashes to track objects).
+    """
 
     @classmethod
     def load_filepaths(cls):
@@ -26,7 +31,18 @@ class FolderStore:
         tracks = TrackTable.get_all()
         for track in tracks:
             cls.filepaths.add(track.filepath)
+            cls.map[track.filepath] = track.trackhash
 
+    @classmethod
+    def get_tracks_by_filepaths(cls, filepaths: list[str]):
+        for filepath in filepaths:
+            trackhash = cls.map.get(filepath)
+
+            if trackhash:
+                track = TrackStore.trackhashmap.get(trackhash)
+
+                if track:
+                    yield [t for t in track.tracks if t.filepath == filepath][0]
 
     @classmethod
     def count_tracks_containing_paths(cls, paths: list[str]):

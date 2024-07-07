@@ -1,4 +1,6 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
+
+from app.utils.auth import get_current_userid
 
 
 @dataclass(slots=True)
@@ -33,10 +35,14 @@ class Track:
     playcount: int
     playduration: int
 
-    is_favorite: bool = False
     _pos: int = 0
     _ati: str = ""
     image: str = ""
+    fav_userids: set = field(default_factory=set)
+
+    @property
+    def is_favorite(self):
+        return get_current_userid() in self.fav_userids
 
     def __post_init__(self):
         self.image = self.albumhash + ".webp"
@@ -66,15 +72,10 @@ class Track:
     # image: str = ""
     # artist_hashes: str = ""
 
-    # fav_userids: list = field(default_factory=list)
     # """
     # A string of user ids separated by commas.
     # """
     # # is_favorite: bool = False
-
-    # @property
-    # def is_favorite(self):
-    #     return current_user["id"] in self.fav_userids
 
     # # temporary attributes
     # _pos: int = 0  # for sorting tracks by disc and track number

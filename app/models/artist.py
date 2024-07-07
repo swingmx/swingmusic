@@ -47,7 +47,7 @@ class Artist:
     genrehashes: list[str]
     name: str
     trackcount: int
-    is_favorite: bool
+    # is_favorite: bool
     lastplayed: int
     playcount: int
     playduration: int

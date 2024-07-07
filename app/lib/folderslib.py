@@ -108,7 +108,7 @@ class GetFilesAndDirs:
 
         tracks = []
         if files:
-            tracks = TrackDB.get_tracks_by_filepaths(files)
+            tracks = list(FolderStore.get_tracks_by_filepaths(files))
 
         folders = []
         if not self.tracks_only:

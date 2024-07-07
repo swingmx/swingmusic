@@ -28,7 +28,7 @@ class Album:
     og_title: str
     title: str
     trackcount: int
-    is_favorite: bool
+    # is_favorite: bool
     lastplayed: int
     playcount: int
     playduration: int
