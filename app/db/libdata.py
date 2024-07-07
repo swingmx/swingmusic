@@ -23,6 +23,9 @@ from typing import Any, Iterable, Optional
 def create_all():
     """
     Create all the tables defined in this file.
+
+    NOTE: We need this function because the MasterBase does not collect
+    the tables defined here (as they are grand-children of the MasterBase)
     """
     Base.metadata.create_all(DbEngine.engine)
 
@@ -317,7 +320,7 @@ class AlbumTable(Base):
                     # NOTE: The artist dict keys need to in the same order they appear in the db for this to work!
                     select(AlbumTable).where(AlbumTable.artisthashes.contains(artist))
                 )
-                albums[artist] = (albums_to_dataclasses(result.fetchall()))
+                albums[artist] = albums_to_dataclasses(result.fetchall())
 
             return albums
 

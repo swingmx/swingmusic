@@ -56,8 +56,8 @@
     then artist B is similar to A with the same weight, unless overwritten.
 - Figure out how to update album/artist tables instead of deleting all rows when the app starts
 - Move get all filtering and sorting operations to the database since all sort keys are table columns
+- Replace the DbManager class with cls.execute()
 
 - Paginate the following endpoints:
   1. Folder tracks
   2. Playlist tracks
-  

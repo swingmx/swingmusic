@@ -90,10 +90,10 @@ class SQLiteManager:
         if self.test_db_path:
             db_path = self.test_db_path
         else:
-            db_path = settings.Db.get_app_db_path()
+            db_path = settings.DbPaths.get_app_db_path()
 
         if self.userdata_db:
-            db_path = settings.Db.get_userdata_db_path()
+            db_path = settings.DbPaths.get_userdata_db_path()
 
         self.conn = sqlite3.connect(
             db_path,

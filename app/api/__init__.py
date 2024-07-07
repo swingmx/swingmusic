@@ -76,6 +76,7 @@ def create_api():
     CORS(app, origins="*", supports_credentials=True)
 
     # RESPONSE COMPRESSION
+    # Only compress JSON responses
     Compress(app)
     app.config["COMPRESS_MIMETYPES"] = [
         "application/json",
@@ -83,10 +84,6 @@ def create_api():
 
     # JWT
     jwt = JWTManager(app)
-
-    # @jwt.user_identity_loader
-    # def user_identity_lookup(user):
-    #     return user
 
     @jwt.user_lookup_loader
     def user_lookup_callback(_jwt_header, jwt_data):

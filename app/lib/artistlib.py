@@ -145,34 +145,3 @@ class CheckArtistImages:
 
         if url is not None:
             return DownloadImage(url, name=f"{artist['artisthash']}.webp")
-
-
-# def fetch_album_bio(title: str, albumartist: str) -> str | None: """ Returns the album bio for a given album. """
-# last_fm_url = "http://ws.audioscrobbler.com/2.0/?method=album.getinfo&api_key={}&artist={}&album={
-# }&format=json".format( settings.Paths.LAST_FM_API_KEY, albumartist, title )
-
-#     try:
-#         response = requests.get(last_fm_url)
-#         data = response.json()
-#     except:
-#         return None
-
-#     try:
-#         bio = data["album"]["wiki"]["summary"].split('<a href="https://www.last.fm/')[0]
-#     except KeyError:
-#         bio = None
-
-#     return bio
-
-
-# class FetchAlbumBio:
-#     """
-#     Returns the album bio for a given album.
-#     """
-
-#     def __init__(self, title: str, albumartist: str):
-#         self.title = title
-#         self.albumartist = albumartist
-
-#     def __call__(self):
-#         return fetch_album_bio(self.title, self.albumartist)

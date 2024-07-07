@@ -23,7 +23,6 @@ from app.api import create_api
 from app.arg_handler import ProcessArgs
 from app.lib.tagger import IndexEverything
 from app.lib.watchdogg import Watcher as WatchDog
-from app.periodic_scan import run_periodic_scans
 from app.plugins.register import register_plugins
 from app.settings import FLASKVARS, TCOLOR, Info
 from app.setup import load_into_mem, run_setup
@@ -32,8 +31,15 @@ from app.utils.filesystem import get_home_res_path
 from app.utils.paths import getClientFilesExtensions
 from app.utils.threading import background
 
-mimetypes.add_type("text/css", ".css")
+# Load mimetypes for the web client's static files
+# Loading mimetypes should happen automatically but
+# sometimes the mimetypes are not loaded correctly
+# eg. when the Registry is messed up on Windows.
 
+# See the following issues:
+# https://github.com/swingmx/swingmusic/issues/137
+
+mimetypes.add_type("text/css", ".css")
 mimetypes.add_type("text/javascript", ".js")
 mimetypes.add_type("text/plain", ".txt")
 mimetypes.add_type("text/html", ".html")
@@ -166,6 +172,8 @@ def serve_client_files(path: str):
     gzipped_path = path + ".gz"
     user_agent = request.headers.get("User-Agent")
 
+    # INFO: Safari doesn't support gzip encoding
+    # See issue: https://github.com/swingmx/swingmusic/issues/155
     is_safari = user_agent.find("Safari") >= 0 and user_agent.find("Chrome") < 0
 
     if is_safari:
