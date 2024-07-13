@@ -52,79 +52,79 @@ def get_folders(paths: list[str]):
     ]
 
 
-class GetFilesAndDirs:
+def get_files_and_dirs(
+    path: str, start: int, end: int, tracks_only: bool = False, skip_empty_folders=True
+):
     """
-    Get files and folders from a directory.
+    Given a path, returns a list of tracks and folders in that immediate path.
+
+    Can recursively call itself to skip through empty folders.
     """
 
-    def __init__(self, path: str, tracks_only=False) -> None:
-        self.path = path
-        self.tracks_only = tracks_only
-
-    def get_files_and_dirs(self, path: str, skip_empty_folders=True):
-        """
-        Given a path, returns a list of tracks and folders in that immediate path.
-
-        Can recursively call itself to skip through empty folders.
-        """
-        try:
-            entries = os.scandir(path)
-        except FileNotFoundError:
-            return {
-                "path": path,
-                "tracks": [],
-                "folders": [],
-            }
-
-        dirs, files = [], []
-
-        for entry in entries:
-            ext = os.path.splitext(entry.name)[1].lower()
-
-            if entry.is_dir() and not entry.name.startswith("."):
-                dir = win_replace_slash(entry.path)
-                # add a trailing slash to the folder path
-                # to avoid matching a folder starting with the same name as the root path
-                # eg. .../Music and .../Music VideosI
-                dirs.append(os.path.join(dir, ""))
-            elif entry.is_file() and ext in SUPPORTED_FILES:
-                files.append(win_replace_slash(entry.path))
-
-        files_ = []
-
-        for file in files:
-            try:
-                files_.append(
-                    {
-                        "path": file,
-                        "time": os.path.getmtime(file),
-                    }
-                )
-            except OSError as e:
-                log.error(e)
-
-        files_.sort(key=lambda f: f["time"])
-        files = [f["path"] for f in files_]
-
-        tracks = []
-        if files:
-            tracks = list(FolderStore.get_tracks_by_filepaths(files))
-
-        folders = []
-        if not self.tracks_only:
-            folders = get_folders(dirs)
-
-        if skip_empty_folders and len(folders) == 1 and len(tracks) == 0:
-            # INFO: When we only have one folder and no tracks,
-            # skip through empty folders.
-            # Call recursively with the first folder in the list.
-            return self.get_files_and_dirs(folders[0].path)
-
+    try:
+        entries = os.scandir(path)
+    except FileNotFoundError:
         return {
             "path": path,
-            "tracks": serialize_tracks(tracks),
-            "folders": folders,
+            "tracks": [],
+            "folders": [],
         }
 
-    def __call__(self):
-        return self.get_files_and_dirs(self.path)
+    dirs, files = [], []
+
+    for entry in entries:
+        ext = os.path.splitext(entry.name)[1].lower()
+
+        if entry.is_dir() and not entry.name.startswith("."):
+            dir = win_replace_slash(entry.path)
+            # add a trailing slash to the folder path
+            # to avoid matching a folder starting with the same name as the root path
+            # eg. .../Music and .../Music VideosI
+            dirs.append(os.path.join(dir, ""))
+        elif entry.is_file() and ext in SUPPORTED_FILES:
+            files.append(win_replace_slash(entry.path))
+
+    files_ = []
+
+    for file in files:
+        try:
+            files_.append(
+                {
+                    "path": file,
+                    "time": os.path.getmtime(file),
+                }
+            )
+        except OSError as e:
+            log.error(e)
+
+    files_.sort(key=lambda f: f["time"])
+    files = [f["path"] for f in files_]
+
+    tracks = []
+    if files:
+        if end == -1:
+            end = len(files)
+
+        tracks = list(FolderStore.get_tracks_by_filepaths(files[start:end]))
+
+    folders = []
+    if not tracks_only:
+        folders = get_folders(dirs)
+
+    if skip_empty_folders and len(folders) == 1 and len(tracks) == 0:
+        # INFO: When we only have one folder and no tracks,
+        # skip through empty folders.
+        # Call recursively with the first folder in the list.
+        return get_files_and_dirs(
+            folders[0].path,
+            start=start,
+            end=end,
+            tracks_only=tracks_only,
+            skip_empty_folders=True,
+        )
+
+    return {
+        "path": path,
+        "tracks": serialize_tracks(tracks),
+        "folders": folders,
+    }

@@ -14,7 +14,7 @@ from showinfm import show_in_file_manager
 from app import settings
 from app.config import UserConfig
 from app.db.libdata import TrackTable
-from app.lib.folderslib import GetFilesAndDirs, get_folders
+from app.lib.folderslib import get_files_and_dirs, get_folders
 from app.serializers.track import serialize_track
 from app.utils.wintools import is_windows, win_replace_slash
 
@@ -26,6 +26,8 @@ class FolderTree(BaseModel):
     folder: str = Field(
         "$home", example="$home", description="The folder to things from"
     )
+    start: int = Field(0, description="The start index")
+    end: int = Field(50, description="The end index")
     tracks_only: bool = Field(False, description="Whether to only get tracks")
 
 
@@ -38,7 +40,6 @@ def get_folder_tree(body: FolderTree):
     """
     req_dir = body.folder
     tracks_only = body.tracks_only
-
 
     config = UserConfig()
     root_dirs = config.rootDirs
@@ -67,7 +68,9 @@ def get_folder_tree(body: FolderTree):
     else:
         req_dir = "/" + req_dir if not req_dir.startswith("/") else req_dir
 
-    res = GetFilesAndDirs(req_dir, tracks_only=tracks_only)()
+    res = get_files_and_dirs(
+        req_dir, start=body.start, end=body.end, tracks_only=tracks_only
+    )
     res["folders"] = sorted(res["folders"], key=lambda i: i.name)
 
     return res
