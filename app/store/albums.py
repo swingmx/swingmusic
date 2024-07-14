@@ -8,6 +8,7 @@ from app.db.sqlite.albumcolors import SQLiteAlbumMethods as aldb
 from app.lib.tagger import create_albums
 from app.models import Album, Track
 from app.store.artists import ArtistStore
+from app.utils import flatten
 from app.utils.customlist import CustomList
 from app.utils.remove_duplicates import remove_duplicates
 
@@ -75,6 +76,13 @@ class AlbumStore:
         #             break
 
         print("Done!")
+
+    @classmethod
+    def get_flat_list(cls):
+        """
+        Returns a flat list of all albums.
+        """
+        return [a.album for a in cls.albummap.values()]
 
     @classmethod
     def add_album(cls, album: Album):

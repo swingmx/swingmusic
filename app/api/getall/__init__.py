@@ -1,13 +1,9 @@
-from flask import Blueprint
-
 from flask_openapi3 import Tag
 from flask_openapi3 import APIBlueprint
 from pydantic import BaseModel, Field
 
 from datetime import datetime
 from app.api.apischemas import GenericLimitSchema
-from app.db.libdata import ArtistTable
-from app.db.libdata import AlbumTable
 from app.store.albums import AlbumStore
 from app.store.artists import ArtistStore
 
@@ -70,9 +66,9 @@ def get_all_items(path: GetAllItemsPath, query: GetAllItemsQuery):
     is_artists = path.itemtype == "artists"
 
     if is_albums:
-        items = AlbumTable.get_all()
+        items = AlbumStore.get_flat_list()
     elif is_artists:
-        items = ArtistTable.get_all()
+        items = ArtistStore.get_flat_list()
 
     total = len(items)
 
@@ -95,12 +91,17 @@ def get_all_items(path: GetAllItemsPath, query: GetAllItemsQuery):
     sort_is_artist_albumcount = is_artists and sort == "albumcount"
 
     lambda_sort = lambda x: getattr(x, sort)
+    lambda_sort_casefold = lambda x: getattr(x, sort).casefold()
+
     if sort_is_artist:
-        lambda_sort = lambda x: getattr(x, sort)[0]["name"]
+        lambda_sort = lambda x: getattr(x, sort)[0]["name"].casefold()
 
-    sorted_items = sorted(items, key=lambda_sort, reverse=reverse)
+    try:
+        sorted_items = sorted(items, key=lambda_sort_casefold, reverse=reverse)
+    except AttributeError:
+        sorted_items = sorted(items, key=lambda_sort, reverse=reverse)
+
     items = sorted_items[start : start + limit]
-
     album_list = []
 
     for item in items:

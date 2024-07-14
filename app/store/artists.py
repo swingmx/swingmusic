@@ -4,6 +4,7 @@ from typing import Iterable
 from app.db.sqlite.artistcolors import SQLiteArtistMethods as ardb
 from app.lib.tagger import create_artists
 from app.models import Artist
+from app.utils import flatten
 from app.utils.bisection import use_bisection
 from app.utils.customlist import CustomList
 from app.utils.progressbar import tqdm
@@ -56,6 +57,13 @@ class ArtistStore:
         #         return
 
         #     cls.map_artist_color(artist)
+
+    @classmethod
+    def get_flat_list(cls):
+        """
+        Returns a flat list of all artists.
+        """
+        return [a.artist for a in cls.artistmap.values()]
 
     @classmethod
     def map_artist_color(cls, artist_tuple: tuple):
