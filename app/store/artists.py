@@ -1,19 +1,30 @@
 import json
+from typing import Iterable
 
 from app.db.sqlite.artistcolors import SQLiteArtistMethods as ardb
+from app.lib.tagger import create_artists
 from app.models import Artist
 from app.utils.bisection import use_bisection
 from app.utils.customlist import CustomList
 from app.utils.progressbar import tqdm
+from .tracks import TrackStore
 
-from .albums import AlbumStore
+# from .albums import AlbumStore
 from .tracks import TrackStore
 
 ARTIST_LOAD_KEY = ""
 
 
+class ArtistMapEntry:
+    def __init__(self, artist: Artist) -> None:
+        self.artist = artist
+        self.albumhashes: set[str] = set()
+        self.trackhashes: set[str] = set()
+
+
 class ArtistStore:
     artists: list[Artist] = CustomList()
+    artistmap: dict[str, ArtistMapEntry] = {}
 
     @classmethod
     def load_artists(cls, instance_key: str):
@@ -24,15 +35,27 @@ class ArtistStore:
         ARTIST_LOAD_KEY = instance_key
 
         print("Loading artists... ", end="")
-        cls.artists.clear()
+        cls.artistmap.clear()
 
-        cls.artists.extend(get_all_artists(TrackStore.tracks, AlbumStore.albums))
-        print("Done!")
-        for artist in ardb.get_all_artists():
+        cls.artistmap = {
+            artist.artisthash: ArtistMapEntry(artist=artist)
+            for artist in create_artists()
+        }
+
+        for track in TrackStore.get_flat_list():
             if instance_key != ARTIST_LOAD_KEY:
                 return
 
-            cls.map_artist_color(artist)
+            for hash in track.artisthashes:
+                cls.artistmap[hash].trackhashes.add(track.trackhash)
+                cls.artistmap[hash].albumhashes.add(track.albumhash)
+
+        print("Done!")
+        # for artist in ardb.get_all_artists():
+        #     if instance_key != ARTIST_LOAD_KEY:
+        #         return
+
+        #     cls.map_artist_color(artist)
 
     @classmethod
     def map_artist_color(cls, artist_tuple: tuple):
@@ -65,24 +88,20 @@ class ArtistStore:
                 cls.artists.append(artist)
 
     @classmethod
-    def get_artist_by_hash(cls, artisthash: str) -> Artist:
+    def get_artist_by_hash(cls, artisthash: str):
         """
         Returns an artist by its hash.P
         """
-        artists = sorted(cls.artists, key=lambda x: x.artisthash)
-        try:
-            artist = use_bisection(artists, "artisthash", [artisthash])[0]
-            return artist
-        except IndexError:
-            return None
+        entry = cls.artistmap.get(artisthash, None)
+        if entry is not None:
+            return entry.artist
 
     @classmethod
-    def get_artists_by_hashes(cls, artisthashes: list[str]) -> list[Artist]:
+    def get_artists_by_hashes(cls, artisthashes: Iterable[str]):
         """
         Returns artists by their hashes.
         """
-        artists = sorted(cls.artists, key=lambda x: x.artisthash)
-        artists = use_bisection(artists, "artisthash", artisthashes)
+        artists = [cls.get_artist_by_hash(hash) for hash in artisthashes]
         return [a for a in artists if a is not None]
 
     @classmethod
@@ -113,3 +132,14 @@ class ArtistStore:
         Removes an artist from the store.
         """
         cls.artists = CustomList(a for a in cls.artists if a.artisthash != artisthash)
+
+    @classmethod
+    def get_artist_tracks(cls, artisthash: str):
+        """
+        Returns all tracks by the given artist hash.
+        """
+        entry = cls.artistmap.get(artisthash)
+        if entry is not None:
+            return TrackStore.get_tracks_by_trackhashes(entry.trackhashes)
+
+        return []

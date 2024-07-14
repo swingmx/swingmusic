@@ -17,13 +17,15 @@ from app.api.apischemas import (
 )
 
 from app.config import UserConfig
-from app.db.libdata import ArtistTable
-from app.db.libdata import AlbumTable, TrackTable
 from app.db.userdata import SimilarArtistTable
 
 from app.serializers.album import serialize_for_card_many
 from app.serializers.artist import serialize_for_cards
 from app.serializers.track import serialize_tracks
+
+from app.store.albums import AlbumStore
+from app.store.artists import ArtistStore
+from app.store.tracks import TrackStore
 
 bp_tag = Tag(name="Artist", description="Single artist")
 api = APIBlueprint("artist", __name__, url_prefix="/artist", abp_tags=[bp_tag])
@@ -39,13 +41,15 @@ def get_artist(path: ArtistHashSchema, query: TrackLimitSchema):
     artisthash = path.artisthash
     limit = query.limit
 
-    artist = ArtistTable.get_artist_by_hash(artisthash)
-    if artist is None:
+    entry = ArtistStore.artistmap.get(artisthash)
+
+    if entry is None:
         return {"error": "Artist not found"}, 404
 
-    tracks = TrackTable.get_tracks_by_artisthash(artisthash)
+    tracks = TrackStore.get_tracks_by_trackhashes(entry.trackhashes)
     tcount = len(tracks)
 
+    artist = entry.artist
     if artist.albumcount == 0 and tcount < 10:
         limit = tcount
 
@@ -85,19 +89,19 @@ def get_artist_albums(path: ArtistHashSchema, query: GetArtistAlbumsQuery):
 
     limit = query.limit
 
-    artist = ArtistTable.get_artist_by_hash(artisthash)
+    entry = ArtistStore.artistmap.get(artisthash)
 
-    if artist is None:
+    if entry is None:
         return {"error": "Artist not found"}, 404
 
-    albums = AlbumTable.get_albums_by_artisthash(artisthash)
-    tracks = TrackTable.get_tracks_by_artisthash(artisthash)
+    albums = AlbumStore.get_albums_by_hashes(entry.albumhashes)
+    tracks = TrackStore.get_tracks_by_trackhashes(entry.trackhashes)
 
     missing_albumhashes = {
         t.albumhash for t in tracks if t.albumhash not in {a.albumhash for a in albums}
     }
 
-    albums.extend(AlbumTable.get_albums_by_albumhashes(missing_albumhashes))
+    albums.extend(AlbumStore.get_albums_by_hashes(missing_albumhashes))
     albumdict = {a.albumhash: a for a in albums}
 
     config = UserConfig()
@@ -135,7 +139,7 @@ def get_artist_albums(path: ArtistHashSchema, query: GetArtistAlbumsQuery):
     for key, value in res.items():
         res[key] = serialize_for_card_many(value[:limit])
 
-    res["artistname"] = artist.name
+    res["artistname"] = entry.artist.name
     return res
 
 
@@ -146,8 +150,7 @@ def get_all_artist_tracks(path: ArtistHashSchema):
 
     Returns all artists by a given artist.
     """
-    # tracks = TrackStore.get_tracks_by_artisthash(path.artisthash)
-    tracks = TrackTable.get_tracks_by_artisthash(path.artisthash)
+    tracks = ArtistStore.get_artist_tracks(path.artisthash)
     return serialize_tracks(tracks)
 
 
@@ -162,7 +165,7 @@ def get_similar_artists(path: ArtistHashSchema, query: ArtistLimitSchema):
     if result is None:
         return []
 
-    similar = ArtistTable.get_artists_by_artisthashes(result.get_artist_hash_set())
+    similar = ArtistStore.get_artists_by_hashes(result.get_artist_hash_set())
 
     if len(similar) > limit:
         similar = random.sample(similar, min(limit, len(similar)))

@@ -1,8 +1,7 @@
 # from tqdm import tqdm
 
 import itertools
-import sys
-from typing import Callable
+from typing import Callable, Iterable
 from flask_jwt_extended import current_user
 from app.db.libdata import TrackTable
 from app.db.sqlite.favorite import SQLiteFavoriteMethods as favdb
@@ -243,7 +242,7 @@ class TrackStore:
     # ================================================
 
     @classmethod
-    def get_tracks_by_trackhashes(cls, trackhashes: list[str]) -> list[Track]:
+    def get_tracks_by_trackhashes(cls, trackhashes: Iterable[str]) -> list[Track]:
         """
         Returns a list of tracks by their hashes.
         """
@@ -259,7 +258,9 @@ class TrackStore:
                 tracks.append(track)
 
         # sort the tracks in the order of the given trackhashes
-        tracks.sort(key=lambda t: trackhashes.index(t.trackhash))
+        if type(trackhashes) == list:
+            tracks.sort(key=lambda t: trackhashes.index(t.trackhash))
+
         return tracks
 
     @classmethod

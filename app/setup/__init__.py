@@ -47,4 +47,6 @@ def load_into_mem():
     # AlbumStore.load_albums(instance_key)
     # ArtistStore.load_artists(instance_key)
     TrackStore.load_all_tracks(get_random_str())
+    AlbumStore.load_albums('a')
+    ArtistStore.load_artists('a')
     FolderStore.load_filepaths()

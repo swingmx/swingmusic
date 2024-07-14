@@ -14,7 +14,6 @@ class Album:
     Creates an album object
     """
 
-    id: int
     albumartists: list[dict[str, str]]
     albumhash: str
     artisthashes: list[str]
@@ -34,6 +33,7 @@ class Album:
     playduration: int
     extra: dict
 
+    id: int = -1
     type: str = "album"
     image: str = ""
     versions: list[str] = dataclasses.field(default_factory=list)

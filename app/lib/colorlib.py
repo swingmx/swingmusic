@@ -12,8 +12,7 @@ from app.db.sqlite.albumcolors import SQLiteAlbumMethods as aldb
 from app.db.sqlite.artistcolors import SQLiteArtistMethods as adb
 from app.db.sqlite.utils import SQLiteManager
 
-from app.store.artists import ArtistStore
-from app.store.albums import AlbumStore
+# from app.store.artists import ArtistStore
 from app.logger import log
 from app.lib.errors import PopulateCancelledError
 from app.utils.progressbar import tqdm
@@ -101,7 +100,7 @@ class ProcessArtistColors:
     """
 
     def __init__(self, instance_key: str) -> None:
-        all_artists = [a for a in ArtistStore.artists if len(a.colors) == 0]
+        # all_artists = [a for a in ArtistStore.artists if len(a.colors) == 0]
 
         global PROCESS_ARTIST_COLORS_KEY
         PROCESS_ARTIST_COLORS_KEY = instance_key

@@ -2,13 +2,14 @@ import gc
 import os
 from pprint import pprint
 from time import time
-from typing import Generator
 from app import settings
 from app.config import UserConfig
 from app.db.libdata import ArtistTable
-from app.db.libdata import AlbumTable, TrackTable
+from app.db.libdata import TrackTable
 from app.lib.populate import CordinateMedia
 from app.lib.taglib import extract_thumb, get_tags
+from app.models.album import Album
+from app.models.artist import Artist
 from app.models.track import Track
 from app.store.folder import FolderStore
 from app.utils.filesystem import run_fast_scandir
@@ -141,154 +142,152 @@ class IndexTracks:
         print("Done")
 
 
-class IndexAlbums:
-    def __init__(self) -> None:
-        albums = dict()
-        all_tracks: list[Track] = TrackTable.get_all()
+# class IndexAlbums:
+def create_albums():
+    albums = dict()
+    all_tracks: list[Track] = TrackTable.get_all()
 
-        if len(all_tracks) == 0:
-            return
+    for track in all_tracks:
+        if track.albumhash not in albums:
+            albums[track.albumhash] = {
+                "albumartists": track.albumartists,
+                "artisthashes": [a["artisthash"] for a in track.albumartists],
+                "albumhash": track.albumhash,
+                "base_title": None,
+                "color": None,
+                "created_date": track.last_mod,
+                "date": track.date,
+                "duration": track.duration,
+                "genres": [*track.genres] if track.genres else [],
+                "og_title": track.og_album,
+                "lastplayed": track.lastplayed,
+                "playcount": track.playcount,
+                "playduration": track.playduration,
+                "title": track.album,
+                "trackcount": 1,
+                "extra": {}
+            }
+        else:
+            album = albums[track.albumhash]
+            album["trackcount"] += 1
+            album["playcount"] += track.playcount
+            album["playduration"] += track.playduration
+            album["lastplayed"] = max(album["lastplayed"], track.lastplayed)
+            album["duration"] += track.duration
+            album["date"] = min(album["date"], track.date)
+            album["created_date"] = min(album["created_date"], track.last_mod)
 
-        for track in all_tracks:
-            if track.albumhash not in albums:
-                albums[track.albumhash] = {
-                    "albumartists": track.albumartists,
-                    "artisthashes": [a["artisthash"] for a in track.albumartists],
-                    "albumhash": track.albumhash,
-                    "base_title": None,
-                    "color": None,
+            if track.genres:
+                album["genres"].extend(track.genres)
+
+    for album in albums.values():
+        genres = []
+        for genre in album["genres"]:
+            if genre not in genres:
+                genres.append(genre)
+
+        album["genres"] = genres
+        album["genrehashes"] = " ".join([g['genrehash'] for g in genres])
+        album["base_title"], _ = get_base_album_title(album["og_title"])
+
+        del genres
+
+    # AlbumTable.remove_all()
+    # AlbumTable.insert_many(list(albums.values()))
+    return [Album(**album) for album in albums.values()]
+
+
+# class IndexArtists:
+def create_artists():
+    all_tracks: list[Track] = TrackTable.get_all()
+    artists = dict()
+
+    for track in all_tracks:
+        this_artists = track.artists
+
+        for a in track.albumartists:
+            if a not in this_artists:
+                a["in_track"] = False
+                this_artists.append(a)
+
+        for thisartist in this_artists:
+            if thisartist["artisthash"] not in artists:
+                artists[thisartist["artisthash"]] = {
+                    "albumcount": None,
+                    "albums": {track.albumhash},
+                    "artisthash": thisartist["artisthash"],
                     "created_date": track.last_mod,
                     "date": track.date,
                     "duration": track.duration,
-                    "genres": [*track.genres] if track.genres else [],
-                    "og_title": track.og_album,
+                    "genres": track.genres if track.genres else [],
+                    "name": None,
+                    "names": {thisartist["name"]},
                     "lastplayed": track.lastplayed,
                     "playcount": track.playcount,
                     "playduration": track.playduration,
-                    "title": track.album,
-                    "trackcount": 1,
+                    "trackcount": None,
+                    "tracks": (
+                        {track.trackhash}
+                        if thisartist.get("in_track", True)
+                        else set()
+                    ),
+                    "extra": {},
                 }
             else:
-                album = albums[track.albumhash]
-                album["trackcount"] += 1
-                album["playcount"] += track.playcount
-                album["playduration"] += track.playduration
-                album["lastplayed"] = max(album["lastplayed"], track.lastplayed)
-                album["duration"] += track.duration
-                album["date"] = min(album["date"], track.date)
-                album["created_date"] = min(album["created_date"], track.last_mod)
+                artist = artists[thisartist["artisthash"]]
+                artist["duration"] += track.duration
+                artist["playcount"] += track.playcount
+                artist["playduration"] += track.playduration
+                artist["albums"].add(track.albumhash)
+                artist["date"] = min(artist["date"], track.date)
+                artist["lastplayed"] = max(artist["lastplayed"], track.lastplayed)
+                artist["created_date"] = min(artist["created_date"], track.last_mod)
+                artist["names"].add(thisartist["name"])
+
+                if thisartist.get("in_track", True):
+                    artist["tracks"].add(track.trackhash)
 
                 if track.genres:
-                    album["genres"].extend(track.genres)
+                    artist["genres"].extend(track.genres)
 
-        for album in albums.values():
-            genres = []
-            for genre in album["genres"]:
-                if genre not in genres:
-                    genres.append(genre)
+    for artist in artists.values():
+        artist["albumcount"] = len(artist["albums"])
+        artist["trackcount"] = len(artist["tracks"])
 
-            album["genres"] = genres
-            album["base_title"], _ = get_base_album_title(album["og_title"])
+        genres = []
 
-            del genres
+        for genre in artist["genres"]:
+            if genre not in genres:
+                genres.append(genre)
 
-        AlbumTable.remove_all()
-        AlbumTable.insert_many(list(albums.values()))
-        del albums
+        artist["genres"] = genres
+        artist["genrehashes"] = " ".join([g['genrehash'] for g in genres])
+        artist["name"] = sorted(artist["names"])[0]
 
+        # INFO: Delete temporary keys
+        del artist["names"]
+        del artist["tracks"]
+        del artist["albums"]
 
-class IndexArtists:
-    def __init__(self) -> None:
-        all_tracks: list[Track] = TrackTable.get_all()
-        artists = dict()
+        # INFO: Delete local variables
+        del genres
 
-        if len(all_tracks) == 0:
-            return
-
-        for track in all_tracks:
-            this_artists = track.artists
-
-            for a in track.albumartists:
-                if a not in this_artists:
-                    a["in_track"] = False
-                    this_artists.append(a)
-
-            for thisartist in this_artists:
-                if thisartist["artisthash"] not in artists:
-                    artists[thisartist["artisthash"]] = {
-                        "albumcount": None,
-                        "albums": {track.albumhash},
-                        "artisthash": thisartist["artisthash"],
-                        "created_date": track.last_mod,
-                        "date": track.date,
-                        "duration": track.duration,
-                        "genres": track.genres if track.genres else [],
-                        "name": None,
-                        "names": {thisartist["name"]},
-                        "lastplayed": track.lastplayed,
-                        "playcount": track.playcount,
-                        "playduration": track.playduration,
-                        "trackcount": None,
-                        "tracks": (
-                            {track.trackhash}
-                            if thisartist.get("in_track", True)
-                            else set()
-                        ),
-                    }
-                else:
-                    artist = artists[thisartist["artisthash"]]
-                    artist["duration"] += track.duration
-                    artist["playcount"] += track.playcount
-                    artist["playduration"] += track.playduration
-                    artist["albums"].add(track.albumhash)
-                    artist["date"] = min(artist["date"], track.date)
-                    artist["lastplayed"] = max(artist["lastplayed"], track.lastplayed)
-                    artist["created_date"] = min(artist["created_date"], track.last_mod)
-                    artist["names"].add(thisartist["name"])
-
-
-                    if thisartist.get("in_track", True):
-                        artist["tracks"].add(track.trackhash)
-
-                    if track.genres:
-                        artist["genres"].extend(track.genres)
-
-        for artist in artists.values():
-            artist["albumcount"] = len(artist["albums"])
-            artist["trackcount"] = len(artist["tracks"])
-
-            genres = []
-
-            for genre in artist["genres"]:
-                if genre not in genres:
-                    genres.append(genre)
-
-            artist["genres"] = genres
-            artist["name"] = sorted(artist["names"])[0]
-
-            # INFO: Delete temporary keys
-            del artist["names"]
-            del artist["tracks"]
-            del artist["albums"]
-
-            # INFO: Delete local variables
-            del genres
-
-        ArtistTable.remove_all()
-        ArtistTable.insert_many(list(artists.values()))
-        del artists
+    # ArtistTable.remove_all()
+    # ArtistTable.insert_many(list(artists.values()))
+    # del artists
+    return [Artist(**artist) for artist in artists.values()]
 
 
 class IndexEverything:
     def __init__(self) -> None:
         IndexTracks(instance_key=time())
-        IndexAlbums()
-        IndexArtists()
+        # IndexAlbums()
+        # IndexArtists()
         FolderStore.load_filepaths()
 
         # pass
 
-        CordinateMedia(instance_key=str(time()))
+        # CordinateMedia(instance_key=str(time()))
         gc.collect()
 
 

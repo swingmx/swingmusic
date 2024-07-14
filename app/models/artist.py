@@ -36,7 +36,6 @@ class Artist:
     Artist class
     """
 
-    id: str
     name: str
     albumcount: int
     artisthash: str
@@ -53,6 +52,7 @@ class Artist:
     playduration: int
     extra: dict
 
+    id: int = -1
     image: str = ""
 
     def __post_init__(self):

@@ -317,7 +317,6 @@ class AlbumTable(Base):
 
             for artist in artisthashes:
                 result = conn.execute(
-                    # NOTE: The artist dict keys need to in the same order they appear in the db for this to work!
                     select(AlbumTable).where(AlbumTable.artisthashes.contains(artist))
                 )
                 albums[artist] = albums_to_dataclasses(result.fetchall())
