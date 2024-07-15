@@ -1,5 +1,4 @@
 import dataclasses
-import json
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
@@ -20,6 +19,7 @@ class Playlist:
     trackhashes: list[str] = dataclasses.field(default_factory=list)
     extra: dict[str, Any] = dataclasses.field(default_factory=dict)
 
+    _last_updated: str = ""
     userid: int | None = None
     thumb: str = ""
     count: int = 0

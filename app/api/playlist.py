@@ -12,6 +12,7 @@ from flask_openapi3 import Tag
 from flask_openapi3 import APIBlueprint, FileStorage
 
 from app import models
+from app.api.apischemas import GenericLimitSchema
 from app.db.libdata import TrackTable
 from app.db.userdata import PlaylistTable
 from app.lib import playlistlib
@@ -20,41 +21,15 @@ from app.lib.home.recentlyadded import get_recently_added_playlist
 from app.lib.home.recentlyplayed import get_recently_played_playlist
 from app.models.playlist import Playlist
 from app.serializers.playlist import serialize_for_card
+from app.serializers.track import serialize_tracks
+from app.store.playlists import PlaylistStore
+from app.store.tracks import TrackStore
 from app.utils.dates import create_new_date, date_string_to_time_passed
 from app.utils.remove_duplicates import remove_duplicates
 from app.settings import Paths
 
 tag = Tag(name="Playlists", description="Get and manage playlists")
 api = APIBlueprint("playlists", __name__, url_prefix="/playlists", abp_tags=[tag])
-
-
-class SendAllPlaylistsQuery(BaseModel):
-    no_images: bool = Field(False, description="Whether to include images")
-
-
-@api.get("")
-def send_all_playlists(query: SendAllPlaylistsQuery):
-    """
-    Gets all the playlists.
-    """
-    playlists = PlaylistTable.get_all()
-    playlists = list(playlists)
-
-    for playlist in playlists:
-        if not query.no_images:
-            playlist.images = playlistlib.get_first_4_images(
-                trackhashes=playlist.trackhashes
-            )
-            playlist.images = [img["image"] for img in playlist.images]
-
-        playlist.clear_lists()
-
-    playlists.sort(
-        key=lambda p: datetime.strptime(p.last_updated, "%Y-%m-%d %H:%M:%S"),
-        reverse=True,
-    )
-
-    return {"data": playlists}
 
 
 def insert_playlist(name: str, image: str = None):
@@ -77,31 +52,6 @@ def insert_playlist(name: str, image: str = None):
         return Playlist(**playlist)
 
     return None
-
-
-class CreatePlaylistBody(BaseModel):
-    name: str = Field(..., description="The name of the playlist")
-
-
-@api.post("/new")
-def create_playlist(body: CreatePlaylistBody):
-    """
-    New playlist
-
-    Creates a new playlist. Accepts POST method with a JSON body.
-    """
-    # existing_playlist_count = PL.count_playlist_by_name(body.name)
-    exists = PlaylistTable.check_exists_by_name(body.name)
-
-    if exists:
-        return {"error": "Playlist already exists"}, 409
-
-    playlist = insert_playlist(body.name)
-
-    if playlist is None:
-        return {"error": "Playlist could not be created"}, 500
-
-    return {"playlist": playlist}, 201
 
 
 def get_path_trackhashes(path: str):
@@ -130,9 +80,63 @@ def get_artist_trackhashes(artisthash: str):
     return [t.trackhash for t in tracks]
 
 
+def format_custom_playlist(playlist: models.Playlist, tracks: list[models.Track]):
+    duration = sum(t.duration for t in tracks)
+
+    playlist.duration = duration
+
+    return {
+        "info": serialize_for_card(playlist),
+        "tracks": tracks,
+    }
+
+
+class SendAllPlaylistsQuery(BaseModel):
+    no_images: bool = Field(False, description="Whether to include images")
+
+
+@api.get("")
+def send_all_playlists(query: SendAllPlaylistsQuery):
+    """
+    Gets all the playlists.
+    """
+    playlists = PlaylistStore.get_flat_list()
+    playlists.sort(
+        key=lambda p: datetime.strptime(p.last_updated, "%Y-%m-%d %H:%M:%S"),
+        reverse=True,
+    )
+
+    return {"data": playlists}
+
+
+class CreatePlaylistBody(BaseModel):
+    name: str = Field(..., description="The name of the playlist")
+
+
+@api.post("/new")
+def create_playlist(body: CreatePlaylistBody):
+    """
+    New playlist
+
+    Creates a new playlist. Accepts POST method with a JSON body.
+    """
+    exists = PlaylistTable.check_exists_by_name(body.name)
+
+    if exists:
+        return {"error": "Playlist already exists"}, 409
+
+    playlist = insert_playlist(body.name)
+
+    if playlist is None:
+        return {"error": "Playlist could not be created"}, 500
+
+    PlaylistStore.add_playlist(playlist)
+    return {"playlist": playlist}, 201
+
+
 class PlaylistIDPath(BaseModel):
     # INFO: playlistid string examples: "recentlyadded"
-    playlistid: int | str = Field(..., description="The ID of the playlist")
+    playlistid: str = Field(..., description="The ID of the playlist")
 
 
 class AddItemToPlaylistBody(BaseModel):
@@ -170,19 +174,9 @@ def add_item_to_playlist(path: PlaylistIDPath, body: AddItemToPlaylistBody):
     return {"msg": "Done"}, 200
 
 
-class GetPlaylistQuery(BaseModel):
+class GetPlaylistQuery(GenericLimitSchema):
     no_tracks: bool = Field(False, description="Whether to include tracks")
-
-
-def format_custom_playlist(playlist: models.Playlist, tracks: list[models.Track]):
-    duration = sum(t.duration for t in tracks)
-
-    playlist.duration = duration
-
-    return {
-        "info": serialize_for_card(playlist),
-        "tracks": tracks,
-    }
+    start: int = Field(0, description="The start index of the tracks")
 
 
 @api.get("/<playlistid>")
@@ -206,24 +200,22 @@ def get_playlist(path: PlaylistIDPath, query: GetPlaylistQuery):
         playlist, tracks = handler()
         return format_custom_playlist(playlist, tracks)
 
-    playlist = PlaylistTable.get_by_id(playlistid)
+    entry = PlaylistStore.playlistmap.get(playlistid)
 
-    if playlist is None:
+    if entry is None:
         return {"msg": "Playlist not found"}, 404
 
-    tracks = TrackTable.get_tracks_by_trackhashes(playlist.trackhashes)
+    playlist = entry.playlist
+    tracks = PlaylistStore.get_playlist_tracks(playlistid, query.start, query.limit)
 
     duration = sum(t.duration for t in tracks)
-    playlist.last_updated = date_string_to_time_passed(playlist.last_updated)
-
+    playlist._last_updated = date_string_to_time_passed(playlist.last_updated)
     playlist.duration = duration
 
-    if not playlist.has_image:
-        playlist.images = playlistlib.get_first_4_images(tracks)
-
-    playlist.clear_lists()
-
-    return {"info": playlist, "tracks": tracks if not no_tracks else []}
+    return {
+        "info": playlist,
+        "tracks": serialize_tracks(tracks) if not no_tracks else [],
+    }
 
 
 class UpdatePlaylistForm(BaseModel):
@@ -340,7 +332,7 @@ def remove_playlist(path: PlaylistIDPath):
     Delete playlist
     """
     PlaylistTable.remove_one(path.playlistid)
-
+    PlaylistStore.playlistmap.pop(path.playlistid, None)
     return {"msg": "Done"}, 200
 
 
@@ -426,7 +418,6 @@ def save_item_as_playlist(body: SavePlaylistAsItemBody):
                 img, str(playlist.id), "image/webp", filename=filename
             )
 
-    # PL.add_tracks_to_playlist(playlist.id, trackhashes)
     PlaylistTable.append_to_playlist(playlist.id, trackhashes)
     playlist.count = len(trackhashes)
 
