@@ -113,7 +113,7 @@ def get_artist_albums(path: ArtistHashSchema, query: GetArtistAlbumsQuery):
             album.check_type(list(tracks), config.showAlbumsAsSingles)
 
     albums = [a for a in albumdict.values()]
-    all_albums = sorted(albums, key=lambda a: str(a.date), reverse=True)
+    all_albums = sorted(albums, key=lambda a: a.date, reverse=True)
 
     res = {
         "albums": [],
