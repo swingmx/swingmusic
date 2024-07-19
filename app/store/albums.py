@@ -125,11 +125,9 @@ class AlbumStore:
         """
         Returns an album by its hash.
         """
-        for album in cls.albums:
-            if album.albumhash == albumhash:
-                return album
-
-        return None
+        entry = cls.albummap.get(albumhash)
+        if entry is not None:
+            return entry.album
 
     @classmethod
     def get_albums_by_hashes(cls, albumhashes: Iterable[str]) -> list[Album]:

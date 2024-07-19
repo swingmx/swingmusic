@@ -1,3 +1,4 @@
+from operator import index
 from app.db.userdata import PlaylistTable
 from app.lib.playlistlib import get_first_4_images
 from app.models.playlist import Playlist
@@ -11,9 +12,12 @@ class PlaylistEntry:
         self.playlist.clear_lists()
 
         if not playlist.has_image:
-            self.playlist.images = get_first_4_images(
-                TrackStore.get_tracks_by_trackhashes(self.trackhashes)
-            )
+            self.rebuild_images()
+
+    def rebuild_images(self):
+        self.playlist.images = get_first_4_images(
+            TrackStore.get_tracks_by_trackhashes(self.trackhashes)
+        )
 
 
 class PlaylistStore:
@@ -48,3 +52,23 @@ class PlaylistStore:
     @classmethod
     def add_playlist(cls, playlist: Playlist):
         cls.playlistmap[str(playlist.id)] = PlaylistEntry(playlist)
+
+    @classmethod
+    def get_playlist_by_id(cls, id: str):
+        entry = cls.playlistmap.get(id)
+
+        if entry is not None:
+            return entry.playlist
+
+    @classmethod
+    def remove_from_playlist(cls, pid: str, tracks: list[dict[str, str]]):
+        playlist = cls.playlistmap.get(pid)
+
+        if not playlist:
+            return
+
+        for track in tracks:
+            if playlist.trackhashes.index(track["trackhash"]) == track["index"]:
+                playlist.trackhashes.remove(track["trackhash"])
+
+        playlist.rebuild_images()

@@ -1,18 +1,13 @@
 from datetime import datetime
 import os
-from app.db.libdata import AlbumTable, ArtistTable, TrackTable
 from app.db.userdata import FavoritesTable, ScrobbleTable
-from app.models.logger import TrackLog
-
-# from app.db.sqlite.logger.tracks import SQLiteTrackLogger as db
-# from app.db.sqlite.playlists import SQLitePlaylistMethods as pdb
-# from app.db.sqlite.favorite import SQLiteFavoriteMethods as fdb
 
 from app.models.playlist import Playlist
 from app.serializers.track import serialize_track
 from app.serializers.album import album_serializer
 from app.lib.playlistlib import get_first_4_images
 from app.store.folder import FolderStore
+from app.store.playlists import PlaylistStore
 from app.utils.dates import (
     create_new_date,
     date_string_to_time_passed,
@@ -22,14 +17,13 @@ from app.serializers.artist import serialize_for_card
 from app.serializers.playlist import serialize_for_card as serialize_playlist
 from app.lib.home.recentlyadded import get_recently_added_playlist
 
-# from app.store.albums import AlbumStore
-# from app.store.tracks import TrackStore
-# from app.store.artists import ArtistStore
+from app.store.albums import AlbumStore
+from app.store.tracks import TrackStore
+from app.store.artists import ArtistStore
 
 
 def get_recently_played(limit=7):
     # TODO: Paginate this
-    # entries = db.get_all()
     entries = ScrobbleTable.get_all(0, 200)
     items = []
     added = set()
@@ -43,16 +37,13 @@ def get_recently_played(limit=7):
         if len(items) >= limit:
             break
 
-        # entry = TrackLog(*entry)
-
         if entry.source in added:
             continue
 
         added.add(entry.source)
 
         if entry.type == "album":
-            # album = AlbumStore.get_album_by_hash(entry.type_src)
-            album = AlbumTable.get_album_by_albumhash(entry.type_src)
+            album = AlbumStore.get_album_by_hash(entry.type_src)
 
             if album is None:
                 continue
@@ -80,8 +71,7 @@ def get_recently_played(limit=7):
             continue
 
         if entry.type == "artist":
-            # artist = ArtistStore.get_artist_by_hash(entry.type_src)
-            artist = ArtistTable.get_artist_by_hash(entry.type_src)
+            artist = ArtistStore.get_artist_by_hash(entry.type_src)
 
             if artist is None:
                 continue
@@ -132,7 +122,6 @@ def get_recently_played(limit=7):
             continue
 
         if entry.type == "playlist":
-            continue
             is_custom = entry.type_src in [i["name"] for i in custom_playlists]
             # is_recently_added = entry.type_src == "recentlyadded"
 
@@ -159,7 +148,8 @@ def get_recently_played(limit=7):
                 )
                 continue
 
-            playlist = pdb.get_playlist_by_id(entry.type_src)
+            # playlist = pdb.get_playlist_by_id(entry.type_src)
+            playlist = PlaylistStore.get_playlist_by_id(entry.type_src)
             if playlist is None:
                 continue
 
@@ -195,13 +185,12 @@ def get_recently_played(limit=7):
             )
             continue
 
-            # track = TrackStore.get_tracks_by_trackhashes([entry.trackhash])[0]
-        track = TrackTable.get_track_by_trackhash(entry.trackhash)
+        t = TrackStore.trackhashmap.get(entry.trackhash)
 
-        if track is None:
+        if t is None:
             continue
 
-        track = serialize_track(track)
+        track = serialize_track(t.get_best())
         track["help_text"] = "track"
         track["time"] = timestamp_to_time_passed(entry.timestamp)
 
@@ -225,12 +214,11 @@ def get_recently_played_playlist(limit: int = 100):
         trackhashes=[],
     )
 
-    tracks = TrackTable.get_recently_played(limit)
+    tracks = TrackStore.get_recently_played(limit)
     date = datetime.fromtimestamp(tracks[0].lastplayed)
-    playlist.last_updated = date_string_to_time_passed(create_new_date(date))
+    playlist._last_updated = date_string_to_time_passed(create_new_date(date))
 
     images = get_first_4_images(tracks=tracks)
     playlist.images = images
-    playlist.count = len(tracks)
 
     return playlist, tracks

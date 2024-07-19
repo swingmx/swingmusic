@@ -59,8 +59,8 @@
 - Replace the DbManager class with cls.execute()
 
 - Paginate the following endpoints:
-  1. Folder tracks
-  2. Playlist tracks
 
+  1. Folder tracks
+  2. Playlist tracks ⭐
 
 - When you update a playlist, update the store as well!

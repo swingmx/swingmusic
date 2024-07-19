@@ -350,3 +350,20 @@ class TrackStore:
             predicate=predicate,
             including_duplicates=True,
         )
+
+    @classmethod
+    def get_recently_added(cls, start: int, limit: int | None):
+        """
+        Returns the most recently added tracks.
+        """
+        tracks = cls.get_flat_list()
+
+        if limit is None:
+            return sorted(tracks, key=lambda x: x.last_mod, reverse=True)[start:]
+
+        return sorted(tracks, key=lambda x: x.last_mod, reverse=True)[start:limit]
+
+    @classmethod
+    def get_recently_played(cls, limit: int):
+        tracks = cls.get_flat_list()
+        return sorted(tracks, key=lambda x: x.lastplayed, reverse=True)[:limit]

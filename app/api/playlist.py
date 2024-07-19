@@ -81,13 +81,12 @@ def get_artist_trackhashes(artisthash: str):
 
 
 def format_custom_playlist(playlist: models.Playlist, tracks: list[models.Track]):
-    duration = sum(t.duration for t in tracks)
-
-    playlist.duration = duration
+    playlist.duration = sum(t.duration for t in tracks)
+    playlist.count = len(tracks)
 
     return {
         "info": serialize_for_card(playlist),
-        "tracks": tracks,
+        "tracks": serialize_tracks(tracks),
     }
 
 
@@ -354,6 +353,7 @@ def remove_tracks_from_playlist(
     # }
 
     PlaylistTable.remove_from_playlist(path.playlistid, body.tracks)
+    PlaylistStore.remove_from_playlist(path.playlistid, body.tracks)
 
     return {"msg": "Done"}, 200
 
