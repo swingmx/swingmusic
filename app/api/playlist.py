@@ -205,6 +205,9 @@ def get_playlist(path: PlaylistIDPath, query: GetPlaylistQuery):
         return {"msg": "Playlist not found"}, 404
 
     playlist = entry.playlist
+    if query.limit == -1:
+        query.limit = None
+
     tracks = PlaylistStore.get_playlist_tracks(playlistid, query.start, query.limit)
 
     duration = sum(t.duration for t in tracks)

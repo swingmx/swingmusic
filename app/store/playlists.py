@@ -32,7 +32,7 @@ class PlaylistStore:
         print(cls.playlistmap)
 
     @classmethod
-    def get_playlist_tracks(cls, playlist_id: str, start: int, limit: int):
+    def get_playlist_tracks(cls, playlist_id: str, start: int, limit: int | None):
         """
         Returns the trackhashes for a playlist.
         """
@@ -40,6 +40,9 @@ class PlaylistStore:
         entry = cls.playlistmap.get(playlist_id)
         if entry is None:
             return []
+
+        if limit is None:
+            return TrackStore.get_tracks_by_trackhashes(entry.trackhashes[start:])
 
         return TrackStore.get_tracks_by_trackhashes(
             entry.trackhashes[start : start + limit]
