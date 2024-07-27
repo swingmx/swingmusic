@@ -1,13 +1,12 @@
 from datetime import datetime
 import os
-from app.db.userdata import FavoritesTable, ScrobbleTable
+from app.db.userdata import FavoritesTable, PlaylistTable, ScrobbleTable
 
 from app.models.playlist import Playlist
 from app.serializers.track import serialize_track
 from app.serializers.album import album_serializer
 from app.lib.playlistlib import get_first_4_images
 from app.store.folder import FolderStore
-from app.store.playlists import PlaylistStore
 from app.utils.dates import (
     create_new_date,
     date_string_to_time_passed,
@@ -148,8 +147,7 @@ def get_recently_played(limit=7):
                 )
                 continue
 
-            # playlist = pdb.get_playlist_by_id(entry.type_src)
-            playlist = PlaylistStore.get_playlist_by_id(entry.type_src)
+            playlist = PlaylistTable.get_by_id(entry.type_src)
             if playlist is None:
                 continue
 

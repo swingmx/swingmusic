@@ -8,7 +8,6 @@ from app.setup.sqlite import run_migrations, setup_sqlite
 from app.store.albums import AlbumStore
 from app.store.artists import ArtistStore
 from app.store.folder import FolderStore
-from app.store.playlists import PlaylistStore
 from app.store.tracks import TrackStore
 from app.utils.generators import get_random_str
 from app.config import UserConfig
@@ -43,12 +42,8 @@ def load_into_mem():
     """
     # instance_key = get_random_str()
 
-    # INFO: Load all tracks, albums, and artists into memory
-    # TrackStore.load_all_tracks(instance_key)
-    # AlbumStore.load_albums(instance_key)
-    # ArtistStore.load_artists(instance_key)
+    # INFO: Load all tracks, albums, and artists data into memory
     TrackStore.load_all_tracks(get_random_str())
     AlbumStore.load_albums('a')
     ArtistStore.load_artists('a')
-    PlaylistStore.load_playlists()
     FolderStore.load_filepaths()

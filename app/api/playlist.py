@@ -22,10 +22,9 @@ from app.lib.home.recentlyplayed import get_recently_played_playlist
 from app.models.playlist import Playlist
 from app.serializers.playlist import serialize_for_card
 from app.serializers.track import serialize_tracks
-from app.store.playlists import PlaylistStore
+
 from app.store.tracks import TrackStore
 from app.utils.dates import create_new_date, date_string_to_time_passed
-from app.utils.remove_duplicates import remove_duplicates
 from app.settings import Paths
 
 tag = Tag(name="Playlists", description="Get and manage playlists")
@@ -99,7 +98,16 @@ def send_all_playlists(query: SendAllPlaylistsQuery):
     """
     Gets all the playlists.
     """
-    playlists = PlaylistStore.get_flat_list()
+    playlists = PlaylistTable.get_all()
+
+    for playlist in playlists:
+        if not playlist.has_image:
+            playlist.images = playlistlib.get_first_4_images(
+                trackhashes=playlist.trackhashes
+            )
+
+        playlist.clear_lists()
+
     playlists.sort(
         key=lambda p: datetime.strptime(p.last_updated, "%Y-%m-%d %H:%M:%S"),
         reverse=True,
@@ -129,7 +137,6 @@ def create_playlist(body: CreatePlaylistBody):
     if playlist is None:
         return {"error": "Playlist could not be created"}, 500
 
-    PlaylistStore.add_playlist(playlist)
     return {"playlist": playlist}, 201
 
 
@@ -199,20 +206,22 @@ def get_playlist(path: PlaylistIDPath, query: GetPlaylistQuery):
         playlist, tracks = handler()
         return format_custom_playlist(playlist, tracks)
 
-    entry = PlaylistStore.playlistmap.get(playlistid)
+    playlist = PlaylistTable.get_by_id(int(playlistid))
 
-    if entry is None:
+    if playlist is None:
         return {"msg": "Playlist not found"}, 404
 
-    playlist = entry.playlist
     if query.limit == -1:
-        query.limit = None
+        query.limit = len(playlist.trackhashes) - 1
 
-    tracks = PlaylistStore.get_playlist_tracks(playlistid, query.start, query.limit)
-
+    tracks = TrackStore.get_tracks_by_trackhashes(
+        playlist.trackhashes[query.start : query.start + query.limit]
+    )
     duration = sum(t.duration for t in tracks)
     playlist._last_updated = date_string_to_time_passed(playlist.last_updated)
     playlist.duration = duration
+    playlist.images = playlistlib.get_first_4_images(tracks)
+    playlist.clear_lists()
 
     return {
         "info": playlist,
@@ -334,7 +343,6 @@ def remove_playlist(path: PlaylistIDPath):
     Delete playlist
     """
     PlaylistTable.remove_one(path.playlistid)
-    PlaylistStore.playlistmap.pop(path.playlistid, None)
     return {"msg": "Done"}, 200
 
 
@@ -356,7 +364,6 @@ def remove_tracks_from_playlist(
     # }
 
     PlaylistTable.remove_from_playlist(path.playlistid, body.tracks)
-    PlaylistStore.remove_from_playlist(path.playlistid, body.tracks)
 
     return {"msg": "Done"}, 200
 
