@@ -1,11 +1,10 @@
 import dataclasses
-import datetime
 from dataclasses import dataclass
 
-from ..utils.hashing import create_hash
-from ..utils.parsers import get_base_title_and_versions, parse_feat_from_title
-from .artist import Artist
 from .track import Track
+from ..utils.hashing import create_hash
+from app.utils.auth import get_current_userid
+from ..utils.parsers import get_base_title_and_versions
 
 
 @dataclass(slots=True)
@@ -27,7 +26,6 @@ class Album:
     og_title: str
     title: str
     trackcount: int
-    # is_favorite: bool
     lastplayed: int
     playcount: int
     playduration: int
@@ -37,6 +35,21 @@ class Album:
     type: str = "album"
     image: str = ""
     versions: list[str] = dataclasses.field(default_factory=list)
+    fav_userids: list[int] = dataclasses.field(default_factory=list)
+
+    @property
+    def is_favorite(self):
+        return get_current_userid() in self.fav_userids
+
+    def toggle_favorite_user(self, userid: int):
+        """
+        Adds or removes the given user from the list of users
+        who have favorited the album.
+        """
+        if userid in self.fav_userids:
+            self.fav_userids.remove(userid)
+        else:
+            self.fav_userids.append(userid)
 
     def __post_init__(self):
         self.image = self.albumhash + ".webp"

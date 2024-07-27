@@ -2,6 +2,7 @@
 Contains all the album routes.
 """
 
+from pprint import pprint
 import random
 
 from pydantic import BaseModel, Field
@@ -53,6 +54,9 @@ def get_album_tracks_and_info(body: AlbumHashSchema):
 
     track_total = sum({int(t.extra.get("track_total", 1) or 1) for t in tracks})
     avg_bitrate = sum(t.bitrate for t in tracks) // (len(tracks) or 1)
+
+    album.fav_userids = [1]
+    pprint(album)
 
     return {
         "info": album,

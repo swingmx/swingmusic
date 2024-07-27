@@ -12,9 +12,10 @@ from app.db.sqlite.albumcolors import SQLiteAlbumMethods as aldb
 from app.db.sqlite.artistcolors import SQLiteArtistMethods as adb
 from app.db.sqlite.utils import SQLiteManager
 
-# from app.store.artists import ArtistStore
+from app.db.userdata import ArtistData
 from app.logger import log
 from app.lib.errors import PopulateCancelledError
+from app.store.artists import ArtistStore
 from app.utils.progressbar import tqdm
 
 PROCESS_ALBUM_COLORS_KEY = ""
@@ -100,32 +101,29 @@ class ProcessArtistColors:
     """
 
     def __init__(self, instance_key: str) -> None:
-        # all_artists = [a for a in ArtistStore.artists if len(a.colors) == 0]
+        all_artists = ArtistStore.get_flat_list()
 
         global PROCESS_ARTIST_COLORS_KEY
         PROCESS_ARTIST_COLORS_KEY = instance_key
 
-        with SQLiteManager() as cur:
-            try:
-                for artist in tqdm(
-                    all_artists, desc="Processing missing artist colors"
-                ):
-                    if PROCESS_ARTIST_COLORS_KEY != instance_key:
-                        raise PopulateCancelledError(
-                            "A newer 'ProcessArtistColors' instance is running. Stopping this one."
-                        )
+        try:
+            for artist in tqdm(all_artists, desc="Processing missing artist colors"):
+                if PROCESS_ARTIST_COLORS_KEY != instance_key:
+                    raise PopulateCancelledError(
+                        "A newer 'ProcessArtistColors' instance is running. Stopping this one."
+                    )
 
-                    exists = adb.exists(artist.artisthash, cur=cur)
+                # exists = adb.exists(artist.artisthash, cur=cur)
+                artist = ArtistData.find_one(artist.artisthash)
+                if artist and artist.color is not None:
+                    continue
 
-                    if exists:
-                        continue
+                colors = process_color(artist.artisthash, is_album=False)
 
-                    colors = process_color(artist.artisthash, is_album=False)
+                if colors is None:
+                    continue
 
-                    if colors is None:
-                        continue
-
-                    artist.set_colors(colors)
-                    adb.insert_one_artist(cur, artist.artisthash, colors)
-            finally:
-                cur.close()
+                artist.set_colors(colors)
+                adb.insert_one_artist(cur, artist.artisthash, colors)
+        finally:
+            cur.close()

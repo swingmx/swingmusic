@@ -9,9 +9,9 @@ from flask_openapi3 import APIBlueprint
 
 from app import models
 from app.api.apischemas import GenericLimitSchema
-from app.db.libdata import TrackTable
 from app.lib import searchlib
 from app.settings import Defaults
+from app.store.tracks import TrackStore
 
 
 tag = Tag(name="Search", description="Search for tracks, albums and artists")
@@ -31,7 +31,7 @@ class Search:
         Calls :class:`SearchTracks` which returns the tracks that fuzzily match
         the search terms. Then adds them to the `SearchResults` store.
         """
-        self.tracks = TrackTable.get_all()
+        self.tracks = TrackStore.get_flat_list()
         return searchlib.TopResults().search(self.query, tracks_only=True)
 
     def search_artists(self):
@@ -124,7 +124,7 @@ def get_top_results(query: TopResultsQuery):
 
 class SearchLoadMoreQuery(SearchQuery):
     type: str = Field(description="The type of search", example="tracks")
-    index: int = Field(description="The index to start from", default=0)
+    start: int = Field(description="The index to start from", default=0)
 
 
 @api.get("/loadmore")
@@ -136,26 +136,26 @@ def search_load_more(query: SearchLoadMoreQuery):
 
     NOTE: You must first initiate a search using the `/search` endpoint.
     """
-    query = query.q
+    q = query.q
     item_type = query.type
-    index = query.index
+    index = query.start
 
     if item_type == "tracks":
-        t = Search(query).search_tracks()
+        t = Search(q).search_tracks()
         return {
             "tracks": t[index : index + SEARCH_COUNT],
             "more": len(t) > index + SEARCH_COUNT,
         }
 
     elif item_type == "albums":
-        a = Search(query).search_albums()
+        a = Search(q).search_albums()
         return {
             "albums": a[index : index + SEARCH_COUNT],
             "more": len(a) > index + SEARCH_COUNT,
         }
 
     elif item_type == "artists":
-        a = Search(query).search_artists()
+        a = Search(q).search_artists()
         return {
             "artists": a[index : index + SEARCH_COUNT],
             "more": len(a) > index + SEARCH_COUNT,

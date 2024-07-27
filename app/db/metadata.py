@@ -1,8 +1,10 @@
-from app.db import Base, DbManager
+from app.db import Base
 
 
 from sqlalchemy import Integer, insert, select, update
 from sqlalchemy.orm import Mapped, mapped_column
+
+from app.db.engine import DbEngine
 
 
 class MigrationTable(Base):
@@ -13,7 +15,7 @@ class MigrationTable(Base):
 
     @classmethod
     def set_version(cls, version: int):
-        with DbManager(commit=True) as conn:
+        with DbEngine.manager(commit=True) as conn:
             result = conn.execute(
                 update(cls).where(cls.id == 1).values(version=version)
             )
@@ -23,7 +25,7 @@ class MigrationTable(Base):
 
     @classmethod
     def get_version(cls):
-        with DbManager() as conn:
+        with DbEngine.manager() as conn:
             result = conn.execute(select(cls.version).where(cls.id == 1))
             result = result.fetchone()
 

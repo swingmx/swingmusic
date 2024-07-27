@@ -7,39 +7,8 @@ from sqlalchemy import (
     select,
 )
 
-from sqlalchemy.engine import Engine
-from sqlalchemy import event
-from sqlalchemy.orm import DeclarativeBase, MappedAsDataclass, Session
-
+from sqlalchemy.orm import DeclarativeBase, MappedAsDataclass
 from app.db.engine import DbEngine
-
-
-# Enable foreign key constraints for SQLite
-@event.listens_for(Engine, "connect")
-def set_sqlite_pragma(dbapi_connection, connection_record):
-    cursor = dbapi_connection.cursor()
-    cursor.execute("PRAGMA foreign_keys=ON")
-    cursor.close()
-
-
-class DbManager:
-    """ """
-
-    def __init__(self, commit: bool = False):
-        self.commit = commit
-        self.conn = DbEngine.engine.connect()
-
-        with Session(DbEngine.engine) as session:
-            session.connection
-
-    def __enter__(self):
-        return self.conn.execution_options(preserve_rowcount=True)
-
-    def __exit__(self, exc_type, exc_val, exc_tb):
-        if self.commit:
-            self.conn.commit()
-
-        self.conn.close()
 
 
 class Base(MappedAsDataclass, DeclarativeBase):
@@ -51,8 +20,8 @@ class Base(MappedAsDataclass, DeclarativeBase):
 
     @classmethod
     def execute(cls, stmt: Any, commit: bool = False):
-        with DbEngine.manager(commit=commit) as conn:
-            return conn.execute(stmt)
+        with DbEngine.manager(commit=commit) as session:
+            return session.execute(stmt)
 
     @classmethod
     def insert_many(cls, items: list[dict[str, Any]]):

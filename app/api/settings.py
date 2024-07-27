@@ -10,7 +10,7 @@ from app.db.sqlite.plugins import PluginsMethods as pdb
 from app.db.sqlite.tracks import SQLiteTrackMethods as trackdb
 from app.db.userdata import PluginTable
 from app.lib import populate
-from app.lib.tagger import index_everything
+from app.lib.index import index_everything
 from app.lib.watchdogg import Watcher as WatchDog
 from app.logger import log
 from app.settings import Info, Paths, SessionVarKeys
@@ -238,7 +238,8 @@ def set_setting(body: SetSettingBody):
 
 @background
 def run_populate():
-    populate.Populate(instance_key=get_random_str())
+    # populate.Populate(instance_key=get_random_str())
+    pass
 
 
 @api.get("/trigger-scan")

@@ -2,13 +2,10 @@
 
 import itertools
 from typing import Callable, Iterable
-from flask_jwt_extended import current_user
 from app.db.libdata import TrackTable
-from app.db.sqlite.favorite import SQLiteFavoriteMethods as favdb
 
-# from app.db.sqlite.tracks import SQLiteTrackMethods as trackdb
-from app.db.userdata import FavoritesTable
 from app.models import Track
+from app.utils.auth import get_current_userid
 from app.utils.remove_duplicates import remove_duplicates
 
 TRACKS_LOAD_KEY = ""
@@ -34,33 +31,30 @@ class TrackGroup:
         """
         self.tracks.remove(track)
 
-    def set_fav_userids(self, userids: set[int]):
+    def increment_playcount(self, duration: int, timestamp: int):
         """
-        Sets the favorite userids.
+        Increments the playcount of all tracks in the group.
         """
         for track in self.tracks:
-            track.fav_userids = userids
+            track.playcount += 1
+            track.lastplayed = timestamp
+            track.playduration += duration
+
+    def toggle_favorite_user(self, userid: int | None = None):
+        """
+        Adds or removes a user from the list of users who have favorited the track.
+        """
+        if userid is None:
+            userid = get_current_userid()
+
+        for track in self.tracks:
+            track.toggle_favorite_user(userid)
 
     def get_best(self):
         """
         Returns the track with higest bitrate.
         """
         return max(self.tracks, key=lambda x: x.bitrate)
-
-    def toggle_favorite(self, remove: bool = False):
-        """
-        Adds a track to the favorites.
-        """
-
-        userids = set(self.tracks[0].fav_userids)
-
-        if remove:
-            userids.remove(current_user["id"])
-        else:
-            userids.add(current_user["id"])
-
-        for track in self.tracks:
-            track.fav_userids = userids
 
     def __len__(self):
         return len(self.tracks)
@@ -72,7 +66,8 @@ class classproperty(property):
     """
 
     def __get__(self, owner_self, owner_cls):
-        return self.fget(owner_cls)
+        if self.fget:
+            return self.fget(owner_cls)
 
 
 class TrackStore:
@@ -117,35 +112,6 @@ class TrackStore:
                 cls.trackhashmap[track.trackhash] = TrackGroup([track])
             else:
                 cls.trackhashmap[track.trackhash].append(track)
-
-        # favs = favdb.get_fav_tracks()
-        favs = FavoritesTable.get_all()
-        records: dict[str, set[int]] = dict()
-
-        # convert records: {trackhash: {userid, userid, ...}}
-        for fav in favs:
-            if fav.hash not in records:
-                # if trackhash not in dict, add it
-                # and set the value to a set containing the userid
-                records[fav.hash] = {fav.userid}
-
-            # if trackhash is in dict, add the userid to the set
-            records[fav.hash].add(fav.userid)
-
-        for record in records:
-            if instance_key != TRACKS_LOAD_KEY:
-                return
-
-            group = cls.trackhashmap.get(record, None)
-
-            if not group:
-                continue
-
-            group.set_fav_userids(records.get(record, set()))
-
-        # print("Done!")
-        # print(cls.trackhashmap.get("0d6b22c19c").tracks[0].fav_userids)
-        # sys.exit(0)
 
     @classmethod
     def add_track(cls, track: Track):
@@ -218,24 +184,6 @@ class TrackStore:
         Counts the number of tracks with a specific trackhash.
         """
         return len(cls.trackhashmap.get(trackhash, []))
-
-    @classmethod
-    def toggle_favorite(cls, trackhash: str, remove: bool = False):
-        """
-        Adds a track to the favorites.
-        """
-
-        group = cls.trackhashmap.get(trackhash)
-
-        if group:
-            group.toggle_favorite(remove=remove)
-
-    @classmethod
-    def remove_track_from_fav(cls, trackhash: str):
-        """
-        Removes a track from the favorites.
-        """
-        return cls.toggle_favorite(trackhash, remove=True)
 
     # ================================================
     # ================== GETTERS =====================
@@ -332,7 +280,7 @@ class TrackStore:
         """
         predicate = lambda artisthashes, artisthash: artisthash in artisthashes
         return cls.find_tracks_by(
-            key="artist_hashes", value=artisthash, predicate=predicate
+            key="artisthashes", value=artisthash, predicate=predicate
         )
 
     @classmethod

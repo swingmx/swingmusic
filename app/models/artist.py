@@ -1,6 +1,7 @@
 import dataclasses
 from dataclasses import dataclass
 
+from app.utils.auth import get_current_userid
 from app.utils.hashing import create_hash
 
 
@@ -46,7 +47,6 @@ class Artist:
     genrehashes: list[str]
     name: str
     trackcount: int
-    # is_favorite: bool
     lastplayed: int
     playcount: int
     playduration: int
@@ -54,6 +54,22 @@ class Artist:
 
     id: int = -1
     image: str = ""
+
+    fav_userids: list[int] = dataclasses.field(default_factory=list)
+
+    @property
+    def is_favorite(self):
+        return get_current_userid() in self.fav_userids
+
+    def toggle_favorite_user(self, userid: int):
+        """
+        Adds or removes the given user from the list of users
+        who have favorited this artist.
+        """
+        if userid in self.fav_userids:
+            self.fav_userids.remove(userid)
+        else:
+            self.fav_userids.append(userid)
 
     def __post_init__(self):
         self.image = self.artisthash + ".webp"

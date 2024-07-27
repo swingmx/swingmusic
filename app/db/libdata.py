@@ -1,6 +1,5 @@
 from app.db import (
     Base as MasterBase,
-    DbManager,
 )
 from app.db.utils import (
     album_to_dataclass,
@@ -13,7 +12,7 @@ from app.db.utils import (
 from app.models import Album as AlbumModel
 from app.utils.remove_duplicates import remove_duplicates
 from app.db.engine import DbEngine
-from sqlalchemy import JSON, Boolean, Integer, String, delete, select, update
+from sqlalchemy import JSON, Integer, String, delete, select, update
 from sqlalchemy.orm import Mapped, mapped_column, DeclarativeBase
 
 
@@ -33,7 +32,7 @@ def create_all():
 class Base(MasterBase, DeclarativeBase):
     @classmethod
     def get_all_hashes(cls, create_date: int | None = None):
-        with DbManager() as conn:
+        with DbEngine.manager() as conn:
             if create_date:
                 if cls.__tablename__ == "track":
                     stmt = select(TrackTable.trackhash).where(
@@ -67,7 +66,7 @@ class Base(MasterBase, DeclarativeBase):
             hash (str): The hash value.
             is_favorite (bool): The value of the 'is_favorite' flag.
         """
-        with DbManager(commit=True) as conn:
+        with DbEngine.manager(commit=True) as conn:
             if cls.__tablename__ == "track":
                 stmt = (
                     update(cls)
@@ -129,7 +128,6 @@ class TrackTable(Base):
     title: Mapped[str] = mapped_column(String())
     track: Mapped[int] = mapped_column(Integer())
     trackhash: Mapped[str] = mapped_column(String(), index=True)
-    # is_favorite: Mapped[Optional[bool]] = mapped_column(Boolean())
     lastplayed: Mapped[int] = mapped_column(Integer(), default=0)
     playcount: Mapped[int] = mapped_column(Integer(), default=0)
     playduration: Mapped[int] = mapped_column(Integer(), default=0)
@@ -139,13 +137,13 @@ class TrackTable(Base):
 
     @classmethod
     def get_all(cls):
-        with DbManager() as conn:
+        with DbEngine.manager() as conn:
             result = conn.execute(select(cls))
             return tracks_to_dataclasses(result.fetchall())
 
     @classmethod
     def get_tracks_by_filepaths(cls, filepaths: list[str]):
-        with DbManager() as conn:
+        with DbEngine.manager() as conn:
             result = conn.execute(
                 select(TrackTable)
                 .where(TrackTable.filepath.in_(filepaths))
@@ -155,7 +153,7 @@ class TrackTable(Base):
 
     @classmethod
     def get_tracks_by_albumhash(cls, albumhash: str):
-        with DbManager() as conn:
+        with DbEngine.manager() as conn:
             result = conn.execute(
                 select(TrackTable).where(TrackTable.albumhash == albumhash)
             )
@@ -164,7 +162,7 @@ class TrackTable(Base):
 
     @classmethod
     def get_track_by_trackhash(cls, hash: str, filepath: str = ""):
-        with DbManager() as conn:
+        with DbEngine.manager() as conn:
             if filepath:
                 result = conn.execute(
                     select(TrackTable)
@@ -186,7 +184,7 @@ class TrackTable(Base):
 
     @classmethod
     def get_tracks_by_artisthash(cls, artisthash: str):
-        with DbManager() as conn:
+        with DbEngine.manager() as conn:
             result = conn.execute(
                 select(TrackTable).where(TrackTable.artists.contains(artisthash))
             )
@@ -194,7 +192,7 @@ class TrackTable(Base):
 
     @classmethod
     def get_tracks_in_path(cls, path: str):
-        with DbManager() as conn:
+        with DbEngine.manager() as conn:
             result = conn.execute(
                 select(TrackTable)
                 .where(TrackTable.filepath.contains(path))
@@ -204,7 +202,7 @@ class TrackTable(Base):
 
     @classmethod
     def get_tracks_by_trackhashes(cls, hashes: Iterable[str], limit: int | None = None):
-        with DbManager() as conn:
+        with DbEngine.manager() as conn:
             result = conn.execute(
                 select(TrackTable)
                 .where(TrackTable.trackhash.in_(hashes))
@@ -221,7 +219,7 @@ class TrackTable(Base):
 
     @classmethod
     def get_recently_added(cls, start: int, limit: int):
-        with DbManager() as conn:
+        with DbEngine.manager() as conn:
             result = conn.execute(
                 select(TrackTable)
                 .order_by(TrackTable.last_mod.desc())
@@ -243,7 +241,7 @@ class TrackTable(Base):
 
     @classmethod
     def remove_tracks_by_filepaths(cls, filepaths: set[str]):
-        with DbManager(commit=True) as conn:
+        with DbEngine.manager(commit=True) as conn:
             conn.execute(delete(TrackTable).where(TrackTable.filepath.in_(filepaths)))
 
     @classmethod
@@ -270,7 +268,6 @@ class AlbumTable(Base):
     og_title: Mapped[str] = mapped_column(String())
     title: Mapped[str] = mapped_column(String())
     trackcount: Mapped[int] = mapped_column(Integer())
-    # is_favorite: Mapped[Optional[bool]] = mapped_column(Boolean())
     lastplayed: Mapped[int] = mapped_column(Integer(), default=0)
     playcount: Mapped[int] = mapped_column(Integer(), default=0)
     playduration: Mapped[int] = mapped_column(Integer(), default=0)
@@ -280,14 +277,14 @@ class AlbumTable(Base):
 
     @classmethod
     def get_all(cls):
-        with DbManager() as conn:
+        with DbEngine.manager() as conn:
             result = conn.execute(select(AlbumTable))
             all = result.fetchall()
             return albums_to_dataclasses(all)
 
     @classmethod
     def get_album_by_albumhash(cls, hash: str):
-        with DbManager() as conn:
+        with DbEngine.manager() as conn:
             result = conn.execute(
                 select(AlbumTable).where(AlbumTable.albumhash == hash)
             )
@@ -298,7 +295,7 @@ class AlbumTable(Base):
 
     @classmethod
     def get_albums_by_albumhashes(cls, hashes: Iterable[str], limit: int | None = None):
-        with DbManager() as conn:
+        with DbEngine.manager() as conn:
             result = conn.execute(
                 select(AlbumTable).where(AlbumTable.albumhash.in_(hashes)).limit(limit)
             )
@@ -312,7 +309,7 @@ class AlbumTable(Base):
 
     @classmethod
     def get_albums_by_artisthashes(cls, artisthashes: list[str]):
-        with DbManager() as conn:
+        with DbEngine.manager() as conn:
             albums: dict[str, list[AlbumModel]] = {}
 
             for artist in artisthashes:
@@ -325,7 +322,7 @@ class AlbumTable(Base):
 
     @classmethod
     def get_albums_by_base_title(cls, base_title: str):
-        with DbManager() as conn:
+        with DbEngine.manager() as conn:
             result = conn.execute(
                 select(AlbumTable).where(AlbumTable.base_title == base_title)
             )
@@ -333,7 +330,7 @@ class AlbumTable(Base):
 
     @classmethod
     def get_albums_by_artisthash(cls, artisthash: str):
-        with DbManager() as conn:
+        with DbEngine.manager() as conn:
             result = conn.execute(
                 select(AlbumTable).where(AlbumTable.artisthashes.contains(artisthash))
             )
@@ -359,7 +356,6 @@ class ArtistTable(Base):
     genres: Mapped[str] = mapped_column(JSON())
     name: Mapped[str] = mapped_column(String(), index=True)
     trackcount: Mapped[int] = mapped_column(Integer())
-    # is_favorite: Mapped[Optional[bool]] = mapped_column(Boolean())
     lastplayed: Mapped[int] = mapped_column(Integer(), default=0)
     playcount: Mapped[int] = mapped_column(Integer(), default=0)
     playduration: Mapped[int] = mapped_column(Integer(), default=0)
@@ -369,14 +365,14 @@ class ArtistTable(Base):
 
     @classmethod
     def get_all(cls):
-        with DbManager() as conn:
+        with DbEngine.manager() as conn:
             result = conn.execute(select(cls))
             all = result.fetchall()
             return artists_to_dataclasses(all)
 
     @classmethod
     def get_artist_by_hash(cls, artisthash: str):
-        with DbManager() as conn:
+        with DbEngine.manager() as conn:
             result = conn.execute(
                 select(ArtistTable).where(ArtistTable.artisthash == artisthash)
             )
@@ -384,7 +380,7 @@ class ArtistTable(Base):
 
     @classmethod
     def get_artisthashes_not_in(cls, artisthashes: list[str]):
-        with DbManager() as conn:
+        with DbEngine.manager() as conn:
             result = conn.execute(
                 select(ArtistTable.artisthash, ArtistTable.name).where(
                     ~ArtistTable.artisthash.in_(artisthashes)
@@ -396,7 +392,7 @@ class ArtistTable(Base):
     def get_artists_by_artisthashes(
         cls, hashes: Iterable[str], limit: int | None = None
     ):
-        with DbManager() as conn:
+        with DbEngine.manager() as conn:
             result = conn.execute(
                 select(ArtistTable)
                 .where(ArtistTable.artisthash.in_(hashes))

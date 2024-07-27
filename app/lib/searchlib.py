@@ -9,7 +9,8 @@ from unidecode import unidecode
 
 from app import models
 from app.config import UserConfig
-from app.db.libdata import AlbumTable, ArtistTable, TrackTable
+
+# from app.db.libdata import AlbumTable, ArtistTable, TrackTable
 
 # from app.db.sqlite.favorite import SQLiteFavoriteMethods as favdb
 from app.models.enums import FavType
@@ -19,9 +20,9 @@ from app.serializers.album import serialize_for_card_many as serialize_albums
 from app.serializers.artist import serialize_for_cards
 from app.serializers.track import serialize_track, serialize_tracks
 
-# from app.store.albums import AlbumStore
-# from app.store.artists import ArtistStore
-# from app.store.tracks import TrackStore
+from app.store.albums import AlbumStore
+from app.store.artists import ArtistStore
+from app.store.tracks import TrackStore
 
 from app.utils.remove_duplicates import remove_duplicates
 
@@ -54,8 +55,7 @@ class Limit:
 class SearchTracks:
     def __init__(self, query: str) -> None:
         self.query = query
-        # self.tracks = TrackStore.tracks
-        self.tracks = TrackTable.get_all()
+        self.tracks = TrackStore.get_flat_list()
 
     def __call__(self) -> List[models.Track]:
         """
@@ -78,8 +78,7 @@ class SearchTracks:
 class SearchArtists:
     def __init__(self, query: str) -> None:
         self.query = query
-        # self.artists = ArtistStore.artists
-        self.artists = ArtistTable.get_all()
+        self.artists = ArtistStore.get_flat_list()
 
     def __call__(self):
         """
@@ -101,8 +100,7 @@ class SearchArtists:
 class SearchAlbums:
     def __init__(self, query: str) -> None:
         self.query = query
-        # self.albums = AlbumStore.albums
-        self.albums = AlbumTable.get_all()
+        self.albums = AlbumStore.get_flat_list()
 
     def __call__(self) -> List[models.Album]:
         """
@@ -169,9 +167,9 @@ class TopResults:
     def collect_all():
         all_items: list[_type] = []
 
-        all_items.extend(ArtistTable.get_all())
-        all_items.extend(TrackTable.get_all())
-        all_items.extend(AlbumTable.get_all())
+        all_items.extend(ArtistStore.get_flat_list())
+        all_items.extend(TrackStore.get_flat_list())
+        all_items.extend(TrackStore.get_flat_list())
 
         return all_items, get_titles(all_items)
 
@@ -194,7 +192,7 @@ class TopResults:
             return {"type": "track", "item": item}
 
         if isinstance(item, models.Album):
-            tracks = TrackTable.get_tracks_by_albumhash(item.albumhash)
+            tracks = TrackStore.get_tracks_by_albumhash(item.albumhash)
             tracks = remove_duplicates(tracks)
 
             try:
@@ -212,18 +210,12 @@ class TopResults:
             track_count = 0
             duration = 0
 
-            tracks = TrackTable.get_tracks_by_artisthash(item.artisthash)
+            tracks = TrackStore.get_tracks_by_artisthash(item.artisthash)
             tracks = remove_duplicates(tracks)
 
             for track in tracks:
                 track_count += 1
                 duration += track.duration
-
-            # album_count = AlbumStore.count_albums_by_artisthash(item.artisthash)
-
-            # item.set_trackcount(track_count)
-            # item.set_albumcount(album_count)
-            # item.set_duration(duration)
 
             return {"type": "artist", "item": item}
 
@@ -235,8 +227,7 @@ class TopResults:
             tracks.extend(SearchTracks(query)())
 
         if item["type"] == "album":
-            t = TrackTable.get_tracks_by_albumhash(item["item"].albumhash)
-            # t = TrackStore.get_tracks_by_albumhash(item["item"].albumhash)
+            t = TrackStore.get_tracks_by_albumhash(item["item"].albumhash)
             t.sort(key=lambda x: x.last_mod)
 
             # if there are less than the limit, get more tracks
@@ -249,7 +240,7 @@ class TopResults:
 
         if item["type"] == "artist":
             # t = TrackStore.get_tracks_by_artisthash(item["item"].artisthash)
-            t = TrackTable.get_tracks_by_artisthash(item["item"].artisthash)
+            t = TrackStore.get_tracks_by_artisthash(item["item"].artisthash)
 
             # if there are less than the limit, get more tracks
             if len(t) < limit:
@@ -271,7 +262,7 @@ class TopResults:
 
         if item["type"] == "artist":
             # albums = AlbumStore.get_albums_by_artisthash(item["item"].artisthash)
-            albums = AlbumTable.get_albums_by_artisthash(item["item"].artisthash)
+            albums = AlbumStore.get_albums_by_artisthash(item["item"].artisthash)
 
             # if there are less than the limit, get more albums
             if len(albums) < limit:

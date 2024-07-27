@@ -3,9 +3,11 @@ from flask_openapi3 import APIBlueprint
 from pydantic import Field
 from app.api.apischemas import TrackHashSchema
 
-from app.db.libdata import AlbumTable, ArtistTable, TrackTable
 from app.db.userdata import ScrobbleTable
 from app.settings import Defaults
+from app.store.albums import AlbumStore
+from app.store.artists import ArtistStore
+from app.store.tracks import TrackStore
 
 bp_tag = Tag(name="Logger", description="Log item plays")
 api = APIBlueprint("logger", __name__, url_prefix="/logger", abp_tags=[bp_tag])
@@ -33,14 +35,27 @@ def log_track(body: LogTrackBody):
     if not timestamp or duration < 5:
         return {"msg": "Invalid entry."}, 400
 
-    track = TrackTable.get_track_by_trackhash(body.trackhash)
-
-    if track is None:
+    trackentry = TrackStore.trackhashmap.get(body.trackhash)
+    if trackentry is None:
         return {"msg": "Track not found."}, 404
 
     ScrobbleTable.add(dict(body))
-    TrackTable.increment_playcount(body.trackhash, duration, timestamp)
-    AlbumTable.increment_playcount(track.albumhash, duration, timestamp)
-    ArtistTable.increment_playcount(track.artisthashes, duration, timestamp)
+
+    # Update play data on the in-memory stores
+    track = trackentry.tracks[0]
+    album = AlbumStore.albummap.get(track.albumhash)
+
+    if album:
+        album.increment_playcount(duration, timestamp)
+
+    for hash in track.artisthashes:
+        artist = ArtistStore.artistmap.get(hash)
+
+        if artist:
+            artist.increment_playcount(duration, timestamp)
+
+    track = TrackStore.trackhashmap.get(body.trackhash)
+    if track:
+        track.increment_playcount(duration, timestamp)
 
     return {"msg": "recorded"}, 201

@@ -1,12 +1,9 @@
-import gc
 import os
-from pprint import pprint
-from time import time
 from app import settings
 from app.config import UserConfig
-from app.db.libdata import ArtistTable
 from app.db.libdata import TrackTable
-from app.lib.populate import CordinateMedia
+
+# from app.lib.populate import CordinateMedia
 from app.lib.taglib import extract_thumb, get_tags
 from app.models.album import Album
 from app.models.artist import Artist
@@ -17,7 +14,6 @@ from app.utils.parsers import get_base_album_title
 from app.utils.progressbar import tqdm
 
 from app.logger import log
-from app.utils.threading import background
 
 POPULATE_KEY: float = 0
 
@@ -142,7 +138,6 @@ class IndexTracks:
         print("Done")
 
 
-# class IndexAlbums:
 def create_albums():
     albums = dict()
     all_tracks: list[Track] = TrackTable.get_all()
@@ -165,7 +160,7 @@ def create_albums():
                 "playduration": track.playduration,
                 "title": track.album,
                 "trackcount": 1,
-                "extra": {}
+                "extra": {},
             }
         else:
             album = albums[track.albumhash]
@@ -187,13 +182,11 @@ def create_albums():
                 genres.append(genre)
 
         album["genres"] = genres
-        album["genrehashes"] = " ".join([g['genrehash'] for g in genres])
+        album["genrehashes"] = " ".join([g["genrehash"] for g in genres])
         album["base_title"], _ = get_base_album_title(album["og_title"])
 
         del genres
 
-    # AlbumTable.remove_all()
-    # AlbumTable.insert_many(list(albums.values()))
     return [Album(**album) for album in albums.values()]
 
 
@@ -227,9 +220,7 @@ def create_artists():
                     "playduration": track.playduration,
                     "trackcount": None,
                     "tracks": (
-                        {track.trackhash}
-                        if thisartist.get("in_track", True)
-                        else set()
+                        {track.trackhash} if thisartist.get("in_track", True) else set()
                     ),
                     "extra": {},
                 }
@@ -261,7 +252,7 @@ def create_artists():
                 genres.append(genre)
 
         artist["genres"] = genres
-        artist["genrehashes"] = " ".join([g['genrehash'] for g in genres])
+        artist["genrehashes"] = " ".join([g["genrehash"] for g in genres])
         artist["name"] = sorted(artist["names"])[0]
 
         # INFO: Delete temporary keys
@@ -272,25 +263,6 @@ def create_artists():
         # INFO: Delete local variables
         del genres
 
-    # ArtistTable.remove_all()
-    # ArtistTable.insert_many(list(artists.values()))
-    # del artists
     return [Artist(**artist) for artist in artists.values()]
 
 
-class IndexEverything:
-    def __init__(self) -> None:
-        IndexTracks(instance_key=time())
-        # IndexAlbums()
-        # IndexArtists()
-        FolderStore.load_filepaths()
-
-        # pass
-
-        # CordinateMedia(instance_key=str(time()))
-        gc.collect()
-
-
-@background
-def index_everything():
-    return IndexEverything()

@@ -11,7 +11,11 @@ from app.db.libdata import AlbumTable, TrackTable
 from app.db.userdata import FavoritesTable
 from app.models import FavType
 from app.settings import Defaults
-from app.utils.bisection import use_bisection
+
+from app.store.albums import AlbumStore
+from app.store.artists import ArtistStore
+from app.store.tracks import TrackStore
+
 from app.serializers.track import serialize_track, serialize_tracks
 from app.serializers.artist import (
     serialize_for_card as serialize_artist,
@@ -46,14 +50,27 @@ def toggle_favorite(body: FavoritesAddBody):
     """
     Adds a favorite to the database.
     """
-    FavoritesTable.insert_item({"hash": body.hash, "type": body.type})
+
+    try:
+        FavoritesTable.insert_item({"hash": body.hash, "type": body.type})
+    except:
+        return {"msg": "Failed! An error occured"}, 500
 
     if body.type == FavType.track:
-        TrackTable.set_is_favorite(body.hash, True)
+        entry = TrackStore.trackhashmap.get(body.hash)
+        if entry is not None:
+            entry.toggle_favorite_user()
+
     elif body.type == FavType.album:
-        AlbumTable.set_is_favorite(body.hash, True)
+        entry = AlbumStore.albummap.get(body.hash)
+
+        if entry is not None:
+            entry.toggle_favorite_user()
     elif body.type == FavType.artist:
-        ArtistTable.set_is_favorite(body.hash, True)
+        entry = ArtistStore.artistmap.get(body.hash)
+
+        if entry is not None:
+            entry.toggle_favorite_user()
 
     return {"msg": "Added to favorites"}
 
@@ -95,7 +112,8 @@ def get_favorite_albums(query: GetAllOfTypeQuery):
     fav_albums, total = FavoritesTable.get_fav_albums(query.start, query.limit)
     fav_albums.reverse()
 
-    return {"albums": serialize_for_card_many(fav_albums), "total": total}
+    albums = AlbumStore.get_albums_by_hashes(a.hash for a in fav_albums)
+    return {"albums": serialize_for_card_many(albums), "total": total}
 
 
 @api.get("/tracks")
@@ -104,6 +122,10 @@ def get_favorite_tracks(query: GetAllOfTypeQuery):
     Get favorite tracks
     """
     tracks, total = FavoritesTable.get_fav_tracks(query.start, query.limit)
+
+    tracks.reverse()
+    tracks = TrackTable.get_tracks_by_trackhashes([t.hash for t in tracks])
+
     return {"tracks": serialize_tracks(tracks), "total": total}
 
 
@@ -118,6 +140,7 @@ def get_favorite_artists(query: GetAllOfTypeQuery):
     )
     artists.reverse()
 
+    artists = ArtistStore.get_artists_by_hashes(a.hash for a in artists)
     return {"artists": [serialize_artist(a) for a in artists], "total": total}
 
 
@@ -164,9 +187,9 @@ def get_all_favorites(query: GetAllFavoritesQuery):
     albums = []
     artists = []
 
-    track_master_hash = TrackTable.get_all_hashes()
-    album_master_hash = AlbumTable.get_all_hashes()
-    artist_master_hash = ArtistTable.get_all_hashes()
+    track_master_hash = TrackStore.trackhashmap.keys()
+    album_master_hash = AlbumStore.albummap.keys()
+    artist_master_hash = ArtistStore.artistmap.keys()
 
     # INFO: Filter out invalid hashes (file not found or tags edited)
     for fav in favs:
@@ -188,12 +211,11 @@ def get_all_favorites(query: GetAllFavoritesQuery):
         "artists": len(artists),
     }
 
-    tracks = TrackTable.get_tracks_by_trackhashes(tracks, limit=track_limit)
-    albums = AlbumTable.get_albums_by_albumhashes(albums, limit=album_limit)
-    artists = ArtistTable.get_artists_by_artisthashes(artists, limit=artist_limit)
+    tracks = TrackStore.get_tracks_by_trackhashes(tracks[:track_limit])
+    albums = AlbumStore.get_albums_by_hashes(albums[:album_limit])
+    artists = ArtistStore.get_artists_by_hashes(artists[:artist_limit])
 
     recents = []
-    # first_n = favs
 
     for fav in favs:
         if len(recents) >= largest:

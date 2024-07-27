@@ -9,6 +9,7 @@ from app.lib.tagger import create_albums
 from app.models import Album, Track
 from app.store.artists import ArtistStore
 from app.utils import flatten
+from app.utils.auth import get_current_userid
 from app.utils.customlist import CustomList
 from app.utils.remove_duplicates import remove_duplicates
 
@@ -27,6 +28,17 @@ class AlbumMapEntry:
     @property
     def basetitle(self):
         return self.album.base_title
+
+    def increment_playcount(self, duration: int, timestamp: int):
+        self.album.lastplayed = timestamp
+        self.album.playduration += duration
+        self.album.playcount += 1
+
+    def toggle_favorite_user(self, userid: int | None = None):
+        if userid is None:
+            userid = get_current_userid()
+
+        self.album.toggle_favorite_user(userid)
 
 
 class AlbumStore:

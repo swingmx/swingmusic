@@ -21,7 +21,8 @@ import setproctitle
 
 from app.api import create_api
 from app.arg_handler import ProcessArgs
-from app.lib.tagger import IndexEverything
+from app.lib.mapstuff import map_favorites, map_scrobble_data
+from app.lib.index import IndexEverything
 from app.lib.watchdogg import Watcher as WatchDog
 from app.plugins.register import register_plugins
 from app.settings import FLASKVARS, TCOLOR, Info
@@ -65,6 +66,8 @@ def bg_run_setup():
     pass
     # run_periodic_scans()
     IndexEverything()
+    # map_scrobble_data()
+    # map_favorites()
 
 
 # @background

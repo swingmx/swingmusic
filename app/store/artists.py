@@ -5,6 +5,7 @@ from app.db.sqlite.artistcolors import SQLiteArtistMethods as ardb
 from app.lib.tagger import create_artists
 from app.models import Artist
 from app.utils import flatten
+from app.utils.auth import get_current_userid
 from app.utils.bisection import use_bisection
 from app.utils.customlist import CustomList
 from app.utils.progressbar import tqdm
@@ -21,6 +22,17 @@ class ArtistMapEntry:
         self.artist = artist
         self.albumhashes: set[str] = set()
         self.trackhashes: set[str] = set()
+
+    def increment_playcount(self, duration: int, timestamp: int):
+        self.artist.lastplayed = timestamp
+        self.artist.playduration += duration
+        self.artist.playcount += 1
+
+    def toggle_favorite_user(self, userid: int | None = None):
+        if userid is None:
+            userid = get_current_userid()
+
+        self.artist.toggle_favorite_user(userid)
 
 
 class ArtistStore:
