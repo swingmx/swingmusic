@@ -2,6 +2,7 @@
 Contains all the album routes.
 """
 
+from dataclasses import asdict
 from pprint import pprint
 import random
 
@@ -52,6 +53,8 @@ def get_album_tracks_and_info(body: AlbumHashSchema):
         tracks=tracks, singleTrackAsSingle=UserConfig().showAlbumsAsSingles
     )
 
+    print("is_favorite", album.is_favorite)
+
     track_total = sum({int(t.extra.get("track_total", 1) or 1) for t in tracks})
     avg_bitrate = sum(t.bitrate for t in tracks) // (len(tracks) or 1)
 
@@ -59,7 +62,10 @@ def get_album_tracks_and_info(body: AlbumHashSchema):
     pprint(album)
 
     return {
-        "info": album,
+        "info": {
+            **asdict(album),
+            "is_favorite": album.is_favorite,
+        },
         "extra": {
             # INFO: track_total is the sum of a set of track_total values from each track
             # ASSUMPTIONS

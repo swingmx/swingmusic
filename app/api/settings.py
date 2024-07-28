@@ -9,7 +9,6 @@ from app.api.auth import admin_required
 from app.db.sqlite.plugins import PluginsMethods as pdb
 from app.db.sqlite.tracks import SQLiteTrackMethods as trackdb
 from app.db.userdata import PluginTable
-from app.lib import populate
 from app.lib.index import index_everything
 from app.lib.watchdogg import Watcher as WatchDog
 from app.logger import log

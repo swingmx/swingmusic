@@ -2,6 +2,7 @@
 Contains all the artist(s) routes.
 """
 
+from dataclasses import asdict
 import math
 import random
 from datetime import datetime
@@ -68,7 +69,7 @@ def get_artist(path: ArtistHashSchema, query: TrackLimitSchema):
         artist.genres.insert(0, {"name": decade, "genrehash": decade})
 
     return {
-        "artist": artist,
+        "artist": {**asdict(artist), "is_favorite": artist.is_favorite},
         "tracks": serialize_tracks(tracks[:limit]),
     }
 
