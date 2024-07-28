@@ -38,7 +38,6 @@
 - Watchdog
 - Periodic scans
 - Remove legacy db methods
-- Remove all stores
 - Review: We don't need server side image colors
 - Clean up main db and userdata modules
 - Move plugins to a config file
@@ -46,21 +45,9 @@
 - Add userid to queries
 - Remove duplicates on artist page (test with Hanson)
 - Test foreign keys on delete
-- Map scrobble info on app start
-- Make home page recent items faster!
 - Normalize playlists table:
   - New table to hold playlist entries
 - Normalize similar artists:
   - New table to hold similar artist entries
   - Create 2 way relationships, such that if an artist A is similar to another B with a certain weight,
     then artist B is similar to A with the same weight, unless overwritten.
-- Figure out how to update album/artist tables instead of deleting all rows when the app starts
-- Move get all filtering and sorting operations to the database since all sort keys are table columns
-- Replace the DbManager class with cls.execute()
-
-- Paginate the following endpoints:
-
-  1. Folder tracks
-  2. Playlist tracks ⭐
-
-- When you update a playlist, update the store as well!

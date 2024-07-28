@@ -128,7 +128,7 @@ def get_artist_albums(path: ArtistHashSchema, query: GetArtistAlbumsQuery):
             res["singles_and_eps"].append(album)
         elif album.type == "compilation":
             res["compilations"].append(album)
-        elif album.albumhash in missing_albumhashes:
+        elif album.albumhash in missing_albumhashes or artisthash not in album.artisthashes:
             res["appearances"].append(album)
         else:
             res["albums"].append(album)
