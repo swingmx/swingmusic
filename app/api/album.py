@@ -3,7 +3,6 @@ Contains all the album routes.
 """
 
 from dataclasses import asdict
-from pprint import pprint
 import random
 
 from pydantic import BaseModel, Field
@@ -39,7 +38,6 @@ def get_album_tracks_and_info(body: AlbumHashSchema):
     Returns album info and tracks for the given albumhash.
     """
     albumhash = body.albumhash
-    # album = AlbumDb.get_album_by_albumhash(albumhash)
     albumentry = AlbumStore.albummap.get(albumhash)
 
     if albumentry is None:
@@ -53,13 +51,8 @@ def get_album_tracks_and_info(body: AlbumHashSchema):
         tracks=tracks, singleTrackAsSingle=UserConfig().showAlbumsAsSingles
     )
 
-    print("is_favorite", album.is_favorite)
-
     track_total = sum({int(t.extra.get("track_total", 1) or 1) for t in tracks})
     avg_bitrate = sum(t.bitrate for t in tracks) // (len(tracks) or 1)
-
-    album.fav_userids = [1]
-    pprint(album)
 
     return {
         "info": {
@@ -128,10 +121,11 @@ def get_more_from_artist(body: GetMoreFromArtistsBody):
             a
             for a in albums
             # INFO: filter out albums added to other artists
-            if a.albumhash not in seen_hashes
+            if a.albumhash not in seen_hashes and artisthash in a.artisthashes
             # INFO: filter out albums with the same base title
             and create_hash(a.base_title) != create_hash(base_title)
         ]
+
         all_albums[artisthash] = serialize_for_card_many(
             [a for a in albums if create_hash(a.base_title) != create_hash(base_title)][
                 :limit

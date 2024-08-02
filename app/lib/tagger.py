@@ -3,7 +3,6 @@ from app import settings
 from app.config import UserConfig
 from app.db.libdata import TrackTable
 
-# from app.lib.populate import CordinateMedia
 from app.lib.taglib import extract_thumb, get_tags
 from app.models.album import Album
 from app.models.artist import Artist
@@ -29,7 +28,6 @@ class IndexTracks:
         global POPULATE_KEY
         POPULATE_KEY = instance_key
 
-        # dirs_to_scan = sdb.get_root_dirs()
         dirs_to_scan = UserConfig().rootDirs
 
         if len(dirs_to_scan) == 0:
@@ -159,12 +157,12 @@ def create_albums():
                 "playcount": track.playcount,
                 "playduration": track.playduration,
                 "title": track.album,
-                "trackcount": 1,
+                "tracks": {track.trackhash},
                 "extra": {},
             }
         else:
             album = albums[track.albumhash]
-            album["trackcount"] += 1
+            album["tracks"].add(track.trackhash)
             album["playcount"] += track.playcount
             album["playduration"] += track.playduration
             album["lastplayed"] = max(album["lastplayed"], track.lastplayed)
@@ -186,8 +184,12 @@ def create_albums():
         album["base_title"], _ = get_base_album_title(album["og_title"])
 
         del genres
+        trackhashes = album.pop("tracks")
+        album["trackcount"] = len(trackhashes)
 
-    return [Album(**album) for album in albums.values()]
+        albums[album["albumhash"]] = (Album(**album), trackhashes)
+
+    return list(albums.values())
 
 
 # class IndexArtists:
@@ -225,7 +227,7 @@ def create_artists():
                     "extra": {},
                 }
             else:
-                artist = artists[thisartist["artisthash"]]
+                artist: dict = artists[thisartist["artisthash"]]
                 artist["duration"] += track.duration
                 artist["playcount"] += track.playcount
                 artist["playduration"] += track.playduration
@@ -234,6 +236,8 @@ def create_artists():
                 artist["lastplayed"] = max(artist["lastplayed"], track.lastplayed)
                 artist["created_date"] = min(artist["created_date"], track.last_mod)
                 artist["names"].add(thisartist["name"])
+
+                artist.setdefault("albums", set())
 
                 if thisartist.get("in_track", True):
                     artist["tracks"].add(track.trackhash)
@@ -257,12 +261,13 @@ def create_artists():
 
         # INFO: Delete temporary keys
         del artist["names"]
-        del artist["tracks"]
-        del artist["albums"]
+
+        tracks = artist.pop("tracks")
+        albums = artist.pop("albums")
 
         # INFO: Delete local variables
         del genres
 
-    return [Artist(**artist) for artist in artists.values()]
+        artists[artist["artisthash"]] = (Artist(**artist), tracks, albums)
 
-
+    return list(artists.values())

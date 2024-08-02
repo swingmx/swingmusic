@@ -1,4 +1,4 @@
-from app.db.userdata import FavoritesTable, ScrobbleTable
+from app.db.userdata import LibDataTable, FavoritesTable, ScrobbleTable
 from app.store.albums import AlbumStore
 from app.store.artists import ArtistStore
 from app.store.tracks import TrackStore
@@ -66,3 +66,23 @@ def map_favorites():
             track = TrackStore.trackhashmap.get(entry.hash)
             if track:
                 track.toggle_favorite_user(entry.userid)
+
+
+def map_artist_colors():
+    colors = LibDataTable.get_all_colors(type="artist")
+
+    for color in colors:
+        artist = ArtistStore.artistmap.get(color["itemhash"])
+
+        if artist:
+            artist.set_color(color["color"])
+
+
+def map_album_colors():
+    colors = LibDataTable.get_all_colors(type="album")
+
+    for color in colors:
+        album = AlbumStore.albummap.get(color["itemhash"])
+
+        if album:
+            album.set_color(color["color"])

@@ -96,10 +96,6 @@ def check_folder_type(group_: dict):
     key: str = group_["folder"]
     tracks: list[Track] = group_["tracks"]
     time: float = group_["time"]
-
-    print(f"Checking folder: {key}")
-    print(f"Tracks: {len(tracks)}")
-
     existing_artist_hashes: set[str] = set(ArtistStore.artistmap.keys())
     existing_album_hashes: set[str] = set(AlbumStore.albummap.keys())
 

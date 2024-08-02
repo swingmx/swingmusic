@@ -21,7 +21,7 @@ from app.config import UserConfig
 from app.db.userdata import SimilarArtistTable
 
 from app.serializers.album import serialize_for_card_many
-from app.serializers.artist import serialize_for_cards
+from app.serializers.artist import serialize_for_cards, serialize_for_card
 from app.serializers.track import serialize_tracks
 
 from app.store.albums import AlbumStore
@@ -69,7 +69,14 @@ def get_artist(path: ArtistHashSchema, query: TrackLimitSchema):
         artist.genres.insert(0, {"name": decade, "genrehash": decade})
 
     return {
-        "artist": {**asdict(artist), "is_favorite": artist.is_favorite},
+        "artist": {
+            **serialize_for_card(artist),
+            "duration": sum(t.duration for t in tracks) if tracks else 0,
+            "trackcount": tcount,
+            "albumcount": artist.albumcount,
+            "genres": artist.genres,
+            "is_favorite": artist.is_favorite,
+        },
         "tracks": serialize_tracks(tracks[:limit]),
     }
 
@@ -128,7 +135,10 @@ def get_artist_albums(path: ArtistHashSchema, query: GetArtistAlbumsQuery):
             res["singles_and_eps"].append(album)
         elif album.type == "compilation":
             res["compilations"].append(album)
-        elif album.albumhash in missing_albumhashes or artisthash not in album.artisthashes:
+        elif (
+            album.albumhash in missing_albumhashes
+            or artisthash not in album.artisthashes
+        ):
             res["appearances"].append(album)
         else:
             res["albums"].append(album)

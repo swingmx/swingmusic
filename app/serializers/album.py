@@ -34,6 +34,7 @@ def serialize_for_card(album: Album):
         "type",
         "playduration",
         "genrehashes",
+        "fav_userids",
         "extra",
         "id",
         "lastplayed",

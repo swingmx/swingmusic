@@ -1,27 +1,22 @@
 import json
 from typing import Iterable
 
-from app.db.sqlite.artistcolors import SQLiteArtistMethods as ardb
 from app.lib.tagger import create_artists
 from app.models import Artist
-from app.utils import flatten
 from app.utils.auth import get_current_userid
-from app.utils.bisection import use_bisection
 from app.utils.customlist import CustomList
-from app.utils.progressbar import tqdm
-from .tracks import TrackStore
-
-# from .albums import AlbumStore
 from .tracks import TrackStore
 
 ARTIST_LOAD_KEY = ""
 
 
 class ArtistMapEntry:
-    def __init__(self, artist: Artist) -> None:
+    def __init__(
+        self, artist: Artist, albumhashes: set[str], trackhashes: set[str]
+    ) -> None:
         self.artist = artist
-        self.albumhashes: set[str] = set()
-        self.trackhashes: set[str] = set()
+        self.albumhashes: set[str] = albumhashes
+        self.trackhashes: set[str] = trackhashes
 
     def increment_playcount(self, duration: int, timestamp: int):
         self.artist.lastplayed = timestamp
@@ -33,6 +28,9 @@ class ArtistMapEntry:
             userid = get_current_userid()
 
         self.artist.toggle_favorite_user(userid)
+
+    def set_color(self, color: str):
+        self.artist.color = color
 
 
 class ArtistStore:
@@ -51,17 +49,19 @@ class ArtistStore:
         cls.artistmap.clear()
 
         cls.artistmap = {
-            artist.artisthash: ArtistMapEntry(artist=artist)
-            for artist in create_artists()
+            artist.artisthash: ArtistMapEntry(
+                artist=artist, albumhashes=albumhashes, trackhashes=trackhashes
+            )
+            for artist, trackhashes, albumhashes in create_artists()
         }
 
-        for track in TrackStore.get_flat_list():
-            if instance_key != ARTIST_LOAD_KEY:
-                return
+        # for track in TrackStore.get_flat_list():
+        #     if instance_key != ARTIST_LOAD_KEY:
+        #         return
 
-            for hash in track.artisthashes:
-                cls.artistmap[hash].trackhashes.add(track.trackhash)
-                cls.artistmap[hash].albumhashes.add(track.albumhash)
+        #     for hash in track.artisthashes:
+        #         cls.artistmap[hash].trackhashes.add(track.trackhash)
+        #         cls.artistmap[hash].albumhashes.add(track.albumhash)
 
         print("Done!")
         # for artist in ardb.get_all_artists():

@@ -2,19 +2,16 @@
 Contains everything that deals with image color extraction.
 """
 
-import json
 from pathlib import Path
 
 import colorgram
 
 from app import settings
-from app.db.sqlite.albumcolors import SQLiteAlbumMethods as aldb
-from app.db.sqlite.artistcolors import SQLiteArtistMethods as adb
-from app.db.sqlite.utils import SQLiteManager
 
-from app.db.userdata import ArtistData
+from app.db.userdata import LibDataTable
 from app.logger import log
 from app.lib.errors import PopulateCancelledError
+from app.store.albums import AlbumStore
 from app.store.artists import ArtistStore
 from app.utils.progressbar import tqdm
 
@@ -52,47 +49,45 @@ def process_color(item_hash: str, is_album=True):
     return get_image_colors(str(path))
 
 
-# class ProcessAlbumColors:
-#     """
-#     Extracts the most dominant color from the album art and saves it to the database.
-#     """
+class ProcessAlbumColors:
+    """
+    Extracts the most dominant color from the album art and saves it to the database.
+    """
 
-#     def __init__(self, instance_key: str) -> None:
-#         global PROCESS_ALBUM_COLORS_KEY
-#         PROCESS_ALBUM_COLORS_KEY = instance_key
+    def __init__(self, instance_key: str) -> None:
+        global PROCESS_ALBUM_COLORS_KEY
+        PROCESS_ALBUM_COLORS_KEY = instance_key
 
-#         albums = [
-#             a
-#             for a in AlbumStore.albums
-#             if a is not None and a.colors is not None and len(a.colors) == 0
-#         ]
+        albums = [a for a in AlbumStore.get_flat_list() if not a.color]
 
-#         with SQLiteManager() as cur:
-#             try:
-#                 for album in tqdm(albums, desc="Processing missing album colors"):
-#                     if PROCESS_ALBUM_COLORS_KEY != instance_key:
-#                         raise PopulateCancelledError(
-#                             "A newer 'ProcessAlbumColors' instance is running. Stopping this one."
-#                         )
+        for album in tqdm(albums, desc="Processing missing album colors"):
+            albumhash = album.albumhash
+            if PROCESS_ALBUM_COLORS_KEY != instance_key:
+                raise PopulateCancelledError(
+                    "A newer 'ProcessAlbumColors' instance is running. Stopping this one."
+                )
 
-#                     # TODO: Stop hitting the database for every album.
-#                     # Instead, fetch all the data from the database and
-#                     # check from memory.
+            albumrecord = LibDataTable.find_one(albumhash, type="album")
+            if albumrecord is not None and albumrecord.color is not None:
+                continue
 
-#                     exists = aldb.exists(album.albumhash, cur=cur)
-#                     if exists:
-#                         continue
+            colors = process_color(albumhash)
 
-#                     colors = process_color(album.albumhash)
+            if colors is None:
+                continue
 
-#                     if colors is None:
-#                         continue
+            album = AlbumStore.albummap.get(albumhash)
 
-#                     album.set_colors(colors)
-#                     color_str = json.dumps(colors)
-#                     aldb.insert_one_album(cur, album.albumhash, color_str)
-#             finally:
-#                 cur.close()
+            if album:
+                album.set_color(colors[0])
+
+            # INFO: Write to the database.
+            if albumrecord is None:
+                LibDataTable.insert_one(
+                    {"itemhash": albumhash, "color": colors[0], "itemtype": "album"}
+                )
+            else:
+                LibDataTable.update_one(albumhash, {"color": colors[0]})
 
 
 class ProcessArtistColors:
@@ -101,29 +96,37 @@ class ProcessArtistColors:
     """
 
     def __init__(self, instance_key: str) -> None:
-        all_artists = ArtistStore.get_flat_list()
+        all_artists = [a for a in ArtistStore.get_flat_list() if not a.color]
 
         global PROCESS_ARTIST_COLORS_KEY
         PROCESS_ARTIST_COLORS_KEY = instance_key
 
-        try:
-            for artist in tqdm(all_artists, desc="Processing missing artist colors"):
-                if PROCESS_ARTIST_COLORS_KEY != instance_key:
-                    raise PopulateCancelledError(
-                        "A newer 'ProcessArtistColors' instance is running. Stopping this one."
-                    )
+        for artist in tqdm(all_artists, desc="Processing missing artist colors"):
+            artisthash = artist.artisthash
+            if PROCESS_ARTIST_COLORS_KEY != instance_key:
+                raise PopulateCancelledError(
+                    "A newer 'ProcessArtistColors' instance is running. Stopping this one."
+                )
 
-                # exists = adb.exists(artist.artisthash, cur=cur)
-                artist = ArtistData.find_one(artist.artisthash)
-                if artist and artist.color is not None:
-                    continue
+            record = LibDataTable.find_one(artisthash, "artist")
 
-                colors = process_color(artist.artisthash, is_album=False)
+            if (record is not None) and (record.color is not None):
+                continue
 
-                if colors is None:
-                    continue
+            colors = process_color(artisthash, is_album=False)
 
-                artist.set_colors(colors)
-                adb.insert_one_artist(cur, artist.artisthash, colors)
-        finally:
-            cur.close()
+            if colors is None:
+                continue
+
+            artist = ArtistStore.artistmap.get(artisthash)
+
+            if artist:
+                artist.set_color(colors[0])
+
+            # INFO: Write to the database.
+            if record is None:
+                LibDataTable.insert_one(
+                    {"itemhash": artisthash, "color": colors[0], "itemtype": "artist"}
+                )
+            else:
+                LibDataTable.update_one(artisthash, {"color": colors[0]})

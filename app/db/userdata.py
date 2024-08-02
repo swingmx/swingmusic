@@ -1,6 +1,4 @@
 import datetime
-import enum
-from shlex import join
 from typing import Any
 from sqlalchemy import (
     JSON,
@@ -13,15 +11,12 @@ from sqlalchemy import (
     insert,
     select,
     update,
-    join,
 )
 
 from sqlalchemy.orm import Mapped, mapped_column
 
 from app.db.engine import DbEngine
 from app.db.utils import (
-    albums_to_dataclasses,
-    artists_to_dataclasses,
     favorites_to_dataclass,
     playlist_to_dataclass,
     playlists_to_dataclasses,
@@ -29,7 +24,6 @@ from app.db.utils import (
     similar_artist_to_dataclass,
     similar_artists_to_dataclass,
     tracklog_to_dataclasses,
-    tracks_to_dataclasses,
     user_to_dataclass,
     user_to_dataclasses,
 )
@@ -377,11 +371,12 @@ class PlaylistTable(Base):
         )
 
 
-class ArtistData(Base):
+class LibDataTable(Base):
     __tablename__ = "artistdata"
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    artisthash: Mapped[str] = mapped_column(String(), index=True)
+    itemhash: Mapped[str] = mapped_column(String(), unique=True, index=True)
+    itemtype: Mapped[str] = mapped_column(String())
     color: Mapped[str] = mapped_column(String(), nullable=True)
     bio: Mapped[str] = mapped_column(String(), nullable=True)
     info: Mapped[dict[str, Any]] = mapped_column(JSON(), nullable=True)
@@ -390,11 +385,21 @@ class ArtistData(Base):
     )
 
     @classmethod
-    def find_one(cls, artisthash: str):
-        result = cls.execute(select(cls).where(cls.artisthash == artisthash))
+    def update_one(cls, hash: str, data: dict[str, Any]):
+        return cls.execute(
+            update(cls).where(cls.itemhash == hash).values(data), commit=True
+        )
+
+    @classmethod
+    def find_one(cls, hash: str, type: str):
+        result = cls.execute(
+            select(cls).where((cls.itemhash == hash) & (cls.itemtype == type))
+        )
         return result.fetchone()
 
     @classmethod
-    def get_all_colors(cls) -> dict[str, str]:
-        result = cls.execute(select(cls.artisthash, cls.color))
-        return dict(result.fetchall())
+    def get_all_colors(cls, type: str) -> list[dict[str, str]]:
+        result = cls.execute(
+            select(cls.itemhash, cls.color).where(cls.itemtype == type)
+        )
+        return [{"itemhash": r[0], "color": r[1]} for r in result.fetchall()]

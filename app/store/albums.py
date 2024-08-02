@@ -4,7 +4,6 @@ from pprint import pprint
 import random
 from typing import Iterable
 
-from app.db.sqlite.albumcolors import SQLiteAlbumMethods as aldb
 from app.lib.tagger import create_albums
 from app.models import Album, Track
 from app.store.artists import ArtistStore
@@ -21,9 +20,9 @@ ALBUM_LOAD_KEY = ""
 
 
 class AlbumMapEntry:
-    def __init__(self, album: Album) -> None:
+    def __init__(self, album: Album, trackhashes: set[str]) -> None:
         self.album = album
-        self.trackhashes: set[str] = set()
+        self.trackhashes = trackhashes
 
     @property
     def basetitle(self):
@@ -39,6 +38,9 @@ class AlbumMapEntry:
             userid = get_current_userid()
 
         self.album.toggle_favorite_user(userid)
+
+    def set_color(self, color: str):
+        self.album.color = color
 
 
 class AlbumStore:
@@ -67,26 +69,9 @@ class AlbumStore:
         print("Loading albums... ", end="")
 
         cls.albummap = {
-            album.albumhash: AlbumMapEntry(album=album) for album in create_albums()
+            album.albumhash: AlbumMapEntry(album=album, trackhashes=trackhashes)
+            for album, trackhashes in create_albums()
         }
-        tracks = remove_duplicates(TrackStore.get_flat_list())
-        tracks = sorted(tracks, key=lambda t: t.albumhash)
-        grouped = groupby(tracks, lambda t: t.albumhash)
-
-        for albumhash, tracks in grouped:
-            cls.albummap[albumhash].trackhashes = {t.trackhash for t in tracks}
-
-        # db_albums: list[tuple] = aldb.get_all_albums()
-
-        # for album in db_albums:
-        #     albumhash = album[1]
-        #     colors = json.loads(album[2])
-
-        #     for _al in cls.albums:
-        #         if _al.albumhash == albumhash:
-        #             _al.set_colors(colors)
-        #             break
-
         print("Done!")
 
     @classmethod

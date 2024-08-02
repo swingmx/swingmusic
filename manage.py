@@ -21,9 +21,7 @@ import setproctitle
 
 from app.api import create_api
 from app.arg_handler import ProcessArgs
-from app.lib.mapstuff import map_favorites, map_scrobble_data
 from app.lib.index import IndexEverything
-from app.lib.watchdogg import Watcher as WatchDog
 from app.plugins.register import register_plugins
 from app.settings import FLASKVARS, TCOLOR, Info
 from app.setup import load_into_mem, run_setup

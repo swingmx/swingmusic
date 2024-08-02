@@ -8,7 +8,7 @@ from requests import ReadTimeout
 from app import settings
 from app.db.sqlite.tracks import SQLiteTrackMethods
 from app.lib.artistlib import CheckArtistImages
-from app.lib.colorlib import ProcessArtistColors
+from app.lib.colorlib import ProcessAlbumColors, ProcessArtistColors
 from app.lib.errors import PopulateCancelledError
 from app.lib.taglib import extract_thumb
 from app.logger import log
@@ -40,6 +40,7 @@ class CordinateMedia:
 
         try:
             ProcessTrackThumbnails(instance_key)
+            ProcessAlbumColors(instance_key)
             ProcessArtistColors(instance_key)
         except PopulateCancelledError as e:
             log.warn(e)

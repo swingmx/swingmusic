@@ -1,13 +1,11 @@
 from typing import List, TypeVar
 
-from flask_jwt_extended import current_user
 from flask_openapi3 import Tag
 from flask_openapi3 import APIBlueprint
 from pydantic import BaseModel, Field
 
 from app.api.apischemas import GenericLimitSchema
-from app.db.libdata import ArtistTable
-from app.db.libdata import AlbumTable, TrackTable
+from app.db.libdata import TrackTable
 from app.db.userdata import FavoritesTable
 from app.models import FavType
 from app.settings import Defaults
@@ -45,6 +43,29 @@ class FavoritesAddBody(BaseModel):
     type: str = Field(description="The type of the item", example=FavType.album)
 
 
+def toggle_fav(type: str, hash: str):
+    """
+    Toggles a favorite item.
+    """
+    if type == FavType.track:
+        entry = TrackStore.trackhashmap.get(hash)
+        if entry is not None:
+            entry.toggle_favorite_user()
+
+    elif type == FavType.album:
+        entry = AlbumStore.albummap.get(hash)
+
+        if entry is not None:
+            entry.toggle_favorite_user()
+    elif type == FavType.artist:
+        entry = ArtistStore.artistmap.get(hash)
+
+        if entry is not None:
+            entry.toggle_favorite_user()
+
+    return {"msg": "Added to favorites"}
+
+
 @api.post("/add")
 def toggle_favorite(body: FavoritesAddBody):
     """
@@ -56,21 +77,7 @@ def toggle_favorite(body: FavoritesAddBody):
     except:
         return {"msg": "Failed! An error occured"}, 500
 
-    if body.type == FavType.track:
-        entry = TrackStore.trackhashmap.get(body.hash)
-        if entry is not None:
-            entry.toggle_favorite_user()
-
-    elif body.type == FavType.album:
-        entry = AlbumStore.albummap.get(body.hash)
-
-        if entry is not None:
-            entry.toggle_favorite_user()
-    elif body.type == FavType.artist:
-        entry = ArtistStore.artistmap.get(body.hash)
-
-        if entry is not None:
-            entry.toggle_favorite_user()
+    toggle_fav(body.type, body.hash)
 
     return {"msg": "Added to favorites"}
 
@@ -80,14 +87,12 @@ def remove_favorite(body: FavoritesAddBody):
     """
     Removes a favorite from the database.
     """
-    FavoritesTable.remove_item({"hash": body.hash, "type": body.type})
+    try:
+        FavoritesTable.remove_item({"hash": body.hash, "type": body.type})
+    except:
+        return {"msg": "Failed! An error occured"}, 500
 
-    if body.type == FavType.track:
-        TrackTable.set_is_favorite(body.hash, False)
-    elif body.type == FavType.album:
-        AlbumTable.set_is_favorite(body.hash, False)
-    elif body.type == FavType.artist:
-        ArtistTable.set_is_favorite(body.hash, False)
+    toggle_fav(body.type, body.hash)
 
     return {"msg": "Removed from favorites"}
 

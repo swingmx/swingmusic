@@ -1,4 +1,4 @@
-from app.lib.mapstuff import map_favorites, map_scrobble_data
+from app.lib.mapstuff import map_album_colors, map_artist_colors, map_favorites, map_scrobble_data
 from app.lib.populate import CordinateMedia
 from app.lib.tagger import IndexTracks
 from app.store.folder import FolderStore
@@ -16,7 +16,9 @@ class IndexEverything:
         FolderStore.load_filepaths()
         map_scrobble_data()
         map_favorites()
-        # CordinateMedia(instance_key=str(time()))
+        map_artist_colors()
+        map_album_colors()
+        CordinateMedia(instance_key=str(time()))
         gc.collect()
 
 
