@@ -61,11 +61,7 @@ mimetypes.add_type("application/manifest+json", ".webmanifest")
 # Background tasks
 @background
 def bg_run_setup():
-    pass
-    # run_periodic_scans()
     IndexEverything()
-    # map_scrobble_data()
-    # map_favorites()
 
 
 # @background

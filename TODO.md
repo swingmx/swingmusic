@@ -55,3 +55,4 @@
 # Bug fixes
 
 - Duplicates on search
+- Audio stops on ending

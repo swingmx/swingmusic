@@ -2,7 +2,14 @@
 Prepares the server for use.
 """
 
+from time import time
 import uuid
+from app.lib.mapstuff import (
+    map_album_colors,
+    map_artist_colors,
+    map_favorites,
+    map_scrobble_data,
+)
 from app.setup.files import create_config_dir
 from app.setup.sqlite import run_migrations, setup_sqlite
 from app.store.albums import AlbumStore
@@ -29,21 +36,19 @@ def run_setup():
     setup_sqlite()
     run_migrations()
 
-    # try:
-    #     load_settings()
-    # except IndexError:
-    #     # settings table is empty
-    #     pass
-
 
 def load_into_mem():
     """
     Load all tracks, albums, and artists into memory.
     """
-    # instance_key = get_random_str()
-
     # INFO: Load all tracks, albums, and artists data into memory
+    key = str(time())
     TrackStore.load_all_tracks(get_random_str())
-    AlbumStore.load_albums('a')
-    ArtistStore.load_artists('a')
+    AlbumStore.load_albums(key)
+    ArtistStore.load_artists(key)
     FolderStore.load_filepaths()
+
+    map_scrobble_data()
+    map_favorites()
+    map_artist_colors()
+    map_album_colors()

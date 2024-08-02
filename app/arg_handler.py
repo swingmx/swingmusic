@@ -10,6 +10,7 @@ import PyInstaller.__main__ as bundler
 
 from app import settings
 from app.config import UserConfig
+from app.db.userdata import UserTable
 from app.logger import log
 from app.print_help import HELP_MESSAGE
 from app.utils.auth import hash_password
@@ -220,7 +221,8 @@ class ProcessArgs:
                 sys.exit(0)
 
             username = username.strip()
-            user = authdb.get_user_by_username(username)
+            # user = authdb.get_user_by_username(username)
+            user = UserTable.get_by_username(username)
 
             if not user:
                 print(f"User {username} not found")
@@ -234,6 +236,10 @@ class ProcessArgs:
                 sys.exit(0)
 
             password = hash_password(password)
-            user = authdb.update_user({"id": user.id, "password": password})
+            # user = authdb.update_user({"id": user.id, "password": password})
+            UserTable.update_one({
+                "id": user.id,
+                "password": password
+            })
 
             sys.exit(0)
