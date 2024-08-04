@@ -24,7 +24,7 @@ api = APIBlueprint("folder", __name__, url_prefix="/folder", abp_tags=[tag])
 
 class FolderTree(BaseModel):
     folder: str = Field("$home", description="The folder to things from")
-    tracksortby: str = Field(
+    sorttracksby: str = Field(
         "default",
         description="""The field to sort tracks by. Options: [
             "default",
@@ -46,7 +46,7 @@ class FolderTree(BaseModel):
         False,
         description="Whether to reverse the sort order of the tracks",
     )
-    foldersortby: str = Field(
+    sortfoldersby: str = Field(
         "lastmod",
         description="""The field to sort folders by.
         Options: [
@@ -58,7 +58,7 @@ class FolderTree(BaseModel):
         """,
     )
     foldersort_reverse: bool = Field(
-        True,
+        False,
         description="Whether to reverse the sort order of the folders",
     )
     start: int = Field(0, description="The start index")
@@ -108,8 +108,8 @@ def get_folder_tree(body: FolderTree):
         start=body.start,
         limit=body.limit,
         tracks_only=tracks_only,
-        tracksortby=body.tracksortby,
-        foldersortby=body.foldersortby,
+        tracksortby=body.sorttracksby,
+        foldersortby=body.sortfoldersby,
         tracksort_reverse=body.tracksort_reverse,
         foldersort_reverse=body.foldersort_reverse,
     )
