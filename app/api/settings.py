@@ -6,7 +6,7 @@ from pydantic import BaseModel, Field
 from app.api.auth import admin_required
 
 from app.db.userdata import PluginTable
-from app.lib.index import index_everything
+from app.lib.index import IndexEverything, index_everything
 from app.logger import log
 from app.settings import Info, SessionVarKeys
 from app.store.albums import AlbumStore
@@ -194,43 +194,43 @@ class SetSettingBody(BaseModel):
     )
 
 
-@api.post("/set")
-@admin_required()
-def set_setting(body: SetSettingBody):
-    """
-    Set a setting.
-    """
-    key = body.key
-    value = body.value
+# @api.post("/set")
+# @admin_required()
+# def set_setting(body: SetSettingBody):
+#     """
+#     Set a setting.
+#     """
+#     key = body.key
+#     value = body.value
 
-    if key is None or value is None or key == "root_dirs":
-        return {"msg": "Invalid arguments!"}, 400
+#     if key is None or value is None or key == "root_dirs":
+#         return {"msg": "Invalid arguments!"}, 400
 
-    root_dir = sdb.get_root_dirs()
+#     root_dir = sdb.get_root_dirs()
 
-    if not root_dir:
-        return {"msg": "No root directories set!"}, 400
+#     if not root_dir:
+#         return {"msg": "No root directories set!"}, 400
 
-    if key not in mapp:
-        return {"msg": "Invalid key!"}, 400
+#     if key not in mapp:
+#         return {"msg": "Invalid key!"}, 400
 
-    if key == "artist_separators":
-        value = str(value).split(",")
-        value = set(value)
+#     if key == "artist_separators":
+#         value = str(value).split(",")
+#         value = set(value)
 
-    reload_all_for_set_setting()
+#     reload_all_for_set_setting()
 
-    # if value is a set, convert it to a string
-    # (artist_separators)
-    if type(value) == set:
-        value = ",".join(value)
+#     # if value is a set, convert it to a string
+#     # (artist_separators)
+#     if type(value) == set:
+#         value = ",".join(value)
 
-    return {"result": value}
+#     return {"result": value}
 
 
 @background
-def run_populate():
-    # populate.Populate(instance_key=get_random_str())
+def index_stuff():
+    IndexEverything()
     pass
 
 
@@ -239,8 +239,7 @@ def trigger_scan():
     """
     Triggers scan for new music
     """
-    run_populate()
-
+    index_stuff()
     return {"msg": "Scan triggered!"}
 
 
