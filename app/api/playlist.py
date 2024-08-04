@@ -200,6 +200,11 @@ def get_playlist(path: PlaylistIDPath, query: GetPlaylistQuery):
     is_custom = playlistid in {p["name"] for p in custom_playlists}
 
     if is_custom:
+        if query.start != 0:
+            return {
+                "tracks": [],
+            }
+
         handler = next(
             p["handler"] for p in custom_playlists if p["name"] == playlistid
         )

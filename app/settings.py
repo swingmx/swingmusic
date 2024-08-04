@@ -5,7 +5,6 @@ Contains default configs
 import os
 import subprocess
 import sys
-from typing import Any
 
 from app import configs
 
@@ -229,20 +228,6 @@ class SessionVars:
     MERGE_ALBUM_VERSIONS = False
     ARTIST_SEPARATORS = set()
     SHOW_ALBUMS_AS_SINGLES = False
-
-
-# TODO: Find a way to eliminate this class without breaking typings
-class SessionVarKeys:
-    EXTRACT_FEAT = "EXTRACT_FEAT"
-    REMOVE_PROD = "REMOVE_PROD"
-    CLEAN_ALBUM_TITLE = "CLEAN_ALBUM_TITLE"
-    REMOVE_REMASTER_FROM_TRACK = "REMOVE_REMASTER_FROM_TRACK"
-    DO_PERIODIC_SCANS = "DO_PERIODIC_SCANS"
-    PERIODIC_SCAN_INTERVAL = "PERIODIC_SCAN_INTERVAL"
-    MERGE_ALBUM_VERSIONS = "MERGE_ALBUM_VERSIONS"
-    ARTIST_SEPARATORS = "ARTIST_SEPARATORS"
-    SHOW_ALBUMS_AS_SINGLES = "SHOW_ALBUMS_AS_SINGLES"
-
 
 
 class TCOLOR:

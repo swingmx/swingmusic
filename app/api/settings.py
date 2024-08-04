@@ -6,14 +6,12 @@ from pydantic import BaseModel, Field
 from app.api.auth import admin_required
 
 from app.db.userdata import PluginTable
-from app.lib.index import IndexEverything, index_everything
+from app.lib.index import index_everything
 from app.logger import log
-from app.settings import Info, SessionVarKeys
+from app.settings import Info
 from app.store.albums import AlbumStore
 from app.store.artists import ArtistStore
 from app.store.tracks import TrackStore
-from app.utils.generators import get_random_str
-from app.utils.threading import background
 from app.config import UserConfig
 
 bp_tag = Tag(name="Settings", description="Customize stuff")
@@ -154,15 +152,15 @@ def get_root_dirs():
 
 
 # maps settings to their parser flags
-mapp = {
-    "artist_separators": SessionVarKeys.ARTIST_SEPARATORS,
-    "extract_feat": SessionVarKeys.EXTRACT_FEAT,
-    "remove_prod": SessionVarKeys.REMOVE_PROD,
-    "clean_album_title": SessionVarKeys.CLEAN_ALBUM_TITLE,
-    "remove_remaster": SessionVarKeys.REMOVE_REMASTER_FROM_TRACK,
-    "merge_albums": SessionVarKeys.MERGE_ALBUM_VERSIONS,
-    "show_albums_as_singles": SessionVarKeys.SHOW_ALBUMS_AS_SINGLES,
-}
+# mapp = {
+#     "artist_separators": SessionVarKeys.ARTIST_SEPARATORS,
+#     "extract_feat": SessionVarKeys.EXTRACT_FEAT,
+#     "remove_prod": SessionVarKeys.REMOVE_PROD,
+#     "clean_album_title": SessionVarKeys.CLEAN_ALBUM_TITLE,
+#     "remove_remaster": SessionVarKeys.REMOVE_REMASTER_FROM_TRACK,
+#     "merge_albums": SessionVarKeys.MERGE_ALBUM_VERSIONS,
+#     "show_albums_as_singles": SessionVarKeys.SHOW_ALBUMS_AS_SINGLES,
+# }
 
 
 @api.get("")
@@ -178,9 +176,9 @@ def get_all_settings():
     return config
 
 
-@background
-def reload_all_for_set_setting():
-    reload_everything(get_random_str())
+# @background
+# def reload_all_for_set_setting():
+#     reload_everything(get_random_str())
 
 
 class SetSettingBody(BaseModel):
@@ -227,19 +225,12 @@ class SetSettingBody(BaseModel):
 
 #     return {"result": value}
 
-
-@background
-def index_stuff():
-    IndexEverything()
-    pass
-
-
 @api.get("/trigger-scan")
 def trigger_scan():
     """
     Triggers scan for new music
     """
-    index_stuff()
+    index_everything()
     return {"msg": "Scan triggered!"}
 
 

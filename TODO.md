@@ -56,4 +56,3 @@
 
 - Duplicates on search
 - Audio stops on ending
-- Port account settings to config on the frontend

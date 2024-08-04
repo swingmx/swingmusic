@@ -14,7 +14,6 @@ from pydantic import BaseModel, Field
 from flask_openapi3 import Tag
 from flask_openapi3 import APIBlueprint
 
-# from app.db.sqlite.auth import SQLiteAuthMethods as authdb
 from app.db.userdata import UserTable
 from app.utils.auth import check_password, hash_password
 from app.config import UserConfig
@@ -307,8 +306,6 @@ def get_all_users(query: GetAllUsersQuery):
     Get all users (if you're an admin, you will also receive accounts settings)
     """
     config = UserConfig()
-    # config.enableGuest = True
-    # config.usersOnLogin = True
     settings = {
         "enableGuest": False,
         "usersOnLogin": config.usersOnLogin,
