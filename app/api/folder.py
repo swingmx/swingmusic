@@ -23,11 +23,46 @@ api = APIBlueprint("folder", __name__, url_prefix="/folder", abp_tags=[tag])
 
 
 class FolderTree(BaseModel):
-    folder: str = Field(
-        "$home", example="$home", description="The folder to things from"
+    folder: str = Field("$home", description="The folder to things from")
+    tracksortby: str = Field(
+        "default",
+        description="""The field to sort tracks by. Options: [
+            "default",
+            "album",
+            "albumartists",
+            "artists",
+            "bitrate",
+            "date",
+            "disc",
+            "duration",
+            "lastmod",
+            "lastplayed",
+            "playduration",
+            "playcount",
+            "title",
+        ]""",
+    )
+    tracksort_reverse: bool = Field(
+        False,
+        description="Whether to reverse the sort order of the tracks",
+    )
+    foldersortby: str = Field(
+        "lastmod",
+        description="""The field to sort folders by.
+        Options: [
+            "default",
+            "name",
+            "lastmod",
+            "trackcount",
+        ]
+        """,
+    )
+    foldersort_reverse: bool = Field(
+        True,
+        description="Whether to reverse the sort order of the folders",
     )
     start: int = Field(0, description="The start index")
-    end: int = Field(50, description="The end index")
+    limit: int = Field(50, description="The max number of items to return")
     tracks_only: bool = Field(False, description="Whether to only get tracks")
 
 
@@ -69,9 +104,15 @@ def get_folder_tree(body: FolderTree):
         req_dir = "/" + req_dir if not req_dir.startswith("/") else req_dir
 
     res = get_files_and_dirs(
-        req_dir, start=body.start, end=body.end, tracks_only=tracks_only
+        req_dir,
+        start=body.start,
+        limit=body.limit,
+        tracks_only=tracks_only,
+        tracksortby=body.tracksortby,
+        foldersortby=body.foldersortby,
+        tracksort_reverse=body.tracksort_reverse,
+        foldersort_reverse=body.foldersort_reverse,
     )
-    res["folders"] = sorted(res["folders"], key=lambda i: i.name)
 
     return res
 

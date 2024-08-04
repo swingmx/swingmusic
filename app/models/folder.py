@@ -7,4 +7,3 @@ class Folder:
     path: str
     is_sym: bool = False
     trackcount: int = 0
-    foldercount: int = 0

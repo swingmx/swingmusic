@@ -14,17 +14,6 @@ from app.store.folder import FolderStore
 from app.store.tracks import TrackStore
 from app.utils.threading import background
 
-def load_and_map():
-    key = str(time())
-    FolderStore.load_filepaths()
-    AlbumStore.load_albums(key)
-    ArtistStore.load_artists(key)
-
-    map_scrobble_data()
-    map_favorites()
-    map_artist_colors()
-    map_album_colors()
-
 
 class IndexEverything:
     def __init__(self) -> None:
@@ -35,6 +24,10 @@ class IndexEverything:
         AlbumStore.load_albums(key)
         ArtistStore.load_artists(key)
         FolderStore.load_filepaths()
+
+        # map colors
+        map_album_colors()
+        map_artist_colors()
 
         map_scrobble_data()
         map_favorites()
