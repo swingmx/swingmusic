@@ -21,9 +21,7 @@ from app.utils.hashing import create_hash
 from app.lib.albumslib import sort_by_track_no
 from app.serializers.album import serialize_for_card_many
 from app.serializers.track import serialize_tracks
-from app.db.sqlite.favorite import SQLiteFavoriteMethods as favdb
 
-check_is_fav = favdb.check_is_favorite
 
 bp_tag = Tag(name="Album", description="Single album")
 api = APIBlueprint("album", __name__, url_prefix="/album", abp_tags=[bp_tag])

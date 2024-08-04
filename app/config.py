@@ -36,7 +36,8 @@ class UserConfig:
 
     # misc
     enablePeriodicScans: bool = False
-    scanInterval: int = 60 * 10  # 10 minutes
+    scanInterval: int = 10
+    enableWatchdog: bool = False
 
     # plugins
     enablePlugins: bool = True

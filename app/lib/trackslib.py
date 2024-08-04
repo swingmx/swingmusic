@@ -6,10 +6,6 @@ import os
 
 from app.lib.pydub.pydub import AudioSegment
 from app.lib.pydub.pydub.silence import detect_leading_silence, detect_silence
-
-from app.db.sqlite.tracks import SQLiteTrackMethods as trackdb
-from app.store.tracks import TrackStore
-from app.utils.progressbar import tqdm
 from app.utils.threading import ThreadWithReturnValue
 
 

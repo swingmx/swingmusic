@@ -20,6 +20,7 @@ from app.db.utils import (
     favorites_to_dataclass,
     playlist_to_dataclass,
     playlists_to_dataclasses,
+    plugin_to_dataclass,
     plugin_to_dataclasses,
     similar_artist_to_dataclass,
     similar_artists_to_dataclass,
@@ -109,6 +110,23 @@ class PluginTable(Base):
     @classmethod
     def get_all(cls):
         return plugin_to_dataclasses(cls.all())
+
+    @classmethod
+    def activate(cls, name: str, value: bool):
+        return cls.execute(
+            update(cls).where(cls.name == name).values(active=value), commit=True
+        )
+
+    @classmethod
+    def get_by_name(cls, name: str):
+        result = cls.execute(select(cls).where(cls.name == name))
+        return plugin_to_dataclass(result.fetchone())
+
+    @classmethod
+    def update_settings(cls, name: str, settings: dict[str, Any]):
+        return cls.execute(
+            update(cls).where(cls.name == name).values(settings=settings), commit=True
+        )
 
 
 class SimilarArtistTable(Base):

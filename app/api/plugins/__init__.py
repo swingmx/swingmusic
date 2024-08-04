@@ -1,10 +1,8 @@
-from flask import Blueprint, request
-
 from flask_openapi3 import Tag
 from flask_openapi3 import APIBlueprint
 from pydantic import BaseModel, Field
 from app.api.auth import admin_required
-from app.db.sqlite.plugins import PluginsMethods
+from app.db.userdata import PluginTable
 
 bp_tag = Tag(name="Plugins", description="Manage plugins")
 api = APIBlueprint("plugins", __name__, url_prefix="/plugins", abp_tags=[bp_tag])
@@ -15,8 +13,7 @@ def get_all_plugins():
     """
     List all plugins
     """
-    plugins = PluginsMethods.get_all_plugins()
-
+    plugins = PluginTable.get_all()
     return {"plugins": plugins}
 
 
@@ -37,9 +34,7 @@ def activate_deactivate_plugin(body: PluginActivateBody):
     Activate/Deactivate plugin
     """
     name = body.plugin
-    active = 1 if body.active else 0
-
-    PluginsMethods.plugin_set_active(name, active)
+    PluginTable.activate(name, body.active)
 
     return {"message": "OK"}, 200
 
@@ -62,7 +57,7 @@ def update_plugin_settings(body: PluginSettingsBody):
     if not plugin or not settings:
         return {"error": "Missing plugin or settings"}, 400
 
-    PluginsMethods.update_plugin_settings(plugin_name=plugin, settings=settings)
-    plugin = PluginsMethods.get_plugin_by_name(plugin)
+    PluginTable.update_settings(plugin, settings)
+    plugin = PluginTable.get_by_name(plugin)
 
     return {"status": "success", "settings": plugin.settings}

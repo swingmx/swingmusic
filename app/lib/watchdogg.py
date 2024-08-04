@@ -12,11 +12,7 @@ from watchdog.observers import Observer
 
 from app import settings
 from app.config import UserConfig
-from app.db.sqlite.albumcolors import SQLiteAlbumMethods as aldb
-
-# from app.db.sqlite.settings import SettingsSQLMethods as sdb
 from app.db.sqlite.tracks import SQLiteManager
-from app.db.sqlite.tracks import SQLiteTrackMethods as db
 from app.lib.colorlib import process_color
 from app.lib.taglib import extract_thumb, get_tags
 from app.logger import log

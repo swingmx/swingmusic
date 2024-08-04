@@ -13,11 +13,11 @@ from app.config import UserConfig
 from app.db.userdata import UserTable
 from app.logger import log
 from app.print_help import HELP_MESSAGE
+from app.setup.sqlite import setup_sqlite
 from app.utils.auth import hash_password
 from app.utils.paths import getFlaskOpenApiPath
 from app.utils.xdg_utils import get_xdg_config_dir
 from app.utils.wintools import is_windows
-from app.db.sqlite.auth import SQLiteAuthMethods as authdb
 
 ALLARGS = settings.ALLARGS
 ARGS = sys.argv[1:]
@@ -209,6 +209,7 @@ class ProcessArgs:
         if ALLARGS.pswd in ARGS:
             print("SWING MUSIC v2.0.0 ")
             print("PASSWORD RECOVERY \n")
+            setup_sqlite()
 
             username: str = ""
             password: str = ""
@@ -221,7 +222,6 @@ class ProcessArgs:
                 sys.exit(0)
 
             username = username.strip()
-            # user = authdb.get_user_by_username(username)
             user = UserTable.get_by_username(username)
 
             if not user:
@@ -235,11 +235,6 @@ class ProcessArgs:
                 print("\nOperation cancelled! Exiting ...")
                 sys.exit(0)
 
-            password = hash_password(password)
-            # user = authdb.update_user({"id": user.id, "password": password})
-            UserTable.update_one({
-                "id": user.id,
-                "password": password
-            })
+            UserTable.update_one({"id": user.id, "password": hash_password(password)})
 
             sys.exit(0)

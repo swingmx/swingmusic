@@ -6,7 +6,6 @@ from requests import ConnectionError as RequestConnectionError
 from requests import ReadTimeout
 
 from app import settings
-from app.db.sqlite.tracks import SQLiteTrackMethods
 from app.lib.artistlib import CheckArtistImages
 from app.lib.colorlib import ProcessAlbumColors, ProcessArtistColors
 from app.lib.errors import PopulateCancelledError
@@ -22,9 +21,6 @@ from app.utils.progressbar import tqdm
 
 from app.db.userdata import SimilarArtistTable
 
-get_all_tracks = SQLiteTrackMethods.get_all_tracks
-insert_many_tracks = SQLiteTrackMethods.insert_many_tracks
-remove_tracks_by_filepaths = SQLiteTrackMethods.remove_tracks_by_filepaths
 
 POPULATE_KEY = ""
 

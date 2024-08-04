@@ -1,18 +1,14 @@
 from dataclasses import asdict
 from typing import Any
-from flask import request
 from flask_openapi3 import Tag
 from flask_openapi3 import APIBlueprint
 from pydantic import BaseModel, Field
 from app.api.auth import admin_required
 
-from app.db.sqlite.plugins import PluginsMethods as pdb
-from app.db.sqlite.tracks import SQLiteTrackMethods as trackdb
 from app.db.userdata import PluginTable
 from app.lib.index import index_everything
-from app.lib.watchdogg import Watcher as WatchDog
 from app.logger import log
-from app.settings import Info, Paths, SessionVarKeys
+from app.settings import Info, SessionVarKeys
 from app.store.albums import AlbumStore
 from app.store.artists import ArtistStore
 from app.store.tracks import TrackStore
@@ -48,6 +44,7 @@ def reload_everything(instance_key: str):
         ArtistStore.load_artists(instance_key)
     except Exception as e:
         log.error(e)
+
 
 # CHECKPOINT: TEST SETTINGS API ENDPOINTS
 
@@ -217,10 +214,6 @@ def set_setting(body: SetSettingBody):
     if key not in mapp:
         return {"msg": "Invalid key!"}, 400
 
-    sdb.set_setting(key, value)
-
-    flag = mapp[key]
-
     if key == "artist_separators":
         value = str(value).split(",")
         value = set(value)
@@ -269,7 +262,11 @@ def update_config(body: UpdateConfigBody):
     Update the config file
     """
     config = UserConfig()
+    if body.key == "artistSeparators":
+        body.value = body.value.split(",")
+
     setattr(config, body.key, body.value)
+    print(getattr(config, body.key))
 
     return {
         "msg": "Config updated!",

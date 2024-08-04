@@ -5,13 +5,10 @@ Reads and applies the latest database migrations.
 """
 
 import inspect
-import sys
 from types import ModuleType
 
 # from app.db.sqlite.migrations import MigrationManager
 from app.db.metadata import MigrationTable
-from app.logger import log
-from app.migrations import v1_3_0, v1_4_9
 from app.migrations.base import Migration
 
 
@@ -41,7 +38,7 @@ def apply_migrations():
     migrations past that index are applied and the new length
     is stored as the new migration index.
     """
-    modules = [v1_3_0, v1_4_9]
+    modules = []
     migrations = [get_all_migrations(m) for m in modules]
 
     # index = MigrationManager.get_index()

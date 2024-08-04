@@ -14,7 +14,6 @@ def hash_password(password: str) -> str:
 
     :return: The hashed password.
     """
-
     return hashlib.pbkdf2_hmac(
         "sha256", password.encode("utf-8"), UserConfig().serverId.encode("utf-8"), 100000
     ).hex()
