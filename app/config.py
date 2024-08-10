@@ -22,6 +22,13 @@ class UserConfig:
     rootDirs: list[str] = field(default_factory=list)
     excludeDirs: list[str] = field(default_factory=list)
     artistSeparators: set[str] = field(default_factory=lambda: {";", "/"})
+    artistSplitIgnoreList: set[str] = field(
+        default_factory=lambda: {
+            "AC/DC",
+            "Bob marley & the wailers",
+            "Crosby, Stills, Nash & Young",
+        }
+    )
     genreSeparators: set[str] = field(default_factory=lambda: {"/", ";", "&"})
 
     # tracks

@@ -10,8 +10,7 @@ from pydantic import BaseModel, Field
 from app.api.apischemas import TrackHashSchema
 from app.lib.trackslib import get_silence_paddings
 
-# from app.store.tracks import TrackStore
-from app.db.libdata import TrackTable
+from app.store.tracks import TrackStore
 from app.utils.files import guess_mime_type
 
 bp_tag = Tag(name="File", description="Audio files")
@@ -35,10 +34,26 @@ def send_track_file_legacy(path: TrackHashSchema, query: SendTrackFileQuery):
     filepath = query.filepath
     msg = {"msg": "File Not Found"}
 
-    track = TrackTable.get_track_by_trackhash(trackhash, filepath)
-    track_exists = track is not None and os.path.exists(track.filepath)
+    track = None
+    tracks = TrackStore.get_tracks_by_filepaths([filepath])
 
-    if track_exists:
+
+    if len(tracks) > 0 and os.path.exists(filepath):
+        track = tracks[0]
+    else:
+        res = TrackStore.trackhashmap.get(trackhash)
+
+        # When finding by trackhash, sort by bitrate
+        # and get the first track that exists
+        if res is not None:
+            tracks = sorted(res.tracks, key=lambda x: x.bitrate, reverse=True)
+
+            for t in tracks:
+                if os.path.exists(t.filepath):
+                    track = t
+                    break
+
+    if track is not None:
         audio_type = guess_mime_type(filepath)
         return send_file(filepath, mimetype=audio_type, conditional=True)
 
@@ -57,10 +72,25 @@ def send_track_file(path: TrackHashSchema, query: SendTrackFileQuery):
     msg = {"msg": "File Not Found"}
 
     # If filepath is provided, try to send that
-    track = TrackTable.get_track_by_trackhash(trackhash, filepath)
-    track_exists = track is not None and os.path.exists(track.filepath)
+    track = None
+    tracks = TrackStore.get_tracks_by_filepaths([filepath])
 
-    if track_exists:
+    if len(tracks) > 0 and os.path.exists(filepath):
+        track = tracks[0]
+    else:
+        res = TrackStore.trackhashmap.get(trackhash)
+
+        # When finding by trackhash, sort by bitrate
+        # and get the first track that exists
+        if res is not None:
+            tracks = sorted(res.tracks, key=lambda x: x.bitrate, reverse=True)
+
+            for t in tracks:
+                if os.path.exists(t.filepath):
+                    track = t
+                    break
+
+    if track is not None:
         audio_type = guess_mime_type(filepath)
         return send_file_as_chunks(track.filepath, audio_type)
 

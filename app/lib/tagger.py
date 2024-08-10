@@ -124,7 +124,7 @@ class IndexTracks:
                 log.warning("'Populate.tag_untagged': Populate key changed")
                 return
 
-            tags = get_tags(file, artist_separators=config.artistSeparators)
+            tags = get_tags(file, config=config)
 
             if tags is not None:
                 TrackTable.insert_one(tags)

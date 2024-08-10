@@ -14,13 +14,7 @@ from tinytag import TinyTag
 from app.config import UserConfig
 from app.settings import Defaults, Paths
 from app.utils.hashing import create_hash
-from app.utils.parsers import (
-    clean_title,
-    get_base_title_and_versions,
-    parse_feat_from_title,
-    remove_prod,
-    split_artists,
-)
+from app.utils.parsers import split_artists
 from app.utils.wintools import win_replace_slash
 
 
@@ -109,13 +103,13 @@ def clean_filename(filename: str):
 class ParseData:
     artist: str
     title: str
-    artist_separators: set[str]
+    config: UserConfig
 
     def __post_init__(self):
-        self.artist = split_artists(self.artist, self.artist_separators)
+        self.artist = split_artists(self.artist, self.config)
 
 
-def extract_artist_title(filename: str, artist_separators: set[str]):
+def extract_artist_title(filename: str, config: UserConfig):
     path = Path(filename).with_suffix("")
 
     path = clean_filename(str(path))
@@ -123,24 +117,30 @@ def extract_artist_title(filename: str, artist_separators: set[str]):
     split_result = [x.strip() for x in split_result]
 
     if len(split_result) == 1:
-        return ParseData("", split_result[0], artist_separators)
+        return ParseData(
+            "",
+            split_result[0],
+            config,
+        )
 
     if len(split_result) > 2:
         try:
             int(split_result[0])
 
             return ParseData(
-                split_result[1], " - ".join(split_result[2:]), artist_separators
+                split_result[1],
+                " - ".join(split_result[2:]),
+                config,
             )
         except ValueError:
             pass
 
     artist = split_result[0]
     title = split_result[1]
-    return ParseData(artist, title, artist_separators)
+    return ParseData(artist, title, config)
 
 
-def get_tags(filepath: str, artist_separators: set[str]):
+def get_tags(filepath: str, config: UserConfig):
     """
     Returns the tags for a given audio file.
     """
@@ -173,9 +173,12 @@ def get_tags(filepath: str, artist_separators: set[str]):
     for tag in to_filename:
         p = getattr(tags, tag)
         if p == "" or p is None:
-            parse_data = extract_artist_title(filename, artist_separators)
-            title = parse_data.title
+            parse_data = extract_artist_title(filename, config)
+            title = parse_data.title.replace("_", " ")
             setattr(tags, tag, title)
+
+            # tags.title = tags.title.replace("_", " ")
+            # tags.album = tags.album.replace("_", " ")
 
     parse = ["artist", "albumartist"]
     for tag in parse:
@@ -183,7 +186,7 @@ def get_tags(filepath: str, artist_separators: set[str]):
 
         if p == "" or p is None:
             if not parse_data:
-                parse_data = extract_artist_title(filename, artist_separators)
+                parse_data = extract_artist_title(filename, config)
 
             artist = parse_data.artist
 
@@ -229,112 +232,110 @@ def get_tags(filepath: str, artist_separators: set[str]):
     tags.artists = tags.artist
     tags.albumartists = tags.albumartist
 
-    split_artist = split_artists(tags.artist, separators=artist_separators)
-    split_albumartists = split_artists(tags.albumartist, separators=artist_separators)
-    new_title = tags.title
+    # split_artist = split_artists(tags.artist, separators=config.artistSeparators)
+    # split_albumartists = split_artists(tags.albumartist, separators=config.artistSeparators)
+    # new_title = tags.title
 
     # TODO: Figure out which is the best spot to create these hashes
     # create albumhash using og_album
     tags.albumhash = create_hash(tags.album or "", tags.albumartist)
 
-    config = UserConfig()
-
     # extract featured artists
-    if config.extractFeaturedArtists:
-        feat, new_title = parse_feat_from_title(
-            tags.title, separators=artist_separators
-        )
-        original_lower = "-".join([create_hash(a) for a in split_artist])
-        split_artist.extend(a for a in feat if create_hash(a) not in original_lower)
+    # if config.extractFeaturedArtists:
+    #     feat, new_title = parse_feat_from_title(
+    #         tags.title, separators=config.artistSeparators
+    #     )
+    #     original_lower = "-".join([create_hash(a) for a in split_artist])
+    #     split_artist.extend(a for a in feat if create_hash(a) not in original_lower)
 
     # if no albumartist, assign to the first artist
     if not tags.albumartist:
-        tags.albumartist = split_artist[:1]
+        tags.albumartist = split_artists(tags.artist, config)[:1]
 
     # create json objects for artists and albumartists
-    tags.artists = [
-        {
-            "artisthash": create_hash(a, decode=True),
-            "name": a,
-        }
-        for a in split_artist
-    ]
+    # tags.artists = [
+    #     {
+    #         "artisthash": create_hash(a, decode=True),
+    #         "name": a,
+    #     }
+    #     for a in split_artist
+    # ]
 
-    tags.albumartists = [
-        {
-            "artisthash": create_hash(a, decode=True),
-            "name": a,
-        }
-        for a in split_albumartists
-    ]
+    # tags.albumartists = [
+    #     {
+    #         "artisthash": create_hash(a, decode=True),
+    #         "name": a,
+    #     }
+    #     for a in split_albumartists
+    # ]
 
-    tags.artisthashes = list(
-        {a["artisthash"] for a in tags.artists}
-    )
+    # tags.artisthashes = list(
+    #     {a["artisthash"] for a in tags.artists}
+    # )
 
     # remove prod by
-    if config.removeProdBy:
-        new_title = remove_prod(new_title)
+    # if config.removeProdBy:
+    #     new_title = remove_prod(new_title)
 
     # if track is a single, ie.
     # if og_title == album, rename album to new_title
-    if tags.title == tags.album:
-        tags.album = new_title
+    # if tags.title == tags.album:
+    #     tags.album = new_title
 
     # remove remaster from track title
-    if config.removeRemasterInfo:
-        new_title = clean_title(new_title)
+    # if config.removeRemasterInfo:
+    #     new_title = clean_title(new_title)
 
     # save final title
-    tags.og_title = tags.title
-    tags.title = new_title
-    tags.og_album = tags.album
+    # tags.og_title = tags.title
+    # tags.title = new_title
+    # tags.og_album = tags.album
 
     # clean album title
-    if config.cleanAlbumTitle:
-        tags.album, _ = get_base_title_and_versions(tags.album, get_versions=False)
+    # if config.cleanAlbumTitle:
+    #     tags.album, _ = get_base_title_and_versions(tags.album, get_versions=False)
 
     # merge album versions
-    if config.mergeAlbums:
-        tags.albumhash = create_hash(
-            tags.album, *(a["name"] for a in tags.albumartists)
-        )
+    # if config.mergeAlbums:
+    #     tags.albumhash = create_hash(
+    #         tags.album, *(a["name"] for a in tags.albumartists)
+    #     )
 
     # process genres
-    if tags.genre:
-        src_genres: str = tags.genre
-        src_genres = src_genres.lower()
-        # separators = {"/", ";", "&"}
-        separators = set(config.genreSeparators)
+    # if tags.genre:
+    #     src_genres: str = tags.genre
+    #     src_genres = src_genres.lower()
+    #     # separators = {"/", ";", "&"}
+    #     separators = set(config.genreSeparators)
 
-        contains_rnb = "r&b" in src_genres
-        contains_rock = "rock & roll" in src_genres
+    #     contains_rnb = "r&b" in src_genres
+    #     contains_rock = "rock & roll" in src_genres
 
-        if contains_rnb:
-            src_genres = src_genres.replace("r&b", "RnB")
+    #     if contains_rnb:
+    #         src_genres = src_genres.replace("r&b", "RnB")
 
-        if contains_rock:
-            src_genres = src_genres.replace("rock & roll", "rock")
+    #     if contains_rock:
+    #         src_genres = src_genres.replace("rock & roll", "rock")
 
-        for s in separators:
-            src_genres = src_genres.replace(s, ",")
+    #     for s in separators:
+    #         src_genres = src_genres.replace(s, ",")
 
-        genres_list: list[str] = src_genres.split(",")
-        tags.genres = [
-            {"name": g.strip(), "genrehash": create_hash(g.strip())}
-            for g in genres_list
-        ]
-        tags.genrehashes = [g["genrehash"] for g in tags.genres]
-    else:
-        tags.genres = []
-        tags.genrehashes = []
+    #     genres_list: list[str] = src_genres.split(",")
+    #     tags.genres = [
+    #         {"name": g.strip(), "genrehash": create_hash(g.strip())}
+    #         for g in genres_list
+    #     ]
+    #     tags.genrehashes = [g["genrehash"] for g in tags.genres]
+    # else:
+    #     tags.genres = []
+    #     tags.genrehashes = []
+
+    tags.genres = tags.genre
 
     # sub underscore with space
-    tags.title = tags.title.replace("_", " ")
-    tags.album = tags.album.replace("_", " ")
-    tags.trackhash = create_hash(
-        *[a["name"] for a in tags.artists], tags.album, tags.title
-    )
+    # tags.title = tags.title.replace("_", " ")
+    # tags.album = tags.album.replace("_", " ")
+    tags.trackhash = create_hash(tags.artists, tags.album, tags.title)
 
     more_extra = {
         "audio_offset": tags.audio_offset,

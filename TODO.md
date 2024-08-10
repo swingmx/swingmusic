@@ -33,17 +33,9 @@
 
 # THE BIG ONE
 
-- Updating settings
-- Cleaning out commented code
 - Watchdog
 - Periodic scans
-- Remove legacy db methods
-- Review: We don't need server side image colors
-- Clean up main db and userdata modules
-- Move plugins to a config file
 - What about our migrations?
-- Add userid to queries
-- Remove duplicates on artist page (test with Hanson)
 - Test foreign keys on delete
 - Normalize playlists table:
   - New table to hold playlist entries
@@ -56,3 +48,5 @@
 
 - Duplicates on search
 - Audio stops on ending
+- Show users on account settings when logged in as admin and show users on login is disabled.
+- 

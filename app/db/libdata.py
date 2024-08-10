@@ -109,10 +109,10 @@ class TrackTable(Base):
 
     id: Mapped[int] = mapped_column(init=False, primary_key=True)
     album: Mapped[str] = mapped_column(String())
-    albumartists: Mapped[list[dict[str, str]]] = mapped_column(JSON())
+    albumartists: Mapped[str] = mapped_column(String())
     albumhash: Mapped[str] = mapped_column(String(), index=True)
-    artisthashes: Mapped[list[str]] = mapped_column(JSON(), index=True)
-    artists: Mapped[list[dict[str, str]]] = mapped_column(JSON(), index=True)
+    # artisthashes: Mapped[list[str]] = mapped_column(JSON(), index=True)
+    artists: Mapped[str] = mapped_column(String())
     bitrate: Mapped[int] = mapped_column(Integer())
     copyright: Mapped[Optional[str]] = mapped_column(String())
     date: Mapped[int] = mapped_column(Integer(), nullable=True)
@@ -120,11 +120,11 @@ class TrackTable(Base):
     duration: Mapped[int] = mapped_column(Integer())
     filepath: Mapped[str] = mapped_column(String(), index=True, unique=True)
     folder: Mapped[str] = mapped_column(String(), index=True)
-    genrehashes: Mapped[list[str]] = mapped_column(JSON(), index=True)
-    genres: Mapped[Optional[list[dict[str, str]]]] = mapped_column(JSON())
+    # genrehashes: Mapped[list[str]] = mapped_column(JSON(), index=True)
+    genres: Mapped[Optional[str]] = mapped_column(String())
     last_mod: Mapped[float] = mapped_column(Integer())
-    og_album: Mapped[str] = mapped_column(String())
-    og_title: Mapped[str] = mapped_column(String())
+    # og_album: Mapped[str] = mapped_column(String())
+    # og_title: Mapped[str] = mapped_column(String())
     title: Mapped[str] = mapped_column(String())
     track: Mapped[int] = mapped_column(Integer())
     trackhash: Mapped[str] = mapped_column(String(), index=True)
@@ -249,6 +249,19 @@ class TrackTable(Base):
         cls.increment_scrobblecount(
             TrackTable, TrackTable.trackhash, trackhash, duration, timestamp
         )
+
+    # @classmethod
+    # def update_artist_separators(cls, separators: set[str]):
+    #     tracks = cls.get_all()
+
+    #     with DbEngine.manager(commit=True) as conn:
+    #         for track in tracks:
+    #             track.split_artists(separators)
+    #             conn.execute(
+    #                 update(cls)
+    #                 .where(cls.trackhash == track.trackhash)
+    #                 .values(artists=track.artists, artisthashes=track.artisthashes)
+    #             )
 
 
 class AlbumTable(Base):

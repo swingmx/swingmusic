@@ -215,8 +215,6 @@ class TrackStore:
     def get_tracks_by_filepaths(cls, paths: list[str]) -> list[Track]:
         """
         Returns all tracks matching the given paths.
-
-        ⛔⛔⛔⛔⛔⛔⛔⛔⛔⛔⛔⛔⛔⛔⛔⛔⛔⛔⛔⛔⛔⛔
         """
         # tracks = sorted(cls.trackhashmap, key=lambda x: x.filepath)
         # tracks = use_bisection(tracks, "filepath", paths)

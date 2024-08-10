@@ -1,5 +1,6 @@
 from typing import Any
 
+from app.config import UserConfig
 from app.models import Album as AlbumModel, Artist as ArtistModel, Track as TrackModel
 from app.models.favorite import Favorite
 from app.models.lastfm import SimilarArtist
@@ -9,12 +10,12 @@ from app.models.plugins import Plugin
 from app.models.user import User
 
 
-def track_to_dataclass(track: Any):
-    return TrackModel(**track._asdict())
+def track_to_dataclass(track: Any, config: UserConfig):
+    return TrackModel(**track._asdict(), config=config)
 
 
 def tracks_to_dataclasses(tracks: Any):
-    return [track_to_dataclass(track) for track in tracks]
+    return [track_to_dataclass(track, UserConfig()) for track in tracks]
 
 
 def album_to_dataclass(album: Any):

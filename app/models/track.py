@@ -1,6 +1,15 @@
 from dataclasses import dataclass, field
 
+from app.config import UserConfig
 from app.utils.auth import get_current_userid
+from app.utils.hashing import create_hash
+from app.utils.parsers import (
+    clean_title,
+    get_base_title_and_versions,
+    parse_feat_from_title,
+    remove_prod,
+    split_artists,
+)
 
 
 @dataclass(slots=True)
@@ -13,7 +22,6 @@ class Track:
     album: str
     albumartists: list[dict[str, str]]
     albumhash: str
-    artisthashes: list[str]
     artists: list[dict[str, str]]
     bitrate: int
     copyright: str
@@ -22,11 +30,8 @@ class Track:
     duration: int
     filepath: str
     folder: str
-    genres: list[dict[str, str]]
-    genrehashes: list[str]
+    genres: str | list[dict[str, str]]
     last_mod: int
-    og_album: str
-    og_title: str
     title: str
     track: int
     trackhash: str
@@ -34,6 +39,12 @@ class Track:
     lastplayed: int
     playcount: int
     playduration: int
+
+    config: UserConfig
+    og_album: str = ""
+    og_title: str = ""
+    artisthashes: list[str] = field(default_factory=list)
+    genrehashes: list[str] = field(default_factory=list)
 
     _pos: int = 0
     _ati: str = ""
@@ -55,9 +66,118 @@ class Track:
             self.fav_userids.append(userid)
 
     def __post_init__(self):
+        self.og_title = self.title
+        self.og_album = self.album
+
         self.image = self.albumhash + ".webp"
         self.extra = {
             "disc_total": self.extra.get("disc_total", 0),
             "track_total": self.extra.get("track_total", 0),
             "samplerate": self.extra.get("samplerate", -1),
         }
+
+        self.split_artists()
+        self.map_with_config()
+        self.process_genres()
+
+        # Remove duplicates from artists and albumartists
+        seen_artists = set()
+        self.artists = [
+            d
+            for d in self.artists
+            if tuple(d.items()) not in seen_artists
+            and not seen_artists.add(tuple(d.items()))
+        ]
+
+        seen_albumartists = set()
+        self.albumartists = [
+            d
+            for d in self.albumartists
+            if tuple(d.items()) not in seen_albumartists
+            and not seen_albumartists.add(tuple(d.items()))
+        ]
+
+        self.config = None
+
+    def split_artists(self):
+        """
+        Splits the artists and albumartists based on the given separators, and updates the artisthashes.
+        """
+
+        def split(artists: str):
+            return [
+                {"name": a, "artisthash": create_hash(a, decode=True)}
+                for a in split_artists(artists, config=self.config)
+            ]
+
+        self.artists = split(self.artists)
+        self.albumartists = split(self.albumartists)
+        self.artisthashes = [a["artisthash"] for a in self.artists]
+
+    def map_with_config(self):
+        new_title = self.title
+
+        # Extract featured artists
+        if self.config.extractFeaturedArtists:
+            feat, new_title = parse_feat_from_title(self.title, self.config)
+            feat = [
+                {"name": f, "artisthash": create_hash(f, decode=True)} for f in feat
+            ]
+            feat = [f for f in feat if f["artisthash"] not in self.artisthashes]
+            self.artists.extend(feat)
+            self.artisthashes.extend([f["artisthash"] for f in feat])
+
+            # Update album title for singles
+            # ie. album: "Title (feat. Artist)"
+            #     title: "Title (feat. Artist)"
+            # becomes: album: "Title", title: "Title"
+            if self.og_album == self.og_title:
+                self.album = new_title
+
+        # Clean track title
+        if self.config.removeProdBy:
+            new_title = remove_prod(new_title)
+
+        # if self.title == new_title:
+        #     self.album = new_title
+
+        if self.config.removeRemasterInfo:
+            new_title = clean_title(new_title)
+
+        self.title = new_title
+
+        # Clean album title
+        if self.config.cleanAlbumTitle:
+            self.album, _ = get_base_title_and_versions(self.album, get_versions=False)
+
+        if self.config.mergeAlbums:
+            self.albumhash = create_hash(
+                self.album, *(a["name"] for a in self.albumartists)
+            )
+
+    def process_genres(self):
+        if self.genres:
+            src_genres: str = self.genres
+
+            src_genres = src_genres.lower()
+            # separators = {"/", ";", "&"}
+            separators = set(self.config.genreSeparators)
+
+            contains_rnb = "r&b" in src_genres
+            contains_rock = "rock & roll" in src_genres
+
+            if contains_rnb:
+                src_genres = src_genres.replace("r&b", "RnB")
+
+            if contains_rock:
+                src_genres = src_genres.replace("rock & roll", "rock")
+
+            for s in separators:
+                src_genres = src_genres.replace(s, ",")
+
+            genres_list: list[str] = src_genres.split(",")
+            self.genres = [
+                {"name": g.strip(), "genrehash": create_hash(g.strip())}
+                for g in genres_list
+            ]
+            self.genrehashes = [g["genrehash"] for g in self.genres]
