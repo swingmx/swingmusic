@@ -57,8 +57,10 @@ class Track:
 
     def toggle_favorite_user(self, userid: int):
         """
-        Adds or removes the given user from the list of users
-        who have favorited the track.
+        Toggles the favorite status of the track for a given user.
+
+        Args:
+            userid (int): The ID of the user toggling the favorite status.
         """
         if userid in self.fav_userids:
             self.fav_userids.remove(userid)
@@ -66,6 +68,11 @@ class Track:
             self.fav_userids.append(userid)
 
     def __post_init__(self):
+        """
+        Performs post-initialization processing on the track object.
+        This includes setting original values, processing artists and genres,
+        and removing duplicate artists.
+        """
         self.og_title = self.title
         self.og_album = self.album
 
@@ -97,11 +104,13 @@ class Track:
             and not seen_albumartists.add(tuple(d.items()))
         ]
 
+        self.recreate_trackhash()
         self.config = None
 
     def split_artists(self):
         """
-        Splits the artists and albumartists based on the given separators, and updates the artisthashes.
+        Splits the artists and albumartists based on the given separators,
+        and updates the artisthashes.
         """
 
         def split(artists: str):
@@ -115,6 +124,10 @@ class Track:
         self.artisthashes = [a["artisthash"] for a in self.artists]
 
     def map_with_config(self):
+        """
+        Applies various transformations to the track's title and album
+        based on the user's configuration settings.
+        """
         new_title = self.title
 
         # Extract featured artists
@@ -156,6 +169,9 @@ class Track:
             )
 
     def process_genres(self):
+        """
+        Processes and standardizes the genre information for the track.
+        """
         if self.genres:
             src_genres: str = self.genres
 
@@ -181,3 +197,11 @@ class Track:
                 for g in genres_list
             ]
             self.genrehashes = [g["genrehash"] for g in self.genres]
+
+    def recreate_trackhash(self):
+        """
+        Recreates the trackhash based on the current title, album, and artist information.
+        """
+        self.trackhash = create_hash(
+            self.title, self.album, *(artist["name"] for artist in self.artists)
+        )

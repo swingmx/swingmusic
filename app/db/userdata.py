@@ -1,5 +1,5 @@
 import datetime
-from typing import Any
+from typing import Any, Literal
 from sqlalchemy import (
     JSON,
     Boolean,
@@ -409,7 +409,7 @@ class LibDataTable(Base):
         )
 
     @classmethod
-    def find_one(cls, hash: str, type: str):
+    def find_one(cls, hash: str, type: Literal["album", "artist"]):
         result = cls.execute(
             select(cls).where((cls.itemhash == hash) & (cls.itemtype == type))
         )

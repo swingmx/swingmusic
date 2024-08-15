@@ -108,14 +108,14 @@ class PairDeviceQuery(BaseModel):
     code: str = Field("", description="The code")
 
 
-@api.post("/pair")
+@api.get("/pair")
 @jwt_required(optional=True)
-def pair_with_code(body: PairDeviceQuery):
+def pair_with_code(query: PairDeviceQuery):
     """
     Get an access token by sending a pair code. NOTE: A code can only be used once!
     """
     global pair_token
-    token = pair_token.get(body.code, None)
+    token = pair_token.get(query.code, None)
 
     if token:
         pair_token = {}

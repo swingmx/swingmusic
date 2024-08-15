@@ -8,11 +8,14 @@ from app.models.album import Album
 from app.models.artist import Artist
 from app.models.track import Track
 from app.store.folder import FolderStore
+from app.store.tracks import TrackStore
+from app.utils import flatten
 from app.utils.filesystem import run_fast_scandir
 from app.utils.parsers import get_base_album_title
 from app.utils.progressbar import tqdm
 
 from app.logger import log
+from app.utils.remove_duplicates import remove_duplicates
 
 POPULATE_KEY: float = 0
 
@@ -136,9 +139,27 @@ class IndexTracks:
         print("Done")
 
 
-def create_albums():
+def create_albums(_trackhashes: list[str] = []) -> list[tuple[Album, set[str]]]:
+    """
+    Creates album objects using the indexed tracks. Takes in an optional
+    list of trackhashes to create the albums from. If no list is provided,
+    all tracks are used.
+
+    The trackhashes are passed when creating albums from the watchdogg module.
+
+    Returns a list of tuples containing the album and the trackhashes in the album.
+    ie:
+
+    >>> list[tuple[Album, set[str]]]
+    """
     albums = dict()
-    all_tracks: list[Track] = TrackTable.get_all()
+
+    if _trackhashes:
+        all_tracks: list[Track] = TrackStore.get_tracks_by_trackhashes(_trackhashes)
+    else:
+        all_tracks: list[Track] = TrackStore.get_flat_list()
+
+    all_tracks = remove_duplicates(all_tracks)
 
     for track in all_tracks:
         if track.albumhash not in albums:
@@ -192,9 +213,28 @@ def create_albums():
     return list(albums.values())
 
 
-# class IndexArtists:
-def create_artists():
-    all_tracks: list[Track] = TrackTable.get_all()
+def create_artists(
+    artisthashes: list[str] = [],
+) -> list[tuple[Artist, set[str], set[str]]]:
+    """
+    Creates artist objects using the indexed tracks. Takes in an optional
+    list of artisthashes to create the artists from. If no list is provided,
+    all tracks are used.
+
+    Returns a list of tuples containing the artist, the trackhashes for the artist
+    and the albumhashes for the artist.
+    ie:
+
+    >>> list[tuple[Artist, set[str], set[str]]]
+    """
+    if artisthashes:
+        all_tracks: list[Track] = flatten(
+            [TrackStore.get_tracks_by_artisthash(hash) for hash in artisthashes]
+        )
+    else:
+        all_tracks: list[Track] = TrackStore.get_flat_list()
+
+    all_tracks = remove_duplicates(all_tracks)
     artists = dict()
 
     for track in all_tracks:

@@ -34,11 +34,10 @@ class ArtistMapEntry:
 
 
 class ArtistStore:
-    artists: list[Artist] = CustomList()
     artistmap: dict[str, ArtistMapEntry] = {}
 
     @classmethod
-    def load_artists(cls, instance_key: str):
+    def load_artists(cls, instance_key: str, _trackhashes: list[str] = []):
         """
         Loads all artists from the database into the store.
         """
@@ -52,7 +51,7 @@ class ArtistStore:
             artist.artisthash: ArtistMapEntry(
                 artist=artist, albumhashes=albumhashes, trackhashes=trackhashes
             )
-            for artist, trackhashes, albumhashes in create_artists()
+            for artist, trackhashes, albumhashes in create_artists(_trackhashes)
         }
 
         # for track in TrackStore.get_flat_list():
@@ -77,35 +76,35 @@ class ArtistStore:
         """
         return [a.artist for a in cls.artistmap.values()]
 
-    @classmethod
-    def map_artist_color(cls, artist_tuple: tuple):
-        """
-        Maps a color to the corresponding artist.
-        """
+    # @classmethod
+    # def map_artist_color(cls, artist_tuple: tuple):
+    #     """
+    #     Maps a color to the corresponding artist.
+    #     """
 
-        artisthash = artist_tuple[1]
-        color = json.loads(artist_tuple[2])
+    #     artisthash = artist_tuple[1]
+    #     color = json.loads(artist_tuple[2])
 
-        for artist in cls.artists:
-            if artist.artisthash == artisthash:
-                artist.set_colors(color)
-                break
+    #     for artist in cls.artists:
+    #         if artist.artisthash == artisthash:
+    #             artist.set_colors(color)
+    #             break
 
-    @classmethod
-    def add_artist(cls, artist: Artist):
-        """
-        Adds an artist to the store.
-        """
-        cls.artists.append(artist)
+    # @classmethod
+    # def add_artist(cls, artist: Artist):
+    #     """
+    #     Adds an artist to the store.
+    #     """
+    #     cls.artists.append(artist)
 
-    @classmethod
-    def add_artists(cls, artists: list[Artist]):
-        """
-        Adds multiple artists to the store.
-        """
-        for artist in artists:
-            if artist not in cls.artists:
-                cls.artists.append(artist)
+    # @classmethod
+    # def add_artists(cls, artists: list[Artist]):
+    #     """
+    #     Adds multiple artists to the store.
+    #     """
+    #     for artist in artists:
+    #         if artist not in cls.artists:
+    #             cls.artists.append(artist)
 
     @classmethod
     def get_artist_by_hash(cls, artisthash: str):
@@ -124,34 +123,34 @@ class ArtistStore:
         artists = [cls.get_artist_by_hash(hash) for hash in artisthashes]
         return [a for a in artists if a is not None]
 
-    @classmethod
-    def artist_exists(cls, artisthash: str) -> bool:
-        """
-        Checks if an artist exists.
-        """
-        return artisthash in "-".join([a.artisthash for a in cls.artists])
+    # @classmethod
+    # def artist_exists(cls, artisthash: str) -> bool:
+    #     """
+    #     Checks if an artist exists.
+    #     """
+    #     return artisthash in "-".join([a.artisthash for a in cls.artists])
 
-    @classmethod
-    def artist_has_tracks(cls, artisthash: str) -> bool:
-        """
-        Checks if an artist has tracks.
-        """
-        artists: set[str] = set()
+    # @classmethod
+    # def artist_has_tracks(cls, artisthash: str) -> bool:
+    #     """
+    #     Checks if an artist has tracks.
+    #     """
+    #     artists: set[str] = set()
 
-        for track in TrackStore.tracks:
-            artists.update(track.artist_hashes)
-            album_artists: list[str] = [a.artisthash for a in track.albumartists]
-            artists.update(album_artists)
+    #     for track in TrackStore.tracks:
+    #         artists.update(track.artist_hashes)
+    #         album_artists: list[str] = [a.artisthash for a in track.albumartists]
+    #         artists.update(album_artists)
 
-        master_hash = "-".join(artists)
-        return artisthash in master_hash
+    #     master_hash = "-".join(artists)
+    #     return artisthash in master_hash
 
-    @classmethod
-    def remove_artist_by_hash(cls, artisthash: str):
-        """
-        Removes an artist from the store.
-        """
-        cls.artists = CustomList(a for a in cls.artists if a.artisthash != artisthash)
+    # @classmethod
+    # def remove_artist_by_hash(cls, artisthash: str):
+    #     """
+    #     Removes an artist from the store.
+    #     """
+    #     cls.artists = CustomList(a for a in cls.artists if a.artisthash != artisthash)
 
     @classmethod
     def get_artist_tracks(cls, artisthash: str):

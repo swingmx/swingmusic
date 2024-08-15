@@ -44,19 +44,19 @@ class AlbumMapEntry:
 
 
 class AlbumStore:
-    albums: list[Album] = CustomList()
+    # albums: list[Album] = CustomList()
     albummap: dict[str, AlbumMapEntry] = {}
 
-    @staticmethod
-    def create_album(track: Track):
-        """
-        Creates album object from a track
-        """
-        return Album(
-            albumhash=track.albumhash,
-            albumartists=track.albumartists,  # type: ignore
-            title=track.og_album,
-        )
+    # @staticmethod
+    # def create_album(track: Track):
+    #     """
+    #     Creates album object from a track
+    #     """
+    #     return Album(
+    #         albumhash=track.albumhash,
+    #         albumartists=track.albumartists,  # type: ignore
+    #         title=track.og_album,
+    #     )
 
     @classmethod
     def load_albums(cls, instance_key: str):
@@ -73,6 +73,12 @@ class AlbumStore:
             for album, trackhashes in create_albums()
         }
         print("Done!")
+
+    @classmethod
+    def index_new_album(cls, album: Album, trackhashes: set[str]):
+        cls.albummap[album.albumhash] = AlbumMapEntry(
+            album=album, trackhashes=trackhashes
+        )
 
     @classmethod
     def get_flat_list(cls):
@@ -141,12 +147,12 @@ class AlbumStore:
         master_string = "-".join(a.albumartists_hashes for a in cls.albums)
         return master_string.count(artisthash)
 
-    @classmethod
-    def album_exists(cls, albumhash: str) -> bool:
-        """
-        Checks if an album exists.
-        """
-        return albumhash in "-".join([a.albumhash for a in cls.albums])
+    # @classmethod
+    # def album_exists(cls, albumhash: str) -> bool:
+    #     """
+    #     Checks if an album exists.
+    #     """
+    #     return albumhash in "-".join([a.albumhash for a in cls.albums])
 
     @classmethod
     def remove_album(cls, album: Album):

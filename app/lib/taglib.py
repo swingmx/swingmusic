@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+import math
 import os
 from io import BytesIO
 from pathlib import Path
@@ -206,7 +207,7 @@ def get_tags(filepath: str, config: UserConfig):
     to_round = ["bitrate", "duration"]
     for prop in to_round:
         try:
-            setattr(tags, prop, round(getattr(tags, prop)))
+            setattr(tags, prop, math.floor(getattr(tags, prop)))
         except TypeError:
             setattr(tags, prop, 0)
 
