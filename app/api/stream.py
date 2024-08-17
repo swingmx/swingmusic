@@ -247,23 +247,11 @@ def send_file_as_chunks(filepath: str) -> Response:
             while remaining_bytes > 0 or retry_count < max_retries:
                 if retry_count == max_retries:
                     print("💚 sending final chunk! ...")
-                    return (
-                        file.read(os.path.getsize(filepath) - file.tell()),
-                        file.tell(),
-                        True,
-                    )
-                print("\n\n")
-                print(f"file: {filepath}")
-                print(f"start: {start}")
-                print(f"end: {end}")
-                print(f"filesize: {os.path.getsize(filepath)}")
-                print(f"⭐ (O) Remaining bytes: {remaining_bytes}")
-                print(f"⭐ Remaining bytes: {remaining_bytes}")
-                print(f"⭐ Cursor position: {file.tell()}")
-                # Read the chunk size or all the remaining bytes
 
-                print(f"💚 remaining_bytes: {remaining_bytes}")
-                print(f"💚 retry_count: {retry_count}")
+                    pos = file.tell()
+                    chunk = file.read(os.path.getsize(filepath) - pos)
+
+                    return chunk, pos, True
 
                 if remaining_bytes < chunk_size:
                     time.sleep(0.25)
@@ -303,7 +291,6 @@ def send_file_as_chunks(filepath: str) -> Response:
         f"bytes {start}-{position}/{os.path.getsize(filepath) + bytes_to_add}",
     )
     response.headers.add("Accept-Ranges", "bytes")
-    response.headers.add("Content-Length", str(len(data or [])))
     return response
 
 

@@ -266,7 +266,7 @@ class ScrobbleTable(Base):
         return cls.insert_one(item)
 
     @classmethod
-    def get_all(cls, start: int, limit: int | None):
+    def get_all(cls, start: int, limit: int | None = None):
         result = cls.execute(
             select(cls)
             .where(cls.userid == get_current_userid())

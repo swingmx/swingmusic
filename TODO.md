@@ -43,6 +43,7 @@
   - New table to hold similar artist entries
   - Create 2 way relationships, such that if an artist A is similar to another B with a certain weight,
     then artist B is similar to A with the same weight, unless overwritten.
+- Clean up tempfiles after transcoding
 
 # Bug fixes
 

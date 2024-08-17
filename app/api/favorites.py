@@ -7,6 +7,7 @@ from pydantic import BaseModel, Field
 from app.api.apischemas import GenericLimitSchema
 from app.db.libdata import TrackTable
 from app.db.userdata import FavoritesTable
+from app.lib.extras import get_extra_info
 from app.models import FavType
 from app.settings import Defaults
 
@@ -71,9 +72,12 @@ def toggle_favorite(body: FavoritesAddBody):
     """
     Adds a favorite to the database.
     """
+    extra = get_extra_info(body.hash, body.type)
 
     try:
-        FavoritesTable.insert_item({"hash": body.hash, "type": body.type})
+        FavoritesTable.insert_item(
+            {"hash": body.hash, "type": body.type, "extra": extra}
+        )
     except:
         return {"msg": "Failed! An error occured"}, 500
 

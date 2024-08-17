@@ -4,6 +4,7 @@ from pydantic import Field
 from app.api.apischemas import TrackHashSchema
 
 from app.db.userdata import ScrobbleTable
+from app.lib.extras import get_extra_info
 from app.settings import Defaults
 from app.store.albums import AlbumStore
 from app.store.artists import ArtistStore
@@ -39,7 +40,9 @@ def log_track(body: LogTrackBody):
     if trackentry is None:
         return {"msg": "Track not found."}, 404
 
-    ScrobbleTable.add(dict(body))
+    scrobble_data = dict(body)
+    scrobble_data["extra"] = get_extra_info(body.trackhash, "track")
+    ScrobbleTable.add(scrobble_data)
 
     # Update play data on the in-memory stores
     track = trackentry.tracks[0]
