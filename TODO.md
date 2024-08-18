@@ -44,6 +44,7 @@
   - Create 2 way relationships, such that if an artist A is similar to another B with a certain weight,
     then artist B is similar to A with the same weight, unless overwritten.
 - Clean up tempfiles after transcoding
+- Double sort artist tracks for consistency (alphabetically then by other field. eg. playcount)
 
 # Bug fixes
 

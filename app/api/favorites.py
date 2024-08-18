@@ -131,9 +131,8 @@ def get_favorite_tracks(query: GetAllOfTypeQuery):
     Get favorite tracks
     """
     tracks, total = FavoritesTable.get_fav_tracks(query.start, query.limit)
-
     tracks.reverse()
-    tracks = TrackTable.get_tracks_by_trackhashes([t.hash for t in tracks])
+    tracks = TrackStore.get_tracks_by_trackhashes([t.hash for t in tracks])
 
     return {"tracks": serialize_tracks(tracks), "total": total}
 

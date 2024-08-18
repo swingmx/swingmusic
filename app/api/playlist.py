@@ -13,7 +13,6 @@ from flask_openapi3 import APIBlueprint, FileStorage
 
 from app import models
 from app.api.apischemas import GenericLimitSchema
-from app.db.libdata import TrackTable
 from app.db.userdata import PlaylistTable
 from app.lib import playlistlib
 from app.lib.albumslib import sort_by_track_no
@@ -57,7 +56,7 @@ def get_path_trackhashes(path: str):
     """
     Returns a list of trackhashes in a folder.
     """
-    tracks = TrackTable.get_tracks_in_path(path)
+    tracks = TrackStore.get_tracks_in_path(path)
     return [t.trackhash for t in tracks]
 
 
@@ -65,7 +64,7 @@ def get_album_trackhashes(albumhash: str):
     """
     Returns a list of trackhashes in an album.
     """
-    tracks = TrackTable.get_tracks_by_albumhash(albumhash)
+    tracks = TrackStore.get_tracks_by_albumhash(albumhash)
     tracks = sort_by_track_no(tracks)
 
     return [t.trackhash for t in tracks]
@@ -75,7 +74,8 @@ def get_artist_trackhashes(artisthash: str):
     """
     Returns a list of trackhashes for an artist.
     """
-    tracks = TrackTable.get_tracks_by_artisthash(artisthash)
+    tracks = TrackStore.get_tracks_by_artisthash(artisthash)
+    tracks = sorted(tracks, key= lambda t: t.playcount, reverse=True)
     return [t.trackhash for t in tracks]
 
 

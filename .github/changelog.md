@@ -5,6 +5,8 @@
 - Auth
 - New artists/albums Sort by: last played, no. of streams, total stream duration
 - Option to show now playing track info on tab title. Go to Settings > Appearance to enable
+- You can select which disc to play in an album
+- Internal Backup and restore
 
 ## Improvements
 

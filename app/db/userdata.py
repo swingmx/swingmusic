@@ -225,6 +225,10 @@ class FavoritesTable(Base):
         res = result.fetchall()
 
         if start == 0:
+            # if limit == -1, return all
+            if limit == -1:
+                limit = len(res)
+
             return res[:limit], len(res)
 
         return res, -1
