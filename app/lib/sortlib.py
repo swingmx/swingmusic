@@ -26,6 +26,12 @@ def sort_tracks(tracks: list[Track], key: str, reverse: bool = False):
 
         return flatten([sort_by_track_no(list(g)) for k, g in groups])
 
+    # INFO: sort tracks by title for a fallback value
+    tracks = sorted(tracks, key=lambda t: t.title)
+
+    if key == "title":
+        return tracks
+
     return sorted(tracks, key=sortfunc, reverse=reverse)
 
 

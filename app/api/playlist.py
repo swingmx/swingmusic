@@ -18,6 +18,7 @@ from app.lib import playlistlib
 from app.lib.albumslib import sort_by_track_no
 from app.lib.home.recentlyadded import get_recently_added_playlist
 from app.lib.home.recentlyplayed import get_recently_played_playlist
+from app.lib.sortlib import sort_tracks
 from app.models.playlist import Playlist
 from app.serializers.playlist import serialize_for_card
 from app.serializers.track import serialize_tracks
@@ -75,7 +76,7 @@ def get_artist_trackhashes(artisthash: str):
     Returns a list of trackhashes for an artist.
     """
     tracks = TrackStore.get_tracks_by_artisthash(artisthash)
-    tracks = sorted(tracks, key= lambda t: t.playcount, reverse=True)
+    tracks = sort_tracks(tracks, key="playcount", reverse=True)
     return [t.trackhash for t in tracks]
 
 

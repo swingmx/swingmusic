@@ -18,6 +18,7 @@ from app.api.apischemas import (
 
 from app.config import UserConfig
 from app.db.userdata import SimilarArtistTable
+from app.lib.sortlib import sort_tracks
 
 from app.serializers.album import serialize_for_card_many
 from app.serializers.artist import serialize_for_cards, serialize_for_card
@@ -47,9 +48,7 @@ def get_artist(path: ArtistHashSchema, query: TrackLimitSchema):
         return {"error": "Artist not found"}, 404
 
     tracks = TrackStore.get_tracks_by_trackhashes(entry.trackhashes)
-    tracks = sorted(tracks, key=lambda t: t.title)
-    tracks = sorted(tracks, key= lambda t: t.playcount, reverse=True)
-    print([{t.title, t.playcount, t.trackhash} for t in tracks])
+    tracks = sort_tracks(tracks, key="playcount", reverse=True)
     tcount = len(tracks)
 
     artist = entry.artist
@@ -164,8 +163,7 @@ def get_all_artist_tracks(path: ArtistHashSchema):
     Returns all artists by a given artist.
     """
     tracks = ArtistStore.get_artist_tracks(path.artisthash)
-    tracks = sorted(tracks, key=lambda t: t.title)
-    tracks = sorted(tracks, key= lambda t: t.playcount, reverse=True)
+    tracks = sort_tracks(tracks, key="playcount", reverse=True)
     return serialize_tracks(tracks)
 
 
