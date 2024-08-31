@@ -10,7 +10,7 @@ from app.settings import DbPaths
 
 from app.db.engine import DbEngine
 from app.db import create_all_tables
-from app.db.libdata import create_all as create_user_tables
+# from app.db.libdata import create_all as create_user_tables
 
 
 def run_migrations():
@@ -32,7 +32,7 @@ def setup_sqlite():
     )
 
     create_all_tables()
-    create_user_tables()
+    # create_user_tables()
 
     if not UserTable.get_all():
         UserTable.insert_default_user()

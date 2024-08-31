@@ -141,7 +141,7 @@ SUPPORTED_FILES = tuple(f".{file}" for file in FILES)
 
 # ===== SQLite =====
 class DbPaths:
-    APP_DB_NAME = "swing.db"
+    APP_DB_NAME = "swingmusic.db"
     USER_DATA_DB_NAME = "userdata.db"
 
     @classmethod

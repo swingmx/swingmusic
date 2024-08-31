@@ -1,4 +1,5 @@
 import os
+import time
 import urllib
 from concurrent.futures import ThreadPoolExecutor
 from io import BytesIO
@@ -10,7 +11,10 @@ from requests.exceptions import ConnectionError as RequestConnectionError
 from requests.exceptions import ReadTimeout
 
 from app import settings
-from app.db.libdata import ArtistTable
+from app.models.artist import Artist
+from app.store.artists import ArtistStore
+
+# from app.db.libdata import ArtistTable
 
 # from app.store import artists as artist_store
 # from app.store.tracks import TrackStore
@@ -28,27 +32,51 @@ def get_artist_image_link(artist: str):
     """
     Returns an artist image url.
     """
+    response: requests.Response | None = None
 
-    try:
+    def make_request():
         query = urllib.parse.quote(artist)  # type: ignore
-
         url = f"https://api.deezer.com/search/artist?q={query}"
-        response = requests.get(url, timeout=30)
+        headers = {
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36",
+            "Accept": "application/json, text/plain, */*",
+            "Accept-Language": "en-US,en;q=0.9",
+            "Referer": "https://www.deezer.com/",
+            "Origin": "https://www.deezer.com",
+        }
+        return requests.get(url, headers=headers, timeout=30)
+
+    for attempt in range(5):
         try:
-            data = response.json()
-        except requests.exceptions.JSONDecodeError:
+            response = make_request()
+            try:
+                data = response.json()
+            except requests.exceptions.JSONDecodeError:
+                return None
+
+            for res in data["data"]:
+                res_hash = create_hash(res["name"], decode=True)
+                artist_hash = create_hash(artist, decode=True)
+
+                if res_hash == artist_hash:
+                    return str(res["picture_big"])
+
             return None
+        except (RequestConnectionError, ReadTimeout, IndexError, KeyError):
+            if attempt == 4:
+                print("Failed to get artist image link  ")
 
-        for res in data["data"]:
-            res_hash = create_hash(res["name"], decode=True)
-            artist_hash = create_hash(artist, decode=True)
+            if attempt <= 4:
+                time.sleep(10)
+            else:
+                return None
 
-            if res_hash == artist_hash:
-                return str(res["picture_big"])
+        # except (IndexError, KeyError):
+        #     print(f"Encountered index/key error in attempt {attempt}")
+        #     if response is not None:
+        #         print(response.headers)
 
-        return None
-    except (RequestConnectionError, ReadTimeout, IndexError, KeyError):
-        return None
+        #     return None
 
 
 # TODO: Move network calls to utils/network.py
@@ -75,11 +103,19 @@ class DownloadImage:
     def download(url: str) -> Image.Image | None:
         """
         Downloads the image from the url.
+        Retries after 10 seconds on a connection error.
         """
-        try:
-            return Image.open(BytesIO(requests.get(url, timeout=10).content))
-        except UnidentifiedImageError:
-            return None
+        for attempt in range(2):
+            try:
+                response = requests.get(url, timeout=10)
+                return Image.open(BytesIO(response.content))
+            except (RequestConnectionError, requests.Timeout, ReadTimeout):
+                if attempt == 0:
+                    time.sleep(10)
+                else:
+                    return None
+            except UnidentifiedImageError:
+                return None
 
     @staticmethod
     def save_img(img: Image.Image, entries: list[tuple[Path, int | None]]):
@@ -107,7 +143,13 @@ class CheckArtistImages:
         # read all files in the artist image folder
         path = settings.Paths.get_sm_artist_img_path()
         processed = [path.replace(".webp", "") for path in os.listdir(path)]
-        unprocessed = ArtistTable.get_artisthashes_not_in(processed)
+        print(f"Found {len(processed)} processed artist images")
+
+        unprocessed = [
+            a for a in ArtistStore.get_flat_list() if a.artisthash not in processed
+        ]
+
+        print(f"Downloading {len(unprocessed)} artist images")
         key_artist_map = ((instance_key, artist) for artist in unprocessed)
 
         with ThreadPoolExecutor(max_workers=14) as executor:
@@ -122,7 +164,7 @@ class CheckArtistImages:
             list(res)
 
     @staticmethod
-    def download_image(_map: tuple[str, dict[str, str]]):
+    def download_image(_map: tuple[str, Artist]):
         """
         Checks if an artist image exists and downloads it if not.
 
@@ -134,14 +176,13 @@ class CheckArtistImages:
             return
 
         img_path = (
-            Path(settings.Paths.get_sm_artist_img_path())
-            / f"{artist['artisthash']}.webp"
+            Path(settings.Paths.get_sm_artist_img_path()) / f"{artist.artisthash}.webp"
         )
 
         if img_path.exists():
             return
 
-        url = get_artist_image_link(artist["name"])
+        url = get_artist_image_link(artist.name)
 
         if url is not None:
-            return DownloadImage(url, name=f"{artist['artisthash']}.webp")
+            return DownloadImage(url, name=f"{artist.artisthash}.webp")
