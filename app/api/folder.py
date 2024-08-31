@@ -35,7 +35,7 @@ class FolderTree(BaseModel):
             "date",
             "disc",
             "duration",
-            "lastmod",
+            "last_mod",
             "lastplayed",
             "playduration",
             "playcount",
