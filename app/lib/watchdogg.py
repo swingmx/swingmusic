@@ -8,19 +8,20 @@ import sqlite3
 import time
 
 from watchdog.events import PatternMatchingEventHandler
+from watchdog.observers.api import BaseObserverSubclassCallable
 from watchdog.observers import Observer
 
 from app import settings
-from app.db.sqlite.albumcolors import SQLiteAlbumMethods as aldb
-from app.db.sqlite.settings import SettingsSQLMethods as sdb
-from app.db.sqlite.tracks import SQLiteManager
-from app.db.sqlite.tracks import SQLiteTrackMethods as db
+from app.config import UserConfig
+from app.db.libdata import TrackTable
+from app.db.userdata import LibDataTable
 from app.lib.colorlib import process_color
+from app.lib.tagger import create_albums, create_artists
 from app.lib.taglib import extract_thumb, get_tags
 from app.logger import log
 from app.models import Artist, Track
 from app.store.albums import AlbumStore
-from app.store.artists import ArtistStore
+from app.store.artists import ArtistMapEntry, ArtistStore
 from app.store.tracks import TrackStore
 
 
@@ -29,7 +30,7 @@ class Watcher:
     Contains the methods for initializing and starting watchdog.
     """
 
-    observers: list[Observer] = []
+    observers: list[BaseObserverSubclassCallable] = []
 
     def __init__(self):
         self.observer = Observer()
@@ -43,7 +44,8 @@ class Watcher:
 
         while trials < 10:
             try:
-                dirs = sdb.get_root_dirs()
+                # dirs = sdb.get_root_dirs()
+                dirs = UserConfig().rootDirs
                 dirs = [rf"{d}" for d in dirs]
 
                 dir_map = [
@@ -127,10 +129,10 @@ class Watcher:
         self.run()
 
 
-def handle_colors(cur: sqlite3.Cursor, albumhash: str):
-    exists = aldb.exists(albumhash, cur)
+def handle_color(albumhash: str):
+    entry = LibDataTable.find_one(albumhash, "album")
 
-    if exists:
+    if entry and entry.color:
         return
 
     colors = process_color(albumhash, is_album=True)
@@ -138,7 +140,12 @@ def handle_colors(cur: sqlite3.Cursor, albumhash: str):
     if colors is None:
         return
 
-    aldb.insert_one_album(cur=cur, albumhash=albumhash, colors=json.dumps(colors))
+    if entry is None:
+        LibDataTable.insert_one(
+            {"itemhash": albumhash, "color": colors[0], "itemtype": "album"}
+        )
+    else:
+        LibDataTable.update_one(albumhash, {"color": colors[0]})
 
     return colors
 
@@ -152,38 +159,43 @@ def add_track(filepath: str) -> None:
 
     TrackStore.remove_track_by_filepath(filepath)
 
-    tags = get_tags(filepath)
+    config = UserConfig()
+    tags = get_tags(filepath, config)
 
     # if the track is somehow invalid, return
     if tags is None or tags["bitrate"] == 0 or tags["duration"] == 0:
         return
 
-    colors = None
+    TrackTable.insert_one(tags)
+    extract_thumb(filepath, tags["albumhash"] + ".webp", overwrite=True)
 
-    with SQLiteManager() as cur:
-        db.insert_one_track(tags, cur)
-        extracted = extract_thumb(filepath, tags["albumhash"] + ".webp")
-
-        if not extracted:
-            return
-
-        colors = handle_colors(cur, tags["albumhash"])
-
+    colors = handle_color(tags["albumhash"])
     track = Track(**tags)
     TrackStore.add_track(track)
 
-    if not AlbumStore.album_exists(track.albumhash):
-        album = AlbumStore.create_album(track)
-        album.set_colors(colors)
-        AlbumStore.add_album(album)
+    # SECTION: Index album
+    albumentry = AlbumStore.albummap.get(track.albumhash)
 
-    artists: list[Artist] = track.artists + track.albumartists  # type: ignore
+    if albumentry is None:
+        album, trackhashes = create_albums([track.trackhash])[0]
+        AlbumStore.index_new_album(album, trackhashes)
+    else:
+        trackhash_exists = track.trackhash in albumentry.trackhashes
+
+        if not trackhash_exists:
+            albumentry.trackhashes.add(track.trackhash)
+            albumentry.album.trackcount += 1
+            albumentry.set_color(colors[0]) if colors else None
+
+    # SECTION: Index artist
+    artists = create_artists(track.artisthashes)
 
     for artist in artists:
-        if not ArtistStore.artist_exists(artist.artisthash):
-            ArtistStore.add_artist(Artist(artist.name))
-
-    extract_thumb(filepath, track.image, overwrite=True)
+        ArtistStore.artistmap[artist[0].artisthash] = ArtistMapEntry(
+            artist=artist[0],
+            albumhashes=artist[1],
+            trackhashes=artist[2],
+        )
 
 
 def remove_track(filepath: str) -> None:
@@ -287,16 +299,33 @@ class Handler(PatternMatchingEventHandler):
         NOT FIRED IN WINDOWS
         """
         try:
-            self.files_to_process.remove(event.src_path)
-            if os.path.getsize(event.src_path) > 0:
+            # Get initial file size
+            initial_size = os.path.getsize(event.src_path)
+
+            # Wait for 10 seconds
+            time.sleep(10)
+
+            # Check if file size has changed
+            current_size = os.path.getsize(event.src_path)
+
+            if current_size > 0 and current_size == initial_size:
                 path = self.get_abs_path(event.src_path)
                 add_track(path)
+                # Remove from processing list only after successful processing
+                self.files_to_process.remove(event.src_path)
+            else:
+                # File is still being modified or has been deleted
+                log.info(
+                    f"File {event.src_path} is still being modified. Skipping processing for now."
+                )
         except FileNotFoundError:
             # file was closed and deleted.
-            pass
+            log.info(f"File {event.src_path} was closed and deleted before processing.")
         except ValueError:
-            # file was removed from the list by another event handler.
-            pass
+            # file was already removed from the list by another event handler.
+            log.info(
+                f"File {event.src_path} was already removed from the processing list."
+            )
 
     def on_modified(self, event):
         # this event handler is triggered twice on windows
@@ -317,7 +346,7 @@ class Handler(PatternMatchingEventHandler):
 
         if current_size == previous_size:
             # Wait for a short duration to ensure the file write operation is complete
-            time.sleep(5)
+            time.sleep(10)
 
             # Check the file size again
             try:

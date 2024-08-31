@@ -1,8 +1,10 @@
 from datetime import datetime
+from time import time
 
 from app.lib.playlistlib import get_first_4_images
 from app.models.playlist import Playlist
 from app.models.track import Track
+
 from app.store.tracks import TrackStore
 from app.store.albums import AlbumStore
 from app.store.artists import ArtistStore
@@ -13,7 +15,12 @@ from app.serializers.artist import serialize_for_card
 
 from itertools import groupby
 
-from app.utils.dates import create_new_date, date_string_to_time_passed, timestamp_to_time_passed
+from app.utils import flatten
+from app.utils.dates import (
+    create_new_date,
+    date_string_to_time_passed,
+    timestamp_to_time_passed,
+)
 
 older_albums = set()
 older_artists = set()
@@ -36,7 +43,7 @@ def check_is_album_folder(tracks: list[Track]):
 
 def check_is_artist_folder(tracks: list[Track]):
     # INFO: flatten artist hashes using "-" as a separator
-    artisthashes = "-".join(t.artist_hashes for t in tracks).split("-")
+    artisthashes = flatten([t.artisthashes for t in tracks])
     return calc_based_on_percent(artisthashes, len(tracks))
 
 
@@ -48,27 +55,22 @@ def check_is_track_folder(tracks: list[Track]):
     return [create_track(t) for t in tracks]
 
 
-def check_is_new_artist(artisthash: str, timestamp: int):
-    """
-    Checks if an artist already exists in the library.
-    """
-    tracks = filter(
-        lambda t: t.last_mod < timestamp and artisthash in t.artist_hashes,
-        TrackStore.tracks,
-    )
-
-    return next(tracks, None) is None
+# def check_is_new_artist(hashes: set[str], artisthash: str, timestamp: int):
+#     """
+#     Checks if an artist already exists in the library.
+#     """
+#     return artisthash not in hashes
 
 
-def check_is_new_album(albumhash: str, timestamp: int):
-    """
-    Checks if an album already exists in the library.
-    """
-    tracks = filter(
-        lambda t: t.last_mod < timestamp and t.albumhash == albumhash, TrackStore.tracks
-    )
+# def check_is_new_album(albumhash: str, timestamp: int):
+#     """
+#     Checks if an album already exists in the library.
+#     """
+#     tracks = filter(
+#         lambda t: t.last_mod < timestamp and t.albumhash == albumhash, TrackStore.tracks
+#     )
 
-    return next(tracks, None) is None
+#     return next(tracks, None) is None
 
 
 def create_track(t: Track):
@@ -85,15 +87,17 @@ def create_track(t: Track):
 
 
 # INFO: Keys: folder, tracks, time (timestamp)
-group_type = dict[str, list[Track], float]
+# group_type = dict[str, str | list[Track] | float]
 
 
-def check_folder_type(group_: group_type) -> str:
+def check_folder_type(group_: dict):
     # check if all tracks in group have the same albumhash
     # if so, return "album"
-    key = group_["folder"]
-    tracks = group_["tracks"]
-    time = group_["time"]
+    key: str = group_["folder"]
+    tracks: list[Track] = group_["tracks"]
+    time: float = group_["time"]
+    existing_artist_hashes: set[str] = set(ArtistStore.artistmap.keys())
+    existing_album_hashes: set[str] = set(AlbumStore.albummap.keys())
 
     if len(tracks) == 1:
         entry = create_track(tracks[0])
@@ -102,13 +106,14 @@ def check_folder_type(group_: group_type) -> str:
 
     is_album, albumhash, _ = check_is_album_folder(tracks)
     if is_album:
-        album = AlbumStore.get_album_by_hash(albumhash)
+        # album = AlbumTable.get_album_by_albumhash(albumhash)
+        entry = AlbumStore.albummap.get(albumhash)
 
-        if album is None:
+        if entry is None:
             return None
 
         album = album_serializer(
-            album,
+            entry.album,
             to_remove={
                 "genres",
                 "og_title",
@@ -120,7 +125,7 @@ def check_folder_type(group_: group_type) -> str:
             },
         )
         album["help_text"] = (
-            "NEW ALBUM" if check_is_new_album(albumhash, time) else "NEW TRACKS"
+            "NEW ALBUM" if albumhash in existing_album_hashes else "NEW TRACKS"
         )
         album["time"] = timestamp_to_time_passed(time)
 
@@ -131,15 +136,15 @@ def check_folder_type(group_: group_type) -> str:
 
     is_artist, artisthash, trackcount = check_is_artist_folder(tracks)
     if is_artist:
-        artist = ArtistStore.get_artist_by_hash(artisthash)
+        entry = ArtistStore.artistmap.get(artisthash)
 
-        if artist is None:
+        if entry is None:
             return None
 
-        artist = serialize_for_card(artist)
+        artist = serialize_for_card(entry.artist)
         artist["trackcount"] = trackcount
         artist["help_text"] = (
-            "NEW ARTIST" if check_is_new_artist(artisthash, time) else "NEW MUSIC"
+            "NEW ARTIST" if artisthash not in existing_artist_hashes else "NEW MUSIC"
         )
         artist["time"] = timestamp_to_time_passed(time)
 
@@ -165,40 +170,60 @@ def check_folder_type(group_: group_type) -> str:
     )
 
 
-def group_track_by_folders(tracks: Track):
+def group_track_by_folders(tracks: list[Track], groups: dict[str, list[Track]]):
     """
     Groups tracks by folder and returns a list of groups sorted by last modified date.
 
     Uses generator expressions to avoid creating intermediate lists.
     """
-
     # INFO: sort tracks by folder name, then group by folder name
     tracks = sorted(tracks, key=lambda t: t.folder)
-    groups = groupby(tracks, lambda t: t.folder)
+    thisgroup = groupby(tracks, lambda t: t.folder)
 
-    # INFO: sort tracks by last modified date in descending order to get the most recent last modified date
-    groups = (
-        (folder, sorted(tracks, key=lambda t: t.last_mod, reverse=True))
-        for folder, tracks in groups
-    )
+    for folder, thistracks in thisgroup:
+        groups.setdefault(folder, []).extend(thistracks)
 
-    # INFO: Return a generator of the groups
-    groups = (
-        {"folder": folder, "tracks": list(tracks), "time": tracks[0].last_mod}
-        for folder, tracks in groups
-    )
-
-    # sort groups by last modified date
-    return sorted(groups, key=lambda group: group["time"], reverse=True)
+    return groups
 
 
 def get_recently_added_items(limit: int = 7):
-    tracks = sorted(TrackStore.tracks, key=lambda t: t.created_date)
-    groups = group_track_by_folders(tracks)
+    # tracks = sorted(TrackStore.tracks, key=lambda t: t.created_date)
+    now = time()
+    tracks = get_recently_added_tracks(start=0, limit=None)
+    then = time()
+
+    print(f"Time taken to get tracks: {then - now}")
+    groups = group_track_by_folders(tracks, {})
+    # print(groups)
+    # last_trackcount: int = len(tracks)
+
+    # while len(groups.keys()) < limit and last_trackcount > 0:
+    #     distracks = get_recently_added_tracks(start=len(tracks), limit=100)
+    #     last_trackcount = len(distracks)
+
+    #     tracks.extend(distracks)
+    #     groups = group_track_by_folders(tracks, groups)
+
+    grouplist = []
+
+    # INFO: sort tracks by last modified date in descending order to get the most recent last modified date
+    for folder, trackgroup in groups.items():
+        trackgroup.sort(key=lambda t: t.last_mod, reverse=True)
+        grouplist.append(
+            {
+                "folder": folder,
+                "len": len(trackgroup),
+                "tracks": trackgroup,
+                "time": trackgroup[0].last_mod,
+            }
+        )
+
+    # sort groups by last modified date
+    grouplist = sorted(grouplist, key=lambda group: group["time"], reverse=True)
 
     recent_items = []
 
-    for group in groups:
+    for group in grouplist:
         item = check_folder_type(group)
 
         if item not in recent_items:
@@ -217,7 +242,6 @@ def get_recently_added_items(limit: int = 7):
     return recent_items
 
 
-
 def get_recently_added_playlist(limit: int = 100):
     playlist = Playlist(
         id="recentlyadded",
@@ -232,18 +256,18 @@ def get_recently_added_playlist(limit: int = 100):
 
     try:
         # Create date to show as last updated
-        date = datetime.fromtimestamp(tracks[0].created_date)
+        date = datetime.fromtimestamp(tracks[0].last_mod)
     except IndexError:
         return playlist, []
 
-    playlist.last_updated = date_string_to_time_passed(create_new_date(date))
-
+    playlist._last_updated = date_string_to_time_passed(create_new_date(date))
     images = get_first_4_images(tracks=tracks)
     playlist.images = images
-    playlist.set_count(len(tracks))
+    playlist.duration = sum(t.duration for t in tracks)
+    playlist.count = len(tracks)
 
     return playlist, tracks
 
-def get_recently_added_tracks(limit: int):
-    tracks = sorted(TrackStore.tracks, key=lambda t: t.created_date, reverse=True)
-    return tracks[:limit]
+
+def get_recently_added_tracks(start: int = 0, limit: int | None = 100):
+    return TrackStore.get_recently_added(start, limit)

@@ -1,38 +1,35 @@
 """
 This module contains functions for the server
 """
+
 import time
 
-from app.lib.populate import Populate, PopulateCancelledError
-from app.settings import SessionVarKeys, get_flag, get_scan_sleep_time
+from app.config import UserConfig
+from app.lib.populate import PopulateCancelledError
 from app.utils.generators import get_random_str
 from app.utils.threading import background
 from app.logger import log
 
-@background
-def run_periodic_scans():
-    """
-    Runs periodic scans.
 
-    Periodic scans are checks that run every few minutes
-    in the background to do stuff like:
-    - checking for new music
-    - delete deleted entries
-    - downloading artist images, and other data.
-    """
-    # ValidateAlbumThumbs()
-    # ValidatePlaylistThumbs()
+# @background
+# def run_periodic_scans():
+#     """
+#     Runs periodic scans.
 
-    run_periodic_scan = True
+#     Periodic scans are checks that run every few minutes
+#     in the background to do stuff like:
+#     - checking for new music
+#     - delete deleted entries
+#     - downloading artist images, and other data.
+#     """
+#     # ValidateAlbumThumbs()
+#     # ValidatePlaylistThumbs()
 
-    while run_periodic_scan:
-        run_periodic_scan = get_flag(SessionVarKeys.DO_PERIODIC_SCANS)
+#     while UserConfig().enablePeriodicScans:
 
-        try:
-            Populate(instance_key=get_random_str())
-        except PopulateCancelledError:
-            log.error("'run_periodic_scans': Periodic scan cancelled.")
-            pass
+#         try:
+#         except PopulateCancelledError:
+#             log.error("'run_periodic_scans': Periodic scan cancelled.")
+#             pass
 
-        sleep_time = get_scan_sleep_time()
-        time.sleep(sleep_time)
+#         time.sleep(UserConfig().scanInterval)

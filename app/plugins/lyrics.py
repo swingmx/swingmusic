@@ -7,7 +7,7 @@ from typing import List, Optional
 import requests
 from unidecode import unidecode
 
-from app.db.sqlite.plugins import PluginsMethods
+from app.db.userdata import PluginTable
 from app.plugins import Plugin, plugin_method
 from app.settings import Paths
 
@@ -190,15 +190,13 @@ class LyricsProvider(LRCProvider):
 
 class Lyrics(Plugin):
     def __init__(self) -> None:
-        plugin = PluginsMethods.get_plugin_by_name("lyrics_finder")
+        plugin = PluginTable.get_by_name("lyrics_finder")
 
         if not plugin:
             return
 
         name = plugin.name
-        description = plugin.description
-
-        super().__init__(name, description)
+        super().__init__(name, "Musixmatch lyrics finder")
 
         self.provider = LyricsProvider()
 

@@ -3,6 +3,7 @@ name = "Swing music player"
 version = "0.1.0"
 description = ""
 authors = ["geoffrey45 <geoffreymungai45@gmail.com>"]
+package-mode = false
 
 [tool.poetry.dependencies]
 python = ">=3.10,<3.12"
@@ -26,6 +27,11 @@ watchdog = "^4.0.0"
 pendulum = "^3.0.0"
 flask-openapi3 = "^3.0.2"
 flask-jwt-extended = "^4.6.0"
+sqlalchemy = "^2.0.31"
+memory-profiler = "^0.61.0"
+sortedcontainers = "^2.4.0"
+xxhash = "^3.4.1"
+ffmpeg-python = "^0.2.0"
 
 [tool.poetry.dev-dependencies]
 pylint = "^2.15.5"

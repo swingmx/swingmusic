@@ -23,10 +23,21 @@ def serialize_for_card(album: Album):
     props_to_remove = {
         "duration",
         "count",
+        "artisthashes",
         "albumartists_hashes",
+        "created_date",
         "og_title",
         "base_title",
         "genres",
+        "playcount",
+        "trackcount",
+        "type",
+        "playduration",
+        "genrehashes",
+        "fav_userids",
+        "extra",
+        "id",
+        "lastplayed",
     }
 
     return album_serializer(album, props_to_remove)

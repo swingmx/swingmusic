@@ -6,6 +6,7 @@ from .settings import Paths
 
 # TODO: Publish this on PyPi
 
+
 @dataclass
 class UserConfig:
     _config_path: str = ""
@@ -14,13 +15,21 @@ class UserConfig:
 
     # auth stuff
     # NOTE: Don't expose the userId via the API
-    userId: str = ""
+    serverId: str = ""
     usersOnLogin: bool = True
 
     # lists
     rootDirs: list[str] = field(default_factory=list)
     excludeDirs: list[str] = field(default_factory=list)
-    artistSeparators: set[str] = field(default_factory=list)
+    artistSeparators: set[str] = field(default_factory=lambda: {";", "/"})
+    artistSplitIgnoreList: set[str] = field(
+        default_factory=lambda: {
+            "AC/DC",
+            "Bob marley & the wailers",
+            "Crosby, Stills, Nash & Young",
+        }
+    )
+    genreSeparators: set[str] = field(default_factory=lambda: {"/", ";", "&"})
 
     # tracks
     extractFeaturedArtists: bool = True
@@ -31,6 +40,14 @@ class UserConfig:
     mergeAlbums: bool = False
     cleanAlbumTitle: bool = True
     showAlbumsAsSingles: bool = False
+
+    # misc
+    enablePeriodicScans: bool = False
+    scanInterval: int = 10
+    enableWatchdog: bool = False
+
+    # plugins
+    enablePlugins: bool = True
 
     def __post_init__(self):
         """
@@ -79,7 +96,7 @@ class UserConfig:
         settings = {k: v for k, v in settings.items() if not k.startswith("_")}
 
         with open(self._config_path, "w") as f:
-            json.dump(settings, f, indent=4)
+            json.dump(settings, f, indent=4, default=list)
 
     def __setattr__(self, key: str, value: Any) -> None:
         """

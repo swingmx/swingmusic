@@ -1,16 +1,17 @@
 from datetime import datetime
 import os
-from app.models.logger import TrackLog
-
-from app.db.sqlite.logger.tracks import SQLiteTrackLogger as db
-from app.db.sqlite.playlists import SQLitePlaylistMethods as pdb
-from app.db.sqlite.favorite import SQLiteFavoriteMethods as fdb
+from app.db.userdata import FavoritesTable, PlaylistTable, ScrobbleTable
 
 from app.models.playlist import Playlist
 from app.serializers.track import serialize_track
 from app.serializers.album import album_serializer
 from app.lib.playlistlib import get_first_4_images
-from app.utils.dates import create_new_date, date_string_to_time_passed, timestamp_to_time_passed
+from app.store.folder import FolderStore
+from app.utils.dates import (
+    create_new_date,
+    date_string_to_time_passed,
+    timestamp_to_time_passed,
+)
 from app.serializers.artist import serialize_for_card
 from app.serializers.playlist import serialize_for_card as serialize_playlist
 from app.lib.home.recentlyadded import get_recently_added_playlist
@@ -20,10 +21,9 @@ from app.store.tracks import TrackStore
 from app.store.artists import ArtistStore
 
 
-
 def get_recently_played(limit=7):
     # TODO: Paginate this
-    entries = db.get_all()
+    entries = ScrobbleTable.get_all(0, 200)
     items = []
     added = set()
 
@@ -35,8 +35,6 @@ def get_recently_played(limit=7):
     for entry in entries:
         if len(items) >= limit:
             break
-
-        entry = TrackLog(*entry)
 
         if entry.source in added:
             continue
@@ -107,13 +105,14 @@ def get_recently_played(limit=7):
             # print(folder)
             # folder = os.path.join("/", folder, "")
             # print(folder)
-            count = len([t for t in TrackStore.tracks if t.folder == folder])
+            # count = len([t for t in TrackStore.tracks if t.folder == folder])
+            count = FolderStore.count_tracks_containing_paths([folder])
             items.append(
                 {
                     "type": "folder",
                     "item": {
                         "path": folder,
-                        "count": count,
+                        "count": count[0]["trackcount"],
                         "help_text": "folder",
                         "time": timestamp_to_time_passed(entry.timestamp),
                     },
@@ -127,7 +126,9 @@ def get_recently_played(limit=7):
 
             if is_custom:
                 playlist, _ = next(
-                    i["handler"]() for i in custom_playlists if i["name"] == entry.type_src
+                    i["handler"]()
+                    for i in custom_playlists
+                    if i["name"] == entry.type_src
                 )
                 playlist.images = [i["image"] for i in playlist.images]
 
@@ -146,7 +147,7 @@ def get_recently_played(limit=7):
                 )
                 continue
 
-            playlist = pdb.get_playlist_by_id(entry.type_src)
+            playlist = PlaylistTable.get_by_id(entry.type_src)
             if playlist is None:
                 continue
 
@@ -175,19 +176,19 @@ def get_recently_played(limit=7):
                     "type": "favorite_tracks",
                     "item": {
                         "help_text": "playlist",
-                        "count": fdb.get_track_count(),
+                        "count": FavoritesTable.count(),
                         "time": timestamp_to_time_passed(entry.timestamp),
                     },
                 }
             )
             continue
 
-        try:
-            track = TrackStore.get_tracks_by_trackhashes([entry.trackhash])[0]
-        except IndexError:
+        t = TrackStore.trackhashmap.get(entry.trackhash)
+
+        if t is None:
             continue
 
-        track = serialize_track(track)
+        track = serialize_track(t.get_best())
         track["help_text"] = "track"
         track["time"] = timestamp_to_time_passed(entry.timestamp)
 
@@ -201,12 +202,6 @@ def get_recently_played(limit=7):
     return items
 
 
-def get_recently_played_tracks(limit: int):
-    records = db.get_recently_played(start=0, limit=limit)
-    last_updated = records[0].timestamp
-    tracks = TrackStore.get_tracks_by_trackhashes([r.trackhash for r in records])
-    return tracks, last_updated
-
 def get_recently_played_playlist(limit: int = 100):
     playlist = Playlist(
         id="recentlyplayed",
@@ -217,13 +212,11 @@ def get_recently_played_playlist(limit: int = 100):
         trackhashes=[],
     )
 
-    tracks, timestamp = get_recently_played_tracks(limit)
-
-    date = datetime.fromtimestamp(timestamp)
-    playlist.last_updated = date_string_to_time_passed(create_new_date(date))
+    tracks = TrackStore.get_recently_played(limit)
+    date = datetime.fromtimestamp(tracks[0].lastplayed)
+    playlist._last_updated = date_string_to_time_passed(create_new_date(date))
 
     images = get_first_4_images(tracks=tracks)
     playlist.images = images
-    playlist.set_count(len(tracks))
 
     return playlist, tracks

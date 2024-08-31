@@ -1,4 +1,5 @@
 import hashlib
+import xxhash
 
 from unidecode import unidecode
 
@@ -32,10 +33,12 @@ def create_hash(*args: str, decode=False, limit=10) -> str:
         str_ = unidecode(str_)
 
     str_ = str_.encode("utf-8")
-    str_ = hashlib.sha1(str_).hexdigest()
+    return xxhash.xxh3_64(str_).hexdigest()
+    # str_ = hashlib.sha1(str_).hexdigest()
 
-    return (
-        str_[: limit // 2] + str_[-limit // 2 :]
-        if limit % 2 == 0
-        else str_[: limit // 2] + str_[-limit // 2 - 1 :]
-    )
+    # INFO: Return first 5 + last 5 characters
+    # return (
+    #     str_[: limit // 2] + str_[-limit // 2 :]
+    #     if limit % 2 == 0
+    #     else str_[: limit // 2] + str_[-limit // 2 - 1 :]
+    # )

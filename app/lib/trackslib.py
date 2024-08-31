@@ -6,21 +6,7 @@ import os
 
 from app.lib.pydub.pydub import AudioSegment
 from app.lib.pydub.pydub.silence import detect_leading_silence, detect_silence
-
-from app.db.sqlite.tracks import SQLiteTrackMethods as trackdb
-from app.store.tracks import TrackStore
-from app.utils.progressbar import tqdm
 from app.utils.threading import ThreadWithReturnValue
-
-
-def validate_tracks() -> None:
-    """
-    Removes track records whose files no longer exist.
-    """
-    for track in tqdm(TrackStore.tracks, desc="Validating tracks"):
-        if not os.path.exists(track.filepath):
-            TrackStore.remove_track_obj(track)
-            trackdb.remove_tracks_by_filepaths(track.filepath)
 
 
 def get_leading_silence_end(filepath: str):

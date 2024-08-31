@@ -26,7 +26,7 @@ def create_new_date(date: datetime = None) -> str:
     return date.strftime(_format)
 
 
-def timestamp_to_time_passed(timestamp: str):
+def timestamp_to_time_passed(timestamp: str | int):
     """
     Converts a timestamp to time passed. e.g. 2 minutes ago, 1 hour ago, yesterday, 2 days ago, 2 weeks ago, etc.
     """
@@ -63,4 +63,4 @@ def seconds_to_time_string(seconds):
     if minutes > 0:
         return f"{minutes} minute{'s' if minutes > 1 else ''}"
 
-    return f"{remaining_seconds} second{'s' if remaining_seconds > 1 else ''}"
+    return f"{remaining_seconds} second{'' if remaining_seconds == 1 else 's'}"

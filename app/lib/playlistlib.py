@@ -10,6 +10,7 @@ from typing import Any
 from PIL import Image, ImageSequence
 
 from app import settings
+from app.db.libdata import TrackTable
 from app.models.track import Track
 from app.store.albums import AlbumStore
 from app.store.tracks import TrackStore
@@ -104,6 +105,12 @@ def duplicate_images(images: list):
 def get_first_4_images(
     tracks: list[Track] = [], trackhashes: list[str] = []
 ) -> list[dict["str", str]]:
+    """
+    Returns images of the first 4 albums that appear in the track list.
+
+    When tracks are not passed, trackhashes need to be passed.
+    Tracks are then resolved from the store.
+    """
     if len(trackhashes) > 0:
         tracks = TrackStore.get_tracks_by_trackhashes(trackhashes)
 
@@ -120,7 +127,7 @@ def get_first_4_images(
     images = [
         {
             "image": album.image,
-            "color": "".join(album.colors),
+            "color": album.color,
         }
         for album in albums
     ]

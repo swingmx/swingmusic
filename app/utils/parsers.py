@@ -1,21 +1,54 @@
 import re
 
+from app.config import UserConfig
 from app.enums.album_versions import AlbumVersionEnum, get_all_keywords
-from app.settings import SessionVarKeys, get_flag
 
 
-def split_artists(src: str):
+def split_artists(src: str, config: UserConfig):
     """
-    Splits a string of artists into a list of artists.
+    Splits a string of artists into a list of artists, preserving those in ignoreList.
+    Case-insensitive matching is used for the ignoreList.
     """
-    separators: set = get_flag(SessionVarKeys.ARTIST_SEPARATORS)    
-    for sep in separators:
-        src = src.replace(sep, ",")
+    result = []
+    current = ""
+    i = 0
 
-    artists = src.split(",")
-    artists = [a.strip() for a in artists]
+    while i < len(src):
+        # Check if any ignored artist starts at this position (case-insensitive)
+        ignored_match = next(
+            (
+                src[i : i + len(ignored)]
+                for ignored in config.artistSplitIgnoreList
+                if src.lower().startswith(ignored.lower(), i)
+            ),
+            None,
+        )
 
-    return [a for a in artists if a]
+        if ignored_match:
+            # If we have accumulated any current string, add it to result
+            if current.strip():
+                result.extend([a.strip() for a in current.split(",") if a.strip()])
+                current = ""
+            # Add the ignored artist to the result (preserving original case)
+            result.append(ignored_match)
+            # Move past the ignored artist
+            i += len(ignored_match)
+        elif src[i] in config.artistSeparators:
+            # If we encounter a separator, process the current string
+            if current.strip():
+                result.extend([a.strip() for a in current.split(",") if a.strip()])
+                current = ""
+            i += 1
+        else:
+            # If it's not an ignored artist or a separator, add to current
+            current += src[i]
+            i += 1
+
+    # Process any remaining current string
+    if current.strip():
+        result.extend([a.strip() for a in current.split(",") if a.strip()])
+
+    return result
 
 
 def remove_prod(title: str) -> str:
@@ -38,7 +71,7 @@ def remove_prod(title: str) -> str:
     return title.strip()
 
 
-def parse_feat_from_title(title: str) -> tuple[list[str], str]:
+def parse_feat_from_title(title: str, config: UserConfig) -> tuple[list[str], str]:
     """
     Extracts featured artists from a song title using regex.
     """
@@ -56,7 +89,7 @@ def parse_feat_from_title(title: str) -> tuple[list[str], str]:
         return [], title
 
     artists = match.group(1)
-    artists = split_artists(artists)
+    artists = split_artists(artists, config)
 
     # remove "feat" group from title
     new_title = re.sub(regex, "", title, flags=re.IGNORECASE)

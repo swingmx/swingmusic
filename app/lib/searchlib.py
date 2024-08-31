@@ -8,16 +8,22 @@ from rapidfuzz import process, utils
 from unidecode import unidecode
 
 from app import models
-from app.db.sqlite.favorite import SQLiteFavoriteMethods as favdb
+from app.config import UserConfig
+
+# from app.db.libdata import AlbumTable, ArtistTable, TrackTable
+
+# from app.db.sqlite.favorite import SQLiteFavoriteMethods as favdb
 from app.models.enums import FavType
 from app.models.track import Track
 from app.serializers.album import serialize_for_card as serialize_album
 from app.serializers.album import serialize_for_card_many as serialize_albums
 from app.serializers.artist import serialize_for_cards
 from app.serializers.track import serialize_track, serialize_tracks
+
 from app.store.albums import AlbumStore
 from app.store.artists import ArtistStore
 from app.store.tracks import TrackStore
+
 from app.utils.remove_duplicates import remove_duplicates
 
 # ratio = fuzz.ratio
@@ -49,7 +55,7 @@ class Limit:
 class SearchTracks:
     def __init__(self, query: str) -> None:
         self.query = query
-        self.tracks = TrackStore.tracks
+        self.tracks = TrackStore.get_flat_list()
 
     def __call__(self) -> List[models.Track]:
         """
@@ -72,7 +78,7 @@ class SearchTracks:
 class SearchArtists:
     def __init__(self, query: str) -> None:
         self.query = query
-        self.artists = ArtistStore.artists
+        self.artists = ArtistStore.get_flat_list()
 
     def __call__(self):
         """
@@ -94,7 +100,7 @@ class SearchArtists:
 class SearchAlbums:
     def __init__(self, query: str) -> None:
         self.query = query
-        self.albums = AlbumStore.albums
+        self.albums = AlbumStore.get_flat_list()
 
     def __call__(self) -> List[models.Album]:
         """
@@ -137,7 +143,7 @@ _S2 = TypeVar("_S2")
 _ResultType = int | float
 
 
-def get_titles(items: _type):
+def get_titles(items: list[_type]):
     for item in items:
         if isinstance(item, models.Track):
             text = item.og_title
@@ -161,9 +167,9 @@ class TopResults:
     def collect_all():
         all_items: list[_type] = []
 
-        all_items.extend(ArtistStore.artists)
-        all_items.extend(TrackStore.tracks)
-        all_items.extend(AlbumStore.albums)
+        all_items.extend(ArtistStore.get_flat_list())
+        all_items.extend(TrackStore.get_flat_list())
+        all_items.extend(TrackStore.get_flat_list())
 
         return all_items, get_titles(all_items)
 
@@ -189,19 +195,13 @@ class TopResults:
             tracks = TrackStore.get_tracks_by_albumhash(item.albumhash)
             tracks = remove_duplicates(tracks)
 
-            item.get_date_from_tracks(tracks)
             try:
                 item.duration = sum((t.duration for t in tracks))
             except AttributeError:
                 item.duration = 0
 
-            item.check_is_single(tracks)
-
-            if not item.is_single:
-                item.check_type()
-
-            item.is_favorite = favdb.check_is_favorite(
-                item.albumhash, fav_type=FavType.album
+            item.check_type(
+                tracks, singleTrackAsSingle=UserConfig().showAlbumsAsSingles
             )
 
             return {"type": "album", "item": item}
@@ -210,15 +210,12 @@ class TopResults:
             track_count = 0
             duration = 0
 
-            for track in TrackStore.get_tracks_by_artisthash(item.artisthash):
+            tracks = TrackStore.get_tracks_by_artisthash(item.artisthash)
+            tracks = remove_duplicates(tracks)
+
+            for track in tracks:
                 track_count += 1
                 duration += track.duration
-
-            album_count = AlbumStore.count_albums_by_artisthash(item.artisthash)
-
-            item.set_trackcount(track_count)
-            item.set_albumcount(album_count)
-            item.set_duration(duration)
 
             return {"type": "artist", "item": item}
 
@@ -242,6 +239,7 @@ class TopResults:
             tracks.extend(t)
 
         if item["type"] == "artist":
+            # t = TrackStore.get_tracks_by_artisthash(item["item"].artisthash)
             t = TrackStore.get_tracks_by_artisthash(item["item"].artisthash)
 
             # if there are less than the limit, get more tracks
@@ -263,6 +261,7 @@ class TopResults:
             return SearchAlbums(query)()[:limit]
 
         if item["type"] == "artist":
+            # albums = AlbumStore.get_albums_by_artisthash(item["item"].artisthash)
             albums = AlbumStore.get_albums_by_artisthash(item["item"].artisthash)
 
             # if there are less than the limit, get more albums
@@ -279,7 +278,6 @@ class TopResults:
         limit: int = None,
         albums_only=False,
         tracks_only=False,
-        in_quotes=False,
     ):
         items, titles = TopResults.collect_all()
         results = TopResults.get_results(titles, query)
@@ -307,21 +305,13 @@ class TopResults:
 
         result = TopResults.map_with_type(result)
 
-        if in_quotes:
-            top_tracks = SearchTracks(query)()[:tracks_limit]
-        else:
-            top_tracks = TopResults.get_track_items(result, query, limit=tracks_limit)
-
+        top_tracks = TopResults.get_track_items(result, query, limit=tracks_limit)
         top_tracks = serialize_tracks(top_tracks)
 
         if tracks_only:
             return top_tracks
 
-        if in_quotes:
-            albums = SearchAlbums(query)()[:albums_limit]
-        else:
-            albums = TopResults.get_album_items(result, query, limit=albums_limit)
-
+        albums = TopResults.get_album_items(result, query, limit=albums_limit)
         albums = serialize_albums(albums)
 
         if albums_only:

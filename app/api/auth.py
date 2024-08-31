@@ -14,7 +14,7 @@ from pydantic import BaseModel, Field
 from flask_openapi3 import Tag
 from flask_openapi3 import APIBlueprint
 
-from app.db.sqlite.auth import SQLiteAuthMethods as authdb
+from app.db.userdata import UserTable
 from app.utils.auth import check_password, hash_password
 from app.config import UserConfig
 
@@ -65,7 +65,7 @@ def login(body: LoginBody):
     Authenticate using username and password
     """
 
-    user = authdb.get_user_by_username(body.username)
+    user = UserTable.get_by_username(body.username)
 
     if user is None:
         return {"msg": "User not found"}, 404
@@ -87,42 +87,41 @@ def login(body: LoginBody):
 pair_token = dict()
 
 
+@api.get("/getpaircode")
+def get_pair():
+    """
+    Get a new pair code to log in to thee Swing Music mobile app
+    """
+    # INFO: if user is already logged in, create a new pair code
+    token = create_new_token(get_jwt_identity())
+    key = token["accesstoken"][-6:]
+
+    global pair_token
+    pair_token = {
+        key: token,
+    }
+
+    return {"code": key}
+
+
 class PairDeviceQuery(BaseModel):
     code: str = Field("", description="The code")
 
 
 @api.get("/pair")
 @jwt_required(optional=True)
-def pair_device(query: PairDeviceQuery):
+def pair_with_code(query: PairDeviceQuery):
     """
-    Pair the Swing Music mobile app with this server
-
-    Send a code to get an access token. Send an authenticated request without the code to generate a new token.
+    Get an access token by sending a pair code. NOTE: A code can only be used once!
     """
-    # INFO: if user is already logged in, create a new pair code
-    if current_user:
-        token = create_new_token(get_jwt_identity())
-        key = token["accesstoken"][-6:]
+    global pair_token
+    token = pair_token.get(query.code, None)
 
-        global pair_token
-        pair_token = {
-            key: token,
-        }
+    if token:
+        pair_token = {}
+        return token
 
-        return {"code": key}
-
-    # INFO: if there's a pair code, return the token
-    if query.code:
-        token = pair_token.get(query.code, None)
-
-        if token:
-            # INFO: reset pair_token
-            pair_token = {}
-            return token
-
-        return {"msg": "Invalid code"}, 400
-
-    return {"msg": "No code provided"}, 400
+    return {"msg": "Invalid code"}, 400
 
 
 @api.post("/refresh")
@@ -133,6 +132,8 @@ def refresh():
 
     >>> Headers:
     >>> Authorization: Bearer <refresh_token>
+
+    Won't work with cookies!!!
     """
     user = get_jwt_identity()
     return create_new_token(user)
@@ -153,7 +154,6 @@ def update_profile(body: UpdateProfileBody):
     """
     user = {
         "id": body.id,
-        "email": body.email,
         "username": body.username,
         "password": body.password,
         "roles": body.roles,
@@ -172,7 +172,8 @@ def update_profile(body: UpdateProfileBody):
         if "admin" not in current_user["roles"]:
             return {"msg": "Only admins can update roles"}, 403
 
-        all_users = authdb.get_all_users()
+        # all_users = authdb.get_all_users()
+        all_users = UserTable.get_all()
         if "admin" not in body.roles:
             # check if we're removing the last admin
             admins = [user for user in all_users if "admin" in user.roles]
@@ -195,7 +196,9 @@ def update_profile(body: UpdateProfileBody):
     clean_user = {k: v for k, v in user.items() if v}
 
     try:
-        return authdb.update_user(clean_user)
+        # return authdb.update_user(clean_user)
+        UserTable.update_one(clean_user)
+        return UserTable.get_by_id(user["id"]).todict()
     except sqlite3.IntegrityError:
         return {"msg": "Username already exists"}, 400
 
@@ -216,11 +219,18 @@ def create_user(body: UpdateProfileBody):
     }
 
     # check if user already exists
-    if authdb.get_user_by_username(user["username"]):
+    if UserTable.get_by_username(user["username"]):
         return {"msg": "Username already exists"}, 400
 
-    userid = authdb.insert_user(user)
-    return authdb.get_user_by_id(userid).todict()
+    UserTable.insert_one(user)
+    user = UserTable.get_by_username(user["username"])
+
+    if user:
+        return user.todict()
+
+    return {
+        "msg": "Failed to create user",
+    }, 500
 
 
 @api.post("/profile/guest/create")
@@ -230,14 +240,14 @@ def create_guest_user():
     Create a guest user
     """
     # check if guest user already exists
-    guest_user = authdb.get_user_by_username("guest")
+    guest_user = UserTable.get_by_username("guest")
 
     if guest_user:
         return {
             "msg": "Guest user already exists",
         }, 400
 
-    userid = authdb.insert_guest_user()
+    userid = UserTable.insert_guest_user()
 
     if userid:
         return {
@@ -264,12 +274,12 @@ def delete_user(body: DeleteUseBody):
         return {"msg": "Sorry! you cannot delete yourselfu"}, 400
 
     # prevent deleting the only admin
-    users = authdb.get_all_users()
+    users = UserTable.get_all()
     admins = [user for user in users if "admin" in user.roles]
     if len(admins) == 1 and admins[0].username == body.username:
         return {"msg": "Cannot delete the only admin"}, 400
 
-    authdb.delete_user_by_username(body.username)
+    UserTable.remove_by_username(body.username)
     return {"msg": f"User {body.username} deleted"}
 
 
@@ -296,8 +306,6 @@ def get_all_users(query: GetAllUsersQuery):
     Get all users (if you're an admin, you will also receive accounts settings)
     """
     config = UserConfig()
-    # config.enableGuest = True
-    # config.usersOnLogin = True
     settings = {
         "enableGuest": False,
         "usersOnLogin": config.usersOnLogin,
@@ -308,8 +316,7 @@ def get_all_users(query: GetAllUsersQuery):
         "users": [],
     }
 
-    users = authdb.get_all_users()
-
+    users = UserTable.get_all()
     is_admin = current_user and "admin" in current_user["roles"]
     settings["enableGuest"] = [
         user for user in users if user.username == "guest"
@@ -355,8 +362,8 @@ def get_all_users(query: GetAllUsersQuery):
 
     if query.simplified:
         res["users"] = [user.todict_simplified() for user in users]
-
-    res["users"] = [user.todict() for user in users]
+    else:
+        res["users"] = [user.todict() for user in users]
 
     return res
 

@@ -14,6 +14,16 @@ def serialize_for_card(artist: Artist):
         "trackcount",
         "duration",
         "albumcount",
+        "playcount",
+        "playduration",
+        "playcount",
+        "lastplayed",
+        "id",
+        "genres",
+        "genrehashes",
+        "extra",
+        "created_date",
+        "date",
     }
 
     for key in props_to_remove:

@@ -3,7 +3,7 @@ from dataclasses import asdict
 from app.models.track import Track
 
 
-def serialize_track(track: Track, to_remove: set = {}, remove_disc=True) -> dict:
+def serialize_track(track: Track, to_remove: set = set(), remove_disc=True) -> dict:
     album_dict = asdict(track)
     # is_favorite @property is not included in asdict
     album_dict["is_favorite"] = track.is_favorite
@@ -20,6 +20,12 @@ def serialize_track(track: Track, to_remove: set = {}, remove_disc=True) -> dict
         "artist_hashes",
         "created_date",
         "fav_userids",
+        "playcount",
+        "genrehashes",
+        "id",
+        "lastplayed",
+        "playduration",
+        "genres",
     }.union(to_remove)
 
     if not remove_disc:
@@ -41,6 +47,6 @@ def serialize_track(track: Track, to_remove: set = {}, remove_disc=True) -> dict
 
 
 def serialize_tracks(
-    tracks: list[Track], _remove: set = {}, remove_disc=True
+    tracks: list[Track], _remove: set = set(), remove_disc=True
 ) -> list[dict]:
     return [serialize_track(t, _remove, remove_disc) for t in tracks]

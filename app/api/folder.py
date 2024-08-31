@@ -12,10 +12,10 @@ from flask_openapi3 import APIBlueprint
 from showinfm import show_in_file_manager
 
 from app import settings
-from app.db.sqlite.settings import SettingsSQLMethods as db
-from app.lib.folderslib import GetFilesAndDirs, get_folders
+from app.config import UserConfig
+from app.db.libdata import TrackTable
+from app.lib.folderslib import get_files_and_dirs, get_folders
 from app.serializers.track import serialize_track
-from app.store.tracks import TrackStore as store
 from app.utils.wintools import is_windows, win_replace_slash
 
 tag = Tag(name="Folders", description="Get folders and tracks in a directory")
@@ -23,9 +23,46 @@ api = APIBlueprint("folder", __name__, url_prefix="/folder", abp_tags=[tag])
 
 
 class FolderTree(BaseModel):
-    folder: str = Field(
-        "$home", example="$home", description="The folder to things from"
+    folder: str = Field("$home", description="The folder to things from")
+    sorttracksby: str = Field(
+        "default",
+        description="""The field to sort tracks by. Options: [
+            "default",
+            "album",
+            "albumartists",
+            "artists",
+            "bitrate",
+            "date",
+            "disc",
+            "duration",
+            "lastmod",
+            "lastplayed",
+            "playduration",
+            "playcount",
+            "title",
+        ]""",
     )
+    tracksort_reverse: bool = Field(
+        False,
+        description="Whether to reverse the sort order of the tracks",
+    )
+    sortfoldersby: str = Field(
+        "lastmod",
+        description="""The field to sort folders by.
+        Options: [
+            "default",
+            "name",
+            "lastmod",
+            "trackcount",
+        ]
+        """,
+    )
+    foldersort_reverse: bool = Field(
+        False,
+        description="Whether to reverse the sort order of the folders",
+    )
+    start: int = Field(0, description="The start index")
+    limit: int = Field(50, description="The max number of items to return")
     tracks_only: bool = Field(False, description="Whether to only get tracks")
 
 
@@ -39,8 +76,8 @@ def get_folder_tree(body: FolderTree):
     req_dir = body.folder
     tracks_only = body.tracks_only
 
-    root_dirs = db.get_root_dirs()
-    root_dirs.sort()
+    config = UserConfig()
+    root_dirs = config.rootDirs
 
     try:
         if req_dir == "$home" and root_dirs[0] == "$home":
@@ -66,16 +103,18 @@ def get_folder_tree(body: FolderTree):
     else:
         req_dir = "/" + req_dir if not req_dir.startswith("/") else req_dir
 
-    res = GetFilesAndDirs(req_dir, tracks_only=tracks_only)()
-    res["folders"] = sorted(res["folders"], key=lambda i: i.name)
+    res = get_files_and_dirs(
+        req_dir,
+        start=body.start,
+        limit=body.limit,
+        tracks_only=tracks_only,
+        tracksortby=body.sorttracksby,
+        foldersortby=body.sortfoldersby,
+        tracksort_reverse=body.tracksort_reverse,
+        foldersort_reverse=body.foldersort_reverse,
+    )
 
     return res
-
-    # return {
-    #     "path": req_dir,
-    #     "tracks": tracks,
-    #     "folders": sorted(folders, key=lambda i: i.name),
-    # }
 
 
 def get_all_drives(is_win: bool = False):
@@ -181,8 +220,7 @@ def get_tracks_in_path(query: GetTracksInPathQuery):
 
     Used when adding tracks to the queue.
     """
-    tracks = store.get_tracks_in_path(query.path)
-    tracks = sorted(tracks, key=lambda i: i.last_mod)
+    tracks = TrackTable.get_tracks_in_path(query.path)
     tracks = (serialize_track(t) for t in tracks if Path(t.filepath).exists())
 
     return {

@@ -1,5 +1,3 @@
-from collections import namedtuple
-from itertools import groupby
 import os
 import urllib
 from concurrent.futures import ThreadPoolExecutor
@@ -12,9 +10,10 @@ from requests.exceptions import ConnectionError as RequestConnectionError
 from requests.exceptions import ReadTimeout
 
 from app import settings
-from app.models import Album, Artist, Track
-from app.store import artists as artist_store
-from app.store.tracks import TrackStore
+from app.db.libdata import ArtistTable
+
+# from app.store import artists as artist_store
+# from app.store.tracks import TrackStore
 from app.utils.hashing import create_hash
 from app.utils.progressbar import tqdm
 
@@ -107,22 +106,15 @@ class CheckArtistImages:
 
         # read all files in the artist image folder
         path = settings.Paths.get_sm_artist_img_path()
-        processed = "".join(os.listdir(path)).replace("webp", "")
-
-        # filter out artists that already have an image
-        artists = filter(
-            lambda a: a.artisthash not in processed, artist_store.ArtistStore.artists
-        )
-        artists = list(artists)
-
-        # process the rest
-        key_artist_map = ((instance_key, artist) for artist in artists)
+        processed = [path.replace(".webp", "") for path in os.listdir(path)]
+        unprocessed = ArtistTable.get_artisthashes_not_in(processed)
+        key_artist_map = ((instance_key, artist) for artist in unprocessed)
 
         with ThreadPoolExecutor(max_workers=14) as executor:
             res = list(
                 tqdm(
                     executor.map(self.download_image, key_artist_map),
-                    total=len(artists),
+                    total=len(unprocessed),
                     desc="Downloading missing artist images",
                 )
             )
@@ -130,7 +122,7 @@ class CheckArtistImages:
             list(res)
 
     @staticmethod
-    def download_image(_map: tuple[str, Artist]):
+    def download_image(_map: tuple[str, dict[str, str]]):
         """
         Checks if an artist image exists and downloads it if not.
 
@@ -142,130 +134,14 @@ class CheckArtistImages:
             return
 
         img_path = (
-            Path(settings.Paths.get_sm_artist_img_path()) / f"{artist.artisthash}.webp"
+            Path(settings.Paths.get_sm_artist_img_path())
+            / f"{artist['artisthash']}.webp"
         )
 
         if img_path.exists():
             return
 
-        url = get_artist_image_link(artist.name)
+        url = get_artist_image_link(artist["name"])
 
         if url is not None:
-            return DownloadImage(url, name=f"{artist.artisthash}.webp")
-
-
-# def fetch_album_bio(title: str, albumartist: str) -> str | None: """ Returns the album bio for a given album. """
-# last_fm_url = "http://ws.audioscrobbler.com/2.0/?method=album.getinfo&api_key={}&artist={}&album={
-# }&format=json".format( settings.Paths.LAST_FM_API_KEY, albumartist, title )
-
-#     try:
-#         response = requests.get(last_fm_url)
-#         data = response.json()
-#     except:
-#         return None
-
-#     try:
-#         bio = data["album"]["wiki"]["summary"].split('<a href="https://www.last.fm/')[0]
-#     except KeyError:
-#         bio = None
-
-#     return bio
-
-
-# class FetchAlbumBio:
-#     """
-#     Returns the album bio for a given album.
-#     """
-
-#     def __init__(self, title: str, albumartist: str):
-#         self.title = title
-#         self.albumartist = albumartist
-
-#     def __call__(self):
-#         return fetch_album_bio(self.title, self.albumartist)
-
-
-def get_artists_from_tracks(tracks: list[Track]) -> set[str]:
-    """
-    Extracts all artists from a list of tracks. Returns a list of Artists.
-    """
-    artists = set()
-
-    master_artist_list = [[x.name for x in t.artists] for t in tracks]
-    artists = artists.union(*master_artist_list)
-
-    return artists
-
-
-def get_albumartists(albums: list[Album]) -> set[str]:
-    artists = set()
-
-    for album in albums:
-        albumartists = [a.name for a in album.albumartists]
-
-        artists.update(albumartists)
-
-    return artists
-
-
-def get_all_artists(tracks: list[Track], albums: list[Album]) -> list[Artist]:
-    TrackInfo = namedtuple(
-        "TrackInfo",
-        [
-            "artisthash",
-            "albumhash",
-            "trackhash",
-            "duration",
-            "artistname",
-            "created_date",
-        ],
-    )
-    src_tracks = TrackStore.tracks
-    all_tracks: set[TrackInfo] = set()
-
-    for track in src_tracks:
-        artist_hashes = {(a.name, a.artisthash) for a in track.artists}.union(
-            (a.name, a.artisthash) for a in track.albumartists
-        )
-
-        for artist in artist_hashes:
-            track_info = TrackInfo(
-                artistname=artist[0],
-                artisthash=artist[1],
-                albumhash=track.albumhash,
-                trackhash=track.trackhash,
-                duration=track.duration,
-                created_date=track.created_date,
-                # work on created date
-            )
-
-            all_tracks.add(track_info)
-
-    all_tracks = sorted(all_tracks, key=lambda x: x.artisthash)
-    all_tracks = groupby(all_tracks, key=lambda x: x.artisthash)
-
-    artists = []
-
-    for artisthash, tracks in all_tracks:
-        tracks: list[TrackInfo] = list(tracks)
-
-        artistname = (
-            sorted({t.artistname for t in tracks})[0]
-            if len(tracks) > 1
-            else tracks[0].artistname
-        )
-
-        albumcount = len({t.albumhash for t in tracks})
-        duration = sum(t.duration for t in tracks)
-        created_date = min(t.created_date for t in tracks)
-
-        artist = Artist(name=artistname)
-
-        artist.set_trackcount(len(tracks))
-        artist.set_albumcount(albumcount)
-        artist.set_duration(duration)
-        artist.set_created_date(created_date)
-
-        artists.append(artist)
-
-    return artists
+            return DownloadImage(url, name=f"{artist['artisthash']}.webp")

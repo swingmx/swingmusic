@@ -11,9 +11,9 @@ from flask_openapi3 import OpenAPI
 from flask_jwt_extended import JWTManager
 from app.config import UserConfig
 
+from app.db.userdata import UserTable
 from app.settings import Info as AppInfo
 from .plugins import lyrics as lyrics_plugin
-from app.db.sqlite.auth import SQLiteAuthMethods as authdb
 from app.api import (
     album,
     artist,
@@ -26,11 +26,12 @@ from app.api import (
     settings,
     lyrics,
     plugins,
-    logger,
+    scrobble,
     home,
     getall,
     auth,
     stream,
+    backup_and_restore
 )
 
 # TODO: Move this description to a separate file
@@ -64,7 +65,7 @@ def create_api():
 
     app = OpenAPI(__name__, info=api_info, doc_prefix="/docs")
     # JWT CONFIGS
-    app.config["JWT_SECRET_KEY"] = UserConfig().userId
+    app.config["JWT_SECRET_KEY"] = UserConfig().serverId
     app.config["JWT_TOKEN_LOCATION"] = ["cookies", "headers"]
     app.config["JWT_COOKIE_CSRF_PROTECT"] = False
     app.config["JWT_SESSION_COOKIE"] = False
@@ -76,6 +77,7 @@ def create_api():
     CORS(app, origins="*", supports_credentials=True)
 
     # RESPONSE COMPRESSION
+    # Only compress JSON responses
     Compress(app)
     app.config["COMPRESS_MIMETYPES"] = [
         "application/json",
@@ -84,16 +86,14 @@ def create_api():
     # JWT
     jwt = JWTManager(app)
 
-    # @jwt.user_identity_loader
-    # def user_identity_lookup(user):
-    #     return user
-
     @jwt.user_lookup_loader
     def user_lookup_callback(_jwt_header, jwt_data):
         identity = jwt_data["sub"]
         userid = identity["id"]
-        user = authdb.get_user_by_id(userid)
-        return user.todict()
+        user = UserTable.get_by_id(userid)
+
+        if user:
+            return user.todict()
 
     # Register all the API blueprints
     with app.app_context():
@@ -108,13 +108,14 @@ def create_api():
         app.register_api(settings.api)
         app.register_api(colors.api)
         app.register_api(lyrics.api)
+        app.register_api(backup_and_restore.api)
 
         # Plugins
         app.register_api(plugins.api)
         app.register_api(lyrics_plugin.api)
 
         # Logger
-        app.register_api(logger.api)
+        app.register_api(scrobble.api)
 
         # Home
         app.register_api(home.api)

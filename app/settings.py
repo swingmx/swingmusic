@@ -5,7 +5,6 @@ Contains default configs
 import os
 import subprocess
 import sys
-from typing import Any
 
 from app import configs
 
@@ -126,7 +125,7 @@ class Defaults:
     SM_ARTIST_IMG_SIZE = 128
     MD_ARTIST_IMG_SIZE = 256
 
-    HASH_LENGTH = 10
+    HASH_LENGTH = 16
     API_ALBUMHASH = "bfe300e966"
     API_ARTISTHASH = "cae59f1fc5"
     API_TRACKHASH = "0853280a12"
@@ -141,7 +140,7 @@ SUPPORTED_FILES = tuple(f".{file}" for file in FILES)
 
 
 # ===== SQLite =====
-class Db:
+class DbPaths:
     APP_DB_NAME = "swing.db"
     USER_DATA_DB_NAME = "userdata.db"
 
@@ -229,31 +228,6 @@ class SessionVars:
     MERGE_ALBUM_VERSIONS = False
     ARTIST_SEPARATORS = set()
     SHOW_ALBUMS_AS_SINGLES = False
-
-
-# TODO: Find a way to eliminate this class without breaking typings
-class SessionVarKeys:
-    EXTRACT_FEAT = "EXTRACT_FEAT"
-    REMOVE_PROD = "REMOVE_PROD"
-    CLEAN_ALBUM_TITLE = "CLEAN_ALBUM_TITLE"
-    REMOVE_REMASTER_FROM_TRACK = "REMOVE_REMASTER_FROM_TRACK"
-    DO_PERIODIC_SCANS = "DO_PERIODIC_SCANS"
-    PERIODIC_SCAN_INTERVAL = "PERIODIC_SCAN_INTERVAL"
-    MERGE_ALBUM_VERSIONS = "MERGE_ALBUM_VERSIONS"
-    ARTIST_SEPARATORS = "ARTIST_SEPARATORS"
-    SHOW_ALBUMS_AS_SINGLES = "SHOW_ALBUMS_AS_SINGLES"
-
-
-def get_flag(key: SessionVarKeys) -> bool:
-    return getattr(SessionVars, key)
-
-
-def set_flag(key: SessionVarKeys, value: Any):
-    setattr(SessionVars, key, value)
-
-
-def get_scan_sleep_time() -> int:
-    return SessionVars.PERIODIC_SCAN_INTERVAL
 
 
 class TCOLOR:

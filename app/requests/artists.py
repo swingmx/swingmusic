@@ -7,6 +7,7 @@ import urllib.parse
 import requests
 from requests import ConnectionError, HTTPError, ReadTimeout
 
+from app.models.lastfm import SimilarArtistEntry
 from app.utils.hashing import create_hash
 
 
@@ -20,7 +21,7 @@ def fetch_similar_artists(name: str):
         response = requests.get(url, timeout=10)
         response.raise_for_status()
     except (ConnectionError, ReadTimeout, HTTPError):
-        return []
+        return None
 
     data = response.json()
 
@@ -29,5 +30,15 @@ def fetch_similar_artists(name: str):
     except KeyError:
         return []
 
-    for artist in artists:
-        yield create_hash(artist["name"])
+    return [
+        SimilarArtistEntry(
+           **{
+                "artisthash": create_hash(artist["name"]),
+                "name": artist["name"],
+                "weight": artist["weight"],
+                "listeners": int(artist["listeners"]),
+                "scrobbles": int(artist["scrobbles"]),
+            }
+        )
+        for artist in artists
+    ]

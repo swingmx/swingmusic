@@ -6,9 +6,9 @@ Reads and applies the latest database migrations.
 
 import inspect
 from types import ModuleType
-from app.db.sqlite.migrations import MigrationManager
-from app.logger import log
-from app.migrations import v1_3_0, v1_4_9
+
+# from app.db.sqlite.migrations import MigrationManager
+from app.db.metadata import MigrationTable
 from app.migrations.base import Migration
 
 
@@ -38,28 +38,32 @@ def apply_migrations():
     migrations past that index are applied and the new length
     is stored as the new migration index.
     """
-    modules = [v1_3_0, v1_4_9]
+    modules = []
     migrations = [get_all_migrations(m) for m in modules]
 
-    index = MigrationManager.get_index()
+    # index = MigrationManager.get_index()
+    index = MigrationTable.get_version()
     all_migrations = [migration for sublist in migrations for migration in sublist]
 
     to_apply: list[Migration] = []
 
     # if index is from old release,
     # get migrations from the "migrations" list
-    if index < 3:
-        _migrations = migrations[index:]
-        to_apply = [migration for sublist in _migrations for migration in sublist]
-    else:
-        to_apply = all_migrations[index:]
+    
+    # if index < 3:
+    #     _migrations = migrations[index:]
+    #     to_apply = [migration for sublist in _migrations for migration in sublist]
+    # else:
+    #     to_apply = all_migrations[index:]
 
-    for migration in to_apply:
-        try:
-            migration.migrate()
-            log.info("Applied migration: %s", migration.__name__)
-        except Exception as e:
-            log.error("Failed to run migration: %s", migration.__name__)
-            log.error(e)
+    # for migration in to_apply:
+    #     # try:
+    #     migration.migrate()
+    #     log.info("Applied migration: %s", migration.__name__)
+    # except Exception as e:
+    #     log.error("Failed to run migration: %s", migration.__name__)
+    #     log.error(e)
 
-    MigrationManager.set_index(len(all_migrations))
+    # sys.exit(0)
+    # MigrationManager.set_index(len(all_migrations))
+    MigrationTable.set_version(len(all_migrations))

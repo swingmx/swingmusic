@@ -1,6 +1,7 @@
 import dataclasses
 from dataclasses import dataclass
 
+from app.utils.auth import get_current_userid
 from app.utils.hashing import create_hash
 
 
@@ -23,35 +24,53 @@ class ArtistMinimal:
         if self.artisthash == "5a37d5315e":
             self.name = "Juice WRLD"
 
+    def to_json(self):
+        return {
+            "name": self.name,
+            "artisthash": self.artisthash,
+        }
+
 
 @dataclass(slots=True)
-class Artist(ArtistMinimal):
+class Artist:
     """
     Artist class
     """
 
-    name: str = ""
-    trackcount: int = 0
-    albumcount: int = 0
-    duration: int = 0
-    colors: list[str] = dataclasses.field(default_factory=list)
-    is_favorite: bool = False
-    created_date: float = 0.0
+    name: str
+    albumcount: int
+    artisthash: str
+    created_date: int
+    date: int
+    duration: int
+    genres: list[dict[str, str]]
+    genrehashes: list[str]
+    name: str
+    trackcount: int
+    lastplayed: int
+    playcount: int
+    playduration: int
+    extra: dict
+
+    id: int = -1
+    image: str = ""
+
+    color: str = ""
+    fav_userids: list[int] = dataclasses.field(default_factory=list)
+
+    @property
+    def is_favorite(self):
+        return get_current_userid() in self.fav_userids
+
+    def toggle_favorite_user(self, userid: int):
+        """
+        Adds or removes the given user from the list of users
+        who have favorited this artist.
+        """
+        if userid in self.fav_userids:
+            self.fav_userids.remove(userid)
+        else:
+            self.fav_userids.append(userid)
 
     def __post_init__(self):
-        super(Artist, self).__init__(self.name)
-
-    def set_trackcount(self, count: int):
-        self.trackcount = count
-
-    def set_albumcount(self, count: int):
-        self.albumcount = count
-
-    def set_duration(self, duration: int):
-        self.duration = duration
-
-    def set_colors(self, colors: list[str]):
-        self.colors = colors
-
-    def set_created_date(self, created_date: float):
-        self.created_date = created_date
+        self.image = self.artisthash + ".webp"

@@ -5,18 +5,14 @@ import json
 @dataclass(slots=True)
 class User:
     id: int
-    username: str
-    firstname: str
-    lastname: str
-    password: str
-    email: str
     image: str
+    password: str
+    username: str
+    roles: list[str]
+    extra: dict[str, str] = field(default_factory=dict)
 
     # NOTE: roles: ['admin', 'user', 'curator']
     roles: list[str] = field(default_factory=lambda: ["user"])
-
-    def __post_init__(self):
-        self.roles = json.loads(self.roles)
 
     def todict(self):
         this_dict = asdict(self)
@@ -28,5 +24,5 @@ class User:
         return {
             "id": self.id,
             "username": self.username,
-            "firstname": self.firstname,
+            "firstname": self.extra["firstname"] if self.extra else "",
         }

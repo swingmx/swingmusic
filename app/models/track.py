@@ -1,11 +1,7 @@
 from dataclasses import dataclass, field
-import os
-from pathlib import Path
 
-from flask_jwt_extended import current_user
-
-
-from app.settings import SessionVarKeys, get_flag
+from app.config import UserConfig
+from app.utils.auth import get_current_userid
 from app.utils.hashing import create_hash
 from app.utils.parsers import (
     clean_title,
@@ -15,8 +11,6 @@ from app.utils.parsers import (
     split_artists,
 )
 
-from .artist import ArtistMinimal
-
 
 @dataclass(slots=True)
 class Track:
@@ -24,10 +18,11 @@ class Track:
     Track class
     """
 
+    id: int
     album: str
-    albumartists: str | list[ArtistMinimal]
+    albumartists: list[dict[str, str]]
     albumhash: str
-    artists: str | list[ArtistMinimal]
+    artists: list[dict[str, str]]
     bitrate: int
     copyright: str
     date: int
@@ -35,152 +30,178 @@ class Track:
     duration: int
     filepath: str
     folder: str
-    genre: str | list[str]
+    genres: str | list[dict[str, str]]
+    last_mod: int
     title: str
     track: int
     trackhash: str
-    last_mod: str | int
+    extra: dict
+    lastplayed: int
+    playcount: int
+    playduration: int
 
+    config: UserConfig
+    og_album: str = ""
+    og_title: str = ""
+    artisthashes: list[str] = field(default_factory=list)
+    genrehashes: list[str] = field(default_factory=list)
+
+    _pos: int = 0
+    _ati: str = ""
     image: str = ""
-    artist_hashes: str = ""
-
-    fav_userids: list = field(default_factory=list)
-    """
-    A string of user ids separated by commas.
-    """
-    # is_favorite: bool = False
+    fav_userids: list[int] = field(default_factory=list)
 
     @property
     def is_favorite(self):
-        return current_user['id'] in self.fav_userids
+        return get_current_userid() in self.fav_userids
 
-    # temporary attributes
-    _pos: int = 0  # for sorting tracks by disc and track number
-    _ati: str = (
-        ""  # (album track identifier) for removing duplicates when merging album versions
-    )
+    def toggle_favorite_user(self, userid: int):
+        """
+        Toggles the favorite status of the track for a given user.
 
-    og_title: str = ""
-    og_album: str = ""
-    created_date: float = 0.0
-
-    def set_created_date(self):
-        try:
-            self.created_date = Path(self.filepath).stat().st_ctime
-        except FileNotFoundError:
-            pass
+        Args:
+            userid (int): The ID of the user toggling the favorite status.
+        """
+        if userid in self.fav_userids:
+            self.fav_userids.remove(userid)
+        else:
+            self.fav_userids.append(userid)
 
     def __post_init__(self):
+        """
+        Performs post-initialization processing on the track object.
+        This includes setting original values, processing artists and genres,
+        and removing duplicate artists.
+        """
         self.og_title = self.title
         self.og_album = self.album
-        self.last_mod = int(self.last_mod)
-        self.date = int(self.date)
-
-        # add a trailing slash to the folder path
-        # to avoid matching a folder starting with the same name as the root path
-        # eg. .../Music and .../Music Videos
-        self.folder = os.path.join(self.folder, "")
-
-        if self.artists is not None:
-            artists = split_artists(self.artists)
-            new_title = self.title
-
-            if get_flag(SessionVarKeys.EXTRACT_FEAT):
-                featured, new_title = parse_feat_from_title(self.title)
-                original_lower = "-".join([create_hash(a) for a in artists])
-                artists.extend(
-                    a for a in featured if create_hash(a) not in original_lower
-                )
-
-            self.artist_hashes = "-".join(create_hash(a, decode=True) for a in artists)
-            self.artists = [ArtistMinimal(a) for a in artists]
-
-            albumartists = split_artists(self.albumartists)
-
-            if not albumartists:
-                self.albumartists = self.artists[:1]
-            else:
-                self.albumartists = [ArtistMinimal(a) for a in albumartists]
-
-            if get_flag(SessionVarKeys.REMOVE_PROD):
-                new_title = remove_prod(new_title)
-
-            # if track is a single
-            if self.og_title == self.album:
-                self.rename_album(new_title)
-
-            if get_flag(SessionVarKeys.REMOVE_REMASTER_FROM_TRACK):
-                new_title = clean_title(new_title)
-
-            self.title = new_title
-
-            if get_flag(SessionVarKeys.CLEAN_ALBUM_TITLE):
-                self.album, _ = get_base_title_and_versions(
-                    self.album, get_versions=False
-                )
-
-            if get_flag(SessionVarKeys.MERGE_ALBUM_VERSIONS):
-                self.recreate_albumhash()
 
         self.image = self.albumhash + ".webp"
+        self.extra = {
+            "disc_total": self.extra.get("disc_total", 0),
+            "track_total": self.extra.get("track_total", 0),
+            "samplerate": self.extra.get("samplerate", -1),
+        }
 
-        if self.genre is not None and self.genre != "":
-            self.genre = self.genre.lower()
-            separators = {"/", ";", "&"}
+        self.split_artists()
+        self.map_with_config()
+        self.process_genres()
 
-            contains_rnb = "r&b" in self.genre
-            contains_rock = "rock & roll" in self.genre
+        # Remove duplicates from artists and albumartists
+        seen_artists = set()
+        self.artists = [
+            d
+            for d in self.artists
+            if tuple(d.items()) not in seen_artists
+            and not seen_artists.add(tuple(d.items()))
+        ]
+
+        seen_albumartists = set()
+        self.albumartists = [
+            d
+            for d in self.albumartists
+            if tuple(d.items()) not in seen_albumartists
+            and not seen_albumartists.add(tuple(d.items()))
+        ]
+
+        self.recreate_trackhash()
+        self.config = None
+
+    def split_artists(self):
+        """
+        Splits the artists and albumartists based on the given separators,
+        and updates the artisthashes.
+        """
+
+        def split(artists: str):
+            return [
+                {"name": a, "artisthash": create_hash(a, decode=True)}
+                for a in split_artists(artists, config=self.config)
+            ]
+
+        self.artists = split(self.artists)
+        self.albumartists = split(self.albumartists)
+        self.artisthashes = [a["artisthash"] for a in self.artists]
+
+    def map_with_config(self):
+        """
+        Applies various transformations to the track's title and album
+        based on the user's configuration settings.
+        """
+        new_title = self.title
+
+        # Extract featured artists
+        if self.config.extractFeaturedArtists:
+            feat, new_title = parse_feat_from_title(self.title, self.config)
+            feat = [
+                {"name": f, "artisthash": create_hash(f, decode=True)} for f in feat
+            ]
+            feat = [f for f in feat if f["artisthash"] not in self.artisthashes]
+            self.artists.extend(feat)
+            self.artisthashes.extend([f["artisthash"] for f in feat])
+
+            # Update album title for singles
+            # ie. album: "Title (feat. Artist)"
+            #     title: "Title (feat. Artist)"
+            # becomes: album: "Title", title: "Title"
+            if self.og_album == self.og_title:
+                self.album = new_title
+
+        # Clean track title
+        if self.config.removeProdBy:
+            new_title = remove_prod(new_title)
+
+        # if self.title == new_title:
+        #     self.album = new_title
+
+        if self.config.removeRemasterInfo:
+            new_title = clean_title(new_title)
+
+        self.title = new_title
+
+        # Clean album title
+        if self.config.cleanAlbumTitle:
+            self.album, _ = get_base_title_and_versions(self.album, get_versions=False)
+
+        if self.config.mergeAlbums:
+            self.albumhash = create_hash(
+                self.album, *(a["name"] for a in self.albumartists)
+            )
+
+    def process_genres(self):
+        """
+        Processes and standardizes the genre information for the track.
+        """
+        if self.genres:
+            src_genres: str = self.genres
+
+            src_genres = src_genres.lower()
+            # separators = {"/", ";", "&"}
+            separators = set(self.config.genreSeparators)
+
+            contains_rnb = "r&b" in src_genres
+            contains_rock = "rock & roll" in src_genres
 
             if contains_rnb:
-                self.genre = self.genre.replace("r&b", "RnB")
+                src_genres = src_genres.replace("r&b", "RnB")
 
             if contains_rock:
-                self.genre = self.genre.replace("rock & roll", "rock")
+                src_genres = src_genres.replace("rock & roll", "rock")
 
             for s in separators:
-                self.genre: str = self.genre.replace(s, ",")
+                src_genres = src_genres.replace(s, ",")
 
-            self.genre = self.genre.split(",")
-            self.genre = [g.strip() for g in self.genre]
+            genres_list: list[str] = src_genres.split(",")
+            self.genres = [
+                {"name": g.strip(), "genrehash": create_hash(g.strip())}
+                for g in genres_list
+            ]
+            self.genrehashes = [g["genrehash"] for g in self.genres]
 
-        self.recreate_hash()
-        self.set_created_date()
-
-    def recreate_hash(self):
+    def recreate_trackhash(self):
         """
-        Recreates a track hash if the track title was altered
-        to prevent duplicate tracks having different hashes.
+        Recreates the trackhash based on the current title, album, and artist information.
         """
-        if self.og_title == self.title and self.og_album == self.album:
-            return
-
         self.trackhash = create_hash(
-            ", ".join(a.name for a in self.artists), self.og_album, self.title
+            self.title, self.album, *(artist["name"] for artist in self.artists)
         )
-
-    def recreate_artists_hash(self):
-        """
-        Recreates a track's artist hashes if the artist list was altered
-        """
-        self.artist_hashes = "-".join(a.artisthash for a in self.artists)
-
-    def recreate_albumhash(self):
-        """
-        Recreates an albumhash of a track to merge all versions of an album.
-        """
-        albumartists = (a.name for a in self.albumartists)
-        self.albumhash = create_hash(self.album, *albumartists)
-
-    def rename_album(self, new_album: str):
-        """
-        Renames an album
-        """
-        self.album = new_album
-
-    def add_artists(self, artists: list[str], new_album_title: str):
-        for artist in artists:
-            if create_hash(artist, decode=True) not in self.artist_hashes:
-                self.artists.append(ArtistMinimal(artist))
-
-        self.recreate_artists_hash()
-        self.rename_album(new_album_title)
