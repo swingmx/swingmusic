@@ -29,7 +29,7 @@ def sort_tracks(tracks: list[Track], key: str, reverse: bool = False):
     # INFO: sort tracks by title for a fallback value
     tracks = sorted(tracks, key=lambda t: t.title)
 
-    if key == "title":
+    if key == "title" and not reverse:
         return tracks
 
     return sorted(tracks, key=sortfunc, reverse=reverse)
