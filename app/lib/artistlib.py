@@ -151,13 +151,11 @@ class CheckArtistImages:
         # read all files in the artist image folder
         path = settings.Paths.get_sm_artist_img_path()
         processed = [path.replace(".webp", "") for path in os.listdir(path)]
-        print(f"Found {len(processed)} processed artist images")
 
         unprocessed = [
             a for a in ArtistStore.get_flat_list() if a.artisthash not in processed
         ]
 
-        print(f"Downloading {len(unprocessed)} artist images")
         key_artist_map = ((instance_key, artist) for artist in unprocessed)
 
         with ThreadPoolExecutor(max_workers=14) as executor:
