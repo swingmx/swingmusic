@@ -12,12 +12,14 @@ colorgram.py==1.2.0
 ConfigArgParse==1.7
 dill==0.3.7
 exceptiongroup==1.1.3
+ffmpeg-python==0.2.0
 Flask==2.3.3
 Flask-BasicAuth==0.2.0
 Flask-Compress==1.14
 Flask-Cors==3.0.10
 Flask-JWT-Extended==4.6.0
 flask-openapi3==3.0.2
+future==1.0.0
 gevent==23.9.1
 geventhttpclient==2.0.11
 greenlet==3.0.3
@@ -31,6 +33,7 @@ lazy-object-proxy==1.9.0
 locust==2.20.1
 MarkupSafe==2.1.3
 mccabe==0.7.0
+memory-profiler==0.61.0
 msgpack==1.0.7
 mypy-extensions==1.0.0
 packaging==23.2
@@ -57,8 +60,9 @@ setproctitle==1.3.3
 show-in-file-manager==1.1.4
 six==1.16.0
 sortedcontainers==2.4.0
+SQLAlchemy==2.0.31
 tabulate==0.9.0
-tinytag==1.9.0
+tinytag==1.10.1
 tomli==2.0.1
 tomlkit==0.12.1
 tqdm==4.66.1
@@ -70,5 +74,6 @@ waitress==2.1.2
 watchdog==4.0.0
 Werkzeug==3.0.0
 wrapt==1.15.0
+xxhash==3.4.1
 zope.event==5.0
 zope.interface==6.1
