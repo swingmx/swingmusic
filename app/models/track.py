@@ -75,6 +75,7 @@ class Track:
         """
         self.og_title = self.title
         self.og_album = self.album
+        self.folder = self.folder + "/"
 
         self.image = self.albumhash + ".webp"
         self.extra = {
