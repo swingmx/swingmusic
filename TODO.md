@@ -46,6 +46,9 @@
 - Clean up tempfiles after transcoding
 - Double sort artist tracks for consistency (alphabetically then by other field. eg. playcount)
 
+
+- ON THE HOME PAGE, STORE THE ITEMS, THEN HYDRATE ON REFRESH INSTEAD OF CLEANING THEN RELOADING THE DATA AGAIN
+
 # Bug fixes
 
 - Duplicates on search

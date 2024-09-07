@@ -43,7 +43,7 @@ class SendTrackFileQuery(BaseModel):
     )
     quality: Literal["original", "1411", "800", "600", "320", "256", "128", "96"] = (
         Field(
-            "320",
+            "original",
             description="The quality of the audio file. Options: original, 1411, 1024, 512, 320, 256, 128, 96",
         )
     )
@@ -290,6 +290,7 @@ def send_file_as_chunks(filepath: str) -> Response:
         "Content-Range",
         f"bytes {start}-{position}/{os.path.getsize(filepath) + bytes_to_add}",
     )
+    response.headers.add("Access-Control-Expose-Headers", "Content-Range")
     response.headers.add("Accept-Ranges", "bytes")
     return response
 
