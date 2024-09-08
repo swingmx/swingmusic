@@ -53,11 +53,12 @@ def insert_playlist(name: str, image: str = None):
     return None
 
 
-def get_path_trackhashes(path: str):
+def get_path_trackhashes(path: str, tracksortby: str, reverse: bool):
     """
     Returns a list of trackhashes in a folder.
     """
     tracks = TrackStore.get_tracks_in_path(path)
+    tracks = sort_tracks(tracks, key=tracksortby, reverse=reverse)
     return [t.trackhash for t in tracks]
 
 
@@ -152,6 +153,10 @@ class AddItemToPlaylistBody(BaseModel):
         description="The type of item to add",
         examples=["tracks", "folder", "album", "artist"],
     )
+    sortoptions: dict = Field(
+        default=None,
+        description="The sort options for the tracks",
+    )
     itemhash: str = Field(..., description="The hash of the item to add")
 
 
@@ -165,11 +170,12 @@ def add_item_to_playlist(path: PlaylistIDPath, body: AddItemToPlaylistBody):
     itemtype = body.itemtype
     itemhash = body.itemhash
     playlist_id = path.playlistid
+    sortoptions = body.sortoptions
 
     if itemtype == "tracks":
         trackhashes = itemhash.split(",")
     elif itemtype == "folder":
-        trackhashes = get_path_trackhashes(itemhash)
+        trackhashes = get_path_trackhashes(itemhash, sortoptions.get("tracksortby") or 'default', sortoptions.get("tracksortreverse") or False)
     elif itemtype == "album":
         trackhashes = get_album_trackhashes(itemhash)
     elif itemtype == "artist":
@@ -378,6 +384,10 @@ class SavePlaylistAsItemBody(BaseModel):
     itemtype: str = Field(..., description="The type of item", example="tracks")
     playlist_name: str = Field(..., description="The name of the playlist")
     itemhash: str = Field(..., description="The hash of the item to save")
+    sortoptions: dict = Field(
+        default=dict(),
+        description="The sort options for the tracks",
+    )
 
 
 @api.post("/save-item")
@@ -390,6 +400,7 @@ def save_item_as_playlist(body: SavePlaylistAsItemBody):
     itemtype = body.itemtype
     playlist_name = body.playlist_name
     itemhash = body.itemhash
+    sortoptions = body.sortoptions
 
     if PlaylistTable.check_exists_by_name(playlist_name):
         return {"error": "Playlist already exists"}, 409
@@ -397,7 +408,7 @@ def save_item_as_playlist(body: SavePlaylistAsItemBody):
     if itemtype == "tracks":
         trackhashes = itemhash.split(",")
     elif itemtype == "folder":
-        trackhashes = get_path_trackhashes(itemhash)
+        trackhashes = get_path_trackhashes(itemhash, sortoptions.get("tracksortby") or 'default', sortoptions.get("tracksortreverse") or False)
     elif itemtype == "album":
         trackhashes = get_album_trackhashes(itemhash)
     elif itemtype == "artist":
