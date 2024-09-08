@@ -48,7 +48,7 @@ class SendTrackFileQuery(BaseModel):
         )
     )
     container: Literal["mp3", "aac", "flac", "webm", "ogg"] = Field(
-        "flac",
+        "mp3",
         description="The container format of the audio file. Options: mp3, aac, flac, webm, ogg",
     )
 

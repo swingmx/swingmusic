@@ -28,10 +28,10 @@ class AlbumMapEntry:
     def basetitle(self):
         return self.album.base_title
 
-    def increment_playcount(self, duration: int, timestamp: int):
+    def increment_playcount(self, duration: int, timestamp: int, playcount: int = 1):
         self.album.lastplayed = timestamp
         self.album.playduration += duration
-        self.album.playcount += 1
+        self.album.playcount += playcount
 
     def toggle_favorite_user(self, userid: int | None = None):
         if userid is None:

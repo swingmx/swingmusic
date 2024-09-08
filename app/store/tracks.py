@@ -31,12 +31,12 @@ class TrackGroup:
         """
         self.tracks.remove(track)
 
-    def increment_playcount(self, duration: int, timestamp: int):
+    def increment_playcount(self, duration: int, timestamp: int, playcount: int = 1):
         """
         Increments the playcount of all tracks in the group.
         """
         for track in self.tracks:
-            track.playcount += 1
+            track.playcount += playcount
             track.lastplayed = timestamp
             track.playduration += duration
 
