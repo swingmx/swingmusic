@@ -22,7 +22,7 @@ from app.lib.sortlib import sort_tracks
 
 from app.serializers.album import serialize_for_card_many
 from app.serializers.artist import serialize_for_cards, serialize_for_card
-from app.serializers.track import serialize_tracks
+from app.serializers.track import serialize_track
 
 from app.store.albums import AlbumStore
 from app.store.artists import ArtistStore
@@ -69,16 +69,25 @@ def get_artist(path: ArtistHashSchema, query: TrackLimitSchema):
     if decade:
         artist.genres.insert(0, {"name": decade, "genrehash": decade})
 
+    duration = sum(t.duration for t in tracks) if tracks else 0
+    tracks = [
+        {
+            **serialize_track(t),
+            "help_text": "unplayed" if t.playcount == 0 else f"{t.playcount} play{'' if t.playcount == 1 else 's'}"
+        }
+        for t in tracks[:limit]
+    ]
+
     return {
         "artist": {
             **serialize_for_card(artist),
-            "duration": sum(t.duration for t in tracks) if tracks else 0,
+            "duration": duration,
             "trackcount": tcount,
             "albumcount": artist.albumcount,
             "genres": artist.genres,
             "is_favorite": artist.is_favorite,
         },
-        "tracks": serialize_tracks(tracks[:limit]),
+        "tracks": tracks,
     }
 
 
@@ -164,7 +173,15 @@ def get_all_artist_tracks(path: ArtistHashSchema):
     """
     tracks = ArtistStore.get_artist_tracks(path.artisthash)
     tracks = sort_tracks(tracks, key="playcount", reverse=True)
-    return serialize_tracks(tracks)
+    tracks = [
+        {
+            **serialize_track(t),
+            "help_text": "unplayed" if t.playcount == 0 else f"{t.playcount} play{'' if t.playcount == 1 else 's'}"
+        }
+        for t in tracks
+    ]
+
+    return tracks
 
 
 @api.get("/<artisthash>/similar")
