@@ -31,7 +31,13 @@ def sort_tracks(tracks: list[Track], key: str, reverse: bool = False):
     if key == "title" and not reverse:
         return tracks
 
-    return sorted(tracks, key=lambda track: sortfunc(track).casefold(), reverse=reverse)
+    return sorted(
+        tracks,
+        key=lambda track: sortfunc(track).casefold()
+        if isinstance(sortfunc(track), str)
+        else sortfunc(track),
+        reverse=reverse,
+    )
 
 
 def sort_folders(folders: list[Folder], key: str, reverse: bool = False):
