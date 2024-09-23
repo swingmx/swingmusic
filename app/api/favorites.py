@@ -189,7 +189,7 @@ def get_all_favorites(query: GetAllFavoritesQuery):
     largest = max(track_limit, album_limit, artist_limit)
 
     favs = FavoritesTable.get_all()
-    favs.reverse()
+    favs = sorted(favs, key=lambda x: x.timestamp, reverse=True)
 
     tracks = []
     albums = []

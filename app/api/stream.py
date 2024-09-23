@@ -41,11 +41,9 @@ class SendTrackFileQuery(BaseModel):
     filepath: str = Field(
         description="The filepath to play (if available)", default=None
     )
-    quality: Literal["original", "1411", "800", "600", "320", "256", "128", "96"] = (
-        Field(
-            "original",
-            description="The quality of the audio file. Options: original, 1411, 1024, 512, 320, 256, 128, 96",
-        )
+    quality: str = Field(
+        "original",
+        description="The quality of the audio file. Options: original, 1411, 1024, 512, 320, 256, 128, 96",
     )
     container: Literal["mp3", "aac", "flac", "webm", "ogg"] = Field(
         "mp3",
