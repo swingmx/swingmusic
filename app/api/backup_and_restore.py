@@ -171,7 +171,11 @@ def restore(body: RestoreBackupBody):
         backups.append(body.backup_dir)
     else:
         # Restore from all backups
-        backup_dirs = [d for d in backup_base_dir.iterdir() if d.is_dir()]
+        try:
+            backup_dirs = [d for d in backup_base_dir.iterdir() if d.is_dir()]
+        except FileNotFoundError:
+            backup_dirs = []
+
         if not backup_dirs:
             return {"msg": "No backups found"}, 404
 
@@ -194,14 +198,18 @@ def list_backups():
     backups = []
 
     entries = []
-    for path in backup_dir.iterdir():
-        if path.is_dir():
-            try:
-                entries.append(
-                    {"path": path, "timestamp": int(path.name.split(".")[1])}
-                )
-            except (IndexError, ValueError):
-                pass
+    try:
+        paths = [p for p in backup_dir.iterdir() if p.is_dir()]
+    except FileNotFoundError:
+        paths = []
+
+    for path in paths:
+        try:
+            entries.append(
+                {"path": path, "timestamp": int(path.name.split(".")[1])}
+            )
+        except (IndexError, ValueError):
+            pass
 
     entries = sorted(entries, key=lambda x: x["timestamp"], reverse=True)
 
