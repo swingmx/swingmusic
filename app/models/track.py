@@ -1,4 +1,4 @@
-from dataclasses import dataclass, field
+from dataclasses import asdict, dataclass, field
 
 from app.config import UserConfig
 from app.utils.auth import get_current_userid
@@ -206,3 +206,6 @@ class Track:
         self.trackhash = create_hash(
             self.title, self.album, *(artist["name"] for artist in self.artists)
         )
+
+    def copy(self):
+        return Track(**{**asdict(self), "config": UserConfig()})

@@ -15,6 +15,7 @@ def serialize_track(track: Track, to_remove: set = set(), remove_disc=True) -> d
         "og_title",
         "og_album",
         "copyright",
+        "config",
         "disc",
         "track",
         "artist_hashes",

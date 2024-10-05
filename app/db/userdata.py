@@ -281,6 +281,15 @@ class ScrobbleTable(Base):
 
         return tracklog_to_dataclasses(result.fetchall())
 
+    @classmethod
+    def get_all_in_period(cls, start_time: int, end_time: int):
+        result = cls.execute(
+            select(cls)
+            .where(and_(cls.timestamp >= start_time, cls.timestamp <= end_time))
+            .order_by(cls.timestamp.desc())
+        )
+        return tracklog_to_dataclasses(result.fetchall())
+
 
 class PlaylistTable(Base):
     __tablename__ = "playlist"

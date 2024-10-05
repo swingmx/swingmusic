@@ -24,6 +24,7 @@ def serialize_for_card(artist: Artist):
         "extra",
         "created_date",
         "date",
+        "fav_userids",
     }
 
     for key in props_to_remove:

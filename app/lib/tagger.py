@@ -238,7 +238,7 @@ def create_artists(
     artists = dict()
 
     for track in all_tracks:
-        this_artists = track.artists
+        this_artists = [*track.artists]
 
         for a in track.albumartists:
             if a not in this_artists:
