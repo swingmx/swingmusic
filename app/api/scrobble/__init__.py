@@ -309,7 +309,7 @@ def get_stats():
         "text": "Total tracks",
         "value": len(TrackStore.get_flat_list()),
     }
-    last_7_days_data, last_7_days_playcount, last_7_days_playduration = (
+    last_7_tracks, last_7_days_playcount, last_7_days_playduration = (
         get_tracks_in_period(one_week_ago, now)
     )
 
@@ -325,11 +325,13 @@ def get_stats():
         "value": seconds_to_time_string(last_7_days_playduration),
     }
 
+    last_7_tracks = sorted(last_7_tracks, key=lambda t: t.playduration, reverse=True)
+
     # Find the top track from the last 7 days
     top_track = {
         "class": "toptrack",
         "text": "Top track last week",
-        "value": last_7_days_data[0].title,
+        "value": last_7_tracks[0].title,
     }
 
     return {
