@@ -56,6 +56,7 @@ def get_albums_in_period(start_time: int, end_time: int):
 def get_tracks_in_period(start_time: int, end_time: int):
     scrobbles = ScrobbleTable.get_all_in_period(start_time, end_time)
     tracks: dict[str, Track] = {}
+    duration = 0
 
     for scrobble in scrobbles:
         if scrobble.trackhash not in tracks:
@@ -70,8 +71,9 @@ def get_tracks_in_period(start_time: int, end_time: int):
 
         tracks[scrobble.trackhash].playcount += 1
         tracks[scrobble.trackhash].playduration += scrobble.duration
+        duration += scrobble.duration
 
-    return list(tracks.values()), len(scrobbles)
+    return list(tracks.values()), len(scrobbles), duration
 
 
 T = TypeVar("T")

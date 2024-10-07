@@ -56,11 +56,11 @@ def seconds_to_time_string(seconds):
 
     if hours > 0:
         if minutes > 0:
-            return f"{hours} hr{'s' if hours > 1 else ''}, {minutes} minute{'s' if minutes > 1 else ''}"
+            return f"{hours} hr{'s' if hours > 1 else ''}, {minutes} min{'s' if minutes > 1 else ''}"
 
         return f"{hours} hr{'s' if hours > 1 else ''}"
 
     if minutes > 0:
-        return f"{minutes} minute{'s' if minutes > 1 else ''}"
+        return f"{minutes} min{'s' if minutes > 1 else ''}"
 
-    return f"{remaining_seconds} second{'' if remaining_seconds == 1 else 's'}"
+    return f"{remaining_seconds} sec"

@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from itertools import groupby
 from math import e
 from pprint import pprint
 from flask_openapi3 import Tag
@@ -8,6 +9,7 @@ from app.api.apischemas import TrackHashSchema
 from typing import Literal
 from datetime import datetime, timedelta
 from collections import defaultdict
+import locale
 
 from app.db.userdata import ScrobbleTable
 from app.lib.extras import get_extra_info
@@ -128,10 +130,10 @@ def get_top_tracks(query: TopTracksQuery):
     start_time = end_time - query.duration
     previous_start_time = start_time - query.duration
 
-    current_period_tracks, current_period_scrobbles = get_tracks_in_period(
+    current_period_tracks, current_period_scrobbles, duration = get_tracks_in_period(
         start_time, end_time
     )
-    previous_period_tracks, previous_period_scrobbles = get_tracks_in_period(
+    previous_period_tracks, previous_period_scrobbles, _ = get_tracks_in_period(
         previous_start_time, start_time
     )
     scrobble_trend = (
@@ -165,7 +167,7 @@ def get_top_tracks(query: TopTracksQuery):
     return {
         "tracks": response,
         "scrobbles": {
-            "text": f"{current_period_scrobbles} total play{'' if current_period_scrobbles == 1 else 's'}",
+            "text": f"{current_period_scrobbles} total play{'' if current_period_scrobbles == 1 else 's'} ({seconds_to_time_string(duration)})",
             "trend": scrobble_trend,
         },
     }, 200
@@ -292,3 +294,49 @@ def get_top_albums(query: TopAlbumsQuery):
 
 def sort_albums(albums: list[Album], order_by: Literal["playcount", "playduration"]):
     return sorted(albums, key=lambda x: getattr(x, order_by), reverse=True)
+
+
+@api.get("/stats")
+def get_stats():
+    """
+    Get the stats for the user.
+    """
+    now = int(datetime.now().timestamp())
+    one_week_ago = now - 23731580
+
+    total_tracks = {
+        "class": "trackcount",
+        "text": "Total tracks",
+        "value": len(TrackStore.get_flat_list()),
+    }
+    last_7_days_data, last_7_days_playcount, last_7_days_playduration = (
+        get_tracks_in_period(one_week_ago, now)
+    )
+
+    last_7_days_playcount = {
+        "class": "streams",
+        "text": "Track plays last week",
+        "value": last_7_days_playcount,
+    }
+
+    last_7_days_playduration = {
+        "class": "playtime",
+        "text": "Playtime last week",
+        "value": seconds_to_time_string(last_7_days_playduration),
+    }
+
+    # Find the top track from the last 7 days
+    top_track = {
+        "class": "toptrack",
+        "text": "Top track last week",
+        "value": last_7_days_data[0].title,
+    }
+
+    return {
+        "stats": [
+            last_7_days_playcount,
+            last_7_days_playduration,
+            total_tracks,
+            top_track,
+        ]
+    }
