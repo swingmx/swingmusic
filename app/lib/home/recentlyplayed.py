@@ -202,16 +202,17 @@ def get_recently_played(limit=7):
 
     BATCH_SIZE = 200
     current_index = 0
+
     entries = ScrobbleTable.get_all(0, BATCH_SIZE)
-    max_iterations = 20  # Safeguard against unexpected infinite loops
+    max_iterations = 20 # Safeguard against unexpected infinite loops
     iterations = 0
 
     while len(items) < limit and iterations < max_iterations:
-        create_items(entries[current_index : current_index + BATCH_SIZE])
+        create_items(entries)
         current_index += BATCH_SIZE
 
         if len(items) < limit:
-            entries = ScrobbleTable.get_all(current_index, BATCH_SIZE)
+            entries = ScrobbleTable.get_all(current_index + 1, BATCH_SIZE)
             if not entries:
                 break
 
