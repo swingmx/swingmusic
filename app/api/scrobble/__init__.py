@@ -4,6 +4,7 @@ from math import e
 from pprint import pprint
 from flask_openapi3 import Tag
 from flask_openapi3 import APIBlueprint
+import pendulum
 from pydantic import Field, BaseModel
 from app.api.apischemas import TrackHashSchema
 from typing import Literal
@@ -23,7 +24,11 @@ from app.settings import Defaults
 from app.store.albums import AlbumStore
 from app.store.artists import ArtistStore
 from app.store.tracks import TrackStore
-from app.utils.dates import seconds_to_time_string
+from app.utils.dates import (
+    get_date_range,
+    get_duration_in_seconds,
+    seconds_to_time_string,
+)
 from app.utils.stats import (
     calculate_album_trend,
     calculate_artist_trend,
@@ -49,6 +54,10 @@ class LogTrackBody(TrackHashSchema):
         description="The play source of the track",
         example=f"al:{Defaults.API_ALBUMHASH}",
     )
+
+
+def format_date(start: float, end: float):
+    return f"{pendulum.from_timestamp(start).format('MMM D, YYYY')} - {pendulum.from_timestamp(end).format('MMM D, YYYY')}"
 
 
 @api.post("/track/log")
@@ -90,13 +99,14 @@ def log_track(body: LogTrackBody):
     return {"msg": "recorded"}, 201
 
 
-class TopTracksQuery(BaseModel):
-    duration: int = Field(
-        description="Duration in seconds to fetch data for", example=604800
+class ChartItemsQuery(BaseModel):
+    duration: Literal["week", "month", "year", "alltime"] = Field(
+        "year",
+        description="Duration to fetch data for",
     )
-    limit: int = Field(description="Number of top tracks to return", example=10)
+    limit: int = Field(10, description="Number of top tracks to return")
     order_by: Literal["playcount", "playduration"] = Field(
-        description="Property to order by", example="playcount"
+        "playduration", description="Property to order by"
     )
 
 
@@ -123,13 +133,12 @@ def get_help_text(
 
 
 @api.get("/top-tracks")
-def get_top_tracks(query: TopTracksQuery):
+def get_top_tracks(query: ChartItemsQuery):
     """
     Get the top N tracks played within a given duration.
     """
-    end_time = int(datetime.now().timestamp())
-    start_time = end_time - query.duration
-    previous_start_time = start_time - query.duration
+    start_time, end_time = get_date_range(query.duration)
+    previous_start_time = start_time - get_duration_in_seconds(query.duration)
 
     current_period_tracks, current_period_scrobbles, duration = get_tracks_in_period(
         start_time, end_time
@@ -170,6 +179,7 @@ def get_top_tracks(query: TopTracksQuery):
         "scrobbles": {
             "text": f"{current_period_scrobbles} total play{'' if current_period_scrobbles == 1 else 's'} ({seconds_to_time_string(duration)})",
             "trend": scrobble_trend,
+            "dates": format_date(start_time, end_time),
         },
     }, 200
 
@@ -178,24 +188,13 @@ def sort_tracks(tracks: list[Track], order_by: Literal["playcount", "playduratio
     return sorted(tracks, key=lambda x: getattr(x, order_by), reverse=True)
 
 
-class TopArtistsQuery(BaseModel):
-    duration: int = Field(
-        description="Duration in seconds to fetch data for", example=604800
-    )
-    limit: int = Field(description="Number of top artists to return", example=10)
-    order_by: Literal["playcount", "playduration"] = Field(
-        description="Property to order by", example="playcount"
-    )
-
-
 @api.get("/top-artists")
-def get_top_artists(query: TopArtistsQuery):
+def get_top_artists(query: ChartItemsQuery):
     """
     Get the top N artists played within a given duration.
     """
-    end_time = int(datetime.now().timestamp())
-    start_time = end_time - query.duration
-    previous_start_time = start_time - query.duration
+    start_time, end_time = get_date_range(query.duration)
+    previous_start_time = start_time - get_duration_in_seconds(query.duration)
 
     current_period_artists = get_artists_in_period(start_time, end_time)
     previous_period_artists = get_artists_in_period(previous_start_time, start_time)
@@ -232,6 +231,7 @@ def get_top_artists(query: TopArtistsQuery):
         "scrobbles": {
             "text": f"{new_artists} new artist{'' if new_artists == 1 else 's'} played",
             "trend": scrobble_trend,
+            "dates": format_date(start_time, end_time),
         },
     }, 200
 
@@ -240,24 +240,13 @@ def sort_artists(artists, order_by):
     return sorted(artists, key=lambda x: x[order_by], reverse=True)
 
 
-class TopAlbumsQuery(BaseModel):
-    duration: int = Field(
-        description="Duration in seconds to fetch data for", example=604800
-    )
-    limit: int = Field(description="Number of top albums to return", example=10)
-    order_by: Literal["playcount", "playduration"] = Field(
-        description="Property to order by", example="playcount"
-    )
-
-
 @api.get("/top-albums")
-def get_top_albums(query: TopAlbumsQuery):
+def get_top_albums(query: ChartItemsQuery):
     """
     Get the top N albums played within a given duration.
     """
-    end_time = int(datetime.now().timestamp())
-    start_time = end_time - query.duration
-    previous_start_time = start_time - query.duration
+    start_time, end_time = get_date_range(query.duration)
+    previous_start_time = start_time - get_duration_in_seconds(query.duration)
 
     current_period_albums = get_albums_in_period(start_time, end_time)
     previous_period_albums = get_albums_in_period(previous_start_time, start_time)
@@ -289,6 +278,7 @@ def get_top_albums(query: TopAlbumsQuery):
         "scrobbles": {
             "text": f"{new_albums} new album{'' if new_albums == 1 else 's'} played",
             "trend": scrobble_trend,
+            "dates": format_date(start_time, end_time),
         },
     }, 200
 
@@ -303,7 +293,7 @@ def get_stats():
     Get the stats for the user.
     """
     now = int(datetime.now().timestamp())
-    one_week_ago = now - 23731580
+    one_week_ago = now - get_duration_in_seconds("week")
 
     total_tracks = StatItem(
         "trackcount",
@@ -332,7 +322,7 @@ def get_stats():
     top_track = StatItem(
         "toptrack",
         "Top track last week",
-        last_7_tracks[0].title,
+        last_7_tracks[0].title if len(last_7_tracks) > 0 else "-",
     )
 
     return {

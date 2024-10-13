@@ -64,3 +64,46 @@ def seconds_to_time_string(seconds):
         return f"{minutes} min{'s' if minutes > 1 else ''}"
 
     return f"{remaining_seconds} sec"
+
+
+def get_date_range(duration: str):
+    """
+    Returns a tuple of dates representing the start and end of a given duration.
+    """
+    match duration:
+        case "week":
+            return (
+                pendulum.now().subtract().start_of("week").timestamp(),
+                pendulum.now().end_of("week").timestamp(),
+            )
+        case "month":
+            return (
+                pendulum.now().subtract().start_of("month").timestamp(),
+                pendulum.now().end_of("month").timestamp(),
+            )
+        case "year":
+            return (
+                pendulum.now().subtract().start_of("year").timestamp(),
+                pendulum.now().end_of("year").timestamp(),
+            )
+        case "alltime":
+            return (float(0), pendulum.now().timestamp())
+        case _:
+            raise ValueError(f"Invalid duration: {duration}")
+
+
+def get_duration_in_seconds(duration: str) -> float:
+    """
+    Returns the number of seconds in a given duration.
+    """
+    match duration:
+        case "week":
+            return 604800
+        case "month":
+            return 2629743
+        case "year":
+            return 31556926
+        case "alltime":
+            return pendulum.now().timestamp()
+
+    raise ValueError(f"Invalid duration: {duration}")
