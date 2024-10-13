@@ -3,6 +3,7 @@ Contains all the artist(s) routes.
 """
 
 import math
+from pprint import pprint
 import random
 from datetime import datetime
 from itertools import groupby
@@ -32,8 +33,18 @@ bp_tag = Tag(name="Artist", description="Single artist")
 api = APIBlueprint("artist", __name__, url_prefix="/artist", abp_tags=[bp_tag])
 
 
+class GetArtistAlbumsQuery(AlbumLimitSchema):
+    all: bool = Field(
+        description="Whether to ignore albumlimit and return all albums", default=False
+    )
+
+
+class GetArtistQuery(TrackLimitSchema, GetArtistAlbumsQuery):
+    albumlimit: int = Field(7, description="The number of albums to return")
+
+
 @api.get("/<string:artisthash>")
-def get_artist(path: ArtistHashSchema, query: TrackLimitSchema):
+def get_artist(path: ArtistHashSchema, query: GetArtistQuery):
     """
     Get artist
 
@@ -73,10 +84,17 @@ def get_artist(path: ArtistHashSchema, query: TrackLimitSchema):
     tracks = [
         {
             **serialize_track(t),
-            "help_text": "unplayed" if t.playcount == 0 else f"{t.playcount} play{'' if t.playcount == 1 else 's'}"
+            "help_text": (
+                "unplayed"
+                if t.playcount == 0
+                else f"{t.playcount} play{'' if t.playcount == 1 else 's'}"
+            ),
         }
         for t in tracks[:limit]
     ]
+
+    query.limit = query.albumlimit
+    albums = get_artist_albums(path, query)
 
     return {
         "artist": {
@@ -88,13 +106,8 @@ def get_artist(path: ArtistHashSchema, query: TrackLimitSchema):
             "is_favorite": artist.is_favorite,
         },
         "tracks": tracks,
+        "albums": albums,
     }
-
-
-class GetArtistAlbumsQuery(AlbumLimitSchema):
-    all: bool = Field(
-        description="Whether to ignore limit and return all albums", default=False
-    )
 
 
 @api.get("/<artisthash>/albums")
@@ -176,7 +189,11 @@ def get_all_artist_tracks(path: ArtistHashSchema):
     tracks = [
         {
             **serialize_track(t),
-            "help_text": "unplayed" if t.playcount == 0 else f"{t.playcount} play{'' if t.playcount == 1 else 's'}"
+            "help_text": (
+                "unplayed"
+                if t.playcount == 0
+                else f"{t.playcount} play{'' if t.playcount == 1 else 's'}"
+            ),
         }
         for t in tracks
     ]

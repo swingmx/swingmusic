@@ -24,7 +24,6 @@ class ArtistHashSchema(BaseModel):
     """
     Extending this class will give you a model with the `artisthash` field
     """
-
     artisthash: str = Field(
         description="The artist hash",
         example=Defaults.API_ARTISTHASH,
@@ -68,6 +67,7 @@ class TrackLimitSchema(BaseModel):
         description="The number of tracks to return",
         example=Defaults.API_CARD_LIMIT,
         default=Defaults.API_CARD_LIMIT,
+        alias="tracklimit",
     )
 
 

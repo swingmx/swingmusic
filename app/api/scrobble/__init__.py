@@ -14,6 +14,7 @@ import locale
 from app.db.userdata import ScrobbleTable
 from app.lib.extras import get_extra_info
 from app.models.album import Album
+from app.models.stats import StatItem
 from app.models.track import Track
 from app.serializers.artist import serialize_for_card
 from app.serializers.album import serialize_for_card as serialize_for_album_card
@@ -304,35 +305,35 @@ def get_stats():
     now = int(datetime.now().timestamp())
     one_week_ago = now - 23731580
 
-    total_tracks = {
-        "class": "trackcount",
-        "text": "Total tracks",
-        "value": len(TrackStore.get_flat_list()),
-    }
+    total_tracks = StatItem(
+        "trackcount",
+        "Total tracks",
+        len(TrackStore.get_flat_list()),
+    )
     last_7_tracks, last_7_days_playcount, last_7_days_playduration = (
         get_tracks_in_period(one_week_ago, now)
     )
 
-    last_7_days_playcount = {
-        "class": "streams",
-        "text": "Track plays last week",
-        "value": last_7_days_playcount,
-    }
+    last_7_days_playcount = StatItem(
+        "streams",
+        "Track plays last week",
+        last_7_days_playcount,
+    )
 
-    last_7_days_playduration = {
-        "class": "playtime",
-        "text": "Playtime last week",
-        "value": seconds_to_time_string(last_7_days_playduration),
-    }
+    last_7_days_playduration = StatItem(
+        "playtime",
+        "Playtime last week",
+        seconds_to_time_string(last_7_days_playduration),
+    )
 
     last_7_tracks = sorted(last_7_tracks, key=lambda t: t.playduration, reverse=True)
 
     # Find the top track from the last 7 days
-    top_track = {
-        "class": "toptrack",
-        "text": "Top track last week",
-        "value": last_7_tracks[0].title,
-    }
+    top_track = StatItem(
+        "toptrack",
+        "Top track last week",
+        last_7_tracks[0].title,
+    )
 
     return {
         "stats": [
