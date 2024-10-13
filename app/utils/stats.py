@@ -1,4 +1,5 @@
 from collections import defaultdict
+import copy
 from typing import Any, Callable, TypeVar, Protocol, List
 from app.db.userdata import ScrobbleTable
 from app.models.track import Track
@@ -40,6 +41,7 @@ def get_albums_in_period(start_time: int, end_time: int):
         album_entry = AlbumStore.albummap.get(track.albumhash)
         if not album_entry:
             continue
+        album_entry = copy.deepcopy(album_entry)
 
         albumhash = album_entry.album.albumhash
         if albumhash not in albums:
@@ -61,7 +63,7 @@ def get_tracks_in_period(start_time: int, end_time: int):
     for scrobble in scrobbles:
         if scrobble.trackhash not in tracks:
             try:
-                track = TrackStore.get_tracks_by_trackhashes([scrobble.trackhash])[0]
+                track = copy.deepcopy(TrackStore.get_tracks_by_trackhashes([scrobble.trackhash])[0])
             except IndexError:
                 continue
 

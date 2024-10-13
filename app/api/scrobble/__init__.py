@@ -223,6 +223,9 @@ def get_top_artists(query: ChartItemsQuery):
             "help_text": get_help_text(
                 artist["playcount"], artist["playduration"], query.order_by
             ),
+            "extra": {
+                "playcount": artist["playcount"],
+            },
         }
         response.append(artist)
 
@@ -327,9 +330,9 @@ def get_stats():
 
     return {
         "stats": [
+            top_track,
             last_7_days_playcount,
             last_7_days_playduration,
             total_tracks,
-            top_track,
         ]
     }
