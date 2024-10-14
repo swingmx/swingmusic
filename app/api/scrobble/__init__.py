@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from gettext import ngettext
 from itertools import groupby
 from math import e
 from pprint import pprint
@@ -313,7 +314,9 @@ def get_stats():
     total_tracks = StatItem(
         "trackcount",
         "in your library",
-        f"{count} track{'' if count == 1 else 's'}",
+        locale.format_string("%d", count, grouping=True)
+        + " "
+        + ngettext("track", "tracks", count),
     )
 
     tracks, playcount, playduration = get_tracks_in_period(start_time, end_time)
