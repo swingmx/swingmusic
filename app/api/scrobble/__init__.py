@@ -324,7 +324,7 @@ def get_stats():
     playcount = StatItem(
         "streams",
         said_period,
-        f"{playcount} track{'' if playcount == 1 else 's'} played",
+        f"{playcount} track {ngettext('play', 'plays', playcount)}",
     )
 
     playduration = StatItem(
