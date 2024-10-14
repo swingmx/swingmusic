@@ -70,29 +70,33 @@ def get_date_range(duration: str):
     """
     Returns a tuple of dates representing the start and end of a given duration.
     """
+    date_range = None
+
     match duration:
         case "week":
-            return (
+            date_range = (
                 pendulum.now().subtract().start_of("week").timestamp(),
                 pendulum.now().end_of("week").timestamp(),
             )
         case "month":
-            return (
+            date_range = (
                 pendulum.now().subtract().start_of("month").timestamp(),
                 pendulum.now().end_of("month").timestamp(),
             )
         case "year":
-            return (
+            date_range = (
                 pendulum.now().subtract().start_of("year").timestamp(),
                 pendulum.now().end_of("year").timestamp(),
             )
         case "alltime":
-            return (float(0), pendulum.now().timestamp())
+            date_range = (float(0), pendulum.now().timestamp())
         case _:
             raise ValueError(f"Invalid duration: {duration}")
 
+    return (int(date_range[0]), int(date_range[1]))
 
-def get_duration_in_seconds(duration: str) -> float:
+
+def get_duration_in_seconds(duration: str) -> int:
     """
     Returns the number of seconds in a given duration.
     """
@@ -104,6 +108,6 @@ def get_duration_in_seconds(duration: str) -> float:
         case "year":
             return 31556926
         case "alltime":
-            return pendulum.now().timestamp()
+            return int(pendulum.now().timestamp())
 
     raise ValueError(f"Invalid duration: {duration}")

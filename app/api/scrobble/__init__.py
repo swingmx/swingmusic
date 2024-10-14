@@ -12,7 +12,7 @@ from datetime import datetime, timedelta
 from collections import defaultdict
 import locale
 
-from app.db.userdata import ScrobbleTable
+from app.db.userdata import FavoritesTable, ScrobbleTable
 from app.lib.extras import get_extra_info
 from app.models.album import Album
 from app.models.stats import StatItem
@@ -295,27 +295,39 @@ def get_stats():
     """
     Get the stats for the user.
     """
-    start_time, end_time = get_date_range("week")
+    period = "week"
+    start_time, end_time = get_date_range(period)
 
+    said_period = period
+    match period:
+        case "week":
+            said_period = "this week"
+        case "month":
+            said_period = "this month"
+        case "year":
+            said_period = "this year"
+        case "alltime":
+            said_period = "all time"
+
+    count = len(TrackStore.get_flat_list())
     total_tracks = StatItem(
         "trackcount",
-        "Total tracks",
-        len(TrackStore.get_flat_list()),
+        "in your library",
+        f"{count} track{'' if count == 1 else 's'}",
     )
-    tracks, playcount, playduration = (
-        get_tracks_in_period(start_time, end_time)
-    )
+
+    tracks, playcount, playduration = get_tracks_in_period(start_time, end_time)
 
     playcount = StatItem(
         "streams",
-        "Track plays last week",
-        playcount,
+        said_period,
+        f"{playcount} track{'' if playcount == 1 else 's'} played",
     )
 
     playduration = StatItem(
         "playtime",
-        "Playtime last week",
-        seconds_to_time_string(playduration),
+        said_period,
+        f"{seconds_to_time_string(playduration)} listened",
     )
 
     tracks = sorted(tracks, key=lambda t: t.playduration, reverse=True)
@@ -323,8 +335,20 @@ def get_stats():
     # Find the top track from the last 7 days
     top_track = StatItem(
         "toptrack",
-        "Top track last week",
-        tracks[0].title if len(tracks) > 0 else "-",
+        f"Top track {said_period}",
+        (
+            tracks[0].title + " - " + tracks[0].artists[0]["name"]
+            if len(tracks) > 0
+            else "—"
+        ),
+        tracks[0].image if len(tracks) > 0 else None,
+    )
+
+    fav_count = FavoritesTable.count_favs_in_period(start_time, end_time)
+    favorites = StatItem(
+        "favorites",
+        said_period,
+        f"{fav_count} {'new' if period != 'alltime' else ''} favorite{'' if fav_count == 1 else 's'}",
     )
 
     return {
@@ -332,6 +356,8 @@ def get_stats():
             top_track,
             playcount,
             playduration,
+            favorites,
             total_tracks,
-        ]
-    }
+        ],
+        "dates": format_date(start_time, end_time),
+    }, 200

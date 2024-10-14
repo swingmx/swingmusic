@@ -8,6 +8,7 @@ from sqlalchemy import (
     String,
     and_,
     delete,
+    func,
     insert,
     select,
     update,
@@ -247,6 +248,21 @@ class FavoritesTable(Base):
     def get_fav_artists(cls, start: int, limit: int):
         result, total = cls.get_all_of_type("artist", start, limit)
         return favorites_to_dataclass(result), total
+
+    @classmethod
+    def count_favs_in_period(cls, start_time: int, end_time: int):
+        result = cls.execute(
+            select(func.count(cls.id)).where(
+                and_(cls.timestamp >= start_time, cls.timestamp <= end_time)
+            )
+        )
+
+        result = result.fetchone()
+
+        if result:
+            return result[0]
+
+        return 0
 
 
 class ScrobbleTable(Base):
