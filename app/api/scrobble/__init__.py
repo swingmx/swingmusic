@@ -295,44 +295,45 @@ def get_stats():
     """
     Get the stats for the user.
     """
-    now = int(datetime.now().timestamp())
-    one_week_ago = now - get_duration_in_seconds("week")
+    # now = int(datetime.now().timestamp())
+    # one_week_ago = now - get_duration_in_seconds("week")
+    start_time, end_time = get_date_range("year")
 
     total_tracks = StatItem(
         "trackcount",
         "Total tracks",
         len(TrackStore.get_flat_list()),
     )
-    last_7_tracks, last_7_days_playcount, last_7_days_playduration = (
-        get_tracks_in_period(one_week_ago, now)
+    tracks, playcount, playduration = (
+        get_tracks_in_period(start_time, end_time)
     )
 
-    last_7_days_playcount = StatItem(
+    playcount = StatItem(
         "streams",
         "Track plays last week",
-        last_7_days_playcount,
+        playcount,
     )
 
-    last_7_days_playduration = StatItem(
+    playduration = StatItem(
         "playtime",
         "Playtime last week",
-        seconds_to_time_string(last_7_days_playduration),
+        seconds_to_time_string(playduration),
     )
 
-    last_7_tracks = sorted(last_7_tracks, key=lambda t: t.playduration, reverse=True)
+    tracks = sorted(tracks, key=lambda t: t.playduration, reverse=True)
 
     # Find the top track from the last 7 days
     top_track = StatItem(
         "toptrack",
         "Top track last week",
-        last_7_tracks[0].title if len(last_7_tracks) > 0 else "-",
+        tracks[0].title if len(tracks) > 0 else "-",
     )
 
     return {
         "stats": [
             top_track,
-            last_7_days_playcount,
-            last_7_days_playduration,
+            playcount,
+            playduration,
             total_tracks,
         ]
     }
