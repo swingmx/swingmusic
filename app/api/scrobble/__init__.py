@@ -233,7 +233,7 @@ def get_top_artists(query: ChartItemsQuery):
     return {
         "artists": response,
         "scrobbles": {
-            "text": f"{new_artists} new artist{'' if new_artists == 1 else 's'} played",
+            "text": f"{new_artists} {'new' if query.duration != 'alltime' else ''} {ngettext('artist', 'artists', new_artists)}",
             "trend": scrobble_trend,
             "dates": format_date(start_time, end_time),
         },
