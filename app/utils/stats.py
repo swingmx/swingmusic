@@ -63,7 +63,9 @@ def get_tracks_in_period(start_time: int, end_time: int):
     for scrobble in scrobbles:
         if scrobble.trackhash not in tracks:
             try:
-                track = copy.deepcopy(TrackStore.get_tracks_by_trackhashes([scrobble.trackhash])[0])
+                track = copy.deepcopy(
+                    TrackStore.get_tracks_by_trackhashes([scrobble.trackhash])[0]
+                )
             except IndexError:
                 continue
 
@@ -153,11 +155,28 @@ def calculate_scrobble_trend(current_scrobbles: int, previous_scrobbles: int) ->
     )
 
 
-def calculate_new_artists(
-    current_artists: List[dict[str, Any]], previous_artists: List[dict[str, Any]]
-):
+def calculate_new_artists(current_artists: List[dict[str, Any]], timestamp: int):
+    """
+    Calculate the number of new artists based on the current and all previous scrobbles.
+    """
     current_artists_set = set(artist["artisthash"] for artist in current_artists)
-    previous_artists_set = set(artist["artisthash"] for artist in previous_artists)
+    all_records = ScrobbleTable.get_all(0, None)
+    trackhashes = set(
+        record.trackhash for record in all_records if record.timestamp < timestamp
+    )
+
+    previous_artists_set = set()
+
+    for record in trackhashes:
+        entry = TrackStore.trackhashmap.get(record)
+        if not entry:
+            continue
+
+        entry = entry.tracks[0]
+
+        for artist in entry.artists:
+            artisthash = artist["artisthash"]
+            previous_artists_set.add(artisthash)
 
     return len(current_artists_set - previous_artists_set)
 

@@ -200,7 +200,7 @@ def get_top_artists(query: ChartItemsQuery):
     current_period_artists = get_artists_in_period(start_time, end_time)
     previous_period_artists = get_artists_in_period(previous_start_time, start_time)
 
-    new_artists = calculate_new_artists(current_period_artists, previous_period_artists)
+    new_artists = calculate_new_artists(current_period_artists, start_time)
     scrobble_trend = calculate_scrobble_trend(
         len(current_period_artists), len(previous_period_artists)
     )
