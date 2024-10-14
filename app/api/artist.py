@@ -81,6 +81,8 @@ def get_artist(path: ArtistHashSchema, query: GetArtistQuery):
         artist.genres.insert(0, {"name": decade, "genrehash": decade})
 
     duration = sum(t.duration for t in tracks) if tracks else 0
+    tracks = tracks[:limit] if (limit and limit != -1) else tracks
+
     tracks = [
         {
             **serialize_track(t),
@@ -90,7 +92,7 @@ def get_artist(path: ArtistHashSchema, query: GetArtistQuery):
                 else f"{t.playcount} play{'' if t.playcount == 1 else 's'}"
             ),
         }
-        for t in tracks[:limit]
+        for t in tracks
     ]
 
     query.limit = query.albumlimit
