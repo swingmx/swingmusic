@@ -295,9 +295,7 @@ def get_stats():
     """
     Get the stats for the user.
     """
-    # now = int(datetime.now().timestamp())
-    # one_week_ago = now - get_duration_in_seconds("week")
-    start_time, end_time = get_date_range("year")
+    start_time, end_time = get_date_range("week")
 
     total_tracks = StatItem(
         "trackcount",
