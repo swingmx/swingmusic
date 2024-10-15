@@ -203,7 +203,7 @@ def get_track_group_stats(tracks: list[Track], is_album: bool = False):
         f"{unplayed_count}/{len(tracks)} tracks",
     )
 
-    play_duration = sum(track.duration for track in played_tracks)
+    play_duration = sum(track.playduration for track in played_tracks)
     play_duration_stat = StatItem(
         "play_duration",
         "listened all time",
