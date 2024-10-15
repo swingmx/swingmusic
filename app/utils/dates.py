@@ -73,23 +73,13 @@ def get_date_range(duration: str):
     date_range = None
 
     match duration:
-        case "week":
+        case "week" | "month" | "year":
             date_range = (
-                pendulum.now().subtract().start_of("week").timestamp(),
-                pendulum.now().end_of("week").timestamp(),
-            )
-        case "month":
-            date_range = (
-                pendulum.now().subtract().start_of("month").timestamp(),
-                pendulum.now().end_of("month").timestamp(),
-            )
-        case "year":
-            date_range = (
-                pendulum.now().subtract().start_of("year").timestamp(),
-                pendulum.now().end_of("year").timestamp(),
+                pendulum.now().subtract().start_of(duration).timestamp(),
+                pendulum.now().end_of(duration).timestamp(),
             )
         case "alltime":
-            date_range = (float(0), pendulum.now().timestamp())
+            date_range = (0, pendulum.now().timestamp())
         case _:
             raise ValueError(f"Invalid duration: {duration}")
 
@@ -101,12 +91,8 @@ def get_duration_in_seconds(duration: str) -> int:
     Returns the number of seconds in a given duration.
     """
     match duration:
-        case "week":
-            return 604800
-        case "month":
-            return 2629743
-        case "year":
-            return 31556926
+        case "week" | "month" | "year":
+            return int(pendulum.now().subtract().start_of(duration).timestamp())
         case "alltime":
             return int(pendulum.now().timestamp())
 

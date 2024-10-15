@@ -28,6 +28,7 @@ from app.serializers.track import serialize_track
 from app.store.albums import AlbumStore
 from app.store.artists import ArtistStore
 from app.store.tracks import TrackStore
+from app.utils.stats import get_track_group_stats
 
 bp_tag = Tag(name="Artist", description="Single artist")
 api = APIBlueprint("artist", __name__, url_prefix="/artist", abp_tags=[bp_tag])
@@ -80,9 +81,9 @@ def get_artist(path: ArtistHashSchema, query: GetArtistQuery):
     if decade:
         artist.genres.insert(0, {"name": decade, "genrehash": decade})
 
+    stats = get_track_group_stats(tracks)
     duration = sum(t.duration for t in tracks) if tracks else 0
     tracks = tracks[:limit] if (limit and limit != -1) else tracks
-
     tracks = [
         {
             **serialize_track(t),
@@ -109,6 +110,7 @@ def get_artist(path: ArtistHashSchema, query: GetArtistQuery):
         },
         "tracks": tracks,
         "albums": albums,
+        "stats": stats,
     }
 
 

@@ -80,6 +80,7 @@ class AlbumLimitSchema(BaseModel):
         description="The number of albums to return",
         example=Defaults.API_CARD_LIMIT,
         default=Defaults.API_CARD_LIMIT,
+        alias="albumlimit",
     )
 
 
@@ -92,4 +93,5 @@ class ArtistLimitSchema(BaseModel):
         description="The number of artists to return",
         example=Defaults.API_CARD_LIMIT,
         default=Defaults.API_CARD_LIMIT,
+        alias="artistlimit",
     )

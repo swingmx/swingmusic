@@ -3,6 +3,7 @@ Contains all the album routes.
 """
 
 from dataclasses import asdict
+from pprint import pprint
 import random
 
 from pydantic import BaseModel, Field
@@ -21,15 +22,44 @@ from app.utils.hashing import create_hash
 from app.lib.albumslib import sort_by_track_no
 from app.serializers.album import serialize_for_card_many
 from app.serializers.track import serialize_tracks
+from app.utils.stats import get_track_group_stats
 
 
 bp_tag = Tag(name="Album", description="Single album")
 api = APIBlueprint("album", __name__, url_prefix="/album", abp_tags=[bp_tag])
 
 
+class GetAlbumVersionsBody(BaseModel):
+    og_album_title: str = Field(
+        description="The original album title (album.og_title)",
+        example=Defaults.API_ALBUMNAME,
+    )
+
+    albumhash: str = Field(
+        description="The album hash of the album to exclude from the results.",
+        example=Defaults.API_ALBUMHASH,
+    )
+
+
+class GetMoreFromArtistsBody(AlbumLimitSchema):
+    albumartists: list = Field(
+        description="The artist hashes to get more albums from",
+    )
+
+    base_title: str = Field(
+        description="The base title of the album to exclude from the results.",
+        example=Defaults.API_ALBUMNAME,
+        default=None,
+    )
+
+
+class GetAlbumInfoBody(AlbumHashSchema, AlbumLimitSchema):
+    pass
+
+
 # NOTE: Don't use "/" as it will cause redirects (failure)
 @api.post("")
-def get_album_tracks_and_info(body: AlbumHashSchema):
+def get_album_tracks_and_info(body: GetAlbumInfoBody):
     """
     Get album and tracks
 
@@ -52,7 +82,22 @@ def get_album_tracks_and_info(body: AlbumHashSchema):
     track_total = sum({int(t.extra.get("track_total", 1) or 1) for t in tracks})
     avg_bitrate = sum(t.bitrate for t in tracks) // (len(tracks) or 1)
 
+    more_from_data = GetMoreFromArtistsBody(
+        albumartists=[a["artisthash"] for a in album.albumartists],
+        albumlimit=body.limit,
+        base_title=album.base_title,
+    )
+    other_versions_data = GetAlbumVersionsBody(
+        albumhash=albumhash,
+        og_album_title=album.og_title,
+    )
+
+
+    more_from_albums = get_more_from_artist(more_from_data)
+    other_versions = get_album_versions(other_versions_data)
+
     return {
+        "stats": get_track_group_stats(tracks, is_album=True),
         "info": {
             **asdict(album),
             "is_favorite": album.is_favorite,
@@ -67,6 +112,8 @@ def get_album_tracks_and_info(body: AlbumHashSchema):
         },
         "copyright": tracks[0].copyright,
         "tracks": serialize_tracks(tracks, remove_disc=False),
+        "more_from": more_from_albums,
+        "other_versions": other_versions,
     }
 
 
@@ -82,18 +129,6 @@ def get_album_tracks(path: AlbumHashSchema):
     tracks = sort_by_track_no(tracks)
 
     return serialize_tracks(tracks)
-
-
-class GetMoreFromArtistsBody(AlbumLimitSchema):
-    albumartists: list = Field(
-        description="The artist hashes to get more albums from",
-    )
-
-    base_title: str = Field(
-        description="The base title of the album to exclude from the results.",
-        example=Defaults.API_ALBUMNAME,
-        default=None,
-    )
 
 
 @api.post("/from-artist")
@@ -133,18 +168,6 @@ def get_more_from_artist(body: GetMoreFromArtistsBody):
         seen_hashes.update([a.albumhash for a in albums][:limit])
 
     return all_albums
-
-
-class GetAlbumVersionsBody(BaseModel):
-    og_album_title: str = Field(
-        description="The original album title (album.og_title)",
-        example=Defaults.API_ALBUMNAME,
-    )
-
-    albumhash: str = Field(
-        description="The album hash of the album to exclude from the results.",
-        example=Defaults.API_ALBUMHASH,
-    )
 
 
 @api.post("/other-versions")

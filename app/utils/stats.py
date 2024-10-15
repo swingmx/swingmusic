@@ -1,11 +1,15 @@
 from collections import defaultdict
 import copy
-from typing import Any, Callable, TypeVar, Protocol, List
+
+from pprint import pprint
+from typing import Any, Callable, TypeVar, List
 from app.db.userdata import ScrobbleTable
+from app.models.stats import StatItem
 from app.models.track import Track
 from app.models.album import Album
 from app.store.albums import AlbumStore
 from app.store.tracks import TrackStore
+from app.utils.dates import seconds_to_time_string
 
 
 def get_artists_in_period(start_time: int, end_time: int):
@@ -160,10 +164,8 @@ def calculate_new_artists(current_artists: List[dict[str, Any]], timestamp: int)
     Calculate the number of new artists based on the current and all previous scrobbles.
     """
     current_artists_set = set(artist["artisthash"] for artist in current_artists)
-    all_records = ScrobbleTable.get_all(0, None)
-    trackhashes = set(
-        record.trackhash for record in all_records if record.timestamp < timestamp
-    )
+    all_records = ScrobbleTable.get_all_in_period(0, timestamp)
+    trackhashes = set(record.trackhash for record in all_records)
 
     previous_artists_set = set()
 
@@ -186,3 +188,106 @@ def calculate_new_albums(current_albums: List[Album], previous_albums: List[Albu
     previous_albums_set = set(album.albumhash for album in previous_albums)
 
     return len(current_albums_set - previous_albums_set)
+
+
+def get_track_group_stats(tracks: list[Track], is_album: bool = False):
+    if len(tracks) == 0:
+        return []
+
+    played_tracks = [track for track in tracks if track.playcount > 0]
+    unplayed_count = len(tracks) - len(played_tracks)
+
+    played_stat = StatItem(
+        "played",
+        f"never played",
+        f"{unplayed_count}/{len(tracks)} tracks",
+    )
+
+    play_duration = sum(track.duration for track in played_tracks)
+    play_duration_stat = StatItem(
+        "play_duration",
+        "listened all time",
+        f"{seconds_to_time_string(play_duration)}",
+    )
+
+    try:
+        top_track = max(played_tracks, key=lambda x: x.playduration)
+    except ValueError:
+        top_track = None
+
+    top_track_stat = (
+        StatItem(
+            "toptrack",
+            f"top track ({seconds_to_time_string(top_track.playduration)} listened)",
+            f"{top_track.title}",
+            top_track.image,
+        )
+        if top_track
+        else StatItem(
+            "toptrack",
+            "top track",
+            "—",
+        )
+    )
+
+    albums_map = {}
+
+    for track in tracks:
+        if track.albumhash not in albums_map:
+            albums_map[track.albumhash] = {
+                "playcount": 0,
+                "playduration": 0,
+                "title": track.album,
+                "image": track.image,
+            }
+
+        albums_map[track.albumhash]["playcount"] += 1
+        albums_map[track.albumhash]["playduration"] += track.playduration
+
+    stats = [play_duration_stat, played_stat, top_track_stat]
+    if not is_album:
+        albums = list(albums_map.values())
+        albums.sort(key=lambda x: x["playduration"], reverse=True)
+
+        top_album = albums[0] if albums[0]["playduration"] else None
+        top_album_stat = (
+            StatItem(
+                "topalbum",
+                f"top album ({seconds_to_time_string(top_album['playduration'])} listened)",
+                f"{top_album['title']}",
+                top_album["image"],
+            )
+            if top_album
+            else StatItem(
+                "topalbum",
+                "top album",
+                "—",
+            )
+        )
+
+        stats.append(top_album_stat)
+
+    if is_album:
+        tracktotal: int = max(
+            int(track.extra.get("track_total", 0) or 0) for track in tracks
+        )
+        percentage = (len(tracks) / tracktotal) * 100 if tracktotal > 0 else 101
+        completedness = int(percentage) if percentage <= 100 else "?"
+
+        completeness_stat = (
+            StatItem(
+                "completeness",
+                f"{len(tracks)}/{tracktotal} tracks available",
+                f"{completedness}% complete",
+            )
+            if tracktotal
+            else StatItem(
+                "completeness",
+                f"{len(tracks)}/? tracks available",
+                "?",
+            )
+        )
+
+        stats.append(completeness_stat)
+
+    return stats
