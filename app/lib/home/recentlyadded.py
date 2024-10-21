@@ -55,24 +55,6 @@ def check_is_track_folder(tracks: list[Track]):
     return [create_track(t) for t in tracks]
 
 
-# def check_is_new_artist(hashes: set[str], artisthash: str, timestamp: int):
-#     """
-#     Checks if an artist already exists in the library.
-#     """
-#     return artisthash not in hashes
-
-
-# def check_is_new_album(albumhash: str, timestamp: int):
-#     """
-#     Checks if an album already exists in the library.
-#     """
-#     tracks = filter(
-#         lambda t: t.last_mod < timestamp and t.albumhash == albumhash, TrackStore.tracks
-#     )
-
-#     return next(tracks, None) is None
-
-
 def create_track(t: Track):
     """
     Creates a recently added track entry.
@@ -187,23 +169,8 @@ def group_track_by_folders(tracks: list[Track], groups: dict[str, list[Track]]):
 
 
 def get_recently_added_items(limit: int = 7):
-    # tracks = sorted(TrackStore.tracks, key=lambda t: t.created_date)
-    now = time()
     tracks = get_recently_added_tracks(start=0, limit=None)
-    then = time()
-
-    print(f"Time taken to get tracks: {then - now}")
     groups = group_track_by_folders(tracks, {})
-    # print(groups)
-    # last_trackcount: int = len(tracks)
-
-    # while len(groups.keys()) < limit and last_trackcount > 0:
-    #     distracks = get_recently_added_tracks(start=len(tracks), limit=100)
-    #     last_trackcount = len(distracks)
-
-    #     tracks.extend(distracks)
-    #     groups = group_track_by_folders(tracks, groups)
-
     grouplist = []
 
     # INFO: sort tracks by last modified date in descending order to get the most recent last modified date

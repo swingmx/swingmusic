@@ -15,7 +15,7 @@ def timestamp_from_days_ago(days_ago: int):
     return int(past_timestamp.timestamp())
 
 
-def create_new_date(date: datetime = None) -> str:
+def create_new_date(date: datetime | None = None) -> str:
     """
     Creates a new date and time string in the format of "YYYY-MM-DD HH:MM:SS"
     :return: A string of the current date and time.
@@ -26,7 +26,7 @@ def create_new_date(date: datetime = None) -> str:
     return date.strftime(_format)
 
 
-def timestamp_to_time_passed(timestamp: str | int):
+def timestamp_to_time_passed(timestamp: str | int | float):
     """
     Converts a timestamp to time passed. e.g. 2 minutes ago, 1 hour ago, yesterday, 2 days ago, 2 weeks ago, etc.
     """

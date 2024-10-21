@@ -257,9 +257,9 @@ class FavoritesTable(Base):
     @classmethod
     def count_favs_in_period(cls, start_time: int, end_time: int):
         result = cls.execute(
-            select(func.count(cls.id)).where(
-                and_(cls.timestamp >= start_time, cls.timestamp <= end_time)
-            )
+            select(func.count(cls.id))
+            .where((cls.userid == get_current_userid()))
+            .where(and_(cls.timestamp >= start_time, cls.timestamp <= end_time))
         )
 
         result = result.fetchone()
@@ -306,6 +306,7 @@ class ScrobbleTable(Base):
     def get_all_in_period(cls, start_time: int, end_time: int):
         result = cls.execute(
             select(cls)
+            .where(cls.userid == get_current_userid())
             .where(and_(cls.timestamp >= start_time, cls.timestamp <= end_time))
             .order_by(cls.timestamp.desc())
         )
