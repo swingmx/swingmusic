@@ -2,6 +2,7 @@
 Contains all the search routes.
 """
 
+from typing import Any, Literal
 from unidecode import unidecode
 from pydantic import Field
 from flask_openapi3 import Tag
@@ -18,7 +19,29 @@ tag = Tag(name="Search", description="Search for tracks, albums and artists")
 api = APIBlueprint("search", __name__, url_prefix="/search", abp_tags=[tag])
 
 SEARCH_COUNT = 30
-"""The max amount of items to return per request"""
+"""
+The max amount of items to return per request
+"""
+
+
+class SearchQuery(GenericLimitSchema):
+    q: str = Field(description="The search query", example=Defaults.API_ARTISTNAME)
+    start: int = Field(description="The index to start from", default=0, example=0)
+    limit: int = Field(
+        description="The number of items to return", default=SEARCH_COUNT
+    )
+
+
+class TopResultsQuery(SearchQuery):
+    limit: int = Field(
+        description="The number of items to return", default=Defaults.API_CARD_LIMIT
+    )
+
+
+class SearchLoadMoreQuery(SearchQuery):
+    itemtype: Literal["tracks", "albums", "artists"] = Field(
+        description="The type of search", example="tracks"
+    )
 
 
 class Search:
@@ -54,61 +77,6 @@ class Search:
         return finder.search(self.query, limit=limit)
 
 
-class SearchQuery(GenericLimitSchema):
-    q: str = Field(description="The search query", example=Defaults.API_ARTISTNAME)
-    start: int = Field(description="The index to start from", default=0, example=0)
-
-
-@api.get("/tracks")
-def search_tracks(query: SearchQuery):
-    """
-    Search tracks
-    """
-    tracks = Search(query.q).search_tracks()
-
-    return {
-        "tracks": tracks[:SEARCH_COUNT],
-        "more": len(tracks) > SEARCH_COUNT,
-    }
-
-
-@api.get("/albums")
-def search_albums(
-    query: SearchQuery,
-):
-    """
-    Search albums.
-    """
-    albums = Search(query.q).search_albums()
-
-    return {
-        "albums": albums[:SEARCH_COUNT],
-        "more": len(albums) > SEARCH_COUNT,
-    }
-
-
-@api.get("/artists")
-def search_artists(query: SearchQuery):
-    """
-    Search artists.
-    """
-    if not query.q:
-        return {"error": "No query provided"}, 400
-
-    artists = Search(query.q).search_artists()
-
-    return {
-        "artists": artists[:SEARCH_COUNT],
-        "more": len(artists) > SEARCH_COUNT,
-    }
-
-
-class TopResultsQuery(SearchQuery):
-    limit: int = Field(
-        description="The number of items to return", default=Defaults.API_CARD_LIMIT
-    )
-
-
 @api.get("/top")
 def get_top_results(query: TopResultsQuery):
     """
@@ -122,44 +90,29 @@ def get_top_results(query: TopResultsQuery):
     return Search(query.q).get_top_results(limit=query.limit)
 
 
-class SearchLoadMoreQuery(SearchQuery):
-    type: str = Field(description="The type of search", example="tracks")
-    start: int = Field(description="The index to start from", default=0)
-
-
-@api.get("/loadmore")
-def search_load_more(query: SearchLoadMoreQuery):
+@api.get("/")
+def search_items(query: SearchLoadMoreQuery):
     """
-    Load more
-
-    Returns more songs, albums or artists from a search query.
-
-    NOTE: You must first initiate a search using the `/search` endpoint.
+    Find tracks, albums or artists from a search query.
     """
-    q = query.q
-    item_type = query.type
-    index = query.start
+    results: Any = []
 
-    if item_type == "tracks":
-        t = Search(q).search_tracks()
-        return {
-            "tracks": t[index : index + SEARCH_COUNT],
-            "more": len(t) > index + SEARCH_COUNT,
-        }
+    match query.itemtype:
+        case "tracks":
+            results = Search(query.q).search_tracks()
+        case "albums":
+            results = Search(query.q).search_albums()
+        case "artists":
+            results = Search(query.q).search_artists()
+        case _:
+            return {
+                "error": "Invalid item type. Valid types are 'tracks', 'albums' and 'artists'"
+            }, 400
 
-    elif item_type == "albums":
-        a = Search(q).search_albums()
-        return {
-            "albums": a[index : index + SEARCH_COUNT],
-            "more": len(a) > index + SEARCH_COUNT,
-        }
-
-    elif item_type == "artists":
-        a = Search(q).search_artists()
-        return {
-            "artists": a[index : index + SEARCH_COUNT],
-            "more": len(a) > index + SEARCH_COUNT,
-        }
+    return {
+        "results": results[query.start : query.start + query.limit],
+        "more": len(results) > query.start + query.limit,
+    }
 
 
 # TODO: Rewrite this file using generators where possible

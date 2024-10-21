@@ -117,6 +117,9 @@ class GetAllOfTypeQuery(GenericLimitSchema):
 def get_favorite_albums(query: GetAllOfTypeQuery):
     """
     Get favorite albums
+
+    Note: Only the first request will return the total number of favorites.
+    Others will return -1
     """
     fav_albums, total = FavoritesTable.get_fav_albums(query.start, query.limit)
     fav_albums.reverse()
@@ -129,6 +132,9 @@ def get_favorite_albums(query: GetAllOfTypeQuery):
 def get_favorite_tracks(query: GetAllOfTypeQuery):
     """
     Get favorite tracks
+
+    Note: Only the first request will return the total number of favorites.
+    Others will return -1
     """
     tracks, total = FavoritesTable.get_fav_tracks(query.start, query.limit)
     tracks.reverse()
@@ -141,6 +147,9 @@ def get_favorite_tracks(query: GetAllOfTypeQuery):
 def get_favorite_artists(query: GetAllOfTypeQuery):
     """
     Get favorite artists
+
+    Note: Only the first request will return the total number of favorites.
+    Others will return -1
     """
     artists, total = FavoritesTable.get_fav_artists(
         start=query.start,
@@ -188,7 +197,7 @@ def get_all_favorites(query: GetAllFavoritesQuery):
     # largest is x2 to accound for broken hashes if any
     largest = max(track_limit, album_limit, artist_limit)
 
-    favs = FavoritesTable.get_all()
+    favs = FavoritesTable.get_all(with_user=True)
     favs = sorted(favs, key=lambda x: x.timestamp, reverse=True)
 
     tracks = []

@@ -184,9 +184,14 @@ class FavoritesTable(Base):
     )
 
     @classmethod
-    def get_all(cls):
+    def get_all(cls, with_user: bool = False):
         with DbEngine.manager() as conn:
-            result = conn.execute(select(cls))
+            if with_user:
+                result = conn.execute(
+                    select(cls).where(cls.userid == get_current_userid())
+                )
+            else:
+                result = conn.execute(select(cls))
             return favorites_to_dataclass(result.fetchall())
 
     @classmethod
