@@ -221,7 +221,9 @@ class FavoritesTable(Base):
         result = cls.execute(
             select(cls)
             # .select_from(join(table, cls, field == cls.hash))
-            .where(and_(cls.type == type, cls.userid == get_current_userid())).offset(
+            .where(and_(cls.type == type, cls.userid == get_current_userid()))
+            .order_by(cls.timestamp.desc())
+            .offset(
                 start
             )
             # INFO: If start is 0, fetch all so we can get the total count
