@@ -13,7 +13,7 @@ from app.utils.dates import seconds_to_time_string
 
 def get_artists_in_period(start_time: int, end_time: int):
     scrobbles = ScrobbleTable.get_all_in_period(start_time, end_time)
-    artists = defaultdict(lambda: {"playcount": 0, "playduration": 0})
+    artists: Any = defaultdict(lambda: {"playcount": 0, "playduration": 0})
 
     for scrobble in scrobbles:
         track = TrackStore.get_tracks_by_trackhashes([scrobble.trackhash])
@@ -24,11 +24,13 @@ def get_artists_in_period(start_time: int, end_time: int):
         for artist in track.artists:
             artisthash = artist["artisthash"]
 
+            artists[artisthash]["artist"] = artist["name"]
             artists[artisthash]["artisthash"] = artist["artisthash"]
             artists[artisthash]["playcount"] += 1
             artists[artisthash]["playduration"] += scrobble.duration
 
-    return list(artists.values())
+    artists = list(artists.values())
+    return sorted(artists, key=lambda x: x["playduration"], reverse=True)
 
 
 def get_albums_in_period(start_time: int, end_time: int):

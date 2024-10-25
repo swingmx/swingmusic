@@ -66,16 +66,23 @@ def seconds_to_time_string(seconds):
     return f"{remaining_seconds} sec"
 
 
-def get_date_range(duration: str):
+def get_date_range(duration: str, units_ago: int = 0):
     """
     Returns a tuple of dates representing the start and end of a given duration.
     """
     date_range = None
+    seconds_ago = (
+        pendulum.now() - pendulum.now().subtract().start_of(duration)
+    ).total_seconds() * units_ago
+    print("seconds_ago", duration, str(seconds_ago))
 
     match duration:
-        case "week" | "month" | "year":
+        case "day" | "week" | "month" | "year":
             date_range = (
-                pendulum.now().subtract().start_of(duration).timestamp(),
+                pendulum.now()
+                .subtract(seconds=seconds_ago)
+                .start_of(duration)
+                .timestamp(),
                 pendulum.now().end_of(duration).timestamp(),
             )
         case "alltime":

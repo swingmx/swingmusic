@@ -14,6 +14,7 @@ from app.config import UserConfig
 from app.db.userdata import UserTable
 from app.settings import Info as AppInfo
 from .plugins import lyrics as lyrics_plugin
+from .plugins import mixes as mixes_plugin
 from app.api import (
     album,
     artist,
@@ -113,6 +114,7 @@ def create_api():
         # Plugins
         app.register_api(plugins.api)
         app.register_api(lyrics_plugin.api)
+        app.register_api(mixes_plugin.api)
 
         # Logger
         app.register_api(scrobble.api)

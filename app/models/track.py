@@ -45,6 +45,7 @@ class Track:
     og_title: str = ""
     artisthashes: list[str] = field(default_factory=list)
     genrehashes: list[str] = field(default_factory=list)
+    weakhash: str = ""
 
     _pos: int = 0
     _ati: str = ""
@@ -76,6 +77,7 @@ class Track:
         self.og_title = self.title
         self.og_album = self.album
         self.folder = self.folder + "/"
+        self.weakhash = create_hash(self.title, self.artists)
 
         self.image = self.albumhash + ".webp"
         self.extra = {

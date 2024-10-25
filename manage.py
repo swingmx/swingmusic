@@ -21,6 +21,7 @@ import setproctitle
 
 from app.api import create_api
 from app.arg_handler import ProcessArgs
+from app.crons import start_cron_jobs
 from app.lib.index import IndexEverything
 from app.plugins.register import register_plugins
 from app.settings import FLASKVARS, TCOLOR, Info
@@ -74,6 +75,7 @@ def run_swingmusic():
     log_startup_info()
     bg_run_setup()
     register_plugins()
+    start_cron_jobs()
 
     # start_watchdog()
 
