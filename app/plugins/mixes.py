@@ -3,6 +3,7 @@ import string
 import requests
 from urllib.parse import quote
 
+from app.db.userdata import SimilarArtistTable
 from app.models.artist import Artist
 from app.models.mix import Mix
 from app.models.track import Track
@@ -10,6 +11,7 @@ from app.plugins import Plugin, plugin_method
 from app.store.artists import ArtistStore
 from app.store.tracks import TrackStore
 from app.utils.dates import get_date_range
+from app.utils.mixes import balance_mix
 from app.utils.remove_duplicates import remove_duplicates
 from app.utils.stats import get_artists_in_period
 
@@ -62,6 +64,7 @@ class MixesPlugin(Plugin):
 
         # sort by trackhash order
         trackmatches = sorted(trackmatches, key=lambda x: trackhashes.index(x.weakhash))
+        trackmatches = balance_mix(trackmatches)
         return trackmatches
 
     @plugin_method
@@ -123,6 +126,7 @@ class MixesPlugin(Plugin):
                     indexed.add(artist["artisthash"])
                     period["created"] += 1
 
+        print(f"⭐⭐⭐⭐ Created {len(mixes)} mixes")
         return mixes
 
     def get_mix_description(self, tracks: list[Track], artishash: str):
@@ -162,3 +166,38 @@ class MixesPlugin(Plugin):
                 "artisthash": artist["artisthash"],
             },
         )
+
+
+    def fallback_create_artist_mix(self, artist: dict[str, str], similar_artists: list[str], trackhashes: set[str], limit: int):
+        """
+        Creates an artist mix by selecting random tracks from similar artists.
+
+        This is used when:
+        - The Swing Music recommendation server is down.
+        - The artist has less than self.MIN_TRACK_MIX_LENGTH tracks from the cloud mix.
+        - When we need to dilute the mix to balance the artist distribution.
+
+        :param artist: The artist to create a mix for.
+        :param similar_artists: A list of similar artists to select tracks from. If not provided, we try reading from the local database. When we exhaust the passed list, we also try reading from the local database.
+        :param trackhashes: A set of trackhashes to omit from the new tracklist.
+        :param limit: The maximum number of tracks to select.
+        """
+        artists = similar_artists
+
+        if len(similar_artists) == 0:
+            local_similar_artists = SimilarArtistTable.get_by_hash(artist["artisthash"])
+
+            if local_similar_artists:
+                artists = [a.artisthash for a in local_similar_artists.similar_artists]
+
+        if len(artists) == 0:
+            return []
+
+        # CHECKPOINT: I'M TIRED AF AND I NEED TO SLEEP
+        # The plan:
+        # Figure out which artists we should skip for the new tracklist
+        # these would be artists with a large number of tracks in the mix already
+
+        # Since the artisthashes are ordered by similarity score, we iterate from the start
+        # and go forward collecting tracks that aren't in the mix yet.
+        # 

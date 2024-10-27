@@ -60,7 +60,7 @@ mimetypes.add_type("application/manifest+json", ".webmanifest")
 
 
 # Background tasks
-@background
+# @background
 def bg_run_setup():
     IndexEverything()
 
@@ -73,21 +73,19 @@ def bg_run_setup():
 @background
 def run_swingmusic():
     log_startup_info()
-    bg_run_setup()
     register_plugins()
-    start_cron_jobs()
 
     # start_watchdog()
 
     setproctitle.setproctitle(f"swingmusic ::{FLASKVARS.get_flask_port()}")
+    # bg_run_setup()
+    start_cron_jobs()
 
 
 # Setup function calls
 Info.load()
 ProcessArgs()
 run_setup()
-load_into_mem()
-run_swingmusic()
 
 
 # Create the Flask app
@@ -226,6 +224,10 @@ def print_memory_usage(response: Response):
 
 
 if __name__ == "__main__":
+
+    load_into_mem()
+    run_swingmusic()
+    
     host = FLASKVARS.get_flask_host()
     port = FLASKVARS.get_flask_port()
 
