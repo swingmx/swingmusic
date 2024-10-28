@@ -138,7 +138,13 @@ class MixesPlugin(Plugin):
                 if previous_period["created"] < previous_period["max"]:
                     limit += previous_period["max"] - previous_period["created"]
 
-            for artist in period["artists"][:limit]:
+            for artist in period["artists"]:
+                if period["created"] >= limit:
+                    break
+
+                if artist["artisthash"] in indexed:
+                    continue
+
                 mix = self.create_artist_mix(artist)
 
                 if mix:
