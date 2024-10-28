@@ -10,9 +10,7 @@ class HomepageStore:
 
     @classmethod
     def set_artist_mixes(cls, mixes: list[Mix], userid: int = 1):
-        print(f"⭐⭐⭐⭐ Setting {len(mixes)} artist mixes")
-        print("mix artists", [mix.title for mix in mixes])
-        idmap = {mix.id: mix for mix in mixes}
+        idmap = {mix.id[1:]: mix for mix in mixes}
         cls.entries["artist_mixes"][userid] = idmap
 
     @classmethod
