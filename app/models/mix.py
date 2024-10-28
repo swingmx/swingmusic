@@ -13,7 +13,6 @@ class Mix:
     title: str
     description: str
     tracks: list[str]
-    image: dict
 
     timestamp: int = field(default_factory=lambda: int(time.time()))
     extra: dict = field(default_factory=dict)
@@ -25,7 +24,10 @@ class Mix:
 
         _dict = asdict(self)
         _dict["tracks"] = serialized_tracks
-        _dict["images"] = get_first_4_images(tracks)
+
+        if not self.extra.get("image"):
+            _dict["images"] = get_first_4_images(tracks)
+
         _dict["duration"] = seconds_to_time_string(sum(t.duration for t in tracks))
         _dict["trackcount"] = len(tracks)
 

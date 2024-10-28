@@ -42,8 +42,8 @@ class MixesPlugin(Plugin):
 
         :param with_help: Whether to include the help flag in the query.
             The flag tells the server to find more data using other tracks from the same album.
-        
-        
+
+
         """
         queries = [
             {
@@ -96,7 +96,7 @@ class MixesPlugin(Plugin):
         return self.get_track_mix(tracks[: self.MAX_TRACKS_TO_FETCH])
 
     @plugin_method
-    def create_artist_mixes(self, limit: int = 10):
+    def create_artist_mixes(self):
         mixes: list[Mix] = []
         indexed = set()
 
@@ -107,7 +107,7 @@ class MixesPlugin(Plugin):
 
         artists = {
             "today": {
-                "max": 2,
+                "max": 3,
                 "artists": get_artists_in_period(today_start, today_end),
                 "created": 0,
             },
@@ -178,29 +178,29 @@ class MixesPlugin(Plugin):
         """
         Given an artist dict, creates an artist mix.
         """
-        mix_tracks = self.get_artist_mix(artist["artisthash"])
-
-        if len(mix_tracks) < self.MIN_TRACK_MIX_LENGTH:
-            return None
-
         _artist = ArtistStore.get_artist_by_hash(artist["artisthash"])
 
         if not _artist:
             return None
 
+        mix_tracks = self.get_artist_mix(artist["artisthash"])
+
+        if len(mix_tracks) < self.MIN_TRACK_MIX_LENGTH:
+            return None
+
         return Mix(
             # the a prefix indicates that this is an artist mix
             id=f"a{artist['artisthash']}",
-            title=artist["artist"],
+            title=artist["artist"] + " Radio",
             description=self.get_mix_description(mix_tracks, artist["artisthash"]),
             tracks=[t.trackhash for t in mix_tracks],
             extra={
                 "type": "artist",
                 "artisthash": artist["artisthash"],
-            },
-            image={
-                "image": _artist.image,
-                "color": _artist.color,
+                "image": {
+                    "image": _artist.image,
+                    "color": _artist.color,
+                },
             },
         )
 
@@ -243,4 +243,3 @@ class MixesPlugin(Plugin):
         # Since the artisthashes are ordered by similarity score, we iterate from the start
         # and go forward collecting tracks that aren't in the mix yet.
         #
- 
