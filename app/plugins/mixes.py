@@ -32,7 +32,19 @@ class MixesPlugin(Plugin):
 
     @plugin_method
     def get_track_mix(self, tracks: list[Track], with_help: bool = False):
-        # query = f"{track.title} - {','.join(a['name'] for a in track.artists)}"
+        """
+        Given a list of tracks, creates a mix by fetching data from the
+        Swing Music Cloud recommendation server.
+
+        The server returns a list of weak trackhashes. We use these to fetch
+        the matching track data from our library database. Found tracks are
+        then balanced and returned as the final mix tracklist.
+
+        :param with_help: Whether to include the help flag in the query.
+            The flag tells the server to find more data using other tracks from the same album.
+        
+        
+        """
         queries = [
             {
                 "query": f"{track.title} - {','.join(a['name'] for a in track.artists)}",
@@ -60,15 +72,23 @@ class MixesPlugin(Plugin):
         for track in trackmatches:
             grouped.setdefault(track.weakhash, []).append(track)
 
-        trackmatches = [max(group, key=lambda x: x.bitrate) for group in grouped.values()]
+        trackmatches = [
+            max(group, key=lambda x: x.bitrate) for group in grouped.values()
+        ]
 
         # sort by trackhash order
         trackmatches = sorted(trackmatches, key=lambda x: trackhashes.index(x.weakhash))
+
+        # try to balance the mix
         trackmatches = balance_mix(trackmatches)
         return trackmatches
 
     @plugin_method
     def get_artist_mix(self, artisthash: str):
+        """
+        Given an artisthash, creates an artist mix using the
+        self.MAX_TRACKS_TO_FETCH most listened to tracks.
+        """
         artist = ArtistStore.artistmap[artisthash]
         tracks = TrackStore.get_tracks_by_trackhashes(artist.trackhashes)
 
@@ -76,7 +96,7 @@ class MixesPlugin(Plugin):
         return self.get_track_mix(tracks[: self.MAX_TRACKS_TO_FETCH])
 
     @plugin_method
-    def get_artists(self, limit: int = 10):
+    def create_artist_mixes(self, limit: int = 10):
         mixes: list[Mix] = []
         indexed = set()
 
@@ -130,6 +150,10 @@ class MixesPlugin(Plugin):
         return mixes
 
     def get_mix_description(self, tracks: list[Track], artishash: str):
+        """
+        Constructs a description for a mix by putting together the first n=4
+        artists in the mix tracklist.
+        """
         first_4_artists = []
         indexed = set()
 
@@ -151,13 +175,22 @@ class MixesPlugin(Plugin):
         return f"Featuring {tracks[0].artists[0]['name']}"
 
     def create_artist_mix(self, artist: dict[str, str]):
+        """
+        Given an artist dict, creates an artist mix.
+        """
         mix_tracks = self.get_artist_mix(artist["artisthash"])
 
         if len(mix_tracks) < self.MIN_TRACK_MIX_LENGTH:
             return None
 
+        _artist = ArtistStore.get_artist_by_hash(artist["artisthash"])
+
+        if not _artist:
+            return None
+
         return Mix(
-            id=artist["artisthash"],
+            # the a prefix indicates that this is an artist mix
+            id=f"a{artist['artisthash']}",
             title=artist["artist"],
             description=self.get_mix_description(mix_tracks, artist["artisthash"]),
             tracks=[t.trackhash for t in mix_tracks],
@@ -165,10 +198,19 @@ class MixesPlugin(Plugin):
                 "type": "artist",
                 "artisthash": artist["artisthash"],
             },
+            image={
+                "image": _artist.image,
+                "color": _artist.color,
+            },
         )
 
-
-    def fallback_create_artist_mix(self, artist: dict[str, str], similar_artists: list[str], trackhashes: set[str], limit: int):
+    def fallback_create_artist_mix(
+        self,
+        artist: dict[str, str],
+        similar_artists: list[str],
+        trackhashes: set[str],
+        limit: int,
+    ):
         """
         Creates an artist mix by selecting random tracks from similar artists.
 
@@ -200,4 +242,5 @@ class MixesPlugin(Plugin):
 
         # Since the artisthashes are ordered by similarity score, we iterate from the start
         # and go forward collecting tracks that aren't in the mix yet.
-        # 
+        #
+ 

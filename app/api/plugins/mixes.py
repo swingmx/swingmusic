@@ -31,7 +31,7 @@ def get_track_mix():
 @api.post("/artist")
 def get_artist_mix():
     mixes = MixesPlugin()
-    return mixes.get_artists()
+    return mixes.create_artist_mixes()
     # tracks = mixes.get_artist_mix("09306be8039b98ad")
 
     # return {
@@ -54,7 +54,7 @@ def get_mix(query: MixQuery):
         case "a":
             mixtype = "artist_mixes"
         case _:
-            raise ValueError(f"Invalid mix ID: {query.mixid}")
+            return {"msg": "Invalid mix ID"}, 400
 
     mix = HomepageStore.get_mix(mixtype, query.mixid[1:])
     if mix:

@@ -13,6 +13,7 @@ class Mix:
     title: str
     description: str
     tracks: list[str]
+    image: dict
 
     timestamp: int = field(default_factory=lambda: int(time.time()))
     extra: dict = field(default_factory=dict)

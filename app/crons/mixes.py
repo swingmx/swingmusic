@@ -16,6 +16,6 @@ class Mixes(CronJob):
         """
         print("⭐⭐⭐⭐ Mixes cron job running")
         mixes = MixesPlugin()
-        artist_mixes = mixes.get_artists()
+        artist_mixes = mixes.create_artist_mixes()
 
         HomepageStore.set_artist_mixes(artist_mixes)
