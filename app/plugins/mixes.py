@@ -2,12 +2,15 @@ import json
 import string
 import requests
 from urllib.parse import quote
+from PIL import Image
 
 from app.db.userdata import SimilarArtistTable
+from app.lib.colorlib import get_image_colors
 from app.models.artist import Artist
 from app.models.mix import Mix
 from app.models.track import Track
 from app.plugins import Plugin, plugin_method
+from app.settings import Paths
 from app.store.artists import ArtistStore
 from app.store.tracks import TrackStore
 from app.utils.dates import get_date_range
@@ -194,6 +197,14 @@ class MixesPlugin(Plugin):
         if len(mix_tracks) < self.MIN_TRACK_MIX_LENGTH:
             return None
 
+        # try downloading artist image
+        mix_image = {"image": _artist.image, "color": _artist.color}
+        downloaded_img_color = self.download_artist_image(_artist)
+
+        if downloaded_img_color:
+            mix_image["image"] = f"{_artist.artisthash}.jpg"
+            mix_image["color"] = downloaded_img_color[0]
+
         return Mix(
             # the a prefix indicates that this is an artist mix
             id=f"a{artist['artisthash']}",
@@ -203,12 +214,39 @@ class MixesPlugin(Plugin):
             extra={
                 "type": "artist",
                 "artisthash": artist["artisthash"],
-                "image": {
-                    "image": _artist.image,
-                    "color": _artist.color,
-                },
+                "image": mix_image,
             },
         )
+
+    def download_artist_image(self, artist: Artist):
+        res = requests.get(f"{self.server}/image?artist={artist.name}")
+
+        if res.status_code == 200:
+            # save to file
+            with open(
+                f"{Paths.get_md_mixes_img_path()}/{artist.artisthash}.jpg", "wb"
+            ) as f:
+                f.write(res.content)
+
+            # resize to 256x256
+            img = Image.open(f"{Paths.get_md_mixes_img_path()}/{artist.artisthash}.jpg")
+            aspect_ratio = img.width / img.height
+
+            newwidth = 256
+
+            if aspect_ratio > 1:
+                newheight = int(256 / aspect_ratio)
+            else:
+                newheight = 256
+
+            img = img.resize((newwidth, newheight), Image.LANCZOS)
+            img.save(f"{Paths.get_sm_mixes_img_path()}/{artist.artisthash}.jpg")
+
+            return get_image_colors(
+                f"{Paths.get_sm_mixes_img_path()}/{artist.artisthash}.jpg"
+            )
+
+        return None
 
     def fallback_create_artist_mix(
         self,

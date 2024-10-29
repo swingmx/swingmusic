@@ -62,6 +62,12 @@ def create_config_dir() -> None:
 
     playlist_img_path = os.path.join("images", "playlists")
 
+
+    mixes_img_path = settings.Paths.get_mixes_img_path()
+    og_mixes_img_path = settings.Paths.get_og_mixes_img_path()
+    md_mixes_img_path = settings.Paths.get_md_mixes_img_path()
+    sm_mixes_img_path = settings.Paths.get_sm_mixes_img_path()
+
     dirs = [
         "",  # creates the config folder
         sm_thumb_path,
@@ -73,6 +79,10 @@ def create_config_dir() -> None:
         md_artist_img_path,
         small_artist_img_path,
         large_artist_img_path,
+        mixes_img_path,
+        og_mixes_img_path,
+        md_mixes_img_path,
+        sm_mixes_img_path,
     ]
 
     for _dir in dirs:

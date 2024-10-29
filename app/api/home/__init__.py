@@ -32,7 +32,7 @@ def homepage_items():
     return {
         "artist_mixes": {
             "title": "Artist mixes for you",
-            "description": "Curated based on artists you have played in the past",
+            "description": "Based on artists you have been listening to",
             "items": HomepageStore.get_artist_mixes(),
             "extra": {},
         },
