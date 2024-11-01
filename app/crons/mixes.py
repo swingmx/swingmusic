@@ -9,7 +9,7 @@ class Mixes(CronJob):
     """
 
     def __init__(self):
-        super().__init__("mixes", 5)
+        super().__init__("mixes", 1)
 
     def run(self):
         """

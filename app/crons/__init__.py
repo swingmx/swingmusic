@@ -10,6 +10,9 @@ def start_cron_jobs():
     """
     This is the function that triggers the cron jobs.
     """
-    Mixes().run()
-    
-    # schedule.run_pending()
+    Mixes()
+    schedule.run_all()
+
+    while True:
+        schedule.run_pending()
+        time.sleep(1)

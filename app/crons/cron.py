@@ -13,7 +13,7 @@ class CronJob(ABC):
         self.name = name
         self.hours = hours
 
-        schedule.every(self.hours).seconds.do(self.run)
+        schedule.every(self.hours).hours.do(self.run)
 
     @abstractmethod
     def run(self):
