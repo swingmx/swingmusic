@@ -71,10 +71,13 @@ def get_date_range(duration: str, units_ago: int = 0):
     Returns a tuple of dates representing the start and end of a given duration.
     """
     date_range = None
-    seconds_ago = (
-        pendulum.now() - pendulum.now().subtract().start_of(duration)
-    ).total_seconds() * units_ago
-    print("seconds_ago", duration, str(seconds_ago))
+    seconds_ago = 0
+
+    if duration != "alltime":
+        seconds_ago = (
+            pendulum.now() - pendulum.now().subtract().start_of(duration)
+        ).total_seconds() * units_ago
+        print("seconds_ago", duration, str(seconds_ago))
 
     match duration:
         case "day" | "week" | "month" | "year":
@@ -83,7 +86,9 @@ def get_date_range(duration: str, units_ago: int = 0):
                 .subtract(seconds=seconds_ago)
                 .start_of(duration)
                 .timestamp(),
-                pendulum.now().end_of(duration).timestamp(),
+                pendulum.now()
+                # .end_of(duration)
+                .timestamp(),
             )
         case "alltime":
             date_range = (0, pendulum.now().timestamp())
@@ -91,6 +96,40 @@ def get_date_range(duration: str, units_ago: int = 0):
             raise ValueError(f"Invalid duration: {duration}")
 
     return (int(date_range[0]), int(date_range[1]))
+
+
+def get_duration_ago(duration: str, units_ago: int = 1) -> int:
+    """
+    Returns the start of the last duration.
+    """
+    seconds_in_day = 24 * 60 * 60
+    now = pendulum.now()
+
+    match duration:
+        case "day":
+            return int(
+                now.subtract(seconds=seconds_in_day * units_ago).timestamp()
+            )
+        case "week":
+            return int(
+                now
+                .subtract(seconds=seconds_in_day * 7 * units_ago)
+                .timestamp()
+            )
+        case "month":
+            return int(
+                now
+                .subtract(seconds=seconds_in_day * 30 * units_ago)
+                .timestamp()
+            )
+        case "year":
+            return int(
+                now
+                .subtract(seconds=seconds_in_day * 365 * units_ago)
+                .timestamp()
+            )
+        case _:
+            raise ValueError(f"Invalid duration: {duration}")
 
 
 def get_duration_in_seconds(duration: str) -> int:

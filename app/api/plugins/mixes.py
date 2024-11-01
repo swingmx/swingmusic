@@ -20,7 +20,7 @@ def get_track_mix():
     """
     mixes = MixesPlugin()
     track = TrackStore.trackhashmap["9eeee292264ad01b"].get_best()
-    tracks = mixes.get_track_mix(track)
+    tracks = mixes.get_track_mix([track])
 
     return {
         "total": len(tracks),

@@ -11,7 +11,7 @@ from app.store.tracks import TrackStore
 from app.utils.dates import seconds_to_time_string
 
 
-def get_artists_in_period(start_time: int, end_time: int):
+def get_artists_in_period(start_time: int | float, end_time: int | float):
     scrobbles = ScrobbleTable.get_all_in_period(start_time, end_time)
     artists: Any = defaultdict(lambda: {"playcount": 0, "playduration": 0})
 

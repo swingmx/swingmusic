@@ -1,5 +1,8 @@
+import datetime
 import json
+import random
 import string
+import time
 import requests
 from urllib.parse import quote
 from PIL import Image
@@ -11,9 +14,10 @@ from app.models.mix import Mix
 from app.models.track import Track
 from app.plugins import Plugin, plugin_method
 from app.settings import Paths
+from app.store.albums import AlbumStore
 from app.store.artists import ArtistStore
 from app.store.tracks import TrackStore
-from app.utils.dates import get_date_range
+from app.utils.dates import get_date_range, get_duration_ago
 from app.utils.mixes import balance_mix
 from app.utils.remove_duplicates import remove_duplicates
 from app.utils.stats import get_artists_in_period
@@ -31,7 +35,18 @@ class MixesPlugin(Plugin):
     def __init__(self):
         super().__init__("mixes", "Mixes")
         self.server = "https://smcloud.mungaist.com"
-        self.set_active(True)
+
+        server_online = self.ping_server()
+        self.set_active(server_online)
+
+    def ping_server(self):
+        try:
+            requests.get(self.server, timeout=10)
+        except requests.exceptions.ConnectionError:
+            print("Failed to connect to the recommendation server")
+            return False
+
+        return True
 
     @plugin_method
     def get_track_mix(self, tracks: list[Track], with_help: bool = False):
@@ -57,13 +72,20 @@ class MixesPlugin(Plugin):
             for track in tracks
         ]
 
-        response = requests.post(
-            f"{self.server}/radio",
-            json=queries,
-        )
-        results = response.json()
+        try:
+            response = requests.post(f"{self.server}/radio", json=queries, timeout=10)
+        except requests.exceptions.ConnectionError:
+            print("Failed to connect to recommendation server")
+            return []
+
+        try:
+            results = response.json()
+        except json.JSONDecodeError:
+            print("Failed to decode JSON response from recommendation server")
+            return []
 
         # artisthashes = results["artists"]
+        # albumhashes = results["albums"]
         trackhashes: list[str] = results["tracks"]
 
         trackmatches = TrackStore.get_flat_list()
@@ -81,6 +103,16 @@ class MixesPlugin(Plugin):
 
         # sort by trackhash order
         trackmatches = sorted(trackmatches, key=lambda x: trackhashes.index(x.weakhash))
+
+        if len(trackmatches) < self.TRACK_MIX_LENGTH:
+            filler_tracks = self.fallback_create_artist_mix(
+                artist=tracks[0].artists[0],
+                similar_artists=results["artists"],
+                similar_albums=results["albums"],
+                omit_trackhashes={t.weakhash for t in trackmatches},
+                limit=self.TRACK_MIX_LENGTH - len(trackmatches),
+            )
+            trackmatches.extend(filler_tracks)
 
         # try to balance the mix
         trackmatches = balance_mix(trackmatches)
@@ -104,9 +136,9 @@ class MixesPlugin(Plugin):
         indexed = set()
 
         today_start, today_end = get_date_range(duration="day")
-        last_2_days_start, last_2_days_end = get_date_range(duration="day", units_ago=2)
-        last_7_days_start, last_7_days_end = get_date_range(duration="week")
-        last_1_month_start, last_1_month_end = get_date_range(duration="month")
+        last_2_days_start = get_duration_ago("day", 2)
+        last_7_days_start = get_duration_ago("week")
+        last_1_month_start = get_duration_ago("month")
 
         artists = {
             "today": {
@@ -116,17 +148,17 @@ class MixesPlugin(Plugin):
             },
             "last_2_days": {
                 "max": 2,
-                "artists": get_artists_in_period(last_2_days_start, last_2_days_end),
+                "artists": get_artists_in_period(last_2_days_start, time.time()),
                 "created": 0,
             },
             "last_7_days": {
                 "max": 3,
-                "artists": get_artists_in_period(last_7_days_start, last_7_days_end),
+                "artists": get_artists_in_period(last_7_days_start, time.time()),
                 "created": 0,
             },
             "last_1_month": {
                 "max": 2,
-                "artists": get_artists_in_period(last_1_month_start, last_1_month_end),
+                "artists": get_artists_in_period(last_1_month_start, time.time()),
                 "created": 0,
             },
         }
@@ -219,7 +251,10 @@ class MixesPlugin(Plugin):
         )
 
     def download_artist_image(self, artist: Artist):
-        res = requests.get(f"{self.server}/image?artist={artist.name}")
+        try:
+            res = requests.get(f"{self.server}/image?artist={artist.name}")
+        except requests.exceptions.ConnectionError:
+            return None
 
         if res.status_code == 200:
             # save to file
@@ -247,8 +282,9 @@ class MixesPlugin(Plugin):
     def fallback_create_artist_mix(
         self,
         artist: dict[str, str],
+        similar_albums: list[str],
         similar_artists: list[str],
-        trackhashes: set[str],
+        omit_trackhashes: set[str],
         limit: int,
     ):
         """
@@ -264,16 +300,70 @@ class MixesPlugin(Plugin):
         :param trackhashes: A set of trackhashes to omit from the new tracklist.
         :param limit: The maximum number of tracks to select.
         """
-        artists = similar_artists
 
-        if len(similar_artists) == 0:
-            local_similar_artists = SimilarArtistTable.get_by_hash(artist["artisthash"])
+        mixtracks = []
+        albummatches = (
+            a
+            for a in AlbumStore.albummap.values()
+            if a.album.weakhash in similar_albums
+        )
 
-            if local_similar_artists:
-                artists = [a.artisthash for a in local_similar_artists.similar_artists]
+        for match in albummatches:
+            if len(mixtracks) >= limit:
+                print(f"Filled up to {limit} tracks with album tracks")
+                return mixtracks
 
-        if len(artists) == 0:
-            return []
+            albumtracks = [
+                t
+                for t in TrackStore.get_tracks_by_trackhashes(match.trackhashes)
+                if t.weakhash not in omit_trackhashes
+            ]
+
+            if len(albumtracks) == 0:
+                continue
+
+            sample = random.sample(albumtracks, k=1)
+            mixtracks.extend(sample)
+            print(
+                f"Supplement: album track {sample[0].title} from ALBUM: {match.album.og_title}"
+            )
+
+        artistmatches = (
+            a
+            for a in ArtistStore.artistmap.values()
+            if a.artist.artisthash in similar_artists
+        )
+
+        for match in artistmatches:
+            if len(mixtracks) >= limit:
+                print(f"Filled up to {limit} tracks with artist tracks")
+                return mixtracks
+
+            artisttracks = [
+                t
+                for t in TrackStore.get_tracks_by_trackhashes(match.trackhashes)
+                if t.weakhash not in omit_trackhashes
+            ]
+
+            if len(artisttracks) == 0:
+                continue
+
+            sample = random.sample(artisttracks, k=1)
+            mixtracks.extend(sample)
+            print(
+                f"Supplement: track {sample[0].title} from ARTIST: {match.artist.name}"
+            )
+
+        return mixtracks
+
+        # if len(similar_artists) == 0:
+        #     local_similar_artists = SimilarArtistTable.get_by_hash(artist["artisthash"])
+
+        #     if local_similar_artists:
+        #         artists = [a.artisthash for a in local_similar_artists.similar_artists]
+
+        # if len(artists) == 0:
+        #     return []
 
         # CHECKPOINT: I'M TIRED AF AND I NEED TO SLEEP
         # The plan:

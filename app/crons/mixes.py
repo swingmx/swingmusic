@@ -7,6 +7,7 @@ class Mixes(CronJob):
     """
     This cron job creates mixes displayed on the homepage.
     """
+
     def __init__(self):
         super().__init__("mixes", 5)
 
@@ -16,6 +17,11 @@ class Mixes(CronJob):
         """
         print("⭐⭐⭐⭐ Mixes cron job running")
         mixes = MixesPlugin()
+
+        if not mixes.enabled:
+            return
+
         artist_mixes = mixes.create_artist_mixes()
 
-        HomepageStore.set_artist_mixes(artist_mixes)
+        if artist_mixes:
+            HomepageStore.set_artist_mixes(artist_mixes)

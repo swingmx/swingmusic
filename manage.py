@@ -102,7 +102,7 @@ whitelisted_routes = {
     "/auth/refresh",
     "/docs",
 }
-blacklist_extensions = {".webp"}.union(getClientFilesExtensions())
+blacklist_extensions = {".webp", ".jpg"}.union(getClientFilesExtensions())
 
 
 def skipAuthAction():
