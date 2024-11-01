@@ -228,16 +228,12 @@ class MixesPlugin(Plugin):
             ) as f:
                 f.write(res.content)
 
-            # resize to 256x256
+            # resize to 256px width while maintaining aspect ratio
             img = Image.open(f"{Paths.get_md_mixes_img_path()}/{artist.artisthash}.jpg")
             aspect_ratio = img.width / img.height
 
             newwidth = 256
-
-            if aspect_ratio > 1:
-                newheight = int(256 / aspect_ratio)
-            else:
-                newheight = 256
+            newheight = int(256 / aspect_ratio)
 
             img = img.resize((newwidth, newheight), Image.LANCZOS)
             img.save(f"{Paths.get_sm_mixes_img_path()}/{artist.artisthash}.jpg")
