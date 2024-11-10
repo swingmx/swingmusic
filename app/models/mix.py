@@ -1,5 +1,6 @@
-from dataclasses import asdict, dataclass, field
 import time
+from dataclasses import asdict, dataclass, field
+from typing import Any
 
 from app.lib.playlistlib import get_first_4_images
 from app.serializers.track import serialize_tracks
@@ -13,12 +14,17 @@ class Mix:
     title: str
     description: str
     tracks: list[str]
+    sourcehash: str
+    """
+    A hash of the tracks used to generate the mix.
+    """
 
     timestamp: int = field(default_factory=lambda: int(time.time()))
     extra: dict = field(default_factory=dict)
     saved: bool = False
 
     def to_full_dict(self):
+        # Limit track mix to 30 tracks
         tracks = TrackStore.get_tracks_by_trackhashes(self.tracks)
         serialized_tracks = serialize_tracks(tracks)
 
@@ -34,7 +40,19 @@ class Mix:
         return _dict
 
     def to_dict(self):
-        item = self.to_full_dict()
+        item = asdict(self)
         del item["tracks"]
 
         return item
+
+    @classmethod
+    def mix_to_dataclass(cls, entry: Any):
+        entry_dict = entry._asdict()
+        entry_dict["id"] = entry_dict["mixid"]
+        del entry_dict["mixid"]
+
+        return Mix(**entry_dict)
+
+    @classmethod
+    def mixes_to_dataclasses(cls, entries: Any):
+        return [cls.mix_to_dataclass(entry) for entry in entries]

@@ -10,7 +10,6 @@ from typing import Any
 from PIL import Image, ImageSequence
 
 from app import settings
-from app.db.libdata import TrackTable
 from app.models.track import Track
 from app.store.albums import AlbumStore
 from app.store.tracks import TrackStore

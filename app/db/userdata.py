@@ -1,3 +1,4 @@
+from dataclasses import asdict
 import datetime
 from typing import Any, Literal
 from sqlalchemy import (
@@ -31,6 +32,7 @@ from app.db.utils import (
 )
 
 from app.db import Base
+from app.models.mix import Mix
 from app.utils.auth import get_current_userid, hash_password
 
 
@@ -223,9 +225,7 @@ class FavoritesTable(Base):
             # .select_from(join(table, cls, field == cls.hash))
             .where(and_(cls.type == type, cls.userid == get_current_userid()))
             .order_by(cls.timestamp.desc())
-            .offset(
-                start
-            )
+            .offset(start)
             # INFO: If start is 0, fetch all so we can get the total count
             .limit(limit if start != 0 else None)
         )
@@ -305,10 +305,15 @@ class ScrobbleTable(Base):
         return tracklog_to_dataclasses(result.fetchall())
 
     @classmethod
-    def get_all_in_period(cls, start_time: int, end_time: int):
+    def get_all_in_period(cls, start_time: int, end_time: int, userid: int | None):
+        # UserId will be None if function is called from the API
+        # In that case, we use the request userid
+        if userid is None:
+            userid = get_current_userid()
+
         result = cls.execute(
             select(cls)
-            .where(cls.userid == get_current_userid())
+            .where(cls.userid == userid)
             .where(and_(cls.timestamp >= start_time, cls.timestamp <= end_time))
             .order_by(cls.timestamp.desc())
         )
@@ -458,3 +463,36 @@ class LibDataTable(Base):
             select(cls.itemhash, cls.color).where(cls.itemtype == type)
         )
         return [{"itemhash": r[0], "color": r[1]} for r in result.fetchall()]
+
+
+class MixTable(Base):
+    __tablename__ = "mix"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    mixid: Mapped[str] = mapped_column(String(), index=True)
+    title: Mapped[str] = mapped_column(String())
+    description: Mapped[str] = mapped_column(String())
+    timestamp: Mapped[int] = mapped_column(Integer())
+    sourcehash: Mapped[str] = mapped_column(String(), unique=True, index=True)
+    tracks: Mapped[list[str]] = mapped_column(JSON(), default_factory=list)
+    extra: Mapped[dict[str, Any]] = mapped_column(
+        JSON(), nullable=True, default_factory=dict
+    )
+
+    @classmethod
+    def get_all(cls):
+        result = cls.execute(select(cls))
+        return Mix.mixes_to_dataclasses(result.fetchall())
+
+    @classmethod
+    def get_by_sourcehash(cls, sourcehash: str):
+        result = cls.execute(select(cls).where(cls.sourcehash == sourcehash))
+        return Mix.mix_to_dataclass(result.fetchone())
+
+    @classmethod
+    def insert_one(cls, mix: Mix):
+        mixdict = asdict(mix)
+        mixdict["mixid"] = mix.id
+        del mixdict["id"]
+
+        return cls.execute(insert(cls).values(mixdict), commit=True)

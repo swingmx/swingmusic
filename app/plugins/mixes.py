@@ -1,5 +1,6 @@
 import datetime
 import json
+from pprint import pprint
 import random
 import string
 import time
@@ -18,6 +19,7 @@ from app.store.albums import AlbumStore
 from app.store.artists import ArtistStore
 from app.store.tracks import TrackStore
 from app.utils.dates import get_date_range, get_duration_ago
+from app.utils.hashing import create_hash
 from app.utils.mixes import balance_mix
 from app.utils.remove_duplicates import remove_duplicates
 from app.utils.stats import get_artists_in_period
@@ -25,7 +27,7 @@ from app.utils.stats import get_artists_in_period
 
 class MixesPlugin(Plugin):
     MAX_TRACKS_TO_FETCH = 5
-    TRACK_MIX_LENGTH = 50
+    TRACK_MIX_LENGTH = 30
     MIN_TRACK_MIX_LENGTH = 15
 
     MIN_DAY_LISTEN_DURATION = 3 * 60  # 3 minutes
@@ -60,8 +62,6 @@ class MixesPlugin(Plugin):
 
         :param with_help: Whether to include the help flag in the query.
             The flag tells the server to find more data using other tracks from the same album.
-
-
         """
         queries = [
             {
@@ -84,8 +84,6 @@ class MixesPlugin(Plugin):
             print("Failed to decode JSON response from recommendation server")
             return []
 
-        # artisthashes = results["artists"]
-        # albumhashes = results["albums"]
         trackhashes: list[str] = results["tracks"]
 
         trackmatches = TrackStore.get_flat_list()
@@ -104,13 +102,18 @@ class MixesPlugin(Plugin):
         # sort by trackhash order
         trackmatches = sorted(trackmatches, key=lambda x: trackhashes.index(x.weakhash))
 
-        if len(trackmatches) < self.TRACK_MIX_LENGTH:
+        # if the mix is short, try to fill it up with tracks
+        # from album and artist data from the cloud!
+
+        # Create as many filler tracks as possible
+        # Then the mix length will be controlled in the Mix model
+        # if len(trackmatches) < self.TRACK_MIX_LENGTH:
+        if True:
             filler_tracks = self.fallback_create_artist_mix(
-                artist=tracks[0].artists[0],
                 similar_artists=results["artists"],
                 similar_albums=results["albums"],
                 omit_trackhashes={t.weakhash for t in trackmatches},
-                limit=self.TRACK_MIX_LENGTH - len(trackmatches),
+                # limit=self.TRACK_MIX_LENGTH - len(trackmatches),
             )
             trackmatches.extend(filler_tracks)
 
@@ -123,15 +126,26 @@ class MixesPlugin(Plugin):
         """
         Given an artisthash, creates an artist mix using the
         self.MAX_TRACKS_TO_FETCH most listened to tracks.
+
+        Returns a tuple of the mix and the sourcehash.
         """
         artist = ArtistStore.artistmap[artisthash]
         tracks = TrackStore.get_tracks_by_trackhashes(artist.trackhashes)
 
         tracks = sorted(tracks, key=lambda x: x.playduration, reverse=True)
-        return self.get_track_mix(tracks[: self.MAX_TRACKS_TO_FETCH])
+        sourcetracks = tracks[: self.MAX_TRACKS_TO_FETCH]
+        sourcehash = create_hash(*[t.trackhash for t in sourcetracks])
+
+        # TODO: Check if we already have this mix in the
+        # database and return that instead
+
+        return (self.get_track_mix(tracks[: self.MAX_TRACKS_TO_FETCH]), sourcehash)
 
     @plugin_method
-    def create_artist_mixes(self):
+    def create_artist_mixes(self, userid: int):
+        """
+        Creates artist mixes for a given userid.
+        """
         mixes: list[Mix] = []
         indexed = set()
 
@@ -143,22 +157,28 @@ class MixesPlugin(Plugin):
         artists = {
             "today": {
                 "max": 3,
-                "artists": get_artists_in_period(today_start, today_end),
+                "artists": get_artists_in_period(today_start, today_end, userid),
                 "created": 0,
             },
             "last_2_days": {
                 "max": 2,
-                "artists": get_artists_in_period(last_2_days_start, time.time()),
+                "artists": get_artists_in_period(
+                    last_2_days_start, time.time(), userid
+                ),
                 "created": 0,
             },
             "last_7_days": {
                 "max": 3,
-                "artists": get_artists_in_period(last_7_days_start, time.time()),
+                "artists": get_artists_in_period(
+                    last_7_days_start, time.time(), userid
+                ),
                 "created": 0,
             },
             "last_1_month": {
                 "max": 2,
-                "artists": get_artists_in_period(last_1_month_start, time.time()),
+                "artists": get_artists_in_period(
+                    last_1_month_start, time.time(), userid
+                ),
                 "created": 0,
             },
         }
@@ -224,7 +244,7 @@ class MixesPlugin(Plugin):
         if not _artist:
             return None
 
-        mix_tracks = self.get_artist_mix(artist["artisthash"])
+        mix_tracks, sourcehash = self.get_artist_mix(artist["artisthash"])
 
         if len(mix_tracks) < self.MIN_TRACK_MIX_LENGTH:
             return None
@@ -243,11 +263,13 @@ class MixesPlugin(Plugin):
             title=artist["artist"] + " Radio",
             description=self.get_mix_description(mix_tracks, artist["artisthash"]),
             tracks=[t.trackhash for t in mix_tracks],
+            sourcehash=sourcehash,
             extra={
                 "type": "artist",
                 "artisthash": artist["artisthash"],
                 "image": mix_image,
             },
+            timestamp=int(time.time()),
         )
 
     def download_artist_image(self, artist: Artist):
@@ -281,23 +303,23 @@ class MixesPlugin(Plugin):
 
     def fallback_create_artist_mix(
         self,
-        artist: dict[str, str],
+        # artist: dict[str, str],
         similar_albums: list[str],
         similar_artists: list[str],
         omit_trackhashes: set[str],
-        limit: int,
+        limit: int = 99,
     ):
         """
-        Creates an artist mix by selecting random tracks from similar artists.
+        Creates an artist mix by selecting random tracks from similar albums and artists.
 
         This is used when:
         - The Swing Music recommendation server is down.
         - The artist has less than self.MIN_TRACK_MIX_LENGTH tracks from the cloud mix.
         - When we need to dilute the mix to balance the artist distribution.
 
-        :param artist: The artist to create a mix for.
-        :param similar_artists: A list of similar artists to select tracks from. If not provided, we try reading from the local database. When we exhaust the passed list, we also try reading from the local database.
-        :param trackhashes: A set of trackhashes to omit from the new tracklist.
+        :param similar_albums: A list of similar album weakhashes to select tracks from.
+        :param similar_artists: A list of similar artist hashes to select tracks from.
+        :param omit_trackhashes: A set of trackhashes to omit from the new tracklist.
         :param limit: The maximum number of tracks to select.
         """
 
@@ -356,20 +378,5 @@ class MixesPlugin(Plugin):
 
         return mixtracks
 
-        # if len(similar_artists) == 0:
-        #     local_similar_artists = SimilarArtistTable.get_by_hash(artist["artisthash"])
-
-        #     if local_similar_artists:
-        #         artists = [a.artisthash for a in local_similar_artists.similar_artists]
-
-        # if len(artists) == 0:
-        #     return []
-
-        # CHECKPOINT: I'M TIRED AF AND I NEED TO SLEEP
-        # The plan:
-        # Figure out which artists we should skip for the new tracklist
-        # these would be artists with a large number of tracks in the mix already
-
-        # Since the artisthashes are ordered by similarity score, we iterate from the start
-        # and go forward collecting tracks that aren't in the mix yet.
-        #
+    def get_mix_from_lastfm_data(self, artisthash: str, limit: int):
+        pass

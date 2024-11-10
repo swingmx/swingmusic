@@ -1,6 +1,6 @@
-from flask_jwt_extended import current_user
 from flask_openapi3 import Tag
 from flask_openapi3 import APIBlueprint
+from pydantic import BaseModel, Field
 
 from app.api.apischemas import GenericLimitSchema
 from app.lib.home.recentlyadded import get_recently_added_items
@@ -27,13 +27,14 @@ def get_recent_plays(query: GenericLimitSchema):
     return {"items": get_recently_played(query.limit)}
 
 
+class HomepageItem(BaseModel):
+    limit: int = Field(
+        default=9, description="The max number of items per group to return"
+    )
+
+
 @api.get("/")
-def homepage_items():
+def homepage_items(query: HomepageItem):
     return {
-        "artist_mixes": {
-            "title": "Artist mixes for you",
-            "description": "Based on artists you have been listening to",
-            "items": HomepageStore.get_artist_mixes(),
-            "extra": {},
-        },
+        "artist_mixes": HomepageStore.get_mixes("artist_mixes", limit=query.limit),
     }

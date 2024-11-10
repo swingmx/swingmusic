@@ -11,8 +11,10 @@ from app.store.tracks import TrackStore
 from app.utils.dates import seconds_to_time_string
 
 
-def get_artists_in_period(start_time: int | float, end_time: int | float):
-    scrobbles = ScrobbleTable.get_all_in_period(start_time, end_time)
+def get_artists_in_period(
+    start_time: int | float, end_time: int | float, userid: int | None = None
+):
+    scrobbles = ScrobbleTable.get_all_in_period(start_time, end_time, userid)
     artists: Any = defaultdict(lambda: {"playcount": 0, "playduration": 0})
 
     for scrobble in scrobbles:
@@ -33,8 +35,8 @@ def get_artists_in_period(start_time: int | float, end_time: int | float):
     return sorted(artists, key=lambda x: x["playduration"], reverse=True)
 
 
-def get_albums_in_period(start_time: int, end_time: int):
-    scrobbles = ScrobbleTable.get_all_in_period(start_time, end_time)
+def get_albums_in_period(start_time: int, end_time: int, userid: int | None = None):
+    scrobbles = ScrobbleTable.get_all_in_period(start_time, end_time, userid)
     albums: dict[str, Album] = {}
 
     for scrobble in scrobbles:
@@ -60,8 +62,8 @@ def get_albums_in_period(start_time: int, end_time: int):
     return list(albums.values())
 
 
-def get_tracks_in_period(start_time: int, end_time: int):
-    scrobbles = ScrobbleTable.get_all_in_period(start_time, end_time)
+def get_tracks_in_period(start_time: int, end_time: int, userid: int | None = None):
+    scrobbles = ScrobbleTable.get_all_in_period(start_time, end_time, userid)
     tracks: dict[str, Track] = {}
     duration = 0
 
@@ -160,12 +162,14 @@ def calculate_scrobble_trend(current_scrobbles: int, previous_scrobbles: int) ->
     )
 
 
-def calculate_new_artists(current_artists: List[dict[str, Any]], timestamp: int):
+def calculate_new_artists(
+    current_artists: List[dict[str, Any]], timestamp: int, userid: int | None = None
+):
     """
     Calculate the number of new artists based on the current and all previous scrobbles.
     """
     current_artists_set = set(artist["artisthash"] for artist in current_artists)
-    all_records = ScrobbleTable.get_all_in_period(0, timestamp)
+    all_records = ScrobbleTable.get_all_in_period(0, timestamp, userid)
     trackhashes = set(record.trackhash for record in all_records)
 
     previous_artists_set = set()
