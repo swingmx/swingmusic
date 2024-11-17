@@ -483,6 +483,7 @@ class MixTable(Base):
     timestamp: Mapped[int] = mapped_column(Integer())
     sourcehash: Mapped[str] = mapped_column(String(), unique=True, index=True)
     tracks: Mapped[list[str]] = mapped_column(JSON(), default_factory=list)
+    saved: Mapped[bool] = mapped_column(Boolean(), default=False)
     extra: Mapped[dict[str, Any]] = mapped_column(
         JSON(), nullable=True, default_factory=dict
     )
@@ -495,7 +496,10 @@ class MixTable(Base):
     @classmethod
     def get_by_sourcehash(cls, sourcehash: str):
         result = cls.execute(select(cls).where(cls.sourcehash == sourcehash))
-        return Mix.mix_to_dataclass(result.fetchone())
+
+        res = result.fetchone()
+        if res:
+            return Mix.mix_to_dataclass(res)
 
     @classmethod
     def insert_one(cls, mix: Mix):

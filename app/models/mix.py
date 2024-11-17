@@ -24,8 +24,7 @@ class Mix:
     saved: bool = False
 
     def to_full_dict(self):
-        # Limit track mix to 30 tracks
-        tracks = TrackStore.get_tracks_by_trackhashes(self.tracks)
+        tracks = TrackStore.get_tracks_by_trackhashes(self.tracks)[:40]
         serialized_tracks = serialize_tracks(tracks)
 
         _dict = asdict(self)
@@ -37,11 +36,17 @@ class Mix:
         _dict["duration"] = seconds_to_time_string(sum(t.duration for t in tracks))
         _dict["trackcount"] = len(tracks)
 
+        del _dict["extra"]["albums"]
+        del _dict["extra"]["artists"]
+
         return _dict
 
     def to_dict(self):
         item = asdict(self)
         del item["tracks"]
+
+        del item["extra"]["albums"]
+        del item["extra"]["artists"]
 
         return item
 

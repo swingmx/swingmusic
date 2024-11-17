@@ -31,7 +31,7 @@ def get_track_mix():
 @api.post("/artist")
 def get_artist_mix():
     mixes = MixesPlugin()
-    return mixes.create_artist_mixes()
+    # return mixes.create_artist_mixes()
     # tracks = mixes.get_artist_mix("09306be8039b98ad")
 
     # return {
