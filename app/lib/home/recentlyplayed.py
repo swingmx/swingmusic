@@ -22,7 +22,7 @@ from app.store.tracks import TrackStore
 from app.store.artists import ArtistStore
 
 
-def get_recently_played(limit=7):
+def get_recently_played(limit=7, userid: int | None = None):
     # TODO: Paginate this
     items = []
     added = set()
@@ -43,47 +43,52 @@ def get_recently_played(limit=7):
             added.add(entry.source)
 
             if entry.type == "album":
-                album = AlbumStore.get_album_by_hash(entry.type_src)
+                album = AlbumStore.albummap.get(entry.type_src)
 
                 if album is None:
                     continue
 
-                album = album_serializer(
-                    album,
-                    to_remove={
-                        "genres",
-                        "date",
-                        "count",
-                        "duration",
-                        "albumartists_hashes",
-                        "og_title",
-                    },
-                )
-                album["help_text"] = "album"
-                album["time"] = timestamp_to_time_passed(entry.timestamp)
+                # album = album_serializer(
+                #     album,
+                #     to_remove={
+                #         "genres",
+                #         "date",
+                #         "count",
+                #         "duration",
+                #         "albumartists_hashes",
+                #         "og_title",
+                #     },
+                # )
+                item = {
+                    "type": "album",
+                    "hash": entry.type_src,
+                    "timestamp": entry.timestamp,
+                }
+                # album["help_text"] = "album"
+                # album["time"] = timestamp_to_time_passed(entry.timestamp)
 
-                items.append(
-                    {
-                        "type": "album",
-                        "item": album,
-                    }
-                )
+                # {
+                #     "type": "album",
+                #     "item": album,
+                # }
+                items.append(item)
                 continue
 
             if entry.type == "artist":
-                artist = ArtistStore.get_artist_by_hash(entry.type_src)
+                artist = ArtistStore.artistmap.get(entry.type_src)
 
                 if artist is None:
                     continue
 
-                artist = serialize_for_card(artist)
-                artist["help_text"] = "artist"
-                artist["time"] = timestamp_to_time_passed(entry.timestamp)
+                # artist = serialize_for_card(artist)
+                # artist["help_text"] = "artist"
+                # artist["time"] = timestamp_to_time_passed(entry.timestamp)
 
                 items.append(
                     {
                         "type": "artist",
-                        "item": artist,
+                        "hash": entry.type_src,
+                        "timestamp": entry.timestamp,
                     }
                 )
 
@@ -103,47 +108,56 @@ def get_recently_played(limit=7):
                 if is_home_dir:
                     folder = os.path.expanduser("~")
 
-                # print(folder)
-                # folder = os.path.join("/", folder, "")
-                # print(folder)
-                # count = len([t for t in TrackStore.tracks if t.folder == folder])
-                count = FolderStore.count_tracks_containing_paths([folder])
-                items.append(
-                    {
-                        "type": "folder",
-                        "item": {
-                            "path": folder,
-                            "count": count[0]["trackcount"],
-                            "help_text": "folder",
-                            "time": timestamp_to_time_passed(entry.timestamp),
-                        },
-                    }
-                )
+                # count = FolderStore.count_tracks_containing_paths([folder])
+                item = {
+                    "type": "folder",
+                    "hash": entry.type_src,
+                    "timestamp": entry.timestamp,
+                }
+
+                items.append(item)
+                # {
+                #     "type": "folder",
+                #     "item": {
+                #         "path": folder,
+                #         "count": count[0]["trackcount"],
+                #         "help_text": "folder",
+                #         "time": timestamp_to_time_passed(entry.timestamp),
+                #     },
+                # }
+
                 continue
 
             if entry.type == "playlist":
                 is_custom = entry.type_src in [i["name"] for i in custom_playlists]
-                # is_recently_added = entry.type_src == "recentlyadded"
 
                 if is_custom:
-                    playlist, _ = next(
-                        i["handler"]()
-                        for i in custom_playlists
-                        if i["name"] == entry.type_src
-                    )
-                    playlist.images = [i["image"] for i in playlist.images]
+                    # playlist, _ = next(
+                    #     i["handler"]()
+                    #     for i in custom_playlists
+                    #     if i["name"] == entry.type_src
+                    # )
+                    # playlist.images = [i["image"] for i in playlist.images]
 
-                    playlist = serialize_playlist(
-                        playlist, to_remove={"settings", "duration"}
-                    )
+                    # playlist = serialize_playlist(
+                    #     playlist, to_remove={"settings", "duration"}
+                    # )
 
-                    playlist["help_text"] = "playlist"
-                    playlist["time"] = timestamp_to_time_passed(entry.timestamp)
+                    # playlist["help_text"] = "playlist"
+                    # playlist["time"] = timestamp_to_time_passed(entry.timestamp)
 
+                    # items.append(
+                    #     {
+                    #         "type": "playlist",
+                    #         "item": playlist,
+                    #     }
+                    # )
                     items.append(
                         {
                             "type": "playlist",
-                            "item": playlist,
+                            "hash": entry.type_src,
+                            "timestamp": entry.timestamp,
+                            "is_custom": True,
                         }
                     )
                     continue
@@ -152,34 +166,47 @@ def get_recently_played(limit=7):
                 if playlist is None:
                     continue
 
-                tracks = TrackStore.get_tracks_by_trackhashes(playlist.trackhashes)
-                playlist.clear_lists()
+                item = {
+                    "type": "playlist",
+                    "hash": entry.type_src,
+                    "timestamp": entry.timestamp,
+                }
 
-                if not playlist.has_image:
-                    images = get_first_4_images(tracks)
-                    images = [i["image"] for i in images]
-                    playlist.images = images
+                items.append(item)
 
-                items.append(
-                    {
-                        "type": "playlist",
-                        "item": {
-                            "help_text": "playlist",
-                            "time": timestamp_to_time_passed(entry.timestamp),
-                            **serialize_playlist(playlist),
-                        },
-                    }
-                )
+                # tracks = TrackStore.get_tracks_by_trackhashes(playlist.trackhashes)
+                # playlist.clear_lists()
+
+                # if not playlist.has_image:
+                #     images = get_first_4_images(tracks)
+                # images = [i["image"] for i in images]
+                # playlist.images = images
+
+                # items.append(
+                #     {
+                #         "type": "playlist",
+                #         "item": {
+                #             "help_text": "playlist",
+                #             "time": timestamp_to_time_passed(entry.timestamp),
+                #             **serialize_playlist(playlist),
+                #         },
+                #     }
+                # )
+                continue
 
             if entry.type == "favorite":
                 items.append(
+                    # {
+                    #     "type": "favorite_tracks",
+                    #     "item": {
+                    #         "help_text": "playlist",
+                    #         "count": FavoritesTable.count(),
+                    #         "time": timestamp_to_time_passed(entry.timestamp),
+                    #     },
+                    # }
                     {
-                        "type": "favorite_tracks",
-                        "item": {
-                            "help_text": "playlist",
-                            "count": FavoritesTable.count(),
-                            "time": timestamp_to_time_passed(entry.timestamp),
-                        },
+                        "type": "favorite",
+                        "timestamp": entry.timestamp,
                     }
                 )
                 continue
@@ -189,22 +216,23 @@ def get_recently_played(limit=7):
             if t is None:
                 continue
 
-            track = serialize_track(t.get_best())
-            track["help_text"] = "track"
-            track["time"] = timestamp_to_time_passed(entry.timestamp)
+            item = {
+                "type": "track",
+                "hash": entry.trackhash,
+                "timestamp": entry.timestamp,
+            }
 
-            items.append(
-                {
-                    "type": "track",
-                    "item": track,
-                }
-            )
+            # track = serialize_track(t.get_best())
+            # track["help_text"] = "track"
+            # track["time"] = timestamp_to_time_passed(entry.timestamp)
+
+            items.append(item)
 
     BATCH_SIZE = 200
     current_index = 0
 
     entries = ScrobbleTable.get_all(0, BATCH_SIZE)
-    max_iterations = 20 # Safeguard against unexpected infinite loops
+    max_iterations = 20  # Safeguard against unexpected infinite loops
     iterations = 0
 
     while len(items) < limit and iterations < max_iterations:
@@ -212,7 +240,9 @@ def get_recently_played(limit=7):
         current_index += BATCH_SIZE
 
         if len(items) < limit:
-            entries = ScrobbleTable.get_all(current_index + 1, BATCH_SIZE)
+            entries = ScrobbleTable.get_all(
+                start=current_index + 1, limit=BATCH_SIZE, userid=userid
+            )
             if not entries:
                 break
 
@@ -224,6 +254,126 @@ def get_recently_played(limit=7):
         )
 
     return items
+
+
+def recover_recently_played_items(items: list[dict]):
+    custom_playlists = [
+        {"name": "recentlyadded", "handler": get_recently_added_playlist},
+        {"name": "recentlyplayed", "handler": get_recently_played_playlist},
+    ]
+    recovered = []
+
+    for item in items:
+        recovered_item = None
+
+        if item["type"] == "album":
+            album = AlbumStore.get_album_by_hash(item["hash"])
+            if album is None:
+                continue
+
+            album = album_serializer(
+                album,
+                to_remove={
+                    "genres",
+                    "date",
+                    "count",
+                    "duration",
+                    "albumartists_hashes",
+                    "og_title",
+                },
+            )
+
+            recovered_item = {
+                "type": "album",
+                "item": album,
+            }
+        elif item["type"] == "artist":
+            artist = ArtistStore.get_artist_by_hash(item["hash"])
+            if artist is None:
+                continue
+
+            recovered_item = {
+                "type": "artist",
+                "item": serialize_for_card(artist),
+            }
+        elif item["type"] == "folder":
+            count = FolderStore.count_tracks_containing_paths([item["hash"]])
+
+            recovered_item = {
+                "type": "folder",
+                "item": {
+                    "path": item["hash"],
+                    "count": count[0]["trackcount"],
+                },
+            }
+        elif item["type"] == "playlist":
+            if item["is_custom"]:
+                playlist, _ = next(
+                    i["handler"]()
+                    for i in custom_playlists
+                    if i["name"] == item["hash"]
+                )
+                playlist.images = [i["image"] for i in playlist.images]
+
+                playlist = serialize_playlist(
+                    playlist, to_remove={"settings", "duration"}
+                )
+                recovered_item = {
+                    "type": "playlist",
+                    "item": playlist,
+                }
+            else:
+                playlist = PlaylistTable.get_by_id(item["hash"])
+                if playlist is None:
+                    continue
+
+                tracks = TrackStore.get_tracks_by_trackhashes(playlist.trackhashes)
+                playlist.clear_lists()
+
+                if not playlist.has_image:
+                    images = get_first_4_images(tracks)
+                    images = [i["image"] for i in images]
+                    playlist.images = images
+
+                recovered_item = {
+                    "type": "playlist",
+                    "item": serialize_playlist(playlist),
+                }
+        elif item["type"] == "favorite":
+            recovered_item = {
+                "type": "favorite",
+                "item": {
+                    "count": FavoritesTable.count(),
+                },
+            }
+        elif item["type"] == "track":
+            track = TrackStore.trackhashmap.get(item["hash"])
+            if track is None:
+                continue
+
+            recovered_item = {
+                "type": "track",
+                "item": serialize_track(track.get_best()),
+            }
+
+        if recovered_item is not None:
+            helptext = item.get("help_text") or item.get("type")
+            secondary_text = item.get("secondary_text")
+
+            if "secondary_text" in item:
+                secondary_text = item["secondary_text"]
+            elif "timestamp" in item:
+                secondary_text = timestamp_to_time_passed(item["timestamp"])
+
+            if helptext:
+                recovered_item["item"]["help_text"] = helptext
+
+            if secondary_text:
+                recovered_item["item"]["time"] = secondary_text
+
+            recovered.append(recovered_item)
+
+    return recovered
 
 
 def get_recently_played_playlist(limit: int = 100):

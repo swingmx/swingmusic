@@ -1,7 +1,5 @@
 from app.crons.cron import CronJob
-from app.lib.recipes import ArtistMixes
-from app.plugins.mixes import MixesPlugin
-from app.store.homepage import HomepageStore
+from app.lib.recipes.artistmixes import ArtistMixes
 
 
 class Mixes(CronJob):
@@ -9,22 +7,15 @@ class Mixes(CronJob):
     This cron job creates mixes displayed on the homepage.
     """
 
+    name: str = "mixes"
+    hours: int = 1
+
     def __init__(self):
-        super().__init__("mixes", 1)
+        super().__init__()
 
     def run(self):
         """
         Creates the artist mixes
         """
         print("⭐⭐⭐⭐ Mixes cron job running")
-        ArtistMixes().run()
-        # mixes = MixesPlugin()
-
-        # if not mixes.enabled:
-        #     return
-
-
-        # artist_mixes = mixes.create_artist_mixes()
-
-        # if artist_mixes:
-        #     HomepageStore.set_artist_mixes(artist_mixes)
+        ArtistMixes()

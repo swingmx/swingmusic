@@ -9,10 +9,10 @@ class CronJob(ABC):
     A cron job that will be run on a regular interval.
     """
 
-    def __init__(self, name: str, hours: int):
-        self.name = name
-        self.hours = hours
+    name: str
+    hours: int = 1
 
+    def __init__(self):
         schedule.every(self.hours).hours.do(self.run)
 
     @abstractmethod

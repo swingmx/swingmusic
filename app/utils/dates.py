@@ -46,7 +46,7 @@ def date_string_to_time_passed(prev_date: str) -> str:
     return timestamp_to_time_passed(then)
 
 
-def seconds_to_time_string(seconds):
+def seconds_to_time_string(seconds: int):
     """
     Converts seconds to a time string. e.g. 1 hour 2 minutes, 1 hour 2 seconds, 1 hour, 1 minute 2 seconds, etc.
     """

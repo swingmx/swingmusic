@@ -35,6 +35,4 @@ class HomepageItem(BaseModel):
 
 @api.get("/")
 def homepage_items(query: HomepageItem):
-    return {
-        "artist_mixes": HomepageStore.get_mixes("artist_mixes", limit=query.limit),
-    }
+    return HomepageStore.get_homepage_items(limit=query.limit)
