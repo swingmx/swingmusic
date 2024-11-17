@@ -22,7 +22,14 @@ from app.store.tracks import TrackStore
 from app.store.artists import ArtistStore
 
 
-def get_recently_played(limit=7, userid: int | None = None):
+def get_recently_played(
+    limit: int, userid: int | None = None, _entries: list[TrackLog] = []
+):
+    """
+    Get the recently played items for the homepage.
+
+    Pass a list of track log entries to use a subset of the scrobble table.
+    """
     # TODO: Paginate this
     items = []
     added = set()
@@ -48,29 +55,12 @@ def get_recently_played(limit=7, userid: int | None = None):
                 if album is None:
                     continue
 
-                # album = album_serializer(
-                #     album,
-                #     to_remove={
-                #         "genres",
-                #         "date",
-                #         "count",
-                #         "duration",
-                #         "albumartists_hashes",
-                #         "og_title",
-                #     },
-                # )
                 item = {
                     "type": "album",
                     "hash": entry.type_src,
                     "timestamp": entry.timestamp,
                 }
-                # album["help_text"] = "album"
-                # album["time"] = timestamp_to_time_passed(entry.timestamp)
 
-                # {
-                #     "type": "album",
-                #     "item": album,
-                # }
                 items.append(item)
                 continue
 
@@ -79,10 +69,6 @@ def get_recently_played(limit=7, userid: int | None = None):
 
                 if artist is None:
                     continue
-
-                # artist = serialize_for_card(artist)
-                # artist["help_text"] = "artist"
-                # artist["time"] = timestamp_to_time_passed(entry.timestamp)
 
                 items.append(
                     {
@@ -108,7 +94,6 @@ def get_recently_played(limit=7, userid: int | None = None):
                 if is_home_dir:
                     folder = os.path.expanduser("~")
 
-                # count = FolderStore.count_tracks_containing_paths([folder])
                 item = {
                     "type": "folder",
                     "hash": entry.type_src,
@@ -116,42 +101,12 @@ def get_recently_played(limit=7, userid: int | None = None):
                 }
 
                 items.append(item)
-                # {
-                #     "type": "folder",
-                #     "item": {
-                #         "path": folder,
-                #         "count": count[0]["trackcount"],
-                #         "help_text": "folder",
-                #         "time": timestamp_to_time_passed(entry.timestamp),
-                #     },
-                # }
-
                 continue
 
             if entry.type == "playlist":
                 is_custom = entry.type_src in [i["name"] for i in custom_playlists]
 
                 if is_custom:
-                    # playlist, _ = next(
-                    #     i["handler"]()
-                    #     for i in custom_playlists
-                    #     if i["name"] == entry.type_src
-                    # )
-                    # playlist.images = [i["image"] for i in playlist.images]
-
-                    # playlist = serialize_playlist(
-                    #     playlist, to_remove={"settings", "duration"}
-                    # )
-
-                    # playlist["help_text"] = "playlist"
-                    # playlist["time"] = timestamp_to_time_passed(entry.timestamp)
-
-                    # items.append(
-                    #     {
-                    #         "type": "playlist",
-                    #         "item": playlist,
-                    #     }
-                    # )
                     items.append(
                         {
                             "type": "playlist",
@@ -173,37 +128,10 @@ def get_recently_played(limit=7, userid: int | None = None):
                 }
 
                 items.append(item)
-
-                # tracks = TrackStore.get_tracks_by_trackhashes(playlist.trackhashes)
-                # playlist.clear_lists()
-
-                # if not playlist.has_image:
-                #     images = get_first_4_images(tracks)
-                # images = [i["image"] for i in images]
-                # playlist.images = images
-
-                # items.append(
-                #     {
-                #         "type": "playlist",
-                #         "item": {
-                #             "help_text": "playlist",
-                #             "time": timestamp_to_time_passed(entry.timestamp),
-                #             **serialize_playlist(playlist),
-                #         },
-                #     }
-                # )
                 continue
 
             if entry.type == "favorite":
                 items.append(
-                    # {
-                    #     "type": "favorite_tracks",
-                    #     "item": {
-                    #         "help_text": "playlist",
-                    #         "count": FavoritesTable.count(),
-                    #         "time": timestamp_to_time_passed(entry.timestamp),
-                    #     },
-                    # }
                     {
                         "type": "favorite",
                         "timestamp": entry.timestamp,
@@ -221,18 +149,18 @@ def get_recently_played(limit=7, userid: int | None = None):
                 "hash": entry.trackhash,
                 "timestamp": entry.timestamp,
             }
-
-            # track = serialize_track(t.get_best())
-            # track["help_text"] = "track"
-            # track["time"] = timestamp_to_time_passed(entry.timestamp)
-
             items.append(item)
 
     BATCH_SIZE = 200
     current_index = 0
 
-    entries = ScrobbleTable.get_all(0, BATCH_SIZE)
-    max_iterations = 20  # Safeguard against unexpected infinite loops
+    if len(_entries):
+        entries = _entries
+        limit = 1
+    else:
+        entries = ScrobbleTable.get_all(0, BATCH_SIZE)
+
+    max_iterations = 20
     iterations = 0
 
     while len(items) < limit and iterations < max_iterations:

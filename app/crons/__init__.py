@@ -18,7 +18,7 @@ def start_cron_jobs():
     RecentlyAdded()
 
     # Initialized CRON jobs
-    # Mixes()
+    Mixes()
     TopArtists()
     TopArtists(duration="week")
 

@@ -26,6 +26,7 @@ from app.db.utils import (
     plugin_to_dataclasses,
     similar_artist_to_dataclass,
     similar_artists_to_dataclass,
+    tracklog_to_dataclass,
     tracklog_to_dataclasses,
     user_to_dataclass,
     user_to_dataclasses,
@@ -318,6 +319,13 @@ class ScrobbleTable(Base):
             .order_by(cls.timestamp.desc())
         )
         return tracklog_to_dataclasses(result.fetchall())
+
+    @classmethod
+    def get_last_entry(cls, userid: int):
+        result = cls.execute(
+            select(cls).where(cls.userid == userid).order_by(cls.timestamp.desc())
+        )
+        return tracklog_to_dataclass(result.fetchone())
 
 
 class PlaylistTable(Base):

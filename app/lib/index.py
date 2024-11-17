@@ -7,6 +7,7 @@ from app.lib.mapstuff import (
     map_scrobble_data,
 )
 from app.lib.populate import CordinateMedia
+from app.lib.recipes.recents import RecentlyAdded
 from app.lib.tagger import IndexTracks
 from app.store.albums import AlbumStore
 from app.store.artists import ArtistStore
@@ -24,6 +25,9 @@ class IndexEverything:
         AlbumStore.load_albums(key)
         ArtistStore.load_artists(key)
         FolderStore.load_filepaths()
+
+        # NOTE: Rebuild recently added items on the homepage store
+        RecentlyAdded()
 
         # map colors
         map_album_colors()
