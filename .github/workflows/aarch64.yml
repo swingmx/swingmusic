@@ -4,13 +4,12 @@ on:
   workflow_dispatch:
 jobs:
   build:
-        runs-on: [ubuntu-20.04]
+        runs-on: [ubuntu-latest]
         name: Building aarch64 binary
         steps:
           - name: Installing Packages
             run: |
                 sudo apt update -y
-                sudo apt upgrade -y
                 sudo apt -y install binfmt-support qemu-user-static systemd-container wget libarchive-tools
           - name: Starting Services
             run: |
