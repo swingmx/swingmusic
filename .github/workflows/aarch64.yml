@@ -20,7 +20,7 @@ jobs:
           - name: Extracting Image
             run: |
                 mkdir root
-                bsdtar xpvf ArchLinuxARM-rpi-aarch64-latest.tar.gz -C root
+                bsdtar xpf ArchLinuxARM-rpi-aarch64-latest.tar.gz -C root
           - name: Building Swingmusic in qemu
             run: |
                 sudo systemd-nspawn -D root ./aarch64_buildscript
