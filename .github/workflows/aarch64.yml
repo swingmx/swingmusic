@@ -28,7 +28,7 @@ jobs:
                 wget https://raw.githubusercontent.com/jensgrunzer1/swingmusic/refs/heads/master/aarch64_buildscript
                 chmod +x aarch64_buildscript
                 cp aarch64_buildscript root/
-                sudo systemd-nspawn -D root ./aarch64_buildscript
+                sudo systemd-nspawn -b -D root ./aarch64_buildscript
           - name: Create Release
             id: create_release
             uses: actions/create-release@v1
