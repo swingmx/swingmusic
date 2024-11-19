@@ -17,6 +17,7 @@ jobs:
           - name: Downloading Arch Linux Arm Image for rpi4 aarch64
             run: |
                 wget http://os.archlinuxarm.org/os/ArchLinuxARM-rpi-aarch64-latest.tar.gz
+                ls
           - name: Extracting Image
             run: |
                 mkdir root
