@@ -21,9 +21,11 @@ jobs:
             run: |
                 mkdir root
                 sudo tar xpf ArchLinuxARM-rpi-aarch64-latest.tar.gz -C root --warning=no-unknown-keyword
+                sudo chmod 777 root
                 sync
           - name: Building Swingmusic in qemu
             run: |
+                cp ./aarch64_buildscript root/
                 sudo systemd-nspawn -D root ./aarch64_buildscript
           - name: Create Release
             id: create_release
