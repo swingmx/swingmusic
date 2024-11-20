@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
 jobs:
   build:
-        runs-on: [ubuntu-20.04.6]
+        runs-on: [ubuntu-20.04]
         name: Building aarch64 binary
         steps:
           - name: Installing Packages
