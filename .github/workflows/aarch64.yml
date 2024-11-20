@@ -15,6 +15,7 @@ jobs:
           - name: Starting Services
             run: |
                 sudo systemctl restart systemd-binfmt
+                sudo systemctl start systemd-resolved
           - name: Downloading Arch Linux Arm Image for rpi4 aarch64
             run: |
                 wget http://os.archlinuxarm.org/os/ArchLinuxARM-rpi-aarch64-latest.tar.gz
@@ -29,7 +30,7 @@ jobs:
                 wget https://raw.githubusercontent.com/jensgrunzer1/swingmusic/refs/heads/master/aarch64_buildscript
                 chmod +x aarch64_buildscript
                 mv aarch64_buildscript root/
-                sudo systemd-nspawn -D root sh -c ./aarch64_buildscript  --bind-ro=/etc/resolv.conf 
+                sudo systemd-nspawn --bind-ro=/etc/resolv.conf -D root ./aarch64_buildscript
           - name: Create Release
             id: create_release
             uses: actions/create-release@v1
