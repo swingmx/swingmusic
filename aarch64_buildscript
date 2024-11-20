@@ -15,7 +15,7 @@ pacman-key --init
 pacman-key --populate archlinuxarm
 pacman -Sy --noconfirm
 pacman -S yarn git wget --noconfirm
-pacman -U  https://github.com/jensgrunzer1/pyhon311-for-aarch64/raw/refs/heads/main/python311-3.11.9-2-aarch64.pkg.tar.xz --noconfirm
+pacman -U --nosig https://github.com/jensgrunzer1/pyhon311-for-aarch64/raw/refs/heads/main/python311-3.11.9-2-aarch64.pkg.tar.xz --noconfirm
 pacman -Su --noconfirm
 mkdir swingmusicbuilder
 cd swingmusicbuilder
