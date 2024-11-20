@@ -14,14 +14,13 @@
 pacman-key --init
 pacman-key --populate archlinuxarm
 pacman -Syu --noconfirm
+pacman -S --noconfirm yarn git
 pacman -U --noconfirm https://github.com/jensgrunzer1/pyhon311-for-aarch64/raw/refs/heads/main/python311-3.11.9-2-aarch64.pkg.tar.xz
-pacman -S -noconfirm yarn git
 mkdir swingmusicbuilder
 cd swingmusicbuilder
 
 git clone https://github.com/swing-opensource/swingmusic-client.git
 git clone https://github.com/swing-opensource/swingmusic.git
-
 # Manual poetry installation as installers are broken.
 python3 -m venv poetry
 source poetry/bin/activate
