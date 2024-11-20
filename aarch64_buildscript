@@ -14,9 +14,9 @@
 pacman-key --init
 pacman-key --populate archlinuxarm
 pacman -Sy --noconfirm
-pacman -S yarn git wget glib2 --noconfirm
-wget https://github.com/jensgrunzer1/pyhon311-for-aarch64/raw/refs/heads/main/python311-3.11.9-2-aarch64.pkg.tar.xz
-pacman -U python311-3.11.9-2-aarch64.pkg.tar.xz --noconfirm
+pacman -S yarn git --noconfirm
+sed -i -e 's/#RemoteFileSigLevel = Required/RemoteFileSigLevel = Optional/g' /etc/pacman.conf 
+pacman -U https://github.com/jensgrunzer1/pyhon311-for-aarch64/raw/refs/heads/main/python311-3.11.9-2-aarch64.pkg.tar.xz --noconfirm
 pacman -Su --noconfirm
 mkdir swingmusicbuilder
 cd swingmusicbuilder
