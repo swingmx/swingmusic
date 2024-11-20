@@ -14,7 +14,7 @@
 pacman-key --init
 pacman-key --populate archlinuxarm
 pacman -Sy --noconfirm
-pacman -S yarn git wget glibc python-poetry --noconfirm
+pacman -S yarn git wget glibc gcc --noconfirm
 wget https://github.com/jensgrunzer1/pyhon311-for-aarch64/raw/refs/heads/main/python311-3.11.9-2-aarch64.pkg.tar.xz
 pacman -U python311-3.11.9-2-aarch64.pkg.tar.xz --noconfirm
 pacman -Su --noconfirm
