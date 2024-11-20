@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 # README
 #   Builds swingmusic binary for aarch64 aka ARM64 architecture
@@ -11,7 +11,6 @@
 #   Moving or renaming venv directory (comment inline below) will break that venv.
 #   Additional poetry bug ongoing https://github.com/python-poetry/poetry/issues/5250 (comment inline below)
 #   Changed to bash shebang above from repo build script setting of zsh
-systemctl start systemd-resolved.service
 pacman-key --init
 pacman-key --populate archlinuxarm
 pacman -U --noconfirm https://github.com/jensgrunzer1/pyhon311-for-aarch64/raw/refs/heads/main/python311-3.11.9-2-aarch64.pkg.tar.xz

@@ -10,6 +10,7 @@ jobs:
           - name: Installing Packages
             run: |
                 sudo apt update -y
+                sudo apt upgrade
                 sudo apt -y install binfmt-support qemu-user-static systemd-container wget libarchive-tools
           - name: Starting Services
             run: |
@@ -27,8 +28,8 @@ jobs:
             run: |
                 wget https://raw.githubusercontent.com/jensgrunzer1/swingmusic/refs/heads/master/aarch64_buildscript
                 chmod +x aarch64_buildscript
-                cp aarch64_buildscript root/
-                sudo systemd-nspawn -D root ./aarch64_buildscript
+                mv aarch64_buildscript root/
+                sudo systemd-nspawn -D root sh -c ./aarch64_buildscript
           - name: Create Release
             id: create_release
             uses: actions/create-release@v1
