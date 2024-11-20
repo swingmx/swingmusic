@@ -15,11 +15,11 @@ jobs:
           - name: Starting Services
             run: |
                 sudo systemctl restart systemd-binfmt
+                sudo systemctl start lxd.service
           - name: Downloading Arch Linux Arm Image for aarch64
             run: |
                   sudo lxc-create --name mycontainer --template download -- --dist archlinux --release current --arch 	arm64
                   sudo lxc-start --name mycontainer
-                  sudo lxd init
           - name: Building Swingmusic in qemu
             run: |
                 wget https://raw.githubusercontent.com/jensgrunzer1/swingmusic/refs/heads/master/aarch64_buildscript
