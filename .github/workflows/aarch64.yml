@@ -11,19 +11,25 @@ jobs:
             run: |
                 sudo apt update -y
                 sudo apt upgrade -y
-                sudo apt -y install binfmt-support qemu-user-static systemd-container wget libarchive-tools lxc
+                sudo apt -y install binfmt-support qemu-user-static systemd-container wget libarchive-tools
           - name: Starting Services
             run: |
                 sudo systemctl restart systemd-binfmt
-          - name: Downloading Arch Linux Arm Image for aarch64
+          - name: Downloading Arch Linux Arm Image for rpi4 aarch64
             run: |
-                  sudo lxc-create --name mycontainer --template download -- --dist archlinux --release current --arch 	arm64
-                  sudo lxc-start --name mycontainer
+                wget http://os.archlinuxarm.org/os/ArchLinuxARM-rpi-aarch64-latest.tar.gz
+          - name: Extracting Image
+            run: |
+                mkdir root
+                sudo tar xpf ArchLinuxARM-rpi-aarch64-latest.tar.gz -C root --warning=no-unknown-keyword
+                sudo chmod 770 root
+                sync
           - name: Building Swingmusic in qemu
             run: |
                 wget https://raw.githubusercontent.com/jensgrunzer1/swingmusic/refs/heads/master/aarch64_buildscript
                 chmod +x aarch64_buildscript
-                sudo lxc exec mycontainer -- sh -c ./aarch64_buildscript
+                mv aarch64_buildscript root/
+                sudo systemd-nspawn -b -D root sh -c ./aarch64_buildscript
           - name: Create Release
             id: create_release
             uses: actions/create-release@v1
