@@ -17,7 +17,6 @@ pacman -Sy --noconfirm
 pacman -S yarn git wget glibc gcc bzip2 expat gdbm libffi libnsl libxcrypt openssl zlib libnghttp2 icu --noconfirm --disable-download-timeout --needed
 wget https://github.com/jensgrunzer1/pyhon311-for-aarch64/raw/refs/heads/main/python311-3.11.9-2-aarch64.pkg.tar.xz
 pacman -U python311-3.11.9-2-aarch64.pkg.tar.xz --noconfirm
-#pacman -Su --noconfirm
 mkdir swingmusicbuilder
 cd swingmusicbuilder
 
