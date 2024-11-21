@@ -107,49 +107,49 @@ Shout out to the following code contributors who have helped maintain and improv
     <tr>
       <td align="center">
         <a href="https://github.com/cwilvx">
-          <img src="https://github.com/cwilvx.png" width="100px;"/>
+          <img src="https://github.com/cwilvx.png" width="80px;"/>
           <br />
           <sub><b>@cwilvx</b></sub>
         </a>
       </td>
       <td align="center">
         <a href="https://github.com/Ericgacoki">
-          <img src="https://github.com/Ericgacoki.png" width="100px;" alt=""/>
+          <img src="https://github.com/Ericgacoki.png" width="80px;" alt=""/>
           <br />
           <sub><b>@Ericgacoki</b></sub>
         </a>
       </td>
       <td align="center">
         <a href="https://github.com/Simonh2o">
-          <img src="https://github.com/Simonh2o.png" width="100px;"/>
+          <img src="https://github.com/Simonh2o.png" width="80px;"/>
           <br />
           <sub><b>@Simonh2o</b></sub>
         </a>
       </td>
       <td align="center">
         <a href="https://github.com/tcsenpai">
-          <img src="https://github.com/tcsenpai.png" width="100px;"/>
+          <img src="https://github.com/tcsenpai.png" width="80px;"/>
           <br />
           <sub><b>@tcsenpai</b></sub>
         </a>
       </td>
       <td align="center">
         <a href="https://github.com/jensgrunzer1">
-          <img src="https://github.com/jensgrunzer1.png" width="100px;"/>
+          <img src="https://github.com/jensgrunzer1.png" width="80px;"/>
           <br />
           <sub><b>@jensgrunzer1</b></sub>
         </a>
       </td>
       <td align="center">
         <a href="https://github.com/Type-Delta">
-          <img src="https://github.com/Type-Delta.png" width="100px;" alt=""/>
+          <img src="https://github.com/Type-Delta.png" width="80px;" alt=""/>
           <br />
           <sub><b>@Type-Delta</b></sub>
         </a>
       </td>
      <td align="center">
         <a href="https://github.com/MarcOrfilaCarreras">
-          <img src="https://github.com/MarcOrfilaCarreras.png" width="100px;" alt=""/>
+          <img src="https://github.com/MarcOrfilaCarreras.png" width="80px;" alt=""/>
           <br />
           <sub><b>@MarcOrfilaCarreras</b></sub>
         </a>
@@ -158,7 +158,7 @@ Shout out to the following code contributors who have helped maintain and improv
     <tr>
     <td align="center">
       <a href="https://github.com/tralph3">
-        <img src="https://github.com/tralph3.png" width="100px;" alt=""/>
+        <img src="https://github.com/tralph3.png" width="80px;" alt=""/>
         <br />
           <sub><b>@tralph3</b></sub>
         </a>
