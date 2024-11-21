@@ -201,6 +201,8 @@ class MixesPlugin(Plugin):
             },
         }
 
+        # FIXME: Make sure that different artists don't generate the same mix
+
         for i, period in enumerate(artists.values()):
             # if previous period has less than its max
             # add the difference to this period's limit
@@ -226,6 +228,7 @@ class MixesPlugin(Plugin):
                     period["created"] += 1
 
         print(f"⭐⭐⭐⭐ Created {len(mixes)} mixes")
+        print([m.title for m in mixes])
         return mixes
 
     def get_mix_description(self, tracks: list[Track], artishash: str):

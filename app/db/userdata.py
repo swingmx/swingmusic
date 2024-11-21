@@ -345,8 +345,12 @@ class PlaylistTable(Base):
     )
 
     @classmethod
-    def get_all(cls):
-        result = cls.all()
+    def get_all(cls, current_user: bool = True):
+        if current_user:
+            result = cls.execute(select(cls).where(cls.userid == get_current_userid()))
+        else:
+            result = cls.execute(select(cls))
+
         return playlists_to_dataclasses(result)
 
     @classmethod

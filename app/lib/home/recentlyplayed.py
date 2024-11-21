@@ -158,7 +158,7 @@ def get_recently_played(
         entries = _entries
         limit = 1
     else:
-        entries = ScrobbleTable.get_all(0, BATCH_SIZE)
+        entries = ScrobbleTable.get_all(0, BATCH_SIZE, userid=userid)
 
     max_iterations = 20
     iterations = 0
