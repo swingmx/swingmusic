@@ -97,3 +97,72 @@ Swing Music is looking for contributors. If you're interested, please join us at
 This software is provided to you with terms stated in the MIT License. Read the full text in the `LICENSE` file located at the root of this repository.
 
 **[MIT License](https://opensource.org/licenses/MIT) | Copyright (c) 2023 Mungai Njoroge**
+
+### Contributors
+
+Shout out to the following code contributors who have helped maintain and improve Swing Music:
+
+<div align="left">
+  <table>
+    <tr>
+      <td align="center">
+        <a href="https://github.com/cwilvx">
+          <img src="https://github.com/cwilvx.png" width="100px;"/>
+          <br />
+          <sub><b>@cwilvx</b></sub>
+        </a>
+      </td>
+      <td align="center">
+        <a href="https://github.com/Ericgacoki">
+          <img src="https://github.com/Ericgacoki.png" width="100px;" alt=""/>
+          <br />
+          <sub><b>@Ericgacoki</b></sub>
+        </a>
+      </td>
+      <td align="center">
+        <a href="https://github.com/Simonh2o">
+          <img src="https://github.com/Simonh2o.png" width="100px;"/>
+          <br />
+          <sub><b>@Simonh2o</b></sub>
+        </a>
+      </td>
+      <td align="center">
+        <a href="https://github.com/tcsenpai">
+          <img src="https://github.com/tcsenpai.png" width="100px;"/>
+          <br />
+          <sub><b>@tcsenpai</b></sub>
+        </a>
+      </td>
+      <td align="center">
+        <a href="https://github.com/jensgrunzer1">
+          <img src="https://github.com/jensgrunzer1.png" width="100px;"/>
+          <br />
+          <sub><b>@jensgrunzer1</b></sub>
+        </a>
+      </td>
+      <td align="center">
+        <a href="https://github.com/Type-Delta">
+          <img src="https://github.com/Type-Delta.png" width="100px;" alt=""/>
+          <br />
+          <sub><b>@Type-Delta</b></sub>
+        </a>
+      </td>
+     <td align="center">
+        <a href="https://github.com/MarcOrfilaCarreras">
+          <img src="https://github.com/MarcOrfilaCarreras.png" width="100px;" alt=""/>
+          <br />
+          <sub><b>@MarcOrfilaCarreras</b></sub>
+        </a>
+      </td>
+    </tr>
+    <tr>
+    <td align="center">
+      <a href="https://github.com/tralph3">
+        <img src="https://github.com/tralph3.png" width="100px;" alt=""/>
+        <br />
+          <sub><b>@tralph3</b></sub>
+        </a>
+      </td>
+    </tr>
+  </table>
+</div>
