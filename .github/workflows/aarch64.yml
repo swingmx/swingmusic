@@ -15,15 +15,13 @@ jobs:
             run: |
                 sudo systemctl restart systemd-binfmt
                 sudo systemctl start systemd-resolved
-          - name: Downloading Arch Linux Arm Image for rpi4 aarch64
+          - name: Downloading Arch Linux Arm Tarball for rpi4 aarch64
             run: |
                 wget http://os.archlinuxarm.org/os/ArchLinuxARM-rpi-aarch64-latest.tar.gz
-          - name: Extracting Image
+          - name: Extracting Tarball
             run: |
                 mkdir root
                 sudo tar xpf ArchLinuxARM-rpi-aarch64-latest.tar.gz -C root --warning=no-unknown-keyword
-                sudo chmod 770 root
-                sync
           - name: Building Swingmusic in qemu
             run: |
                 wget https://raw.githubusercontent.com/jensgrunzer1/swingmusic/refs/heads/master/aarch64_buildscript
