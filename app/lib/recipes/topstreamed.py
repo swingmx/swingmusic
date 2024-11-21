@@ -1,5 +1,4 @@
 from gettext import ngettext
-from os import name
 import pendulum
 
 from app.crons.cron import CronJob
@@ -23,7 +22,7 @@ class TopArtists(CronJob, HomepageRoutine):
         """
         Only valid if it's the middle or last 2 days of this month.
 
-        When the duration is "week", it's valid on Saturday and Sunday.
+        When the duration is "week", it's valid on the weekend.
         """
         if self.duration == "month":
             now = pendulum.now()
@@ -34,7 +33,7 @@ class TopArtists(CronJob, HomepageRoutine):
                 or now.day > now.days_in_month - 2
             )
         if self.duration == "week":
-            return pendulum.now().isoweekday() in (6, 7)
+            return pendulum.now().isoweekday() in (5, 6, 7)
 
         return False
 
