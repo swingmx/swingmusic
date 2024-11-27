@@ -1,4 +1,5 @@
 import datetime
+from gettext import ngettext
 import json
 from pprint import pprint
 import random
@@ -136,7 +137,7 @@ class MixesPlugin(Plugin):
 
         # try to balance the mix
         trackmatches = balance_mix(trackmatches)
-        return trackmatches, results["albums"], results["albums"]
+        return trackmatches, results["albums"], results["artists"]
 
     @plugin_method
     def get_artist_mix(self, artisthash: str):
@@ -419,3 +420,61 @@ class MixesPlugin(Plugin):
         TODO: Implement this!
         """
         pass
+
+    def get_because_items(self, mixes: list[Mix]):
+        """
+        Given a list of mixes, returns a list of artists that are similar to the
+        artists in the mixes.
+        """
+        artists: dict[str, list[dict[str, str | int]]] = {}
+
+        for mix in mixes:
+            mix_artisthash = mix.extra["artisthash"]
+            artists.setdefault(mix_artisthash, [])
+
+            for artisthash in mix.extra["artists"]:
+                artist = ArtistStore.artistmap.get(artisthash)
+
+                if not artist:
+                    continue
+
+                artists[mix_artisthash].append(
+                    {
+                        "type": "artist",
+                        "trackcount": artist.artist.trackcount,
+                        "hash": artisthash,
+                        "help_text": str(artist.artist.trackcount)
+                        + ngettext(" track", " tracks", artist.artist.trackcount),
+                    }
+                )
+
+            # INFO: Sort artists by trackcount
+            artists[mix_artisthash] = sorted(
+                artists[mix_artisthash],
+                key=lambda x: x["trackcount"],
+                reverse=True,
+            )
+
+        artisthash = mixes[0].extra["artisthash"]
+        because_you_listened_to_artist = {
+            "title": "Because you listened to "
+            + ArtistStore.artistmap[artisthash].artist.name,
+            "items": artists[artisthash][:15],
+        }
+
+        # Flatten list of artists and remove duplicates by artisthash
+        all_artists = []
+        seen = set()
+
+        for artist_list in artists.values():
+            for artist in artist_list:
+                if artist["hash"] not in seen:
+                    all_artists.append(artist)
+                    seen.add(artist["hash"])
+
+        artists_you_might_like = {
+            "title": "Artists you might like",
+            "items": random.sample(all_artists, k=min(15, len(all_artists))),
+        }
+
+        return because_you_listened_to_artist, artists_you_might_like

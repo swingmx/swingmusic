@@ -18,9 +18,9 @@ def start_cron_jobs():
     RecentlyAdded()
 
     # Initialized CRON jobs
-    Mixes()
     TopArtists()
     TopArtists(duration="week")
+    Mixes()
 
     # Trigger all CRON jobs when the app is started.
     schedule.run_all()

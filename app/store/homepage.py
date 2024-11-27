@@ -1,7 +1,8 @@
 from abc import ABC
 from dataclasses import dataclass
+import pprint
 from typing import Any
-from app.lib.home.recentlyplayed import recover_recently_played_items
+from app.lib.home.recentlyplayed import recover_items
 from app.models.mix import Mix
 from app.utils.auth import get_current_userid
 
@@ -78,7 +79,7 @@ class RecentlyPlayedHomepageEntry(HomepageEntry):
         return {
             "title": self.title,
             "description": self.description,
-            "items": recover_recently_played_items(items),
+            "items": recover_items(items),
         }
 
 
@@ -91,7 +92,7 @@ class RecentlyAddedHomepageEntry(RecentlyPlayedHomepageEntry):
         return super().get_items(0, limit)
 
 
-class TopStreamedHomepageEntry(RecentlyPlayedHomepageEntry):
+class GenericRecoverableEntry(RecentlyPlayedHomepageEntry):
     """
     A homepage entry for top streamed.
     """
@@ -99,6 +100,25 @@ class TopStreamedHomepageEntry(RecentlyPlayedHomepageEntry):
     # NOTE: This extends RecentlyPlayedHomepageEntry because
     # the shape of the data is the same.
     pass
+
+
+class BecauseYouListenedToArtistHomepageEntry(RecentlyPlayedHomepageEntry):
+    """
+    A homepage entry for because you listened to artist.
+    """
+
+    # SHAPE: {userid: {title: str, items: list[RecoverableItem]}}
+    items: dict[int, dict[str, Any]]
+
+    def get_items(self, userid: int, limit: int | None = None):
+        pprint.pprint(self.items)
+        title = self.items.get(userid, {}).get("title")
+        items = self.items.get(userid, {}).get("items", [])[:limit]
+
+        return {
+            "title": title,
+            "items": recover_items(items),
+        }
 
 
 class HomepageStore:
@@ -114,13 +134,21 @@ class HomepageStore:
             title="Artist mixes for you",
             description="Based on artists you have been listening to",
         ),
-        "top_streamed_weekly_artists": TopStreamedHomepageEntry(
+        "top_streamed_weekly_artists": GenericRecoverableEntry(
             title="Top artists this week",
             description="Your most played artists since Monday",
         ),
-        "top_streamed_monthly_artists": TopStreamedHomepageEntry(
+        "top_streamed_monthly_artists": GenericRecoverableEntry(
             title="Top artists this month",
             description="Your most played artists since the start of the month",
+        ),
+        "because_you_listened_to_artist": BecauseYouListenedToArtistHomepageEntry(
+            title="",
+            description="Artists similar to the artist you listened to",
+        ),
+        "artists_you_might_like": BecauseYouListenedToArtistHomepageEntry(
+            title="Artists you might like",
+            description="Artists similar to the artists you have listened to",
         ),
         "recently_added": RecentlyAddedHomepageEntry(
             title="Recently added",

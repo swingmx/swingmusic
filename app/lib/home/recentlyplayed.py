@@ -184,7 +184,7 @@ def get_recently_played(
     return items
 
 
-def recover_recently_played_items(items: list[dict]):
+def recover_items(items: list[dict]):
     custom_playlists = [
         {"name": "recentlyadded", "handler": get_recently_added_playlist},
         {"name": "recentlyplayed", "handler": get_recently_played_playlist},
@@ -235,7 +235,7 @@ def recover_recently_played_items(items: list[dict]):
                 },
             }
         elif item["type"] == "playlist":
-            if item["is_custom"]:
+            if item.get("is_custom"):
                 playlist, _ = next(
                     i["handler"]()
                     for i in custom_playlists
