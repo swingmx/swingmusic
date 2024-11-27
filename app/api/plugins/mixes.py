@@ -53,6 +53,8 @@ def get_mix(query: MixQuery):
     match query.mixid[0]:
         case "a":
             mixtype = "artist_mixes"
+        case "t":
+            mixtype = "custom_mixes"
         case _:
             return {"msg": "Invalid mix ID"}, 400
 

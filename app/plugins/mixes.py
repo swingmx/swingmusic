@@ -1,16 +1,13 @@
-import datetime
 from gettext import ngettext
 import json
-from pprint import pprint
 import random
-import string
 import time
 import requests
-from urllib.parse import quote
 from PIL import Image
 
-from app.db.userdata import MixTable, SimilarArtistTable
+from app.db.userdata import MixTable
 from app.lib.colorlib import get_image_colors
+from app.lib.playlistlib import get_first_4_images
 from app.models.artist import Artist
 from app.models.mix import Mix
 from app.models.track import Track
@@ -22,7 +19,6 @@ from app.store.tracks import TrackStore
 from app.utils.dates import get_date_range, get_duration_ago
 from app.utils.hashing import create_hash
 from app.utils.mixes import balance_mix
-from app.utils.remove_duplicates import remove_duplicates
 from app.utils.stats import get_artists_in_period
 
 
@@ -36,8 +32,8 @@ class MixAlreadyExists(Exception):
 
 class MixesPlugin(Plugin):
     MAX_TRACKS_TO_FETCH = 5
-    TRACK_MIX_LENGTH = 30
     MIN_TRACK_MIX_LENGTH = 15
+    MIX_TRACKS = 40
 
     MIN_DAY_LISTEN_DURATION = 3 * 60  # 3 minutes
     MIN_WEEK_LISTEN_DURATION = 10 * 60  # 10 minutes
@@ -421,16 +417,76 @@ class MixesPlugin(Plugin):
         """
         pass
 
+    def get_custom_mix_items(self, mix: Mix):
+        """
+        Given a mix, returns the excess tracks as a custom mix.
+        """
+
+        # INFO: If the mix can't have more than 20 tracks, return None
+        if len(mix.tracks) <= self.MIX_TRACKS + 20:
+            return None
+
+        tracks = TrackStore.get_tracks_by_trackhashes(mix.tracks[self.MIX_TRACKS :])
+
+        return Mix(
+            id=f"t{mix.extra['artisthash']}",
+            title="", # INFO: Will be filled after all mixes are created.
+            description=self.get_mix_description(tracks, mix.extra["artisthash"]),
+            tracks=[t.trackhash for t in tracks],
+            sourcehash=create_hash(*[t.trackhash for t in tracks]),
+            extra={
+                "type": "track",
+                "images": self.get_custom_mix_images(tracks),
+                "artists": None,
+                "albums": None,
+            },
+        )
+
+    def get_custom_mix_images(self, tracks: list[Track]):
+
+        first_album = tracks[0].albumhash
+        first_img = {
+            "image": first_album + ".webp",
+            "type": "album",
+            "color": AlbumStore.albummap[first_album].album.color,
+        }
+
+        seen = set()
+        images = [first_img]
+
+        for track in tracks[1:]:
+            artisthash = track.artists[0]["artisthash"]
+
+            if artisthash in seen:
+                continue
+
+            seen.add(artisthash)
+
+            image = {
+                "image": artisthash + ".webp",
+                "type": "artist",
+                "color": ArtistStore.get_artist_by_hash(artisthash).color,
+            }
+
+            images.append(image)
+
+            if len(images) == 3:
+                break
+
+        return images
+
     def get_because_items(self, mixes: list[Mix]):
         """
         Given a list of mixes, returns a list of artists that are similar to the
         artists in the mixes.
         """
         artists: dict[str, list[dict[str, str | int]]] = {}
+        albums: dict[str, list[dict[str, str | int]]] = {}
 
         for mix in mixes:
             mix_artisthash = mix.extra["artisthash"]
             artists.setdefault(mix_artisthash, [])
+            albums.setdefault(mix_artisthash, [])
 
             for artisthash in mix.extra["artists"]:
                 artist = ArtistStore.artistmap.get(artisthash)
@@ -448,9 +504,32 @@ class MixesPlugin(Plugin):
                     }
                 )
 
+            for albumhash in mix.extra["albums"]:
+                album = AlbumStore.albummap.get(albumhash)
+
+                if not album:
+                    continue
+
+                albums[mix_artisthash].append(
+                    {
+                        "type": "album",
+                        "trackcount": album.album.trackcount,
+                        "hash": albumhash,
+                        "help_text": str(album.album.trackcount)
+                        + ngettext(" track", " tracks", album.album.trackcount),
+                    }
+                )
+
             # INFO: Sort artists by trackcount
             artists[mix_artisthash] = sorted(
                 artists[mix_artisthash],
+                key=lambda x: x["trackcount"],
+                reverse=True,
+            )
+
+            # INFO: Sort albums by trackcount
+            albums[mix_artisthash] = sorted(
+                albums[mix_artisthash],
                 key=lambda x: x["trackcount"],
                 reverse=True,
             )
@@ -459,22 +538,22 @@ class MixesPlugin(Plugin):
         because_you_listened_to_artist = {
             "title": "Because you listened to "
             + ArtistStore.artistmap[artisthash].artist.name,
-            "items": artists[artisthash][:15],
+            "items": albums[artisthash][:15],
         }
 
         # Flatten list of artists and remove duplicates by artisthash
         all_artists = []
         seen = set()
 
-        for artist_list in artists.values():
-            for artist in artist_list:
-                if artist["hash"] not in seen:
-                    all_artists.append(artist)
-                    seen.add(artist["hash"])
+        # for artist_list in artists.values():
+        #     for artist in artist_list:
+        #         if artist["hash"] not in seen:
+        #             all_artists.append(artist)
+        #             seen.add(artist["hash"])
 
         artists_you_might_like = {
             "title": "Artists you might like",
-            "items": random.sample(all_artists, k=min(15, len(all_artists))),
+            "items": artists[artisthash][:15],
         }
 
         return because_you_listened_to_artist, artists_you_might_like

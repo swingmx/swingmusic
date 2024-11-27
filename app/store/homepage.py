@@ -1,6 +1,4 @@
 from abc import ABC
-from dataclasses import dataclass
-import pprint
 from typing import Any
 from app.lib.home.recentlyplayed import recover_items
 from app.models.mix import Mix
@@ -111,7 +109,6 @@ class BecauseYouListenedToArtistHomepageEntry(RecentlyPlayedHomepageEntry):
     items: dict[int, dict[str, Any]]
 
     def get_items(self, userid: int, limit: int | None = None):
-        pprint.pprint(self.items)
         title = self.items.get(userid, {}).get("title")
         items = self.items.get(userid, {}).get("items", [])[:limit]
 
@@ -133,6 +130,10 @@ class HomepageStore:
         "artist_mixes": MixHomepageEntry(
             title="Artist mixes for you",
             description="Based on artists you have been listening to",
+        ),
+        "custom_mixes": MixHomepageEntry(
+            title="Mixes for you",
+            description="Because artist mixes alone aren't enough",
         ),
         "top_streamed_weekly_artists": GenericRecoverableEntry(
             title="Top artists this week",

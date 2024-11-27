@@ -30,8 +30,8 @@ class Mix:
         _dict = asdict(self)
         _dict["tracks"] = serialized_tracks
 
-        if not self.extra.get("image"):
-            _dict["images"] = get_first_4_images(tracks)
+        # if not self.extra.get("image"):
+        #     _dict["images"] = get_first_4_images(tracks)
 
         _dict["duration"] = seconds_to_time_string(sum(t.duration for t in tracks))
         _dict["trackcount"] = len(tracks)
