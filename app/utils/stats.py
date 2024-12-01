@@ -15,12 +15,15 @@ def get_artists_in_period(
     start_time: int | float, end_time: int | float, userid: int | None = None
 ):
     scrobbles = ScrobbleTable.get_all_in_period(start_time, end_time, userid)
-    artists: Any = defaultdict(lambda: {"playcount": 0, "playduration": 0})
+    artists: Any = defaultdict(
+        lambda: {"playcount": 0, "playduration": 0, "tracks": {}}
+    )
 
     for scrobble in scrobbles:
         track = TrackStore.get_tracks_by_trackhashes([scrobble.trackhash])
         if not track:
             continue
+
         track = track[0]
 
         for artist in track.artists:
@@ -30,6 +33,11 @@ def get_artists_in_period(
             artists[artisthash]["artisthash"] = artist["artisthash"]
             artists[artisthash]["playcount"] += 1
             artists[artisthash]["playduration"] += scrobble.duration
+
+            # index the track counts too
+            artists[artisthash]["tracks"][track.trackhash] = (
+                artists[artisthash]["tracks"].get(track.trackhash, 0) + 1
+            )
 
     artists = list(artists.values())
     return sorted(artists, key=lambda x: x["playduration"], reverse=True)

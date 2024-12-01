@@ -217,7 +217,13 @@ class MixesPlugin(Plugin):
                 if artist["artisthash"] in indexed:
                     continue
 
-                mix = self.create_artist_mix(artist)
+                # INFO: track['tracks'] is a dict of trackhashes and their counts
+                # get the trackhashes sorted by count
+                trackhashes = sorted(
+                    artist["tracks"], key=lambda x: artist["tracks"][x], reverse=True
+                )
+
+                mix = self.create_artist_mix(artist, trackhashes[:self.MAX_TRACKS_TO_FETCH])
 
                 if mix:
                     mixes.append(mix)
@@ -253,7 +259,7 @@ class MixesPlugin(Plugin):
 
         return f"Featuring {tracks[0].artists[0]['name']}"
 
-    def create_artist_mix(self, artist: dict[str, str]):
+    def create_artist_mix(self, artist: dict[str, str], trackhashes: list[str]):
         """
         Given an artist dict, creates an artist mix.
         """
@@ -262,10 +268,12 @@ class MixesPlugin(Plugin):
         if not _artist:
             return None
 
-        tracks = TrackStore.get_tracks_by_trackhashes(_artist.trackhashes)
-        tracks = sorted(tracks, key=lambda x: x.playduration, reverse=True)
-        sourcetracks = tracks[: self.MAX_TRACKS_TO_FETCH]
-        sourcehash = create_hash(*[t.trackhash for t in sourcetracks])
+        tracks = TrackStore.get_tracks_by_trackhashes(trackhashes)
+        # tracks = sorted(tracks, key=lambda x: x.playduration, reverse=True)
+        # sourcetracks = tracks[: self.MAX_TRACKS_TO_FETCH]
+
+        # INFO: Sort the trackhashes when creating the sourcehash
+        sourcehash = create_hash(*sorted(trackhashes, key=lambda x: trackhashes.index(x)))
 
         db_mix = MixTable.get_by_sourcehash(sourcehash)
         if db_mix:
@@ -273,7 +281,7 @@ class MixesPlugin(Plugin):
             print(db_mix.title)
             return db_mix
 
-        mix_tracks, albums, artists = self.get_track_mix(sourcetracks)
+        mix_tracks, albums, artists = self.get_track_mix(tracks)
 
         if len(mix_tracks) < self.MIN_TRACK_MIX_LENGTH:
             return None
@@ -296,6 +304,7 @@ class MixesPlugin(Plugin):
             extra={
                 "type": "artist",
                 "artisthash": artist["artisthash"],
+                "sourcetracks": trackhashes,
                 "image": mix_image,
                 # NOTE: Save the similar albums and artists
                 # Related to the source tracks that were used to create the mix
@@ -430,7 +439,7 @@ class MixesPlugin(Plugin):
 
         return Mix(
             id=f"t{mix.extra['artisthash']}",
-            title="", # INFO: Will be filled after all mixes are created.
+            title="",  # INFO: Will be filled after all mixes are created.
             description=self.get_mix_description(tracks, mix.extra["artisthash"]),
             tracks=[t.trackhash for t in tracks],
             sourcehash=create_hash(*[t.trackhash for t in tracks]),
