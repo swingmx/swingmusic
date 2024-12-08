@@ -27,6 +27,7 @@ from app.plugins.register import register_plugins
 from app.settings import FLASKVARS, TCOLOR, Info
 from app.setup import load_into_mem, run_setup
 from app.start_info_logger import log_startup_info
+from app.store.tracks import TrackStore
 from app.utils.filesystem import get_home_res_path
 from app.utils.paths import getClientFilesExtensions
 from app.utils.threading import background
@@ -227,6 +228,7 @@ if __name__ == "__main__":
 
     load_into_mem()
     run_swingmusic()
+    TrackStore.export()
     
     host = FLASKVARS.get_flask_host()
     port = FLASKVARS.get_flask_port()

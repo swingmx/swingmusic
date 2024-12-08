@@ -79,7 +79,8 @@ class MixesPlugin(Plugin):
         """
         queries = [
             {
-                "query": f"{track.title} - {','.join(a['name'] for a in track.artists)}",
+                "title": track.title,
+                "artists": [a["name"] for a in track.artists],
                 "album": track.og_album,
                 "with_help": with_help,
             }
