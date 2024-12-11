@@ -239,7 +239,7 @@ if __name__ == "__main__":
         app,
         host=host,
         port=port,
-        threads=10,
+        threads=100,
         ipv6=True,
         ipv4=True,
     )
