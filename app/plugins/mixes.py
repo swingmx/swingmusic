@@ -1,4 +1,5 @@
 from gettext import ngettext
+from io import BytesIO
 import json
 import random
 import time
@@ -6,8 +7,6 @@ import requests
 from PIL import Image
 
 from app.db.userdata import MixTable
-from app.lib.colorlib import get_image_colors
-from app.lib.playlistlib import get_first_4_images
 from app.models.artist import Artist
 from app.models.mix import Mix
 from app.models.track import Track
@@ -42,9 +41,10 @@ class MixesPlugin(Plugin):
     def __init__(self):
         super().__init__("mixes", "Mixes")
         self.server = "https://smcloud.mungaist.com"
+        # self.server = "http://localhost:1956"
 
-        server_online = self.ping_server()
-        self.set_active(server_online)
+        # server_online = self.ping_server()
+        self.set_active(True)
 
     def ping_server(self):
         max_retries = 3
@@ -224,7 +224,9 @@ class MixesPlugin(Plugin):
                     artist["tracks"], key=lambda x: artist["tracks"][x], reverse=True
                 )
 
-                mix = self.create_artist_mix(artist, trackhashes[:self.MAX_TRACKS_TO_FETCH])
+                mix = self.create_artist_mix(
+                    artist, trackhashes[: self.MAX_TRACKS_TO_FETCH]
+                )
 
                 if mix:
                     mixes.append(mix)
@@ -274,7 +276,9 @@ class MixesPlugin(Plugin):
         # sourcetracks = tracks[: self.MAX_TRACKS_TO_FETCH]
 
         # INFO: Sort the trackhashes when creating the sourcehash
-        sourcehash = create_hash(*sorted(trackhashes, key=lambda x: trackhashes.index(x)))
+        sourcehash = create_hash(
+            *sorted(trackhashes, key=lambda x: trackhashes.index(x))
+        )
 
         db_mix = MixTable.get_by_sourcehash(sourcehash)
         if db_mix:
@@ -289,11 +293,10 @@ class MixesPlugin(Plugin):
 
         # try downloading artist image
         mix_image = {"image": _artist.artist.image, "color": _artist.artist.color}
-        downloaded_img_color = self.download_artist_image(_artist.artist)
+        image = self.download_artist_image(_artist.artist)
 
-        if downloaded_img_color:
-            mix_image["image"] = f"{_artist.artist.artisthash}.jpg"
-            mix_image["color"] = downloaded_img_color[0]
+        if image:
+            mix_image["image"] = image
 
         mix = Mix(
             # the a prefix indicates that this is an artist mix
@@ -321,30 +324,35 @@ class MixesPlugin(Plugin):
 
     def download_artist_image(self, artist: Artist):
         try:
-            res = requests.get(f"{self.server}/image?artist={artist.name}")
+            res = requests.get(
+                f"{self.server}/mix/image?artist={artist.name}&type=Artist"
+            )
         except requests.exceptions.ConnectionError:
             return None
 
         if res.status_code == 200:
-            # save to file
-            with open(
-                f"{Paths.get_md_mixes_img_path()}/{artist.artisthash}.jpg", "wb"
-            ) as f:
-                f.write(res.content)
+            filename = f"{artist.artisthash}_{int(time.time())}.webp"
+            path = Paths.get_md_mixes_img_path() + "/" + filename
 
-            # resize to 256px width while maintaining aspect ratio
-            img = Image.open(f"{Paths.get_md_mixes_img_path()}/{artist.artisthash}.jpg")
-            aspect_ratio = img.width / img.height
+            image = Image.open(BytesIO(res.content))
+            aspect_ratio = image.width / image.height
 
-            newwidth = 256
-            newheight = int(256 / aspect_ratio)
+            # resize to 512px
+            md_width = 512
+            md_height = int(md_width / aspect_ratio)
 
-            img = img.resize((newwidth, newheight), Image.LANCZOS)
-            img.save(f"{Paths.get_sm_mixes_img_path()}/{artist.artisthash}.jpg")
+            image = image.resize((md_width, md_height), Image.LANCZOS)
+            image.save(path, "webp")
 
-            return get_image_colors(
-                f"{Paths.get_sm_mixes_img_path()}/{artist.artisthash}.jpg"
-            )
+            # resize to 256px
+            sm_width = 256
+            sm_height = int(sm_width / aspect_ratio)
+
+            image = image.resize((sm_width, sm_height), Image.LANCZOS)
+            small_path = Paths.get_sm_mixes_img_path() + "/" + filename
+            image.save(small_path, "webp")
+
+            return filename
 
         return None
 
