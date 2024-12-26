@@ -1,10 +1,11 @@
-from app.db.userdata import MixTable, PlaylistTable
+import os
+from app.db.userdata import PlaylistTable
+from app.lib.home import find_mix
 from app.lib.home.recentlyadded import get_recently_added_playlist
 from app.lib.home.recentlyplayed import get_recently_played_playlist
 from app.models.logger import TrackLog
 from app.store.albums import AlbumStore
 from app.store.artists import ArtistStore
-from app.store.homepage import HomepageStore
 from app.store.tracks import TrackStore
 
 
@@ -30,17 +31,16 @@ def create_items(entries: list[TrackLog], limit: int):
             if not entry.type_src:
                 continue
 
-            # INFO: Get mix from homepage store
-            mix = HomepageStore.find_mix(entry.type_src)
+            splits = entry.type_src.split(".")
 
-            if not mix and entry.type_src.startswith("t"):
-                # mix is a track mix (not saved in the db)
+            try:
+                mixid = splits[0]
+                sourcehash = splits[1]
+            except IndexError:
                 continue
 
-            if not mix:
-                # INFO: Get mix from db
-                mix = MixTable.get_by_mixid(entry.type_src)
-
+            # INFO: Get mix from homepage store
+            mix = find_mix(mixid, sourcehash)
             if not mix:
                 continue
 

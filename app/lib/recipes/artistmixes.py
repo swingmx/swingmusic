@@ -25,7 +25,7 @@ class ArtistMixes(HomepageRoutine):
 
             custom_mixes = []
             for _mix in mixes:
-                custom_mix = mix.get_track_mix(_mix)
+                custom_mix = MixesPlugin.get_track_mix(_mix)
 
                 if custom_mix:
                     custom_mixes.append(custom_mix)

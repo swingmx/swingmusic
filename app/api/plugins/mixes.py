@@ -78,8 +78,7 @@ def get_mix(query: MixQuery):
         return {"msg": "Mix not found"}, 404
 
     if mixtype == "custom_mixes":
-        plugin = MixesPlugin()
-        mix = plugin.get_track_mix(mix)
+        mix = MixesPlugin.get_track_mix(mix)
 
         if not mix:
             return {"msg": "Mix not found"}, 404

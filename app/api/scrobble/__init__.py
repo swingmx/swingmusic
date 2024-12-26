@@ -72,6 +72,8 @@ def log_track(body: LogTrackBody):
         return {"msg": "Track not found."}, 404
 
     scrobble_data = dict(body)
+    # REVIEW: Do we need to store the extra info in the database?
+    # OR .... can we just write it to the backup file on demand?
     scrobble_data["extra"] = get_extra_info(body.trackhash, "track")
     ScrobbleTable.add(scrobble_data)
 

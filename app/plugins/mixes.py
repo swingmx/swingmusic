@@ -237,7 +237,8 @@ class MixesPlugin(Plugin):
         print([m.title for m in mixes])
         return mixes
 
-    def get_mix_description(self, tracks: list[Track], artishash: str):
+    @classmethod
+    def get_mix_description(cls, tracks: list[Track], artishash: str):
         """
         Constructs a description for a mix by putting together the first n=4
         artists in the mix tracklist.
@@ -434,17 +435,18 @@ class MixesPlugin(Plugin):
 
         The resulting mix is definitely expected to be of low quality.
 
-        TODO: Implement this!
+        TODO: Maybe implement this!
         """
         pass
 
-    def get_track_mix(self, mix: Mix):
+    @classmethod
+    def get_track_mix(cls, mix: Mix):
         """
         Given a mix, returns the excess tracks as a custom mix.
         """
 
         # INFO: If the mix can't have more than 20 tracks, return None
-        if len(mix.tracks) <= self.MIX_TRACKS_LENGTH + 20:
+        if len(mix.tracks) <= cls.MIX_TRACKS_LENGTH + 20:
             return None
 
         og_track = TrackStore.trackhashmap.get(mix.tracks[0])
@@ -454,20 +456,20 @@ class MixesPlugin(Plugin):
 
         og_track = og_track.get_best()
         tracks = [og_track] + TrackStore.get_tracks_by_trackhashes(
-            mix.tracks[self.MIX_TRACKS_LENGTH :]
+            mix.tracks[cls.MIX_TRACKS_LENGTH :]
         )
 
         trackmix = Mix(
             id=f"t{mix.userid}{mix.extra['artisthash']}",
             title=og_track.title,
-            description=self.get_mix_description(tracks, mix.extra["artisthash"]),
+            description=cls.get_mix_description(tracks, mix.extra["artisthash"]),
             tracks=[t.trackhash for t in tracks],
             sourcehash=create_hash(*[t.trackhash for t in tracks]),
             userid=mix.userid,
             extra={
                 "type": "track",
                 "og_sourcehash": mix.sourcehash,
-                "images": self.get_custom_mix_images(tracks),
+                "images": cls.get_custom_mix_images(tracks),
                 "artists": None,
                 "albums": None,
             },
@@ -479,8 +481,8 @@ class MixesPlugin(Plugin):
 
         return trackmix
 
-    def get_custom_mix_images(self, tracks: list[Track]):
-
+    @classmethod
+    def get_custom_mix_images(cls, tracks: list[Track]):
         first_album = tracks[0].albumhash
         first_img = {
             "image": first_album + ".webp",
@@ -517,7 +519,8 @@ class MixesPlugin(Plugin):
 
         return images
 
-    def get_because_items(self, mixes: list[Mix]):
+    @staticmethod
+    def get_because_items(mixes: list[Mix]):
         """
         Given a list of mixes, returns a list of artists that are similar to the
         artists in the mixes.

@@ -1,7 +1,7 @@
 from abc import ABC
 from typing import Any
 
-from app.lib.home import recover_items
+from app.lib.home.recover_items import recover_items
 from app.models.mix import Mix
 
 class HomepageEntry(ABC):
