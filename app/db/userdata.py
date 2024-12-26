@@ -581,7 +581,7 @@ class MixTable(Base):
         if not mix:
             return False
 
-        mix.extra["trackmix_saved"] = not mix.extra["trackmix_saved"]
+        mix.extra["trackmix_saved"] = not mix.extra.get("trackmix_saved", False)
         cls.update_one(mix.id, mix)
 
         return mix.extra["trackmix_saved"]
