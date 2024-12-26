@@ -41,8 +41,8 @@ class MixesPlugin(Plugin):
 
     def __init__(self):
         super().__init__("mixes", "Mixes")
-        # self.server = "https://smcloud.mungaist.com"
-        self.server = "http://localhost:1956"
+        self.server = "https://smcloud.mungaist.com"
+        # self.server = "http://localhost:1956"
 
         # server_online = self.ping_server()
         self.set_active(True)
