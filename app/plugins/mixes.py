@@ -172,26 +172,26 @@ class MixesPlugin(Plugin):
 
         artists = {
             "today": {
-                "max": 3,
+                "max": 4,
                 "artists": get_artists_in_period(today_start, today_end, userid),
                 "created": 0,
             },
             "last_2_days": {
-                "max": 2,
+                "max": 3,
                 "artists": get_artists_in_period(
                     last_2_days_start, time.time(), userid
                 ),
                 "created": 0,
             },
             "last_7_days": {
-                "max": 3,
+                "max": 4,
                 "artists": get_artists_in_period(
                     last_7_days_start, time.time(), userid
                 ),
                 "created": 0,
             },
             "last_1_month": {
-                "max": 2,
+                "max": 4,
                 "artists": get_artists_in_period(
                     last_1_month_start, time.time(), userid
                 ),
