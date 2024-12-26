@@ -3,6 +3,7 @@ from io import BytesIO
 import json
 import random
 import time
+from urllib.parse import quote
 import requests
 from PIL import Image
 
@@ -40,8 +41,8 @@ class MixesPlugin(Plugin):
 
     def __init__(self):
         super().__init__("mixes", "Mixes")
-        self.server = "https://smcloud.mungaist.com"
-        # self.server = "http://localhost:1956"
+        # self.server = "https://smcloud.mungaist.com"
+        self.server = "http://localhost:1956"
 
         # server_online = self.ping_server()
         self.set_active(True)
@@ -329,7 +330,7 @@ class MixesPlugin(Plugin):
     def download_artist_image(self, artist: Artist):
         try:
             res = requests.get(
-                f"{self.server}/mix/image?artist={artist.name}&type=Artist"
+                f"{self.server}/mix/image?artist={quote(artist.name)}&type=Artist"
             )
         except requests.exceptions.ConnectionError:
             return None
