@@ -4,7 +4,7 @@ from pydantic import BaseModel, Field
 
 from app.api.apischemas import GenericLimitSchema
 from app.lib.home.recentlyadded import get_recently_added_items
-from app.lib.home.recentlyplayed import get_recently_played
+from app.lib.home.get_recently_played import get_recently_played
 from app.store.homepage import HomepageStore
 
 bp_tag = Tag(name="Home", description="Homepage items")

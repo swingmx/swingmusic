@@ -1,7 +1,7 @@
 import pprint
 from app.db.userdata import ScrobbleTable, UserTable
 from app.lib.home.recentlyadded import get_recently_added_items
-from app.lib.home.recentlyplayed import get_recently_played
+from app.lib.home.get_recently_played import get_recently_played
 from app.lib.recipes import HomepageRoutine
 from app.store.homepage import HomepageStore
 

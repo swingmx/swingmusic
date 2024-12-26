@@ -32,7 +32,7 @@ class MixAlreadyExists(Exception):
 class MixesPlugin(Plugin):
     MAX_TRACKS_TO_FETCH = 5
     MIN_TRACK_MIX_LENGTH = 15
-    MIX_TRACKS = 40
+    MIX_TRACKS_LENGTH = 40
 
     MIN_DAY_LISTEN_DURATION = 3 * 60  # 3 minutes
     MIN_WEEK_LISTEN_DURATION = 10 * 60  # 10 minutes
@@ -65,7 +65,7 @@ class MixesPlugin(Plugin):
         return False
 
     @plugin_method
-    def get_track_mix(self, tracks: list[Track], with_help: bool = False):
+    def get_track_mix_data(self, tracks: list[Track], with_help: bool = False):
         """
         Given a list of tracks, creates a mix by fetching data from the
         Swing Music Cloud recommendation server.
@@ -137,25 +137,25 @@ class MixesPlugin(Plugin):
         return trackmatches, results["albums"], results["artists"]
 
     @plugin_method
-    def get_artist_mix(self, artisthash: str):
-        """
-        Given an artisthash, creates an artist mix using the
-        self.MAX_TRACKS_TO_FETCH most listened to tracks.
+    # def get_artist_mix(self, artisthash: str):
+    #     """
+    #     Given an artisthash, creates an artist mix using the
+    #     self.MAX_TRACKS_TO_FETCH most listened to tracks.
 
-        Returns a tuple of the mix and the sourcehash.
-        """
-        artist = ArtistStore.artistmap[artisthash]
-        tracks = TrackStore.get_tracks_by_trackhashes(artist.trackhashes)
+    #     Returns a tuple of the mix and the sourcehash.
+    #     """
+    #     artist = ArtistStore.artistmap[artisthash]
+    #     tracks = TrackStore.get_tracks_by_trackhashes(artist.trackhashes)
 
-        tracks = sorted(tracks, key=lambda x: x.playduration, reverse=True)
-        sourcetracks = tracks[: self.MAX_TRACKS_TO_FETCH]
-        sourcehash = create_hash(*[t.trackhash for t in sourcetracks])
+    #     tracks = sorted(tracks, key=lambda x: x.playduration, reverse=True)
+    #     sourcetracks = tracks[: self.MAX_TRACKS_TO_FETCH]
+    #     sourcehash = create_hash(*[t.trackhash for t in sourcetracks])
 
-        if MixTable.get_by_sourcehash(sourcehash):
-            raise MixAlreadyExists()
+    #     if MixTable.get_by_sourcehash(sourcehash):
+    #         raise MixAlreadyExists()
 
-        tracks, albums, artists = self.get_track_mix(tracks[: self.MAX_TRACKS_TO_FETCH])
-        return (tracks, albums, artists, sourcehash)
+    #     tracks, albums, artists = self.get_track_mix(tracks[: self.MAX_TRACKS_TO_FETCH])
+    #     return (tracks, albums, artists, sourcehash)
 
     @plugin_method
     def create_artist_mixes(self, userid: int):
@@ -225,7 +225,7 @@ class MixesPlugin(Plugin):
                 )
 
                 mix = self.create_artist_mix(
-                    artist, trackhashes[: self.MAX_TRACKS_TO_FETCH]
+                    artist, trackhashes[: self.MAX_TRACKS_TO_FETCH], userid=userid
                 )
 
                 if mix:
@@ -262,7 +262,9 @@ class MixesPlugin(Plugin):
 
         return f"Featuring {tracks[0].artists[0]['name']}"
 
-    def create_artist_mix(self, artist: dict[str, str], trackhashes: list[str]):
+    def create_artist_mix(
+        self, artist: dict[str, str], trackhashes: list[str], userid: int
+    ):
         """
         Given an artist dict, creates an artist mix.
         """
@@ -286,7 +288,7 @@ class MixesPlugin(Plugin):
             print(db_mix.title)
             return db_mix
 
-        mix_tracks, albums, artists = self.get_track_mix(tracks)
+        mix_tracks, albums, artists = self.get_track_mix_data(tracks)
 
         if len(mix_tracks) < self.MIN_TRACK_MIX_LENGTH:
             return None
@@ -300,11 +302,12 @@ class MixesPlugin(Plugin):
 
         mix = Mix(
             # the a prefix indicates that this is an artist mix
-            id=f"a{artist['artisthash']}",
+            id=f"a{userid}{artist['artisthash']}",
             title=artist["artist"] + " Radio",
             description=self.get_mix_description(mix_tracks, artist["artisthash"]),
             tracks=[t.trackhash for t in mix_tracks],
             sourcehash=sourcehash,
+            userid=userid,
             extra={
                 "type": "artist",
                 "artisthash": artist["artisthash"],
@@ -435,30 +438,46 @@ class MixesPlugin(Plugin):
         """
         pass
 
-    def get_custom_mix_items(self, mix: Mix):
+    def get_track_mix(self, mix: Mix):
         """
         Given a mix, returns the excess tracks as a custom mix.
         """
 
         # INFO: If the mix can't have more than 20 tracks, return None
-        if len(mix.tracks) <= self.MIX_TRACKS + 20:
+        if len(mix.tracks) <= self.MIX_TRACKS_LENGTH + 20:
             return None
 
-        tracks = TrackStore.get_tracks_by_trackhashes(mix.tracks[self.MIX_TRACKS :])
+        og_track = TrackStore.trackhashmap.get(mix.tracks[0])
 
-        return Mix(
-            id=f"t{mix.extra['artisthash']}",
-            title="",  # INFO: Will be filled after all mixes are created.
+        if not og_track:
+            return None
+
+        og_track = og_track.get_best()
+        tracks = [og_track] + TrackStore.get_tracks_by_trackhashes(
+            mix.tracks[self.MIX_TRACKS_LENGTH :]
+        )
+
+        trackmix = Mix(
+            id=f"t{mix.userid}{mix.extra['artisthash']}",
+            title=og_track.title,
             description=self.get_mix_description(tracks, mix.extra["artisthash"]),
             tracks=[t.trackhash for t in tracks],
             sourcehash=create_hash(*[t.trackhash for t in tracks]),
+            userid=mix.userid,
             extra={
                 "type": "track",
+                "og_sourcehash": mix.sourcehash,
                 "images": self.get_custom_mix_images(tracks),
                 "artists": None,
                 "albums": None,
             },
         )
+
+        # INFO: Write track mix save state
+        if mix.extra.get("trackmix_saved"):
+            trackmix.saved = True
+
+        return trackmix
 
     def get_custom_mix_images(self, tracks: list[Track]):
 
@@ -478,12 +497,17 @@ class MixesPlugin(Plugin):
             if artisthash in seen:
                 continue
 
+            artist = ArtistStore.artistmap.get(artisthash)
+
+            if not artist:
+                continue
+
             seen.add(artisthash)
 
             image = {
                 "image": artisthash + ".webp",
                 "type": "artist",
-                "color": ArtistStore.get_artist_by_hash(artisthash).color,
+                "color": artist.artist.color,
             }
 
             images.append(image)

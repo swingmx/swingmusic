@@ -27,10 +27,11 @@ class TrackLog:
 
     def __post_init__(self):
         prefix_map = {
+            "mix:": "mix",
             "al:": "album",
             "ar:": "artist",
-            "pl:": "playlist",
             "fo:": "folder",
+            "pl:": "playlist",
             "favorite": "favorite",
         }
 

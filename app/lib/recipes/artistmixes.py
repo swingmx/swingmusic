@@ -25,13 +25,10 @@ class ArtistMixes(HomepageRoutine):
 
             custom_mixes = []
             for _mix in mixes:
-                custom_mix = mix.get_custom_mix_items(_mix)
+                custom_mix = mix.get_track_mix(_mix)
 
                 if custom_mix:
                     custom_mixes.append(custom_mix)
-
-            for index, custom_mix in enumerate(custom_mixes):
-                custom_mix.title = f"Mix {index + 1}"
 
             HomepageStore.set_mixes(
                 custom_mixes, entrykey="custom_mixes", userid=user.id

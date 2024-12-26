@@ -5,7 +5,8 @@ from typing import Any
 from app.lib.playlistlib import get_first_4_images
 from app.serializers.track import serialize_tracks
 from app.store.tracks import TrackStore
-from app.utils.dates import seconds_to_time_string
+from app.utils.dates import seconds_to_time_string, timestamp_to_time_passed
+from app.utils.hashing import create_hash
 
 
 @dataclass
@@ -15,6 +16,7 @@ class Mix:
     description: str
     tracks: list[str]
     sourcehash: str
+    userid: int
     """
     A hash of the tracks used to generate the mix.
     """
@@ -41,8 +43,13 @@ class Mix:
 
         return _dict
 
-    def to_dict(self):
+    def to_dict(self, convert_timestamp: bool = False):
         item = asdict(self)
+        item["trackshash"] = create_hash(*self.tracks[:40])
+
+        if convert_timestamp:
+            item["time"] = timestamp_to_time_passed(item["timestamp"])
+
         del item["tracks"]
 
         del item["extra"]["albums"]

@@ -486,15 +486,22 @@ class MixTable(Base):
     description: Mapped[str] = mapped_column(String())
     timestamp: Mapped[int] = mapped_column(Integer())
     sourcehash: Mapped[str] = mapped_column(String(), unique=True, index=True)
-    tracks: Mapped[list[str]] = mapped_column(JSON(), default_factory=list)
+    userid: Mapped[int] = mapped_column(
+        Integer(), ForeignKey("user.id", ondelete="cascade"), index=True
+    )
     saved: Mapped[bool] = mapped_column(Boolean(), default=False)
+    tracks: Mapped[list[str]] = mapped_column(JSON(), default_factory=list)
     extra: Mapped[dict[str, Any]] = mapped_column(
         JSON(), nullable=True, default_factory=dict
     )
 
     @classmethod
-    def get_all(cls):
-        result = cls.execute(select(cls))
+    def get_all(cls, with_userid: bool = False):
+        if with_userid:
+            result = cls.execute(select(cls).where(cls.userid == get_current_userid()))
+        else:
+            result = cls.execute(select(cls))
+
         return Mix.mixes_to_dataclasses(result.fetchall())
 
     @classmethod
@@ -506,9 +513,75 @@ class MixTable(Base):
             return Mix.mix_to_dataclass(res)
 
     @classmethod
+    def get_by_mixid(cls, mixid: str):
+        result = cls.execute(select(cls).where(cls.mixid == mixid))
+        res = result.fetchone()
+        if res:
+            return Mix.mix_to_dataclass(res)
+
+    @classmethod
     def insert_one(cls, mix: Mix):
         mixdict = asdict(mix)
         mixdict["mixid"] = mix.id
         del mixdict["id"]
 
         return cls.execute(insert(cls).values(mixdict), commit=True)
+
+    @classmethod
+    def update_one(cls, mixid: str, mix: Mix):
+        mixdict = asdict(mix)
+        mixdict["mixid"] = mix.id
+        del mixdict["id"]
+
+        return cls.execute(
+            update(cls)
+            .where(
+                and_(
+                    cls.mixid == mixid,
+                    cls.sourcehash == mix.sourcehash,
+                    cls.userid == get_current_userid(),
+                )
+            )
+            .values(mixdict),
+            commit=True,
+        )
+
+    @classmethod
+    def save_artist_mix(cls, sourcehash: str):
+        """
+        Toggles the saved status of an artist mix.
+        """
+
+        mix = cls.get_by_sourcehash(sourcehash)
+
+        if not mix:
+            return False
+
+        mix.saved = not mix.saved
+        cls.update_one(mix.id, mix)
+
+        return mix.saved
+
+    @classmethod
+    def get_saved_track_mixes(cls):
+        """
+        Return all mixes that have the extra.trackmix_saved set to True.
+        """
+
+        result = cls.execute(select(cls).where(cls.extra.c.trackmix_saved == True))
+        return Mix.mixes_to_dataclasses(result.fetchall())
+
+    @classmethod
+    def save_track_mix(cls, sourcehash: str):
+        """
+        Toggles the property extra.trackmix_saved to True.
+        """
+
+        mix = cls.get_by_sourcehash(sourcehash)
+        if not mix:
+            return False
+
+        mix.extra["trackmix_saved"] = not mix.extra["trackmix_saved"]
+        cls.update_one(mix.id, mix)
+
+        return mix.extra["trackmix_saved"]
