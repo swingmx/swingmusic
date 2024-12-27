@@ -475,6 +475,7 @@ class MixesPlugin(Plugin):
                 "albums": None,
             },
         )
+        trackmix.timestamp = mix.timestamp
 
         # INFO: Write track mix save state
         if mix.extra.get("trackmix_saved"):

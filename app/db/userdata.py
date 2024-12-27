@@ -498,9 +498,13 @@ class MixTable(Base):
     @classmethod
     def get_all(cls, with_userid: bool = False):
         if with_userid:
-            result = cls.execute(select(cls).where(cls.userid == get_current_userid()))
+            result = cls.execute(
+                select(cls)
+                .where(cls.userid == get_current_userid())
+                .order_by(cls.timestamp.desc())
+            )
         else:
-            result = cls.execute(select(cls))
+            result = cls.execute(select(cls).order_by(cls.timestamp.desc()))
 
         return Mix.mixes_to_dataclasses(result.fetchall())
 
