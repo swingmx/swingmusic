@@ -1,20 +1,15 @@
-from dataclasses import dataclass
 from gettext import ngettext
-from itertools import groupby
-from math import e
-from pprint import pprint
 from flask_openapi3 import Tag
 from flask_openapi3 import APIBlueprint
 import pendulum
 from pydantic import Field, BaseModel
 from app.api.apischemas import TrackHashSchema
 from typing import Literal
-from datetime import datetime, timedelta
-from collections import defaultdict
 import locale
 
 from app.db.userdata import FavoritesTable, ScrobbleTable
 from app.lib.extras import get_extra_info
+from app.lib.recipes.recents import RecentlyPlayed
 from app.models.album import Album
 from app.models.stats import StatItem
 from app.models.track import Track
@@ -77,8 +72,13 @@ def log_track(body: LogTrackBody):
         return {"msg": "Track not found."}, 404
 
     scrobble_data = dict(body)
+    # REVIEW: Do we need to store the extra info in the database?
+    # OR .... can we just write it to the backup file on demand?
     scrobble_data["extra"] = get_extra_info(body.trackhash, "track")
     ScrobbleTable.add(scrobble_data)
+
+    # NOTE: Update the recently played homepage for this userid
+    RecentlyPlayed(userid=scrobble_data["userid"])
 
     # Update play data on the in-memory stores
     track = trackentry.tracks[0]

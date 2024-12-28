@@ -31,3 +31,4 @@ logs.txt
 testdata.py
 test.py
 nohup.out
+*s.json

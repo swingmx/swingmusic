@@ -13,18 +13,25 @@ class TrackLog:
     duration: int
     timestamp: int
     source: str
+    """
+    The full source string, eg. "al:123456"
+    """
     userid: int
     extra: dict[str, Any]
 
     type = "track"
     type_src = None
+    """
+    The source identifier string, eg. albumhash, artisthash, etc.
+    """
 
     def __post_init__(self):
         prefix_map = {
+            "mix:": "mix",
             "al:": "album",
             "ar:": "artist",
-            "pl:": "playlist",
             "fo:": "folder",
+            "pl:": "playlist",
             "favorite": "favorite",
         }
 

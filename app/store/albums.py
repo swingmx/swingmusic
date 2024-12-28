@@ -1,20 +1,14 @@
-from itertools import groupby
-import json
-from pprint import pprint
 import random
 from typing import Iterable
 
 from app.lib.tagger import create_albums
 from app.models import Album, Track
 from app.store.artists import ArtistStore
-from app.utils import flatten
 from app.utils.auth import get_current_userid
 from app.utils.customlist import CustomList
-from app.utils.remove_duplicates import remove_duplicates
 
 from ..utils.hashing import create_hash
 from .tracks import TrackStore
-from app.utils.progressbar import tqdm
 
 ALBUM_LOAD_KEY = ""
 

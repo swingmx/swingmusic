@@ -1,3 +1,4 @@
+from dataclasses import asdict
 import datetime
 from typing import Any, Literal
 from sqlalchemy import (
@@ -25,12 +26,14 @@ from app.db.utils import (
     plugin_to_dataclasses,
     similar_artist_to_dataclass,
     similar_artists_to_dataclass,
+    tracklog_to_dataclass,
     tracklog_to_dataclasses,
     user_to_dataclass,
     user_to_dataclasses,
 )
 
 from app.db import Base
+from app.models.mix import Mix
 from app.utils.auth import get_current_userid, hash_password
 
 
@@ -223,9 +226,7 @@ class FavoritesTable(Base):
             # .select_from(join(table, cls, field == cls.hash))
             .where(and_(cls.type == type, cls.userid == get_current_userid()))
             .order_by(cls.timestamp.desc())
-            .offset(
-                start
-            )
+            .offset(start)
             # INFO: If start is 0, fetch all so we can get the total count
             .limit(limit if start != 0 else None)
         )
@@ -293,10 +294,10 @@ class ScrobbleTable(Base):
         return cls.insert_one(item)
 
     @classmethod
-    def get_all(cls, start: int, limit: int | None = None):
+    def get_all(cls, start: int, limit: int | None = None, userid: int | None = None):
         result = cls.execute(
             select(cls)
-            .where(cls.userid == get_current_userid())
+            .where(cls.userid == (userid if userid else get_current_userid()))
             .order_by(cls.timestamp.desc())
             .offset(start)
             .limit(limit)
@@ -305,14 +306,26 @@ class ScrobbleTable(Base):
         return tracklog_to_dataclasses(result.fetchall())
 
     @classmethod
-    def get_all_in_period(cls, start_time: int, end_time: int):
+    def get_all_in_period(cls, start_time: int, end_time: int, userid: int | None):
+        # UserId will be None if function is called from the API
+        # In that case, we use the request userid
+        if userid is None:
+            userid = get_current_userid()
+
         result = cls.execute(
             select(cls)
-            .where(cls.userid == get_current_userid())
+            .where(cls.userid == userid)
             .where(and_(cls.timestamp >= start_time, cls.timestamp <= end_time))
             .order_by(cls.timestamp.desc())
         )
         return tracklog_to_dataclasses(result.fetchall())
+
+    @classmethod
+    def get_last_entry(cls, userid: int):
+        result = cls.execute(
+            select(cls).where(cls.userid == userid).order_by(cls.timestamp.desc())
+        )
+        return tracklog_to_dataclass(result.fetchone())
 
 
 class PlaylistTable(Base):
@@ -332,8 +345,12 @@ class PlaylistTable(Base):
     )
 
     @classmethod
-    def get_all(cls):
-        result = cls.all()
+    def get_all(cls, current_user: bool = True):
+        if current_user:
+            result = cls.execute(select(cls).where(cls.userid == get_current_userid()))
+        else:
+            result = cls.execute(select(cls))
+
         return playlists_to_dataclasses(result)
 
     @classmethod
@@ -458,3 +475,117 @@ class LibDataTable(Base):
             select(cls.itemhash, cls.color).where(cls.itemtype == type)
         )
         return [{"itemhash": r[0], "color": r[1]} for r in result.fetchall()]
+
+
+class MixTable(Base):
+    __tablename__ = "mix"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    mixid: Mapped[str] = mapped_column(String(), index=True)
+    title: Mapped[str] = mapped_column(String())
+    description: Mapped[str] = mapped_column(String())
+    timestamp: Mapped[int] = mapped_column(Integer())
+    sourcehash: Mapped[str] = mapped_column(String(), unique=True, index=True)
+    userid: Mapped[int] = mapped_column(
+        Integer(), ForeignKey("user.id", ondelete="cascade"), index=True
+    )
+    saved: Mapped[bool] = mapped_column(Boolean(), default=False)
+    tracks: Mapped[list[str]] = mapped_column(JSON(), default_factory=list)
+    extra: Mapped[dict[str, Any]] = mapped_column(
+        JSON(), nullable=True, default_factory=dict
+    )
+
+    @classmethod
+    def get_all(cls, with_userid: bool = False):
+        if with_userid:
+            result = cls.execute(
+                select(cls)
+                .where(cls.userid == get_current_userid())
+                .order_by(cls.timestamp.desc())
+            )
+        else:
+            result = cls.execute(select(cls).order_by(cls.timestamp.desc()))
+
+        return Mix.mixes_to_dataclasses(result.fetchall())
+
+    @classmethod
+    def get_by_sourcehash(cls, sourcehash: str):
+        result = cls.execute(select(cls).where(cls.sourcehash == sourcehash))
+
+        res = result.fetchone()
+        if res:
+            return Mix.mix_to_dataclass(res)
+
+    @classmethod
+    def get_by_mixid(cls, mixid: str):
+        result = cls.execute(select(cls).where(cls.mixid == mixid))
+        res = result.fetchone()
+        if res:
+            return Mix.mix_to_dataclass(res)
+
+    @classmethod
+    def insert_one(cls, mix: Mix):
+        mixdict = asdict(mix)
+        mixdict["mixid"] = mix.id
+        del mixdict["id"]
+
+        return cls.execute(insert(cls).values(mixdict), commit=True)
+
+    @classmethod
+    def update_one(cls, mixid: str, mix: Mix):
+        mixdict = asdict(mix)
+        mixdict["mixid"] = mix.id
+        del mixdict["id"]
+
+        return cls.execute(
+            update(cls)
+            .where(
+                and_(
+                    cls.mixid == mixid,
+                    cls.sourcehash == mix.sourcehash,
+                    cls.userid == get_current_userid(),
+                )
+            )
+            .values(mixdict),
+            commit=True,
+        )
+
+    @classmethod
+    def save_artist_mix(cls, sourcehash: str):
+        """
+        Toggles the saved status of an artist mix.
+        """
+
+        mix = cls.get_by_sourcehash(sourcehash)
+
+        if not mix:
+            return False
+
+        mix.saved = not mix.saved
+        cls.update_one(mix.id, mix)
+
+        return mix.saved
+
+    @classmethod
+    def get_saved_track_mixes(cls):
+        """
+        Return all mixes that have the extra.trackmix_saved set to True.
+        """
+
+        result = cls.execute(select(cls).where(cls.extra.c.trackmix_saved == True))
+        return Mix.mixes_to_dataclasses(result.fetchall())
+
+    @classmethod
+    def save_track_mix(cls, sourcehash: str):
+        """
+        Toggles the property extra.trackmix_saved to True.
+        """
+
+        mix = cls.get_by_sourcehash(sourcehash)
+        if not mix:
+            return False
+
+        mix.extra["trackmix_saved"] = not mix.extra.get("trackmix_saved", False)
+        cls.update_one(mix.id, mix)
+
+        return mix.extra["trackmix_saved"]

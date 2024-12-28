@@ -1,6 +1,7 @@
 # from tqdm import tqdm
 
 import itertools
+import json
 from typing import Callable, Iterable
 from app.db.libdata import TrackTable
 
@@ -313,3 +314,18 @@ class TrackStore:
     def get_recently_played(cls, limit: int):
         tracks = cls.get_flat_list()
         return sorted(tracks, key=lambda x: x.lastplayed, reverse=True)[:limit]
+
+    @classmethod
+    def export(cls):
+        path = "tracks.json"
+
+        with open(path, "w") as f:
+            data = [
+                {
+                    "title": t.title,
+                    "album": t.album,
+                    "artists": [a["name"] for a in t.artists],
+                }
+                for t in cls.get_flat_list()
+            ]
+            json.dump(data, f)

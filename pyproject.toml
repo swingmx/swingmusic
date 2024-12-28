@@ -32,6 +32,7 @@ memory-profiler = "^0.61.0"
 sortedcontainers = "^2.4.0"
 xxhash = "^3.4.1"
 ffmpeg-python = "^0.2.0"
+schedule = "^1.2.2"
 
 [tool.poetry.dev-dependencies]
 pylint = "^2.15.5"

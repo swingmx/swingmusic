@@ -36,6 +36,7 @@ class Album:
     image: str = ""
     versions: list[str] = dataclasses.field(default_factory=list)
     fav_userids: list[int] = dataclasses.field(default_factory=list)
+    weakhash: str = ""
 
     @property
     def is_favorite(self):
@@ -54,6 +55,9 @@ class Album:
     def __post_init__(self):
         self.image = self.albumhash + ".webp"
         self.populate_versions()
+        self.weakhash = create_hash(
+            self.og_title, ",".join(a["name"] for a in self.albumartists)
+        )
 
     def populate_versions(self):
         _, self.versions = get_base_title_and_versions(self.og_title, get_versions=True)
