@@ -4,6 +4,8 @@ astroid==2.15.8
 attrs==23.1.0
 black==22.12.0
 blinker==1.6.3
+boto3==1.35.71
+botocore==1.35.71
 Brotli==1.1.0
 certifi==2023.7.22
 charset-normalizer==3.3.0
@@ -29,6 +31,7 @@ iniconfig==2.0.0
 isort==5.12.0
 itsdangerous==2.1.2
 Jinja2==3.1.2
+jmespath==1.0.1
 lazy-object-proxy==1.9.0
 locust==2.20.1
 MarkupSafe==2.1.3
@@ -55,7 +58,10 @@ pyxdg==0.28
 pyzmq==25.1.2
 rapidfuzz==2.15.2
 requests==2.31.0
+requests-ip-rotator==1.0.14
 roundrobin==0.0.4
+s3transfer==0.10.4
+schedule==1.2.2
 setproctitle==1.3.3
 show-in-file-manager==1.1.4
 six==1.16.0
