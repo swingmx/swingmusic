@@ -48,8 +48,8 @@ class UserConfig:
 
     # plugins
     enablePlugins: bool = True
-    lastfmApiKey: str = "5e5306fbf3e8e3bc92f039b6c6c4bd4e"
-    lastfmApiSecret: str = "0553005e93f9a4b4819d835182181806"
+    lastfmApiKey: str = "0553005e93f9a4b4819d835182181806"
+    lastfmApiSecret: str = "5e5306fbf3e8e3bc92f039b6c6c4bd4e"
     lastfmSessionKeys: dict[str, str] = field(default_factory=dict)
 
     def __post_init__(self):
