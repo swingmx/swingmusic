@@ -37,12 +37,15 @@ class RecentlyPlayed(HomepageRoutine):
                 )
 
                 item = items[0]
-                store_entry = HomepageStore.entries[self.store_key].items[
-                    self.userids[0]
-                ][0]
+                try:
+                    store_entry = HomepageStore.entries[self.store_key].items[
+                        self.userids[0]
+                    ][0]
+                except IndexError:
+                    store_entry = None
 
                 if (
-                    item["type"] + item["hash"]
+                    store_entry and item["type"] + item["hash"]
                     == store_entry["type"] + store_entry["hash"]
                 ):
                     # If the item is the same as the one in the store
