@@ -70,7 +70,11 @@ class LastFmPlugin(Plugin):
             "albumArtist": track.albumartists[0]["name"],
         }
 
+        print("scrobble data:", data)
+
         try:
-            self.post(data)
+            res = self.post(data)
+            print("scrobble response:", res.text)
+            print("scrobble response json:", res.json())
         except Exception as e:
             print("scrobble error", e)

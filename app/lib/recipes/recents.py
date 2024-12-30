@@ -36,17 +36,20 @@ class RecentlyPlayed(HomepageRoutine):
                     limit=self.ITEM_LIMIT, userid=self.userids[0], _entries=[last_entry]
                 )
 
-                item = items[0]
                 try:
+                    item = items[0]
                     store_entry = HomepageStore.entries[self.store_key].items[
                         self.userids[0]
                     ][0]
                 except IndexError:
                     store_entry = None
+                    item = None
 
                 if (
-                    store_entry and item["type"] + item["hash"]
-                    == store_entry["type"] + store_entry["hash"]
+                    store_entry
+                    and item
+                    and store_entry["type"] + store_entry["hash"]
+                    == item["type"] + item["hash"]
                 ):
                     # If the item is the same as the one in the store
                     # only update the timestamp
