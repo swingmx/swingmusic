@@ -9,6 +9,7 @@ from app.db.userdata import PluginTable
 from app.lib.index import index_everything
 from app.settings import Info
 from app.config import UserConfig
+from app.utils.auth import get_current_userid
 
 bp_tag = Tag(name="Settings", description="Customize stuff")
 api = APIBlueprint("settings", __name__, url_prefix="/notsettings", abp_tags=[bp_tag])
@@ -98,6 +99,10 @@ def get_all_settings():
     config["plugins"] = plugins
     config["version"] = Info.SWINGMUSIC_APP_VERSION
 
+    # hide lastfmSessionKeys for other users
+    current_user = get_current_userid()
+    config["lastfmSessionKey"] = config["lastfmSessionKeys"].get(str(current_user), "")
+    del config["lastfmSessionKeys"]
     return config
 
 
