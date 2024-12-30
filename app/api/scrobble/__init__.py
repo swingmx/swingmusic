@@ -13,6 +13,7 @@ from app.lib.recipes.recents import RecentlyPlayed
 from app.models.album import Album
 from app.models.stats import StatItem
 from app.models.track import Track
+from app.plugins.lastfm import LastFmPlugin
 from app.serializers.artist import serialize_for_card
 from app.serializers.album import serialize_for_card as serialize_for_album_card
 from app.serializers.track import serialize_track, serialize_tracks
@@ -96,6 +97,11 @@ def log_track(body: LogTrackBody):
     track = TrackStore.trackhashmap.get(body.trackhash)
     if track:
         track.increment_playcount(duration, timestamp)
+
+    lastfm = LastFmPlugin()
+
+    if lastfm.enabled:
+        lastfm.scrobble(trackentry.tracks[0], timestamp)
 
     return {"msg": "recorded"}, 201
 
