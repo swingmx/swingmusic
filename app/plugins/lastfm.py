@@ -9,6 +9,7 @@ from app.utils.auth import get_current_userid
 from app.utils.threading import background
 from app.plugins import Plugin, plugin_method
 
+from app.logger import log
 
 class LastFmPlugin(Plugin):
     def __init__(self):
@@ -60,7 +61,7 @@ class LastFmPlugin(Plugin):
     @plugin_method
     @background
     def scrobble(self, track: Track, timestamp: int):
-        print("Last.fm: logging track: ", track.title, "-", track.artists[0]["name"])
+        log.info(f"Last.fm: logging track: {track.title} - {track.artists[0]['name']}")
         data = {
             "method": "track.scrobble",
             "artist": track.artists[0]["name"],
@@ -70,11 +71,11 @@ class LastFmPlugin(Plugin):
             "albumArtist": track.albumartists[0]["name"],
         }
 
-        print("scrobble data:", data)
+        log.info(f"scrobble data: {data}")
 
         try:
             res = self.post(data)
-            print("scrobble response:", res.text)
-            print("scrobble response json:", res.json())
+            log.info("scrobble response:" + str(res.text))
+            log.info("scrobble response json:" + str(res.json()))
         except Exception as e:
-            print("scrobble error", e)
+            log.info("scrobble error" + str(e))

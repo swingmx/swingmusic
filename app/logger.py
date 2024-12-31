@@ -35,7 +35,7 @@ class CustomFormatter(logging.Formatter):
         return formatter.format(record)
 
 
-log = logging.getLogger("swing")
+log = logging.getLogger("SWING MUSIC")
 log.propagate = False
 log.setLevel(logging.DEBUG)
 
