@@ -173,7 +173,7 @@ class Album:
 
         # REVIEW: Reading from the config file in a for loop will be slow
         # TODO: Find a
-        if singleTrackAsSingle and len(tracks) == 1:
+        if singleTrackAsSingle and self.trackcount == 1:
             return True
 
         if (
