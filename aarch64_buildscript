@@ -1,0 +1,45 @@
+#!/bin/sh
+
+# README
+#   Builds swingmusic binary for aarch64 aka ARM64 architecture
+# Run
+#   ./buildswingmusic.sh
+#   chmod a+x swingmusicbuilder/swingmusic/dist/swingmusic
+#   .swingmusicbuilder/swingmusic/dist/swingmusic --port <optional_port_param> --host <optional_host_param>
+# Notes
+#   Poetry installer and pipx install poetry are both broken on ARM64 Raspberry Pi OS
+#   Moving or renaming venv directory (comment inline below) will break that venv.
+#   Additional poetry bug ongoing https://github.com/python-poetry/poetry/issues/5250 (comment inline below)
+#   Changed to bash shebang above from repo build script setting of zsh
+pacman-key --init
+pacman-key --populate archlinuxarm
+pacman -Sy --noconfirm
+pacman -S yarn git wget glibc gcc bzip2 expat gdbm libffi libnsl libxcrypt openssl zlib libnghttp2 icu --noconfirm --disable-download-timeout --needed
+wget https://github.com/jensgrunzer1/pyhon311-for-aarch64/raw/refs/heads/main/python311-3.11.9-2-aarch64.pkg.tar.xz
+pacman -U python311-3.11.9-2-aarch64.pkg.tar.xz --noconfirm
+mkdir swingmusicbuilder
+cd swingmusicbuilder
+
+git clone https://github.com/swing-opensource/swingmusic-client.git
+git clone https://github.com/swing-opensource/swingmusic.git
+# Manual poetry installation as installers are broken.
+python3.11 -m venv poetry
+source poetry/bin/activate
+
+cd swingmusic
+
+pip install -U pip setuptools
+pip install poetry
+
+cd ../swingmusic-client
+yarn install
+yarn build --outDir ../swingmusic/client
+
+cd ../swingmusic
+# Fixes poetry issue 5250.
+export PYTHON_KEYRING_BACKEND=keyring.backends.fail.Keyring
+poetry env use /usr/bin/python3.11
+poetry install
+# Swing gives error if this is not set. Set to version of repo you cloned.
+export SWINGMUSIC_APP_VERSION="1.4.8"
+poetry run python manage.py --build

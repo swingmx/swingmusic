@@ -1,0 +1,50 @@
+name: New aarch64 Release
+run-name: Release v${{ github.event.inputs.tag }}
+on:
+  workflow_dispatch:
+jobs:
+  build:
+        runs-on: [ubuntu-20.04]
+        name: Building aarch64 binary
+        steps:
+          - name: Installing Packages
+            run: |
+                sudo apt update -y
+                sudo apt -y install binfmt-support qemu-user-static systemd-container wget
+          - name: Starting Services
+            run: |
+                sudo systemctl restart systemd-binfmt
+                sudo systemctl start systemd-resolved
+          - name: Downloading Arch Linux Arm Tarball for rpi4 aarch64
+            run: |
+                wget http://os.archlinuxarm.org/os/ArchLinuxARM-rpi-aarch64-latest.tar.gz
+          - name: Extracting Tarball
+            run: |
+                mkdir root
+                sudo tar xpf ArchLinuxARM-rpi-aarch64-latest.tar.gz -C root --warning=no-unknown-keyword
+          - name: Building Swingmusic in qemu
+            run: |
+                wget https://raw.githubusercontent.com/jensgrunzer1/swingmusic/refs/heads/master/aarch64_buildscript
+                chmod +x aarch64_buildscript
+                mv aarch64_buildscript root/
+                sudo systemd-nspawn --bind-ro=/etc/resolv.conf -D root ./aarch64_buildscript
+          - name: Create Release
+            id: create_release
+            uses: actions/create-release@v1
+            env:
+              GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+            with:
+              tag_name: ${{ github.run_number }}
+              release_name: Release ${{ github.run_number }}
+              draft: false
+              prerelease: false
+          - name: Upload Release Asset
+            id: upload-release-asset
+            uses: actions/upload-release-asset@v1
+            env:
+              GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+            with:
+              upload_url: ${{ steps.create_release.outputs.upload_url }}
+              asset_path: ./root/swingmusicbuilder/swingmusic/dist/swingmusic
+              asset_name: swingmusic              
+              asset_content_type: application/octet-stream
