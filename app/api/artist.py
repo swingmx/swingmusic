@@ -7,6 +7,7 @@ from pprint import pprint
 import random
 from datetime import datetime
 from itertools import groupby
+from typing import Any
 
 from flask_openapi3 import APIBlueprint, Tag
 from pydantic import Field
@@ -72,6 +73,7 @@ def get_artist(path: ArtistHashSchema, query: GetArtistQuery):
     except ValueError:
         year = 0
 
+    genres = [*artist.genres]
     decade = None
 
     if year:
@@ -79,7 +81,7 @@ def get_artist(path: ArtistHashSchema, query: GetArtistQuery):
         decade = str(decade)[2:] + "s"
 
     if decade:
-        artist.genres.insert(0, {"name": decade, "genrehash": decade})
+        genres.insert(0, {"name": decade, "genrehash": decade})
 
     stats = get_track_group_stats(tracks)
     duration = sum(t.duration for t in tracks) if tracks else 0
@@ -105,7 +107,7 @@ def get_artist(path: ArtistHashSchema, query: GetArtistQuery):
             "duration": duration,
             "trackcount": tcount,
             "albumcount": artist.albumcount,
-            "genres": artist.genres,
+            "genres": genres,
             "is_favorite": artist.is_favorite,
         },
         "tracks": tracks,
@@ -150,7 +152,7 @@ def get_artist_albums(path: ArtistHashSchema, query: GetArtistAlbumsQuery):
     albums = [a for a in albumdict.values()]
     all_albums = sorted(albums, key=lambda a: a.date, reverse=True)
 
-    res = {
+    res: dict[str, Any] = {
         "albums": [],
         "appearances": [],
         "compilations": [],

@@ -465,7 +465,7 @@ class LibDataTable(Base):
     @classmethod
     def find_one(cls, hash: str, type: Literal["album", "artist"]):
         result = cls.execute(
-            select(cls).where((cls.itemhash == hash) & (cls.itemtype == type))
+            select(cls).where((cls.itemhash == type + hash) & (cls.itemtype == type))
         )
         return result.fetchone()
 

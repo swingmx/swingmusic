@@ -2323,17 +2323,17 @@ widechars = ["wcwidth"]
 
 [[package]]
 name = "tinytag"
-version = "1.10.1"
-description = "Read music meta data and length of MP3, OGG, OPUS, MP4, M4A, FLAC, WMA and Wave files"
+version = "2.0.0"
+description = "Read audio file metadata"
 optional = false
-python-versions = ">=2.7"
+python-versions = ">=3.7"
 files = [
-    {file = "tinytag-1.10.1-py3-none-any.whl", hash = "sha256:e437654d04c966fbbbdbf807af61eb9759f1d80e4173a7d26202506b37cfdaf0"},
-    {file = "tinytag-1.10.1.tar.gz", hash = "sha256:122a63b836f85094aacca43fc807aaee3290be3de17d134f5f4a08b509ae268f"},
+    {file = "tinytag-2.0.0-py3-none-any.whl", hash = "sha256:971b9dceae2d1de73b5e8300639ea0b41454633b899426e702aed15f0e72a9b4"},
+    {file = "tinytag-2.0.0.tar.gz", hash = "sha256:d041f53d15553bb148549bfbc7feab445caf7105ba95fa2ecb9827bb06b62275"},
 ]
 
 [package.extras]
-tests = ["flake8", "pytest", "pytest-cov"]
+tests = ["coverage", "mypy", "pycodestyle", "pylint", "pytest"]
 
 [[package]]
 name = "tomli"
@@ -2775,4 +2775,4 @@ testing = ["coverage (>=5.0.3)", "zope.event", "zope.testing"]
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.10,<3.12"
-content-hash = "85f8932739522e7b53b4fe5bbecc3c10a30bb690e25bf9404209c57ec71e88d3"
+content-hash = "733ca957831c695560fe292a6dfdad13c3fc905695f473cd48cf13bfba8defdc"

@@ -50,6 +50,7 @@ class Track:
     _pos: int = 0
     _ati: str = ""
     image: str = ""
+    explicit: bool = False
     fav_userids: list[int] = field(default_factory=list)
 
     @property
@@ -78,6 +79,8 @@ class Track:
         self.og_album = self.album
         self.folder = self.folder + "/"
         self.weakhash = create_hash(self.title, self.artists)
+        explicit_tag = self.extra.get("explicit", ["0"])
+        self.explicit = int(explicit_tag[0]) == 1
 
         self.image = self.albumhash + ".webp"
         self.extra = {

@@ -1,3 +1,6 @@
+import json
+from pathlib import Path
+import time
 import requests
 from typing import Any
 from hashlib import md5
@@ -5,13 +8,21 @@ from urllib.parse import quote_plus
 
 from app.config import UserConfig
 from app.models.track import Track
+from app.settings import Paths
 from app.utils.auth import get_current_userid
 from app.utils.threading import background
 from app.plugins import Plugin, plugin_method
 
 from app.logger import log
 
+
 class LastFmPlugin(Plugin):
+    """
+    Last.fm scrobbler plugin.
+    """
+
+    UPLOADING_DUMPS = False
+
     def __init__(self):
         self.config = UserConfig()
         super().__init__("lastfm", "Last.fm scrobbler")
@@ -71,11 +82,85 @@ class LastFmPlugin(Plugin):
             "albumArtist": track.albumartists[0]["name"],
         }
 
+        success = self.post_scrobble_data({**data})
+
+        if not success:
+            self.dump_scrobble(data)
+        else:
+            self.upload_dumps()
+
+        return success
+
+    def post_scrobble_data(self, data: dict[str, Any]):
+        """
+        Uploads the scrobble data and handles the
+        response from the lastfm scrobble endpoint.
+        """
         log.info(f"scrobble data: {data}")
 
         try:
             res = self.post(data)
-            log.info("scrobble response:" + str(res.text))
-            log.info("scrobble response json:" + str(res.json()))
         except Exception as e:
-            log.info("scrobble error" + str(e))
+            log.warn("scrobble response error" + str(e))
+            return False
+
+        log.info("scrobble response text: " + str(res.text))
+        log.info("scrobble response json: " + str(res.json()))
+
+        res_json: dict[str, Any] = res.json()
+
+        if res_json.get("error"):
+            log.error("LASTFM: scrobble error" + str(res_json))
+
+            if res_json["error"] == 9:
+                log.error("LAST.FM: Invalid session key")
+                # Invalid session key
+                self.config.lastfmSessionKeys.pop(str(get_current_userid()))
+                self.config.lastfmSessionKeys = self.config.lastfmSessionKeys
+                return False
+
+        if res_json.get("scrobbles", {}).get("@attr", {}).get("accepted") == 1:
+            log.info("scrobble accepted")
+            return True
+
+        return False
+
+    # SECTION: Persistence
+    def dump_scrobble(self, data: dict[str, Any]):
+        """
+        Dumps the scrobble data to a file in the lastfm plugin directory.
+        """
+        dump_dir = Path(Paths.get_plugins_path(), "lastfm")
+        if not dump_dir.exists():
+            dump_dir.mkdir(parents=True, exist_ok=True)
+
+        path = dump_dir / f"{int(time.time())}.json"
+
+        log.info(f"Dumping scrobble to {path}")
+        with open(path, "w") as f:
+            json.dump(data, f)
+
+    def upload_dumps(self):
+        """
+        Uploads the scrobble dumps to the lastfm api.
+        """
+        if self.UPLOADING_DUMPS:
+            return
+
+        self.UPLOADING_DUMPS = True
+        dump_dir = Path(Paths.get_plugins_path(), "lastfm")
+
+        if not dump_dir.exists():
+            return
+
+        try:
+            for file in dump_dir.iterdir():
+                log.info(f"Uploading dump: {file}")
+                with open(file, "r") as f:
+                    data = json.load(f)
+                    success = self.post_scrobble_data(data)
+
+                    if success:
+                        file.unlink()
+        finally:
+            self.UPLOADING_DUMPS = False

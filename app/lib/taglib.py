@@ -155,35 +155,54 @@ def get_tags(filepath: str, config: UserConfig):
         return None
 
     try:
-        tags: Any = TinyTag.get(filepath)
-    except:  # noqa: E722
+        tags = TinyTag.get(filepath)
+    except Exception as e:  # noqa: E722
         return None
+
+    metadata: dict[str, Any] = {
+        "album": tags.album,
+        "albumartists": tags.albumartist,
+        "artists": tags.artist,
+        "title": tags.title,
+        "last_mod": last_mod,
+        "filepath": win_replace_slash(filepath),
+        "folder": win_replace_slash(os.path.dirname(filepath)),
+        "bitrate": tags.bitrate,
+        "duration": tags.duration,
+        "track": tags.track,
+        "disc": tags.disc,
+        "genres": tags.genre,
+        "copyright": " ".join(tags.other.get("copyright", [])),
+        "extra": {},
+    }
 
     no_albumartist: bool = (tags.albumartist == "") or (tags.albumartist is None)
     no_artist: bool = (tags.artist == "") or (tags.artist is None)
 
     if no_albumartist and not no_artist:
-        tags.albumartist = tags.artist
+        # INFO: If no albumartist, use the artist
+        metadata["albumartists"] = tags.artist
 
     if no_artist and not no_albumartist:
-        tags.artist = tags.albumartist
+        # INFO: If no artist, use the albumartist
+        metadata["artist"] = tags.albumartist
 
     parse_data = None
 
+    # INFO: If title or album is empty, extract the album and title from the filename
     to_filename = ["title", "album"]
     for tag in to_filename:
-        p = getattr(tags, tag)
+        p = metadata[tag]
         if p == "" or p is None:
             parse_data = extract_artist_title(filename, config)
             title = parse_data.title.replace("_", " ")
-            setattr(tags, tag, title)
+            metadata[tag] = title
 
-            # tags.title = tags.title.replace("_", " ")
-            # tags.album = tags.album.replace("_", " ")
-
-    parse = ["artist", "albumartist"]
+    # INFO: If artist or albumartist is empty
+    # extract the artist and albumartist from the filename
+    parse = ["artists", "albumartists"]
     for tag in parse:
-        p = getattr(tags, tag)
+        p = metadata[tag]
 
         if p == "" or p is None:
             if not parse_data:
@@ -192,194 +211,68 @@ def get_tags(filepath: str, config: UserConfig):
             artist = parse_data.artist
 
             if artist:
-                setattr(tags, tag, ", ".join(artist))
+                metadata[tag] = ", ".join(artist)
             else:
-                setattr(tags, tag, "Unknown")
+                metadata[tag] = "Unknown"
 
-    # TODO: Move parsing title, album and artist to startup. (Maybe!)
-
-    to_check = ["album", "year", "albumartist"]
+    # INFO: If these are empty, set to "Unknown"
+    to_check = ["album", "albumartists"]
     for prop in to_check:
-        p = getattr(tags, prop)
+        p = metadata[prop]
         if (p is None) or (p == ""):
-            setattr(tags, prop, "Unknown")
+            metadata[prop] = "Unknown"
 
+    # INFO: Round the bitrate and duration
     to_round = ["bitrate", "duration"]
     for prop in to_round:
         try:
-            setattr(tags, prop, math.floor(getattr(tags, prop)))
+            metadata[prop] = math.floor(getattr(tags, prop))
         except TypeError:
-            setattr(tags, prop, 0)
+            metadata[prop] = 0
 
+    # INFO: Convert these to int
     to_int = ["track", "disc"]
     for prop in to_int:
         try:
-            setattr(tags, prop, int(getattr(tags, prop)))
+            metadata[prop] = int(getattr(tags, prop))
         except (ValueError, TypeError):
-            setattr(tags, prop, 1)
+            metadata[prop] = 1
 
-    try:
-        tags.copyright = tags.extra["copyright"]
-    except KeyError:
-        tags.copyright = None
+    # INFO: Extract copyright from extra data
+    metadata["date"] = parse_date(tags.year or "") or int(last_mod)
 
-    # tags.image = f"{tags.albumhash}.webp"
-    tags.folder = win_replace_slash(os.path.dirname(filepath))
-
-    tags.date = parse_date(tags.year) or int(last_mod)
-    tags.filepath = win_replace_slash(filepath)
-    tags.last_mod = last_mod
-
-    tags.artists = tags.artist
-    tags.albumartists = tags.albumartist
-
-    # split_artist = split_artists(tags.artist, separators=config.artistSeparators)
-    # split_albumartists = split_artists(tags.albumartist, separators=config.artistSeparators)
-    # new_title = tags.title
-
-    # TODO: Figure out which is the best spot to create these hashes
     # create albumhash using og_album
-    tags.albumhash = create_hash(tags.album or "", tags.albumartist)
+    metadata["albumhash"] = create_hash(
+        tags.album or "", metadata.get("albumartists", "")
+    )
 
-    # extract featured artists
-    # if config.extractFeaturedArtists:
-    #     feat, new_title = parse_feat_from_title(
-    #         tags.title, separators=config.artistSeparators
-    #     )
-    #     original_lower = "-".join([create_hash(a) for a in split_artist])
-    #     split_artist.extend(a for a in feat if create_hash(a) not in original_lower)
+    metadata["trackhash"] = create_hash(
+        metadata.get("artist", ""), metadata.get("album", ""), metadata.get("title", "")
+    )
 
-    # if no albumartist, assign to the first artist
-    if not tags.albumartist:
-        tags.albumartist = split_artists(tags.artist, config)[:1]
-
-    # create json objects for artists and albumartists
-    # tags.artists = [
-    #     {
-    #         "artisthash": create_hash(a, decode=True),
-    #         "name": a,
-    #     }
-    #     for a in split_artist
-    # ]
-
-    # tags.albumartists = [
-    #     {
-    #         "artisthash": create_hash(a, decode=True),
-    #         "name": a,
-    #     }
-    #     for a in split_albumartists
-    # ]
-
-    # tags.artisthashes = list(
-    #     {a["artisthash"] for a in tags.artists}
-    # )
-
-    # remove prod by
-    # if config.removeProdBy:
-    #     new_title = remove_prod(new_title)
-
-    # if track is a single, ie.
-    # if og_title == album, rename album to new_title
-    # if tags.title == tags.album:
-    #     tags.album = new_title
-
-    # remove remaster from track title
-    # if config.removeRemasterInfo:
-    #     new_title = clean_title(new_title)
-
-    # save final title
-    # tags.og_title = tags.title
-    # tags.title = new_title
-    # tags.og_album = tags.album
-
-    # clean album title
-    # if config.cleanAlbumTitle:
-    #     tags.album, _ = get_base_title_and_versions(tags.album, get_versions=False)
-
-    # merge album versions
-    # if config.mergeAlbums:
-    #     tags.albumhash = create_hash(
-    #         tags.album, *(a["name"] for a in tags.albumartists)
-    #     )
-
-    # process genres
-    # if tags.genre:
-    #     src_genres: str = tags.genre
-    #     src_genres = src_genres.lower()
-    #     # separators = {"/", ";", "&"}
-    #     separators = set(config.genreSeparators)
-
-    #     contains_rnb = "r&b" in src_genres
-    #     contains_rock = "rock & roll" in src_genres
-
-    #     if contains_rnb:
-    #         src_genres = src_genres.replace("r&b", "RnB")
-
-    #     if contains_rock:
-    #         src_genres = src_genres.replace("rock & roll", "rock")
-
-    #     for s in separators:
-    #         src_genres = src_genres.replace(s, ",")
-
-    #     genres_list: list[str] = src_genres.split(",")
-    #     tags.genres = [
-    #         {"name": g.strip(), "genrehash": create_hash(g.strip())}
-    #         for g in genres_list
-    #     ]
-    #     tags.genrehashes = [g["genrehash"] for g in tags.genres]
-    # else:
-    #     tags.genres = []
-    #     tags.genrehashes = []
-
-    tags.genres = tags.genre
-
-    # sub underscore with space
-    # tags.title = tags.title.replace("_", " ")
-    # tags.album = tags.album.replace("_", " ")
-    tags.trackhash = create_hash(tags.artists, tags.album, tags.title)
-
-    more_extra = {
-        "audio_offset": tags.audio_offset,
-        "bitdepth": tags.bitdepth,
-        "composer": tags.composer,
-        "channels": tags.channels,
-        "comment": tags.comment,
-        "disc_total": tags.disc_total,
-        "filesize": tags.filesize,
-        "samplerate": tags.samplerate,
-        "track_total": tags.track_total,
-        "hashinfo": {
-            "algo": "sha1",
-            "format": "[:5]+[-5:]",  # first 5 + last 5 chars
-        },
+    extra: dict[str, Any] = {
+        k: v for k, v in tags.as_dict().items() if metadata.get(k, "meh") == "meh"
     }
 
-    tags.extra = {**tags.extra, **more_extra}
+    extra["hashinfo"] = {
+        "algo": "sha1",
+        "format": "[:5]+[-5:]",  # first 5 + last 5 chars
+    }
 
-    tags = tags.__dict__
+    to_pop = ["filename", "artist", "albumartist", "year"]
 
-    # delete all tag properties that start with _ (tinytag internals)
-    for tag in list(tags):
-        if tag.startswith("_"):
-            del tags[tag]
+    # REMOVE EMPTY VALUES
+    for key, value in extra.items():
+        if (
+            value is None
+            or value == ""
+            # INFO: If value is a list, check if it's empty or if the first element is empty
+            or (type(value) is list and "".join(value) == "")
+        ):
+            to_pop.append(key)
 
-    to_delete = [
-        "filesize",
-        "audio_offset",
-        "channels",
-        "comment",
-        "composer",
-        "disc_total",
-        "samplerate",
-        "track_total",
-        "year",
-        "bitdepth",
-        "artist",
-        "albumartist",
-        "genre",
-    ]
+    for key in to_pop:
+        extra.pop(key, None)
 
-    for tag in to_delete:
-        del tags[tag]
-
-    return tags
+    metadata["extra"] = extra
+    return metadata

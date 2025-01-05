@@ -27,6 +27,8 @@ class UserConfig:
             "AC/DC",
             "Bob marley & the wailers",
             "Crosby, Stills, Nash & Young",
+            "Smith & Thell",
+            "Peter, Paul & Mary",
         }
     )
     genreSeparators: set[str] = field(default_factory=lambda: {"/", ";", "&"})
