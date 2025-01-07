@@ -233,7 +233,7 @@ def get_track_group_stats(tracks: list[Track], is_album: bool = False):
             "toptrack",
             f"top track ({seconds_to_time_string(top_track.playduration)} listened)",
             f"{top_track.title}",
-            top_track.image + "?pathhash=" + top_track.pathhash if top_track else None,
+            top_track.image if top_track else None,
         )
         if top_track
         else StatItem(
@@ -251,7 +251,7 @@ def get_track_group_stats(tracks: list[Track], is_album: bool = False):
                 "playcount": 0,
                 "playduration": 0,
                 "title": track.album,
-                "image": track.image + "?pathhash=" + track.pathhash if track.image else None,
+                "image": track.image if track.image else None,
             }
 
         albums_map[track.albumhash]["playcount"] += 1

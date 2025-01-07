@@ -357,7 +357,7 @@ def get_stats():
             else "—"
         ),
         (
-            tracks[0].image + "?pathhash=" + tracks[0].pathhash
+            tracks[0].image
             if len(tracks) > 0
             else None
         ),

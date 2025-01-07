@@ -54,7 +54,7 @@ class Album:
             self.fav_userids.append(userid)
 
     def __post_init__(self):
-        self.image = self.albumhash + ".webp"
+        self.image = self.albumhash + ".webp" + "?pathhash=" + self.pathhash
         self.populate_versions()
         self.weakhash = create_hash(
             self.og_title, ",".join(a["name"] for a in self.albumartists)

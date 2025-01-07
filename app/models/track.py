@@ -52,11 +52,14 @@ class Track:
     image: str = ""
     explicit: bool = False
     fav_userids: list[int] = field(default_factory=list)
-    pathhash: str = ""
 
     @property
     def is_favorite(self):
         return get_current_userid() in self.fav_userids
+
+    @property
+    def pathhash(self):
+        return create_hash(self.folder)
 
     def toggle_favorite_user(self, userid: int):
         """
@@ -82,9 +85,8 @@ class Track:
         self.weakhash = create_hash(self.title, self.artists)
         explicit_tag = self.extra.get("explicit", ["0"])
         self.explicit = int(explicit_tag[0]) == 1
-        self.pathhash = create_hash(self.folder)
 
-        self.image = self.albumhash + ".webp"
+        self.image = self.albumhash + ".webp" + "?pathhash=" + self.pathhash
         self.extra = {
             "disc_total": self.extra.get("disc_total", 0),
             "track_total": self.extra.get("track_total", 0),
