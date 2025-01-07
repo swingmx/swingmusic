@@ -8,7 +8,7 @@ from app.lib.home.get_recently_played import get_recently_played
 from app.store.homepage import HomepageStore
 
 bp_tag = Tag(name="Home", description="Homepage items")
-api = APIBlueprint("home", __name__, url_prefix="/home", abp_tags=[bp_tag])
+api = APIBlueprint("home", __name__, url_prefix="/nothome", abp_tags=[bp_tag])
 
 
 @api.get("/recents/added")

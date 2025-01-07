@@ -30,6 +30,7 @@ class Album:
     playcount: int
     playduration: int
     extra: dict
+    pathhash: str = ""
 
     id: int = -1
     type: str = "album"

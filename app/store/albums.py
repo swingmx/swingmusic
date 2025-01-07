@@ -38,19 +38,7 @@ class AlbumMapEntry:
 
 
 class AlbumStore:
-    # albums: list[Album] = CustomList()
     albummap: dict[str, AlbumMapEntry] = {}
-
-    # @staticmethod
-    # def create_album(track: Track):
-    #     """
-    #     Creates album object from a track
-    #     """
-    #     return Album(
-    #         albumhash=track.albumhash,
-    #         albumartists=track.albumartists,  # type: ignore
-    #         title=track.og_album,
-    #     )
 
     @classmethod
     def load_albums(cls, instance_key: str):

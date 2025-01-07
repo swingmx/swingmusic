@@ -123,6 +123,10 @@ class Paths:
     def get_sm_mixes_img_path(cls):
         return join(cls.get_mixes_img_path(), "small")
 
+    @classmethod
+    def get_image_cache_path(cls):
+        return join(cls.get_img_path(), "cache")
+
 
 # defaults
 class Defaults:

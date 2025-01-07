@@ -179,6 +179,7 @@ def create_albums(_trackhashes: list[str] = []) -> list[tuple[Album, set[str]]]:
                 "playduration": track.playduration,
                 "title": track.album,
                 "tracks": {track.trackhash},
+                "pathhash": track.pathhash,
                 "extra": {},
             }
         else:

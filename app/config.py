@@ -29,6 +29,7 @@ class UserConfig:
             "Crosby, Stills, Nash & Young",
             "Smith & Thell",
             "Peter, Paul & Mary",
+            "Simon & Garfunkel",
         }
     )
     genreSeparators: set[str] = field(default_factory=lambda: {"/", ";", "&"})

@@ -94,13 +94,19 @@ def log_track(body: LogTrackBody):
         if artist:
             artist.increment_playcount(duration, timestamp)
 
-    track = TrackStore.trackhashmap.get(body.trackhash)
-    if track:
-        track.increment_playcount(duration, timestamp)
+    trackentry.increment_playcount(duration, timestamp)
+    track = trackentry.tracks[0]
 
     lastfm = LastFmPlugin()
 
-    if lastfm.enabled:
+    print(track.duration / 2, 240, body.duration, "\n")
+
+    if (
+        lastfm.enabled
+        and track.duration > 30
+        and body.duration >= min(track.duration / 2, 240)
+        # SEE: https://www.last.fm/api/scrobbling#when-is-a-scrobble-a-scrobble
+    ):
         lastfm.scrobble(trackentry.tracks[0], timestamp)
 
     return {"msg": "recorded"}, 201
@@ -350,7 +356,11 @@ def get_stats():
             if len(tracks) > 0
             else "—"
         ),
-        tracks[0].image if len(tracks) > 0 else None,
+        (
+            tracks[0].image + "?pathhash=" + tracks[0].pathhash
+            if len(tracks) > 0
+            else None
+        ),
     )
 
     fav_count = FavoritesTable.count_favs_in_period(start_time, end_time)
