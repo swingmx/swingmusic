@@ -69,7 +69,7 @@ class IndexTracks:
         for track in tracks:
             try:
                 extract_thumb(
-                    track["filepath"], track["trackhash"] + ".webp", overwrite=True
+                    track["filepath"], track["albumhash"] + ".webp", overwrite=True
                 )
             except FileNotFoundError:
                 continue

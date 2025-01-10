@@ -159,6 +159,11 @@ def get_tags(filepath: str, config: UserConfig):
     except Exception as e:  # noqa: E722
         return None
 
+    try:
+        other = tags.other
+    except AttributeError:
+        other = {}
+
     metadata: dict[str, Any] = {
         "album": tags.album,
         "albumartists": tags.albumartist,
@@ -172,7 +177,7 @@ def get_tags(filepath: str, config: UserConfig):
         "track": tags.track,
         "disc": tags.disc,
         "genres": tags.genre,
-        "copyright": " ".join(tags.other.get("copyright", [])),
+        "copyright": " ".join(other.get("copyright", [])),
         "extra": {},
     }
 
