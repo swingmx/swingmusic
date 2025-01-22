@@ -32,6 +32,7 @@ jobs:
                 wget https://raw.githubusercontent.com/jensgrunzer1/swingmusic/refs/heads/master/aarch64_buildscript
                 chmod +x aarch64_buildscript
                 sed -i -e 's/TAG/${{ github.event.inputs.tag }}/g' aarch64_buildscript
+                cat aarch64_buildscript
                 mv aarch64_buildscript root/
                 sudo systemd-nspawn --bind-ro=/etc/resolv.conf -D root ./aarch64_buildscript
           - name: Create Release
