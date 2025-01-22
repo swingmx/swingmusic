@@ -41,5 +41,5 @@ export PYTHON_KEYRING_BACKEND=keyring.backends.fail.Keyring
 poetry env use /usr/bin/python3.11
 poetry install
 # Swing gives error if this is not set. Set to version of repo you cloned.
-export SWINGMUSIC_APP_VERSION="1.4.8"
+export SWINGMUSIC_APP_VERSION="TAG"
 poetry run python manage.py --build
