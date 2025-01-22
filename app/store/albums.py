@@ -1,20 +1,14 @@
-from itertools import groupby
-import json
-from pprint import pprint
 import random
 from typing import Iterable
 
 from app.lib.tagger import create_albums
 from app.models import Album, Track
 from app.store.artists import ArtistStore
-from app.utils import flatten
 from app.utils.auth import get_current_userid
 from app.utils.customlist import CustomList
-from app.utils.remove_duplicates import remove_duplicates
 
 from ..utils.hashing import create_hash
 from .tracks import TrackStore
-from app.utils.progressbar import tqdm
 
 ALBUM_LOAD_KEY = ""
 
@@ -44,19 +38,7 @@ class AlbumMapEntry:
 
 
 class AlbumStore:
-    # albums: list[Album] = CustomList()
     albummap: dict[str, AlbumMapEntry] = {}
-
-    # @staticmethod
-    # def create_album(track: Track):
-    #     """
-    #     Creates album object from a track
-    #     """
-    #     return Album(
-    #         albumhash=track.albumhash,
-    #         albumartists=track.albumartists,  # type: ignore
-    #         title=track.og_album,
-    #     )
 
     @classmethod
     def load_albums(cls, instance_key: str):

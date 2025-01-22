@@ -1,5 +1,4 @@
 from datetime import datetime
-from time import time
 
 from app.lib.playlistlib import get_first_4_images
 from app.models.playlist import Playlist
@@ -9,17 +8,12 @@ from app.store.tracks import TrackStore
 from app.store.albums import AlbumStore
 from app.store.artists import ArtistStore
 
-from app.serializers.track import serialize_track
-from app.serializers.album import album_serializer
-from app.serializers.artist import serialize_for_card
-
 from itertools import groupby
 
 from app.utils import flatten
 from app.utils.dates import (
     create_new_date,
     date_string_to_time_passed,
-    timestamp_to_time_passed,
 )
 
 older_albums = set()
@@ -59,14 +53,12 @@ def create_track(t: Track):
     """
     Creates a recently added track entry.
     """
-    track = serialize_track(t, to_remove={"created_date"})
-    track["help_text"] = "NEW TRACK"
-
     return {
         "type": "track",
-        "item": track,
+        "hash": t.trackhash,
+        "timestamp": t.last_mod,
+        "help_text": "NEW TRACK",
     }
-
 
 # INFO: Keys: folder, tracks, time (timestamp)
 # group_type = dict[str, str | list[Track] | float]
@@ -83,7 +75,7 @@ def check_folder_type(group_: dict):
 
     if len(tracks) == 1:
         entry = create_track(tracks[0])
-        entry["item"]["time"] = timestamp_to_time_passed(time)
+        entry["timestamp"] = time
         return entry
 
     is_album, albumhash, _ = check_is_album_folder(tracks)
@@ -94,26 +86,13 @@ def check_folder_type(group_: dict):
         if entry is None:
             return None
 
-        album = album_serializer(
-            entry.album,
-            to_remove={
-                "genres",
-                "og_title",
-                "date",
-                "duration",
-                "count",
-                "albumartists_hashes",
-                "base_title",
-            },
-        )
-        album["help_text"] = (
-            "NEW ALBUM" if albumhash in existing_album_hashes else "NEW TRACKS"
-        )
-        album["time"] = timestamp_to_time_passed(time)
-
         return {
             "type": "album",
-            "item": album,
+            "hash": albumhash,
+            "timestamp": time,
+            "help_text": (
+                "NEW ALBUM" if albumhash in existing_album_hashes else "NEW TRACKS"
+            ),
         }
 
     is_artist, artisthash, trackcount = check_is_artist_folder(tracks)
@@ -123,16 +102,13 @@ def check_folder_type(group_: dict):
         if entry is None:
             return None
 
-        artist = serialize_for_card(entry.artist)
-        artist["trackcount"] = trackcount
-        artist["help_text"] = (
-            "NEW ARTIST" if artisthash not in existing_artist_hashes else "NEW MUSIC"
-        )
-        artist["time"] = timestamp_to_time_passed(time)
-
         return {
             "type": "artist",
-            "item": artist,
+            "hash": artisthash,
+            "timestamp": time,
+            "help_text": (
+                "NEW ARTIST" if artisthash not in existing_artist_hashes else "NEW MUSIC"
+            ),
         }
 
     is_track_folder = check_is_track_folder(tracks)
@@ -142,12 +118,9 @@ def check_folder_type(group_: dict):
         if is_track_folder
         else {
             "type": "folder",
-            "item": {
-                "path": key,
-                "count": len(tracks),
-                "help_text": "NEW MUSIC",
-                "time": timestamp_to_time_passed(time),
-            },
+            "hash": key,
+            "timestamp": time,
+            "help_text": "NEW MUSIC",
         }
     )
 

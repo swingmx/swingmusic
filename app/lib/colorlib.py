@@ -124,9 +124,15 @@ class ProcessArtistColors:
                 artist.set_color(colors[0])
 
             # INFO: Write to the database.
+            print("RECORD")
+            print(record)
             if record is None:
                 LibDataTable.insert_one(
-                    {"itemhash": artisthash, "color": colors[0], "itemtype": "artist"}
+                    {
+                        "itemhash": "artist" + artisthash,
+                        "color": colors[0],
+                        "itemtype": "artist",
+                    }
                 )
             else:
-                LibDataTable.update_one(artisthash, {"color": colors[0]})
+                LibDataTable.update_one("artist" + artisthash, {"color": colors[0]})

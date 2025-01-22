@@ -30,12 +30,14 @@ class Album:
     playcount: int
     playduration: int
     extra: dict
+    pathhash: str = ""
 
     id: int = -1
     type: str = "album"
     image: str = ""
     versions: list[str] = dataclasses.field(default_factory=list)
     fav_userids: list[int] = dataclasses.field(default_factory=list)
+    weakhash: str = ""
 
     @property
     def is_favorite(self):
@@ -52,8 +54,11 @@ class Album:
             self.fav_userids.append(userid)
 
     def __post_init__(self):
-        self.image = self.albumhash + ".webp"
+        self.image = self.albumhash + ".webp" + "?pathhash=" + self.pathhash
         self.populate_versions()
+        self.weakhash = create_hash(
+            self.og_title, ",".join(a["name"] for a in self.albumartists)
+        )
 
     def populate_versions(self):
         _, self.versions = get_base_title_and_versions(self.og_title, get_versions=True)
@@ -169,7 +174,7 @@ class Album:
 
         # REVIEW: Reading from the config file in a for loop will be slow
         # TODO: Find a
-        if singleTrackAsSingle and len(tracks) == 1:
+        if singleTrackAsSingle and self.trackcount == 1:
             return True
 
         if (

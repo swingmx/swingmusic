@@ -162,3 +162,16 @@ class ArtistStore:
             return TrackStore.get_tracks_by_trackhashes(entry.trackhashes)
 
         return []
+
+    @classmethod
+    def export(cls):
+        path = "artists.json"
+
+        with open(path, "w") as f:
+            data = [
+                {
+                    "name": a.name,
+                }
+                for a in cls.get_flat_list()
+            ]
+            json.dump(data, f)

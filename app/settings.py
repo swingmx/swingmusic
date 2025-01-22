@@ -103,6 +103,30 @@ class Paths:
     def get_config_file_path(cls):
         return join(cls.get_app_dir(), "settings.json")
 
+    @classmethod
+    def get_mixes_img_path(cls):
+        return join(cls.get_img_path(), "mixes")
+
+    @classmethod
+    def get_artist_mixes_img_path(cls):
+        return join(cls.get_mixes_img_path(), "artists")
+
+    @classmethod
+    def get_og_mixes_img_path(cls):
+        return join(cls.get_mixes_img_path(), "original")
+
+    @classmethod
+    def get_md_mixes_img_path(cls):
+        return join(cls.get_mixes_img_path(), "medium")
+
+    @classmethod
+    def get_sm_mixes_img_path(cls):
+        return join(cls.get_mixes_img_path(), "small")
+
+    @classmethod
+    def get_image_cache_path(cls):
+        return join(cls.get_img_path(), "cache")
+
 
 # defaults
 class Defaults:

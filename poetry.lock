@@ -2053,6 +2053,20 @@ files = [
 ]
 
 [[package]]
+name = "schedule"
+version = "1.2.2"
+description = "Job scheduling for humans."
+optional = false
+python-versions = ">=3.7"
+files = [
+    {file = "schedule-1.2.2-py3-none-any.whl", hash = "sha256:5bef4a2a0183abf44046ae0d164cadcac21b1db011bdd8102e4a0c1e91e06a7d"},
+    {file = "schedule-1.2.2.tar.gz", hash = "sha256:15fe9c75fe5fd9b9627f3f19cc0ef1420508f9f9a46f45cd0769ef75ede5f0b7"},
+]
+
+[package.extras]
+timezone = ["pytz"]
+
+[[package]]
 name = "setproctitle"
 version = "1.3.3"
 description = "A Python module to customize the process title"
@@ -2309,17 +2323,17 @@ widechars = ["wcwidth"]
 
 [[package]]
 name = "tinytag"
-version = "1.10.1"
-description = "Read music meta data and length of MP3, OGG, OPUS, MP4, M4A, FLAC, WMA and Wave files"
+version = "2.0.0"
+description = "Read audio file metadata"
 optional = false
-python-versions = ">=2.7"
+python-versions = ">=3.7"
 files = [
-    {file = "tinytag-1.10.1-py3-none-any.whl", hash = "sha256:e437654d04c966fbbbdbf807af61eb9759f1d80e4173a7d26202506b37cfdaf0"},
-    {file = "tinytag-1.10.1.tar.gz", hash = "sha256:122a63b836f85094aacca43fc807aaee3290be3de17d134f5f4a08b509ae268f"},
+    {file = "tinytag-2.0.0-py3-none-any.whl", hash = "sha256:971b9dceae2d1de73b5e8300639ea0b41454633b899426e702aed15f0e72a9b4"},
+    {file = "tinytag-2.0.0.tar.gz", hash = "sha256:d041f53d15553bb148549bfbc7feab445caf7105ba95fa2ecb9827bb06b62275"},
 ]
 
 [package.extras]
-tests = ["flake8", "pytest", "pytest-cov"]
+tests = ["coverage", "mypy", "pycodestyle", "pylint", "pytest"]
 
 [[package]]
 name = "tomli"
@@ -2761,4 +2775,4 @@ testing = ["coverage (>=5.0.3)", "zope.event", "zope.testing"]
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.10,<3.12"
-content-hash = "43972b6ffadd14e5047f067a0258f2428ebe351df8bd032dc0bf05df379678a6"
+content-hash = "733ca957831c695560fe292a6dfdad13c3fc905695f473cd48cf13bfba8defdc"

@@ -38,6 +38,7 @@ def serialize_for_card(album: Album):
         "extra",
         "id",
         "lastplayed",
+        "weakhash",
     }
 
     return album_serializer(album, props_to_remove)

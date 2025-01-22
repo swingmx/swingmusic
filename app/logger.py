@@ -16,10 +16,9 @@ class CustomFormatter(logging.Formatter):
     red = "\033[41m"
     bold_red = "\x1b[31;1m"
     reset = "\x1b[0m"
-    # format = (
-    #     "%(asctime)s - %(name)s - %(levelname)s - %(message)s (%(filename)s:%(lineno)d)"
-    # )
-    format_ = "%(message)s"
+    # format_ = "[%(asctime)s] %(name)s %(levelname)s %(message)s (%(filename)s:%(lineno)d)"
+    format_ = "[%(asctime)s] [%(levelname)s] %(message)s (%(filename)s:%(lineno)d)\n"
+    # format_ = "%(message)s"
 
     FORMATS = {
         logging.DEBUG: grey + format_ + reset,
@@ -35,7 +34,7 @@ class CustomFormatter(logging.Formatter):
         return formatter.format(record)
 
 
-log = logging.getLogger("swing")
+log = logging.getLogger("SWING MUSIC")
 log.propagate = False
 log.setLevel(logging.DEBUG)
 

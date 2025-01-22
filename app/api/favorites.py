@@ -78,7 +78,8 @@ def toggle_favorite(body: FavoritesAddBody):
         FavoritesTable.insert_item(
             {"hash": body.hash, "type": body.type, "extra": extra}
         )
-    except:
+    except Exception as e:
+        print(e)
         return {"msg": "Failed! An error occured"}, 500
 
     toggle_fav(body.type, body.hash)
@@ -93,7 +94,8 @@ def remove_favorite(body: FavoritesAddBody):
     """
     try:
         FavoritesTable.remove_item({"hash": body.hash, "type": body.type})
-    except:
+    except Exception as e:
+        print(e)
         return {"msg": "Failed! An error occured"}, 500
 
     toggle_fav(body.type, body.hash)

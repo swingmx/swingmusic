@@ -86,7 +86,7 @@ def get_image(_map: tuple[str, Album]):
     matching_tracks = AlbumStore.get_album_tracks(album.albumhash)
 
     for track in matching_tracks:
-        if extract_thumb(track.filepath, track.image):
+        if extract_thumb(track.filepath, track.albumhash + ".webp"):
             break
 
 

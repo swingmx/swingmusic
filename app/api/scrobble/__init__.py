@@ -1,23 +1,19 @@
-from dataclasses import dataclass
 from gettext import ngettext
-from itertools import groupby
-from math import e
-from pprint import pprint
 from flask_openapi3 import Tag
 from flask_openapi3 import APIBlueprint
 import pendulum
 from pydantic import Field, BaseModel
 from app.api.apischemas import TrackHashSchema
 from typing import Literal
-from datetime import datetime, timedelta
-from collections import defaultdict
 import locale
 
 from app.db.userdata import FavoritesTable, ScrobbleTable
 from app.lib.extras import get_extra_info
+from app.lib.recipes.recents import RecentlyPlayed
 from app.models.album import Album
 from app.models.stats import StatItem
 from app.models.track import Track
+from app.plugins.lastfm import LastFmPlugin
 from app.serializers.artist import serialize_for_card
 from app.serializers.album import serialize_for_card as serialize_for_album_card
 from app.serializers.track import serialize_track, serialize_tracks
@@ -77,8 +73,13 @@ def log_track(body: LogTrackBody):
         return {"msg": "Track not found."}, 404
 
     scrobble_data = dict(body)
+    # REVIEW: Do we need to store the extra info in the database?
+    # OR .... can we just write it to the backup file on demand?
     scrobble_data["extra"] = get_extra_info(body.trackhash, "track")
     ScrobbleTable.add(scrobble_data)
+
+    # NOTE: Update the recently played homepage for this userid
+    RecentlyPlayed(userid=scrobble_data["userid"])
 
     # Update play data on the in-memory stores
     track = trackentry.tracks[0]
@@ -93,9 +94,20 @@ def log_track(body: LogTrackBody):
         if artist:
             artist.increment_playcount(duration, timestamp)
 
-    track = TrackStore.trackhashmap.get(body.trackhash)
-    if track:
-        track.increment_playcount(duration, timestamp)
+    trackentry.increment_playcount(duration, timestamp)
+    track = trackentry.tracks[0]
+
+    lastfm = LastFmPlugin()
+
+    print(track.duration / 2, 240, body.duration, "\n")
+
+    if (
+        lastfm.enabled
+        and track.duration > 30
+        and body.duration >= min(track.duration / 2, 240)
+        # SEE: https://www.last.fm/api/scrobbling#when-is-a-scrobble-a-scrobble
+    ):
+        lastfm.scrobble(trackentry.tracks[0], timestamp)
 
     return {"msg": "recorded"}, 201
 
@@ -344,7 +356,11 @@ def get_stats():
             if len(tracks) > 0
             else "—"
         ),
-        tracks[0].image if len(tracks) > 0 else None,
+        (
+            tracks[0].image
+            if len(tracks) > 0
+            else None
+        ),
     )
 
     fav_count = FavoritesTable.count_favs_in_period(start_time, end_time)

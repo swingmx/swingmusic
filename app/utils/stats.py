@@ -11,28 +11,40 @@ from app.store.tracks import TrackStore
 from app.utils.dates import seconds_to_time_string
 
 
-def get_artists_in_period(start_time: int, end_time: int):
-    scrobbles = ScrobbleTable.get_all_in_period(start_time, end_time)
-    artists = defaultdict(lambda: {"playcount": 0, "playduration": 0})
+def get_artists_in_period(
+    start_time: int | float, end_time: int | float, userid: int | None = None
+):
+    scrobbles = ScrobbleTable.get_all_in_period(start_time, end_time, userid)
+    artists: Any = defaultdict(
+        lambda: {"playcount": 0, "playduration": 0, "tracks": {}}
+    )
 
     for scrobble in scrobbles:
         track = TrackStore.get_tracks_by_trackhashes([scrobble.trackhash])
         if not track:
             continue
+
         track = track[0]
 
         for artist in track.artists:
             artisthash = artist["artisthash"]
 
+            artists[artisthash]["artist"] = artist["name"]
             artists[artisthash]["artisthash"] = artist["artisthash"]
             artists[artisthash]["playcount"] += 1
             artists[artisthash]["playduration"] += scrobble.duration
 
-    return list(artists.values())
+            # index the track counts too
+            artists[artisthash]["tracks"][track.trackhash] = (
+                artists[artisthash]["tracks"].get(track.trackhash, 0) + 1
+            )
+
+    artists = list(artists.values())
+    return sorted(artists, key=lambda x: x["playduration"], reverse=True)
 
 
-def get_albums_in_period(start_time: int, end_time: int):
-    scrobbles = ScrobbleTable.get_all_in_period(start_time, end_time)
+def get_albums_in_period(start_time: int, end_time: int, userid: int | None = None):
+    scrobbles = ScrobbleTable.get_all_in_period(start_time, end_time, userid)
     albums: dict[str, Album] = {}
 
     for scrobble in scrobbles:
@@ -58,8 +70,8 @@ def get_albums_in_period(start_time: int, end_time: int):
     return list(albums.values())
 
 
-def get_tracks_in_period(start_time: int, end_time: int):
-    scrobbles = ScrobbleTable.get_all_in_period(start_time, end_time)
+def get_tracks_in_period(start_time: int, end_time: int, userid: int | None = None):
+    scrobbles = ScrobbleTable.get_all_in_period(start_time, end_time, userid)
     tracks: dict[str, Track] = {}
     duration = 0
 
@@ -158,12 +170,14 @@ def calculate_scrobble_trend(current_scrobbles: int, previous_scrobbles: int) ->
     )
 
 
-def calculate_new_artists(current_artists: List[dict[str, Any]], timestamp: int):
+def calculate_new_artists(
+    current_artists: List[dict[str, Any]], timestamp: int, userid: int | None = None
+):
     """
     Calculate the number of new artists based on the current and all previous scrobbles.
     """
     current_artists_set = set(artist["artisthash"] for artist in current_artists)
-    all_records = ScrobbleTable.get_all_in_period(0, timestamp)
+    all_records = ScrobbleTable.get_all_in_period(0, timestamp, userid)
     trackhashes = set(record.trackhash for record in all_records)
 
     previous_artists_set = set()
@@ -219,7 +233,7 @@ def get_track_group_stats(tracks: list[Track], is_album: bool = False):
             "toptrack",
             f"top track ({seconds_to_time_string(top_track.playduration)} listened)",
             f"{top_track.title}",
-            top_track.image,
+            top_track.image if top_track else None,
         )
         if top_track
         else StatItem(
@@ -237,7 +251,7 @@ def get_track_group_stats(tracks: list[Track], is_album: bool = False):
                 "playcount": 0,
                 "playduration": 0,
                 "title": track.album,
-                "image": track.image,
+                "image": track.image if track.image else None,
             }
 
         albums_map[track.albumhash]["playcount"] += 1
@@ -254,8 +268,7 @@ def get_track_group_stats(tracks: list[Track], is_album: bool = False):
                 "topalbum",
                 f"top album ({seconds_to_time_string(top_album['playduration'])} listened)",
                 f"{top_album['title']}",
-                top_album["image"],
-            )
+                top_album["image"])
             if top_album
             else StatItem(
                 "topalbum",

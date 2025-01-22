@@ -69,7 +69,7 @@ class IndexTracks:
         for track in tracks:
             try:
                 extract_thumb(
-                    track["filepath"], track["trackhash"] + ".webp", overwrite=True
+                    track["filepath"], track["albumhash"] + ".webp", overwrite=True
                 )
             except FileNotFoundError:
                 continue
@@ -179,6 +179,7 @@ def create_albums(_trackhashes: list[str] = []) -> list[tuple[Album, set[str]]]:
                 "playduration": track.playduration,
                 "title": track.album,
                 "tracks": {track.trackhash},
+                "pathhash": track.pathhash,
                 "extra": {},
             }
         else:

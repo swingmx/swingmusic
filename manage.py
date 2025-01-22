@@ -21,11 +21,14 @@ import setproctitle
 
 from app.api import create_api
 from app.arg_handler import ProcessArgs
+from app.crons import start_cron_jobs
 from app.lib.index import IndexEverything
 from app.plugins.register import register_plugins
 from app.settings import FLASKVARS, TCOLOR, Info
 from app.setup import load_into_mem, run_setup
 from app.start_info_logger import log_startup_info
+from app.store.artists import ArtistStore
+from app.store.tracks import TrackStore
 from app.utils.filesystem import get_home_res_path
 from app.utils.paths import getClientFilesExtensions
 from app.utils.threading import background
@@ -59,7 +62,7 @@ mimetypes.add_type("application/manifest+json", ".webmanifest")
 
 
 # Background tasks
-@background
+# @background
 def bg_run_setup():
     IndexEverything()
 
@@ -72,20 +75,19 @@ def bg_run_setup():
 @background
 def run_swingmusic():
     log_startup_info()
-    bg_run_setup()
     register_plugins()
 
     # start_watchdog()
 
     setproctitle.setproctitle(f"swingmusic ::{FLASKVARS.get_flask_port()}")
+    # bg_run_setup()
+    start_cron_jobs()
 
 
 # Setup function calls
 Info.load()
 ProcessArgs()
 run_setup()
-load_into_mem()
-run_swingmusic()
 
 
 # Create the Flask app
@@ -102,7 +104,7 @@ whitelisted_routes = {
     "/auth/refresh",
     "/docs",
 }
-blacklist_extensions = {".webp"}.union(getClientFilesExtensions())
+blacklist_extensions = {".webp", ".jpg"}.union(getClientFilesExtensions())
 
 
 def skipAuthAction():
@@ -224,6 +226,12 @@ def print_memory_usage(response: Response):
 
 
 if __name__ == "__main__":
+
+    load_into_mem()
+    run_swingmusic()
+    TrackStore.export()
+    ArtistStore.export()
+
     host = FLASKVARS.get_flask_host()
     port = FLASKVARS.get_flask_port()
 
@@ -231,7 +239,7 @@ if __name__ == "__main__":
         app,
         host=host,
         port=port,
-        threads=10,
+        threads=100,
         ipv6=True,
         ipv4=True,
     )

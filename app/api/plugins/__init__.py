@@ -2,7 +2,10 @@ from flask_openapi3 import Tag
 from flask_openapi3 import APIBlueprint
 from pydantic import BaseModel, Field
 from app.api.auth import admin_required
+from app.config import UserConfig
 from app.db.userdata import PluginTable
+from app.plugins.lastfm import LastFmPlugin
+from app.utils.auth import get_current_userid
 
 bp_tag = Tag(name="Plugins", description="Manage plugins")
 api = APIBlueprint("plugins", __name__, url_prefix="/plugins", abp_tags=[bp_tag])
@@ -61,3 +64,40 @@ def update_plugin_settings(body: PluginSettingsBody):
     plugin = PluginTable.get_by_name(plugin)
 
     return {"status": "success", "settings": plugin.settings}
+
+
+class LastFmSessionBody(BaseModel):
+    token: str = Field(description="The token to use to create the session")
+
+
+@api.post("/lastfm/session/create")
+def create_lastfm_session(body: LastFmSessionBody):
+    """
+    Create a Last.fm session
+    """
+    if not body.token:
+        return {"error": "Missing token"}, 400
+
+    lastfm = LastFmPlugin()
+    session_key = lastfm.get_session_key(body.token)
+
+    if session_key:
+        config = UserConfig()
+        current_user = get_current_userid()
+        config.lastfmSessionKeys[str(current_user)] = session_key
+        config.lastfmSessionKeys = config.lastfmSessionKeys
+
+    return {"status": "success", "session_key": session_key}
+
+
+@api.post("/lastfm/session/delete")
+def delete_lastfm_session():
+    """
+    Delete the Last.fm session
+    """
+    config = UserConfig()
+    current_user = get_current_userid()
+    config.lastfmSessionKeys[str(current_user)] = ""
+    config.lastfmSessionKeys = config.lastfmSessionKeys
+
+    return {"status": "success"}
