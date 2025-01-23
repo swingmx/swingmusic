@@ -12,6 +12,12 @@ jobs:
         runs-on: [ubuntu-20.04]
         name: Building aarch64 binary
         steps:
+          - name: Checking out buildscript
+            uses: actions/checkout@v4
+            with:
+              sparse-checkout: |
+                aarch64_buildscript
+              sparse-checkout-cone-mode: false
           - name: Installing Packages
             run: |
                 sudo apt -qq update -y
@@ -27,12 +33,6 @@ jobs:
             run: |
                 mkdir root
                 sudo tar xpf ArchLinuxARM-rpi-aarch64-latest.tar.gz -C root --warning=no-unknown-keyword
-          - name: Checking out buildscript
-            uses: actions/checkout@v4
-            with:
-              sparse-checkout: |
-                aarch64_buildscript
-              sparse-checkout-cone-mode: false
           - name: Building Swingmusic in qemu
             run: |
                 chmod +x aarch64_buildscript
