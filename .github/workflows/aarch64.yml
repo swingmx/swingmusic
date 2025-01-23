@@ -20,8 +20,8 @@ jobs:
               sparse-checkout-cone-mode: false
           - name: Installing Packages
             run: |
-                sudo apt -qq update -y
-                sudo apt -y -qq install binfmt-support qemu-user-static systemd-container wget
+                sudo apt -qq update -y > /dev/null
+                sudo apt -y -qq install binfmt-support qemu-user-static systemd-container wget > /dev/null
           - name: Starting Services
             run: |
                 sudo systemctl restart systemd-binfmt
