@@ -124,9 +124,8 @@ def get_favorite_albums(query: GetAllOfTypeQuery):
     Others will return -1
     """
     fav_albums, total = FavoritesTable.get_fav_albums(query.start, query.limit)
-    fav_albums.reverse()
-
     albums = AlbumStore.get_albums_by_hashes(a.hash for a in fav_albums)
+
     return {"albums": serialize_for_card_many(albums), "total": total}
 
 
@@ -156,7 +155,6 @@ def get_favorite_artists(query: GetAllOfTypeQuery):
         start=query.start,
         limit=query.limit,
     )
-    artists.reverse()
 
     artists = ArtistStore.get_artists_by_hashes(a.hash for a in artists)
     return {"artists": [serialize_artist(a) for a in artists], "total": total}
