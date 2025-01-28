@@ -589,3 +589,47 @@ class MixTable(Base):
         cls.update_one(mix.id, mix)
 
         return mix.extra["trackmix_saved"]
+
+
+class PageTable(Base):
+    __tablename__ = "page"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    name: Mapped[str] = mapped_column(String(), index=True)
+    userid: Mapped[int] = mapped_column(
+        Integer(), ForeignKey("user.id", ondelete="cascade"), index=True
+    )
+    items: Mapped[list[dict[str, Any]]] = mapped_column(JSON(), default_factory=list)
+    extra: Mapped[dict[str, Any]] = mapped_column(
+        JSON(), nullable=True, default_factory=dict
+    )
+
+    @classmethod
+    def to_dict(cls, entry: Any) -> dict[str, Any]:
+        return entry._asdict()
+
+    @classmethod
+    def get_all(cls):
+        result = cls.execute(select(cls))
+        return [cls.to_dict(entry) for entry in result.fetchall()]
+
+    @classmethod
+    def get_by_id(cls, id: int):
+        result = cls.execute(select(cls).where(cls.id == id))
+        return cls.to_dict(result.fetchone())
+
+    @classmethod
+    def delete_by_id(cls, id: int):
+        return cls.execute(delete(cls).where(cls.id == id), commit=True)
+
+    @classmethod
+    def update_items(cls, id: int, items: list[dict[str, Any]]):
+        return cls.execute(
+            update(cls).where(cls.id == id).values(items=items), commit=True
+        )
+
+    @classmethod
+    def update_one(cls, payload: dict[str, Any]):
+        return cls.execute(
+            update(cls).where(cls.id == payload["id"]).values(payload), commit=True
+        )
