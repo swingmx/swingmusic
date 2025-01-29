@@ -1,17 +1,23 @@
+import json
 from typing import Any
 from app.serializers.album import serialize_for_card
 from app.serializers.artist import serialize_for_card as serialize_artist
 from app.store.albums import AlbumStore
 from app.store.artists import ArtistStore
+from app.utils.hashing import create_hash
 
 
-def validate_page_items(items: list[dict[str, str]]):
+def validate_page_items(items: list[dict[str, str]], existing: list[dict[str, str]]):
     """
     Validate the items in a page before adding them to the database.
     """
     validated: list[dict[str, str]] = []
+    indexed = set(create_hash(json.dumps(item)) for item in existing)
 
     for item in items:
+        if create_hash(json.dumps(item)) in indexed:
+            continue
+
         if item["type"] == "album":
             album = AlbumStore.albummap.get(item["hash"])
 
@@ -28,7 +34,15 @@ def validate_page_items(items: list[dict[str, str]]):
     return validated
 
 
-def recover_page_items(items: list[dict[str, str]]):
+def remove_page_items(existing: list[dict[str, str]], item: dict[str, str]):
+    return [
+        i
+        for i in existing
+        if create_hash(json.dumps(i)) != create_hash(json.dumps(item))
+    ]
+
+
+def recover_page_items(items: list[dict[str, str]], for_homepage: bool = False):
     """
     Recover the items in a page.
     """
@@ -39,16 +53,24 @@ def recover_page_items(items: list[dict[str, str]]):
             album = AlbumStore.albummap.get(item["hash"])
 
             if album is not None:
-                recovered.append(
-                    {"item": serialize_for_card(album.album), "type": "album"}
-                )
+                item = serialize_for_card(album.album)
+
+                if for_homepage:
+                    del item["type"]
+                    item = {"item": item, "type": "album"}
+
+                recovered.append(item)
         elif item["type"] == "artist":
             artist = ArtistStore.artistmap.get(item["hash"])
 
             if artist is not None:
-                recovered.append(
-                    {"item": serialize_artist(artist.artist), "type": "artist"}
-                )
+                item = serialize_artist(artist.artist)
+
+                if for_homepage:
+                    del item["type"]
+                    item = {"item": item, "type": "artist"}
+
+                recovered.append(item)
 
     recovered.reverse()
     return recovered

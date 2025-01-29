@@ -9,7 +9,7 @@ from flask_openapi3 import APIBlueprint
 from pydantic import BaseModel, Field
 
 from app.db.userdata import PageTable
-from app.lib.pagelib import recover_page_items, validate_page_items
+from app.lib.pagelib import recover_page_items, remove_page_items, validate_page_items
 from app.utils.auth import get_current_userid
 
 bp_tag = Tag(name="Pages", description="Pages")
@@ -32,7 +32,7 @@ def create_page(body: CreatePageBody):
     """
     Create a new page.
     """
-    items = validate_page_items(body.items)
+    items = validate_page_items(body.items, existing=[])
 
     if len(items) == 0:
         return {"error": "No items to add"}, 400
@@ -46,39 +46,9 @@ def create_page(body: CreatePageBody):
         },
     }
 
-    print(payload)
     PageTable.insert_one(payload)
 
     return {"message": "Page created"}, 201
-
-
-class AddPageItemsBody(BaseModel):
-    items: list[dict[str, Any]] = Field(
-        description="The items to add to the page",
-        example=[{"type": "album", "hash": "1234567890"}],
-    )
-
-
-class AddPageItemsPath(BaseModel):
-    page_id: int = Field(description="The ID of the page to add items to", example=1)
-
-
-@api.post("/<int:page_id>/items")
-def add_page_items(path: AddPageItemsPath, body: AddPageItemsBody):
-    """
-    Add items to a page.
-    """
-    new_items = validate_page_items(body.items)
-
-    page = PageTable.get_by_id(path.page_id)
-
-    if page is None:
-        return {"error": "Page not found"}, 404
-
-    page["items"].extend(new_items)
-    PageTable.update_items(page["id"], page["items"])
-
-    return {"message": "Items added to page"}
 
 
 @api.get("")
@@ -87,6 +57,65 @@ def get_pages():
     Get all pages.
     """
     return PageTable.get_all()
+
+
+class AddPageItemBody(BaseModel):
+    item: dict[str, Any] = Field(
+        description="The item to add to the page",
+        example={"type": "album", "hash": "1234567890"},
+    )
+
+
+class AddPageItemPath(BaseModel):
+    page_id: int = Field(description="The ID of the page to add items to", example=1)
+
+
+@api.post("/<int:page_id>/items")
+def add_page_item(path: AddPageItemPath, body: AddPageItemBody):
+    """
+    Add an item to a page.
+    """
+    page = PageTable.get_by_id(path.page_id)
+
+    if page is None:
+        return {"error": "Page not found"}, 404
+
+    new_items = validate_page_items([body.item], existing=page["items"])
+
+    if len(new_items) == 0:
+        return {"error": "items already in page"}, 400
+
+    page["items"].extend(new_items)
+    PageTable.update_items(page["id"], page["items"])
+
+    return {"message": "Items added to page"}
+
+
+class RemovePageItemBody(BaseModel):
+    item: dict[str, Any] = Field(
+        description="The item to remove from the page",
+        example={"type": "album", "hash": "1234567890"},
+    )
+
+
+class RemovePageItemPath(BaseModel):
+    page_id: int = Field(description="The ID of the page to remove items from")
+
+
+@api.delete("/<int:page_id>/items")
+def remove_page_item(path: RemovePageItemPath, body: RemovePageItemBody):
+    """
+    Remove an item from a page.
+    """
+    page = PageTable.get_by_id(path.page_id)
+
+    if page is None:
+        return {"error": "Page not found"}, 404
+
+    remaining = remove_page_items(page["items"], body.item)
+    PageTable.update_items(page["id"], remaining)
+
+    return {"message": "Item removed from page"}
 
 
 class GetPageBody(BaseModel):

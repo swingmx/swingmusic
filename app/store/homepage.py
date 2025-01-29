@@ -75,7 +75,7 @@ class HomepageStore:
                         "id": page["id"],
                         "title": page["name"],
                         "description": page["extra"]["description"],
-                        "items": recover_page_items(page["items"]),
+                        "items": recover_page_items(page["items"], for_homepage=True),
                         "url": f"pages/{page['id']}",
                     }
                 }
