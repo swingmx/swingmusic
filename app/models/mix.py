@@ -46,6 +46,7 @@ class Mix:
     def to_dict(self, convert_timestamp: bool = False):
         item = asdict(self)
         item["trackshash"] = create_hash(*self.tracks[:40])
+        item["type"] = "mix"
 
         if convert_timestamp:
             item["time"] = timestamp_to_time_passed(item["timestamp"])
