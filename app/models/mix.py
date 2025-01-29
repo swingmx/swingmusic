@@ -68,3 +68,4 @@ class Mix:
     @classmethod
     def mixes_to_dataclasses(cls, entries: Any):
         return [cls.mix_to_dataclass(entry) for entry in entries]
+

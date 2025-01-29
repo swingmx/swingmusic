@@ -1,5 +1,7 @@
 from typing import Any
 
+from app.db.userdata import PageTable
+from app.lib.pagelib import recover_page_items
 from app.store.homepageentries import (
     BecauseYouListenedToArtistHomepageEntry,
     GenericRecoverableEntry,
@@ -63,11 +65,30 @@ class HomepageStore:
     @classmethod
     def get_homepage_items(cls, limit: int):
         # return a dict of entry name to entry items
-        return [
+        pages = PageTable.get_all()
+        pagedata = []
+
+        for page in pages:
+            pagedata.append(
+                {
+                    page["id"]: {
+                        "id": page["id"],
+                        "title": page["name"],
+                        "description": page["extra"]["description"],
+                        "items": recover_page_items(page["items"], for_homepage=True),
+                        "url": f"pages/{page['id']}",
+                    }
+                }
+            )
+
+        homedata = [
             {entry: cls.entries[entry].get_items(get_current_userid(), limit)}
             for entry in cls.entries.keys()
             if len(cls.entries[entry].items)
         ]
+
+        recently_added = homedata.pop()
+        return homedata + pagedata + [recently_added]
 
     @classmethod
     def find_mix(cls, mixid: str):

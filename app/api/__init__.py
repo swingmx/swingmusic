@@ -22,6 +22,7 @@ from app.api import (
     favorites,
     folder,
     imgserver,
+    pages,
     playlist,
     search,
     settings,
@@ -32,7 +33,7 @@ from app.api import (
     getall,
     auth,
     stream,
-    backup_and_restore
+    backup_and_restore,
 )
 
 # TODO: Move this description to a separate file
@@ -110,7 +111,7 @@ def create_api():
         app.register_api(colors.api)
         app.register_api(lyrics.api)
         app.register_api(backup_and_restore.api)
-
+        app.register_api(pages.api)
         # Plugins
         app.register_api(plugins.api)
         app.register_api(lyrics_plugin.api)

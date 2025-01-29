@@ -30,6 +30,7 @@ def serialize_for_card(artist: Artist):
     for key in props_to_remove:
         artist_dict.pop(key, None)
 
+    artist_dict["type"] = "artist"
     return artist_dict
 
 

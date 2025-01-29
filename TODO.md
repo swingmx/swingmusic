@@ -21,7 +21,7 @@
 <!-- CHECKPOINT -->
 <!-- ALBUM PAGE! -->
 
- # DONE
+# DONE
 
 - Support auth headers
 - Add recently played playlist
