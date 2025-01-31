@@ -112,7 +112,7 @@ jobs:
           }
       - name: Upload Linux binary
         if: matrix.os == 'ubuntu-20.04'
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: linux
           path: dist/swingmusic
