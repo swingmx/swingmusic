@@ -7,10 +7,10 @@ on:
         description: "Tag"
         required: true
         default: "1.x.x"
-      skip_binary_build:
-        description: "Skip binary build"
+      binary_build:
+        description: "Build platform binaries"
         required: true
-        default: "false"
+        default: "true"
         type: choice
         options:
           - true
@@ -18,7 +18,7 @@ on:
       is_latest:
         description: "Set as latest"
         required: true
-        default: "true"
+        default: "false"
         type: choice
         options:
           - true
@@ -32,10 +32,10 @@ on:
           - true
           - false
       build_docker:
-        description: "Release Docker image"
+        description: "Build Docker image"
         required: true
         type: choice
-        default: "false"
+        default: "true"
         options:
           - true
           - false
@@ -45,7 +45,7 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-20.04, windows-2019]
-    if: ${{ github.event.inputs.skip_binary_build == 'false' }}
+    if: ${{ github.event.inputs.binary_build == 'false' }}
     runs-on: ${{ matrix.os }}
     name: Create binary on ${{ matrix.os }}
     steps:
@@ -96,17 +96,25 @@ jobs:
           python manage.py --build
         env:
           SWINGMUSIC_APP_VERSION: ${{ inputs.tag }}
+      - name: Rename Linux binary
+        if: matrix.os == 'ubuntu-20.04'
+        run: |
+          mv dist/swingmusic dist/swingmusic_linux_amd64
+      - name: Rename Windows binary
+        if: matrix.os == 'windows-2019'
+        run: |
+          mv dist/swingmusic.exe dist/swingmusic_win32.exe
       - name: Verify Linux build success
         if: matrix.os == 'ubuntu-20.04'
         run: |
-          if [ ! -f "./dist/swingmusic" ]; then
+          if [ ! -f "./dist/swingmusic_linux_amd64" ]; then
             echo "Build failed"
             exit 1
           fi
       - name: Verify Windows build success
         if: matrix.os == 'windows-2019'
         run: |
-          if (-not (Test-Path "./dist/swingmusic.exe")) {
+          if (-not (Test-Path "./dist/swingmusic_win32.exe")) {
             Write-Host "Build failed"
             exit 1
           }
@@ -115,14 +123,14 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: linux
-          path: dist/swingmusic
+          path: dist/swingmusic_linux_amd64
           retention-days: 1
       - name: Upload Windows binary
         if: matrix.os == 'windows-2019'
         uses: actions/upload-artifact@v4
         with:
           name: win32
-          path: dist/swingmusic.exe
+          path: dist/swingmusic_win32.exe
           retention-days: 1
 
   build_aarch64:
@@ -160,7 +168,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: arm64
-          path: root/swingmusicbuilder/swingmusic/dist/swingmusic
+          path: root/swingmusicbuilder/swingmusic/dist/swingmusic_linux_arm64
           retention-days: 1
 
   release:

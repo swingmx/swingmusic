@@ -43,3 +43,6 @@ poetry install
 # Swing gives error if this is not set. Set to version of repo you cloned.
 export SWINGMUSIC_APP_VERSION="TAG"
 poetry run python manage.py --build
+
+# rename binary
+mv dist/swingmusic dist/swingmusic_linux_arm64
