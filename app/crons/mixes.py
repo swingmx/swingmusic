@@ -18,7 +18,6 @@ class Mixes(CronJob):
         """
         Creates the artist mixes
         """
-        print("⭐⭐⭐⭐ Mixes cron job running")
         ArtistMixes()
 
         # INFO: Because you listened to artist items are generated using

@@ -100,7 +100,7 @@ class MixesPlugin(Plugin):
             print("Failed to decode JSON response from recommendation server")
             return [], [], []
 
-        trackhashes: list[str] = results["tracks"]
+        trackhashes: list[str] = results.get("tracks", [])
 
         trackmatches = TrackStore.get_flat_list()
         trackmatches = [t for t in trackmatches if t.weakhash in trackhashes]
@@ -234,8 +234,6 @@ class MixesPlugin(Plugin):
                     indexed.add(artist["artisthash"])
                     period["created"] += 1
 
-        print(f"⭐⭐⭐⭐ Created {len(mixes)} mixes")
-        print([m.title for m in mixes])
         return mixes
 
     @classmethod
@@ -286,8 +284,6 @@ class MixesPlugin(Plugin):
 
         db_mix = MixTable.get_by_sourcehash(sourcehash)
         if db_mix:
-            print(f"🔍 Found existing mix for {_artist.artist.name}")
-            print(db_mix.title)
             return db_mix
 
         mix_tracks, albums, artists = self.get_track_mix_data(tracks)

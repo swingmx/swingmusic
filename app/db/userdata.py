@@ -474,7 +474,7 @@ class LibDataTable(Base):
         result = cls.execute(
             select(cls.itemhash, cls.color).where(cls.itemtype == type)
         )
-        return [{"itemhash": r[0], "color": r[1]} for r in result.fetchall()]
+        return [{"itemhash": r[0].replace(type, ''), "color": r[1]} for r in result.fetchall()]
 
 
 class MixTable(Base):
@@ -610,26 +610,37 @@ class PageTable(Base):
 
     @classmethod
     def get_all(cls):
-        result = cls.execute(select(cls))
+        result = cls.execute(select(cls).where(cls.userid == get_current_userid()))
         return [cls.to_dict(entry) for entry in result.fetchall()]
 
     @classmethod
     def get_by_id(cls, id: int):
-        result = cls.execute(select(cls).where(cls.id == id))
+        result = cls.execute(
+            select(cls).where(and_(cls.id == id, cls.userid == get_current_userid()))
+        )
         return cls.to_dict(result.fetchone())
 
     @classmethod
     def delete_by_id(cls, id: int):
-        return cls.execute(delete(cls).where(cls.id == id), commit=True)
+        return cls.execute(
+            delete(cls).where(and_(cls.id == id, cls.userid == get_current_userid())),
+            commit=True,
+        )
 
     @classmethod
     def update_items(cls, id: int, items: list[dict[str, Any]]):
         return cls.execute(
-            update(cls).where(cls.id == id).values(items=items), commit=True
+            update(cls)
+            .where(and_(cls.id == id, cls.userid == get_current_userid()))
+            .values(items=items),
+            commit=True,
         )
 
     @classmethod
     def update_one(cls, payload: dict[str, Any]):
         return cls.execute(
-            update(cls).where(cls.id == payload["id"]).values(payload), commit=True
+            update(cls)
+            .where(and_(cls.id == payload["id"], cls.userid == get_current_userid()))
+            .values(payload),
+            commit=True,
         )

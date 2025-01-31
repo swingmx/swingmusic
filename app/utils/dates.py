@@ -77,7 +77,6 @@ def get_date_range(duration: str, units_ago: int = 0):
         seconds_ago = (
             pendulum.now() - pendulum.now().subtract().start_of(duration)
         ).total_seconds() * units_ago
-        print("seconds_ago", duration, str(seconds_ago))
 
     match duration:
         case "day" | "week" | "month" | "year":

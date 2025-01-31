@@ -84,7 +84,11 @@ class ProcessAlbumColors:
             # INFO: Write to the database.
             if albumrecord is None:
                 LibDataTable.insert_one(
-                    {"itemhash": albumhash, "color": colors[0], "itemtype": "album"}
+                    {
+                        "itemhash": "album" + albumhash,
+                        "color": colors[0],
+                        "itemtype": "album",
+                    }
                 )
             else:
                 LibDataTable.update_one(albumhash, {"color": colors[0]})
@@ -109,7 +113,6 @@ class ProcessArtistColors:
                 )
 
             record = LibDataTable.find_one(artisthash, "artist")
-
             if (record is not None) and (record.color is not None):
                 continue
 
@@ -123,9 +126,6 @@ class ProcessArtistColors:
             if artist:
                 artist.set_color(colors[0])
 
-            # INFO: Write to the database.
-            print("RECORD")
-            print(record)
             if record is None:
                 LibDataTable.insert_one(
                     {

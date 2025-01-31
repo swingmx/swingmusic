@@ -15,7 +15,8 @@ def log_startup_info():
     adresses = [FLASKVARS.get_flask_host()]
 
     if FLASKVARS.get_flask_host() == "0.0.0.0":
-        adresses = ["localhost", get_ip()]
+        remote_ip = get_ip()
+        adresses = ["localhost"] + ([remote_ip] if remote_ip else [])
 
     print("Started app on:")
     for address in adresses:

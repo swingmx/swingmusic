@@ -22,7 +22,10 @@ def get_ip():
     Returns the IP address of this device.
     """
     soc = Socket.socket(Socket.AF_INET, Socket.SOCK_DGRAM)
-    soc.connect(("8.8.8.8", 80))
+    try:
+        soc.connect(("8.8.8.8", 80))
+    except OSError:
+        return None
     ip_address = str(soc.getsockname()[0])
     soc.close()
 
