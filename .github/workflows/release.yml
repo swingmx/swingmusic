@@ -100,10 +100,6 @@ jobs:
         if: matrix.os == 'ubuntu-20.04'
         run: |
           mv dist/swingmusic dist/swingmusic_linux_amd64
-      - name: Rename Windows binary
-        if: matrix.os == 'windows-2019'
-        run: |
-          mv dist/swingmusic.exe dist/swingmusic_win32.exe
       - name: Verify Linux build success
         if: matrix.os == 'ubuntu-20.04'
         run: |
@@ -114,7 +110,7 @@ jobs:
       - name: Verify Windows build success
         if: matrix.os == 'windows-2019'
         run: |
-          if (-not (Test-Path "./dist/swingmusic_win32.exe")) {
+          if (-not (Test-Path "./dist/swingmusic.exe")) {
             Write-Host "Build failed"
             exit 1
           }
@@ -130,7 +126,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: win32
-          path: dist/swingmusic_win32.exe
+          path: dist/swingmusic.exe
           retention-days: 1
 
   build_aarch64:
@@ -185,7 +181,7 @@ jobs:
         uses: ncipollo/release-action@v1
         with:
           allowUpdates: true
-          artifacts: "./linux/swingmusic_linux_amd64, ./win32/swingmusic_win32.exe, ./arm64/swingmusic_linux_arm64"
+          artifacts: "./linux/swingmusic_linux_amd64, ./win32/swingmusic.exe, ./arm64/swingmusic_linux_arm64"
           token: ${{ secrets.GITHUB_TOKEN }}
           tag: ${{ format('v{0}',inputs.tag) }}
           commit: ${{ github.sha }}
