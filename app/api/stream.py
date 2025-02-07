@@ -3,11 +3,12 @@ Contains all the track routes.
 """
 
 import os
+from pathlib import Path
 import tempfile
 import time
 from typing import Literal
 
-from flask import send_file, request, Response
+from flask import send_file, request, Response, send_from_directory
 from flask_openapi3 import APIBlueprint, Tag
 from pydantic import BaseModel, Field
 from app.api.apischemas import TrackHashSchema
@@ -84,7 +85,22 @@ def send_track_file_legacy(path: TrackHashSchema, query: SendTrackFileQuery):
 
     if track is not None:
         audio_type = guess_mime_type(filepath)
-        return send_file(filepath, mimetype=audio_type, conditional=True)
+        # return send_file(
+        #     filepath,
+        #     mimetype=audio_type,
+        #     conditional=True,
+        #     # environ=request.environ,
+        #     as_attachment=True,
+        #     max_age=None,
+        # )
+        return send_from_directory(
+            Path(filepath).parent,
+            Path(filepath).name,
+            mimetype=audio_type,
+            conditional=True,
+            as_attachment=True,
+        )
+        # return ""
 
     return msg, 404
 

@@ -67,6 +67,7 @@ def create_api():
 
     app = OpenAPI(__name__, info=api_info, doc_prefix="/docs")
     # JWT CONFIGS
+    app.config["JWT_VERIFY_SUB"] = False
     app.config["JWT_SECRET_KEY"] = UserConfig().serverId
     app.config["JWT_TOKEN_LOCATION"] = ["cookies", "headers"]
     app.config["JWT_COOKIE_CSRF_PROTECT"] = False
