@@ -1,5 +1,4 @@
 from contextlib import contextmanager
-import gc
 from sqlalchemy import Engine, event
 
 
@@ -43,3 +42,5 @@ class DbEngine:
             raise e
         finally:
             conn.close()
+            del conn
+            cls.engine.clear_compiled_cache()

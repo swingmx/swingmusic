@@ -1,6 +1,6 @@
 from dataclasses import asdict
 import os
-from concurrent.futures import ThreadPoolExecutor
+from concurrent.futures import ProcessPoolExecutor
 
 from requests import ConnectionError as RequestConnectionError
 from requests import ReadTimeout
@@ -111,7 +111,7 @@ class ProcessTrackThumbnails:
         path = settings.Paths.get_sm_thumb_path()
 
         # read all the files in the thumbnail directory
-        processed = "".join(os.listdir(path)).replace("webp", "")
+        processed = set(i.replace(".webp", "") for i in os.listdir(path))
 
         # filter out albums that already have thumbnails
         albums = filter(
@@ -119,10 +119,12 @@ class ProcessTrackThumbnails:
         )
         albums = list(albums)
 
+        print("length of albums", len(albums))
+
         # process the rest
         key_album_map = ((instance_key, album) for album in albums)
 
-        with ThreadPoolExecutor(max_workers=get_cpu_count()) as executor:
+        with ProcessPoolExecutor(max_workers=get_cpu_count()) as executor:
             results = list(
                 tqdm(
                     executor.map(get_image, key_album_map),
@@ -168,7 +170,7 @@ class FetchSimilarArtistsLastFM:
     def __init__(self, instance_key: str) -> None:
         # read all artists from db
         processed = SimilarArtistTable.get_all()
-        processed = ".".join(a.artisthash for a in processed)
+        processed = ".".join(a for a in processed)
 
         # filter out artists that already have similar artists
         artists = filter(
@@ -179,7 +181,7 @@ class FetchSimilarArtistsLastFM:
         # process the rest
         key_artist_map = ((instance_key, artist) for artist in artists)
 
-        with ThreadPoolExecutor(max_workers=get_cpu_count()) as executor:
+        with ProcessPoolExecutor(max_workers=get_cpu_count()) as executor:
             try:
                 print("Processing similar artists")
                 results = list(

@@ -173,7 +173,9 @@ def serve_client_files(path: str):
 
     # INFO: Safari doesn't support gzip encoding
     # See issue: https://github.com/swingmx/swingmusic/issues/155
-    is_safari = user_agent.find("Safari") >= 0 and user_agent.find("Chrome") < 0
+    is_safari = (
+        user_agent and user_agent.find("Safari") >= 0 and user_agent.find("Chrome") < 0
+    )
 
     if is_safari:
         return app.send_static_file(path)
@@ -181,7 +183,7 @@ def serve_client_files(path: str):
     accepts_gzip = request.headers.get("Accept-Encoding", "").find("gzip") >= 0
 
     if accepts_gzip:
-        if os.path.exists(os.path.join(app.static_folder, gzipped_path)):
+        if os.path.exists(os.path.join(app.static_folder or "", gzipped_path)):
             response = app.make_response(app.send_static_file(gzipped_path))
             response.headers["Content-Encoding"] = "gzip"
             return response

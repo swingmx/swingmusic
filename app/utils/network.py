@@ -8,7 +8,6 @@ def has_connection(host="google.it", port=80, timeout=3):
     OpenPort: 53/tcp
     Service: domain (DNS/TCP)
     """
-    
     try:
         Socket.setdefaulttimeout(timeout)
         Socket.socket(Socket.AF_INET, Socket.SOCK_STREAM).connect((host, port))

@@ -143,8 +143,10 @@ class SimilarArtistTable(Base):
     @classmethod
     def get_all(cls):
         with DbEngine.manager() as conn:
-            result = conn.execute(select(cls))
-            return similar_artists_to_dataclass(result.fetchall())
+            result = conn.execute(
+                select(cls.artisthash), execution_options={"stream_results": True}
+            )
+            return result.scalars().all()
 
     @classmethod
     def exists(cls, artisthash: str):
@@ -156,7 +158,8 @@ class SimilarArtistTable(Base):
             result = conn.execute(
                 select(cls.artisthash).where(cls.artisthash == artisthash)
             )
-            return result.fetchone() is not None
+
+            return len(result.scalars().all()) > 0
 
     @classmethod
     def get_by_hash(cls, artisthash: str):
@@ -474,7 +477,10 @@ class LibDataTable(Base):
         result = cls.execute(
             select(cls.itemhash, cls.color).where(cls.itemtype == type)
         )
-        return [{"itemhash": r[0].replace(type, ''), "color": r[1]} for r in result.fetchall()]
+        return [
+            {"itemhash": r[0].replace(type, ""), "color": r[1]}
+            for r in result.fetchall()
+        ]
 
 
 class MixTable(Base):

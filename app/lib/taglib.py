@@ -23,12 +23,13 @@ def parse_album_art(filepath: str):
     """
     Returns the album art for a given audio file.
     """
+    tags = TinyTag.get(filepath, image=True)
+    image = tags.images.any
 
-    try:
-        tags = TinyTag.get(filepath, image=True)
-        return tags.get_image()
-    except:  # pylint: disable=bare-except
-        return None
+    if image:
+        return image.data
+
+    return None
 
 
 def extract_thumb(filepath: str, webp_path: str, overwrite=False) -> bool:
@@ -53,7 +54,9 @@ def extract_thumb(filepath: str, webp_path: str, overwrite=False) -> bool:
         ratio = width / height
 
         for path, size in images:
-            img.resize((size, int(size / ratio)), Image.ANTIALIAS).save(path, "webp")
+            img.resize((size, int(size / ratio)), Image.LANCZOS).save(path, "webp")
+
+        del img
 
     if not overwrite and os.path.exists(sm_img_path):
         img_size = os.path.getsize(sm_img_path)

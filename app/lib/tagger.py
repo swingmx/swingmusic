@@ -1,4 +1,7 @@
 import os
+from functools import partial
+from multiprocessing import Pool, cpu_count
+
 from app import settings
 from app.config import UserConfig
 from app.db.libdata import TrackTable
@@ -17,7 +20,9 @@ from app.utils.progressbar import tqdm
 from app.logger import log
 from app.utils.remove_duplicates import remove_duplicates
 
-POPULATE_KEY: float = 0
+
+class PopulateKey:
+    key: float = 0
 
 
 class IndexTracks:
@@ -28,9 +33,7 @@ class IndexTracks:
         An instance key is used to prevent multiple instances of the
         same class from running at the same time.
         """
-        global POPULATE_KEY
-        POPULATE_KEY = instance_key
-
+        PopulateKey.key = instance_key
         dirs_to_scan = UserConfig().rootDirs
 
         if len(dirs_to_scan) == 0:
@@ -120,22 +123,46 @@ class IndexTracks:
     def get_untagged(self):
         tracks = TrackTable.get_all()
 
+    @staticmethod
+    def _process_file(file: str, config: UserConfig, key: float) -> dict | None:
+        """Worker function to process individual files"""
+        if PopulateKey.key != key:
+            return None
+
+        try:
+            return get_tags(file, config=config)
+        except Exception as e:
+            log.warning(f"Failed to process file {file}: {e}")
+            return None
+
     def tag_untagged(self, files: set[str], key: float):
         config = UserConfig()
-        for file in tqdm(files, desc="Reading files"):
-            if POPULATE_KEY != key:
-                log.warning("'Populate.tag_untagged': Populate key changed")
-                return
 
-            tags = get_tags(file, config=config)
+        # Create process pool with worker function
+        with Pool(processes=cpu_count()) as pool:
+            worker = partial(self._process_file, config=config, key=key)
 
-            if tags is not None:
-                TrackTable.insert_one(tags)
-                FolderStore.filepaths.add(tags["filepath"])
+            # Process files and track progress
+            results = []
+            for result in tqdm(
+                pool.imap_unordered(worker, files),
+                total=len(files),
+                desc="Reading files",
+            ):
+                if PopulateKey.key != key:
+                    log.warning("'Populate.tag_untagged': Populate key changed")
+                    pool.terminate()
+                    return
 
-            del tags
+                if result is not None:
+                    results.append(result)
 
-        print(f"{len(files)} new files indexed")
+        # Bulk insert results
+        for tags in results:
+            TrackTable.insert_one(tags)
+            FolderStore.filepaths.add(tags["filepath"])
+
+        print(f"{len(results)} new files indexed")
         print("Done")
 
 

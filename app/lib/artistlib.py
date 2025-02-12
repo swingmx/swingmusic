@@ -1,11 +1,13 @@
 import os
 import time
 import urllib
-from concurrent.futures import ThreadPoolExecutor
+import requests
+import multiprocessing
+
 from io import BytesIO
 from pathlib import Path
+from concurrent.futures import ProcessPoolExecutor
 
-import requests
 from PIL import Image, PngImagePlugin, UnidentifiedImageError
 from requests.exceptions import ConnectionError as RequestConnectionError
 from requests.exceptions import ReadTimeout
@@ -21,6 +23,7 @@ from app.store.artists import ArtistStore
 from app.utils.hashing import create_hash
 from app.utils.progressbar import tqdm
 
+
 CHECK_ARTIST_IMAGES_KEY = ""
 
 LARGE_ENOUGH_NUMBER = 100
@@ -28,6 +31,7 @@ PngImagePlugin.MAX_TEXT_CHUNK = LARGE_ENOUGH_NUMBER * (1024**2)
 # https://stackoverflow.com/a/61466412
 
 import random
+
 
 def get_artist_image_link(artist: str):
     """
@@ -43,7 +47,7 @@ def get_artist_image_link(artist: str):
             "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/14.0 Safari/605.1.15",
             "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.107 Safari/537.36",
             "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:90.0) Gecko/20100101 Firefox/90.0",
-            "Mozilla/5.0 (iPhone; CPU iPhone OS 14_6 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/14.0 Mobile/15E148 Safari/604.1"
+            "Mozilla/5.0 (iPhone; CPU iPhone OS 14_6 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/14.0 Mobile/15E148 Safari/604.1",
         ]
         headers = {
             "User-Agent": random.choice(user_agents),
@@ -138,7 +142,7 @@ class DownloadImage:
                 img.save(path, format="webp")
                 continue
 
-            img.resize((size, int(size / ratio)), Image.ANTIALIAS).save(
+            img.resize((size, int(size / ratio)), Image.LANCZOS).save(
                 path, format="webp"
             )
 
@@ -150,7 +154,7 @@ class CheckArtistImages:
 
         # read all files in the artist image folder
         path = settings.Paths.get_sm_artist_img_path()
-        processed = [path.replace(".webp", "") for path in os.listdir(path)]
+        processed = set(i.replace(".webp", "") for i in os.listdir(path))
 
         unprocessed = [
             a for a in ArtistStore.get_flat_list() if a.artisthash not in processed
@@ -158,7 +162,10 @@ class CheckArtistImages:
 
         key_artist_map = ((instance_key, artist) for artist in unprocessed)
 
-        with ThreadPoolExecutor(max_workers=14) as executor:
+        # Use number of CPU cores minus 1 to leave one core free for system processes
+        num_workers = max(1, multiprocessing.cpu_count() - 1)
+
+        with ProcessPoolExecutor(max_workers=num_workers) as executor:
             res = list(
                 tqdm(
                     executor.map(self.download_image, key_artist_map),

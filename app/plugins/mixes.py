@@ -126,8 +126,8 @@ class MixesPlugin(Plugin):
         # if len(trackmatches) < self.TRACK_MIX_LENGTH:
         if True:
             filler_tracks = self.fallback_create_artist_mix(
-                similar_artists=results["artists"],
-                similar_albums=results["albums"],
+                similar_artists=results.get("artists", []),
+                similar_albums=results.get("albums", []),
                 omit_trackhashes={t.weakhash for t in trackmatches},
                 # limit=self.TRACK_MIX_LENGTH - len(trackmatches),
             )
@@ -135,9 +135,9 @@ class MixesPlugin(Plugin):
 
         # try to balance the mix
         trackmatches = balance_mix(trackmatches)
-        return trackmatches, results["albums"], results["artists"]
+        return trackmatches, results.get("albums", []), results.get("artists", [])
 
-    @plugin_method
+    # @plugin_method
     # def get_artist_mix(self, artisthash: str):
     #     """
     #     Given an artisthash, creates an artist mix using the
