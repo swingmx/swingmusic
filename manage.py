@@ -4,7 +4,6 @@ This file is used to run the application.
 
 from datetime import datetime, timezone
 import os
-import logging
 from flask_jwt_extended import (
     create_access_token,
     get_jwt,
@@ -16,7 +15,6 @@ import psutil
 import mimetypes
 from flask import Response, request
 
-import waitress
 import setproctitle
 
 from app.api import create_api
@@ -27,8 +25,6 @@ from app.plugins.register import register_plugins
 from app.settings import FLASKVARS, TCOLOR, Info
 from app.setup import load_into_mem, run_setup
 from app.start_info_logger import log_startup_info
-from app.store.artists import ArtistStore
-from app.store.tracks import TrackStore
 from app.utils.filesystem import get_home_res_path
 from app.utils.paths import getClientFilesExtensions
 from app.utils.threading import background
@@ -245,4 +241,8 @@ if __name__ == "__main__":
     #     ipv6=True,
     #     ipv4=True,
     # )
-    app.run(host=host, port=port, debug=False)
+    # app.run(host=host, port=port, debug=False)
+    from gevent.pywsgi import WSGIServer
+
+    server = WSGIServer((host, port), app, log=None)
+    server.serve_forever()

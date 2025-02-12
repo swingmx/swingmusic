@@ -33,6 +33,7 @@ dependencies = [
     "schedule>=1.2.2",
     "flask-openapi3>=4.0.3",
     "pillow>=11.1.0",
+    "gevent>=24.11.1",
 ]
 
 [dependency-groups]
