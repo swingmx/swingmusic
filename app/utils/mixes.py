@@ -92,13 +92,11 @@ def balance_mix(tracks: List[Track]) -> List[Track]:
     """
     can_be_balanced, is_balanced = is_tracklist_balanced(tracks)
 
-    if not can_be_balanced:
-        print("Warning: This tracklist cannot be perfectly balanced.")
-        # Proceed with best-effort balancing
-
     if is_balanced:
-        return tracks  # Already balanced, no need to modify
+        # Already balanced, no need to modify
+        return tracks
 
+    # Proceed with best-effort balancing
     balanced_mix: Dict[int, Track] = {}
     total_tracks = len(tracks)
 
