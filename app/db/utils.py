@@ -10,8 +10,14 @@ from app.models.plugins import Plugin
 from app.models.user import User
 
 
-def track_to_dataclass(track: Any, config: UserConfig):
-    return TrackModel(**track._asdict(), config=config)
+def row_to_dict(row: Any):
+    d = row.__dict__
+    del d["_sa_instance_state"]
+    return d
+
+
+def track_to_dataclass(track: dict, config: UserConfig):
+    return TrackModel(**track, config=config)
 
 
 def tracks_to_dataclasses(tracks: Any):
@@ -35,10 +41,8 @@ def artists_to_dataclasses(artists: Any):
 
 
 # SECTION: User data helpers
-
-
 def similar_artist_to_dataclass(entry: Any):
-    entry_dict = entry._asdict()
+    entry_dict = row_to_dict(entry)
     del entry_dict["id"]
 
     return SimilarArtist(**entry_dict)
@@ -49,7 +53,7 @@ def similar_artists_to_dataclass(entries: Any):
 
 
 def favorite_to_dataclass(entry: Any):
-    entry_dict = entry._asdict()
+    entry_dict = row_to_dict(entry)
     del entry_dict["id"]
 
     return Favorite(**entry_dict)
@@ -60,16 +64,15 @@ def favorites_to_dataclass(entries: Any):
 
 
 def user_to_dataclass(entry: Any):
-    entry_dict = entry._asdict()
-    return User(**entry_dict)
+    return User(**row_to_dict(entry))
 
 
-def user_to_dataclasses(entries: Any):
-    return [user_to_dataclass(entry) for entry in entries]
+# def user_to_dataclasses(entries: Any):
+#     return [user_to_dataclass(entry) for entry in entries]
 
 
 def plugin_to_dataclass(entry: Any):
-    entry_dict = entry._asdict()
+    entry_dict = row_to_dict(entry)
     del entry_dict["id"]
     return Plugin(**entry_dict)
 
@@ -79,8 +82,7 @@ def plugin_to_dataclasses(entries: Any):
 
 
 def tracklog_to_dataclass(entry: Any):
-    entry_dict = entry._asdict()
-    return TrackLog(**entry_dict)
+    return TrackLog(**row_to_dict(entry))
 
 
 def tracklog_to_dataclasses(entries: Any):
@@ -88,7 +90,7 @@ def tracklog_to_dataclasses(entries: Any):
 
 
 def playlist_to_dataclass(entry: Any):
-    entry_dict = entry._asdict()
+    entry_dict = row_to_dict(entry)
     return Playlist(**entry_dict)
 
 

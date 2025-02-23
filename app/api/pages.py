@@ -56,7 +56,7 @@ def get_pages():
     """
     Get all pages.
     """
-    return PageTable.get_all()
+    return [page for page in PageTable.get_all()]
 
 
 class AddPageItemBody(BaseModel):

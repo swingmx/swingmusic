@@ -101,6 +101,11 @@ def send_all_playlists(query: SendAllPlaylistsQuery):
     Gets all the playlists.
     """
     playlists = PlaylistTable.get_all()
+    playlists = sorted(
+        playlists,
+        key=lambda p: datetime.strptime(p.last_updated, "%Y-%m-%d %H:%M:%S"),
+        reverse=True,
+    )
 
     for playlist in playlists:
         if not playlist.has_image:
@@ -110,10 +115,10 @@ def send_all_playlists(query: SendAllPlaylistsQuery):
 
         playlist.clear_lists()
 
-    playlists.sort(
-        key=lambda p: datetime.strptime(p.last_updated, "%Y-%m-%d %H:%M:%S"),
-        reverse=True,
-    )
+    # playlists.sort(
+    #     key=lambda p: datetime.strptime(p.last_updated, "%Y-%m-%d %H:%M:%S"),
+    #     reverse=True,
+    # )
 
     return {"data": playlists}
 
@@ -175,7 +180,11 @@ def add_item_to_playlist(path: PlaylistIDPath, body: AddItemToPlaylistBody):
     if itemtype == "tracks":
         trackhashes = itemhash.split(",")
     elif itemtype == "folder":
-        trackhashes = get_path_trackhashes(itemhash, sortoptions.get("tracksortby") or 'default', sortoptions.get("tracksortreverse") or False)
+        trackhashes = get_path_trackhashes(
+            itemhash,
+            sortoptions.get("tracksortby") or "default",
+            sortoptions.get("tracksortreverse") or False,
+        )
     elif itemtype == "album":
         trackhashes = get_album_trackhashes(itemhash)
     elif itemtype == "artist":
@@ -408,7 +417,11 @@ def save_item_as_playlist(body: SavePlaylistAsItemBody):
     if itemtype == "tracks":
         trackhashes = itemhash.split(",")
     elif itemtype == "folder":
-        trackhashes = get_path_trackhashes(itemhash, sortoptions.get("tracksortby") or 'default', sortoptions.get("tracksortreverse") or False)
+        trackhashes = get_path_trackhashes(
+            itemhash,
+            sortoptions.get("tracksortby") or "default",
+            sortoptions.get("tracksortreverse") or False,
+        )
     elif itemtype == "album":
         trackhashes = get_album_trackhashes(itemhash)
     elif itemtype == "artist":

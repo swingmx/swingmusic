@@ -1,5 +1,6 @@
 from contextlib import contextmanager
 from sqlalchemy import Engine, event
+from sqlalchemy.orm import sessionmaker
 
 
 @event.listens_for(Engine, "connect")
@@ -9,8 +10,8 @@ def set_sqlite_pragma(dbapi_connection, connection_record):
     cursor.execute("PRAGMA synchronous=NORMAL")
     cursor.execute("PRAGMA cache_size=10000")
     cursor.execute("PRAGMA foreign_keys=ON")
-    cursor.execute("PRAGMA temp_store=MEMORY")
-    cursor.execute("PRAGMA mmap_size=30000000000")
+    cursor.execute("PRAGMA temp_store=FILE")
+    cursor.execute("PRAGMA mmap_size=0")
     cursor.close()
 
 
@@ -31,16 +32,23 @@ class DbEngine:
 
         If the `commit` parameter is set to `True`, the context manager will commit the transaction when it exits.
         """
-        conn = cls.engine.connect()
+        Session = sessionmaker(cls.engine)
 
         try:
-            yield conn.execution_options(preserve_rowcount=True)
-            if commit:
-                conn.commit()
+            with Session() as session:
+                yield session
+
+                if commit:
+                    session.commit()
+                # yield session.execution_options(preserve_rowcount=True, yield_per=100)
+            # yield conn.execution_options(preserve_rowcount=True, yield_per=100)
         except Exception as e:
-            conn.rollback()
+            session.rollback()
             raise e
         finally:
-            conn.close()
-            del conn
-            cls.engine.clear_compiled_cache()
+            if commit:
+                session.commit()
+
+            session.close()
+            # del conn
+            # cls.engine.clear_compiled_cache()

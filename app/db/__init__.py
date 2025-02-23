@@ -21,14 +21,19 @@ class Base(MappedAsDataclass, DeclarativeBase):
     @classmethod
     def execute(cls, stmt: Any, commit: bool = False):
         with DbEngine.manager(commit=commit) as session:
-            return session.execute(stmt)
+            result = session.execute(stmt.execution_options(yield_per=100))
+
+            if commit:
+                session.commit()
+
+            yield result
 
     @classmethod
     def insert_many(cls, items: list[dict[str, Any]]):
         """
         Inserts multiple items into the database.
         """
-        return cls.execute(insert(cls).values(items), commit=True)
+        return next(cls.execute(insert(cls).values(items), commit=True))
 
     @classmethod
     def insert_one(cls, item: dict[str, Any]):
@@ -39,19 +44,19 @@ class Base(MappedAsDataclass, DeclarativeBase):
 
     @classmethod
     def remove_all(cls):
-        return cls.execute(delete(cls), commit=True)
+        return next(cls.execute(delete(cls), commit=True))
 
     @classmethod
     def remove_one(cls, id: int):
-        return cls.execute(delete(cls).where(cls.id == id), commit=True)
+        return next(cls.execute(delete(cls).where(cls.id == id), commit=True))
 
     @classmethod
     def all(cls):
-        return cls.execute(select(cls))
+        return next(cls.execute(select(cls).execution_options(yield_per=100)))
 
     @classmethod
     def count(cls):
-        return cls.execute(select(func.count()).select_from(cls)).scalar()
+        return next(cls.execute(select(func.count()).select_from(cls))).scalar()
 
 
 def create_all_tables():

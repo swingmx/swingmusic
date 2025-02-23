@@ -33,6 +33,7 @@ class MixAlreadyExists(Exception):
 class MixesPlugin(Plugin):
     MAX_TRACKS_TO_FETCH = 5
     MIN_TRACK_MIX_LENGTH = 15
+    MIN_ARTISTS_PER_MIX = 4
     MIX_TRACKS_LENGTH = 40
 
     MIN_DAY_LISTEN_DURATION = 3 * 60  # 3 minutes
@@ -289,6 +290,10 @@ class MixesPlugin(Plugin):
         mix_tracks, albums, artists = self.get_track_mix_data(tracks)
 
         if len(mix_tracks) < self.MIN_TRACK_MIX_LENGTH:
+            return None
+
+        # INFO: Dump mixes with no variety
+        if len(set(t.artisthashes[0] for t in mix_tracks)) < self.MIN_ARTISTS_PER_MIX:
             return None
 
         # try downloading artist image

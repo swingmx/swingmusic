@@ -169,8 +169,7 @@ class FetchSimilarArtistsLastFM:
 
     def __init__(self, instance_key: str) -> None:
         # read all artists from db
-        processed = SimilarArtistTable.get_all()
-        processed = ".".join(a for a in processed)
+        processed = set(a.artisthash for a in SimilarArtistTable.get_all())
 
         # filter out artists that already have similar artists
         artists = filter(

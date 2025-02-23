@@ -1252,7 +1252,7 @@ requires-dist = [
     { name = "pendulum", specifier = ">=3.0.0" },
     { name = "pillow", specifier = ">=11.1.0" },
     { name = "psutil", specifier = ">=5.9.4" },
-    { name = "rapidfuzz", specifier = ">=2.13.7" },
+    { name = "rapidfuzz", specifier = "==3.12.1" },
     { name = "requests", specifier = ">=2.27.1" },
     { name = "schedule", specifier = ">=1.2.2" },
     { name = "setproctitle", specifier = ">=1.3.2" },

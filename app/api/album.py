@@ -92,7 +92,6 @@ def get_album_tracks_and_info(body: GetAlbumInfoBody):
         og_album_title=album.og_title,
     )
 
-
     more_from_albums = get_more_from_artist(more_from_data)
     other_versions = get_album_versions(other_versions_data)
 
@@ -217,6 +216,9 @@ def get_similar_albums(query: GetSimilarAlbumsQuery):
         return []
 
     artisthashes = similar_artists.get_artist_hash_set()
+
+    del similar_artists
+
     artists = ArtistStore.get_artists_by_hashes(artisthashes)
     albums = AlbumStore.get_albums_by_artisthashes([a.artisthash for a in artists])
     sample = random.sample(albums, min(len(albums), limit))

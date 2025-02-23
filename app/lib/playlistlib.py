@@ -28,7 +28,7 @@ def create_thumbnail(image: Any, img_path: str) -> str:
 
     new_w = round(250 * aspect_ratio)
 
-    thumb = image.resize((new_w, 250), Image.ANTIALIAS)
+    thumb = image.resize((new_w, 250), Image.Resampling.LANCZOS)
     thumb.save(full_thumb_path, "webp")
 
     return thumb_path
@@ -50,7 +50,7 @@ def create_gif_thumbnail(image: Any, img_path: str):
 
         new_w = round(250 * aspect_ratio)
 
-        thumb = frame.resize((new_w, 250), Image.ANTIALIAS)
+        thumb = frame.resize((new_w, 250), Image.Resampling.LANCZOS)
         frames.append(thumb)
 
     frames[0].save(full_thumb_path, save_all=True, append_images=frames[1:])

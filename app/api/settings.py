@@ -95,14 +95,14 @@ def get_all_settings():
     Get all settings
     """
     config = asdict(UserConfig())
-    plugins = PluginTable.get_all()
-    config["plugins"] = plugins
+    config["plugins"] = [p for p in PluginTable.get_all()]
     config["version"] = Info.SWINGMUSIC_APP_VERSION
 
     # hide lastfmSessionKeys for other users
     current_user = get_current_userid()
     config["lastfmSessionKey"] = config["lastfmSessionKeys"].get(str(current_user), "")
     del config["lastfmSessionKeys"]
+
     return config
 
 

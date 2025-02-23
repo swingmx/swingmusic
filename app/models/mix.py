@@ -2,6 +2,7 @@ import time
 from dataclasses import asdict, dataclass, field
 from typing import Any
 
+from app.db.utils import row_to_dict
 from app.lib.playlistlib import get_first_4_images
 from app.serializers.track import serialize_tracks
 from app.store.tracks import TrackStore
@@ -60,7 +61,8 @@ class Mix:
 
     @classmethod
     def mix_to_dataclass(cls, entry: Any):
-        entry_dict = entry._asdict()
+        entry_dict = row_to_dict(entry)
+
         entry_dict["id"] = entry_dict["mixid"]
         del entry_dict["mixid"]
 
@@ -69,4 +71,3 @@ class Mix:
     @classmethod
     def mixes_to_dataclasses(cls, entries: Any):
         return [cls.mix_to_dataclass(entry) for entry in entries]
-

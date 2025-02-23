@@ -1,5 +1,6 @@
+from app.config import UserConfig
 from app.db import Base
-from app.db.utils import tracks_to_dataclasses
+from app.db.utils import track_to_dataclass, tracks_to_dataclasses
 from app.db.engine import DbEngine
 from sqlalchemy import JSON, Integer, String, delete, select
 from sqlalchemy.orm import Mapped, mapped_column
@@ -38,8 +39,14 @@ class TrackTable(Base):
     @classmethod
     def get_all(cls):
         with DbEngine.manager() as conn:
-            result = conn.execute(select(cls))
-            return tracks_to_dataclasses(result.fetchall())
+            config = UserConfig()
+            result = conn.execute(select(cls).execution_options(yield_per=100))
+
+            for i in result.scalars():
+                d = i.__dict__
+                del d["_sa_instance_state"]
+
+                yield track_to_dataclass(d, config)
 
     @classmethod
     def get_tracks_by_filepaths(cls, filepaths: list[str]):

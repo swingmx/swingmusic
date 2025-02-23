@@ -1,6 +1,6 @@
 from dataclasses import asdict
 import datetime
-from typing import Any, Literal
+from typing import Any, Iterable, Literal
 from sqlalchemy import (
     JSON,
     Boolean,
@@ -15,21 +15,17 @@ from sqlalchemy import (
     update,
 )
 
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, sessionmaker
 
 from app.db.engine import DbEngine
 from app.db.utils import (
+    favorite_to_dataclass,
     favorites_to_dataclass,
     playlist_to_dataclass,
-    playlists_to_dataclasses,
     plugin_to_dataclass,
-    plugin_to_dataclasses,
     similar_artist_to_dataclass,
-    similar_artists_to_dataclass,
     tracklog_to_dataclass,
-    tracklog_to_dataclasses,
     user_to_dataclass,
-    user_to_dataclasses,
 )
 
 from app.db import Base
@@ -52,7 +48,9 @@ class UserTable(Base):
     @classmethod
     def get_all(cls):
         result = cls.execute(select(cls))
-        return user_to_dataclasses(result.fetchall())
+
+        for i in next(result).scalars():
+            yield user_to_dataclass(i)
 
     @classmethod
     def insert_default_user(cls):
@@ -76,30 +74,40 @@ class UserTable(Base):
 
     @classmethod
     def get_by_id(cls, id: int):
-        with DbEngine.manager() as conn:
-            result = conn.execute(select(cls).where(cls.id == id))
-            res = result.fetchone()
+        result = cls.execute(select(cls).where(cls.id == id))
+        res = next(result).scalar()
 
-            if res:
-                return user_to_dataclass(res)
+        if res:
+            return user_to_dataclass(res)
 
     @classmethod
     def get_by_username(cls, username: str):
-        with DbEngine.manager() as conn:
-            result = conn.execute(select(cls).where(cls.username == username))
-            res = result.fetchone()
+        # with DbEngine.manager() as conn:
+        #     result = conn.execute(select(cls).where(cls.username == username))
+        #     res = result.fetchone()
 
-            if res:
-                return user_to_dataclass(res)
+        #     if res:
+        #         return user_to_dataclass(res)
+
+        res = cls.execute(select(cls).where(cls.username == username))
+        res = next(res).scalar()
+
+        if res:
+            return user_to_dataclass(res)
 
     @classmethod
     def update_one(cls, user: dict[str, Any]):
-        with DbEngine.manager(commit=True) as conn:
-            conn.execute(update(cls).where(cls.id == user["id"]).values(user))
+        return next(
+            cls.execute(
+                update(cls).where(cls.id == user["id"]).values(user), commit=True
+            )
+        )
 
     @classmethod
     def remove_by_username(cls, username: str):
-        return cls.execute(delete(cls).where(cls.username == username), commit=True)
+        return next(
+            cls.execute(delete(cls).where(cls.username == username), commit=True)
+        )
 
 
 class PluginTable(Base):
@@ -113,23 +121,34 @@ class PluginTable(Base):
 
     @classmethod
     def get_all(cls):
-        return plugin_to_dataclasses(cls.all())
+        result = cls.execute(select(cls))
+
+        for i in next(result).scalars():
+            yield plugin_to_dataclass(i)
 
     @classmethod
     def activate(cls, name: str, value: bool):
-        return cls.execute(
-            update(cls).where(cls.name == name).values(active=value), commit=True
+        return next(
+            cls.execute(
+                update(cls).where(cls.name == name).values(active=value), commit=True
+            )
         )
 
     @classmethod
     def get_by_name(cls, name: str):
         result = cls.execute(select(cls).where(cls.name == name))
-        return plugin_to_dataclass(result.fetchone())
+        res = next(result).scalar()
+
+        if res:
+            return plugin_to_dataclass(res)
 
     @classmethod
     def update_settings(cls, name: str, settings: dict[str, Any]):
-        return cls.execute(
-            update(cls).where(cls.name == name).values(settings=settings), commit=True
+        return next(
+            cls.execute(
+                update(cls).where(cls.name == name).values(settings=settings),
+                commit=True,
+            )
         )
 
 
@@ -142,11 +161,10 @@ class SimilarArtistTable(Base):
 
     @classmethod
     def get_all(cls):
-        with DbEngine.manager() as conn:
-            result = conn.execute(
-                select(cls.artisthash), execution_options={"stream_results": True}
-            )
-            return result.scalars().all()
+        result = cls.execute(select(cls).execution_options(yield_per=100))
+
+        for i in next(result).scalars():
+            yield similar_artist_to_dataclass(i)
 
     @classmethod
     def exists(cls, artisthash: str):
@@ -156,7 +174,9 @@ class SimilarArtistTable(Base):
 
         with DbEngine.manager() as conn:
             result = conn.execute(
-                select(cls.artisthash).where(cls.artisthash == artisthash)
+                select(cls.artisthash)
+                .where(cls.artisthash == artisthash)
+                .execution_options(yield_per=100)
             )
 
             return len(result.scalars().all()) > 0
@@ -166,13 +186,11 @@ class SimilarArtistTable(Base):
         """
         Get a single artist by hash.
         """
+        result = cls.execute(select(cls).where(cls.artisthash == artisthash))
+        res = next(result).scalar()
 
-        with DbEngine.manager() as conn:
-            result = conn.execute(select(cls).where(cls.artisthash == artisthash))
-            result = result.fetchone()
-
-            if result:
-                return similar_artist_to_dataclass(result)
+        if res:
+            return similar_artist_to_dataclass(res)
 
 
 class FavoritesTable(Base):
@@ -198,29 +216,31 @@ class FavoritesTable(Base):
                 )
             else:
                 result = conn.execute(select(cls))
-            return favorites_to_dataclass(result.fetchall())
+
+            for i in result.scalars():
+                yield favorite_to_dataclass(i)
 
     @classmethod
     def insert_item(cls, item: dict[str, Any]):
         item["timestamp"] = int(datetime.datetime.now().timestamp())
         item["userid"] = get_current_userid()
 
-        with DbEngine.manager(commit=True) as conn:
-            conn.execute(insert(cls).values(item))
+        return next(cls.execute(insert(cls).values(item), commit=True))
 
     @classmethod
     def remove_item(cls, item: dict[str, Any]):
-        with DbEngine.manager(commit=True) as conn:
-            conn.execute(
+        return next(
+            cls.execute(
                 delete(cls).where(
                     (cls.hash == item["hash"]) & (cls.type == item["type"])
                 )
             )
+        )
 
     @classmethod
     def check_exists(cls, hash: str, type: str):
         result = cls.execute(select(cls).where((cls.hash == hash) & (cls.type == type)))
-        return result.fetchone() is not None
+        return next(result).scalar() is not None
 
     @classmethod
     def get_all_of_type(cls, type: str, start: int, limit: int):
@@ -234,7 +254,7 @@ class FavoritesTable(Base):
             .limit(limit if start != 0 else None)
         )
 
-        res = result.fetchall()
+        res = next(result).scalars().all()
 
         if start == 0:
             # if limit == -1, return all
@@ -268,10 +288,10 @@ class FavoritesTable(Base):
             .where(and_(cls.timestamp >= start_time, cls.timestamp <= end_time))
         )
 
-        result = result.fetchone()
+        res = next(result).scalar()
 
-        if result:
-            return result[0]
+        if res:
+            return res[0]
 
         return 0
 
@@ -304,9 +324,11 @@ class ScrobbleTable(Base):
             .order_by(cls.timestamp.desc())
             .offset(start)
             .limit(limit)
+            .execution_options(yield_per=100)
         )
 
-        return tracklog_to_dataclasses(result.fetchall())
+        for i in next(result).scalars():
+            yield tracklog_to_dataclass(i)
 
     @classmethod
     def get_all_in_period(cls, start_time: int, end_time: int, userid: int | None):
@@ -320,15 +342,21 @@ class ScrobbleTable(Base):
             .where(cls.userid == userid)
             .where(and_(cls.timestamp >= start_time, cls.timestamp <= end_time))
             .order_by(cls.timestamp.desc())
+            .execution_options(yield_per=100)
         )
-        return tracklog_to_dataclasses(result.fetchall())
+
+        for i in next(result).scalars():
+            yield tracklog_to_dataclass(i)
 
     @classmethod
     def get_last_entry(cls, userid: int):
         result = cls.execute(
             select(cls).where(cls.userid == userid).order_by(cls.timestamp.desc())
         )
-        return tracklog_to_dataclass(result.fetchone())
+        res = next(result).scalar()
+
+        if res:
+            return tracklog_to_dataclass(res)
 
 
 class PlaylistTable(Base):
@@ -350,24 +378,30 @@ class PlaylistTable(Base):
     @classmethod
     def get_all(cls, current_user: bool = True):
         if current_user:
-            result = cls.execute(select(cls).where(cls.userid == get_current_userid()))
+            result = cls.execute(
+                select(cls)
+                .where(cls.userid == get_current_userid())
+                .execution_options(yield_per=100)
+            )
         else:
-            result = cls.execute(select(cls))
+            result = cls.execute(select(cls).execution_options(yield_per=100))
 
-        return playlists_to_dataclasses(result)
+        for i in next(result).scalars():
+            yield playlist_to_dataclass(i)
 
     @classmethod
     def add_one(cls, playlist: dict[str, Any]):
         playlist["userid"] = get_current_userid()
         result = cls.insert_one(playlist)
-        return result.lastrowid
+
+        return next(result).lastrowid
 
     @classmethod
     def check_exists_by_name(cls, name: str):
         result = cls.execute(
             select(cls).where((cls.name == name) & (cls.userid == get_current_userid()))
         )
-        return result.fetchone() is not None
+        return next(result).scalar() is not None
 
     @classmethod
     def append_to_playlist(cls, id: int, trackhashes: list[str]):
@@ -375,11 +409,13 @@ class PlaylistTable(Base):
         if not dbtrackhashes:
             dbtrackhashes = []
 
-        return cls.execute(
-            update(cls)
-            .where((cls.id == id) & (cls.userid == get_current_userid()))
-            .values(trackhashes=dbtrackhashes + trackhashes),
-            commit=True,
+        return next(
+            cls.execute(
+                update(cls)
+                .where((cls.id == id) & (cls.userid == get_current_userid()))
+                .values(trackhashes=dbtrackhashes + trackhashes),
+                commit=True,
+            )
         )
 
     @classmethod
@@ -389,9 +425,7 @@ class PlaylistTable(Base):
                 (cls.id == id) & (cls.userid == get_current_userid())
             )
         )
-        result = result.fetchone()
-        if result:
-            return result[0]
+        return next(result).scalar()
 
     @classmethod
     def remove_from_playlist(cls, id: int, trackhashes: list[dict[str, Any]]):
@@ -402,11 +436,13 @@ class PlaylistTable(Base):
                 if dbtrackhashes.index(item["trackhash"]) == item["index"]:
                     dbtrackhashes.remove(item["trackhash"])
 
-            return cls.execute(
-                update(cls)
-                .where((cls.id == id) & (cls.userid == get_current_userid()))
-                .values(trackhashes=dbtrackhashes),
-                commit=True,
+            return next(
+                cls.execute(
+                    update(cls)
+                    .where((cls.id == id) & (cls.userid == get_current_userid()))
+                    .values(trackhashes=dbtrackhashes),
+                    commit=True,
+                )
             )
 
     @classmethod
@@ -414,35 +450,42 @@ class PlaylistTable(Base):
         result = cls.execute(
             select(cls).where((cls.id == id) & (cls.userid == get_current_userid()))
         )
-        result = result.fetchone()
+        result = next(result).scalar()
+
         if result:
             return playlist_to_dataclass(result)
 
     @classmethod
     def update_one(cls, id: int, playlist: dict[str, Any]):
-        return cls.execute(
-            update(cls)
-            .where((cls.id == id) & (cls.userid == get_current_userid()))
-            .values(playlist),
-            commit=True,
+        return next(
+            cls.execute(
+                update(cls)
+                .where((cls.id == id) & (cls.userid == get_current_userid()))
+                .values(playlist),
+                commit=True,
+            )
         )
 
     @classmethod
     def update_settings(cls, id: int, settings: dict[str, Any]):
-        return cls.execute(
-            update(cls)
-            .where((cls.id == id) & (cls.userid == get_current_userid()))
-            .values(settings=settings),
-            commit=True,
+        return next(
+            cls.execute(
+                update(cls)
+                .where((cls.id == id) & (cls.userid == get_current_userid()))
+                .values(settings=settings),
+                commit=True,
+            )
         )
 
     @classmethod
     def remove_image(cls, id: int):
-        return cls.execute(
-            update(cls)
-            .where((cls.id == id) & (cls.userid == get_current_userid()))
-            .values(image=None),
-            commit=True,
+        return next(
+            cls.execute(
+                update(cls)
+                .where((cls.id == id) & (cls.userid == get_current_userid()))
+                .values(image=None),
+                commit=True,
+            )
         )
 
 
@@ -461,8 +504,10 @@ class LibDataTable(Base):
 
     @classmethod
     def update_one(cls, hash: str, data: dict[str, Any]):
-        return cls.execute(
-            update(cls).where(cls.itemhash == hash).values(data), commit=True
+        return next(
+            cls.execute(
+                update(cls).where(cls.itemhash == hash).values(data), commit=True
+            )
         )
 
     @classmethod
@@ -470,17 +515,20 @@ class LibDataTable(Base):
         result = cls.execute(
             select(cls).where((cls.itemhash == type + hash) & (cls.itemtype == type))
         )
-        return result.fetchone()
+        return next(result).scalar()
 
     @classmethod
-    def get_all_colors(cls, type: str) -> list[dict[str, str]]:
+    def get_all_colors(cls, type: str) -> Iterable[dict[str, str]]:
         result = cls.execute(
             select(cls.itemhash, cls.color).where(cls.itemtype == type)
         )
-        return [
-            {"itemhash": r[0].replace(type, ""), "color": r[1]}
-            for r in result.fetchall()
-        ]
+        # return [
+        #     {"itemhash": r[0].replace(type, ""), "color": r[1]}
+        #     for r in result.fetchall()
+        # ]
+
+        for i in next(result).scalars():
+            yield {"itemhash": i[0].replace(type, ""), "color": i[1]}
 
 
 class MixTable(Base):
@@ -512,20 +560,23 @@ class MixTable(Base):
         else:
             result = cls.execute(select(cls).order_by(cls.timestamp.desc()))
 
-        return Mix.mixes_to_dataclasses(result.fetchall())
+        for i in next(result).scalars():
+            yield Mix.mix_to_dataclass(i)
 
     @classmethod
     def get_by_sourcehash(cls, sourcehash: str):
         result = cls.execute(select(cls).where(cls.sourcehash == sourcehash))
 
-        res = result.fetchone()
+        res = next(result).scalar()
+
         if res:
             return Mix.mix_to_dataclass(res)
 
     @classmethod
     def get_by_mixid(cls, mixid: str):
         result = cls.execute(select(cls).where(cls.mixid == mixid))
-        res = result.fetchone()
+        res = next(result).scalar()
+
         if res:
             return Mix.mix_to_dataclass(res)
 
@@ -535,7 +586,7 @@ class MixTable(Base):
         mixdict["mixid"] = mix.id
         del mixdict["id"]
 
-        return cls.execute(insert(cls).values(mixdict), commit=True)
+        return next(cls.execute(insert(cls).values(mixdict), commit=True))
 
     @classmethod
     def update_one(cls, mixid: str, mix: Mix):
@@ -543,17 +594,19 @@ class MixTable(Base):
         mixdict["mixid"] = mix.id
         del mixdict["id"]
 
-        return cls.execute(
-            update(cls)
-            .where(
-                and_(
-                    cls.mixid == mixid,
-                    cls.sourcehash == mix.sourcehash,
-                    cls.userid == get_current_userid(),
+        return next(
+            cls.execute(
+                update(cls)
+                .where(
+                    and_(
+                        cls.mixid == mixid,
+                        cls.sourcehash == mix.sourcehash,
+                        cls.userid == get_current_userid(),
+                    )
                 )
+                .values(mixdict),
+                commit=True,
             )
-            .values(mixdict),
-            commit=True,
         )
 
     @classmethod
@@ -579,7 +632,10 @@ class MixTable(Base):
         """
 
         result = cls.execute(select(cls).where(cls.extra.c.trackmix_saved == True))
-        return Mix.mixes_to_dataclasses(result.fetchall())
+        # return Mix.mixes_to_dataclasses(result.fetchall())
+
+        for i in next(result).scalars():
+            yield Mix.mix_to_dataclass(i)
 
     @classmethod
     def save_track_mix(cls, sourcehash: str):
@@ -612,41 +668,58 @@ class PageTable(Base):
 
     @classmethod
     def to_dict(cls, entry: Any) -> dict[str, Any]:
-        return entry._asdict()
+        d = entry.__dict__
+        del d["_sa_instance_state"]
+        return d
 
     @classmethod
     def get_all(cls):
         result = cls.execute(select(cls).where(cls.userid == get_current_userid()))
-        return [cls.to_dict(entry) for entry in result.fetchall()]
+
+        for i in next(result).scalars():
+            yield cls.to_dict(i)
 
     @classmethod
     def get_by_id(cls, id: int):
         result = cls.execute(
             select(cls).where(and_(cls.id == id, cls.userid == get_current_userid()))
         )
-        return cls.to_dict(result.fetchone())
+        res = next(result).scalar()
+
+        if res:
+            return cls.to_dict(res)
 
     @classmethod
     def delete_by_id(cls, id: int):
-        return cls.execute(
-            delete(cls).where(and_(cls.id == id, cls.userid == get_current_userid())),
-            commit=True,
+        return next(
+            cls.execute(
+                delete(cls).where(
+                    and_(cls.id == id, cls.userid == get_current_userid())
+                ),
+                commit=True,
+            )
         )
 
     @classmethod
     def update_items(cls, id: int, items: list[dict[str, Any]]):
-        return cls.execute(
-            update(cls)
-            .where(and_(cls.id == id, cls.userid == get_current_userid()))
-            .values(items=items),
-            commit=True,
+        return next(
+            cls.execute(
+                update(cls)
+                .where(and_(cls.id == id, cls.userid == get_current_userid()))
+                .values(items=items),
+                commit=True,
+            )
         )
 
     @classmethod
     def update_one(cls, payload: dict[str, Any]):
-        return cls.execute(
-            update(cls)
-            .where(and_(cls.id == payload["id"], cls.userid == get_current_userid()))
-            .values(payload),
-            commit=True,
+        return next(
+            cls.execute(
+                update(cls)
+                .where(
+                    and_(cls.id == payload["id"], cls.userid == get_current_userid())
+                )
+                .values(payload),
+                commit=True,
+            )
         )
