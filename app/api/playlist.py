@@ -5,11 +5,12 @@ All playlist-related routes.
 import json
 from datetime import datetime
 import pathlib
+from typing import Any
 
 from PIL import UnidentifiedImageError, Image
 from pydantic import BaseModel, Field
 from flask_openapi3 import Tag
-from flask_openapi3 import APIBlueprint, FileStorage
+from flask_openapi3 import APIBlueprint
 
 from app import models
 from app.api.apischemas import GenericLimitSchema
@@ -251,7 +252,7 @@ def get_playlist(path: PlaylistIDPath, query: GetPlaylistQuery):
 
 
 class UpdatePlaylistForm(BaseModel):
-    image: FileStorage = Field(None, description="The image file")
+    image: Any = Field(..., description="The image file")
     name: str = Field(..., description="The name of the playlist")
     settings: str = Field(
         ...,

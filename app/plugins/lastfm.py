@@ -72,7 +72,6 @@ class LastFmPlugin(Plugin):
     @plugin_method
     @background
     def scrobble(self, track: Track, timestamp: int):
-        log.info(f"Last.fm: logging track: {track.title} - {track.artists[0]['name']}")
         data = {
             "method": "track.scrobble",
             "artist": track.artists[0]["name"],
@@ -96,16 +95,11 @@ class LastFmPlugin(Plugin):
         Uploads the scrobble data and handles the
         response from the lastfm scrobble endpoint.
         """
-        log.info(f"scrobble data: {data}")
-
         try:
             res = self.post(data)
         except Exception as e:
             log.warn("scrobble response error" + str(e))
             return False
-
-        log.info("scrobble response text: " + str(res.text))
-        log.info("scrobble response json: " + str(res.json()))
 
         res_json: dict[str, Any] = res.json()
 
@@ -120,7 +114,6 @@ class LastFmPlugin(Plugin):
                 return False
 
         if res_json.get("scrobbles", {}).get("@attr", {}).get("accepted") == 1:
-            log.info("scrobble accepted")
             return True
 
         return False
@@ -136,7 +129,6 @@ class LastFmPlugin(Plugin):
 
         path = dump_dir / f"{int(time.time())}.json"
 
-        log.info(f"Dumping scrobble to {path}")
         with open(path, "w") as f:
             json.dump(data, f)
 
@@ -155,7 +147,6 @@ class LastFmPlugin(Plugin):
 
         try:
             for file in dump_dir.iterdir():
-                log.info(f"Uploading dump: {file}")
                 with open(file, "r") as f:
                     data = json.load(f)
                     success = self.post_scrobble_data(data)
