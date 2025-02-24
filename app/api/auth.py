@@ -316,7 +316,7 @@ def get_all_users(query: GetAllUsersQuery):
         "users": [],
     }
 
-    users = UserTable.get_all()
+    users = [u for u in UserTable.get_all()]
     is_admin = current_user and "admin" in current_user["roles"]
     settings["enableGuest"] = [
         user for user in users if user.username == "guest"
@@ -348,8 +348,7 @@ def get_all_users(query: GetAllUsersQuery):
         users = [user for user in users if user.username == "guest"]
 
     # reverse list to show latest users first
-    users = list(reversed(users))
-
+    users = reversed(users)
     # bring admins to the front
     users = sorted(users, key=lambda x: "admin" in x.roles, reverse=True)
     # bring current user to index 0
