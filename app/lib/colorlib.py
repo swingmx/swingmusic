@@ -113,6 +113,7 @@ class ProcessArtistColors:
                 )
 
             record = LibDataTable.find_one(artisthash, "artist")
+            print(record)
             if (record is not None) and (record.color is not None):
                 continue
 

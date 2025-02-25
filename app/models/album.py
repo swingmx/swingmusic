@@ -35,6 +35,7 @@ class Album:
     id: int = -1
     type: str = "album"
     image: str = ""
+    _score: float = 0
     versions: list[str] = dataclasses.field(default_factory=list)
     fav_userids: list[int] = dataclasses.field(default_factory=list)
     weakhash: str = ""

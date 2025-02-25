@@ -11,6 +11,7 @@ from flask_openapi3 import APIBlueprint
 from app import models
 from app.api.apischemas import GenericLimitSchema
 from app.lib import searchlib
+from app.serializers.artist import serialize_for_cards
 from app.settings import Defaults
 from app.store.tracks import TrackStore
 
@@ -61,7 +62,8 @@ class Search:
         """Calls :class:`SearchArtists` which returns the artists that fuzzily match
         the search term. Then adds them to the `SearchResults` store.
         """
-        return searchlib.SearchArtists(self.query)()
+        artists = searchlib.SearchArtists(self.query)()
+        return serialize_for_cards(artists)
 
     def search_albums(self):
         """Calls :class:`SearchAlbums` which returns the albums that fuzzily match

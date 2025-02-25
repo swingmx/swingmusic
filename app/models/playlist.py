@@ -27,7 +27,7 @@ class Playlist:
     has_image: bool = False
     images: list[dict[str, str]] = dataclasses.field(default_factory=list)
     pinned: bool = False
-
+    _score: float = 0
     def __post_init__(self):
         self.count = len(self.trackhashes)
 

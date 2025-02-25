@@ -519,16 +519,10 @@ class LibDataTable(Base):
 
     @classmethod
     def get_all_colors(cls, type: str) -> Iterable[dict[str, str]]:
-        result = cls.execute(
-            select(cls.itemhash, cls.color).where(cls.itemtype == type)
-        )
-        # return [
-        #     {"itemhash": r[0].replace(type, ""), "color": r[1]}
-        #     for r in result.fetchall()
-        # ]
+        result = cls.execute(select(cls).where(cls.itemtype == type))
 
         for i in next(result).scalars():
-            yield {"itemhash": i[0].replace(type, ""), "color": i[1]}
+            yield {"itemhash": i.itemhash.replace(type, ""), "color": i.color}
 
 
 class MixTable(Base):

@@ -4,7 +4,7 @@ This library contains all the functions related to the search functionality.
 
 from typing import Any, Generator, List, TypeVar
 
-from rapidfuzz import process, utils
+from rapidfuzz import process, utils, fuzz
 from unidecode import unidecode
 
 from app import models
@@ -13,11 +13,14 @@ from app.config import UserConfig
 # from app.db.libdata import AlbumTable, ArtistTable, TrackTable
 
 # from app.db.sqlite.favorite import SQLiteFavoriteMethods as favdb
+from app.models.album import Album
+from app.models.artist import Artist
 from app.models.enums import FavType
+from app.models.playlist import Playlist
 from app.models.track import Track
 from app.serializers.album import serialize_for_card as serialize_album
 from app.serializers.album import serialize_for_card_many as serialize_albums
-from app.serializers.artist import serialize_for_cards
+from app.serializers.artist import serialize_for_card, serialize_for_cards
 from app.serializers.track import serialize_track, serialize_tracks
 
 from app.store.albums import AlbumStore
@@ -35,10 +38,10 @@ class Cutoff:
     Holds all the default cutoff values.
     """
 
-    tracks: int = 75
-    albums: int = 75
-    artists: int = 75
-    playlists: int = 75
+    tracks: int = 50
+    albums: int = 50
+    artists: int = 50
+    playlists: int = 50
 
 
 class Limit:
@@ -57,21 +60,28 @@ class SearchTracks:
         self.query = query
         self.tracks = TrackStore.get_flat_list()
 
-    def __call__(self) -> List[models.Track]:
+    def __call__(self, limit: int = Limit.tracks) -> List[models.Track]:
         """
         Gets all songs with a given title.
         """
 
-        track_titles = [unidecode(track.og_title).lower() for track in self.tracks]
+        track_titles = [unidecode(track.title).lower() for track in self.tracks]
         results = process.extract(
             self.query,
             track_titles,
             score_cutoff=Cutoff.tracks,
-            limit=Limit.tracks,
+            limit=limit,
             processor=utils.default_process,
+            scorer=fuzz.WRatio,
         )
 
-        tracks = [self.tracks[i[2]] for i in results]
+        tracks: list[Track] = []
+
+        for item in results:
+            track = self.tracks[item[2]]
+            track._score = item[1]
+            tracks.append(track)
+
         return remove_duplicates(tracks)
 
 
@@ -80,21 +90,29 @@ class SearchArtists:
         self.query = query
         self.artists = ArtistStore.get_flat_list()
 
-    def __call__(self):
+    def __call__(self, limit: int = Limit.artists):
         """
         Gets all artists with a given name.
         """
-        artists = [unidecode(a.name).lower() for a in self.artists]
+        choices = [unidecode(a.name).lower() for a in self.artists]
 
         results = process.extract(
             self.query,
-            artists,
+            choices,
             score_cutoff=Cutoff.artists,
-            limit=Limit.artists,
+            limit=limit,
             processor=utils.default_process,
+            scorer=fuzz.WRatio,
         )
 
-        return [self.artists[i[2]] for i in results]
+        artists: list[Artist] = []
+
+        for item in results:
+            artist = self.artists[item[2]]
+            artist._score = item[1]
+            artists.append(artist)
+
+        return artists
 
 
 class SearchAlbums:
@@ -102,22 +120,30 @@ class SearchAlbums:
         self.query = query
         self.albums = AlbumStore.get_flat_list()
 
-    def __call__(self) -> List[models.Album]:
+    def __call__(self, limit: int = Limit.albums):
         """
         Gets all albums with a given title.
         """
 
-        albums = [unidecode(a.og_title).lower() for a in self.albums]
+        choices = [unidecode(a.title).lower() for a in self.albums]
 
         results = process.extract(
             self.query,
-            albums,
+            choices,
             score_cutoff=Cutoff.albums,
-            limit=Limit.albums,
+            limit=limit,
             processor=utils.default_process,
+            scorer=fuzz.token_sort_ratio,
         )
 
-        return [self.albums[i[2]] for i in results]
+        albums: list[Album] = []
+
+        for item in results:
+            album = self.albums[item[2]]
+            album._score = item[1]
+            albums.append(album)
+
+        return albums
 
 
 class SearchPlaylists:
@@ -125,22 +151,28 @@ class SearchPlaylists:
         self.playlists = playlists
         self.query = query
 
-    def __call__(self) -> List[models.Playlist]:
-        playlists = [p.name for p in self.playlists]
+    def __call__(self, limit: int = Limit.playlists):
+        choices = [p.name for p in self.playlists]
         results = process.extract(
             self.query,
-            playlists,
+            choices,
             score_cutoff=Cutoff.playlists,
-            limit=Limit.playlists,
+            limit=limit,
             processor=utils.default_process,
+            scorer=fuzz.WRatio,
         )
 
-        return [self.playlists[i[2]] for i in results]
+        playlists: list[Playlist] = []
+
+        for item in results:
+            playlist = self.playlists[item[2]]
+            playlist._score = item[1]
+            playlists.append(playlist)
+
+        return playlists
 
 
 _type = models.Track | models.Album | models.Artist
-_S2 = TypeVar("_S2")
-_ResultType = int | float
 
 
 def get_titles(items: list[_type]):
@@ -169,108 +201,45 @@ class TopResults:
 
         all_items.extend(ArtistStore.get_flat_list())
         all_items.extend(TrackStore.get_flat_list())
-        all_items.extend(TrackStore.get_flat_list())
+        all_items.extend(AlbumStore.get_flat_list())
 
         return all_items, get_titles(all_items)
 
     @staticmethod
-    def get_results(items: Generator[str, Any, None], query: str):
-        items = list(items)
-
-        results = process.extract(
-            query=query, choices=items, score_cutoff=Cutoff.tracks, limit=1
-        )
-
-        return results
-
-    @staticmethod
-    def map_with_type(item: _type):
-        """
-        Map the results to their respective types.
-        """
-        if isinstance(item, models.Track):
-            return {"type": "track", "item": item}
-
-        if isinstance(item, models.Album):
-            tracks = TrackStore.get_tracks_by_albumhash(item.albumhash)
-            tracks = remove_duplicates(tracks)
-
-            try:
-                item.duration = sum((t.duration for t in tracks))
-            except AttributeError:
-                item.duration = 0
-
-            item.check_type(
-                tracks, singleTrackAsSingle=UserConfig().showAlbumsAsSingles
-            )
-
-            return {"type": "album", "item": item}
-
-        if isinstance(item, models.Artist):
-            track_count = 0
-            duration = 0
-
-            tracks = TrackStore.get_tracks_by_artisthash(item.artisthash)
-            tracks = remove_duplicates(tracks)
-
-            for track in tracks:
-                track_count += 1
-                duration += track.duration
-
-            return {"type": "artist", "item": item}
-
-    @staticmethod
-    def get_track_items(item: dict[str, _type], query: str, limit=5):
+    def get_track_items(item: Track | Album | Artist, limit=5):
         tracks: list[Track] = []
 
-        if item["type"] == "track":
-            tracks.extend(SearchTracks(query)())
+        # INFO: If the item is a track, return empty list
+        # to be filled by the results from the top search
+        if isinstance(item, Track):
+            return tracks
 
-        if item["type"] == "album":
-            t = TrackStore.get_tracks_by_albumhash(item["item"].albumhash)
-            t.sort(key=lambda x: x.last_mod)
+        # INFO: If the item is an album, get the tracks from the album
+        if isinstance(item, Album):
+            tracks = TrackStore.get_tracks_by_albumhash(item.albumhash)[:limit]
+            tracks.sort(key=lambda x: x.playduration, reverse=True)
+            return tracks
 
-            # if there are less than the limit, get more tracks
-            if len(t) < limit:
-                remainder = limit - len(t)
-                more_tracks = SearchTracks(query)()
-                t.extend(more_tracks[:remainder])
+        # INFO: If the item is an artist, get the tracks from the artist
+        if isinstance(item, Artist):
+            tracks = TrackStore.get_tracks_by_artisthash(item.artisthash)[:limit]
+            tracks.sort(key=lambda x: x.playduration, reverse=True)
 
-            tracks.extend(t)
-
-        if item["type"] == "artist":
-            # t = TrackStore.get_tracks_by_artisthash(item["item"].artisthash)
-            t = TrackStore.get_tracks_by_artisthash(item["item"].artisthash)
-
-            # if there are less than the limit, get more tracks
-            if len(t) < limit:
-                remainder = limit - len(t)
-                more_tracks = SearchTracks(query)()
-                t.extend(more_tracks[:remainder])
-
-            tracks.extend(t)
-
-        return tracks[:limit]
+        return tracks
 
     @staticmethod
-    def get_album_items(item: dict[str, _type], query: str, limit=6):
-        if item["type"] == "track":
-            return SearchAlbums(query)()[:limit]
+    def get_album_items(item: Track | Album | Artist, limit=6):
+        albums: list[Album] = []
 
-        if item["type"] == "album":
-            return SearchAlbums(query)()[:limit]
+        # INFO: If the item is a track or album, search for albums
+        if isinstance(item, Track) or isinstance(item, Album):
+            return albums
 
-        if item["type"] == "artist":
-            # albums = AlbumStore.get_albums_by_artisthash(item["item"].artisthash)
-            albums = AlbumStore.get_albums_by_artisthash(item["item"].artisthash)
+        # INFO: If the item is an artist, get the albums from the artist
+        if isinstance(item, Artist):
+            albums = AlbumStore.get_albums_by_artisthash(item.artisthash)[:limit]
 
-            # if there are less than the limit, get more albums
-            if len(albums) < limit:
-                remainder = limit - len(albums)
-                more_albums = SearchAlbums(query)()
-                albums.extend(more_albums[:remainder])
-
-            return albums[:limit]
+        return albums
 
     @staticmethod
     def search(
@@ -279,56 +248,77 @@ class TopResults:
         albums_only=False,
         tracks_only=False,
     ):
-        items, titles = TopResults.collect_all()
-        results = TopResults.get_results(titles, query)
-
         tracks_limit = Limit.tracks if tracks_only else 4
         albums_limit = Limit.albums if albums_only else limit
         artists_limit = limit
 
-        # map results to their respective items
-        try:
-            result = [items[i[2]] for i in results][0]
-        except IndexError:
+        # INFO: Individually search all stores as each type has a different scorer
+        tracks = SearchTracks(query)(limit=tracks_limit) if not albums_only else []
+        albums = SearchAlbums(query)(limit=albums_limit)
+        artists = SearchArtists(query)(limit=artists_limit)
+
+        # INFO: Combine all results and sort them by score
+        all_results = artists + tracks + albums
+        all_results = sorted(all_results, key=lambda x: int(x._score), reverse=True)
+
+        # INFO: Get the top result
+        top_result = all_results[0]
+        top_tracks = []
+
+        if not albums_only:
+            top_tracks = TopResults.get_track_items(top_result, limit=tracks_limit)
+
+            # INFO: If there are not enough tracks, fill with search results
+            if len(top_tracks) < tracks_limit:
+                found_tracks_set = {track.trackhash for track in top_tracks}
+
+                for track in tracks:
+                    if track.trackhash not in found_tracks_set:
+                        top_tracks.append(track)
+
+                    if len(top_tracks) >= tracks_limit:
+                        break
+
+            top_tracks = serialize_tracks(top_tracks)
+
             if tracks_only:
-                return []
+                return top_tracks
 
-            if albums_only:
-                return []
+        top_albums = TopResults.get_album_items(top_result, limit=albums_limit)
 
-            return {
-                "top_result": None,
-                "tracks": [],
-                "artists": [],
-                "albums": [],
-            }
+        # INFO: If there are not enough albums, fill with search results
+        if len(top_albums) < albums_limit:
+            found_albums_set = {album.albumhash for album in top_albums}
 
-        result = TopResults.map_with_type(result)
+            for album in albums:
+                if album.albumhash not in found_albums_set:
+                    top_albums.append(album)
 
-        top_tracks = TopResults.get_track_items(result, query, limit=tracks_limit)
-        top_tracks = serialize_tracks(top_tracks)
+                    if len(top_albums) >= albums_limit:
+                        break
 
-        if tracks_only:
-            return top_tracks
-
-        albums = TopResults.get_album_items(result, query, limit=albums_limit)
-        albums = serialize_albums(albums)
+        top_albums = serialize_albums(top_albums)
 
         if albums_only:
-            return albums
+            return top_albums
 
-        artists = SearchArtists(query)()[:artists_limit]
         artists = serialize_for_cards(artists)
 
-        if result["type"] == "track":
-            result["item"] = serialize_track(result["item"])
+        if isinstance(top_result, Track):
+            top_result = serialize_track(top_result)
+            top_result["type"] = "track"
 
-        if result["type"] == "album":
-            result["item"] = serialize_album(result["item"])
+        if isinstance(top_result, Album):
+            top_result = serialize_album(top_result)
+            top_result["type"] = "album"
+
+        if isinstance(top_result, Artist):
+            top_result = serialize_for_card(top_result)
+            top_result["type"] = "artist"
 
         return {
-            "top_result": result,
+            "top_result": top_result,
             "tracks": top_tracks,
             "artists": artists,
-            "albums": albums,
+            "albums": top_albums,
         }

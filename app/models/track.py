@@ -50,6 +50,7 @@ class Track:
     _pos: int = 0
     _ati: str = ""
     image: str = ""
+    _score: float = 0
     explicit: bool = False
     fav_userids: list[int] = field(default_factory=list)
 

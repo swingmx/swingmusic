@@ -39,9 +39,4 @@ def get_recently_played(
 
         iterations += 1
 
-    if iterations == max_iterations:
-        print(
-            f"Warning: Reached maximum iterations ({max_iterations}) while fetching recently played items"
-        )
-
     return items

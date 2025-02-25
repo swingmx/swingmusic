@@ -54,6 +54,7 @@ class Artist:
 
     id: int = -1
     image: str = ""
+    _score: float = 0
 
     color: str = ""
     fav_userids: list[int] = dataclasses.field(default_factory=list)
