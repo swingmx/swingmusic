@@ -39,9 +39,8 @@ class FavoritesAddBody(BaseModel):
         description="The hash of the item",
         min_length=Defaults.HASH_LENGTH,
         max_length=Defaults.HASH_LENGTH,
-        example=Defaults.API_ALBUMHASH,
     )
-    type: str = Field(description="The type of the item", example=FavType.album)
+    type: str = Field(description="The type of the item")
 
 
 def toggle_fav(type: str, hash: str):
@@ -110,7 +109,6 @@ class GetAllOfTypeQuery(GenericLimitSchema):
 
     start: int = Field(
         description="Where to start from",
-        example=Defaults.API_CARD_LIMIT,
         default=Defaults.API_CARD_LIMIT,
     )
 
@@ -167,19 +165,16 @@ class GetAllFavoritesQuery(BaseModel):
 
     track_limit: int = Field(
         description="The number of tracks to return",
-        example=Defaults.API_CARD_LIMIT,
         default=Defaults.API_CARD_LIMIT,
     )
 
     album_limit: int = Field(
         description="The number of albums to return",
-        example=Defaults.API_CARD_LIMIT,
         default=Defaults.API_CARD_LIMIT,
     )
 
     artist_limit: int = Field(
         description="The number of artists to return",
-        example=Defaults.API_CARD_LIMIT,
         default=Defaults.API_CARD_LIMIT,
     )
 

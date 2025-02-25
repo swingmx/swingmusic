@@ -9,7 +9,7 @@ class Mixes(CronJob):
     """
 
     name: str = "mixes"
-    hours: int = 6
+    hours: int = 12
 
     def __init__(self):
         super().__init__()

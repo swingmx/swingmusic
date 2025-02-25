@@ -222,6 +222,9 @@ class FavoritesTable(Base):
 
     @classmethod
     def insert_item(cls, item: dict[str, Any]):
+        # guard against hash collisions for different item types
+        item["hash"] = f"{item['type']}_{item['hash']}"
+
         item["timestamp"] = int(datetime.datetime.now().timestamp())
         item["userid"] = get_current_userid()
 
@@ -232,15 +235,28 @@ class FavoritesTable(Base):
         return next(
             cls.execute(
                 delete(cls).where(
-                    (cls.hash == item["hash"]) & (cls.type == item["type"])
-                )
+                    (cls.hash == item["hash"])
+                    | (cls.hash == f"{item['type']}_{item['hash']}")
+                ),
+                commit=True,
             )
         )
 
     @classmethod
     def check_exists(cls, hash: str, type: str):
-        result = cls.execute(select(cls).where((cls.hash == hash) & (cls.type == type)))
+        result = cls.execute(
+            select(cls).where((cls.hash == hash) | (cls.hash == f"{type}_{hash}"))
+        )
+
         return next(result).scalar() is not None
+
+    @classmethod
+    def get_by_hash(cls, hash: str, type: str):
+        result = cls.execute(
+            select(cls).where((cls.hash == hash) | (cls.hash == f"{type}_{hash}"))
+        )
+
+        return next(result).scalars().all()
 
     @classmethod
     def get_all_of_type(cls, type: str, start: int, limit: int):
@@ -647,7 +663,8 @@ class MixTable(Base):
         return mix.extra["trackmix_saved"]
 
 
-class PageTable(Base):
+class CollectionTable(Base):
+    # INFO: table name was kept as page to avoid breaking existing data
     __tablename__ = "page"
 
     id: Mapped[int] = mapped_column(primary_key=True)

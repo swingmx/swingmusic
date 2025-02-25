@@ -18,11 +18,11 @@ from .plugins import mixes as mixes_plugin
 from app.api import (
     album,
     artist,
+    collections,
     colors,
     favorites,
     folder,
     imgserver,
-    pages,
     playlist,
     search,
     settings,
@@ -112,7 +112,7 @@ def create_api():
         app.register_api(colors.api)
         app.register_api(lyrics.api)
         app.register_api(backup_and_restore.api)
-        app.register_api(pages.api)
+        app.register_api(collections.api)
         # Plugins
         app.register_api(plugins.api)
         app.register_api(lyrics_plugin.api)

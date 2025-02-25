@@ -1,6 +1,6 @@
 from typing import Any
 
-from app.db.userdata import PageTable
+from app.db.userdata import CollectionTable
 from app.lib.pagelib import recover_page_items
 from app.store.homepageentries import (
     BecauseYouListenedToArtistHomepageEntry,
@@ -65,7 +65,7 @@ class HomepageStore:
     @classmethod
     def get_homepage_items(cls, limit: int):
         # return a dict of entry name to entry items
-        pages = PageTable.get_all()
+        pages = CollectionTable.get_all()
         pagedata = []
 
         for page in pages:
@@ -76,7 +76,7 @@ class HomepageStore:
                         "title": page["name"],
                         "description": page["extra"]["description"],
                         "items": recover_page_items(page["items"], for_homepage=True),
-                        "url": f"pages/{page['id']}",
+                        "url": f"collections/{page['id']}",
                     }
                 }
             )
