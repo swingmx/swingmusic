@@ -307,7 +307,7 @@ class FavoritesTable(Base):
         res = next(result).scalar()
 
         if res:
-            return res[0]
+            return res
 
         return 0
 
@@ -410,7 +410,7 @@ class PlaylistTable(Base):
         playlist["userid"] = get_current_userid()
         result = cls.insert_one(playlist)
 
-        return next(result).lastrowid
+        return result.lastrowid
 
     @classmethod
     def check_exists_by_name(cls, name: str):

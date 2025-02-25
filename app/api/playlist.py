@@ -8,9 +8,11 @@ import pathlib
 from typing import Any
 
 from PIL import UnidentifiedImageError, Image
-from pydantic import BaseModel, Field
+from pydantic_core import core_schema
+from pydantic import BaseModel, Field, GetCoreSchemaHandler
+
 from flask_openapi3 import Tag
-from flask_openapi3 import APIBlueprint
+from flask_openapi3 import APIBlueprint, FileStorage as _FileStorage
 
 from app import models
 from app.api.apischemas import GenericLimitSchema
@@ -251,13 +253,23 @@ def get_playlist(path: PlaylistIDPath, query: GetPlaylistQuery):
     }
 
 
+class FileStorage(_FileStorage):
+    @classmethod
+    def __get_pydantic_core_schema__(
+        cls, _source: Any, handler: GetCoreSchemaHandler
+    ) -> core_schema.CoreSchema:
+        return core_schema.with_info_plain_validator_function(cls.validate)
+
+
 class UpdatePlaylistForm(BaseModel):
-    image: Any = Field(..., description="The image file")
+    image: FileStorage = Field(description="The image file")
     name: str = Field(..., description="The name of the playlist")
     settings: str = Field(
         ...,
         description="The settings of the playlist",
-        example='{"has_gif": false, "banner_pos": 50, "square_img": false, "pinned": false}',
+        json_schema_extra={
+            "example": '{"has_gif": false, "banner_pos": 50, "square_img": false, "pinned": false}'
+        },
     )
 
 

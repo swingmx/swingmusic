@@ -75,7 +75,10 @@ def get_tracks_in_period(start_time: int, end_time: int, userid: int | None = No
     tracks: dict[str, Track] = {}
     duration = 0
 
+    total = 0
+
     for scrobble in scrobbles:
+        total += 1
         if scrobble.trackhash not in tracks:
             try:
                 track = copy.deepcopy(
@@ -92,7 +95,7 @@ def get_tracks_in_period(start_time: int, end_time: int, userid: int | None = No
         tracks[scrobble.trackhash].playduration += scrobble.duration
         duration += scrobble.duration
 
-    return list(tracks.values()), len(scrobbles), duration
+    return list(tracks.values()), total, duration
 
 
 T = TypeVar("T")
