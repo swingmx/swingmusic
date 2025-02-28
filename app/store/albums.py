@@ -119,7 +119,13 @@ class AlbumStore:
         """
         Returns albums by their hashes.
         """
-        return [cls.albummap[albumhash].album for albumhash in albumhashes]
+        albums = []
+        for albumhash in albumhashes:
+            entry = cls.albummap.get(albumhash)
+            if entry is not None:
+                albums.append(entry.album)
+
+        return albums
 
     @classmethod
     def count_albums_by_artisthash(cls, artisthash: str):

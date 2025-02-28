@@ -313,7 +313,9 @@ class TopResults:
             top_result["type"] = "album"
 
         if isinstance(top_result, Artist):
-            top_result = serialize_for_card(top_result)
+            top_result = serialize_for_card(
+                top_result, include={"albumcount", "trackcount"}
+            )
             top_result["type"] = "artist"
 
         return {

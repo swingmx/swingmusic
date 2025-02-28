@@ -3,7 +3,7 @@ from dataclasses import asdict
 from app.models.artist import Artist
 
 
-def serialize_for_card(artist: Artist):
+def serialize_for_card(artist: Artist, include: set[str] = set()):
     try:
         artist_dict = asdict(artist)
     except TypeError:
@@ -25,7 +25,11 @@ def serialize_for_card(artist: Artist):
         "created_date",
         "date",
         "fav_userids",
+        "_score",
     }
+
+    if include:
+        props_to_remove = props_to_remove - include
 
     for key in props_to_remove:
         artist_dict.pop(key, None)
