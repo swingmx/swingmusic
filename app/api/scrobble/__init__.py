@@ -99,8 +99,6 @@ def log_track(body: LogTrackBody):
 
     lastfm = LastFmPlugin()
 
-    print(track.duration / 2, 240, body.duration, "\n")
-
     if (
         lastfm.enabled
         and track.duration > 30
