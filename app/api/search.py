@@ -26,8 +26,11 @@ The max amount of items to return per request
 
 
 class SearchQuery(GenericLimitSchema):
-    q: str = Field(description="The search query", example=Defaults.API_ARTISTNAME)
-    start: int = Field(description="The index to start from", default=0, example=0)
+    q: str = Field(
+        description="The search query",
+        json_schema_extra={"example": "Fleetwood Mac"},
+    )
+    start: int = Field(description="The index to start from", default=0)
     limit: int = Field(
         description="The number of items to return", default=SEARCH_COUNT
     )
@@ -41,7 +44,8 @@ class TopResultsQuery(SearchQuery):
 
 class SearchLoadMoreQuery(SearchQuery):
     itemtype: Literal["tracks", "albums", "artists"] = Field(
-        description="The type of search", example="tracks"
+        description="The type of search",
+        json_schema_extra={"example": "tracks"},
     )
 
 

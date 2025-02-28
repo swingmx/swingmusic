@@ -10,13 +10,10 @@
      - remove image colors
 
 - Package jsoni and publish on PyPi
-- Rewrite stores to use dictionaries instead of list pools
 - last updated date on tracks added via watchdog is broken
 - Disable the watchdog by default, and mark it as experimental
 - rename userid to server id in config file
 - Look into seeding jwts using user password + server id
-- Recreate album hash if featured artists are discover
-- Implement checking if is clean install and skip migrations!
 
 <!-- CHECKPOINT -->
 <!-- ALBUM PAGE! -->
@@ -45,9 +42,6 @@
     then artist B is similar to A with the same weight, unless overwritten.
 - Clean up tempfiles after transcoding
 - Double sort artist tracks for consistency (alphabetically then by other field. eg. playcount)
-
-
-- ON THE HOME PAGE, STORE THE ITEMS, THEN HYDRATE ON REFRESH INSTEAD OF CLEANING THEN RELOADING THE DATA AGAIN
 
 # Bug fixes
 
