@@ -2,6 +2,7 @@
 This file is used to run the application.
 """
 
+import logging
 import os
 import psutil
 import waitress
@@ -53,6 +54,9 @@ mimetypes.add_type("application/manifest+json", ".webmanifest")
 # logging.disable(logging.CRITICAL)
 # werkzeug = logging.getLogger("werkzeug")
 # werkzeug.setLevel(logging.ERROR)
+
+waitress_logger = logging.getLogger("waitress")
+waitress_logger.setLevel(logging.ERROR)
 
 # # logging.basicConfig()
 # logging.getLogger("sqlalchemy.engine").setLevel(logging.ERROR)
