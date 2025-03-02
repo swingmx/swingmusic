@@ -1,5 +1,5 @@
 from pathlib import Path
-from tinytag import TinyTag
+from typing import Iterable
 
 from app.store.tracks import TrackStore
 
@@ -28,7 +28,7 @@ def convert_to_milliseconds(time: str):
     return int(milliseconds)
 
 
-def format_synced_lyrics(lines: list[str]):
+def format_synced_lyrics(lines: Iterable[str]):
     """
     Formats synced lyrics into a list of dicts
     """
@@ -51,7 +51,7 @@ def format_synced_lyrics(lines: list[str]):
     return lyrics
 
 
-def get_lyrics_from_lrc(filepath: str):
+def get_lyrics_from_lrc(filepath: str | Path):
     with open(filepath, mode="r") as file:
         lines = (f.removesuffix("\n") for f in file.readlines())
         return format_synced_lyrics(lines)
@@ -79,7 +79,7 @@ def check_lyrics_file_rel_to_track(filepath: str):
         return False
 
 
-def get_lyrics(track_path: str):
+def get_lyrics(track_path: str, trackhash: str):
     """
     Gets the lyrics for a track
     """
@@ -87,9 +87,18 @@ def get_lyrics(track_path: str):
 
     if lyrics_path:
         lyrics = get_lyrics_from_lrc(lyrics_path)
-        copyright = get_extras(track_path, ["copyright"])
+        copyright = ""
 
-        return lyrics, copyright[0]
+        entry = TrackStore.trackhashmap.get(trackhash, None)
+
+        if entry:
+            for track in entry.tracks:
+                copyright = track.copyright
+
+                if copyright:
+                    break
+
+        return lyrics, copyright
     else:
         return None, ""
 
@@ -98,10 +107,14 @@ def get_lyrics_from_duplicates(trackhash: str, filepath: str):
     """
     Finds the lyrics from other duplicate tracks
     """
+    entry = TrackStore.trackhashmap.get(trackhash, None)
 
-    for track in TrackStore.tracks:
+    if entry is None:
+        return None, ""
+
+    for track in entry.tracks:
         if track.trackhash == trackhash and track.filepath != filepath:
-            lyrics, copyright = get_lyrics(track.filepath)
+            lyrics, copyright = get_lyrics(track.filepath, trackhash)
 
             if lyrics:
                 return lyrics, copyright
@@ -110,12 +123,20 @@ def get_lyrics_from_duplicates(trackhash: str, filepath: str):
 
 
 def check_lyrics_file(filepath: str, trackhash: str):
+    """
+    Checks if the lyrics file exists for a track
+    """
     lyrics_exists = check_lyrics_file_rel_to_track(filepath)
 
     if lyrics_exists:
         return True
 
-    for track in TrackStore.tracks:
+    entry = TrackStore.trackhashmap.get(trackhash, None)
+
+    if entry is None:
+        return False
+
+    for track in entry.tracks:
         if track.trackhash == trackhash and track.filepath != filepath:
             lyrics_exists = check_lyrics_file_rel_to_track(track.filepath)
 
@@ -139,32 +160,35 @@ def test_is_synced(lyrics: list[str]):
     return False
 
 
-def get_extras(filepath: str, keys: list[str]):
-    """
-    Get extra tags from an audio file.
-    """
-    try:
-        tags = TinyTag.get(filepath)
-    except Exception:
-        return [""] * len(keys)
-
-    extras = tags.extra
-
-    return [extras.get(key, "").strip() for key in keys]
-
-
-def get_lyrics_from_tags(filepath: str, just_check: bool = False):
+def get_lyrics_from_tags(trackhash: str, just_check: bool = False):
     """
     Gets the lyrics from the tags of the track
     """
-    lyrics, copyright = get_extras(filepath, ["lyrics", "copyright"])
-    lyrics = lyrics.replace("engdesc", "")
-    exists = bool(lyrics.replace("\n", "").strip())
+    entry = TrackStore.trackhashmap.get(trackhash, None)
+
+    if entry is None:
+        return None, False, ""
+
+    lyrics: str | None = None
+    copyright: str | None = None
+    synced = False
+
+    for track in entry.tracks:
+        if lyrics and copyright:
+            break
+
+        if not lyrics:
+            lyrics = track.extra.get("lyrics", None)
+
+        if not copyright:
+            copyright = track.copyright
 
     if just_check:
-        return exists
+        return lyrics is not None
 
-    if not exists:
+    if lyrics:
+        lyrics = lyrics.replace("engdesc", "")
+    else:
         return None, False, ""
 
     lines = lyrics.split("\n")

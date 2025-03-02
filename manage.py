@@ -6,6 +6,7 @@ import logging
 import os
 import psutil
 import waitress
+import bjoern
 import mimetypes
 import setproctitle
 
@@ -237,11 +238,13 @@ if __name__ == "__main__":
     host = FLASKVARS.get_flask_host()
     port = FLASKVARS.get_flask_port()
 
-    waitress.serve(
-        app,
-        host=host,
-        port=port,
-        threads=100,
-        ipv6=True,
-        ipv4=True,
-    )
+    # waitress.serve(
+    #     app,
+    #     host=host,
+    #     port=port,
+    #     threads=100,
+    #     ipv6=True,
+    #     ipv4=True,
+    # )
+    # app.run(host=host, port=port, debug=False)
+    bjoern.run(app, host, port)

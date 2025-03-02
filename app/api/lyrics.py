@@ -15,10 +15,7 @@ api = APIBlueprint("lyrics", __name__, url_prefix="/lyrics", abp_tags=[bp_tag])
 
 
 class SendLyricsBody(TrackHashSchema):
-    filepath: str = Field(
-        description="The path to the file",
-        example="/path/to/file.mp3",
-    )
+    filepath: str = Field(description="The path to the file")
 
 
 @api.post("")
@@ -30,13 +27,13 @@ def send_lyrics(body: SendLyricsBody):
     trackhash = body.trackhash
 
     is_synced = True
-    lyrics, copyright = get_lyrics(filepath)
+    lyrics, copyright = get_lyrics(filepath, trackhash)
 
     if not lyrics:
         lyrics, copyright = get_lyrics_from_duplicates(trackhash, filepath)
 
     if not lyrics:
-        lyrics, is_synced, copyright = get_lyrics_from_tags(filepath)
+        lyrics, is_synced, copyright = get_lyrics_from_tags(trackhash) # type: ignore
 
     if not lyrics:
         return {"error": "No lyrics found"}
@@ -57,6 +54,6 @@ def check_lyrics(body: SendLyricsBody):
     if exists:
         return {"exists": exists}, 200
 
-    exists = get_lyrics_from_tags(filepath, just_check=True)
+    exists = get_lyrics_from_tags(trackhash, just_check=True)
 
     return {"exists": exists}, 200

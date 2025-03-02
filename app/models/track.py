@@ -88,11 +88,11 @@ class Track:
         self.explicit = int(explicit_tag[0]) == 1
 
         self.image = self.albumhash + ".webp" + "?pathhash=" + self.pathhash
-        self.extra = {
-            "disc_total": self.extra.get("disc_total", 0),
-            "track_total": self.extra.get("track_total", 0),
-            "samplerate": self.extra.get("samplerate", -1),
-        }
+        # self.extra = {
+        #     "disc_total": self.extra.get("disc_total", 0),
+        #     "track_total": self.extra.get("track_total", 0),
+        #     "samplerate": self.extra.get("samplerate", -1),
+        # }
 
         self.split_artists()
         self.map_with_config()

@@ -39,9 +39,7 @@ class TransCodeStore:
 
 
 class SendTrackFileQuery(BaseModel):
-    filepath: str = Field(
-        description="The filepath to play (if available)", default=None
-    )
+    filepath: str = Field(description="The filepath to play (if available)")
     quality: str = Field(
         "original",
         description="The quality of the audio file. Options: original, 1411, 1024, 512, 320, 256, 128, 96",
@@ -85,14 +83,6 @@ def send_track_file_legacy(path: TrackHashSchema, query: SendTrackFileQuery):
 
     if track is not None:
         audio_type = guess_mime_type(filepath)
-        # return send_file(
-        #     filepath,
-        #     mimetype=audio_type,
-        #     conditional=True,
-        #     # environ=request.environ,
-        #     as_attachment=True,
-        #     max_age=None,
-        # )
         return send_from_directory(
             Path(filepath).parent,
             Path(filepath).name,
@@ -100,7 +90,6 @@ def send_track_file_legacy(path: TrackHashSchema, query: SendTrackFileQuery):
             conditional=True,
             as_attachment=True,
         )
-        # return ""
 
     return msg, 404
 
@@ -319,14 +308,8 @@ def get_start_range(range_header: str):
 
 
 class GetAudioSilenceBody(BaseModel):
-    ending_file: str = Field(
-        description="The ending file's path",
-        example="/home/cwilvx/Music/Made in Kenya/Sol generation/Bensoul - Salama.mp3",
-    )
-    starting_file: str = Field(
-        description="The beginning file's path",
-        example="/home/cwilvx/Music/Tidal/Albums/Bensoul - Qwarantunes/Bensoul - Peddi.m4a",
-    )
+    ending_file: str = Field(description="The ending file's path")
+    starting_file: str = Field(description="The beginning file's path")
 
 
 @api.post("/silence")

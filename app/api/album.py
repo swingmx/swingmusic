@@ -32,12 +32,10 @@ api = APIBlueprint("album", __name__, url_prefix="/album", abp_tags=[bp_tag])
 class GetAlbumVersionsBody(BaseModel):
     og_album_title: str = Field(
         description="The original album title (album.og_title)",
-        example=Defaults.API_ALBUMNAME,
     )
 
     albumhash: str = Field(
         description="The album hash of the album to exclude from the results.",
-        example=Defaults.API_ALBUMHASH,
     )
 
 
@@ -48,8 +46,6 @@ class GetMoreFromArtistsBody(AlbumLimitSchema):
 
     base_title: str = Field(
         description="The base title of the album to exclude from the results.",
-        example=Defaults.API_ALBUMNAME,
-        default=None,
     )
 
 
