@@ -34,5 +34,5 @@ def setup_sqlite():
     create_all_tables()
     # create_user_tables()
 
-    if not UserTable.get_all():
+    if not [u for u in UserTable.get_all()]:
         UserTable.insert_default_user()
