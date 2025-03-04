@@ -9,6 +9,7 @@ import waitress
 import bjoern
 import mimetypes
 import setproctitle
+import gunicorn.app.base
 
 from flask_jwt_extended import (
     create_access_token,
@@ -229,6 +230,28 @@ def print_memory_usage(response: Response):
     return response
 
 
+class StandaloneApplication(gunicorn.app.base.BaseApplication):
+    def __init__(self, app, options=None):
+        self.options = options or {}
+        self.application = app
+        super().__init__()
+
+    def load_config(self):
+        if not self.cfg:
+            return
+
+        config = {
+            key: value
+            for key, value in self.options.items()
+            if key in self.cfg.settings and value is not None
+        }
+        for key, value in config.items():
+            self.cfg.set(key.lower(), value)
+
+    def load(self):
+        return self.application
+
+
 if __name__ == "__main__":
     load_into_mem()
     run_swingmusic()
@@ -247,4 +270,12 @@ if __name__ == "__main__":
     #     ipv4=True,
     # )
     # app.run(host=host, port=port, debug=False)
-    bjoern.run(app, host, port)
+    # bjoern.run(app, host, port)
+
+    options = {
+        "bind": f"{host}:{port}",
+        "workers": 1,
+        "threads": 100,
+        "timeout": 0,
+    }
+    StandaloneApplication(app, options).run()
