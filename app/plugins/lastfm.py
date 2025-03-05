@@ -101,7 +101,10 @@ class LastFmPlugin(Plugin):
             log.warn("scrobble response error" + str(e))
             return False
 
-        res_json: dict[str, Any] = res.json()
+        try:
+            res_json: dict[str, Any] = res.json()
+        except requests.exceptions.JSONDecodeError:
+            return False
 
         if res_json.get("error"):
             log.error("LASTFM: scrobble error" + str(res_json))
