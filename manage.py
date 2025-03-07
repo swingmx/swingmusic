@@ -4,9 +4,13 @@ This file is used to run the application.
 
 import logging
 import os
+import granian.constants
+import granian.http
+import granian.wsgi
 import psutil
 import waitress
 import bjoern
+import granian
 import mimetypes
 import setproctitle
 
@@ -87,15 +91,11 @@ def run_swingmusic():
 
 
 # Setup function calls
-Info.load()
-ProcessArgs()
-run_setup()
 
 
 # Create the Flask app
 
-app = create_api()
-app.static_folder = get_home_res_path("client")
+# app = create_api()
 
 # INFO: Routes that don't need authentication
 whitelisted_routes = {
@@ -125,82 +125,6 @@ def skipAuthAction():
     return False
 
 
-@app.before_request
-def verify_auth():
-    """
-    Verifies the JWT token before each request.
-    """
-    if skipAuthAction():
-        return
-
-    verify_jwt_in_request()
-
-
-@app.after_request
-def refresh_expiring_jwt(response: Response):
-    """
-    Refreshes the cookies JWT token after each request.
-    """
-
-    # INFO: If the request has an Authorization header, don't refresh the jwt
-    # Request is probably from the mobile client or a third party
-    if skipAuthAction() or request.headers.get("Authorization"):
-        return response
-
-    try:
-        exp_timestamp = get_jwt()["exp"]
-        now = datetime.now(timezone.utc)
-        target_timestamp = datetime.timestamp(now) + 60 * 60 * 24 * 7  # 7 days
-
-        if target_timestamp > exp_timestamp:
-            access_token = create_access_token(identity=get_jwt_identity())
-            set_access_cookies(response, access_token)
-
-        return response
-    except (RuntimeError, KeyError):
-        return response
-
-
-@app.route("/<path:path>")
-def serve_client_files(path: str):
-    """
-    Serves the static files in the client folder.
-    """
-    js_or_css = path.endswith(".js") or path.endswith(".css")
-    if not js_or_css:
-        return app.send_static_file(path)
-
-    gzipped_path = path + ".gz"
-    user_agent = request.headers.get("User-Agent")
-
-    # INFO: Safari doesn't support gzip encoding
-    # See issue: https://github.com/swingmx/swingmusic/issues/155
-    is_safari = (
-        user_agent and user_agent.find("Safari") >= 0 and user_agent.find("Chrome") < 0
-    )
-
-    if is_safari:
-        return app.send_static_file(path)
-
-    accepts_gzip = request.headers.get("Accept-Encoding", "").find("gzip") >= 0
-
-    if accepts_gzip:
-        if os.path.exists(os.path.join(app.static_folder or "", gzipped_path)):
-            response = app.make_response(app.send_static_file(gzipped_path))
-            response.headers["Content-Encoding"] = "gzip"
-            return response
-
-    return app.send_static_file(path)
-
-
-@app.route("/")
-def serve_client():
-    """
-    Serves the index.html file at `client/index.html`.
-    """
-    return app.send_static_file("index.html")
-
-
 prev_memory = 0
 
 
@@ -228,22 +152,136 @@ def print_memory_usage(response: Response):
 
     return response
 
-if __name__ == "__main__":
+
+# if __name__ == "__main__":
+
+#     # TrackStore.export()
+#     # ArtistStore.export()
+
+
+#     # waitress.serve(
+#     #     app,
+#     #     host=host,
+#     #     port=port,
+#     #     threads=100,
+#     #     ipv6=True,
+#     #     ipv4=True,
+#     # )
+#     # app.run(host=host, port=port, debug=False)
+#     bjoern.run(app, host, port)
+
+
+def create_app():
+    Info.load()
+    ProcessArgs()
+    run_setup()
+
+    app = create_api()
+    app.static_folder = get_home_res_path("client")
+
+    @app.before_request
+    def verify_auth():
+        """
+        Verifies the JWT token before each request.
+        """
+        if skipAuthAction():
+            return
+
+        verify_jwt_in_request()
+
+    @app.after_request
+    def refresh_expiring_jwt(response: Response):
+        """
+        Refreshes the cookies JWT token after each request.
+        """
+
+        # INFO: If the request has an Authorization header, don't refresh the jwt
+        # Request is probably from the mobile client or a third party
+        if skipAuthAction() or request.headers.get("Authorization"):
+            return response
+
+        try:
+            exp_timestamp = get_jwt()["exp"]
+            now = datetime.now(timezone.utc)
+            target_timestamp = datetime.timestamp(now) + 60 * 60 * 24 * 7  # 7 days
+
+            if target_timestamp > exp_timestamp:
+                access_token = create_access_token(identity=get_jwt_identity())
+                set_access_cookies(response, access_token)
+
+            return response
+        except (RuntimeError, KeyError):
+            return response
+
+    @app.route("/<path:path>")
+    def serve_client_files(path: str):
+        """
+        Serves the static files in the client folder.
+        """
+        js_or_css = path.endswith(".js") or path.endswith(".css")
+        if not js_or_css:
+            return app.send_static_file(path)
+
+        gzipped_path = path + ".gz"
+        user_agent = request.headers.get("User-Agent")
+
+        # INFO: Safari doesn't support gzip encoding
+        # See issue: https://github.com/swingmx/swingmusic/issues/155
+        is_safari = (
+            user_agent
+            and user_agent.find("Safari") >= 0
+            and user_agent.find("Chrome") < 0
+        )
+
+        if is_safari:
+            return app.send_static_file(path)
+
+        accepts_gzip = request.headers.get("Accept-Encoding", "").find("gzip") >= 0
+
+        if accepts_gzip:
+            if os.path.exists(os.path.join(app.static_folder or "", gzipped_path)):
+                response = app.make_response(app.send_static_file(gzipped_path))
+                response.headers["Content-Encoding"] = "gzip"
+                return response
+
+        return app.send_static_file(path)
+
+    @app.route("/")
+    def serve_client():
+        """
+        Serves the index.html file at `client/index.html`.
+        """
+        return app.send_static_file("index.html")
+
     load_into_mem()
     run_swingmusic()
-    # TrackStore.export()
-    # ArtistStore.export()
 
     host = FLASKVARS.get_flask_host()
     port = FLASKVARS.get_flask_port()
 
-    # waitress.serve(
-    #     app,
-    #     host=host,
-    #     port=port,
-    #     threads=100,
-    #     ipv6=True,
-    #     ipv4=True,
-    # )
-    # app.run(host=host, port=port, debug=False)
-    bjoern.run(app, host, port)
+
+    return app, host, port
+
+
+app, host, port = create_app()
+
+# config = {
+#     # "app": "manage:app",
+#     "address": host,
+#     "port": port,
+#     "blocking_threads": 10,
+#     "interface": granian.constants.Interfaces.WSGI
+# }
+
+# server = granian.server.Server("manage:app", **config)
+# server.serve()
+
+
+# server = granian.server.Server(
+#     "manage:app",
+#     address="0.0.0.0",
+#     port=1980,
+#     blocking_threads=10,
+#     workers=1,
+# )
+# server.serve()

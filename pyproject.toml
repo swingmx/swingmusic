@@ -34,6 +34,7 @@ dependencies = [
     "flask-openapi3==3.0.2",
     "rapidfuzz==3.11.0",
     "bjoern>=3.2.2",
+    "granian>=2.0.1",
 ]
 
 [dependency-groups]
