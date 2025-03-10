@@ -10,14 +10,9 @@ from app import settings
 
 from app.db.userdata import LibDataTable
 from app.logger import log
-from app.lib.errors import PopulateCancelledError
 from app.store.albums import AlbumStore
 from app.store.artists import ArtistStore
 from app.utils.progressbar import tqdm
-
-PROCESS_ALBUM_COLORS_KEY = ""
-PROCESS_ARTIST_COLORS_KEY = ""
-
 
 def get_image_colors(image: str, count=1) -> list[str]:
     """Extracts n number of the most dominant colors from an image."""
@@ -54,18 +49,11 @@ class ProcessAlbumColors:
     Extracts the most dominant color from the album art and saves it to the database.
     """
 
-    def __init__(self, instance_key: str) -> None:
-        global PROCESS_ALBUM_COLORS_KEY
-        PROCESS_ALBUM_COLORS_KEY = instance_key
-
+    def __init__(self) -> None:
         albums = [a for a in AlbumStore.get_flat_list() if not a.color]
 
         for album in tqdm(albums, desc="Processing missing album colors"):
             albumhash = album.albumhash
-            if PROCESS_ALBUM_COLORS_KEY != instance_key:
-                raise PopulateCancelledError(
-                    "A newer 'ProcessAlbumColors' instance is running. Stopping this one."
-                )
 
             albumrecord = LibDataTable.find_one(albumhash, type="album")
             if albumrecord is not None and albumrecord.color is not None:
@@ -99,21 +87,13 @@ class ProcessArtistColors:
     Extracts the most dominant color from the artist art and saves it to the database.
     """
 
-    def __init__(self, instance_key: str) -> None:
+    def __init__(self) -> None:
         all_artists = [a for a in ArtistStore.get_flat_list() if not a.color]
-
-        global PROCESS_ARTIST_COLORS_KEY
-        PROCESS_ARTIST_COLORS_KEY = instance_key
 
         for artist in tqdm(all_artists, desc="Processing missing artist colors"):
             artisthash = artist.artisthash
-            if PROCESS_ARTIST_COLORS_KEY != instance_key:
-                raise PopulateCancelledError(
-                    "A newer 'ProcessArtistColors' instance is running. Stopping this one."
-                )
 
             record = LibDataTable.find_one(artisthash, "artist")
-            print(record)
             if (record is not None) and (record.color is not None):
                 continue
 

@@ -1,6 +1,8 @@
 from dataclasses import asdict
+import math
 import os
 from concurrent.futures import ProcessPoolExecutor
+import platform
 
 from requests import ConnectionError as RequestConnectionError
 from requests import ReadTimeout
@@ -8,7 +10,6 @@ from requests import ReadTimeout
 from app import settings
 from app.lib.artistlib import CheckArtistImages
 from app.lib.colorlib import ProcessAlbumColors, ProcessArtistColors
-from app.lib.errors import PopulateCancelledError
 from app.lib.taglib import extract_thumb
 from app.logger import log
 from app.models import Album, Artist
@@ -21,33 +22,22 @@ from app.utils.progressbar import tqdm
 
 from app.db.userdata import SimilarArtistTable
 
-
-POPULATE_KEY = ""
-
-
 class CordinateMedia:
     """
     Cordinates the extracting of thumbnails
     """
 
     def __init__(self, instance_key: str):
-        global POPULATE_KEY
-        POPULATE_KEY = instance_key
-
-        try:
-            ProcessTrackThumbnails(instance_key)
-            ProcessAlbumColors(instance_key)
-            ProcessArtistColors(instance_key)
-        except PopulateCancelledError as e:
-            log.warn(e)
-            return
+        ProcessTrackThumbnails()
+        ProcessAlbumColors()
+        ProcessArtistColors()
 
         tried_to_download_new_images = False
 
         if has_connection():
             tried_to_download_new_images = True
             try:
-                CheckArtistImages(instance_key)
+                CheckArtistImages()
             except (RequestConnectionError, ReadTimeout) as e:
                 log.error(
                     "Internet connection lost. Downloading artist images suspended."
@@ -58,18 +48,14 @@ class CordinateMedia:
 
         # Re-process the new artist images.
         if tried_to_download_new_images:
-            ProcessArtistColors(instance_key=instance_key)
+            ProcessArtistColors()
 
         if has_connection():
-            try:
-                print("Attempting to download similar artists...")
-                FetchSimilarArtistsLastFM(instance_key)
-            except PopulateCancelledError as e:
-                log.warn(e)
-                return
+            print("Attempting to download similar artists...")
+            FetchSimilarArtistsLastFM()
 
 
-def get_image(_map: tuple[str, Album]):
+def get_image(album: Album):
     """
     The function retrieves an image from an album by iterating through its tracks and extracting the thumbnail from the first track that has one.
 
@@ -77,17 +63,13 @@ def get_image(_map: tuple[str, Album]):
     :type album: Album
     :return: None
     """
-
-    instance_key, album = _map
-
-    if POPULATE_KEY != instance_key:
-        raise PopulateCancelledError("'ProcessTrackThumbnails': Populate key changed")
-
     matching_tracks = AlbumStore.get_album_tracks(album.albumhash)
-
+    
     for track in matching_tracks:
-        if extract_thumb(track.filepath, track.albumhash + ".webp"):
-            break
+        extracted = extract_thumb(track.filepath, track.albumhash + ".webp")
+        
+        if extracted:
+            return
 
 
 def get_cpu_count():
@@ -103,7 +85,31 @@ class ProcessTrackThumbnails:
     Extracts the album art from all albums in album store.
     """
 
-    def __init__(self, instance_key: str) -> None:
+    def extract(self, albums: list[Album]):
+        """
+        Extracts the album art with platform specific logic.
+        """
+
+        if platform.system() == "Linux":
+            # INFO: Processess are forked with access to global stores
+            # It's "safe" to use a process pool
+            cpus = math.floor(get_cpu_count() / 2)
+            with ProcessPoolExecutor(max_workers=cpus) as executor:
+                results = list(
+                    tqdm(
+                        executor.map(get_image, albums),
+                        total=len(albums),
+                        desc="Extracting track images",
+                    )
+                )
+
+                list(results)
+        else:
+            # INFO: Use a for loop for windows (and others I guess)
+            for album in tqdm(albums, desc="Extracting track images"):
+                get_image(album)
+
+    def __init__(self) -> None:
         """
         Filters out albums that already have thumbnails and
         extracts the thumbnail for the other albums.
@@ -112,43 +118,20 @@ class ProcessTrackThumbnails:
 
         # read all the files in the thumbnail directory
         processed = set(i.replace(".webp", "") for i in os.listdir(path))
-
         # filter out albums that already have thumbnails
         albums = filter(
-            lambda album: album.albumhash not in processed, AlbumStore.get_flat_list()
+            lambda album: album.albumhash not in processed,
+            AlbumStore.get_flat_list(),
         )
+
         albums = list(albums)
-
-        print("length of albums", len(albums))
-
-        # process the rest
-        key_album_map = ((instance_key, album) for album in albums)
-
-        with ProcessPoolExecutor(max_workers=get_cpu_count()) as executor:
-            results = list(
-                tqdm(
-                    executor.map(get_image, key_album_map),
-                    total=len(albums),
-                    desc="Extracting track images",
-                )
-            )
-
-            list(results)
+        self.extract(albums)
 
 
-def save_similar_artists(_map: tuple[str, Artist]):
+def save_similar_artists(artist: Artist):
     """
     Downloads and saves similar artists to the database.
     """
-
-    instance_key, artist = _map
-
-    if POPULATE_KEY != instance_key:
-        print("Warning: Populate key changed")
-        raise PopulateCancelledError(
-            "'FetchSimilarArtistsLastFM': Populate key changed"
-        )
-
     if SimilarArtistTable.exists(artist.artisthash):
         return
 
@@ -167,7 +150,7 @@ class FetchSimilarArtistsLastFM:
     Fetches similar artists from LastFM using a thread pool.
     """
 
-    def __init__(self, instance_key: str) -> None:
+    def __init__(self) -> None:
         # read all artists from db
         processed = set(a.artisthash for a in SimilarArtistTable.get_all())
 
@@ -177,25 +160,18 @@ class FetchSimilarArtistsLastFM:
         )
         artists = list(artists)
 
-        # process the rest
-        key_artist_map = ((instance_key, artist) for artist in artists)
-
         with ProcessPoolExecutor(max_workers=get_cpu_count()) as executor:
             try:
                 print("Processing similar artists")
                 results = list(
                     tqdm(
-                        executor.map(save_similar_artists, key_artist_map),
+                        executor.map(save_similar_artists, artists),
                         total=len(artists),
                         desc="Fetching similar artists",
                     )
                 )
 
                 list(results)
-
-            except PopulateCancelledError as e:
-                raise e
-
             # any exception that can be raised by the pool
             except Exception as e:
                 log.warn(e)

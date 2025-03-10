@@ -22,19 +22,14 @@ from app.logger import log
 from app.utils.remove_duplicates import remove_duplicates
 
 
-class PopulateKey:
-    key: float = 0
-
-
 class IndexTracks:
-    def __init__(self, instance_key: float) -> None:
+    def __init__(self) -> None:
         """
         Indexes all tracks in the database.
 
         An instance key is used to prevent multiple instances of the
         same class from running at the same time.
         """
-        PopulateKey.key = instance_key
         dirs_to_scan = UserConfig().rootDirs
 
         if len(dirs_to_scan) == 0:
@@ -60,7 +55,7 @@ class IndexTracks:
         unmodified, modified_tracks = self.filter_modded()
         untagged = files - unmodified
 
-        self.tag_untagged(untagged, instance_key)
+        self.tag_untagged(untagged)
         self.extract_thumb_with_overwrite(modified_tracks)
 
     @staticmethod
@@ -125,23 +120,20 @@ class IndexTracks:
         tracks = TrackTable.get_all()
 
     @staticmethod
-    def _process_file(file: str, config: UserConfig, key: float) -> dict | None:
+    def _process_file(file: str, config: UserConfig) -> dict | None:
         """Worker function to process individual files"""
-        if PopulateKey.key != key:
-            return None
-
         try:
             return get_tags(file, config=config)
         except Exception as e:
             log.warning(f"Failed to process file {file}: {e}")
             return None
 
-    def tag_untagged(self, files: set[str], key: float):
+    def tag_untagged(self, files: set[str]):
         config = UserConfig()
 
         # Create process pool with worker function
         with Pool(processes=math.floor(cpu_count() / 2)) as pool:
-            worker = partial(self._process_file, config=config, key=key)
+            worker = partial(self._process_file, config=config)
 
             # Process files and track progress
             results = []
@@ -150,11 +142,6 @@ class IndexTracks:
                 total=len(files),
                 desc="Reading files",
             ):
-                if PopulateKey.key != key:
-                    log.warning("'Populate.tag_untagged': Populate key changed")
-                    pool.terminate()
-                    return
-
                 if result is not None:
                     results.append(result)
 

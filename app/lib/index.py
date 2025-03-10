@@ -18,7 +18,7 @@ from app.utils.threading import background
 
 class IndexEverything:
     def __init__(self) -> None:
-        IndexTracks(instance_key=time())
+        IndexTracks()
 
         key = str(time())
         TrackStore.load_all_tracks(key)

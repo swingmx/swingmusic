@@ -1,3 +1,4 @@
+import math
 import os
 import time
 import urllib
@@ -23,8 +24,6 @@ from app.store.artists import ArtistStore
 from app.utils.hashing import create_hash
 from app.utils.progressbar import tqdm
 
-
-CHECK_ARTIST_IMAGES_KEY = ""
 
 LARGE_ENOUGH_NUMBER = 100
 PngImagePlugin.MAX_TEXT_CHUNK = LARGE_ENOUGH_NUMBER * (1024**2)
@@ -148,10 +147,7 @@ class DownloadImage:
 
 
 class CheckArtistImages:
-    def __init__(self, instance_key: str):
-        global CHECK_ARTIST_IMAGES_KEY
-        CHECK_ARTIST_IMAGES_KEY = instance_key
-
+    def __init__(self):
         # read all files in the artist image folder
         path = settings.Paths.get_sm_artist_img_path()
         processed = set(i.replace(".webp", "") for i in os.listdir(path))
@@ -160,15 +156,14 @@ class CheckArtistImages:
             a for a in ArtistStore.get_flat_list() if a.artisthash not in processed
         ]
 
-        key_artist_map = ((instance_key, artist) for artist in unprocessed)
-
         # Use number of CPU cores minus 1 to leave one core free for system processes
-        num_workers = max(1, multiprocessing.cpu_count() - 1)
+        num_workers = max(1, math.floor(multiprocessing.cpu_count() / 2))
+        print("num_workers", num_workers)
 
         with ProcessPoolExecutor(max_workers=num_workers) as executor:
             res = list(
                 tqdm(
-                    executor.map(self.download_image, key_artist_map),
+                    executor.map(self.download_image, unprocessed),
                     total=len(unprocessed),
                     desc="Downloading missing artist images",
                 )
@@ -177,17 +172,12 @@ class CheckArtistImages:
             list(res)
 
     @staticmethod
-    def download_image(_map: tuple[str, Artist]):
+    def download_image(artist: Artist):
         """
         Checks if an artist image exists and downloads it if not.
 
         :param artist: The artist name
         """
-        instance_key, artist = _map
-
-        if CHECK_ARTIST_IMAGES_KEY != instance_key:
-            return
-
         img_path = (
             Path(settings.Paths.get_sm_artist_img_path()) / f"{artist.artisthash}.webp"
         )

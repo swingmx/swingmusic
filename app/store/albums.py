@@ -69,41 +69,6 @@ class AlbumStore:
         """
         return [a.album for a in cls.albummap.values()]
 
-    @classmethod
-    def add_album(cls, album: Album):
-        """
-        Adds an album to the store.
-        """
-        cls.albums.append(album)
-
-    @classmethod
-    def add_albums(cls, albums: list[Album]):
-        """
-        Adds multiple albums to the store.
-        """
-        cls.albums.extend(albums)
-
-    @classmethod
-    def get_albums_by_albumartist(
-        cls, artisthash: str, limit: int, exclude: str
-    ) -> list[Album]:
-        """
-        Returns N albums by the given albumartist, excluding the specified album.
-        """
-
-        albums = [album for album in cls.albums if artisthash in album.artisthashes]
-
-        albums = [
-            album
-            for album in albums
-            if create_hash(album.base_title) != create_hash(exclude)
-        ]
-
-        if len(albums) > limit:
-            random.shuffle(albums)
-
-        # TODO: Merge this with `cls.get_albums_by_artisthash()`
-        return albums[:limit]
 
     @classmethod
     def get_album_by_hash(cls, albumhash: str) -> Album | None:
@@ -126,35 +91,6 @@ class AlbumStore:
                 albums.append(entry.album)
 
         return albums
-
-    @classmethod
-    def count_albums_by_artisthash(cls, artisthash: str):
-        """
-        Count albums for the given artisthash.
-        """
-        master_string = "-".join(a.albumartists_hashes for a in cls.albums)
-        return master_string.count(artisthash)
-
-    # @classmethod
-    # def album_exists(cls, albumhash: str) -> bool:
-    #     """
-    #     Checks if an album exists.
-    #     """
-    #     return albumhash in "-".join([a.albumhash for a in cls.albums])
-
-    @classmethod
-    def remove_album(cls, album: Album):
-        """
-        Removes an album from the store.
-        """
-        cls.albums.remove(album)
-
-    @classmethod
-    def remove_album_by_hash(cls, albumhash: str):
-        """
-        Removes an album from the store.
-        """
-        cls.albums = CustomList(a for a in cls.albums if a.albumhash != albumhash)
 
     @classmethod
     def get_albums_by_artisthash(cls, hash: str):

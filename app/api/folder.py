@@ -78,6 +78,7 @@ def get_folder_tree(body: FolderTree):
 
     config = UserConfig()
     root_dirs = config.rootDirs
+    print("root_dirs", root_dirs)
 
     try:
         if req_dir == "$home" and root_dirs[0] == "$home":

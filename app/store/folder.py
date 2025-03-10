@@ -59,10 +59,11 @@ class FolderStore:
         results: list[dict[str, int | str]] = []
 
         with ThreadPoolExecutor() as executor:
-            res = executor.map(countFilepathsInDir, paths)
+            res = executor.map(countFilepathsInDir, ((path, FolderStore.filepaths) for path in paths))
             results = [
                 {"path": path, "trackcount": count} for path, count in zip(paths, res)
             ]
+            print("results", results)
 
         return results
 
@@ -92,21 +93,22 @@ def getIndexOfFirstMatch(strings: list[str], prefix: str):
     return -1
 
 
-def countFilepathsInDir(dirpath: str):
+def countFilepathsInDir(_map: tuple[str, SortedSet]):
     """
     Counts the number of filepaths that start with the given directory path.
 
     Gets the index of the first path that starts with the given directory path,
     then checks each path after that to see if it starts with the given directory path.
     """
-    index = getIndexOfFirstMatch(FolderStore.filepaths, dirpath)
+    dirpath, filepaths = _map
+    index = getIndexOfFirstMatch(filepaths, dirpath)
 
     if index == -1:
         return 0
 
     paths: list[str] = []
 
-    for path in FolderStore.filepaths[index:]:
+    for path in filepaths[index:]:
         if path.startswith(dirpath):
             paths.append(path)
         else:
