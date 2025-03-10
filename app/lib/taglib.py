@@ -193,7 +193,7 @@ def get_tags(filepath: str, config: UserConfig):
 
     if no_artist and not no_albumartist:
         # INFO: If no artist, use the albumartist
-        metadata["artist"] = tags.albumartist
+        metadata["artists"] = tags.albumartist
 
     parse_data = None
 
@@ -255,7 +255,7 @@ def get_tags(filepath: str, config: UserConfig):
     )
 
     metadata["trackhash"] = create_hash(
-        metadata.get("artist", ""), metadata.get("album", ""), metadata.get("title", "")
+        metadata.get("artists", ""), metadata.get("album", ""), metadata.get("title", "")
     )
 
     extra: dict[str, Any] = {
@@ -267,7 +267,7 @@ def get_tags(filepath: str, config: UserConfig):
         "format": "[:5]+[-5:]",  # first 5 + last 5 chars
     }
 
-    to_pop = ["filename", "artist", "albumartist", "year"]
+    to_pop = ["filename", "artists", "albumartist", "year"]
 
     # REMOVE EMPTY VALUES
     for key, value in extra.items():

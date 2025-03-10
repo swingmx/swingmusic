@@ -311,6 +311,20 @@ class FavoritesTable(Base):
 
         return 0
 
+    @classmethod
+    def count_tracks(cls):
+        result = cls.execute(select(func.count(cls.id)).where(cls.type == "track"))
+
+        return next(result).scalar()
+
+    @classmethod
+    def get_last_trackhash(cls):
+        result = cls.execute(
+            select(cls.hash).where(cls.type == "track").order_by(cls.timestamp.desc())
+        )
+
+        return next(result).scalar()
+
 
 class ScrobbleTable(Base):
     __tablename__ = "scrobble"

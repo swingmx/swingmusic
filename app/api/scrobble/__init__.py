@@ -43,13 +43,17 @@ api = APIBlueprint("logger", __name__, url_prefix="/logger", abp_tags=[bp_tag])
 
 
 class LogTrackBody(TrackHashSchema):
-    timestamp: int = Field(description="The timestamp of the track", example=1622217600)
-    duration: int = Field(
-        description="The duration of the track in seconds", example=300
-    )
+    timestamp: int = Field(description="The timestamp of the track")
+    duration: int = Field(description="The duration of the track in seconds")
     source: str = Field(
         description="The play source of the track",
-        example=f"al:{Defaults.API_ALBUMHASH}",
+        json_schema_extra={
+            "examples": [
+                f"al:{Defaults.API_ALBUMHASH}",
+                f"tr:{Defaults.API_TRACKHASH}",
+                f"ar:{Defaults.API_ARTISTHASH}",
+            ]
+        },
     )
 
 
@@ -354,11 +358,7 @@ def get_stats():
             if len(tracks) > 0
             else "—"
         ),
-        (
-            tracks[0].image
-            if len(tracks) > 0
-            else None
-        ),
+        (tracks[0].image if len(tracks) > 0 else None),
     )
 
     fav_count = FavoritesTable.count_favs_in_period(start_time, end_time)

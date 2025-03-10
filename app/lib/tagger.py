@@ -1,3 +1,4 @@
+import math
 import os
 from functools import partial
 from multiprocessing import Pool, cpu_count
@@ -139,7 +140,7 @@ class IndexTracks:
         config = UserConfig()
 
         # Create process pool with worker function
-        with Pool(processes=cpu_count()) as pool:
+        with Pool(processes=math.floor(cpu_count() / 2)) as pool:
             worker = partial(self._process_file, config=config, key=key)
 
             # Process files and track progress

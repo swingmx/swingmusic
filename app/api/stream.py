@@ -11,7 +11,6 @@ from typing import Literal
 from flask import send_file, request, Response, send_from_directory
 from flask_openapi3 import APIBlueprint, Tag
 from pydantic import BaseModel, Field
-import werkzeug
 import werkzeug.wsgi
 from app.api.apischemas import TrackHashSchema
 from app.lib.trackslib import get_silence_paddings
@@ -61,7 +60,6 @@ def send_track_file_legacy(path: TrackHashSchema, query: SendTrackFileQuery):
 
     NOTE: Does not support range requests or transcoding.
     """
-    request.environ["wsgi.file_wrapper"] = werkzeug.wsgi.FileWrapper
     trackhash = path.trackhash
     filepath = query.filepath
     msg = {"msg": "File Not Found"}

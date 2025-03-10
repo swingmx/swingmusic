@@ -98,10 +98,20 @@ def recover_items(items: list[dict]):
                     "item": serialize_playlist(playlist),
                 }
         elif item["type"] == "favorite":
+            image = None
+            last_trackhash = FavoritesTable.get_last_trackhash()
+
+            if last_trackhash:
+                trackhash = last_trackhash.replace("track_", "")
+                entry = TrackStore.trackhashmap.get(trackhash)
+                if entry:
+                    image = entry.tracks[0].image
+
             recovered_item = {
                 "type": "favorite",
                 "item": {
-                    "count": FavoritesTable.count(),
+                    "count": FavoritesTable.count_tracks(),
+                    "image": image,
                 },
             }
         elif item["type"] == "track":

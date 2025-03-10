@@ -48,8 +48,8 @@ class RecentlyPlayed(HomepageRoutine):
                 if (
                     store_entry
                     and item
-                    and store_entry["type"] + store_entry["hash"]
-                    == item["type"] + item["hash"]
+                    and store_entry.get("type", "") + store_entry.get("hash", "")
+                    == item.get("type", "") + item.get("hash", "")
                 ):
                     # If the item is the same as the one in the store
                     # only update the timestamp
