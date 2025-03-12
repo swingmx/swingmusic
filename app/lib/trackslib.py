@@ -14,8 +14,11 @@ def get_leading_silence_end(filepath: str):
     Returns the leading silence of a track.
     """
     format = filepath.split(".")[-1]
-    audio = AudioSegment.from_file(filepath, format=format)
-    silence = detect_leading_silence(audio, silence_threshold=-40.0, chunk_size=10)
+    try:
+        audio = AudioSegment.from_file(filepath, format=format)
+        silence = detect_leading_silence(audio, silence_threshold=-40.0, chunk_size=10)
+    except Exception as e:
+        return 0
 
     return silence if silence > 1000 else 0
 
@@ -25,8 +28,11 @@ def get_trailing_silence_start(filepath: str):
     Returns the trailing silence of a track.
     """
     format = filepath.split(".")[-1]
-    audio = AudioSegment.from_file(filepath, format=format)
-    duration = len(audio)
+    try:
+        audio = AudioSegment.from_file(filepath, format=format)
+        duration = len(audio)
+    except Exception as e:
+        return None
 
     audio = audio[-30000:] if len(audio) > 30000 else audio
     silence_groups = detect_silence(audio, silence_thresh=-40.0, seek_step=10)

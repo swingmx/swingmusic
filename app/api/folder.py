@@ -78,7 +78,6 @@ def get_folder_tree(body: FolderTree):
 
     config = UserConfig()
     root_dirs = config.rootDirs
-    print("root_dirs", root_dirs)
 
     try:
         if req_dir == "$home" and root_dirs[0] == "$home":
@@ -122,11 +121,11 @@ def get_all_drives(is_win: bool = False):
     """
     Returns a list of all the drives on a Windows machine.
     """
-    drives = psutil.disk_partitions(all=True)
-    drives = [d.mountpoint for d in drives]
+    drives_ = psutil.disk_partitions(all=True)
+    drives = [Path(d.mountpoint).as_posix() for d in drives_]
 
     if is_win:
-        drives = [win_replace_slash(d) for d in drives]
+        return drives
     else:
         remove = (
             "/boot",

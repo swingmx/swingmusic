@@ -26,19 +26,6 @@ def create_folder(path: str, trackcount=0) -> Folder:
     )
 
 
-def get_first_child_from_path(root: str, maybe_child: str):
-    """
-    Given a root path and a path, returns the first child from the root path.
-    """
-    if not maybe_child.startswith(root) or maybe_child == root:
-        return None
-
-    children = maybe_child.replace(root, "")
-    first = Path(children).parts[0]
-
-    return os.path.join(root, first)
-
-
 def get_folders(paths: list[str]):
     """
     Filters out folders that don't have any tracks and
@@ -68,7 +55,7 @@ def get_files_and_dirs(
 
     Can recursively call itself to skip through empty folders.
     """
-
+    # TODO: Replace os.path with pathlib
     try:
         entries = os.scandir(path)
     except FileNotFoundError:
@@ -80,17 +67,19 @@ def get_files_and_dirs(
 
     dirs, files = [], []
 
-    for entry in entries:
-        ext = os.path.splitext(entry.name)[1].lower()
+    for entry_ in entries:
+        entry = Path(entry_.path)
+        ext = entry.suffix.lower()
 
         if entry.is_dir() and not entry.name.startswith("."):
-            dir = win_replace_slash(entry.path)
+            dir = (entry / "").as_posix()
+            
             # add a trailing slash to the folder path
             # to avoid matching a folder starting with the same name as the root path
             # eg. .../Music and .../Music VideosI
-            dirs.append(os.path.join(dir, ""))
+            dirs.append(dir)
         elif entry.is_file() and ext in SUPPORTED_FILES:
-            files.append(win_replace_slash(entry.path))
+            files.append(entry.as_posix())
 
     files_ = []
 

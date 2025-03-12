@@ -63,7 +63,6 @@ class FolderStore:
             results = [
                 {"path": path, "trackcount": count} for path, count in zip(paths, res)
             ]
-            print("results", results)
 
         return results
 
