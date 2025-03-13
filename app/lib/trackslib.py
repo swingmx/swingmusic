@@ -6,7 +6,7 @@ import os
 
 from app.lib.pydub.pydub import AudioSegment
 from app.lib.pydub.pydub.silence import detect_leading_silence, detect_silence
-from app.utils.threading import ThreadWithReturnValue
+from app.utils.threading import ProcessWithReturnValue
 
 
 def get_leading_silence_end(filepath: str):
@@ -58,13 +58,13 @@ def get_silence_paddings(ending_file: str, starting_file: str):
     starting_thread = None
 
     if os.path.exists(ending_file):
-        ending_thread = ThreadWithReturnValue(
+        ending_thread = ProcessWithReturnValue(
             target=get_trailing_silence_start, args=(ending_file,)
         )
         ending_thread.start()
 
     if os.path.exists(starting_file):
-        starting_thread = ThreadWithReturnValue(
+        starting_thread = ProcessWithReturnValue(
             target=get_leading_silence_end, args=(starting_file,)
         )
         starting_thread.start()

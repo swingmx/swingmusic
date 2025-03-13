@@ -99,11 +99,12 @@ def get_folder_tree(body: FolderTree):
     if is_windows():
         # Trailing slash needed when drive letters are passed,
         # Remember, the trailing slash is removed in the client.
-        req_dir += "/"
+        # req_dir += "/"
+        pass
     else:
         req_dir = "/" + req_dir if not req_dir.startswith("/") else req_dir
 
-    res = get_files_and_dirs(
+    return get_files_and_dirs(
         req_dir,
         start=body.start,
         limit=body.limit,
@@ -113,8 +114,6 @@ def get_folder_tree(body: FolderTree):
         tracksort_reverse=body.tracksort_reverse,
         foldersort_reverse=body.foldersort_reverse,
     )
-
-    return res
 
 
 def get_all_drives(is_win: bool = False):
