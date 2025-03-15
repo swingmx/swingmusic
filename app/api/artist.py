@@ -52,7 +52,6 @@ def get_artist(path: ArtistHashSchema, query: GetArtistQuery):
 
     Returns artist data, tracks and genres for the given artisthash.
     """
-    print(query)
     artisthash = path.artisthash
     limit = query.limit
 
@@ -68,8 +67,6 @@ def get_artist(path: ArtistHashSchema, query: GetArtistQuery):
     artist = entry.artist
     if artist.albumcount == 0 and tcount < 10:
         limit = tcount
-
-    print(limit)
 
     try:
         year = datetime.fromtimestamp(artist.date).year
