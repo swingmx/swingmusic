@@ -3,7 +3,7 @@
 </div>
 <div align="center" style="font-size: 2rem"><b>Swing Music</b></div>
 
-<div align="center"><b><sub><code>v1.4.8</code></sub></b></div>
+<div align="center"><b><sub><code>v2.0.2</code></sub></b></div>
  
 **<div align="center" style="padding-top: 1.25rem">[Download](https://swingmusic.vercel.app/downloads) • <a href="https://swingmusic.vercel.app/support-us.html" target="_blank">Support Development</a> • [Docs](https://swingmusic.vercel.app/guide/introduction.html) • [Screenshots](https://swingmusic.vercel.app) • [r/SwingMusicApp](https://www.reddit.com/r/SwingMusicApp)</div>**
 
@@ -13,7 +13,27 @@
 
 ##
 
-Swing Music is a beautiful, self-hosted music player for your local audio files. Like a cooler Spotify ... but bring your own music. Just run the app and enjoy your music library in a web browser.
+Swing Music is a fast and beautiful, self-hosted music player for your local audio files. Like a cooler Spotify ... but bring your own music. Just run the app and enjoy your music library in a web browser.
+
+## Features
+
+- **Daily Mixes** - generated daily based on your listening activity
+- **Metadata normalization** - a clean and consistent library
+- **Album versioning** - normalized albums and association with version labels (eg. Deluxe, Remaster, etc)
+- **Related artist and albums**
+- **Folder view** - Browse your music library by folders
+- **Playlist management**
+- **Beautiful browser based UI**
+- **Silence detection** - Combine cross-fade with silence detection to create a seamless listening experience
+- **Collections** - Group albums and artists based on your preferences
+- **Statistics** - Get insights into your listening activity
+- **Lyrics view**
+- **Android client**
+- **Last.fm scrobbling**
+- **Multi-user support**
+- **Cross-platform** - Windows, Linux, MacOS (coming soon), arm64, x86
+- **Blazingly fast**
+- **Pure awesomeness**
 
 ### Installation
 
@@ -35,15 +55,15 @@ chmod a+x ./swingmusic
 ./swingmusic
 ```
 
-The app should start at <http://localhost:1970> by default. Open it in your browser to use Swing Music. You can change the default port by using the `--port` flags.
+The app should start at <http://localhost:1970> by default. Open it in your browser to configure and use Swing Music. You can change the default port by using the `--port` flag.
 
 ```sh
-swingmusic --port 1980
+./swingmusic --port 1980
 ```
 
 ### Options
 
-Options are flags that can be passed when starting the app in the terminal to tweak runtime settings or perform tasks. You can use the `-h` flag to see all supported options.
+Options flags can be passed when starting the app in the terminal to tweak runtime settings or perform tasks. You can use the `-h` flag to see all supported options.
 
 > [!TIP]
 > You can read more about options in [the docs](https://swingmusic.vercel.app/guide/getting-started.html#options).

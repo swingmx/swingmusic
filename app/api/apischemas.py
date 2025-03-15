@@ -14,7 +14,9 @@ class AlbumHashSchema(BaseModel):
 
     albumhash: str = Field(
         description="The album hash",
-        example=Defaults.API_ALBUMHASH,
+        json_schema_extra={
+            "example": Defaults.API_ALBUMHASH,
+        },
         min_length=Defaults.HASH_LENGTH,
         max_length=Defaults.HASH_LENGTH,
     )
@@ -26,7 +28,9 @@ class ArtistHashSchema(BaseModel):
     """
     artisthash: str = Field(
         description="The artist hash",
-        example=Defaults.API_ARTISTHASH,
+        json_schema_extra={
+            "example": Defaults.API_ARTISTHASH,
+        },
         min_length=Defaults.HASH_LENGTH,
         max_length=Defaults.HASH_LENGTH,
     )
@@ -39,7 +43,9 @@ class TrackHashSchema(BaseModel):
 
     trackhash: str = Field(
         description="The track hash",
-        example=Defaults.API_TRACKHASH,
+        json_schema_extra={
+            "example": Defaults.API_TRACKHASH,
+        },
         min_length=Defaults.HASH_LENGTH,
         max_length=Defaults.HASH_LENGTH,
     )
@@ -52,7 +58,9 @@ class GenericLimitSchema(BaseModel):
 
     limit: int = Field(
         description="The number of items to return",
-        example=Defaults.API_CARD_LIMIT,
+        json_schema_extra={
+            "example": Defaults.API_CARD_LIMIT,
+        },
         default=Defaults.API_CARD_LIMIT,
     )
 
@@ -65,8 +73,10 @@ class TrackLimitSchema(BaseModel):
 
     limit: int = Field(
         description="The number of tracks to return",
-        example=Defaults.API_CARD_LIMIT,
-        default=Defaults.API_CARD_LIMIT,
+        json_schema_extra={
+            "example": Defaults.API_CARD_LIMIT,
+        },
+        default=5,
         alias="tracklimit",
     )
 
@@ -78,7 +88,9 @@ class AlbumLimitSchema(BaseModel):
 
     limit: int = Field(
         description="The number of albums to return",
-        example=Defaults.API_CARD_LIMIT,
+        json_schema_extra={
+            "example": Defaults.API_CARD_LIMIT,
+        },
         default=Defaults.API_CARD_LIMIT,
         alias="albumlimit",
     )
@@ -91,7 +103,9 @@ class ArtistLimitSchema(BaseModel):
 
     limit: int = Field(
         description="The number of artists to return",
-        example=Defaults.API_CARD_LIMIT,
+        json_schema_extra={
+            "example": Defaults.API_CARD_LIMIT,
+        },
         default=Defaults.API_CARD_LIMIT,
         alias="artistlimit",
     )
