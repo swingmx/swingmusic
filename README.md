@@ -61,6 +61,9 @@ The app should start at <http://localhost:1970> by default. Open it in your brow
 ./swingmusic --port 1980
 ```
 
+> [!IMPORTANT]
+> The default password for user `admin` is "admin". Please change the password via the settings after first login.
+
 ### Options
 
 Options flags can be passed when starting the app in the terminal to tweak runtime settings or perform tasks. You can use the `-h` flag to see all supported options.
