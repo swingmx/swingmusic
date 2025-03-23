@@ -157,8 +157,7 @@ class CheckArtistImages:
         ]
 
         # Use number of CPU cores minus 1 to leave one core free for system processes
-        num_workers = max(1, math.floor(multiprocessing.cpu_count() / 2))
-        print("num_workers", num_workers)
+        num_workers = max(1, os.cpu_count() // 2)
 
         with ProcessPoolExecutor(max_workers=num_workers) as executor:
             res = list(

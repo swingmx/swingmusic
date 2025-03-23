@@ -2,239 +2,125 @@
 Handles arguments passed to the program.
 """
 
-from getpass import getpass
-import os.path
 import sys
+from getpass import getpass
 
+import click
 import PyInstaller.__main__ as bundler
 
 from app import settings
-from app.config import UserConfig
 from app.db.userdata import UserTable
 from app.logger import log
-from app.print_help import HELP_MESSAGE
 from app.setup.sqlite import setup_sqlite
 from app.utils.auth import hash_password
 from app.utils.paths import getFlaskOpenApiPath
-from app.utils.xdg_utils import get_xdg_config_dir
 from app.utils.wintools import is_windows
 
 ALLARGS = settings.ALLARGS
 ARGS = sys.argv[1:]
 
 
-class ProcessArgs:
+def handle_build(*args, **kwargs):
     """
-    Processes the arguments passed to the program.
+    Handles the --build argument. Builds the project into a single executable.
     """
+    if not args[2]:
+        return
 
-    def __init__(self) -> None:
-        # resolve config path
-        self.handle_config_path()  # 1
+    if settings.IS_BUILD:
+        click.echo("Can't build the project. Exiting ...")
+        sys.exit(0)
 
-        # handles that exit
-        self.handle_password_recovery()
-        self.handle_build()
-        self.handle_help()
-        self.handle_version()
+    info_keys = [
+        "SWINGMUSIC_APP_VERSION",
+        "GIT_LATEST_COMMIT_HASH",
+        "GIT_CURRENT_BRANCH",
+    ]
 
-        # non-exiting handles
-        self.handle_host()
-        self.handle_port()
-        self.handle_periodic_scan()
-        self.handle_periodic_scan_interval()
+    lines = []
 
-    @staticmethod
-    def handle_build():
-        """
-        Runs Pyinstaller.
-        """
+    for key in info_keys:
+        value = settings.Info.get(key)
 
-        if ALLARGS.build not in ARGS:
-            return
-
-        if settings.IS_BUILD:
-            print("Do the cha cha slide instead!")
-            print("https://www.youtube.com/watch?v=wZv62ShoStY")
-            sys.exit(0)
-
-        info_keys = [
-            "SWINGMUSIC_APP_VERSION",
-            "GIT_LATEST_COMMIT_HASH",
-            "GIT_CURRENT_BRANCH",
-        ]
-
-        lines = []
-
-        for key in info_keys:
-            value = settings.Info.get(key)
-
-            if not value:
-                log.error(f"WARNING: {key} not resolved. Exiting ...")
-                sys.exit(0)
-
-            lines.append(f'{key} = "{value}"\n')
-
-        try:
-            # write the info to the config file
-            with open("./app/configs.py", "w", encoding="utf-8") as file:
-                # copy the api keys to the config file
-                file.writelines(lines)
-
-            _s = ";" if is_windows() else ":"
-
-            flask_openapi_path = getFlaskOpenApiPath()
-
-            bundler.run(
-                [
-                    "manage.py",
-                    "--onefile",
-                    "--name",
-                    "swingmusic",
-                    "--clean",
-                    f"--add-data=assets{_s}assets",
-                    f"--add-data=client{_s}client",
-                    f"--add-data={flask_openapi_path}/templates/static{_s}flask_openapi3/templates/static",
-                    f"--icon=assets/logo-fill.light.ico",
-                    "-y",
-                ]
-            )
-        finally:
-            # revert and remove the api keys for dev mode
-            with open("./app/configs.py", "w", encoding="utf-8") as file:
-                lines = [f'{key} = ""\n' for key in info_keys]
-                file.writelines(lines)
-
-            sys.exit(0)
-
-    @staticmethod
-    def handle_port():
-        if ALLARGS.port in ARGS:
-            index = ARGS.index(ALLARGS.port)
-            try:
-                port = ARGS[index + 1]
-            except IndexError:
-                print("ERROR: Port not specified")
-                sys.exit(0)
-
-            try:
-                settings.FLASKVARS.FLASK_PORT = int(port)  # type: ignore
-            except ValueError:
-                print("ERROR: Port should be a number")
-                sys.exit(0)
-
-    @staticmethod
-    def handle_host():
-        if ALLARGS.host in ARGS:
-            index = ARGS.index(ALLARGS.host)
-
-            try:
-                host = ARGS[index + 1]
-            except IndexError:
-                print("ERROR: Host not specified")
-                sys.exit(0)
-
-            settings.FLASKVARS.set_flask_host(host)  # type: ignore
-
-    @staticmethod
-    def handle_config_path():
-        """
-        Modifies the config path.
-        """
-        if ALLARGS.config in ARGS:
-            index = ARGS.index(ALLARGS.config)
-
-            try:
-                config_path = ARGS[index + 1]
-                resolved = os.path.abspath(config_path)
-
-                if os.path.exists(resolved):
-                    settings.Paths.set_config_dir(resolved)
-                    return
-
-                log.warn(f"Config path {resolved} doesn't exist")
-                sys.exit(0)
-            except IndexError:
-                pass
-
-        settings.Paths.set_config_dir(get_xdg_config_dir())
-
-    @staticmethod
-    def handle_periodic_scan():
-        if any((a in ARGS for a in ALLARGS.no_periodic_scan)):
-            UserConfig().enablePeriodicScans = False
-
-    @staticmethod
-    def handle_periodic_scan_interval():
-        if any((a in ARGS for a in ALLARGS.periodic_scan_interval)):
-            index = [
-                ARGS.index(a) for a in ALLARGS.periodic_scan_interval if a in ARGS
-            ][0]
-
-            try:
-                interval = ARGS[index + 1]
-            except IndexError:
-                print("ERROR: Interval not specified")
-                sys.exit(0)
-
-            try:
-                psi = int(interval)
-            except ValueError:
-                print("ERROR: Interval should be a number")
-                sys.exit(0)
-
-            if psi < 0:
-                print("WHAT ARE YOU TRYING?")
-                sys.exit(0)
-
-            UserConfig().scanInterval = psi
-
-    @staticmethod
-    def handle_help():
-        if any((a in ARGS for a in ALLARGS.help)):
-            print(HELP_MESSAGE)
-            sys.exit(0)
-
-    @staticmethod
-    def handle_version():
-        if any((a in ARGS for a in ALLARGS.version)):
-            print(f"VERSION: v{settings.Info.SWINGMUSIC_APP_VERSION}")
-            print(
-                f"COMMIT#: {settings.Info.GIT_CURRENT_BRANCH}/{settings.Info.GIT_LATEST_COMMIT_HASH}"
+        if not value:
+            log.error(
+                f"WARNING: {key} not resolved. Can't build the project. Exiting ..."
             )
             sys.exit(0)
 
-    @staticmethod
-    def handle_password_recovery():
-        if ALLARGS.pswd in ARGS:
-            print("SWING MUSIC v2.0.0 ")
-            print("PASSWORD RECOVERY \n")
-            setup_sqlite()
+        lines.append(f'{key} = "{value}"\n')
 
-            username: str = ""
-            password: str = ""
+    try:
+        # write the info to the config file
+        with open("./app/configs.py", "w", encoding="utf-8") as file:
+            # copy the api keys to the config file
+            file.writelines(lines)
 
-            # collect username
-            try:
-                username = input("Enter username: ")
-            except KeyboardInterrupt:
-                print("\nOperation cancelled! Exiting ...")
-                sys.exit(0)
+        _s = ";" if is_windows() else ":"
 
-            username = username.strip()
-            user = UserTable.get_by_username(username)
+        flask_openapi_path = getFlaskOpenApiPath()
 
-            if not user:
-                print(f"User {username} not found")
-                sys.exit(0)
+        bundler.run(
+            [
+                "main.py",
+                "--onefile",
+                "--name",
+                "swingmusic",
+                "--clean",
+                f"--add-data=assets{_s}assets",
+                f"--add-data=client{_s}client",
+                f"--add-data={flask_openapi_path}/templates/static{_s}flask_openapi3/templates/static",
+                f"--icon=assets/logo-fill.light.ico",
+                "-y",
+            ]
+        )
+    finally:
+        # revert and remove the api keys for dev mode
+        with open("./app/configs.py", "w", encoding="utf-8") as file:
+            lines = [f'{key} = ""\n' for key in info_keys]
+            file.writelines(lines)
 
-            # collect password
-            try:
-                password = getpass("Enter new password: ")
-            except KeyboardInterrupt:
-                print("\nOperation cancelled! Exiting ...")
-                sys.exit(0)
+        sys.exit(0)
 
-            UserTable.update_one({"id": user.id, "password": hash_password(password)})
 
-            sys.exit(0)
+def handle_password_reset(*args, **kwargs):
+    """
+    Handles the --password-reset argument. Resets the password.
+    """
+    if not args[2]:
+        return
+
+    setup_sqlite()
+
+    username: str = ""
+    password: str = ""
+
+    # collect username
+    try:
+        username = input("Enter username: ")
+    except KeyboardInterrupt:
+        click.echo("\nOperation cancelled! Exiting ...")
+        sys.exit(0)
+
+    username = username.strip()
+    user = UserTable.get_by_username(username)
+
+    if not user:
+        click.echo(f"User {username} not found")
+        sys.exit(0)
+
+    # collect password
+    try:
+        password = getpass("Enter new password: ")
+    except KeyboardInterrupt:
+        click.echo("\nOperation cancelled! Exiting ...")
+        sys.exit(0)
+
+    try:
+        UserTable.update_one({"id": user.id, "password": hash_password(password)})
+        click.echo("Password reset successfully!")
+    except Exception as e:
+        click.echo(f"Error resetting password: {e}")
+        sys.exit(0)
+
+    sys.exit(0)

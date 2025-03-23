@@ -5,11 +5,9 @@ from app.lib.sortlib import sort_folders, sort_tracks
 from app.logger import log
 from app.models import Folder
 from app.serializers.track import serialize_tracks
-from app.settings import SUPPORTED_FILES
+from app.utils.filesystem import SUPPORTED_FILES
 from app.store.folder import FolderStore
 from app.utils.wintools import win_replace_slash
-
-# from app.db.libdata import TrackTable as TrackDB
 
 
 def create_folder(path: str, trackcount=0) -> Folder:

@@ -7,6 +7,7 @@ import subprocess
 import sys
 
 from app import configs
+from app.utils.filesystem import get_home_res_path
 
 join = os.path.join
 
@@ -159,10 +160,6 @@ class Defaults:
     API_CARD_LIMIT = 6
 
 
-FILES = ["flac", "mp3", "wav", "m4a", "ogg", "wma", "opus", "alac", "aiff"]
-SUPPORTED_FILES = tuple(f".{file}" for file in FILES)
-
-
 # ===== SQLite =====
 class DbPaths:
     APP_DB_NAME = "swingmusic.db"
@@ -304,6 +301,15 @@ class Info:
     """
 
     SWINGMUSIC_APP_VERSION = os.environ.get("SWINGMUSIC_APP_VERSION")
+
+    if not SWINGMUSIC_APP_VERSION:
+        path = get_home_res_path("version.txt")
+        if not path:
+            raise ValueError("Version file not found")
+
+        with open(path, "r") as f:
+            SWINGMUSIC_APP_VERSION = f.read().strip()
+
     GIT_LATEST_COMMIT_HASH = "<unset>"
     GIT_CURRENT_BRANCH = "<unset>"
 

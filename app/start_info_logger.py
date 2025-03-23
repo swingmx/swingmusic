@@ -1,30 +1,26 @@
-import os
-
-from app.settings import FLASKVARS, TCOLOR, Info, Paths
+from app.settings import TCOLOR, Info, Paths
 from app.utils.network import get_ip
+import click
 
 
-def log_startup_info():
-    lines = "------------------------------"
+def log_startup_info(host: str, port: int):
+    lines = "-"*30
     # clears terminal 👇
     # os.system("cls" if os.name == "nt" else "echo -e \\\\033c")
 
-    print(lines)
-    print(f"{TCOLOR.HEADER}Swing Music v{Info.SWINGMUSIC_APP_VERSION} {TCOLOR.ENDC}")
+    click.echo(f"{TCOLOR.HEADER}Swing Music v{Info.SWINGMUSIC_APP_VERSION} {TCOLOR.ENDC}")
 
-    adresses = [FLASKVARS.get_flask_host()]
+    addresses = [host]
 
-    if FLASKVARS.get_flask_host() == "0.0.0.0":
+    if host == "0.0.0.0":
         remote_ip = get_ip()
-        adresses = ["localhost"] + ([remote_ip] if remote_ip else [])
+        addresses.extend(["127.0.0.1"] + ([remote_ip] if remote_ip else []))
 
-    print("Started app on:")
-    for address in adresses:
-        # noinspection HttpUrlsUsage
-        print(
-            f"➤ {TCOLOR.OKGREEN}http://{address}:{FLASKVARS.get_flask_port()}{TCOLOR.ENDC}"
+    click.echo("Server running on:\n")
+    for address in addresses:
+        click.echo(
+            f"{TCOLOR.OKGREEN}http://{address}:{port}{TCOLOR.ENDC}"
         )
 
-    print(lines + "\n")
-
-    print(f"{TCOLOR.YELLOW}Data folder: {Paths.get_app_dir()}{TCOLOR.ENDC}")
+    click.echo("")
+    click.echo(f"{TCOLOR.YELLOW}Data folder: {Paths.get_app_dir()}{TCOLOR.ENDC}\n")

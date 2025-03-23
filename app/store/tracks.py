@@ -114,6 +114,8 @@ class TrackStore:
             else:
                 cls.trackhashmap[track.trackhash].append(track)
 
+        print("Done!")
+
     @classmethod
     def add_track(cls, track: Track):
         """

@@ -22,6 +22,7 @@ from app.utils.progressbar import tqdm
 
 from app.db.userdata import SimilarArtistTable
 
+
 class CordinateMedia:
     """
     Cordinates the extracting of thumbnails
@@ -64,20 +65,12 @@ def get_image(album: Album):
     :return: None
     """
     matching_tracks = AlbumStore.get_album_tracks(album.albumhash)
-    
+
     for track in matching_tracks:
         extracted = extract_thumb(track.filepath, track.albumhash + ".webp")
-        
+
         if extracted:
             return
-
-
-def get_cpu_count():
-    """
-    Returns the number of CPUs on the machine.
-    """
-    cpu_count = os.cpu_count() or 0
-    return cpu_count // 2 if cpu_count > 2 else cpu_count
 
 
 class ProcessTrackThumbnails:
@@ -93,7 +86,7 @@ class ProcessTrackThumbnails:
         if platform.system() == "Linux":
             # INFO: Processess are forked with access to global stores
             # It's "safe" to use a process pool
-            cpus = math.floor(get_cpu_count() / 2)
+            cpus = max(1, os.cpu_count() // 2)
             with ProcessPoolExecutor(max_workers=cpus) as executor:
                 results = list(
                     tqdm(
@@ -160,7 +153,7 @@ class FetchSimilarArtistsLastFM:
         )
         artists = list(artists)
 
-        with ProcessPoolExecutor(max_workers=get_cpu_count()) as executor:
+        with ProcessPoolExecutor(max_workers=max(1, os.cpu_count() // 2)) as executor:
             try:
                 print("Processing similar artists")
                 results = list(

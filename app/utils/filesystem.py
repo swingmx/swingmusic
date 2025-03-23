@@ -1,10 +1,12 @@
 import os
 from pathlib import Path
 
-from app.settings import SUPPORTED_FILES
 from app.utils.wintools import win_replace_slash
 
 CWD = Path(__file__).parent.resolve()
+
+FILES = ["flac", "mp3", "wav", "m4a", "ogg", "wma", "opus", "alac", "aiff"]
+SUPPORTED_FILES = tuple(f".{file}" for file in FILES)
 
 
 def run_fast_scandir(_dir: str, full=False) -> tuple[list[str], list[str]]:

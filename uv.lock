@@ -1,4 +1,5 @@
 version = 1
+revision = 1
 requires-python = "==3.11.*"
 resolution-markers = [
     "platform_python_implementation != 'PyPy'",
@@ -22,6 +23,12 @@ sdist = { url = "https://files.pythonhosted.org/packages/ee/67/531ea369ba64dcff5
 wheels = [
     { url = "https://files.pythonhosted.org/packages/78/b6/6307fbef88d9b5ee7421e68d78a9f162e0da4900bc5f5793f6d3d0e34fb8/annotated_types-0.7.0-py3-none-any.whl", hash = "sha256:1f02e8b43a8fbbc3f3e0d4f0f4bfc8131bcb4eebe8849b8e5c773f3a1c582a53", size = 13643 },
 ]
+
+[[package]]
+name = "bjoern"
+version = "3.2.2"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/d5/a0/fba55eb58a502dabc0915137ff44eaacaba58a60196fd94dc8cd4e9fe67d/bjoern-3.2.2.tar.gz", hash = "sha256:16e5a02a9a17a7f5f8bea0d7c58650e78ab80ead6fe3e390037573d4355baf31", size = 45716 }
 
 [[package]]
 name = "blinker"
@@ -826,6 +833,7 @@ name = "swingmusic"
 version = "2.0.2"
 source = { virtual = "." }
 dependencies = [
+    { name = "bjoern" },
     { name = "colorgram-py" },
     { name = "ffmpeg-python" },
     { name = "flask" },
@@ -861,6 +869,7 @@ dev = [
 
 [package.metadata]
 requires-dist = [
+    { name = "bjoern", specifier = ">=3.2.2" },
     { name = "colorgram-py", specifier = ">=1.2.0" },
     { name = "ffmpeg-python", specifier = ">=0.2.0" },
     { name = "flask", specifier = ">=3.1.0" },
