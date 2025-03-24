@@ -14,6 +14,7 @@
 pacman-key --init > /dev/null
 pacman-key --populate archlinuxarm > /dev/null
 pacman -Syq --noconfirm > /dev/null
+pacman -S libev --noconfirm > /dev/null
 pacman -Sq yarn git wget glibc gcc bzip2 expat gdbm libffi libnsl libxcrypt openssl zlib libnghttp2 icu --noconfirm --disable-download-timeout --needed > /dev/null
 wget -q https://github.com/jensgrunzer1/pyhon311-for-aarch64/raw/refs/heads/main/python311-3.11.9-2-aarch64.pkg.tar.xz
 pacman -U python311-3.11.9-2-aarch64.pkg.tar.xz --noconfirm
@@ -30,6 +31,7 @@ cd swingmusic
 
 # pip install -U pip setuptools
 pip install -r requirements.txt
+pip install bjoern
 
 cd ../swingmusic-client
 yarn install

@@ -69,6 +69,7 @@ def handle_build(*args, **kwargs):
                 "--clean",
                 f"--add-data=assets{_s}assets",
                 f"--add-data=client{_s}client",
+                f"--add-data=version.txt{_s}.",
                 f"--add-data={flask_openapi_path}/templates/static{_s}flask_openapi3/templates/static",
                 f"--icon=assets/logo-fill.light.ico",
                 "-y",
