@@ -132,7 +132,7 @@ class IndexTracks:
         config = UserConfig()
 
         # Create process pool with worker function
-        with Pool(processes=math.floor(cpu_count() / 2)) as pool:
+        with Pool(processes=max(1, cpu_count() // 2)) as pool:
             worker = partial(self._process_file, config=config)
 
             # Process files and track progress
