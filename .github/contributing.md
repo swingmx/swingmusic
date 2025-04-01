@@ -36,13 +36,13 @@ git clone git@github.com:swing-opensource/swingmusic.git
 
 cd swingmusic
 
-poetry install
+poetry install --with dev # `--with dev` installs all the development dependencies
 ```
 
 Finally, run the server. You can use a different port if you have another Swing Music instance running on port `1970`.
 
 ```sh
-poetry run python manage.py --port 1980
+poetry run python main.py --port 1980
 ```
 
 After that, checkout into a new branch and make your changes.
