@@ -93,7 +93,7 @@ jobs:
       #     python -m poetry install
       - name: Build server
         run: |
-          python manage.py --build
+          python main.py --build
         env:
           SWINGMUSIC_APP_VERSION: ${{ inputs.tag }}
       - name: Rename Linux binary
