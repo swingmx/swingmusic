@@ -14,6 +14,16 @@ def run_fast_scandir(_dir: str, full=False) -> tuple[list[str], list[str]]:
     Scans a directory for files with a specific extension.
     Returns a list of files and folders in the directory.
     """
+    # if on mac, ignore Library folder and its children
+    if os.name == "posix":
+        dir_path = Path(_dir)
+        library_path = Path.home() / "Library"
+        if dir_path == library_path or library_path in dir_path.parents:
+            return [], []
+
+    # if the path contains "node_modules" ignore
+    if "node_modules" in _dir:
+        return [], []
 
     if _dir == "":
         return [], []
