@@ -77,7 +77,7 @@ jobs:
       - name: Activate virtualenv (linux)
         if: matrix.os == 'ubuntu-20.04'
         run: |
-          source .venv/bin/activate && pip install bjoern
+          sudo apt-get install libev-dev -y > /dev/null && source .venv/bin/activate && pip install bjoern
       - name: Activate virtualenv (windows)
         if: matrix.os == 'windows-2019'
         run: |
@@ -93,7 +93,7 @@ jobs:
       #     python -m poetry install
       - name: Build server
         run: |
-          python manage.py --build
+          python main.py --build
         env:
           SWINGMUSIC_APP_VERSION: ${{ inputs.tag }}
       - name: Rename Linux binary

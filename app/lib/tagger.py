@@ -1,4 +1,3 @@
-import math
 import os
 from functools import partial
 from multiprocessing import Pool, cpu_count
@@ -115,9 +114,6 @@ class IndexTracks:
         # =============================================================
 
         return unmodified_paths, modified_tracks
-
-    def get_untagged(self):
-        tracks = TrackTable.get_all()
 
     @staticmethod
     def _process_file(file: str, config: UserConfig) -> dict | None:

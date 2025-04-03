@@ -23,7 +23,7 @@ cd swingmusicbuilder
 
 git clone --quiet https://github.com/swing-opensource/swingmusic-client.git
 git clone --quiet https://github.com/swing-opensource/swingmusic.git
-# Manual poetry installation as installers are broken.
+
 python3.11 -m venv venv
 source venv/bin/activate
 
@@ -44,7 +44,7 @@ cd ../swingmusic
 # poetry install
 # Swing gives error if this is not set. Set to version of repo you cloned.
 export SWINGMUSIC_APP_VERSION="TAG"
-python manage.py --build
+python main.py --build
 
 # rename binary
 mv dist/swingmusic dist/swingmusic_linux_arm64

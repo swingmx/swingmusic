@@ -1,5 +1,4 @@
 from dataclasses import asdict
-import math
 import os
 from concurrent.futures import ProcessPoolExecutor
 import platform
@@ -45,7 +44,7 @@ class CordinateMedia:
                 )
                 log.error(e)  # REVIEW More informations = good
         else:
-            log.warning(f"No internet connection. Downloading artist images suspended!")
+            log.warning("No internet connection. Downloading artist images suspended!")
 
         # Re-process the new artist images.
         if tried_to_download_new_images:
