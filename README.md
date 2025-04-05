@@ -3,7 +3,7 @@
 </div>
 <div align="center" style="font-size: 2rem"><b>Swing Music</b></div>
 
-<div align="center"><b><sub><code>v2.0.2</code></sub></b></div>
+<div align="center"><b><sub><code>v2.0.3</code></sub></b></div>
  
 **<div align="center" style="padding-top: 1.25rem">[Download](https://swingmusic.vercel.app/downloads) • <a href="https://swingmusic.vercel.app/support-us.html" target="_blank">Support Development</a> • [Docs](https://swingmusic.vercel.app/guide/introduction.html) • [Screenshots](https://swingmusic.vercel.app) • [r/SwingMusicApp](https://www.reddit.com/r/SwingMusicApp)</div>**
 
@@ -44,7 +44,20 @@ Swing Music is available as pre-compiled binaries for Windows and Linux. Just do
 On Linux, you can install FFmpeg using:
 
 ```sh
-sudo apt-get install ffmpeg libavcodec-extra -y
+sudo apt-get install ffmpeg libev-dev libavcodec-extra -y
+```
+
+The `libev` package is needed on Linux and MacOS. You can install it on other system as shown:
+
+```sh
+# Arch Linux
+pacman -S libev
+
+# Fedora, CentOS
+dnf install libev-devel
+
+# MacOS
+brew install libevl
 ```
 
 Then make the file executable first.
@@ -119,7 +132,7 @@ Swing Music is looking for contributors. If you're interested, please join us at
 
 This software is provided to you with terms stated in the MIT License. Read the full text in the `LICENSE` file located at the root of this repository.
 
-**[MIT License](https://opensource.org/licenses/MIT) | Copyright (c) 2023 Mungai Njoroge**
+[MIT License](https://opensource.org/licenses/MIT) | Copyright (c) 2021 - Present, Mungai Njoroge
 
 ### Contributors
 
