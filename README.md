@@ -57,7 +57,7 @@ pacman -S libev
 dnf install libev-devel
 
 # MacOS
-brew install libevl
+brew install libev
 ```
 
 Then make the file executable first.
