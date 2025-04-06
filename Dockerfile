@@ -30,6 +30,7 @@ apt-get clean && \
 rm -rf /var/lib/apt/lists/*
 
 RUN pip install -r requirements.txt
+RUN pip install bjoern
 
 ARG app_version
 ENV SWINGMUSIC_APP_VERSION=$app_version
