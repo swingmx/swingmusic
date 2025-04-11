@@ -25,7 +25,7 @@ VOLUME /music
 
 VOLUME /config
 
-RUN apt-get update && apt-get install -y gcc libev-dev python3-dev -y ffmpeg libavcodec-extra gcc-aarch64-linux-gnu && \
+RUN apt-get update && apt-get install -y gcc libev-dev python3-dev -y ffmpeg libavcodec-extra gcc-aarch64-linux-gnu libev-dev && \
 apt-get clean && \
 rm -rf /var/lib/apt/lists/*
 
