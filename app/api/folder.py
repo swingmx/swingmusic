@@ -2,6 +2,7 @@
 Contains all the folder routes.
 """
 
+from datetime import datetime
 import os
 from pathlib import Path
 
@@ -14,8 +15,10 @@ from showinfm import show_in_file_manager
 from app import settings
 from app.config import UserConfig
 from app.db.libdata import TrackTable
+from app.db.userdata import FavoritesTable, PlaylistTable
 from app.lib.folderslib import get_files_and_dirs, get_folders
-from app.serializers.track import serialize_track
+from app.serializers.track import serialize_track, serialize_tracks
+from app.store.tracks import TrackStore
 from app.utils.wintools import is_windows, win_replace_slash
 
 tag = Tag(name="Folders", description="Get folders and tracks in a directory")
@@ -73,6 +76,7 @@ def get_folder_tree(body: FolderTree):
 
     Returns a list of all the folders and tracks in the given folder.
     """
+    og_req_dir = body.folder
     req_dir = body.folder
     tracks_only = body.tracks_only
 
@@ -96,6 +100,54 @@ def get_folder_tree(body: FolderTree):
                 "tracks": [],
             }
 
+    if req_dir.startswith("$playlist"):
+        splits = req_dir.split("/")
+
+        if len(splits) == 2:
+            pid = splits[1]
+            playlist = PlaylistTable.get_by_id(int(pid))
+            tracks = TrackStore.get_tracks_by_trackhashes(
+                playlist.trackhashes[body.start : body.start + body.limit]
+            )
+
+            return {
+                "path": req_dir,
+                "folders": [],
+                "tracks": serialize_tracks(tracks),
+            }
+
+        playlists = PlaylistTable.get_all()
+        playlists = sorted(
+            playlists,
+            key=lambda p: datetime.strptime(p.last_updated, "%Y-%m-%d %H:%M:%S"),
+            reverse=True,
+        )
+
+        for playlist in playlists:
+            playlist.clear_lists()
+
+        return {
+            "path": req_dir,
+            "folders": [
+                {
+                    "name": p.name,
+                    "path": f"$playlist/{p.id}",
+                }
+                for p in playlists
+            ],
+            "tracks": [],
+        }
+
+    if req_dir == "$favorites":
+        tracks, total = FavoritesTable.get_fav_tracks(body.start, body.limit)
+        tracks = TrackStore.get_tracks_by_trackhashes([t.hash for t in tracks])
+
+        return {
+            "tracks": serialize_tracks(tracks),
+            "folders": [],
+            "path": req_dir,
+        }
+
     if is_windows():
         # Trailing slash needed when drive letters are passed,
         # Remember, the trailing slash is removed in the client.
@@ -104,7 +156,7 @@ def get_folder_tree(body: FolderTree):
     else:
         req_dir = "/" + req_dir if not req_dir.startswith("/") else req_dir
 
-    return get_files_and_dirs(
+    results = get_files_and_dirs(
         req_dir,
         start=body.start,
         limit=body.limit,
@@ -114,6 +166,23 @@ def get_folder_tree(body: FolderTree):
         tracksort_reverse=body.tracksort_reverse,
         foldersort_reverse=body.foldersort_reverse,
     )
+
+    if og_req_dir == "$home" and config.showPlaylistsInFolderView:
+        # Get all playlists and return them as a list of folders
+        playlists_item = {
+            "name": "Playlists",
+            "path": "$playlists",
+        }
+
+        favorites_item = {
+            "name": "Favorites",
+            "path": "$favorites",
+        }
+
+        results["folders"].insert(0, playlists_item)
+        results["folders"].insert(0, favorites_item)
+
+    return results
 
 
 def get_all_drives(is_win: bool = False):

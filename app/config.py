@@ -30,6 +30,7 @@ class UserConfig:
             "Smith & Thell",
             "Peter, Paul & Mary",
             "Simon & Garfunkel",
+            "Judy & Mary",
         }
     )
     genreSeparators: set[str] = field(default_factory=lambda: {"/", ";", "&"})
@@ -48,6 +49,7 @@ class UserConfig:
     enablePeriodicScans: bool = False
     scanInterval: int = 10
     enableWatchdog: bool = False
+    showPlaylistsInFolderView: bool = False
 
     # plugins
     enablePlugins: bool = True

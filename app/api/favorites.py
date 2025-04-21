@@ -5,7 +5,6 @@ from flask_openapi3 import APIBlueprint
 from pydantic import BaseModel, Field
 
 from app.api.apischemas import GenericLimitSchema
-from app.db.libdata import TrackTable
 from app.db.userdata import FavoritesTable
 from app.lib.extras import get_extra_info
 from app.models import FavType
