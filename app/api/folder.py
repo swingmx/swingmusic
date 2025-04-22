@@ -123,15 +123,13 @@ def get_folder_tree(body: FolderTree):
             reverse=True,
         )
 
-        for playlist in playlists:
-            playlist.clear_lists()
-
         return {
             "path": req_dir,
             "folders": [
                 {
                     "name": p.name,
                     "path": f"$playlist/{p.id}",
+                    "trackcount": p.count,
                 }
                 for p in playlists
             ],
@@ -172,11 +170,13 @@ def get_folder_tree(body: FolderTree):
         playlists_item = {
             "name": "Playlists",
             "path": "$playlists",
+            "trackcount": sum(p.count for p in PlaylistTable.get_all()),
         }
 
         favorites_item = {
             "name": "Favorites",
             "path": "$favorites",
+            "trackcount": FavoritesTable.get_fav_tracks(0, -1)[1],
         }
 
         results["folders"].insert(0, playlists_item)
