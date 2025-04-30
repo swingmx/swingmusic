@@ -129,48 +129,48 @@ jobs:
           path: dist/swingmusic.exe
           retention-days: 1
 
-  build_aarch64:
-    runs-on: [ubuntu-22.04]
-    name: Building aarch64 binary
-    steps:
-      - name: Checking out buildscript
-        uses: actions/checkout@v4
-        with:
-          sparse-checkout: |
-            aarch64_buildscript
-          sparse-checkout-cone-mode: false
-      - name: Installing Packages
-        run: |
-          sudo apt -qq update -y > /dev/null
-          sudo apt -y -qq install binfmt-support qemu-user-static systemd-container wget > /dev/null
-      - name: Starting Services
-        run: |
-          sudo systemctl restart systemd-binfmt
-          sudo systemctl start systemd-resolved
-      - name: Downloading Arch Linux Arm Tarball for rpi4 aarch64
-        run: |
-          wget -q http://os.archlinuxarm.org/os/ArchLinuxARM-rpi-aarch64-latest.tar.gz
-      - name: Extracting Tarball
-        run: |
-          mkdir root
-          sudo tar xpf ArchLinuxARM-rpi-aarch64-latest.tar.gz -C root --warning=no-unknown-keyword
-      - name: Building Swingmusic in qemu
-        run: |
-          chmod +x aarch64_buildscript
-          sed -i -e 's/TAG/${{ github.event.inputs.tag }}/g' aarch64_buildscript
-          mv aarch64_buildscript root/
-          sudo systemd-nspawn --bind-ro=/etc/resolv.conf -D root ./aarch64_buildscript
-      - name: Upload aarch64 binary
-        uses: actions/upload-artifact@v4
-        with:
-          name: arm64
-          path: root/swingmusicbuilder/swingmusic/dist/swingmusic_linux_arm64
-          retention-days: 1
+  # build_aarch64:
+  #   runs-on: [ubuntu-22.04]
+  #   name: Building aarch64 binary
+  #   steps:
+  #     - name: Checking out buildscript
+  #       uses: actions/checkout@v4
+  #       with:
+  #         sparse-checkout: |
+  #           aarch64_buildscript
+  #         sparse-checkout-cone-mode: false
+  #     - name: Installing Packages
+  #       run: |
+  #         sudo apt -qq update -y > /dev/null
+  #         sudo apt -y -qq install binfmt-support qemu-user-static systemd-container wget > /dev/null
+  #     - name: Starting Services
+  #       run: |
+  #         sudo systemctl restart systemd-binfmt
+  #         sudo systemctl start systemd-resolved
+  #     - name: Downloading Arch Linux Arm Tarball for rpi4 aarch64
+  #       run: |
+  #         wget -q http://os.archlinuxarm.org/os/ArchLinuxARM-rpi-aarch64-latest.tar.gz
+  #     - name: Extracting Tarball
+  #       run: |
+  #         mkdir root
+  #         sudo tar xpf ArchLinuxARM-rpi-aarch64-latest.tar.gz -C root --warning=no-unknown-keyword
+  #     - name: Building Swingmusic in qemu
+  #       run: |
+  #         chmod +x aarch64_buildscript
+  #         sed -i -e 's/TAG/${{ github.event.inputs.tag }}/g' aarch64_buildscript
+  #         mv aarch64_buildscript root/
+  #         sudo systemd-nspawn --bind-ro=/etc/resolv.conf -D root ./aarch64_buildscript
+  #     - name: Upload aarch64 binary
+  #       uses: actions/upload-artifact@v4
+  #       with:
+  #         name: arm64
+  #         path: root/swingmusicbuilder/swingmusic/dist/swingmusic_linux_arm64
+  #         retention-days: 1
 
   release:
     name: Create New Release
     runs-on: ubuntu-latest
-    needs: [build, build_aarch64]
+    needs: [build]
     permissions: write-all
     steps:
       - name: Checkout into repo
