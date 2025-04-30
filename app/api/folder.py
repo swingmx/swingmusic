@@ -107,7 +107,9 @@ def get_folder_tree(body: FolderTree):
             pid = splits[1]
             playlist = PlaylistTable.get_by_id(int(pid))
             tracks = TrackStore.get_tracks_by_trackhashes(
-                playlist.trackhashes[body.start : body.start + body.limit]
+                playlist.trackhashes[
+                    body.start : body.start + body.limit if body.limit != -1 else None
+                ]
             )
 
             return {
