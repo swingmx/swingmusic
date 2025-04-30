@@ -44,7 +44,7 @@ jobs:
   build:
     strategy:
       matrix:
-        os: [ubuntu-20.04, windows-2019]
+        os: [ubuntu-22.04, windows-2019]
     if: ${{ github.event.inputs.binary_build == 'true' }}
     runs-on: ${{ matrix.os }}
     name: Create binary on ${{ matrix.os }}
@@ -75,7 +75,7 @@ jobs:
         run: |
           python -m venv .venv
       - name: Activate virtualenv (linux)
-        if: matrix.os == 'ubuntu-20.04'
+        if: matrix.os == 'ubuntu-22.04'
         run: |
           sudo apt-get install libev-dev -y > /dev/null && source .venv/bin/activate && pip install bjoern
       - name: Activate virtualenv (windows)
@@ -97,11 +97,11 @@ jobs:
         env:
           SWINGMUSIC_APP_VERSION: ${{ inputs.tag }}
       - name: Rename Linux binary
-        if: matrix.os == 'ubuntu-20.04'
+        if: matrix.os == 'ubuntu-22.04'
         run: |
           mv dist/swingmusic dist/swingmusic_linux_amd64
       - name: Verify Linux build success
-        if: matrix.os == 'ubuntu-20.04'
+        if: matrix.os == 'ubuntu-22.04'
         run: |
           if [ ! -f "./dist/swingmusic_linux_amd64" ]; then
             echo "Build failed"
@@ -115,7 +115,7 @@ jobs:
             exit 1
           }
       - name: Upload Linux binary
-        if: matrix.os == 'ubuntu-20.04'
+        if: matrix.os == 'ubuntu-22.04'
         uses: actions/upload-artifact@v4
         with:
           name: linux
@@ -130,7 +130,7 @@ jobs:
           retention-days: 1
 
   build_aarch64:
-    runs-on: [ubuntu-20.04]
+    runs-on: [ubuntu-22.04]
     name: Building aarch64 binary
     steps:
       - name: Checking out buildscript
