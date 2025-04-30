@@ -59,6 +59,7 @@ def handle_build(*args, **kwargs):
         _s = ";" if is_windows() else ":"
 
         flask_openapi_path = getFlaskOpenApiPath()
+        server_module = "waitress" if is_windows() else "bjoern"
 
         bundler.run(
             [
@@ -71,6 +72,7 @@ def handle_build(*args, **kwargs):
                 f"--add-data=client{_s}client",
                 f"--add-data=version.txt{_s}.",
                 f"--add-data={flask_openapi_path}/templates/static{_s}flask_openapi3/templates/static",
+                f"--hidden-import={server_module}",
                 "--icon=assets/logo-fill.light.ico",
                 "-y",
             ]
