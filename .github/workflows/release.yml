@@ -181,7 +181,8 @@ jobs:
         uses: ncipollo/release-action@v1
         with:
           allowUpdates: true
-          artifacts: "./linux/swingmusic_linux_amd64, ./win32/swingmusic.exe, ./arm64/swingmusic_linux_arm64"
+          artifacts: "./linux/swingmusic_linux_amd64, ./win32/swingmusic.exe"
+          # artifacts: "./linux/swingmusic_linux_amd64, ./win32/swingmusic.exe, ./arm64/swingmusic_linux_arm64"
           token: ${{ secrets.GITHUB_TOKEN }}
           tag: ${{ format('v{0}',inputs.tag) }}
           commit: ${{ github.sha }}
