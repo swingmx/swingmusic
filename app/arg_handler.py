@@ -73,7 +73,6 @@ def handle_build(*args, **kwargs):
                 f"--add-data=version.txt{_s}.",
                 f"--add-data={flask_openapi_path}/templates/static{_s}flask_openapi3/templates/static",
                 f"--hidden-import={server_module}",
-                "--debug=imports",
                 "--icon=assets/logo-fill.light.ico",
                 "-y",
             ]

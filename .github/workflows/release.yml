@@ -44,7 +44,7 @@ jobs:
   build:
     strategy:
       matrix:
-        os: [ubuntu-22.04, windows-2019]
+        os: [ubuntu-22.04, ubuntu-22.04-arm64, windows-2019, windows-11-arm, macos-13, macos-14]
     if: ${{ github.event.inputs.binary_build == 'true' }}
     runs-on: ${{ matrix.os }}
     name: Create binary on ${{ matrix.os }}
@@ -75,16 +75,19 @@ jobs:
         run: |
           python -m venv .venv
       - name: Activate virtualenv (linux)
-        if: matrix.os == 'ubuntu-22.04'
+        if: ${{ !startsWith(matrix.os, 'win') }}
         run: |
           sudo apt-get install libev-dev -y > /dev/null && source .venv/bin/activate && echo "bjoern==3.2.2" >> requirements.txt
       - name: Activate virtualenv (windows)
-        if: matrix.os == 'windows-2019'
+        if: ${{ startsWith(matrix.os, 'win') }}
         run: |
           .venv\Scripts\Activate && echo "waitress==3.0.2" >> requirements.txt
       - name: Install dependencies
         run: |
           pip install -r requirements.txt
+      - name: Write version file
+        run: |
+          echo ${{ inputs.tag }} > version.txt
       # - name: Install Poetry
       #   run: |
       #     pip install poetry
@@ -96,37 +99,73 @@ jobs:
           python main.py --build
         env:
           SWINGMUSIC_APP_VERSION: ${{ inputs.tag }}
-      - name: Rename Linux binary
-        if: matrix.os == 'ubuntu-22.04'
+      - name: Rename Unix binary
+        if: ${{ !startsWith(matrix.os, 'win') }}
         run: |
-          mv dist/swingmusic dist/swingmusic_linux_amd64
-      - name: Verify Linux build success
-        if: matrix.os == 'ubuntu-22.04'
+          if [[ "${{ matrix.os }}" == *"macos"* ]]; then
+            if [[ "${{ matrix.os }}" == *"14"* ]]; then
+              mv dist/swingmusic dist/swingmusic_macos_arm64
+            else
+              mv dist/swingmusic dist/swingmusic_macos_amd64
+            fi
+          elif [[ "${{ matrix.os }}" == *"arm64"* ]]; then
+            mv dist/swingmusic dist/swingmusic_linux_arm64
+          else
+            mv dist/swingmusic dist/swingmusic_linux_amd64
+          fi
+      - name: Verify Unix build success
+        if: ${{ !startsWith(matrix.os, 'win') }}
         run: |
-          if [ ! -f "./dist/swingmusic_linux_amd64" ]; then
-            echo "Build failed"
-            exit 1
+          if [[ "${{ matrix.os }}" == *"macos"* ]]; then
+            if [[ "${{ matrix.os }}" == *"14"* ]]; then
+              if [ ! -f "./dist/swingmusic_macos_arm64" ]; then
+                echo "Build failed"
+                exit 1
+              fi
+            else
+              if [ ! -f "./dist/swingmusic_macos_amd64" ]; then
+                echo "Build failed"
+                exit 1
+              fi
+            fi
+          elif [[ "${{ matrix.os }}" == *"arm64"* ]]; then
+            if [ ! -f "./dist/swingmusic_linux_arm64" ]; then
+              echo "Build failed"
+              exit 1
+            fi
+          else
+            if [ ! -f "./dist/swingmusic_linux_amd64" ]; then
+              echo "Build failed"
+              exit 1
+            fi
           fi
       - name: Verify Windows build success
-        if: matrix.os == 'windows-2019'
+        if: ${{ startsWith(matrix.os, 'win') }}
         run: |
-          if (-not (Test-Path "./dist/swingmusic.exe")) {
-            Write-Host "Build failed"
-            exit 1
+          if [[ "${{ matrix.os }}" == *"arm"* ]]; then
+            if (-not (Test-Path "./dist/swingmusic_arm64.exe")) {
+              Write-Host "Build failed"
+              exit 1
+            }
+          else
+            if (-not (Test-Path "./dist/swingmusic.exe")) {
+              Write-Host "Build failed"
+              exit 1
+            }
           }
-      - name: Upload Linux binary
-        if: matrix.os == 'ubuntu-22.04'
+      - name: Upload Unix binary
+        if: ${{ !startsWith(matrix.os, 'win') }}
         uses: actions/upload-artifact@v4
         with:
-          name: linux
-          path: dist/swingmusic_linux_amd64
+          name: ${{ matrix.os == 'ubuntu-22.04-arm64' && 'linux-arm64' || matrix.os == 'macos-14' && 'macos-arm64' || matrix.os == 'macos-13' && 'macos-amd64' || 'linux-amd64' }}
+          path: ${{ matrix.os == 'ubuntu-22.04-arm64' && 'dist/swingmusic_linux_arm64' || matrix.os == 'macos-14' && 'dist/swingmusic_macos_arm64' || matrix.os == 'macos-13' && 'dist/swingmusic_macos_amd64' || 'dist/swingmusic_linux_amd64' }}
           retention-days: 1
       - name: Upload Windows binary
-        if: matrix.os == 'windows-2019'
+        if: ${{ startsWith(matrix.os, 'win') }}
         uses: actions/upload-artifact@v4
         with:
-          name: win32
-          path: dist/swingmusic.exe
+          name: ${{ matrix.os == 'windows-11-arm' && 'win-arm64' || 'win-amd64' }}
+          path: ${{ matrix.os == 'windows-11-arm' && 'dist/swingmusic_arm64.exe' || 'dist/swingmusic.exe' }}
           retention-days: 1
 
   # build_aarch64:
@@ -181,7 +220,7 @@ jobs:
         uses: ncipollo/release-action@v1
         with:
           allowUpdates: true
-          artifacts: "./linux/swingmusic_linux_amd64, ./win32/swingmusic.exe"
+          artifacts: "./linux-amd64/swingmusic_linux_amd64, ./linux-arm64/swingmusic_linux_arm64, ./win-amd64/swingmusic.exe, ./win-arm64/swingmusic_arm64.exe, ./macos-amd64/swingmusic_macos_amd64, ./macos-arm64/swingmusic_macos_arm64"
           # artifacts: "./linux/swingmusic_linux_amd64, ./win32/swingmusic.exe, ./arm64/swingmusic_linux_arm64"
           token: ${{ secrets.GITHUB_TOKEN }}
           tag: ${{ format('v{0}',inputs.tag) }}
