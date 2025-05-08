@@ -77,11 +77,11 @@ jobs:
       - name: Activate virtualenv (linux)
         if: matrix.os == 'ubuntu-22.04'
         run: |
-          sudo apt-get install libev-dev -y > /dev/null && source .venv/bin/activate && pip install bjoern
+          sudo apt-get install libev-dev -y > /dev/null && source .venv/bin/activate && echo "bjoern==3.2.2" >> requirements.txt
       - name: Activate virtualenv (windows)
         if: matrix.os == 'windows-2019'
         run: |
-          .venv\Scripts\Activate && pip install waitress
+          .venv\Scripts\Activate && echo "waitress==3.0.2" >> requirements.txt
       - name: Install dependencies
         run: |
           pip install -r requirements.txt
