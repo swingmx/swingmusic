@@ -153,12 +153,12 @@ jobs:
       - name: Verify Windows build success
         if: ${{ startsWith(matrix.os, 'win') }}
         run: |
-          if [[ "${{ matrix.os }}" == *"arm"* ]]; then
+          if ($env:matrix_os -like "*arm*") {
             if (-not (Test-Path "./dist/swingmusic_arm64.exe")) {
               Write-Host "Build failed"
               exit 1
             }
-          else
+          } else {
             if (-not (Test-Path "./dist/swingmusic.exe")) {
               Write-Host "Build failed"
               exit 1
