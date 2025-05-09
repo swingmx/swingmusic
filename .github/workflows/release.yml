@@ -74,10 +74,21 @@ jobs:
       - name: Create virtualenv
         run: |
           python -m venv .venv
-      - name: Activate virtualenv (linux)
+      - name: Setup Homebrew
+        if: ${{ startsWith(matrix.os, 'macos') }}
+        uses: Homebrew/actions/setup-homebrew@master
+      - name: Install libev (macOS)
+        if: ${{ startsWith(matrix.os, 'macos') }}
+        run: |
+          brew install libev
+      - name: Install libev (Linux)
+        if: ${{ startsWith(matrix.os, 'ubuntu') }}
+        run: |
+          sudo apt-get install libev-dev -y > /dev/null
+      - name: Activate virtualenv (unix)
         if: ${{ !startsWith(matrix.os, 'win') }}
         run: |
-          sudo apt-get install libev-dev -y > /dev/null && source .venv/bin/activate && echo "bjoern==3.2.2" >> requirements.txt
+          source .venv/bin/activate && echo "bjoern==3.2.2" >> requirements.txt
       - name: Activate virtualenv (windows)
         if: ${{ startsWith(matrix.os, 'win') }}
         run: |
