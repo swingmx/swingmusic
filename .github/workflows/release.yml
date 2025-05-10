@@ -44,7 +44,7 @@ jobs:
   build:
     strategy:
       matrix:
-        os: [ubuntu-22.04, ubuntu-22.04-arm64, windows-2019, macos-13, macos-14]
+        os: [ubuntu-22.04, windows-2019, macos-13, macos-14]
     if: ${{ github.event.inputs.binary_build == 'true' }}
     runs-on: ${{ matrix.os }}
     name: Create binary on ${{ matrix.os }}
@@ -232,7 +232,7 @@ jobs:
         uses: ncipollo/release-action@v1
         with:
           allowUpdates: true
-          artifacts: "./linux-amd64/swingmusic_linux_amd64, ./linux-arm64/swingmusic_linux_arm64, ./win-amd64/swingmusic.exe, ./win-arm64/swingmusic_arm64.exe, ./macos-amd64/swingmusic_macos_amd64, ./macos-arm64/swingmusic_macos_arm64"
+          artifacts: "./linux-amd64/swingmusic_linux_amd64, ./win-amd64/swingmusic.exe, ./macos-amd64/swingmusic_macos_amd64, ./macos-arm64/swingmusic_macos_arm64"
           # artifacts: "./linux/swingmusic_linux_amd64, ./win32/swingmusic.exe, ./arm64/swingmusic_linux_arm64"
           token: ${{ secrets.GITHUB_TOKEN }}
           tag: ${{ format('v{0}',inputs.tag) }}
