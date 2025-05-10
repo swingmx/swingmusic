@@ -245,7 +245,7 @@ jobs:
   docker:
     name: Build and push Docker image
     runs-on: ubuntu-latest
-    # needs: build
+    needs: [build]
     permissions: write-all
     if: inputs.build_docker == 'true'
     # if: false
