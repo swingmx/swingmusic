@@ -69,7 +69,7 @@ class IndexTracks:
                 extract_thumb(
                     track["filepath"], track["albumhash"] + ".webp", overwrite=True
                 )
-            except FileNotFoundError:
+            except (FileNotFoundError, KeyError):
                 continue
 
     @staticmethod

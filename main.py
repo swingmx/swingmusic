@@ -1,7 +1,8 @@
-import multiprocessing
-import pathlib
-import click
+import os
 import sys
+import click
+import pathlib
+import multiprocessing
 from app.arg_handler import handle_build, handle_password_reset
 from app.utils.filesystem import get_home_res_path
 from app.utils.xdg_utils import get_xdg_config_dir
@@ -66,6 +67,10 @@ def version(*args, **kwargs):
     is_eager=True,
 )
 def run(*args, **kwargs):
+    # INFO: Set the config dir as an environment variable
+    os.environ["SWINGMUSIC_XDG_CONFIG_DIR"] = str(
+        pathlib.Path(kwargs["config"]).resolve()
+    )
     run_app(kwargs["host"], kwargs["port"], kwargs["config"])
 
 

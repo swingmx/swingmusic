@@ -1,6 +1,8 @@
 from contextlib import contextmanager
-from sqlalchemy import Engine, event
+from sqlalchemy import Engine, create_engine, event
 from sqlalchemy.orm import sessionmaker
+
+from app.settings import DbPaths
 
 
 @event.listens_for(Engine, "connect")
@@ -14,13 +16,35 @@ def set_sqlite_pragma(dbapi_connection, connection_record):
     cursor.execute("PRAGMA mmap_size=0")
     cursor.close()
 
+class classproperty(property):
+    """
+    A class property decorator.
+    """
+
+    def __get__(self, owner_self, owner_cls):
+        if self.fget:
+            return self.fget(owner_cls)
+
+
 
 class DbEngine:
     """
     The database engine instance.
     """
 
-    engine: Engine
+    _engine: Engine | None = None
+
+    @classproperty
+    def engine(cls) -> Engine:
+        if not cls._engine:
+            cls._engine = create_engine(
+                f"sqlite+pysqlite:///{DbPaths.get_app_db_path()}",
+                echo=False,
+                max_overflow=20,
+                pool_size=10,
+            )
+
+        return cls._engine
 
     @classmethod
     @contextmanager

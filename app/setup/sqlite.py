@@ -24,7 +24,7 @@ def setup_sqlite():
     """
     Create Sqlite databases and tables.
     """
-    DbEngine.engine = create_engine(
+    DbEngine._engine = create_engine(
         f"sqlite+pysqlite:///{DbPaths.get_app_db_path()}",
         echo=False,
         max_overflow=20,

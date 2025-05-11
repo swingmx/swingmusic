@@ -1,9 +1,8 @@
-import math
 import os
 import time
+import random
 import urllib
 import requests
-import multiprocessing
 
 from io import BytesIO
 from pathlib import Path
@@ -28,8 +27,6 @@ from app.utils.progressbar import tqdm
 LARGE_ENOUGH_NUMBER = 100
 PngImagePlugin.MAX_TEXT_CHUNK = LARGE_ENOUGH_NUMBER * (1024**2)
 # https://stackoverflow.com/a/61466412
-
-import random
 
 
 def get_artist_image_link(artist: str):
