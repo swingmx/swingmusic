@@ -318,6 +318,7 @@ def update_playlist_info(path: PlaylistIDPath, form: UpdatePlaylistForm):
     p_tuple = (*playlist.values(),)
 
     PlaylistTable.update_one(playlistid, playlist)
+    playlistlib.cleanup_playlist_images()
 
     playlist = models.Playlist(*p_tuple)
     playlist.last_updated = date_string_to_time_passed(playlist.last_updated)
@@ -377,6 +378,7 @@ def remove_playlist(path: PlaylistIDPath):
     Delete playlist
     """
     PlaylistTable.remove_one(path.playlistid)
+    playlistlib.cleanup_playlist_images()
     return {"msg": "Done"}, 200
 
 
