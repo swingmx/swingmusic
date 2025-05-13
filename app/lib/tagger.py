@@ -69,7 +69,7 @@ class IndexTracks:
                 extract_thumb(
                     track["filepath"], track["albumhash"] + ".webp", overwrite=True
                 )
-            except (FileNotFoundError, KeyError):
+            except FileNotFoundError:
                 continue
 
     @staticmethod
@@ -100,7 +100,7 @@ class IndexTracks:
             modified_tracks.append(
                 {
                     "filepath": track.filepath,
-                    "trackhash": track.trackhash,
+                    "albumhash": track.albumhash,
                 }
             )
 
