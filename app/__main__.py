@@ -242,7 +242,15 @@ def run_app(host: str, port: int, config: pathlib.Path):
 @click.version_option(
     package_name="swingmusic"
 )
-def run(*args, **kwargs):
+def run(*args, **kwargs) -> None:
+    """
+    main functions for interaction with swingmusic.
+    can be called directly.
+    Parses args with click -> cli.
+
+    :param args: provided by click
+    :param kwargs: provided by click
+    """
     # INFO: Set the config dir as an environment variable
     os.environ["SWINGMUSIC_XDG_CONFIG_DIR"] = str(
         pathlib.Path(kwargs["config"]).resolve()
@@ -250,7 +258,11 @@ def run(*args, **kwargs):
     run_app(kwargs["host"], kwargs["port"], kwargs["config"])
 
 
-def main(*args, **kwargs):
+def main() -> None:
+    """
+    wrapper function to interact with swingmusic.
+    just a wrapper to call :func:`run` with freeze support.
+    """
     multiprocessing.freeze_support()
     run()
 
