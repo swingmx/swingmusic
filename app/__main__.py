@@ -5,8 +5,12 @@ __main__ used for executing module directly e.g. `pyhton -m swingmusic`
 import logging
 import mimetypes
 import setproctitle
-from pathlib import Path
+import pathlib
+import os
+import click
+import multiprocessing
 
+from flask import Response, request
 from flask_jwt_extended import (
     create_access_token,
     get_jwt,
@@ -14,47 +18,25 @@ from flask_jwt_extended import (
     set_access_cookies,
     verify_jwt_in_request,
 )
+
 from datetime import datetime, timezone
-from flask import Response, request
 
 from app import settings
 from app.api import create_api
 from app.crons import start_cron_jobs
-from app.utils.threading import background
 from app.setup import load_into_mem, run_setup
 from app.plugins.register import register_plugins
 from app.start_info_logger import log_startup_info
-from app.utils.filesystem import get_home_res_path
-from app.utils.paths import getClientFilesExtensions
-import os
-import sys
-import click
-import pathlib
-import multiprocessing
+
 from app.arg_handler import handle_build, handle_password_reset
+
+from app.utils.threading import background
+from app.utils.paths import getClientFilesExtensions
 from app.utils.filesystem import get_home_res_path
 from app.utils.xdg_utils import get_xdg_config_dir
-from manage import run_app
 
 
-
-def version(*args, **kwargs):
-    if not args[2]:
-        return
-
-    path = get_home_res_path("version.txt")
-    if not path:
-        click.echo("Version file not found.")
-        sys.exit(1)
-
-    with open(path, "r") as f:
-        version = f.read()
-
-    click.echo(version)
-    sys.exit(0)
-
-
-def run_app(host: str, port: int, config: Path):
+def run_app(host: str, port: int, config: pathlib.Path):
     settings.Paths.set_config_dir(config)
 
     # Load mimetypes for the web client's static files
@@ -257,8 +239,9 @@ def run_app(host: str, port: int, config: Path):
     is_eager=True,
     callback=handle_password_reset,
 )
-@click.version_option()
-
+@click.version_option(
+    package_name="swingmusic"
+)
 def run(*args, **kwargs):
     # INFO: Set the config dir as an environment variable
     os.environ["SWINGMUSIC_XDG_CONFIG_DIR"] = str(
@@ -267,6 +250,10 @@ def run(*args, **kwargs):
     run_app(kwargs["host"], kwargs["port"], kwargs["config"])
 
 
-if __name__ == "__main__":
+def main(*args, **kwargs):
     multiprocessing.freeze_support()
     run()
+
+
+if __name__ == "__main__":
+    main()
