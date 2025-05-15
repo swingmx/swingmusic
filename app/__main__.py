@@ -2,7 +2,6 @@
 __main__ used for executing module directly e.g. `pyhton -m swingmusic`
 """
 
-import os
 import logging
 import mimetypes
 import setproctitle
@@ -258,14 +257,7 @@ def run_app(host: str, port: int, config: Path):
     is_eager=True,
     callback=handle_password_reset,
 )
-@click.option(
-    "--version",
-    is_flag=True,
-    default=False,
-    callback=version,
-    help="Show the version and exit",
-    is_eager=True,
-)
+@click.version_option()
 
 def run(*args, **kwargs):
     # INFO: Set the config dir as an environment variable
