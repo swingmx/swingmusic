@@ -4,9 +4,13 @@ from datetime import datetime, timedelta
 _format = "%Y-%m-%d %H:%M:%S"
 
 
-def timestamp_from_days_ago(days_ago: int):
+def timestamp_from_days_ago(days_ago: int) -> int:
     """
-    Returns a timestamp from a number of days ago.
+    calculates the timestamp from <days_ago> days ago.
+    result is returned as unix timestamp.
+
+    :param days_ago: how many days back should be calculated
+    :return: unix timestamp
     """
     current_datetime = datetime.now()
     delta = timedelta(days=days_ago)
@@ -18,6 +22,7 @@ def timestamp_from_days_ago(days_ago: int):
 def create_new_date(date: datetime | None = None) -> str:
     """
     Creates a new date and time string in the format of "YYYY-MM-DD HH:MM:SS"
+
     :return: A string of the current date and time.
     """
     if not date:
@@ -70,7 +75,6 @@ def get_date_range(duration: str, units_ago: int = 0):
     """
     Returns a tuple of dates representing the start and end of a given duration.
     """
-    date_range = None
     seconds_ago = 0
 
     if duration != "alltime":
