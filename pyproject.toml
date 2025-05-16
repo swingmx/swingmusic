@@ -29,6 +29,7 @@ dependencies = [
     "ffmpeg-python>=0.2.0",
     "schedule>=1.2.2",
     "pillow>=11.1.0",
+    "pydup>=0.25.01",
     "flask-openapi3==3.0.2",
     "rapidfuzz==3.11.0",
     "waitress>=3.0.2",

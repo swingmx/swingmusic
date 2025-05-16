@@ -71,6 +71,7 @@ class classproperty(property):
             return self.fget(owner_cls)
 
 
+# Question: Could singleton be used here?
 class TrackStore:
     # {'trackhash': Track[]}
     trackhashmap: dict[str, TrackGroup] = dict()
