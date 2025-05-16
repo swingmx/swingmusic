@@ -4,8 +4,8 @@ This library contains all the functions related to tracks.
 
 import os
 
-from pydub.pydub import AudioSegment
-from pydub.pydub.silence import detect_leading_silence, detect_silence
+from pydub import AudioSegment
+from pydub.silence import detect_leading_silence, detect_silence
 from app.utils.threading import ProcessWithReturnValue
 
 
