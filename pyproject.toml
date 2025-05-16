@@ -37,7 +37,7 @@ dependencies = [
 ]
 
 [project.scripts]
-swingmusic = "app.__main__:run"
+swingmusic = "swingmusic.__main__:run"
 
 
 
@@ -54,14 +54,12 @@ dev = [
 ]
 
 [tool.poetry]
-packages = [
-    { include = "app"}
-]
-include = ["app/client/*", "version.txt"]
+packages = [ { include = "swingmusic"} ]
+include = ["swingmusic/client/*", "version.txt"]
 
 
 [tool.setuptools.package-dir]
-swingmusic = "app"
+swingmusic = "swingmusic"
 
 [tool.setuptools.package-data]
-swingmusic = ["app/client/*", "version.txt"]
+swingmusic = ["swingmusic/client/*", "version.txt"]
