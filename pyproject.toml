@@ -40,12 +40,11 @@ dependencies = [
 swingmusic = "swingmusic.__main__:run"
 
 
-
 [project.urls]
-homepage = "https://swingmx.com/"
-repository = "https://github.com/swingmx/swingmusic"
-documentation = "https://swingmx.com/guide/introduction.html"
-"Bug Tracker" = "https://github.com/swingmx/swingmusic/issues"
+Homepage = "https://swingmx.com/"
+Repository = "https://github.com/swingmx/swingmusic"
+Documentation = "https://swingmx.com/guide/introduction.html"
+Issues = "https://github.com/swingmx/swingmusic/issues"
 
 
 [dependency-groups]
@@ -56,7 +55,6 @@ dev = [
 [tool.poetry]
 packages = [ { include = "swingmusic"} ]
 include = ["swingmusic/client/*", "version.txt"]
-
 
 [tool.setuptools.package-dir]
 swingmusic = "swingmusic"
