@@ -1,9 +1,6 @@
 import logging
 import mimetypes
 import setproctitle
-import sys
-import os
-import multiprocessing
 from importlib import resources as impresources
 from importlib import metadata as impmetadata
 from flask import Response, request
@@ -17,7 +14,6 @@ from flask_jwt_extended import (
 
 from datetime import datetime, timezone, timedelta
 import pathlib
-import argparse
 import swingmusic
 from swingmusic import settings
 from swingmusic.api import create_api
@@ -27,7 +23,6 @@ from swingmusic.plugins.register import register_plugins
 from swingmusic.start_info_logger import log_startup_info
 from swingmusic.utils.threading import background
 from swingmusic.utils.paths import getClientFilesExtensions
-from swingmusic.utils.xdg_utils import get_xdg_config_dir
 
 
 def _load_mimetypes():
@@ -83,7 +78,7 @@ def _skip_auth_action():
     return False
 
 
-def create_app(host: str, port: int, config: pathlib.Path):
+def run_app(host: str, port: int, config: pathlib.Path):
     settings.Paths.set_config_dir(config)
 
     _load_mimetypes()
@@ -111,7 +106,7 @@ def create_app(host: str, port: int, config: pathlib.Path):
     # Create the Flask app
     app = create_api()
     # TODO: rework static files: where should they be located
-    app.static_folder = impresources.files(swingmusic) / "client"
+    app.static_folder = impresources.files(swingmusic) / "../../client"
 
 
     @app.before_request
@@ -123,7 +118,6 @@ def create_app(host: str, port: int, config: pathlib.Path):
             return
 
         verify_jwt_in_request()
-
 
     @app.after_request
     def refresh_expiring_jwt(response: Response) -> Response:
@@ -155,37 +149,39 @@ def create_app(host: str, port: int, config: pathlib.Path):
 
 
     @app.route("/<path:path>")
-    def serve_client_files(path: str):
+    def serve_client_files(path: str) -> Response:
         """
-        Serves the static files in the client folder.
-        """
-        js_or_css = path.endswith(".js") or path.endswith(".css")
-        if not js_or_css:
-            return app.send_static_file(path)
+        Serve static files in client folder
+        sens gzip encoded files if client supports it, else default to no encoding
 
-        gzipped_path = path + ".gz"
-        user_agent = request.headers.get("User-Agent")
+        :param path: path to wanted resource. Relative to client folder
+        """
+
+        path = pathlib.Path(path)
+        if not path.suffix in [".js", ".css"] :
+            return app.send_static_file(path)
 
         # INFO: Safari doesn't support gzip encoding
         # See issue: https://github.com/swingmx/swingmusic/issues/155
-        is_safari = (
-            user_agent
-            and user_agent.find("Safari") >= 0
-            and user_agent.find("Chrome") < 0
-        )
-
-        if is_safari:
+        # user_agent is not None and "Safari" in user_agent and "Chrome" not in user_agent
+        user_agent = request.headers.get("User-Agent")
+        if user_agent and "Safari" in user_agent and "Chrome" not in "user_agent":
             return app.send_static_file(path)
 
-        accepts_gzip = request.headers.get("Accept-Encoding", "").find("gzip") >= 0
+        # check header is gzip is accepted
+        accepts_gzip = "gzip" in request.headers.get("Accept-Encoding", "")
+        if not accepts_gzip:
+            return app.send_static_file(path)
 
-        if accepts_gzip:
-            if os.path.exists(os.path.join(app.static_folder or "", gzipped_path)):
-                response = app.make_response(app.send_static_file(gzipped_path))
-                response.headers["Content-Encoding"] = "gzip"
-                return response
 
-        return app.send_static_file(path)
+        gzipped_path = path.with_suffix(".gz")
+        full_path = pathlib.Path(str(app.static_folder)) / gzipped_path
+
+        if full_path.exists():
+            response = app.make_response(app.send_static_file(gzipped_path))
+            response.headers["Content-Encoding"] = "gzip"
+            return response
+
 
     @app.route("/")
     def serve_client():

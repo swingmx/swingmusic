@@ -2,16 +2,12 @@
 __main__ used for executing module directly e.g. `pyhton -m swingmusic`
 """
 
-import logging
-import mimetypes
-import setproctitle
-import sys
 import os
 import multiprocessing
 from importlib import metadata as impmetadata
 import pathlib
 import argparse
-from swingmusic.args import handle_build, handle_password_reset
+from swingmusic.args import handle_build, handle_password_reset, run_app
 from swingmusic.utils.xdg_utils import get_xdg_config_dir
 
 
