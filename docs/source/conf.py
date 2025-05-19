@@ -69,3 +69,8 @@ except ImportError:
 # anywhere in conf.py before any of your modules are imported
 import builtins
 builtins.__sphinx_build__ = True
+
+
+
+# remove to dont show todos:
+todo_include_todos = True

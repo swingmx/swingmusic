@@ -16,3 +16,13 @@ documentation for details.
    :caption: Contents:
 
    architecture
+
+
+.. todo::
+   :collapsible: open
+
+   * Installation from build, pypi, source
+   * How to launch
+   * Config file location
+   * Project architecture
+   * What is executed when and why
