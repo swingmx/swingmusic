@@ -51,9 +51,16 @@ Documentation = "https://swingmx.com/guide/introduction.html"
 Issues = "https://github.com/swingmx/swingmusic/issues"
 
 
-[dependency-groups]
+[project.optional-dependencies]
 dev = [
     "pyinstaller==6.12.0",
+]
+docs = [
+    "sphinx",
+    "furo",
+    "sphinx_design",
+    "myst_parser",
+    "sphinx",
 ]
 
 [tool.setuptools]
