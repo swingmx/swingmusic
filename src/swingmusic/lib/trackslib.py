@@ -4,8 +4,8 @@ This library contains all the functions related to tracks.
 
 import os
 
-from swingmusic.lib.pydub.pydub import AudioSegment
-from swingmusic.lib.pydub.pydub.silence import detect_leading_silence, detect_silence
+from swing_pydub import AudioSegment
+from swing_pydub.silence import detect_leading_silence, detect_silence
 from swingmusic.utils.threading import ProcessWithReturnValue
 
 

@@ -1,3 +1,7 @@
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
 [project]
 name = "swingmusic"
 version = "2.0.2"
@@ -52,12 +56,8 @@ dev = [
     "pyinstaller==6.12.0",
 ]
 
-[tool.poetry]
-packages = [ { include = "swingmusic"} ]
-include = ["swingmusic/client/*", "version.txt"]
-
-[tool.setuptools.package-dir]
-swingmusic = "swingmusic"
+[tool.setuptools]
+package-dir = {"" = "src"}
 
 [tool.setuptools.package-data]
-swingmusic = ["swingmusic/client/*", "version.txt"]
+swingmusic = ["src/swingmusic/client/*"]
