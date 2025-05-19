@@ -41,7 +41,7 @@ dependencies = [
 ]
 
 [project.scripts]
-swingmusic = "swingmusic.__main__:run"
+swingmusic = "swingmusic.__main__:main"
 
 
 [project.urls]
