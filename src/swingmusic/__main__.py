@@ -4,6 +4,7 @@ __main__ used for executing module directly e.g. `pyhton -m swingmusic`
 
 import os
 import multiprocessing
+import sys
 from importlib import metadata as impmetadata
 import pathlib
 import argparse
@@ -27,8 +28,8 @@ server.add_argument(
     dest="port",
     nargs="?",
     help="Port to run the app on. (default: %(default)s)",
-    default=8080,
-    const=8080
+    default=1970,
+    const=1970
 )
 server.add_argument(
     "-c", "--config",
@@ -40,23 +41,13 @@ server.add_argument(
     type=pathlib.Path,
 )
 
-tools = parser.add_argument_group(title="Tools")
-tools.add_argument(
-    "--build",
-    dest="build",
-    action="store_true",
-    help="Build the app."
-)
-tools.add_argument(
-    "--password-reset",
-    dest="password_reset",
-    action="store_true",
-    help="Reset password."
-)
 parser.add_argument(
-    "-v", "--version",
-    action="version",
-    version=f"swingmusic, version {impmetadata.version('swingmusic')}"
+    "aktion",
+    nargs="?",
+    help="Aktion to run (default: serve)",
+    default="serve",
+    const="serve",
+    choices=["password-reset", "build", "serve"]
 )
 
 def main() -> None:
@@ -68,14 +59,13 @@ def main() -> None:
     args = vars(parser.parse_args())
 
     #TODO: check if frozen and then run freeze_support functions
-
     match args:
-        case {"build": True}:
+        case {"aktion": "build"}:
             multiprocessing.freeze_support()
             handle_build()
-        case {"password_reset": True}:
+        case {"aktion": "password-reset"}:
             handle_password_reset()
-        case _:
+        case {"aktion": "serve"}:
             # run checks
             if not args["config"].exists():
                 raise ValueError("Path could not be found")
@@ -83,6 +73,9 @@ def main() -> None:
             # TODO: global module wide config
             os.environ["SWINGMUSIC_XDG_CONFIG_DIR"] = str( args["config"].resolve() )
             run_app(args["host"], args["port"], args["config"])
+        case _:
+            print("Unsupported aktion selected. Aborting")
+            sys.exit()
 
 if __name__ == "__main__":
     main()

@@ -28,12 +28,10 @@ from flask_jwt_extended import (
 from datetime import datetime, timezone
 
 
-def handle_build(*args, **kwargs):
+def handle_build():
     """
-    Handles the --build argument. Builds the project into a single executable.
+    build swingmusic into single executable
     """
-    if not args[2]:
-        return
 
     if settings.IS_BUILD:
         click.echo("Can't build the project. Exiting ...")
