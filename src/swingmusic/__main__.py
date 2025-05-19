@@ -79,7 +79,7 @@ def run_app(host: str, port: int, config: pathlib.Path):
 
     # Create the Flask app
     app = create_api()
-    # TODO: rework static files: where sould they be located
+    # TODO: rework static files: where should they be located
     app.static_folder = impresources.files(swingmusic) / "client"
 
     # INFO: Routes that don't need authentication

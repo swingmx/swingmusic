@@ -1,6 +1,7 @@
 import os
 from pathlib import Path
-
+from importlib import resources as impresources
+import swingmusic
 from swingmusic.utils.wintools import win_replace_slash
 
 CWD = Path(__file__).parent.resolve()
@@ -57,6 +58,6 @@ def get_home_res_path(filename: str):
     Used to resolve resources in builds.
     """
     try:
-        return (CWD / ".." / ".." / filename).resolve()
+        return (impresources.files(swingmusic) / ".." / ".." / filename).resolve()
     except ValueError:
         return None
