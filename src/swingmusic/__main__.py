@@ -9,7 +9,7 @@ import pathlib
 import os
 import click
 import multiprocessing
-
+from importlib import resources as impresources
 from flask import Response, request
 from flask_jwt_extended import (
     create_access_token,
@@ -21,18 +21,16 @@ from flask_jwt_extended import (
 
 from datetime import datetime, timezone
 
+import swingmusic
 from swingmusic import settings
 from swingmusic.api import create_api
 from swingmusic.crons import start_cron_jobs
 from swingmusic.setup import load_into_mem, run_setup
 from swingmusic.plugins.register import register_plugins
 from swingmusic.start_info_logger import log_startup_info
-
 from swingmusic.arg_handler import handle_build, handle_password_reset
-
 from swingmusic.utils.threading import background
 from swingmusic.utils.paths import getClientFilesExtensions
-from swingmusic.utils.filesystem import get_home_res_path
 from swingmusic.utils.xdg_utils import get_xdg_config_dir
 
 
@@ -81,7 +79,8 @@ def run_app(host: str, port: int, config: pathlib.Path):
 
     # Create the Flask app
     app = create_api()
-    app.static_folder = get_home_res_path("client")
+    # TODO: rework static files: where sould they be located
+    app.static_folder = impresources.files(swingmusic) / "client"
 
     # INFO: Routes that don't need authentication
     whitelisted_routes = {
