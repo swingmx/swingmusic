@@ -7,9 +7,8 @@ import multiprocessing
 from importlib import metadata as impmetadata
 import pathlib
 import argparse
-from swingmusic.args import handle_build, handle_password_reset, run_app
 from swingmusic.utils.xdg_utils import get_xdg_config_dir
-
+from swingmusic.args import handle_build, handle_password_reset, run_app
 
 parser = argparse.ArgumentParser(
     description="Cli for swingmusic",
@@ -67,6 +66,8 @@ def main() -> None:
     args are parsed with argparse
     """
     args = vars(parser.parse_args())
+
+    #TODO: check if frozen and then run freeze_support functions
 
     match args:
         case {"build": True}:
