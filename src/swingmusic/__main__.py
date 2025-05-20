@@ -30,7 +30,7 @@ from swingmusic.plugins.register import register_plugins
 from swingmusic.start_info_logger import log_startup_info
 from swingmusic.arg_handler import handle_build, handle_password_reset
 from swingmusic.utils.threading import background
-from swingmusic.utils.paths import getClientFilesExtensions
+from swingmusic.utils.paths import get_client_files_extensions
 from swingmusic.utils.xdg_utils import get_xdg_config_dir
 
 
@@ -81,6 +81,7 @@ def run_app(host: str, port: int, config: pathlib.Path):
     app = create_api()
     # TODO: rework static files: where should they be located
     app.static_folder = impresources.files(swingmusic) / "client"
+    print(f"{app.static_folder=}")
 
     # INFO: Routes that don't need authentication
     whitelisted_routes = {
@@ -91,7 +92,7 @@ def run_app(host: str, port: int, config: pathlib.Path):
         "/auth/refresh",
         "/docs",
     }
-    blacklist_extensions = {".webp", ".jpg"}.union(getClientFilesExtensions())
+    blacklist_extensions = {".webp", ".jpg"}.union(get_client_files_extensions())
 
     def skipAuthAction():
         """
