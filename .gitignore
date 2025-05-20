@@ -103,6 +103,7 @@ instance/
 # Sphinx documentation
 docs/_build/
 docs/source/_build
+docs/source/apidocs
 
 # PyBuilder
 .pybuilder/

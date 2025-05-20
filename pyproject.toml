@@ -61,6 +61,7 @@ docs = [
     "sphinx_design",
     "myst_parser",
     "sphinx",
+    "sphinx-autodoc2",
 ]
 
 [tool.setuptools]

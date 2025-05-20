@@ -37,7 +37,12 @@ extensions = [
     "sphinx.ext.todo",
     "sphinx.ext.viewcode",
     "myst_parser",
-    "sphinx_design"
+    "sphinx_design",
+    "autodoc2",
+]
+
+autodoc2_packages = [
+    "../../src/swingmusic",
 ]
 
 myst_enable_extensions = ["colon_fence"]

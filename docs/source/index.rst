@@ -11,11 +11,49 @@ Add your content using ``reStructuredText`` syntax. See the
 documentation for details.
 
 
+
+Quickstart
+----------
+
+.. tab-set::
+
+
+   .. tab-item:: Download
+
+      Download the latest build for your system from `swingmusic Github <https://github.com/swingmx/swingmusic/releases>`_
+
+   .. tab-item:: Pypi
+
+      .. code-block:: bash
+
+         pip install swingmusic
+
+   .. tab-item:: Github releases
+
+         Download the latest wheel from `here <https://github.com/swingmx/swingmusic/releases>`_
+
+         .. code-block:: bash
+
+            pip install swingmusic-<version>-py3-none-any.whl
+
+   .. tab-item:: By source
+
+      .. code-block:: bash
+
+         git clone https://github.com/swingmx/swingmusic.git
+         cd swingmusic
+         pip install .
+
+
+
+
 .. toctree::
    :maxdepth: 2
    :caption: Contents:
 
    architecture
+   apidocs/index
+
 
 
 .. todo::
@@ -24,5 +62,8 @@ documentation for details.
    * Installation from build, pypi, source
    * How to launch
    * Config file location
+   * Configs
+   * * Streaming
+   * * Watchdog
    * Project architecture
    * What is executed when and why
