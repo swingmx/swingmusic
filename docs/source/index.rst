@@ -21,20 +21,26 @@ Quickstart
    .. tab-item:: Download
 
       Download the latest build for your system from `swingmusic Github <https://github.com/swingmx/swingmusic/releases>`_
+      You can now start swingmusic with launching your build file.
 
    .. tab-item:: Pypi
+
+      Open a terminal and type:
 
       .. code-block:: bash
 
          pip install swingmusic
+         swingmusic
+
 
    .. tab-item:: Github releases
 
-         Download the latest wheel from `here <https://github.com/swingmx/swingmusic/releases>`_
+         Download the latest wheel from `here <https://github.com/swingmx/swingmusic/releases>`_ and then:
 
          .. code-block:: bash
 
             pip install swingmusic-<version>-py3-none-any.whl
+            swingmusic
 
    .. tab-item:: By source
 
@@ -43,8 +49,7 @@ Quickstart
          git clone https://github.com/swingmx/swingmusic.git
          cd swingmusic
          pip install .
-
-
+         swingmusic
 
 
 .. toctree::
