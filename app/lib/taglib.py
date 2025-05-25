@@ -255,7 +255,9 @@ def get_tags(filepath: str, config: UserConfig):
     )
 
     metadata["trackhash"] = create_hash(
-        metadata.get("artists", ""), metadata.get("album", ""), metadata.get("title", "")
+        metadata.get("artists", ""),
+        metadata.get("album", ""),
+        metadata.get("title", ""),
     )
 
     extra: dict[str, Any] = {

@@ -84,8 +84,15 @@ class Track:
         self.og_album = self.album
         self.folder = self.folder + "/"
         self.weakhash = create_hash(self.title, self.artists)
+
         explicit_tag = self.extra.get("explicit", ["0"])
-        self.explicit = int(explicit_tag[0]) == 1
+        if isinstance(explicit_tag, list):
+            explicit_tag = explicit_tag[0] if explicit_tag else "0"
+        if isinstance(explicit_tag, str):
+            explicit_tag = explicit_tag.lower()
+            self.explicit = explicit_tag in ("1", "yes", "true")
+        else:
+            self.explicit = bool(explicit_tag)
 
         self.image = self.albumhash + ".webp" + "?pathhash=" + self.pathhash
         # self.extra = {

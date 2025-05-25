@@ -30,7 +30,7 @@ from app.utils.paths import getClientFilesExtensions
 
 
 def run_app(host: str, port: int, config: Path):
-    settings.Paths.set_config_dir(config)
+    # settings.Paths.set_config_dir(config)
 
     # Load mimetypes for the web client's static files
     # Loading mimetypes should happen automatically but

@@ -18,7 +18,6 @@ else:
 
 
 class Paths:
-    XDG_CONFIG_DIR = ""
     USER_HOME_DIR = os.path.expanduser("~")
 
     # TODO: Break this down into getter methods for each path
@@ -30,9 +29,8 @@ class Paths:
     @classmethod
     def get_config_dir(cls):
         return (
-            cls.XDG_CONFIG_DIR
-            or os.environ.get("SWINGMUSIC_XDG_CONFIG_DIR")
-            or os.path.realpath(".")
+            # cls.XDG_CONFIG_DIR
+            os.environ.get("SWINGMUSIC_XDG_CONFIG_DIR") or os.path.realpath(".")
         )
 
     @classmethod

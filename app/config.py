@@ -116,5 +116,4 @@ class UserConfig:
         if key.startswith("_") or not self._config_path:
             return
 
-        print(f"writing to file: {key}={value}")
         self.write_to_file(asdict(self))
