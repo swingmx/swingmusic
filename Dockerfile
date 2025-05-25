@@ -35,4 +35,4 @@ RUN pip install bjoern
 ARG app_version
 ENV SWINGMUSIC_APP_VERSION=$app_version
 
-ENTRYPOINT ["python", "main.py", "--host", "0.0.0.0", "--config", "/config"]
+ENTRYPOINT ["python", "run.py", "--host", "0.0.0.0", "--config", "/config"]

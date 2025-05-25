@@ -122,11 +122,62 @@ services:
     restart: unless-stopped
 ```
 
-### Contributing
+### Contributing and Development
 
 Swing Music is looking for contributors. If you're interested, please join us at the [Swing Music Community](https://t.me/+9n61PFcgKhozZDE0) group on Telegram. For more information, take a look at https://github.com/swing-opensource/swingmusic/issues/186.
 
 [**CONTRIBUTING GUIDELINES**](.github/contributing.md).
+
+> [!TIP]
+> This project runs on Python 3.11 or newer and uses [uv](https://docs.astral.sh/uv) to manage dependencies. Please [install uv](https://docs.astral.sh/uv/getting-started/installation/) before continuing for an easy setup.
+
+To set up this project on your computer follow the following steps:
+
+```sh
+# 1. Fork the project
+
+git clone https://github.com/swingmx/swingmusic.git
+
+# or via SSH
+
+git clone git@github.com:swingmx/swingmusic.git
+```
+
+```sh
+# 2. Install dependencies
+
+uv sync
+```
+
+```sh
+# 3. Install wsgi server
+
+# If you are on Windows, install waitress:
+uv add waitress
+
+# If you are on Unix, install bjoern:
+uv add bjoern
+```
+
+> [!TIP]
+> The `libev` package is needed on Linux and MacOS. You can install it on other system as shown:
+> 
+> ```sh
+> # Arch Linux
+> pacman -S libev
+> 
+> # Fedora, CentOS
+> dnf install libev-devel
+> 
+> # MacOS
+> brew install libev
+> ```
+
+```sh
+# 4. Run the program
+
+uv run python run.py
+```
 
 ### License
 

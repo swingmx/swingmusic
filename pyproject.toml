@@ -1,6 +1,6 @@
 [project]
 name = "swingmusic"
-version = "2.0.2"
+version = "2.0.6"
 description = "Swing Music"
 readme = "README.md"
 requires-python = ">=3.11, <3.12"
@@ -31,7 +31,6 @@ dependencies = [
     "pillow>=11.1.0",
     "flask-openapi3==3.0.2",
     "rapidfuzz==3.11.0",
-    "waitress>=3.0.2",
     "pendulum>=3.0.0",
     "bjoern>=3.2.2",
 ]
