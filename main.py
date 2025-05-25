@@ -6,7 +6,7 @@ import multiprocessing
 from app.arg_handler import handle_build, handle_password_reset
 from app.utils.filesystem import get_home_res_path
 from app.utils.xdg_utils import get_xdg_config_dir
-from manage import run_app
+from manage import create_app
 
 
 def version(*args, **kwargs):
@@ -71,7 +71,7 @@ def run(*args, **kwargs):
     os.environ["SWINGMUSIC_XDG_CONFIG_DIR"] = str(
         pathlib.Path(kwargs["config"]).resolve()
     )
-    run_app(kwargs["host"], kwargs["port"], kwargs["config"])
+    create_app(kwargs["host"], kwargs["port"], kwargs["config"])
 
 
 if __name__ == "__main__":

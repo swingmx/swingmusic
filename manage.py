@@ -29,7 +29,7 @@ from app.utils.filesystem import get_home_res_path
 from app.utils.paths import getClientFilesExtensions
 
 
-def run_app(host: str, port: int, config: Path):
+def create_app(host: str, port: int, config: Path):
     # settings.Paths.set_config_dir(config)
 
     # Load mimetypes for the web client's static files
