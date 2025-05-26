@@ -186,13 +186,16 @@ def get_lyrics_from_tags(trackhash: str, just_check: bool = False):
     if just_check:
         return lyrics is not None
 
-    if lyrics:
+    if isinstance(lyrics, list):
+        lyrics = lyrics[0]
+
+    if isinstance(lyrics, str):
         lyrics = lyrics.replace("engdesc", "")
     else:
         return None, False, ""
 
     lines = lyrics.split("\n")
-    synced = test_is_synced(lines[:15])
+    synced = test_is_synced(lines[5:15])
 
     if synced:
         return format_synced_lyrics(lines), synced, copyright
