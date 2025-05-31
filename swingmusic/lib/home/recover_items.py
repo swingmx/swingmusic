@@ -1,4 +1,4 @@
-from swingmusic.db.userdata import FavoritesTable, MixTable, PlaylistTable
+from swingmusic.db.userdata import FavoritesTable, PlaylistTable
 from swingmusic.lib.home import find_mix
 from swingmusic.lib.home.recentlyadded import get_recently_added_playlist
 from swingmusic.lib.home.recentlyplayed import get_recently_played_playlist

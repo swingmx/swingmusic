@@ -4,6 +4,7 @@ from typing import Any
 from swingmusic.lib.home.recover_items import recover_items
 from swingmusic.models.mix import Mix
 
+
 class HomepageEntry(ABC):
     """
     Base class for all homepage entries.
@@ -70,6 +71,12 @@ class RecentlyPlayedHomepageEntry(HomepageEntry):
         super().__init__(title, description)
         self.items = {}
 
+    def add_new_user(self, userid: int):
+        """
+        Add a new user to the homepage entry.
+        """
+        self.items[userid] = []
+
     def get_items(self, userid: int, limit: int | None = None):
         items = self.items.get(userid, [])[:limit]
 
@@ -115,4 +122,3 @@ class BecauseYouListenedToArtistHomepageEntry(RecentlyPlayedHomepageEntry):
             "title": title,
             "items": recover_items(items),
         }
-

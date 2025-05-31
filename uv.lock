@@ -1047,7 +1047,7 @@ requires-dist = [
     { name = "sortedcontainers", specifier = ">=2.4.0" },
     { name = "sqlalchemy", specifier = ">=2.0.31" },
     { name = "tabulate", specifier = ">=0.9.0" },
-    { name = "tinytag", specifier = ">=2.0.0" },
+    { name = "tinytag", specifier = ">=2.1.1" },
     { name = "tqdm", specifier = ">=4.65.0" },
     { name = "unidecode", specifier = ">=1.3.6" },
     { name = "watchdog", specifier = ">=4.0.0" },
@@ -1090,11 +1090,11 @@ wheels = [
 
 [[package]]
 name = "tinytag"
-version = "2.1.0"
+version = "2.1.1"
 source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/c1/44/9818c9272fffb67fa2bf4804ce7cda538726238d9424e006772518ebacd0/tinytag-2.1.0.tar.gz", hash = "sha256:9a1b2e37aa45723541621133004ae86416086a0b1922e600cff5bfca5ef93e55", size = 35803 }
+sdist = { url = "https://files.pythonhosted.org/packages/18/1e/90893a772800ef04ab337f5debf6adf976544d8e683bba9a26a376079814/tinytag-2.1.1.tar.gz", hash = "sha256:b417d480cf3b0c2d60a3afef705b29ac0080fc72d35b0b579b64184c54ee394c", size = 35860 }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/00/6e/6d258b355f78047b3aa1abd4c5a12fd3cd4b3d45774651fa90d3aea2e5a4/tinytag-2.1.0-py3-none-any.whl", hash = "sha256:1261c25f5dc0a192eb182c4d9ac5facb1e86ba03a005a1322ec545d06a78d719", size = 31057 },
+    { url = "https://files.pythonhosted.org/packages/43/db/272d1b127d30107c1bb2724ba1d2aa7b75364824c7d203a84d8a8237fd6c/tinytag-2.1.1-py3-none-any.whl", hash = "sha256:b49da8f41dc0c457ecce32e6c5b2595aed8ac9314402192cd6cdb0fef67747eb", size = 31115 },
 ]
 
 [[package]]

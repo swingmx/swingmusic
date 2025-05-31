@@ -198,7 +198,6 @@ class TrackStore:
         Returns a list of tracks by their hashes.
         """
         hash_set = set(trackhashes)
-
         tracks: list[Track] = []
 
         for trackhash in hash_set:
@@ -209,7 +208,7 @@ class TrackStore:
                 tracks.append(track)
 
         # sort the tracks in the order of the given trackhashes
-        if type(trackhashes) == list:
+        if type(trackhashes) is list:
             tracks.sort(key=lambda t: trackhashes.index(t.trackhash))
 
         return tracks

@@ -2,40 +2,13 @@ import os
 import sys
 import click
 import pathlib
-import pystray
 import multiprocessing
 from PIL import Image
-from typing import Callable
-from pystray._base import Icon as PystrayIcon
 
 from swingmusic.start_swingmusic import start_swingmusic
 from swingmusic.utils.xdg_utils import get_xdg_config_dir
 from swingmusic.utils.filesystem import get_home_res_path
 from swingmusic.arg_handler import handle_build, handle_password_reset
-
-
-class App:
-    def __init__(self, host: str, port: int, setup: Callable[[], None]):
-        self.host: str = host
-        self.port: int = port
-        self.icon: PystrayIcon = None
-        self.setup = setup
-        self.process = multiprocessing.Process(
-            target=self.setup, args=(self.host, self.port)
-        )
-
-    def start(self, icon: PystrayIcon):
-        self.icon = icon
-        self.icon.visible = True
-        self.process.start()
-        self.icon.run()
-
-    def stop(self):
-        print("\nShutting down ...", end=" ")
-        self.process.terminate()
-        self.process.join(timeout=1)
-        self.icon.stop()
-        print("bye! 👋")
 
 
 def create_image(width, height, color1, color2):
@@ -132,16 +105,7 @@ def run(*args, **kwargs):
     os.environ["SWINGMUSIC_XDG_CONFIG_DIR"] = str(
         pathlib.Path(kwargs["config"]).resolve()
     )
-
-    app = App(kwargs["host"], kwargs["port"], start_swingmusic)
-    icon = pystray.Icon(
-        "Swing Music",
-        icon=create_image(64, 64, "black", "white"),
-        menu=pystray.Menu(
-            pystray.MenuItem("Quit Swing Music", app.stop),
-        ),
-    )
-    app.start(icon)
+    start_swingmusic(kwargs["host"], kwargs["port"])
 
 
 if __name__ == "__main__":

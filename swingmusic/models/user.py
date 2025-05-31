@@ -18,6 +18,13 @@ class User:
         this_dict = asdict(self)
         del this_dict["password"]
 
+        if type(this_dict["roles"]) is str:
+            # INFO: this is an attempt to fix string roles!
+            try:
+                this_dict["roles"] = json.loads(this_dict["roles"])
+            except json.JSONDecodeError:
+                this_dict["roles"] = []
+
         return this_dict
 
     def todict_simplified(self):

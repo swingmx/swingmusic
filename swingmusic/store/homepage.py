@@ -18,6 +18,7 @@ class HomepageStore:
     Stores the homepage items.
     """
 
+    # INFO: map of entry names to entry objects
     entries: dict[str, HomepageEntry] = {
         "recently_played": RecentlyPlayedHomepageEntry(
             title="Recently played",

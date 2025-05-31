@@ -1,4 +1,3 @@
-import pprint
 from swingmusic.db.userdata import ScrobbleTable, UserTable
 from swingmusic.lib.home.recentlyadded import get_recently_added_items
 from swingmusic.lib.home.get_recently_played import get_recently_played

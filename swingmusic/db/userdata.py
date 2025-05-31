@@ -1,5 +1,6 @@
 from dataclasses import asdict
 import datetime
+import json
 from typing import Any, Iterable, Literal
 from sqlalchemy import (
     JSON,
@@ -15,7 +16,7 @@ from sqlalchemy import (
     update,
 )
 
-from sqlalchemy.orm import Mapped, mapped_column, sessionmaker
+from sqlalchemy.orm import Mapped, mapped_column
 
 from swingmusic.db.engine import DbEngine
 from swingmusic.db.utils import (
@@ -40,7 +41,7 @@ class UserTable(Base):
     image: Mapped[str] = mapped_column(String(), nullable=True)
     password: Mapped[str] = mapped_column(String())
     username: Mapped[str] = mapped_column(String(), index=True)
-    roles: Mapped[list[str]] = mapped_column(JSON(), default_factory=lambda: ["user"])
+    roles: Mapped[list[str]] = mapped_column(JSON(), default_factory=lambda: [])
     extra: Mapped[dict[str, Any]] = mapped_column(
         JSON(), nullable=True, default_factory=dict
     )
@@ -82,13 +83,6 @@ class UserTable(Base):
 
     @classmethod
     def get_by_username(cls, username: str):
-        # with DbEngine.manager() as conn:
-        #     result = conn.execute(select(cls).where(cls.username == username))
-        #     res = result.fetchone()
-
-        #     if res:
-        #         return user_to_dataclass(res)
-
         res = cls.execute(select(cls).where(cls.username == username))
         res = next(res).scalar()
 

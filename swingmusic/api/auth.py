@@ -15,6 +15,7 @@ from flask_openapi3 import Tag
 from flask_openapi3 import APIBlueprint
 
 from swingmusic.db.userdata import UserTable
+from swingmusic.store.homepage import HomepageStore
 from swingmusic.utils.auth import check_password, hash_password
 from swingmusic.config import UserConfig
 
@@ -172,7 +173,6 @@ def update_profile(body: UpdateProfileBody):
         if "admin" not in current_user["roles"]:
             return {"msg": "Only admins can update roles"}, 403
 
-        # all_users = authdb.get_all_users()
         all_users = UserTable.get_all()
         if "admin" not in body.roles:
             # check if we're removing the last admin
@@ -187,7 +187,7 @@ def update_profile(body: UpdateProfileBody):
             return {"msg": "Cannot update guest user"}, 400
 
         # finally, convert roles to json string
-        user["roles"] = json.dumps(body.roles)
+        user["roles"] = body.roles
 
     if user["password"]:
         user["password"] = hash_password(user["password"])
@@ -215,7 +215,7 @@ def create_user(body: UpdateProfileBody):
     user = {
         "username": body.username,
         "password": hash_password(body.password),
-        "roles": json.dumps([]),
+        "roles": [],
     }
 
     # check if user already exists
@@ -226,6 +226,7 @@ def create_user(body: UpdateProfileBody):
     user = UserTable.get_by_username(user["username"])
 
     if user:
+        HomepageStore.entries["recently_played"].add_new_user(user.id)
         return user.todict()
 
     return {
@@ -247,9 +248,12 @@ def create_guest_user():
             "msg": "Guest user already exists",
         }, 400
 
-    userid = UserTable.insert_guest_user()
+    UserTable.insert_guest_user()
+    user = UserTable.get_by_username("guest")
 
-    if userid:
+    if user:
+        HomepageStore.entries["recently_played"].add_new_user(user.id)
+
         return {
             "msg": "Guest user created",
         }

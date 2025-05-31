@@ -1,5 +1,6 @@
 from datetime import datetime
 
+from swingmusic.db.userdata import ScrobbleTable
 from swingmusic.models.playlist import Playlist
 from swingmusic.lib.playlistlib import get_first_4_images
 from swingmusic.utils.dates import (
@@ -20,7 +21,11 @@ def get_recently_played_playlist(limit: int = 100):
         trackhashes=[],
     )
 
-    tracks = TrackStore.get_recently_played(limit)
+    scrobbles = ScrobbleTable.get_all(None, 100)
+    tracks = TrackStore.get_tracks_by_trackhashes(
+        [scrobble.trackhash for scrobble in scrobbles]
+    )
+
     date = datetime.fromtimestamp(tracks[0].lastplayed)
     playlist._last_updated = date_string_to_time_passed(create_new_date(date))
 
