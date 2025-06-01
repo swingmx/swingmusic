@@ -135,3 +135,36 @@ def get_first_4_images(
         return images
 
     return duplicate_images(images)
+
+
+def cleanup_playlist_images():
+    """
+    Cleans up unlinked playlist images by comparing files in the playlist image directory
+    against the .image property of all playlists.
+    """
+    # Import here to avoid circular import
+    from swingmusic.db.userdata import PlaylistTable
+
+    playlists = PlaylistTable.get_all()
+    linked_images = {p.image for p in playlists if p.image and p.image != "None"}
+
+    playlist_dir = settings.Paths.get_playlist_img_path()
+    all_files = os.listdir(playlist_dir)
+
+    # Find unlinked images (including thumbnails)
+    unlinked_files = []
+    for file in all_files:
+        if file.startswith("thumb_"):
+            base_file = file[6:]  # Remove "thumb_" prefix
+            if base_file not in linked_images:
+                unlinked_files.append(file)
+
+        elif file not in linked_images:
+            unlinked_files.append(file)
+
+    for file in unlinked_files:
+        try:
+            os.remove(os.path.join(playlist_dir, file))
+        except OSError:
+            # Skip if file doesn't exist or can't be deleted
+            pass
