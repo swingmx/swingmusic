@@ -1,6 +1,6 @@
 # Swing Music Contributing Guide
 
-Hi! We're really excited that you are interested in contributing to Swing Music. This project uses Python, [Flask](https://flask.palletsprojects.com/en/2.3.x/), Sqlite, [Poetry](https://python-poetry.org/), and [Vue](https://vuejs.org/).
+Hi! We're really excited that you are interested in contributing to Swing Music. This project uses Python, [Flask](https://flask.palletsprojects.com/en/2.3.x/), Sqlite, [uv](https://docs.astral.sh/uv), and [Vue](https://vuejs.org/).
 
 If you are interested in making a code contribution take a moment to read through the following guidelines:
 
@@ -15,7 +15,7 @@ If you are interested in making a code contribution take a moment to read throug
 
   - Provide a convincing reason to add this feature. Ideally, you should open a suggestion issue first and have it approved before working on it.
 
-- If fixing bug:
+- If fixing a bug:
 
   - Provide a detailed description of the bug in the PR.
 
@@ -23,7 +23,7 @@ If you are interested in making a code contribution take a moment to read throug
 
 This project is broken down into 2 parts. The server (this repo) and the client (which lives [here](https://github.com/swing-opensource/swingmusic-client)).
 
-To contribute to the server development, you need to install [Poetry package manager](https://python-poetry.org/docs).
+To contribute to the server development, you need to install [uv package manager](https://docs.astral.sh/uv).
 
 Fork this repo, git clone and install the dependencies:
 
@@ -35,14 +35,38 @@ git clone https://github.com/swing-opensource/swingmusic.git
 git clone git@github.com:swing-opensource/swingmusic.git
 
 cd swingmusic
-
-poetry install
+uv sync
 ```
 
-Finally, run the server. You can use a different port if you have another Swing Music instance running on port `1970`.
+Finally install the wsgi module for the server. If you are on Windows, simply install `waitress`:
 
 ```sh
-poetry run python manage.py --port 1980
+uv add waitress
+```
+
+If you are on Unix, you will need to install `bjoern`. The package requires the `libev` module to be installed on your machine:
+
+```sh
+# Arch Linux
+pacman -S libev
+
+# Fedora, CentOS
+dnf install libev-devel
+
+# MacOS
+brew install libev
+```
+
+Finally:
+
+```sh
+uv add bjoern
+```
+
+Finally, run the server for development on port 1980.
+
+```sh
+uv run python -m swingmusic --port 1980
 ```
 
 After that, checkout into a new branch and make your changes.
@@ -51,11 +75,11 @@ After that, checkout into a new branch and make your changes.
 git checkout <branch_name>
 ```
 
-Finally, commit your changes and open a pull request.
+After testing your changes, commit your changes and open a pull request.
 
 ## Contributing to the client
 
-You need to have [yarn](https://yarnpkg.com/) installed in your machine. See their [install guide](https://yarnpkg.com/getting-started/install).
+You need to have [yarn](https://yarnpkg.com) installed in your machine. Please check out the [install guide](https://yarnpkg.com/getting-started/install).
 
 Fork the repo, git clone and install the dependencies:
 
@@ -67,11 +91,10 @@ git clone https://github.com/swing-opensource/swingmusic-client.git
 git clone git@github.com:swing-opensource/swingmusic-client.git
 
 cd swingmusic-client
-
 yarn install
 ```
 
-You can now run the client.
+You can now run the client in development mode.
 
 ```sh
 yarn dev
@@ -79,13 +102,12 @@ yarn dev
 
 You can see the client at http://localhost:5173.
 
-> The client is hardcoded to hook into the server on port `1980` (to allow the another server instance to be running on the default port).
-> 
-> You can follow the instructions above to set up the server in that port, or you can change the port in `swingmusic-client/config.ts`. Don't forget to change it back when in the PR.
+> [!TIP]
+> The client is configured to hook into the development server running on port `1980` (to allow the another server instance to be running on the default port).
 
 ## Where can I go for help?
 
-If you need help, you can find other contributors on the [Swing Music Community](https://t.me/+9n61PFcgKhozZDE0) group on Telegram. 
+If you need help, you can find users and contributors on [Swing Music Community](https://t.me/+9n61PFcgKhozZDE0) Telegram chat.
 
 ## What does the Code of Conduct mean for me?
 
