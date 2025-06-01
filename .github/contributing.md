@@ -41,7 +41,7 @@ uv sync
 Finally install the wsgi module for the server. If you are on Windows, simply install `waitress`:
 
 ```sh
-uv add waitress
+uv pip install waitress
 ```
 
 If you are on Unix, you will need to install `bjoern`. The package requires the `libev` module to be installed on your machine:
@@ -60,7 +60,7 @@ brew install libev
 Finally:
 
 ```sh
-uv add bjoern
+uv pip install bjoern
 ```
 
 Finally, run the server for development on port 1980.
