@@ -153,10 +153,10 @@ uv sync
 # 3. Install wsgi server
 
 # If you are on Windows, install waitress:
-uv add waitress
+uv pip install waitress
 
 # If you are on Unix, install bjoern:
-uv add bjoern
+uv pip install bjoern
 ```
 
 > [!TIP]
