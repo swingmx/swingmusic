@@ -29,13 +29,13 @@ def send_lyrics(body: SendLyricsBody):
     is_synced = True
     lyrics, copyright = get_lyrics(filepath, trackhash)
 
-    if not lyrics:
+    if lyrics is None:
         lyrics, copyright = get_lyrics_from_duplicates(trackhash, filepath)
 
-    if not lyrics:
+    if lyrics is None:
         lyrics, is_synced, copyright = get_lyrics_from_tags(trackhash) # type: ignore
 
-    if not lyrics:
+    if lyrics is None:
         return {"error": "No lyrics found"}
 
     return {"lyrics": lyrics, "synced": is_synced, "copyright": copyright}, 200
