@@ -1,5 +1,5 @@
 """
-Handles arguments passed to the program.
+Handles Tool argument functions
 """
 
 import sys
@@ -16,16 +16,22 @@ from swingmusic.utils.auth import hash_password
 from swingmusic.utils.paths import getFlaskOpenApiPath
 from swingmusic.utils.wintools import is_windows
 
-ALLARGS = settings.ALLARGS
-ARGS = sys.argv[1:]
+from flask import Response, request
+from flask_jwt_extended import (
+    create_access_token,
+    get_jwt,
+    get_jwt_identity,
+    set_access_cookies,
+    verify_jwt_in_request,
+)
+
+from datetime import datetime, timezone
 
 
-def handle_build(*args, **kwargs):
+def handle_build():
     """
-    Handles the --build argument. Builds the project into a single executable.
+    build swingmusic into single executable
     """
-    if not args[2]:
-        return
 
     if settings.IS_BUILD:
         click.echo("Can't build the project. Exiting ...")
@@ -86,12 +92,12 @@ def handle_build(*args, **kwargs):
         sys.exit(0)
 
 
-def handle_password_reset(*args, **kwargs):
+def handle_password_reset() -> None:
     """
-    Handles the --password-reset argument. Resets the password.
+    Resets the password.
+    user will get asked for username and password directly.
+    No params needed
     """
-    if not args[2]:
-        return
 
     setup_sqlite()
 
@@ -100,12 +106,11 @@ def handle_password_reset(*args, **kwargs):
 
     # collect username
     try:
-        username = input("Enter username: ")
+        username = input("Enter username: ").strip()
     except KeyboardInterrupt:
         click.echo("\nOperation cancelled! Exiting ...")
         sys.exit(0)
 
-    username = username.strip()
     user = UserTable.get_by_username(username)
 
     if not user:
