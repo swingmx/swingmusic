@@ -1,10 +1,13 @@
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
 [project]
 name = "swingmusic"
 version = "2.0.6"
 description = "Swing Music"
 readme = "README.md"
-requires-python = ">=3.11, =<3.13"
-
+requires-python = ">=3.11, <=3.12"
 
 dependencies = [
     "pillow>=11.1.0",
@@ -38,6 +41,12 @@ dependencies = [
     "bjoern >=3.2.2; sys_platform != 'win32'"
 ]
 
+[tool.uv]
+dependency-metadata = [
+    { name = "waitress", version = "3.0.2", requires-dist = [], requires-python = ">=3.11" },
+    { name = "bjoern", version="3.2.2", requires-dist = [], requires-python = ">=3.11"}
+]
+
 [project.scripts]
 swingmusic = "swingmusic.__main__:main"
 
@@ -64,7 +73,7 @@ docs = [
 ]
 
 [tool.setuptools]
-package-dir = {"" = "swingmusic"}
+package-dir = {"swingmusic" = "swingmusic"}
 
 [tool.setuptools.package-data]
 swingmusic = ["client/*"]

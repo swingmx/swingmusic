@@ -149,16 +149,6 @@ git clone git@github.com:swingmx/swingmusic.git
 uv sync
 ```
 
-```sh
-# 3. Install wsgi server
-
-# If you are on Windows, install waitress:
-uv pip install waitress
-
-# If you are on Unix, install bjoern:
-uv pip install bjoern
-```
-
 > [!TIP]
 > The `libev` package is needed on Linux and MacOS. You can install it on other system as shown:
 > 
