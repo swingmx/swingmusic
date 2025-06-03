@@ -39,3 +39,7 @@ dependencies = [
 dev = [
     "pyinstaller==6.12.0",
 ]
+
+[tool.setuptools.package-dir]
+"swingmusic" = "swingmusic"
+"pydub_swing" = "pydub"

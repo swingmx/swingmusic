@@ -16,7 +16,7 @@ Pydub lets you do stuff to audio in a way that isn't stupid.
 Open a WAV file
 
 ```python
-from pydub import AudioSegment
+from pydub_swing import AudioSegment
 
 song = AudioSegment.from_wav("never_gonna_give_you_up.wav")
 ```
@@ -193,10 +193,10 @@ You can play audio if you have one of these installed (simpleaudio _strongly_ re
  - [pyaudio](https://people.csail.mit.edu/hubert/pyaudio/docs/#)
  - ffplay (usually bundled with ffmpeg, see the next section)
  - avplay (usually bundled with libav, see the next section)
- 
+
 ```python
-from pydub import AudioSegment
-from pydub.playback import play
+from pydub_swing import AudioSegment
+from pydub_swing.playback import play
 
 sound = AudioSegment.from_file("mysound.wav", format="wav")
 play(sound)
@@ -252,7 +252,8 @@ When no codec is specified exporting to `ogg` will _default_ to using `vorbis`
 as a convenience. That is:
 
 ```python
-from pydub import AudioSegment
+from pydub_swing import AudioSegment
+
 song = AudioSegment.from_mp3("test/data/test1.mp3")
 song.export("out.ogg", format="ogg")  # Is the same as:
 song.export("out.ogg", format="ogg", codec="libvorbis")
@@ -265,7 +266,7 @@ Suppose you have a directory filled with *mp4* and *flv* videos and you want to 
 ```python
 import os
 import glob
-from pydub import AudioSegment
+from pydub_swing import AudioSegment
 
 video_dir = '/home/johndoe/downloaded_videos/'  # Path where the videos are located
 extension_list = ('*.mp4', '*.flv')
@@ -281,7 +282,7 @@ for extension in extension_list:
 
 ```python
 from glob import glob
-from pydub import AudioSegment
+from pydub_swing import AudioSegment
 
 playlist_songs = [AudioSegment.from_mp3(mp3_file) for mp3_file in glob("*.mp3")]
 
@@ -289,11 +290,10 @@ first_song = playlist_songs.pop(0)
 
 # let's just include the first 30 seconds of the first song (slicing
 # is done by milliseconds)
-beginning_of_song = first_song[:30*1000]
+beginning_of_song = first_song[:30 * 1000]
 
 playlist = beginning_of_song
 for song in playlist_songs:
-
     # We don't want an abrupt stop at the end, so let's do a 10 second crossfades
     playlist = playlist.append(song, crossfade=(10 * 1000))
 
@@ -301,7 +301,7 @@ for song in playlist_songs:
 playlist = playlist.fade_out(30)
 
 # hmm I wonder how long it is... ( len(audio_segment) returns milliseconds )
-playlist_length = len(playlist) / (1000*60)
+playlist_length = len(playlist) / (1000 * 60)
 
 # lets save it!
 with open("%s_minute_playlist.mp3" % playlist_length, 'wb') as out_f:
