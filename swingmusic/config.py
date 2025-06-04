@@ -75,7 +75,7 @@ class UserConfig:
             setattr(self, key, value)
 
         # finally set the config path
-        self._config_path = config_path
+        self._config_path = str(config_path)
 
     def setup_config_file(self) -> None:
         """

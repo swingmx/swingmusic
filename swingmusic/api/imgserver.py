@@ -209,7 +209,7 @@ def send_sm_artist_image(path: ImagePath):
     Get small artist image (128)
     """
     folder = Paths.get_sm_artist_img_path()
-    return send_file_or_fallback(folder, path.imgpath, "artist.webp")
+    return send_file_or_fallback(str(folder), path.imgpath, "artist.webp")
 
 
 @api.get("/artist/medium/<imgpath>")

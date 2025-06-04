@@ -26,17 +26,74 @@ class Paths:
     XDG_CONFIG_DIR:Path
 
     # TODO: Break this down into getter methods for each path
+    # TODO: After refactoring change to singleton class
 
     def __init__(self, base_path:Path=None):
         """
         Create config-folder structure and check permissions.
         THIS CLASS CAN BE USED WITHOUT INITIALISATION.
-        DO NOT RETURN PATH, RETURN AS STRING FOR COMPATIBILITY
+
+
 
         :param base_path: The location where the swingmusic config folder will be created.
         """
 
         self.base_path = base_path
+        self.mkdir_config_folders()
+
+
+        # TODO: should assets be moved there?
+
+
+    def mkdir_config_folders(self):
+        """
+        Create config config folder structure.
+
+        base folder
+        └───`swingmusic` or `.swingmusic`
+            ├───assets
+            ├───images
+            │   ├───artists
+            │   │   ├───large
+            │   │   ├───medium
+            │   │   └───small
+            │   ├───mixes
+            │   │   ├───medium
+            │   │   ├───original
+            │   │   └───small
+            │   ├───playlists
+            │   └───thumbnails
+            │       ├───large
+            │       ├───medium
+            │       ├───small
+            │       └───xsmall
+            └───plugins
+                └───lyrics
+        """
+
+
+        dirs = [
+            "",  # creates the config folder
+            "plugins/lyrics",
+            Paths.get_sm_thumb_path(), #
+            Paths.get_lg_thumb_path(),
+            Paths.get_md_thumb_path(),
+            Paths.get_xsm_thumb_path(),
+            os.path.join("images", "playlists"),
+            Paths.get_md_artist_img_path(),
+            Paths.get_sm_artist_img_path(),
+            Paths.get_lg_artist_img_path(),
+            Paths.get_mixes_img_path(),
+            Paths.get_og_mixes_img_path(),
+            Paths.get_md_mixes_img_path(),
+            Paths.get_sm_mixes_img_path(),
+        ]
+
+        for folder in dirs:
+            path = Paths.get_app_dir() / folder
+            if not path.exists():
+                path.mkdir(parents=True)
+                path.chmod(mode=0o755)
 
 
     @classmethod

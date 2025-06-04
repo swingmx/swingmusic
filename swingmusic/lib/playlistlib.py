@@ -20,16 +20,14 @@ def create_thumbnail(image: Any, img_path: str) -> str:
     Creates a 250 x 250 thumbnail from a playlist image
     """
     thumb_path = "thumb_" + img_path
-    full_thumb_path = os.path.join(
-        settings.Paths.get_app_dir(), "images", "playlists", thumb_path
-    )
+    full_thumb_path = ( settings.Paths.get_app_dir() / "images" / "playlists" / thumb_path ).resolve()
 
     aspect_ratio = image.width / image.height
 
     new_w = round(250 * aspect_ratio)
 
     thumb = image.resize((new_w, 250), Image.Resampling.LANCZOS)
-    thumb.save(full_thumb_path, "webp")
+    thumb.save(str(full_thumb_path), "webp")
 
     return thumb_path
 
@@ -39,9 +37,7 @@ def create_gif_thumbnail(image: Any, img_path: str):
     Creates a 250 x 250 thumbnail from a playlist image
     """
     thumb_path = "thumb_" + img_path
-    full_thumb_path = os.path.join(
-        settings.Paths.get_app_dir(), "images", "playlists", thumb_path
-    )
+    full_thumb_path = ( settings.Paths.get_app_dir() / "images" / "playlists" / thumb_path ).resolve()
 
     frames = []
 
@@ -53,7 +49,7 @@ def create_gif_thumbnail(image: Any, img_path: str):
         thumb = frame.resize((new_w, 250), Image.Resampling.LANCZOS)
         frames.append(thumb)
 
-    frames[0].save(full_thumb_path, save_all=True, append_images=frames[1:])
+    frames[0].save(str(full_thumb_path), save_all=True, append_images=frames[1:])
 
     return thumb_path
 
