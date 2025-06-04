@@ -1,7 +1,8 @@
 """
 Contains default configs
 """
-
+import pathlib
+from pathlib import Path
 import os
 import subprocess
 import sys
@@ -9,7 +10,6 @@ import sys
 from swingmusic import configs
 from swingmusic.utils.filesystem import get_home_res_path
 
-join = os.path.join
 
 if getattr(sys, "frozen", False) and hasattr(sys, "_MEIPASS"):
     IS_BUILD = True
@@ -18,117 +18,141 @@ else:
 
 
 class Paths:
-    USER_HOME_DIR = os.path.expanduser("~")
+
+    base_path:Path = Path.home()
+
+
+    USER_HOME_DIR = Path.home()
+    XDG_CONFIG_DIR:Path
 
     # TODO: Break this down into getter methods for each path
 
-    @classmethod
-    def set_config_dir(cls, path: str):
-        cls.XDG_CONFIG_DIR = path
+    def __init__(self, base_path:Path=None):
+        """
+        Create config-folder structure and check permissions.
+        THIS CLASS CAN BE USED WITHOUT INITIALISATION.
+        DO NOT RETURN PATH, RETURN AS STRING FOR COMPATIBILITY
+
+        :param base_path: The location where the swingmusic config folder will be created.
+        """
+
+        self.base_path = base_path
+
 
     @classmethod
-    def get_config_dir(cls):
-        return (
-            # cls.XDG_CONFIG_DIR
-            os.environ.get("SWINGMUSIC_XDG_CONFIG_DIR") or os.path.realpath(".")
-        )
+    def set_config_dir(cls, path: Path|str):
+        cls.XDG_CONFIG_DIR = Path(path)
 
     @classmethod
-    def get_config_folder(cls):
-        return (
-            "swingmusic" if cls.get_config_dir() != cls.USER_HOME_DIR else ".swingmusic"
-        )
+    def get_config_dir(cls) -> pathlib.Path:
+        if xdg:=os.environ.get("SWINGMUSIC_XDG_CONFIG_DIR"):
+            return Path(xdg).resolve()
+        else:
+            return Path(".").resolve()
 
     @classmethod
-    def get_app_dir(cls):
-        return join(cls.get_config_dir(), cls.get_config_folder())
+    def get_config_folder(cls) -> str:
+        """
+        return the name of the swingmusic config folder.
+
+        When the base path is the same as the home dir,
+        it returns `.swingmusic` else `swingmusic`
+        """
+        if cls.get_config_dir() == str(cls.USER_HOME_DIR.resolve()):
+            return ".swingmusic"
+        else:
+            return "swingmusic"
 
     @classmethod
-    def get_img_path(cls):
-        return join(cls.get_app_dir(), "images")
+    def get_app_dir(cls) -> Path:
+        return cls.get_config_dir() / cls.get_config_folder()
+
+    @classmethod
+    def get_img_path(cls) -> Path:
+        return cls.get_app_dir() /  "images"
 
     # ARTISTS
     @classmethod
-    def get_artist_img_path(cls):
-        return join(cls.get_img_path(), "artists")
+    def get_artist_img_path(cls) -> Path:
+        return cls.get_img_path() / "artists"
 
     @classmethod
-    def get_sm_artist_img_path(cls):
-        return join(cls.get_artist_img_path(), "small")
+    def get_sm_artist_img_path(cls) -> Path:
+        return cls.get_artist_img_path() / "small"
 
     @classmethod
     def get_md_artist_img_path(cls):
-        return join(cls.get_artist_img_path(), "medium")
+        return cls.get_artist_img_path() / "medium"
 
     @classmethod
     def get_lg_artist_img_path(cls):
-        return join(cls.get_artist_img_path(), "large")
+        return cls.get_artist_img_path() / "large"
 
     # TRACK THUMBNAILS
     @classmethod
     def get_thumbs_path(cls):
-        return join(cls.get_img_path(), "thumbnails")
+        return cls.get_img_path() / "thumbnails"
 
     @classmethod
     def get_sm_thumb_path(cls):
-        return join(cls.get_thumbs_path(), "small")
+        return cls.get_thumbs_path() / "small"
 
     @classmethod
     def get_xsm_thumb_path(cls):
-        return join(cls.get_thumbs_path(), "xsmall")
+        return cls.get_thumbs_path() / "xsmall"
 
     @classmethod
     def get_md_thumb_path(cls):
-        return join(cls.get_thumbs_path(), "medium")
+        return cls.get_thumbs_path() / "medium"
 
     @classmethod
     def get_lg_thumb_path(cls):
-        return join(cls.get_thumbs_path(), "large")
+        return cls.get_thumbs_path() / "large"
 
     # OTHERS
     @classmethod
     def get_playlist_img_path(cls):
-        return join(cls.get_img_path(), "playlists")
+        return cls.get_img_path() / "playlists"
 
     @classmethod
     def get_assets_path(cls):
-        return join(Paths.get_app_dir(), "assets")
+        return Paths.get_app_dir() / "assets"
 
     @classmethod
     def get_plugins_path(cls):
-        return join(Paths.get_app_dir(), "plugins")
+        return Paths.get_app_dir() / "plugins"
 
     @classmethod
     def get_lyrics_plugins_path(cls):
-        return join(Paths.get_plugins_path(), "lyrics")
+        return Paths.get_plugins_path() / "lyrics"
 
     @classmethod
     def get_config_file_path(cls):
-        return join(cls.get_app_dir(), "settings.json")
+        return cls.get_app_dir() / "settings.json"
 
     @classmethod
     def get_mixes_img_path(cls):
-        return join(cls.get_img_path(), "mixes")
+        return cls.get_img_path() / "mixes"
 
     @classmethod
     def get_artist_mixes_img_path(cls):
-        return join(cls.get_mixes_img_path(), "artists")
+        return cls.get_mixes_img_path() / "artists"
 
     @classmethod
     def get_og_mixes_img_path(cls):
-        return join(cls.get_mixes_img_path(), "original")
+        return cls.get_mixes_img_path() / "original"
 
     @classmethod
     def get_md_mixes_img_path(cls):
-        return join(cls.get_mixes_img_path(), "medium")
+        return cls.get_mixes_img_path() / "medium"
 
     @classmethod
     def get_sm_mixes_img_path(cls):
-        return join(cls.get_mixes_img_path(), "small")
+        return cls.get_mixes_img_path() / "small"
 
     @classmethod
     def get_image_cache_path(cls):
-        return join(cls.get_img_path(), "cache")
+        return cls.get_img_path() / "cache"
 
 
 # defaults
@@ -169,15 +193,15 @@ class DbPaths:
 
     @classmethod
     def get_app_db_path(cls):
-        return join(Paths.get_app_dir(), cls.APP_DB_NAME)
+        return Paths.get_app_dir() / cls.APP_DB_NAME
 
     @classmethod
     def get_userdata_db_path(cls):
-        return join(Paths.get_app_dir(), cls.USER_DATA_DB_NAME)
+        return Paths.get_app_dir() / cls.USER_DATA_DB_NAME
 
     @classmethod
     def get_json_config_path(cls):
-        return join(Paths.get_app_dir(), "config.json")
+        return Paths.get_app_dir() / "config.json"
 
 
 class FLASKVARS:
