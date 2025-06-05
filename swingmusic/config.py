@@ -62,7 +62,7 @@ class UserConfig:
         Loads the config file and sets the values to this instance
         """
         # set config path locally to avoid writing to file
-        config_path = Paths.get_config_file_path()
+        config_path = Paths().config_file_path()
 
         try:
             config = self.load_config(config_path)

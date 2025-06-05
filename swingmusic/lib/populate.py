@@ -106,7 +106,7 @@ class ProcessTrackThumbnails:
         Filters out albums that already have thumbnails and
         extracts the thumbnail for the other albums.
         """
-        path = settings.Paths.get_sm_thumb_path()
+        path = settings.Paths().sm_thumb_path
 
         # read all the files in the thumbnail directory
         processed = set(i.replace(".webp", "") for i in os.listdir(path))

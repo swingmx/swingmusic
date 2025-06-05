@@ -37,7 +37,7 @@ def extract_thumb(filepath: str, webp_path: str, overwrite=False) -> bool:
     Extracts the thumbnail from an audio file.
     Returns the path to the thumbnail.
     """
-    lg_img_path = os.path.join(Paths.get_lg_thumb_path(), webp_path)
+    lg_img_path = os.path.join(Paths().lg_thumb_path(), webp_path)
     sm_img_path = os.path.join(Paths.get_sm_thumb_path(), webp_path)
     xms_img_path = os.path.join(Paths.get_xsm_thumb_path(), webp_path)
     md_img_path = os.path.join(Paths.get_md_thumb_path(), webp_path)

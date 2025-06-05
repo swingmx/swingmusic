@@ -20,7 +20,7 @@ def create_thumbnail(image: Any, img_path: str) -> str:
     Creates a 250 x 250 thumbnail from a playlist image
     """
     thumb_path = "thumb_" + img_path
-    full_thumb_path = ( settings.Paths.get_app_dir() / "images" / "playlists" / thumb_path ).resolve()
+    full_thumb_path = ( settings.Paths().app_dir / "images" / "playlists" / thumb_path ).resolve()
 
     aspect_ratio = image.width / image.height
 
@@ -37,7 +37,7 @@ def create_gif_thumbnail(image: Any, img_path: str):
     Creates a 250 x 250 thumbnail from a playlist image
     """
     thumb_path = "thumb_" + img_path
-    full_thumb_path = ( settings.Paths.get_app_dir() / "images" / "playlists" / thumb_path ).resolve()
+    full_thumb_path = ( settings.Paths().app_dir / "images" / "playlists" / thumb_path ).resolve()
 
     frames = []
 
@@ -67,7 +67,7 @@ def save_p_image(
     if not filename:
         filename = str(pid) + str(random_str) + ".webp"
 
-    full_img_path = os.path.join(settings.Paths.get_playlist_img_path(), filename)
+    full_img_path = os.path.join(settings.Paths().playlist_img_path, filename)
 
     if content_type == "image/gif":
         frames = []
@@ -144,7 +144,7 @@ def cleanup_playlist_images():
     playlists = PlaylistTable.get_all()
     linked_images = {p.image for p in playlists if p.image and p.image != "None"}
 
-    playlist_dir = settings.Paths.get_playlist_img_path()
+    playlist_dir = settings.Paths().playlist_img_path
     all_files = os.listdir(playlist_dir)
 
     # Find unlinked images (including thumbnails)

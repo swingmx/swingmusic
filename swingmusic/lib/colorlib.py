@@ -32,9 +32,9 @@ def get_image_colors(image: str, count=1) -> list[str]:
 
 def process_color(item_hash: str, is_album=True):
     path = (
-        settings.Paths.get_sm_thumb_path()
+        settings.Paths().sm_thumb_path
         if is_album
-        else settings.Paths.get_sm_artist_img_path()
+        else settings.Paths().sm_artist_img_path
     )
     path = Path(path) / (item_hash + ".webp")
 

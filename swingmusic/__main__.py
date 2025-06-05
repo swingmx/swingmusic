@@ -5,8 +5,8 @@ import pathlib
 import multiprocessing
 from PIL import Image
 
+from swingmusic import settings
 from swingmusic.start_swingmusic import start_swingmusic
-from swingmusic.utils.xdg_utils import get_xdg_config_dir
 from swingmusic.utils.filesystem import get_home_res_path
 from swingmusic.arg_handler import handle_build, handle_password_reset
 
@@ -68,7 +68,7 @@ def print_version(*args, **kwargs):
 @click.option("--port", default=1970, help="HTTP port to run the app on.")
 @click.option(
     "--config",
-    default=lambda: get_xdg_config_dir(),
+    default=lambda: settings.Paths().base_path,
     show_default="XDG_CONFIG_HOME",
     help="Path to the config file.",
     type=click.Path(

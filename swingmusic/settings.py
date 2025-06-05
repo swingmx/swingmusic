@@ -11,19 +11,33 @@ from swingmusic import configs
 from swingmusic.utils.filesystem import get_home_res_path
 
 
+class SingletonMeta(type):
+    _instances = {}
+
+    def __call__(cls, *args, **kwargs):
+        if cls not in cls._instances:
+            instance = super().__call__(*args, **kwargs)
+            cls._instances[cls] = instance
+        return cls._instances[cls]
+
+
+
 if getattr(sys, "frozen", False) and hasattr(sys, "_MEIPASS"):
     IS_BUILD = True
 else:
     IS_BUILD = False
 
 
-class Paths:
+class Paths(metaclass=SingletonMeta):
+    """
+    This class is a singleton.
+    That means only the first instantiation of Paths can set the swingmusic config path.
+    You cannot change the config path later.
+    """
 
-    base_path:Path = Path.home()
+    base_path:Path = Path.home().resolve()
+    USER_HOME_DIR = Path.home().resolve()
 
-
-    USER_HOME_DIR = Path.home()
-    XDG_CONFIG_DIR:Path
 
     # TODO: Break this down into getter methods for each path
     # TODO: After refactoring change to singleton class
@@ -31,27 +45,46 @@ class Paths:
     def __init__(self, base_path:Path=None):
         """
         Create config-folder structure and check permissions.
-        THIS CLASS CAN BE USED WITHOUT INITIALISATION.
-
-
+        This Class can be used
 
         :param base_path: The location where the swingmusic config folder will be created.
         """
 
-        self.base_path = base_path
+        """
+        Returns the XDG_CONFIG_HOME environment variable if it exists, otherwise
+        returns the default config directory. If none of those exist, returns the
+        user's home directory.
+        """
+
+        xdg_config_home = os.environ.get("XDG_CONFIG_HOME")
+        swing_xdg_config_home = os.environ.get("SWINGMUSIC_XDG_CONFIG_DIR")
+        alt_dir = Path.home() / ".config"
+
+
+        if not base_path is None:
+            self.base_path = Path(base_path)
+
+        elif not swing_xdg_config_home is None:
+            self.base_path = Path(swing_xdg_config_home)
+
+        elif not xdg_config_home is None:
+            self.base_path =  Path(xdg_config_home)
+
+        elif alt_dir.exists():
+            self.base_path = alt_dir
+
+        else:
+            self.base_path = Path.home()
+
         self.mkdir_config_folders()
-
-
-        # TODO: should assets be moved there?
 
 
     def mkdir_config_folders(self):
         """
-        Create config config folder structure.
+        Create the config/cache folder structure.
 
         base folder
         └───`swingmusic` or `.swingmusic`
-            ├───assets
             ├───images
             │   ├───artists
             │   │   ├───large
@@ -72,144 +105,141 @@ class Paths:
         """
 
 
+        # all dirs relative to `swingmusic` config dir
         dirs = [
-            "",  # creates the config folder
+            "",                                 # `swingmusic` or `.swingmusic`
             "plugins/lyrics",
-            Paths.get_sm_thumb_path(), #
-            Paths.get_lg_thumb_path(),
-            Paths.get_md_thumb_path(),
-            Paths.get_xsm_thumb_path(),
-            os.path.join("images", "playlists"),
-            Paths.get_md_artist_img_path(),
-            Paths.get_sm_artist_img_path(),
-            Paths.get_lg_artist_img_path(),
-            Paths.get_mixes_img_path(),
-            Paths.get_og_mixes_img_path(),
-            Paths.get_md_mixes_img_path(),
-            Paths.get_sm_mixes_img_path(),
+            "images/playlists",
+            "images/thumbnails/small",
+            "/images/thumbnails/large",
+            "/images/thumbnails/medium",
+            "/images/thumbnails/xsmall",
+            "/images/artists/medium",
+            "/images/artists/small",
+            "/images/artists/large",
+            "/images/mixes/",
+            "/images/mixes/original",
+            "/images/mixes/medium",
+            "/images/mixes/small",
         ]
 
         for folder in dirs:
-            path = Paths.get_app_dir() / folder
+            path = self.base_path / self.config_folder_name / folder
             if not path.exists():
                 path.mkdir(parents=True)
                 path.chmod(mode=0o755)
 
 
-    @classmethod
-    def set_config_dir(cls, path: Path|str):
-        cls.XDG_CONFIG_DIR = Path(path)
+    @property
+    def config_dir(self) -> pathlib.Path:
+        """
+        return the resolved base path of swingmusic config folder
+        """
+        path_config = Paths()
+        return path_config.base_path.resolve()
 
-    @classmethod
-    def get_config_dir(cls) -> pathlib.Path:
-        if xdg:=os.environ.get("SWINGMUSIC_XDG_CONFIG_DIR"):
-            return Path(xdg).resolve()
-        else:
-            return Path(".").resolve()
-
-    @classmethod
-    def get_config_folder(cls) -> str:
+    @property
+    def config_folder_name(self) -> str:
         """
         return the name of the swingmusic config folder.
 
         When the base path is the same as the home dir,
         it returns `.swingmusic` else `swingmusic`
         """
-        if cls.get_config_dir() == str(cls.USER_HOME_DIR.resolve()):
+        if self.config_dir == self.USER_HOME_DIR:
             return ".swingmusic"
         else:
             return "swingmusic"
 
-    @classmethod
-    def get_app_dir(cls) -> Path:
-        return cls.get_config_dir() / cls.get_config_folder()
+    @property
+    def app_dir(self) -> Path:
+        return self.config_dir / self.config_folder_name
 
-    @classmethod
-    def get_img_path(cls) -> Path:
-        return cls.get_app_dir() /  "images"
+    @property
+    def img_path(self) -> Path:
+        return self.app_dir / "images"
 
     # ARTISTS
-    @classmethod
-    def get_artist_img_path(cls) -> Path:
-        return cls.get_img_path() / "artists"
+    @property
+    def artist_img_path(self) -> Path:
+        return self.img_path / "artists"
 
-    @classmethod
-    def get_sm_artist_img_path(cls) -> Path:
-        return cls.get_artist_img_path() / "small"
+    @property
+    def sm_artist_img_path(self) -> Path:
+        return self.artist_img_path / "small"
 
-    @classmethod
-    def get_md_artist_img_path(cls):
-        return cls.get_artist_img_path() / "medium"
+    @property
+    def md_artist_img_path(self):
+        return self.artist_img_path / "medium"
 
-    @classmethod
-    def get_lg_artist_img_path(cls):
-        return cls.get_artist_img_path() / "large"
+    @property
+    def lg_artist_img_path(self):
+        return self.artist_img_path / "large"
 
     # TRACK THUMBNAILS
-    @classmethod
-    def get_thumbs_path(cls):
-        return cls.get_img_path() / "thumbnails"
+    @property
+    def thumbs_path(self):
+        return self.img_path / "thumbnails"
 
-    @classmethod
-    def get_sm_thumb_path(cls):
-        return cls.get_thumbs_path() / "small"
+    @property
+    def sm_thumb_path(self):
+        return self.thumbs_path / "small"
 
-    @classmethod
-    def get_xsm_thumb_path(cls):
-        return cls.get_thumbs_path() / "xsmall"
+    @property
+    def xsm_thumb_path(self):
+        return self.thumbs_path / "xsmall"
 
-    @classmethod
-    def get_md_thumb_path(cls):
-        return cls.get_thumbs_path() / "medium"
+    @property
+    def md_thumb_path(self):
+        return self.thumbs_path / "medium"
 
-    @classmethod
-    def get_lg_thumb_path(cls):
-        return cls.get_thumbs_path() / "large"
+    @property
+    def lg_thumb_path(self):
+        return self.thumbs_path/ "large"
 
     # OTHERS
-    @classmethod
-    def get_playlist_img_path(cls):
-        return cls.get_img_path() / "playlists"
+    @property
+    def playlist_img_path(self):
+        return self.img_path / "playlists"
 
-    @classmethod
-    def get_assets_path(cls):
-        return Paths.get_app_dir() / "assets"
+    def assets_path(self):
+        return self.app_dir / "assets"
 
-    @classmethod
-    def get_plugins_path(cls):
-        return Paths.get_app_dir() / "plugins"
+    @property
+    def plugins_path(self):
+        return self.app_dir / "plugins"
 
-    @classmethod
-    def get_lyrics_plugins_path(cls):
-        return Paths.get_plugins_path() / "lyrics"
+    @property
+    def lyrics_plugins_path(self):
+        return self.plugins_path / "lyrics"
 
-    @classmethod
-    def get_config_file_path(cls):
-        return cls.get_app_dir() / "settings.json"
+    @property
+    def config_file_path(self):
+        return self.app_dir/ "settings.json"
 
-    @classmethod
-    def get_mixes_img_path(cls):
-        return cls.get_img_path() / "mixes"
+    @property
+    def mixes_img_path(self):
+        return self.img_path/ "mixes"
 
-    @classmethod
-    def get_artist_mixes_img_path(cls):
-        return cls.get_mixes_img_path() / "artists"
+    @property
+    def artist_mixes_img_path(self):
+        return self.mixes_img_path/ "artists"
 
-    @classmethod
-    def get_og_mixes_img_path(cls):
-        return cls.get_mixes_img_path() / "original"
+    @property
+    def og_mixes_img_path(self):
+        return self.mixes_img_path/ "original"
 
-    @classmethod
-    def get_md_mixes_img_path(cls):
-        return cls.get_mixes_img_path() / "medium"
+    @property
+    def md_mixes_img_path(self):
+        return self.mixes_img_path/ "medium"
 
-    @classmethod
-    def get_sm_mixes_img_path(cls):
-        return cls.get_mixes_img_path() / "small"
+    @property
+    def sm_mixes_img_path(self):
+        return self.mixes_img_path / "small"
 
-    @classmethod
-    def get_image_cache_path(cls):
-        return cls.get_img_path() / "cache"
+    @property
+    def image_cache_path(self):
+        return self.img_path / "cache"
 
 
 # defaults
@@ -250,15 +280,15 @@ class DbPaths:
 
     @classmethod
     def get_app_db_path(cls):
-        return Paths.get_app_dir() / cls.APP_DB_NAME
+        return Paths().app_dir / cls.APP_DB_NAME
 
     @classmethod
     def get_userdata_db_path(cls):
-        return Paths.get_app_dir() / cls.USER_DATA_DB_NAME
+        return Paths().app_dir / cls.USER_DATA_DB_NAME
 
     @classmethod
     def get_json_config_path(cls):
-        return Paths.get_app_dir() / "config.json"
+        return Paths().app_dir / "config.json"
 
 
 class FLASKVARS:
