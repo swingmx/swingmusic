@@ -111,16 +111,16 @@ class Paths(metaclass=SingletonMeta):
             "plugins/lyrics",
             "images/playlists",
             "images/thumbnails/small",
-            "/images/thumbnails/large",
-            "/images/thumbnails/medium",
-            "/images/thumbnails/xsmall",
-            "/images/artists/medium",
-            "/images/artists/small",
-            "/images/artists/large",
-            "/images/mixes/",
-            "/images/mixes/original",
-            "/images/mixes/medium",
-            "/images/mixes/small",
+            "images/thumbnails/large",
+            "images/thumbnails/medium",
+            "images/thumbnails/xsmall",
+            "images/artists/medium",
+            "images/artists/small",
+            "images/artists/large",
+            "images/mixes/",
+            "images/mixes/original",
+            "images/mixes/medium",
+            "images/mixes/small",
         ]
 
         for folder in dirs:
@@ -135,8 +135,7 @@ class Paths(metaclass=SingletonMeta):
         """
         return the resolved base path of swingmusic config folder
         """
-        path_config = Paths()
-        return path_config.base_path.resolve()
+        return self.base_path.resolve()
 
     @property
     def config_folder_name(self) -> str:

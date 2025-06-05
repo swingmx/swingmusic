@@ -15,35 +15,27 @@ def copy_assets_files():
     Copies assets to the app directory.
     """
 
+    # TODO: rework this file.
+    #  Either import assets from inside the module, no need for copy
+    #  or copy files with explicit location to config folder
+
     assets_dir = "assets"
 
     if settings.IS_BUILD:
         assets_dir = get_home_res_path("assets")
 
-    files = [
-        {
-            "src": assets_dir,
-            "dest": (settings.Paths().app_dir / "assets").resolve(),
-            "is_dir": True,
-        }
-    ]
+    src = Path(".").resolve() / assets_dir
+    dest = (settings.Paths().app_dir / "assets").resolve()
 
-    for entry in files:
-        src = Path(".") / entry["src"]
-
-        if entry["is_dir"]:
-            shutil.copytree(
-                src,
-                entry["dest"],
-                ignore=shutil.ignore_patterns(
-                    "*.pyc",
-                ),
-                copy_function=shutil.copy2,
-                dirs_exist_ok=True,
-            )
-            break
-
-        shutil.copy2(src, entry["dest"])
+    shutil.copytree(
+        src,
+        dest,
+        ignore=shutil.ignore_patterns(
+            "*.pyc",
+        ),
+        copy_function=shutil.copy2,
+        dirs_exist_ok=True,
+    )
 
 
 def create_config_dir() -> None:
