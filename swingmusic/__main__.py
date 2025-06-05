@@ -55,6 +55,29 @@ def print_version(*args, **kwargs):
     sys.exit(0)
 
 
+def default_base_path():
+    """
+    copy of `settings.Paths.__init__` method.
+    used for click to determine which base-config-path is chosen by default.
+    """
+
+    xdg_config_home = os.environ.get("XDG_CONFIG_HOME")
+    swing_xdg_config_home = os.environ.get("SWINGMUSIC_XDG_CONFIG_DIR")
+    alt_dir = pathlib.Path.home() / ".config"
+
+    if not swing_xdg_config_home is None:
+        return pathlib.Path(swing_xdg_config_home)
+
+    elif not xdg_config_home is None:
+        return pathlib.Path(xdg_config_home)
+
+    elif alt_dir.exists():
+        return alt_dir
+
+    else:
+        return pathlib.Path.home()
+
+
 @click.command(options_metavar="<options>", context_settings={"show_default": True})
 @click.option(
     "--build",
@@ -68,7 +91,7 @@ def print_version(*args, **kwargs):
 @click.option("--port", default=1970, help="HTTP port to run the app on.")
 @click.option(
     "--config",
-    default=lambda: settings.Paths().base_path,
+    default=default_base_path,
     show_default="XDG_CONFIG_HOME",
     help="Path to the config file.",
     type=click.Path(

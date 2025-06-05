@@ -10,7 +10,6 @@ from swingmusic.lib.mapstuff import (
     map_favorites,
     map_scrobble_data,
 )
-from swingmusic.setup.files import create_config_dir
 from swingmusic.setup.sqlite import run_migrations, setup_sqlite
 from swingmusic.store.albums import AlbumStore
 from swingmusic.store.artists import ArtistStore
@@ -24,7 +23,6 @@ def run_setup():
     """
     Creates the config directory, runs migrations, and loads settings.
     """
-    create_config_dir()
 
     # setup config file
     config = UserConfig()

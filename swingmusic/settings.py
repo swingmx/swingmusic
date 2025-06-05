@@ -2,6 +2,7 @@
 Contains default configs
 """
 import pathlib
+import shutil
 from pathlib import Path
 import os
 import subprocess
@@ -125,6 +126,35 @@ class Paths(metaclass=SingletonMeta):
             if not path.exists():
                 path.mkdir(parents=True)
                 path.chmod(mode=0o755)
+
+
+    def copy_assets_dir(self):
+        """
+        Copies assets to the app directory.
+        """
+
+        # TODO: rework this file.
+        #  Either import assets from inside the module, no need for copy
+        #  or copy files with explicit location to config folder
+
+        assets_dir = "assets"
+
+        if IS_BUILD:
+            assets_dir = get_home_res_path("assets")
+
+        src = Path(".").resolve() / assets_dir
+        dest = (self.app_dir / "assets").resolve()
+
+        shutil.copytree(
+            src,
+            dest,
+            ignore=shutil.ignore_patterns(
+                "*.pyc",
+            ),
+            copy_function=shutil.copy2,
+            dirs_exist_ok=True,
+        )
+
 
 
     @property
