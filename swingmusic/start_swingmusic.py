@@ -191,14 +191,6 @@ def start_swingmusic(host: str, port: int):
         return app.send_static_file("index.html")
 
 
-    @background
-    def run_swingmusic():
-        register_plugins()
-
-        setproctitle.setproctitle(f"swingmusic {host}:{port}")
-        start_cron_jobs()
-
-
     log_startup_info(host, port)
     load_into_mem()
     run_swingmusic()
