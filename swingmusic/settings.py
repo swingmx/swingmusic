@@ -39,9 +39,6 @@ class Paths(metaclass=SingletonMeta):
     USER_HOME_DIR = Path.home().resolve()
 
 
-    # TODO: Break this down into getter methods for each path
-    # TODO: After refactoring change to singleton class
-
     def __init__(self, base_path:Path=None):
         """
         Create config-folder structure and check permissions.
