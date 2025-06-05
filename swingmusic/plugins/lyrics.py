@@ -87,7 +87,7 @@ class LyricsProvider(LRCProvider):
 
     def _get_token(self):
         # Check if token is cached and not expired
-        plugin_path = Paths.get_lyrics_plugins_path()
+        plugin_path = Paths().lyrics_plugins_path
         token_path = os.path.join(plugin_path, "token.json")
 
         current_time = int(time.time())

@@ -23,7 +23,7 @@ def copy_assets_files():
     files = [
         {
             "src": assets_dir,
-            "dest": (settings.Paths.app_dir() / "assets").resolve(),
+            "dest": (settings.Paths().app_dir / "assets").resolve(),
             "is_dir": True,
         }
     ]
