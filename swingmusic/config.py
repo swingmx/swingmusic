@@ -1,3 +1,4 @@
+import pathlib
 from dataclasses import dataclass, asdict, field
 import json
 import os
@@ -86,7 +87,7 @@ class UserConfig:
         if not os.path.exists(self._config_path):
             self.write_to_file(asdict(self))
 
-    def load_config(self, path: str) -> dict[str, Any]:
+    def load_config(self, path: pathlib.Path|str) -> dict[str, Any]:
         """
         Reads the settings from the config file.
         Returns a dictget_root_dirs

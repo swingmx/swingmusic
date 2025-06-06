@@ -71,8 +71,6 @@ def start_swingmusic(host: str, port: int):
     waitress_logger = logging.getLogger("waitress")
     waitress_logger.setLevel(logging.ERROR)
 
-    log_startup_info(host, port)
-
     @background
     def run_swingmusic():
         register_plugins()

@@ -85,7 +85,7 @@ def get_folder_tree(body: FolderTree):
 
     try:
         if req_dir == "$home" and root_dirs[0] == "$home":
-            req_dir = settings.Paths().USER_HOME_DIR
+            req_dir = settings.Paths().USER_HOME_DIR.as_posix()
     except IndexError:
         pass
 

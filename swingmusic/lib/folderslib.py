@@ -1,4 +1,5 @@
 import os
+import pathlib
 from pathlib import Path
 
 from swingmusic.lib.sortlib import sort_folders, sort_tracks
@@ -24,7 +25,7 @@ def create_folder(path: str, trackcount=0) -> Folder:
     )
 
 
-def get_folders(paths: list[str]):
+def get_folders(paths: list[pathlib.Path]):
     """
     Filters out folders that don't have any tracks and
     returns a list of folder objects.
@@ -38,7 +39,7 @@ def get_folders(paths: list[str]):
 
 
 def get_files_and_dirs(
-    path: str,
+    path: str|pathlib.Path,
     start: int,
     limit: int,
     tracksortby: str,
@@ -53,48 +54,53 @@ def get_files_and_dirs(
 
     Can recursively call itself to skip through empty folders.
     """
-    # TODO: Replace os.path with pathlib
-    try:
-        entries = os.scandir(path)
-    except FileNotFoundError:
+
+    path = pathlib.Path(path)
+
+    if not ( path.exists() and path.is_dir() ):
         return {
-            "path": path,
+            "path": path.as_posix(),
             "tracks": [],
             "folders": [],
         }
 
-    dirs, files = [], []
 
-    for entry_ in entries:
-        entry = Path(entry_.path)
+    # iter through all folders
+    # add files with supported suffix
+    # ignore hidden folder
+    dirs, files = [], []
+    for entry in path.iterdir():
         ext = entry.suffix.lower()
 
-        if entry.is_dir() and not entry.name.startswith("."):
-            dir = (entry / "").as_posix()
-            
+        if entry.is_dir() and not entry.stem.startswith("."):
+            dirs.append((entry / "").as_posix())
+            # only append as posix for FolderStore, sort_tracks and sort_folder function
             # add a trailing slash to the folder path
             # to avoid matching a folder starting with the same name as the root path
             # eg. .../Music and .../Music VideosI
-            dirs.append(dir)
+
         elif entry.is_file() and ext in SUPPORTED_FILES:
-            files.append(entry.as_posix())
+            files.append(entry)
 
-    files_ = []
-
+    # sort files by most recent
+    files_with_mtime = []
     for file in files:
         try:
-            files_.append(
+            files_with_mtime.append(
                 {
-                    "path": file,
-                    "time": os.path.getmtime(file),
+                    "path": file.as_posix(),
+                    "time": file.lstat().st_mtime,
                 }
             )
         except OSError as e:
             log.error(e)
 
-    files_.sort(key=lambda f: f["time"])
-    files = [f["path"] for f in files_]
+    files_with_mtime.sort(key=lambda f: f["time"])
+    files = [f["path"] for f in files_with_mtime]
 
+
+    # if supported files were found,
+    #
     tracks = []
     if files:
         if limit == -1:
@@ -126,7 +132,7 @@ def get_files_and_dirs(
         )
 
     return {
-        "path": path,
+        "path": path.as_posix(),
         "tracks": serialize_tracks(tracks),
         "folders": folders,
         "total": len(files),

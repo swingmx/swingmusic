@@ -228,6 +228,7 @@ class Paths(metaclass=SingletonMeta):
     def playlist_img_path(self):
         return self.img_path / "playlists"
 
+    @property
     def assets_path(self):
         return self.app_dir / "assets"
 
