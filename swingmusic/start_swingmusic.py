@@ -1,3 +1,5 @@
+import pathlib
+
 from swingmusic import settings
 from swingmusic.api import create_api
 from swingmusic.crons import start_cron_jobs
@@ -69,8 +71,6 @@ def start_swingmusic(host: str, port: int):
     waitress_logger = logging.getLogger("waitress")
     waitress_logger.setLevel(logging.ERROR)
 
-    log_startup_info(host, port)
-
     @background
     def run_swingmusic():
         register_plugins()
@@ -80,6 +80,8 @@ def start_swingmusic(host: str, port: int):
 
     # Setup function calls
     settings.Info.load()
+    settings.Paths()
+
     run_setup()
 
     # Create the Flask app
@@ -186,6 +188,8 @@ def start_swingmusic(host: str, port: int):
         """
         return app.send_static_file("index.html")
 
+
+    log_startup_info(host, port)
     load_into_mem()
     run_swingmusic()
     # TrackStore.export()

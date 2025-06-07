@@ -23,4 +23,4 @@ def log_startup_info(host: str, port: int):
         )
 
     click.echo("")
-    click.echo(f"{TCOLOR.YELLOW}Data folder: {Paths.get_app_dir()}{TCOLOR.ENDC}\n")
+    click.echo(f"{TCOLOR.YELLOW}Data folder: {Paths().app_dir}{TCOLOR.ENDC}\n")

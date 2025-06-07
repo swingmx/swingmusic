@@ -130,7 +130,7 @@ class LastFmPlugin(Plugin):
         """
         Dumps the scrobble data to a file in the lastfm plugin directory.
         """
-        dump_dir = Path(Paths.get_plugins_path(), "lastfm")
+        dump_dir = Paths().plugins_path / "lastfm"
         if not dump_dir.exists():
             dump_dir.mkdir(parents=True, exist_ok=True)
 
@@ -147,7 +147,7 @@ class LastFmPlugin(Plugin):
             return
 
         self.UPLOADING_DUMPS = True
-        dump_dir = Path(Paths.get_plugins_path(), "lastfm")
+        dump_dir = Paths.get_plugins_path() / "lastfm"
 
         if not dump_dir.exists():
             return
