@@ -42,7 +42,7 @@ class AlbumVersionEnum(Enum):
     BONUS_EDITION = ("bonus",)
     BONUS_TRACK = ("bonus track",)
 
-    ORIGINAL = ("original", "og")
+    ORIGINAL = ("original", " og ", "og ")
     INTL_VERSION = ("international",)
     UK_VERSION = ("uk version",)
     US_VERSION = ("us version",)

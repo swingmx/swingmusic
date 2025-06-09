@@ -31,6 +31,8 @@ class UserConfig:
             "Peter, Paul & Mary",
             "Simon & Garfunkel",
             "Judy & Mary",
+            "Belle & Sebastian",
+            "Florence & The Machine",
         }
     )
     genreSeparators: set[str] = field(default_factory=lambda: {"/", ";", "&"})
@@ -72,7 +74,12 @@ class UserConfig:
 
         # loop through the config file and set the values
         for key, value in config.items():
-            setattr(self, key, value)
+            if key == "artistSplitIgnoreList":
+                # Merge with default values instead of overwriting
+                default_values = self.artistSplitIgnoreList
+                setattr(self, key, default_values.union(value))
+            else:
+                setattr(self, key, value)
 
         # finally set the config path
         self._config_path = config_path
