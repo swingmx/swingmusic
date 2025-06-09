@@ -55,6 +55,7 @@ class UserConfig:
     excludeDirs: list[str] = field(default_factory=list)
     artistSeparators: set[str] = field(default_factory=lambda: {";", "/"})
     artistSplitIgnoreList: set[str] = field(
+        # TODO: in the future, maybe setup a server where users can contribute to the global ignore list?
         default_factory=lambda: load_default_artist_ignore_list().union(
             load_user_artist_ignore_list()
         )
