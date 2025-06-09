@@ -1,10 +1,41 @@
 from dataclasses import dataclass, asdict, field
 import json
-import os
+from pathlib import Path
 from typing import Any
 from .settings import Paths
 
 # TODO: Publish this on PyPi
+
+
+def load_artist_ignore_list_from_file(filepath: Path) -> set[str]:
+    """
+    Loads artist names from a text file.
+    Returns an empty set if the file doesn't exist.
+    """
+    try:
+        return {
+            line.strip() for line in filepath.read_text().splitlines() if line.strip()
+        }
+    except FileNotFoundError:
+        return set()
+
+
+def load_default_artist_ignore_list() -> set[str]:
+    """
+    Loads the default artist ignore list from the text file.
+    Returns an empty set if the file doesn't exist.
+    """
+    default_file = Path(__file__).parent / "data" / "artist_split_ignore.txt"
+    return load_artist_ignore_list_from_file(default_file)
+
+
+def load_user_artist_ignore_list() -> set[str]:
+    """
+    Loads the user-defined artist ignore list from the config directory.
+    Returns an empty set if the file doesn't exist.
+    """
+    user_file = Path(Paths.get_config_file_path()).parent / "artist_split_ignore.txt"
+    return load_artist_ignore_list_from_file(user_file)
 
 
 @dataclass
@@ -23,17 +54,9 @@ class UserConfig:
     excludeDirs: list[str] = field(default_factory=list)
     artistSeparators: set[str] = field(default_factory=lambda: {";", "/"})
     artistSplitIgnoreList: set[str] = field(
-        default_factory=lambda: {
-            "AC/DC",
-            "Bob marley & the wailers",
-            "Crosby, Stills, Nash & Young",
-            "Smith & Thell",
-            "Peter, Paul & Mary",
-            "Simon & Garfunkel",
-            "Judy & Mary",
-            "Belle & Sebastian",
-            "Florence & The Machine",
-        }
+        default_factory=lambda: load_default_artist_ignore_list().union(
+            load_user_artist_ignore_list()
+        )
     )
     genreSeparators: set[str] = field(default_factory=lambda: {"/", ";", "&"})
 
@@ -75,9 +98,10 @@ class UserConfig:
         # loop through the config file and set the values
         for key, value in config.items():
             if key == "artistSplitIgnoreList":
-                # Merge with default values instead of overwriting
-                default_values = self.artistSplitIgnoreList
-                setattr(self, key, default_values.union(value))
+                # Merge with default values and user file values instead of overwriting
+                default_values = load_default_artist_ignore_list()
+                user_values = load_user_artist_ignore_list()
+                setattr(self, key, default_values.union(user_values).union(value))
             else:
                 setattr(self, key, value)
 
@@ -90,7 +114,7 @@ class UserConfig:
         if it doesn't exist
         """
         # if not exists, create the config file
-        if not os.path.exists(self._config_path):
+        if not Path(self._config_path).exists():
             self.write_to_file(asdict(self))
 
     def load_config(self, path: str) -> dict[str, Any]:
