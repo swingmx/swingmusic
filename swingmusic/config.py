@@ -41,6 +41,7 @@ def load_user_artist_ignore_list() -> set[str]:
 @dataclass
 class UserConfig:
     _config_path: str = ""
+    _artist_split_ignore_file_name: str = "artist_split_ignore.txt"
     # NOTE: only auth stuff are used (the others are still reading/writing to db)
     # TODO: Move the rest of the settings to the config file
 
