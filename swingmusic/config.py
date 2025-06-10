@@ -10,7 +10,7 @@ from .settings import Paths
 
 @dataclass
 class UserConfig:
-    _config_path: str = ""
+    _config_path: pathlib.Path = ""
     # NOTE: only auth stuff are used (the others are still reading/writing to db)
     # TODO: Move the rest of the settings to the config file
 
@@ -76,7 +76,7 @@ class UserConfig:
             setattr(self, key, value)
 
         # finally set the config path
-        self._config_path = str(config_path)
+        self._config_path = config_path
 
     def setup_config_file(self) -> None:
         """
@@ -84,16 +84,18 @@ class UserConfig:
         if it doesn't exist
         """
         # if not exists, create the config file
-        if not os.path.exists(self._config_path):
-            self.write_to_file(asdict(self))
+        config = pathlib.Path(self._config_path)
+        if not config.exists():
+            config.touch()
+            config.write_text(asdict(self))
 
-    def load_config(self, path: pathlib.Path|str) -> dict[str, Any]:
+    def load_config(self, path: pathlib.Path) -> dict[str, Any]:
         """
         Reads the settings from the config file.
         Returns a dictget_root_dirs
         """
-        with open(path, "r") as f:
-            settings = json.load(f)
+        with path.open("r") as file:
+            settings = json.load(file)
 
         return settings
 
@@ -104,7 +106,7 @@ class UserConfig:
         # remove internal attributes
         settings = {k: v for k, v in settings.items() if not k.startswith("_")}
 
-        with open(self._config_path, "w") as f:
+        with self._config_path.open("w") as f:
             json.dump(settings, f, indent=4, default=list)
 
     def __setattr__(self, key: str, value: Any) -> None:

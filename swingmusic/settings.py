@@ -444,11 +444,10 @@ class Info:
 
     if not SWINGMUSIC_APP_VERSION:
         path = get_home_res_path("version.txt")
-        if not path:
+        if not path.exists():
             raise ValueError("Version file not found")
 
-        with open(path, "r") as f:
-            SWINGMUSIC_APP_VERSION = f.read().strip()
+        SWINGMUSIC_APP_VERSION = path.read_text().strip()
 
     GIT_LATEST_COMMIT_HASH = "<unset>"
     GIT_CURRENT_BRANCH = "<unset>"

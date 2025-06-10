@@ -44,11 +44,11 @@ def print_version(*args, **kwargs):
         return
 
     path = get_home_res_path("version.txt")
-    if not path:
+    if not path.exists():
         click.echo("Version file not found.")
         sys.exit(1)
 
-    with open(path, "r") as f:
+    with path.open("r") as f:
         version = f.read()
 
     click.echo(version)

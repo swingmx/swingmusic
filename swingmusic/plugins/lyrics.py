@@ -88,12 +88,12 @@ class LyricsProvider(LRCProvider):
     def _get_token(self):
         # Check if token is cached and not expired
         plugin_path = Paths().lyrics_plugins_path
-        token_path = os.path.join(plugin_path, "token.json")
+        token_path = plugin_path / "token.json"
 
         current_time = int(time.time())
 
-        if os.path.exists(token_path):
-            with open(token_path, "r", encoding="utf-8") as token_file:
+        if token_path.exists():
+            with token_path.open(mode="r", encoding="utf-8") as token_file:
                 cached_token_data: dict = json.load(token_file)
 
             cached_token = cached_token_data.get("token")
@@ -121,8 +121,8 @@ class LyricsProvider(LRCProvider):
         self.token = new_token
         token_data = {"token": new_token, "expiration_time": expiration_time}
 
-        os.makedirs(plugin_path, exist_ok=True)
-        with open(token_path, "w", encoding="utf-8") as token_file:
+        plugin_path.mkdir(parents=True, exist_ok=True)
+        with token_path.open("w", encoding="utf-8") as token_file:
             json.dump(token_data, token_file)
 
     def get_lrc_by_id(self, track_id: str) -> Optional[str]:
@@ -210,16 +210,15 @@ class Lyrics(Plugin):
     @plugin_method
     def download_lyrics(self, trackid: str, path: str):
         lrc = self.provider.get_lrc_by_id(trackid)
-        is_valid = lrc is not None and lrc.replace("\n", "").strip() != ""
 
-        if not is_valid:
+        if lrc is None:
+            return None
+        elif len(lrc.replace("\n", "").strip()) < 1: #check if empty
             return None
 
         path = Path(path).with_suffix(".lrc")
+        if not path.exists():
+            path.touch()
+        path.write_text(lrc)
 
-        try:
-            with open(path, "w", encoding="utf-8") as f:
-                f.write(lrc)
-                return lrc
-        except:
-            return lrc
+        return lrc

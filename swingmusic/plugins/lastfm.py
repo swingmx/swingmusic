@@ -131,9 +131,7 @@ class LastFmPlugin(Plugin):
             dump_dir.mkdir(parents=True, exist_ok=True)
 
         path = dump_dir / f"{int(time.time())}.json"
-
-        with open(path, "w") as f:
-            json.dump(data, f)
+        path.write_text(json.dumps(data))
 
     def upload_dumps(self):
         """
