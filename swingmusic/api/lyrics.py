@@ -26,6 +26,8 @@ def send_lyrics(body: SendLyricsBody):
     filepath = body.filepath
     trackhash = body.trackhash
 
+    # lyrics is allways synced
+
     is_synced = True
     lyrics, copyright = get_lyrics(filepath, trackhash)
 
