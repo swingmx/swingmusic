@@ -4,13 +4,171 @@ from typing import Iterable
 from swingmusic.store.tracks import TrackStore
 
 
+def parse_lyrics_lines(lyrics:str) -> list[dict]:
+    """
+    Split lyrics into lines and determine there tag type.
+
+    Parses the tag if the following format is present: [tag]*[tags] <body>
+    else tag_type is unknown
+    tag-type and tags are lists combined by their index
+
+
+    :param lyrics: Full lyrics body
+    :return: {'tag_type', 'body', 'tag'}
+    """
+
+
+    entries = []
+    for line in lyrics.splitlines():
+
+        data = {}
+        if line.startswith("["):
+            data["tag_type"] = []
+            data["tags"] = []
+
+            after_content = ""
+            bracket_content = ""
+
+            while True:
+                if "[" in line and "]" in line: # second tag
+                    bracket_content, after_content = line.split("]", 1)
+                    bracket_content = bracket_content.removeprefix("[")
+
+                    data["tags"].append(bracket_content)
+                    data["body"] = after_content
+
+                    line = after_content
+
+                    # check which tag type it is
+                    if bracket_content[0].isnumeric():
+                        data["tag_type"].append( "time" )
+
+                    elif bracket_content[0].isalpha():
+                        data["tag_type"].append( "meta" )
+                else:
+                    break
+
+        elif line.startswith("#"):
+            data["tag_type"].append("comment")
+            data["tag"] = ""
+            data["body"] = line
+
+        else:
+            data["tag_type"].append("unknwon")
+            data["tag"] = "unknown"
+            data["body"] = line
+
+        entries.append(data)
+
+    return entries
+
+
+def parse_time_tag(lines:list[dict]) -> list[dict]:
+    """
+    Filter time-tags from lines and parse them.
+    """
+
+    # filter tagtype time
+    # check if multi line []
+
+
+    parsed_tags = []
+    time_tags = [line for line in lines if line["tag_type"] == "time"]
+
+    # line = {"tag", "body", "tag_type"}
+    for line in time_tags:
+            minute, seconds = line["tag"].split(":", 1)
+
+            # check for comment
+            if "#" in line:
+                line["body"], comment = line.split("#", 1)
+            else:
+                comment = ""
+
+            parsed_tags.append({
+            "minute": minute,
+            "seconds": seconds,
+            "body": line["body"],
+            "comment": comment
+            })
+
+    return time_only
+
+
+class Lyrics:
+
+    SUPPORTED_METATAGS = {
+        "ti": "title",
+        "ar": "artist",
+        "al": "album",
+        "au": "author",
+        "lr": "lyricist",
+        "length": "lenght",
+        "by": "lrc_author",
+        "offset": "offset",
+        "re": "recorder",
+        "tool": "recorder",
+        "ve": "version"
+    }
+
+    lyrics:str
+    parsed_lyrics:list[dict]
+    meta:dict = {}
+
+
+    def __init__(self, lyrics:str):
+        """
+
+        :param lyrics: entire lyrics body
+        """
+
+        if lyrics is None:
+            raise ValueError("Lyrics can not be None")
+
+        if isinstance(lyrics, list):
+            lyrics = lyrics[0]
+            self.lyrics = lyrics
+
+        parsed = parse_lyrics_lines(lyrics)
+
+        # translate meta tags
+        meta = [line for line in parsed if line["tag_type"] == "meta"]
+        for entry in meta:
+            name, body = entry["tag"].split(":", 1)
+            name = name.lower()
+
+            dict_name = self.SUPPORTED_METATAGS.get(name, name)
+            self.meta[dict_name] = body
+
+        # parse lyrics / time tags
+        self.parsed_lyrics  = parse_time_tag(lyrics)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 def split_line(line: str):
     """
     Split a lyrics line into time and lyrics
     """
     items = line.split("]")
     time = items[0].removeprefix("[")
-    lyric = items[1] if len(items) > 1 else ""
+    if len(items) > 1:
+        lyric = items[1]
+    else:
+        lyric = ""
 
     return (time, lyric.strip())
 
@@ -83,6 +241,11 @@ def get_lyrics(track_path: str, trackhash: str):
     """
     Gets the lyrics for a track
     """
+    # find if lyrics can be found
+    # 1. relative to file .lrc / .elrc
+    # 2. 3dtag
+
+
     lyrics_path = get_lyrics_file_rel_to_track(track_path)
 
     if lyrics_path:
