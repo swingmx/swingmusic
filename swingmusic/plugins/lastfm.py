@@ -112,7 +112,11 @@ class LastFmPlugin(Plugin):
             if res_json["error"] == 9:
                 log.error("LAST.FM: Invalid session key")
                 # Invalid session key
-                self.config.lastfmSessionKeys.pop(str(get_current_userid()))
+                try:
+                    self.config.lastfmSessionKeys.pop(str(get_current_userid()))
+                except KeyError:
+                    pass
+
                 self.config.lastfmSessionKeys = self.config.lastfmSessionKeys
                 return False
 
