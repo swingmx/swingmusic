@@ -2,7 +2,7 @@ from pathlib import Path
 from dataclasses import dataclass, asdict, field
 import json
 from typing import Any
-from .settings import Paths
+from swingmusic.settings import Paths
 
 # TODO: Publish this on PyPi
 
@@ -34,13 +34,13 @@ def load_user_artist_ignore_list() -> set[str]:
     Loads the user-defined artist ignore list from the config directory.
     Returns an empty set if the file doesn't exist.
     """
-    user_file = Path(Paths.get_config_file_path()).parent / "artist_split_ignore.txt"
+    user_file = Path(Paths().config_file_path).parent / "artist_split_ignore.txt"
     return load_artist_ignore_list_from_file(user_file)
 
 
 @dataclass
 class UserConfig:
-    _config_path: Path = ""
+    _config_path: str = ""
     _artist_split_ignore_file_name: str = "artist_split_ignore.txt"
     # NOTE: only auth stuff are used (the others are still reading/writing to db)
     # TODO: Move the rest of the settings to the config file
@@ -94,7 +94,7 @@ class UserConfig:
         try:
             config = self.load_config(config_path)
         except FileNotFoundError:
-            self._config_path = config_path
+            self._config_path = config_path.as_posix()
             return
 
         # loop through the config file and set the values
@@ -108,7 +108,7 @@ class UserConfig:
                 setattr(self, key, value)
 
         # finally set the config path
-        self._config_path = config_path
+        self._config_path = config_path.as_posix()
 
     def setup_config_file(self) -> None:
         """

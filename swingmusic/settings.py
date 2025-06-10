@@ -7,6 +7,7 @@ from pathlib import Path
 import os
 import subprocess
 import sys
+from importlib import resources as impres
 
 from swingmusic import configs
 from swingmusic.utils.filesystem import get_home_res_path
@@ -126,6 +127,17 @@ class Paths(metaclass=SingletonMeta):
             if not path.exists():
                 path.mkdir(parents=True)
                 path.chmod(mode=0o755)
+
+        # Empty files to create
+        empty_files = [
+            # artist split ignore list
+            self.app_dir / "data" / "artist_split_ignore.txt" # TODO: use USERCONFIG -> circular import error
+        ]
+
+        for file in empty_files:
+            if not file.exists():
+                file.mkdir(parents=True)
+                file.touch()
 
 
     def copy_assets_dir(self):
