@@ -138,7 +138,7 @@ class UserConfig:
         # remove internal attributes
         settings = {k: v for k, v in settings.items() if not k.startswith("_")}
 
-        with self._config_path.open("w") as f:
+        with open(self._config_path , mode="w") as f:
             json.dump(settings, f, indent=4, default=list)
 
     def __setattr__(self, key: str, value: Any) -> None:

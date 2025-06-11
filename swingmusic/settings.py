@@ -13,7 +13,7 @@ from swingmusic import configs
 from swingmusic.utils.filesystem import get_home_res_path
 
 
-class SingletonMeta(type):
+class Singleton(type):
     _instances = {}
 
     def __call__(cls, *args, **kwargs):
@@ -30,7 +30,11 @@ else:
     IS_BUILD = False
 
 
-class Paths(metaclass=SingletonMeta):
+# global object
+paths = None
+
+
+class Paths(metaclass=Singleton):
     """
     This class is a singleton.
     That means only the first instantiation of Paths can set the swingmusic config path.
@@ -76,6 +80,10 @@ class Paths(metaclass=SingletonMeta):
             self.base_path = Path.home()
 
         self.mkdir_config_folders()
+
+        # set global easier access?
+        global paths
+        paths = self
 
 
     def mkdir_config_folders(self):
