@@ -118,8 +118,7 @@ class UserConfig:
         # if not exists, create the config file
         config = Path(self._config_path)
         if not config.exists():
-            config.touch()
-            config.write_text(asdict(self))
+            self.write_to_file(asdict(self))
 
     def load_config(self, path: Path) -> dict[str, Any]:
         """
