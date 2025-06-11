@@ -8,7 +8,6 @@ from swingmusic.models import Folder
 from swingmusic.serializers.track import serialize_tracks
 from swingmusic.utils.filesystem import SUPPORTED_FILES
 from swingmusic.store.folder import FolderStore
-from swingmusic.utils.wintools import win_replace_slash
 
 
 def create_folder(path: str, trackcount=0) -> Folder:
@@ -19,7 +18,7 @@ def create_folder(path: str, trackcount=0) -> Folder:
 
     return Folder(
         name=folder.name,
-        path=win_replace_slash(str(folder)) + "/",
+        path=folder.as_posix() + "/",
         is_sym=folder.is_symlink(),
         trackcount=trackcount,
     )

@@ -174,7 +174,13 @@ def start_swingmusic(host: str, port: int):
         accepts_gzip = request.headers.get("Accept-Encoding", "").find("gzip") >= 0
 
         if accepts_gzip:
-            if os.path.exists(os.path.join(app.static_folder or "", gzipped_path)):
+            if app.static_folder is None:
+                static_folder = pathlib.Path("")
+            else:
+                static_folder = pathlib.Path(app.static_folder)
+
+            joined = static_folder / gzipped_path
+            if joined.exists():
                 response = app.make_response(app.send_static_file(gzipped_path))
                 response.headers["Content-Encoding"] = "gzip"
                 return response

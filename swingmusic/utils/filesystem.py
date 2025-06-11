@@ -1,7 +1,6 @@
 import os
 from pathlib import Path
 
-from swingmusic.utils.wintools import win_replace_slash
 
 CWD = Path(__file__).parent.resolve()
 
@@ -9,42 +8,51 @@ FILES = ["flac", "mp3", "wav", "m4a", "ogg", "wma", "opus", "alac", "aiff"]
 SUPPORTED_FILES = tuple(f".{file}" for file in FILES)
 
 
-def run_fast_scandir(_dir: str, full=False) -> tuple[list[str], list[str]]:
+def run_fast_scandir(path: str, full=False) -> tuple[list[str], list[str]]:
     """
     Scans a directory for files with a specific extension.
     Returns a list of files and folders in the directory.
     """
-    # if on mac, ignore Library folder and its children
-    if os.name == "posix":
-        dir_path = Path(_dir)
-        library_path = Path.home() / "Library"
-        if dir_path == library_path or library_path in dir_path.parents:
+
+    # filter out unwanted known folders
+    if isinstance(path, str):
+        if path == "":
             return [], []
 
-    # if the path contains "node_modules" ignore
-    if "node_modules" in _dir:
+    path = Path(path).resolve()
+
+    if "node_modules" in path.as_posix():
         return [], []
 
-    if _dir == "":
-        return [], []
+    # if on mac, ignore Library folder and its children
+    # TODO: test on real mac
+    if os.name == "posix":
+        library_path = (Path.home() / "Library").resolve()
+        if path == library_path or str(path).startswith(str(library_path)):
+            return [], []
 
     subfolders = []
     files = []
 
     try:
-        for _file in os.scandir(_dir):
-            if _file.is_dir() and not _file.name.startswith("."):
-                subfolders.append(_file.path)
-            if _file.is_file():
-                ext = os.path.splitext(_file.name)[1].lower()
+        for entry in path.iterdir():
+            if entry.is_dir():
+                if entry.name.startswith(".") or entry.name.startswith("$"):
+                    continue # filter out system / hidden files
+                else:
+                    subfolders.append(entry)
+
+            if entry.is_file():
+                ext = entry.suffix.lower()
                 if ext in SUPPORTED_FILES:
-                    files.append(win_replace_slash(_file.path))
+                    files.append(entry.as_posix())
 
         if full or len(files) == 0:
-            for _dir in list(subfolders):
-                sub_dirs, _file = run_fast_scandir(_dir, full=True)
+            for folder in subfolders:
+                sub_dirs, subfiles = run_fast_scandir(folder, full=True)
                 subfolders.extend(sub_dirs)
-                files.extend(_file)
+                files.extend(subfiles)
+
     except (OSError, PermissionError, FileNotFoundError, ValueError):
         return [], []
 

@@ -67,7 +67,7 @@ def save_p_image(
     if not filename:
         filename = str(pid) + str(random_str) + ".webp"
 
-    full_img_path = os.path.join(settings.Paths().playlist_img_path, filename)
+    full_img_path = settings.Paths().playlist_img_path / filename
 
     if content_type == "image/gif":
         frames = []
@@ -160,7 +160,8 @@ def cleanup_playlist_images():
 
     for file in unlinked_files:
         try:
-            os.remove(os.path.join(playlist_dir, file))
+            path = playlist_dir / file
+            path.unlink()
         except OSError:
             # Skip if file doesn't exist or can't be deleted
             pass
