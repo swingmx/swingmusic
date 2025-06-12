@@ -414,6 +414,17 @@ class PlaylistTable(Base):
             yield playlist_to_dataclass(i)
 
     @classmethod
+    def reorder_playlist(cls, id: int, trackhashes: list[str]):
+        return next(
+            cls.execute(
+                update(cls)
+                .where((cls.id == id) & (cls.userid == get_current_userid()))
+                .values(trackhashes=trackhashes),
+                commit=True,
+            )
+        )
+
+    @classmethod
     def add_one(cls, playlist: dict[str, Any]):
         playlist["userid"] = get_current_userid()
         result = cls.insert_one(playlist)
