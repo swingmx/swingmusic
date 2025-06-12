@@ -54,6 +54,8 @@ class Track:
     explicit: bool = False
     fav_userids: list[int] = field(default_factory=list)
 
+    album1: str = ""
+
     @property
     def is_favorite(self):
         return get_current_userid() in self.fav_userids
@@ -82,6 +84,7 @@ class Track:
         """
         self.og_title = self.title
         self.og_album = self.album
+        self.album1 = self.album
         self.folder = self.folder + "/"
         self.weakhash = create_hash(self.title, self.artists)
 
@@ -221,7 +224,7 @@ class Track:
         Recreates the trackhash based on the current title, album, and artist information.
         """
         self.trackhash = create_hash(
-            self.title, self.album, *(artist["name"] for artist in self.artists)
+            self.title, self.album1, *(artist["name"] for artist in self.artists)
         )
 
     def copy(self):
