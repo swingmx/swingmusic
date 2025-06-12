@@ -338,7 +338,7 @@ class MixesPlugin(Plugin):
 
         if res.status_code == 200:
             filename = f"{artist.artisthash}_{int(time.time())}.webp"
-            path = Paths().md_mixes_img_path + "/" + filename
+            path = Paths().md_mixes_img_path / filename
 
             image = Image.open(BytesIO(res.content))
             aspect_ratio = image.width / image.height
