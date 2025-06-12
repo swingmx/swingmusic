@@ -1,4 +1,3 @@
-import os
 import pathlib
 from pathlib import Path
 
@@ -24,7 +23,7 @@ def create_folder(path: str, trackcount=0) -> Folder:
     )
 
 
-def get_folders(paths: list[pathlib.Path]):
+def get_folders(paths: list[str]):
     """
     Filters out folders that don't have any tracks and
     returns a list of folder objects.
@@ -111,7 +110,7 @@ def get_files_and_dirs(
 
     folders = []
     if not tracks_only:
-        folders = get_folders(dirs)
+        folders = get_folders([folder.as_posix() for folder in dirs])
         folders = sort_folders(folders, foldersortby, foldersort_reverse)
 
     if skip_empty_folders and len(folders) == 1 and len(tracks) == 0:
