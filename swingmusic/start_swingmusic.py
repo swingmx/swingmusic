@@ -1,3 +1,5 @@
+import pathlib
+
 from swingmusic import settings
 from swingmusic.api import create_api
 from swingmusic.crons import start_cron_jobs
@@ -69,8 +71,6 @@ def start_swingmusic(host: str, port: int):
     waitress_logger = logging.getLogger("waitress")
     waitress_logger.setLevel(logging.ERROR)
 
-    log_startup_info(host, port)
-
     @background
     def run_swingmusic():
         register_plugins()
@@ -80,6 +80,8 @@ def start_swingmusic(host: str, port: int):
 
     # Setup function calls
     settings.Info.load()
+    settings.Paths()
+
     run_setup()
 
     # Create the Flask app
@@ -172,7 +174,13 @@ def start_swingmusic(host: str, port: int):
         accepts_gzip = request.headers.get("Accept-Encoding", "").find("gzip") >= 0
 
         if accepts_gzip:
-            if os.path.exists(os.path.join(app.static_folder or "", gzipped_path)):
+            if app.static_folder is None:
+                static_folder = pathlib.Path("")
+            else:
+                static_folder = pathlib.Path(app.static_folder)
+
+            joined = static_folder / gzipped_path
+            if joined.exists():
                 response = app.make_response(app.send_static_file(gzipped_path))
                 response.headers["Content-Encoding"] = "gzip"
                 return response
@@ -186,6 +194,8 @@ def start_swingmusic(host: str, port: int):
         """
         return app.send_static_file("index.html")
 
+
+    log_startup_info(host, port)
     load_into_mem()
     run_swingmusic()
     # TrackStore.export()

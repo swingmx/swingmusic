@@ -59,8 +59,8 @@ Documentation = "https://swingmx.com/guide/introduction.html"
 Issues = "https://github.com/swingmx/swingmusic/issues"
 
 
-[tool.setuptools]
-package-dir = {"swingmusic" = "swingmusic"}
+[tool.setuptools.packages.find]
+namespaces = false
 
 [tool.setuptools.package-data]
 swingmusic = ["client/*"]

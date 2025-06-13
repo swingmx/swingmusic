@@ -6,7 +6,6 @@ import multiprocessing
 from PIL import Image
 
 from swingmusic.start_swingmusic import start_swingmusic
-from swingmusic.utils.xdg_utils import get_xdg_config_dir
 from swingmusic.utils.filesystem import get_home_res_path
 from swingmusic.arg_handler import handle_build, handle_password_reset
 
@@ -36,23 +35,27 @@ def create_image(width, height, color1, color2):
     return padded_image
 
 
-def print_version(*args, **kwargs):
+def default_base_path():
     """
-    Prints the version of the application.
+    copy of `settings.Paths.__init__` method.
+    used for click to determine which base-config-path is chosen by default.
     """
-    if not args[2]:
-        return
 
-    path = get_home_res_path("version.txt")
-    if not path:
-        click.echo("Version file not found.")
-        sys.exit(1)
+    xdg_config_home = os.environ.get("XDG_CONFIG_HOME")
+    swing_xdg_config_home = os.environ.get("SWINGMUSIC_XDG_CONFIG_DIR")
+    alt_dir = pathlib.Path.home() / ".config"
 
-    with open(path, "r") as f:
-        version = f.read()
+    if not swing_xdg_config_home is None:
+        return pathlib.Path(swing_xdg_config_home)
 
-    click.echo(version)
-    sys.exit(0)
+    elif not xdg_config_home is None:
+        return pathlib.Path(xdg_config_home)
+
+    elif alt_dir.exists():
+        return alt_dir
+
+    else:
+        return pathlib.Path.home()
 
 
 @click.command(options_metavar="<options>", context_settings={"show_default": True})
@@ -68,7 +71,7 @@ def print_version(*args, **kwargs):
 @click.option("--port", default=1970, help="HTTP port to run the app on.")
 @click.option(
     "--config",
-    default=lambda: get_xdg_config_dir(),
+    default=default_base_path,
     show_default="XDG_CONFIG_HOME",
     help="Path to the config file.",
     type=click.Path(
@@ -88,13 +91,9 @@ def print_version(*args, **kwargs):
     is_eager=True,
     callback=handle_password_reset,
 )
-@click.option(
-    "--version",
-    is_flag=True,
-    default=False,
-    callback=print_version,
-    help="Show the version and exit",
-    is_eager=True,
+@click.version_option(
+    package_name="swingmusic",
+    prog_name="swingmusic"
 )
 def run(*args, **kwargs):
     """
