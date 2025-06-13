@@ -1,8 +1,8 @@
 import os
+import pathlib
 from pathlib import Path
+import importlib.resources as imres
 
-
-CWD = Path(__file__).parent.resolve()
 
 FILES = ["flac", "mp3", "wav", "m4a", "ogg", "wma", "opus", "alac", "aiff"]
 SUPPORTED_FILES = tuple(f".{file}" for file in FILES)
@@ -64,7 +64,10 @@ def get_home_res_path(filename: str):
     Returns a path to resources in the home directory of this project.
     Used to resolve resources in builds.
     """
+
+    # CWD = Path(__file__).parent.resolve()
     try:
-        return (CWD / ".." / ".." / filename).resolve()
+        swing_modele_path = pathlib.Path( imres.files("swingmusic") / ".." )
+        return ( swing_modele_path / filename).resolve()
     except ValueError:
         return None

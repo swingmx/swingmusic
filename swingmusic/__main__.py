@@ -5,7 +5,6 @@ import pathlib
 import multiprocessing
 from PIL import Image
 
-from swingmusic import settings
 from swingmusic.start_swingmusic import start_swingmusic
 from swingmusic.utils.filesystem import get_home_res_path
 from swingmusic.arg_handler import handle_build, handle_password_reset
@@ -34,25 +33,6 @@ def create_image(width, height, color1, color2):
     padded_image.paste(image, (x, y), image)
 
     return padded_image
-
-
-def print_version(*args, **kwargs):
-    """
-    Prints the version of the application.
-    """
-    if not args[2]:
-        return
-
-    path = get_home_res_path("version.txt")
-    if not path.exists():
-        click.echo("Version file not found.")
-        sys.exit(1)
-
-    with path.open("r") as f:
-        version = f.read()
-
-    click.echo(version)
-    sys.exit(0)
 
 
 def default_base_path():
@@ -111,13 +91,9 @@ def default_base_path():
     is_eager=True,
     callback=handle_password_reset,
 )
-@click.option(
-    "--version",
-    is_flag=True,
-    default=False,
-    callback=print_version,
-    help="Show the version and exit",
-    is_eager=True,
+@click.version_option(
+    package_name="swingmusic",
+    prog_name="swingmusic"
 )
 def run(*args, **kwargs):
     """
