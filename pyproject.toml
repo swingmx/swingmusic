@@ -60,7 +60,8 @@ Issues = "https://github.com/swingmx/swingmusic/issues"
 
 
 [tool.setuptools]
-package-dir = {"swingmusic" = "swingmusic"}
+packages = ["swingmusic"]
+package-dir = {"" = "src"}
 
 [tool.setuptools.package-data]
-swingmusic = ["client/*"]
+swingmusic = ["./client/*", "*.txt"]
