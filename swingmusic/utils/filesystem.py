@@ -65,7 +65,6 @@ def get_home_res_path(filename: str):
     Used to resolve resources in builds.
     """
 
-    # CWD = Path(__file__).parent.resolve()
     try:
         swing_modele_path = pathlib.Path( imres.files("swingmusic") / ".." )
         return ( swing_modele_path / filename).resolve()

@@ -159,9 +159,6 @@ class Paths(metaclass=Singleton):
 
         assets_dir = get_home_res_path("assets")
 
-        if IS_BUILD:
-            assets_dir = get_home_res_path("assets")
-
         src = Path(".").resolve() / assets_dir
         dest = (self.app_dir / "assets").resolve()
 
