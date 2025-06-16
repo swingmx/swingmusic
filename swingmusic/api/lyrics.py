@@ -4,7 +4,7 @@ from pydantic import Field
 
 from swingmusic.api.apischemas import TrackHashSchema
 from swingmusic.lib.lyrics import (
-    get_lyrics,
+    get_lyrics_file,
     check_lyrics_file,
     get_lyrics_from_duplicates,
     get_lyrics_from_tags,
@@ -29,10 +29,10 @@ def send_lyrics(body: SendLyricsBody):
     # lyrics is allways synced
 
     is_synced = True
-    lyrics, copyright = get_lyrics(filepath, trackhash)
+    lyrics, copyright = get_lyrics_file(filepath, trackhash)
 
     if not lyrics:
-        lyrics, copyright = get_lyrics_from_duplicates(trackhash, filepath)
+        lyrics, copyright = get_lyrics_from_duplicates(filepath, trackhash)
 
     if not lyrics:
         lyrics, is_synced, copyright = get_lyrics_from_tags(trackhash) # type: ignore
@@ -44,7 +44,7 @@ def send_lyrics(body: SendLyricsBody):
 
 
 @api.post("/check")
-def check_lyrics(body: SendLyricsBody):
+def check_lyrics(body: SendLyricsBody) -> tuple[dict[str, bool], int]:
     """
     Checks if lyrics exist for a track
     """
