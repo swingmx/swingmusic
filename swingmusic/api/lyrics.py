@@ -43,10 +43,11 @@ def send_lyrics(body: SendLyricsBody):
     lyrics = get_lyrics_file(filepath)
 
     if not lyrics:
-        lyrics = get_lyrics_from_duplicates(filepath, trackhash)
+        lyrics = get_lyrics_from_tags(trackhash) # type: ignore
 
     if not lyrics:
-        lyrics = get_lyrics_from_tags(trackhash) # type: ignore
+        lyrics = get_lyrics_from_duplicates(filepath, trackhash)
+
 
     # check lyrics plugins
 
