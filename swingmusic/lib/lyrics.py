@@ -215,19 +215,14 @@ class Lyrics:
         return lyrics
 
 
-    def format_unsynced_lyrics(self) -> str:
+    def format_unsynced_lyrics(self) -> list[str]:
         """
         return unsynced lyrics.
         If no lyrics provided return empty string.
         """
 
-        value = ""
-
-        for item in self.parsed_lyrics:
-            value = value + "\n" + item["body"]
-            pass
-
-        return value
+        lyrics = [item["body"] for item in self.parsed_lyrics]
+        return lyrics
 
 
     def __bool__(self):
