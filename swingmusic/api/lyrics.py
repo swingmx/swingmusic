@@ -2,12 +2,14 @@ from flask_openapi3 import Tag
 from flask_openapi3 import APIBlueprint
 from pydantic import Field
 
+from store.tracks import TrackStore
 from swingmusic.api.apischemas import TrackHashSchema
 from swingmusic.lib.lyrics import (
     get_lyrics_file,
     check_lyrics_file,
     get_lyrics_from_duplicates,
     get_lyrics_from_tags,
+    get_lyrics_file_rel_to_track,
 )
 
 bp_tag = Tag(name="Lyrics", description="Get lyrics")
@@ -23,39 +25,60 @@ def send_lyrics(body: SendLyricsBody):
     """
     Returns the lyrics for a track
     """
+    # 1. try to get lyrics by .lrc / .elrc file
+    # 2. try to get lyrics by extra key
+    # 3. try to get by duplicates
+    # 4. iter plugins
+
     filepath = body.filepath
     trackhash = body.trackhash
 
-    # lyrics is allways synced
+    # get copyright first
+    copyright = ""
+    if entry:=TrackStore.trackhashmap.get(trackhash, None):
+        for track in entry.tracks:
+            copyright = track.copyright
 
-    is_synced = True
-    lyrics, copyright = get_lyrics_file(filepath, trackhash)
+            if copyright:
+                break
+
+    lyrics = get_lyrics_file(filepath, trackhash)
 
     if not lyrics:
-        lyrics, copyright = get_lyrics_from_duplicates(filepath, trackhash)
+        lyrics = get_lyrics_from_duplicates(filepath, trackhash)
 
     if not lyrics:
-        lyrics, is_synced, copyright = get_lyrics_from_tags(trackhash) # type: ignore
+        lyrics = get_lyrics_from_tags(trackhash) # type: ignore
+
+
+    # check lyrics plugins
 
     if not lyrics:
         return {"error": "No lyrics found"}
 
-    return {"lyrics": lyrics, "synced": is_synced, "copyright": copyright}, 200
+
+    # todo check synced
+    if lyrics.is_synced:
+        text = lyrics.format_synced_lyrics()
+    else:
+        text = lyrics.format_unsynced_lyrics()
+
+    return {"lyrics": text, "synced": lyrics.is_synced, "copyright": copyright}, 200
 
 
 @api.post("/check")
-def check_lyrics(body: SendLyricsBody) -> tuple[dict[str, bool], int]:
+def check_lyrics(body: SendLyricsBody):
     """
-    Checks if lyrics exist for a track
+    Checks if lyrics file or tag exists for a track
     """
     filepath = body.filepath
     trackhash = body.trackhash
 
-    exists = check_lyrics_file(filepath, trackhash)
 
-    if exists:
-        return {"exists": exists}, 200
+    if get_lyrics_file(filepath, trackhash):
+        return {"exists": True}, 200
 
-    exists = get_lyrics_from_tags(trackhash, just_check=True)
+    if get_lyrics_from_tags(trackhash):
+        return {"exists": True}, 200
 
-    return {"exists": exists}, 200
+    return {"exists": False}

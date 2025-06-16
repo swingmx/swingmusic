@@ -1,7 +1,6 @@
 import datetime
 import pathlib
 from pathlib import Path
-from typing import Iterable
 
 from swingmusic.store.tracks import TrackStore
 
@@ -145,7 +144,7 @@ class Lyrics:
     is_synced:bool = False
 
 
-    def __init__(self, lyrics:str):
+    def __init__(self, lyrics:str=""):
         """
 
         :param lyrics: entire lyrics body
@@ -191,7 +190,8 @@ class Lyrics:
         Formats synced lyrics into a list of dicts
         """
         if not self.is_synced:
-            raise ValueError("Cannot format synced lyrics if no synced lyrics exist for track.")
+            raise ValueError("Cannot format synced lyrics if no synced lyrics exist for track.\nPlease use `format_unsynced_lyrics()`")
+
         lyrics = []
 
         time_tags = parse_time_tag(self.parsed_lyrics)
@@ -215,14 +215,35 @@ class Lyrics:
         return lyrics
 
 
+    def format_unsynced_lyrics(self) -> str:
+        """
+        return unsynced lyrics.
+        If no lyrics provided return empty string.
+        """
+
+        value = ""
+
+        for item in self.parsed_lyrics:
+            #TODO:
+            pass
+
+        return value
+
+
+    def __bool__(self):
+        """
+        return True if contains anything
+        """
+        return bool(self.parsed_lyrics)
+
+
 # # # # # # # # # # # # # # # # # # # # # # # # # # #
 # Path and parse function to get lyrics from track  #
 # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
-def get_lyrics_file(track_path: str|pathlib.Path, trackhash: str):
+def get_lyrics_file(track_path: str|pathlib.Path, trackhash: str) -> Lyrics:
     """
     Try to get lyrics from a relative lrc file.
-    #TODO: reformat return type to be one type only
 
     :param track_path: path of track
     :param trackhash: Track-hash value
@@ -232,30 +253,20 @@ def get_lyrics_file(track_path: str|pathlib.Path, trackhash: str):
     lyrics_path = track_path.with_suffix(".lrc")
     extended_path = track_path.with_suffix(".rlrc")
 
-
-    # get copyright first
-    copyright = ""
-    if entry:=TrackStore.trackhashmap.get(trackhash, None):
-        for track in entry.tracks:
-            copyright = track.copyright
-
-            if copyright:
-                break
-
-
+    # check paths
     if lyrics_path.exists():
-        lyrics = Lyrics(lyrics_path.read_text()).format_synced_lyrics()
+        lyrics = Lyrics(lyrics_path.read_text())
+        return lyrics
 
-        return lyrics, copyright
     elif extended_path.exists():
-        lyrics = Lyrics(extended_path.read_text()).format_synced_lyrics()
-        return lyrics, copyright
+        lyrics = Lyrics(extended_path.read_text())
+        return lyrics
 
     else:
-        return None, copyright
+        return Lyrics()
 
 
-def get_lyrics_from_duplicates(track_path: str, trackhash: str):
+def get_lyrics_from_duplicates(track_path: str, trackhash: str) -> Lyrics:
     """
     Finds the lyrics from other duplicate tracks
 
@@ -266,53 +277,37 @@ def get_lyrics_from_duplicates(track_path: str, trackhash: str):
     entry = TrackStore.trackhashmap.get(trackhash, None)
 
     if entry is None:
-        return None, ""
+        return Lyrics()
 
     for track in entry.tracks:
         if track.trackhash == trackhash and track.filepath != track_path:
-            lyrics, copyright = get_lyrics_file(track.filepath, trackhash)
+            lyrics = get_lyrics_file(track.filepath, trackhash)
 
             if lyrics:
-                return lyrics, copyright
+                return lyrics
 
-    return None, ""
+    return Lyrics()
 
 
-def get_lyrics_from_tags(trackhash: str, just_check: bool = False) -> tuple[Lyrics, str]:
+def get_lyrics_from_tags(trackhash: str) -> Lyrics:
     """
     Gets the lyrics from the tags of the track
 
     :param trackhash:
-    :param just_check: check if lyrics exist -> return bool
     """
 
     entry = TrackStore.trackhashmap.get(trackhash, None)
 
     if entry is None:
-        return None, False, ""
+        return Lyrics()
 
-    lyrics = ""
-    copyright = ""
-
-    # loop tracks until copyright and lyrics is filled
     for track in entry.tracks:
-        if lyrics and copyright:
-            break
+        if "lyrics" in track.extra:
+            lyrics = track.extra["lyrics"]
+            if lyrics:
+                return Lyrics(lyrics)
 
-        if not lyrics:
-            lyrics = track.extra.get("lyrics", None)
-
-        if not copyright:
-            copyright = track.copyright
-
-
-    if just_check:
-        return len(lyrics) > 0 # if lyrics exist
-
-    if len(lyrics) == 0: # no lyrics found
-        return None, ""
-
-    return Lyrics(lyrics), copyright
+    return Lyrics("")
 
 
 def check_lyrics_file(filepath: str, trackhash: str):
