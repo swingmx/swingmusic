@@ -236,12 +236,11 @@ class Lyrics:
 # Path and parse function to get lyrics from track  #
 # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
-def get_lyrics_file(track_path: str|pathlib.Path, trackhash: str) -> Lyrics:
+def get_lyrics_file(track_path: str|pathlib.Path) -> Lyrics:
     """
     Try to get lyrics from a relative lrc file.
 
     :param track_path: path of track
-    :param trackhash: Track-hash value
     """
 
     track_path = Path(track_path)
@@ -276,7 +275,7 @@ def get_lyrics_from_duplicates(track_path: str, trackhash: str) -> Lyrics:
 
     for track in entry.tracks:
         if track.trackhash == trackhash and track.filepath != track_path:
-            lyrics = get_lyrics_file(track.filepath, trackhash)
+            lyrics = get_lyrics_file(track.filepath)
 
             if lyrics:
                 return lyrics

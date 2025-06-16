@@ -40,7 +40,7 @@ def send_lyrics(body: SendLyricsBody):
             if copyright:
                 break
 
-    lyrics = get_lyrics_file(filepath, trackhash)
+    lyrics = get_lyrics_file(filepath)
 
     if not lyrics:
         lyrics = get_lyrics_from_duplicates(filepath, trackhash)
@@ -66,14 +66,11 @@ def check_lyrics(body: SendLyricsBody):
     """
     Checks if lyrics file or tag exists for a track
     """
-    filepath = body.filepath
-    trackhash = body.trackhash
+    result = send_lyrics(body)
 
-
-    if get_lyrics_file(filepath, trackhash):
+    if "error" in result:
+        return {"exists": False}
+    else:
         return {"exists": True}, 200
 
-    if get_lyrics_from_tags(trackhash):
-        return {"exists": True}, 200
 
-    return {"exists": False}
