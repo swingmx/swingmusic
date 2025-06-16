@@ -224,7 +224,7 @@ class Lyrics:
         value = ""
 
         for item in self.parsed_lyrics:
-            #TODO:
+            value = value + "\n" + item["body"]
             pass
 
         return value
