@@ -157,7 +157,7 @@ class Paths(metaclass=Singleton):
         #  Either import assets from inside the module, no need for copy
         #  or copy files with explicit location to config folder
 
-        assets_dir = "assets"
+        assets_dir = get_home_res_path("assets")
 
         if IS_BUILD:
             assets_dir = get_home_res_path("assets")
