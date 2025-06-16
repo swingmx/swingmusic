@@ -4,9 +4,11 @@ create the config directory and copy the assets to the app directory.
 """
 
 import os
+from pathlib import Path
 import shutil
 
 from swingmusic import settings
+from swingmusic.config import UserConfig
 from swingmusic.utils.filesystem import get_home_res_path
 
 
@@ -62,7 +64,6 @@ def create_config_dir() -> None:
 
     playlist_img_path = os.path.join("images", "playlists")
 
-
     mixes_img_path = settings.Paths.get_mixes_img_path()
     og_mixes_img_path = settings.Paths.get_og_mixes_img_path()
     md_mixes_img_path = settings.Paths.get_md_mixes_img_path()
@@ -85,14 +86,24 @@ def create_config_dir() -> None:
         sm_mixes_img_path,
     ]
 
-    for _dir in dirs:
-        path = os.path.join(settings.Paths.get_app_dir(), _dir)
+    for dir in dirs:
+        path = os.path.join(settings.Paths.get_app_dir(), dir)
         exists = os.path.exists(path)
 
         if not exists:
             # exist_ok=True to create parent directories if they don't exist
             os.makedirs(path, exist_ok=True)
             os.chmod(path, 0o755)
+
+    # Empty files to create
+    empty_files = [
+        # artist split ignore list
+        Path(settings.Paths.get_app_dir()) / UserConfig._artist_split_ignore_file_name,
+    ]
+
+    for file in empty_files:
+        if not file.exists():
+            file.touch()
 
     # copy assets to the app directory
     CopyFiles()

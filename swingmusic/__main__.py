@@ -108,7 +108,10 @@ def run(*args, **kwargs):
     start_swingmusic(kwargs["host"], kwargs["port"])
 
 
-if __name__ == "__main__":
+def main():
     multiprocessing.freeze_support()
     multiprocessing.set_start_method("spawn")
     run()
+
+if __name__ == "__main__":
+    main()

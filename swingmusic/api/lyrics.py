@@ -2,14 +2,12 @@ from flask_openapi3 import Tag
 from flask_openapi3 import APIBlueprint
 from pydantic import Field
 
-from store.tracks import TrackStore
+from swingmusic.store.tracks import TrackStore
 from swingmusic.api.apischemas import TrackHashSchema
 from swingmusic.lib.lyrics import (
     get_lyrics_file,
-    check_lyrics_file,
     get_lyrics_from_duplicates,
     get_lyrics_from_tags,
-    get_lyrics_file_rel_to_track,
 )
 
 bp_tag = Tag(name="Lyrics", description="Get lyrics")
@@ -50,14 +48,11 @@ def send_lyrics(body: SendLyricsBody):
     if not lyrics:
         lyrics = get_lyrics_from_tags(trackhash) # type: ignore
 
-
     # check lyrics plugins
 
     if not lyrics:
         return {"error": "No lyrics found"}
 
-
-    # todo check synced
     if lyrics.is_synced:
         text = lyrics.format_synced_lyrics()
     else:
