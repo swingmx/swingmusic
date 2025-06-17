@@ -109,7 +109,7 @@ def run(*args, **kwargs):
 
 def main():
     multiprocessing.freeze_support()
-    multiprocessing.set_start_method("spawn")
+    multiprocessing.set_start_method("fork")
     run()
 
 if __name__ == "__main__":
