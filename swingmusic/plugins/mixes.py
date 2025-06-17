@@ -531,7 +531,23 @@ class MixesPlugin(Plugin):
         artists: dict[str, list[dict[str, str | int]]] = {}
         albums: dict[str, list[dict[str, str | int]]] = {}
 
-        for mix in mixes:
+        pivot_artist = None
+        pivot_artist_index = None
+
+        # Get pivot artist
+        for index, mix in enumerate(mixes):
+            artist = ArtistStore.artistmap.get(mix.extra["artisthash"])
+            if not artist:
+                continue
+
+            pivot_artist = artist.artist
+            pivot_artist_index = index
+            break
+
+        if not pivot_artist:
+            return None, None
+
+        for mix in mixes[pivot_artist_index:]:
             mix_artisthash = mix.extra["artisthash"]
             artists.setdefault(mix_artisthash, [])
             albums.setdefault(mix_artisthash, [])
@@ -582,11 +598,10 @@ class MixesPlugin(Plugin):
                 reverse=True,
             )
 
-        artisthash = mixes[0].extra["artisthash"]
         because_you_listened_to_artist = {
             "title": "Because you listened to "
-            + ArtistStore.artistmap[artisthash].artist.name,
-            "items": albums[artisthash][:15],
+            + pivot_artist.name,
+            "items": albums[pivot_artist.artisthash][:15],
         }
 
         # Flatten list of artists and remove duplicates by artisthash
@@ -601,7 +616,7 @@ class MixesPlugin(Plugin):
 
         artists_you_might_like = {
             "title": "Artists you might like",
-            "items": artists[artisthash][:15],
+            "items": artists[pivot_artist.artisthash][:15],
         }
 
         return because_you_listened_to_artist, artists_you_might_like

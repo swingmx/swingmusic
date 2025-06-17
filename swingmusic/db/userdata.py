@@ -219,8 +219,11 @@ class FavoritesTable(Base):
         # guard against hash collisions for different item types
         item["hash"] = f"{item['type']}_{item['hash']}"
 
-        item["timestamp"] = int(datetime.datetime.now().timestamp())
-        item["userid"] = get_current_userid()
+        if item.get("timestamp") is None:
+            item["timestamp"] = int(datetime.datetime.now().timestamp())
+
+        if item.get("userid") is None:
+            item["userid"] = get_current_userid()
 
         return next(cls.execute(insert(cls).values(item), commit=True))
 
@@ -337,7 +340,9 @@ class ScrobbleTable(Base):
 
     @classmethod
     def add(cls, item: dict[str, Any]):
-        item["userid"] = get_current_userid()
+        if item.get("userid") is None:
+            item["userid"] = get_current_userid()
+
         return cls.insert_one(item)
 
     @classmethod

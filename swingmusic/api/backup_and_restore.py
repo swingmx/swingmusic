@@ -7,6 +7,7 @@ import shutil
 from time import time
 from flask_openapi3 import Tag
 from flask_openapi3 import APIBlueprint
+import sqlalchemy.exc
 from swingmusic.api.auth import admin_required
 
 from swingmusic.db.userdata import FavoritesTable, PlaylistTable, ScrobbleTable
@@ -96,6 +97,9 @@ def backup():
 
 
 class RestoreBackup:
+    # TODO: BACKUP AND RESTORE COLLECTIONS & MIXES!
+    # TODO: IMPROVE UX WHEN WAITING FOR RESTORE TO COMPLETE!
+
     def __init__(self, backup_dir: Path):
         self.backup_dir = backup_dir
         self.backup_file = backup_dir / "data.json"
@@ -114,8 +118,12 @@ class RestoreBackup:
         existing_hashes = set(fav.hash for fav in existing_favorites)
         new_favorites = [fav for fav in favorites if fav["hash"] not in existing_hashes]
 
-        if new_favorites:
-            FavoritesTable.insert_many(new_favorites)
+        for fav in new_favorites:
+            try:
+                FavoritesTable.insert_item(fav)
+            except sqlalchemy.exc.IntegrityError:
+                print("Integrity error, skipping favorite")
+                print(fav)
 
     def restore_playlists(self, playlists: list[dict]):
         existing_playlists = PlaylistTable.get_all()
@@ -124,8 +132,15 @@ class RestoreBackup:
             playlist for playlist in playlists if playlist["name"] not in existing_names
         ]
 
-        if new_playlists:
-            PlaylistTable.insert_many(new_playlists)
+        for playlist in new_playlists:
+            try:
+                if playlist.get("_score") is not None:
+                    del playlist["_score"]
+
+                PlaylistTable.add_one(playlist)
+            except sqlalchemy.exc.IntegrityError:
+                print("Integrity error, skipping playlist:")
+                print(playlist)
 
     def restore_scrobbles(self, scrobbles: list[dict]):
         existing_scrobbles = ScrobbleTable.get_all(0)
@@ -139,8 +154,13 @@ class RestoreBackup:
             if f"{scrobble['trackhash']}.{scrobble['timestamp']}" not in existing_hashes
         ]
 
-        if new_scrobbles:
-            ScrobbleTable.insert_many(new_scrobbles)
+        for scrobble in new_scrobbles:
+            try:
+                ScrobbleTable.add(scrobble)
+            except sqlalchemy.exc.IntegrityError:
+                print("Integrity error, skipping scrobble:")
+                print(scrobble)
+
 
 
 class RestoreBackupBody(BaseModel):
