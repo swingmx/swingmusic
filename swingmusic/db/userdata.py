@@ -220,11 +220,9 @@ class FavoritesTable(Base):
         item["hash"] = f"{item['type']}_{item['hash']}"
 
         if item.get("timestamp") is None:
-            print("No timestamp found, using current timestamp")
             item["timestamp"] = int(datetime.datetime.now().timestamp())
 
         if item.get("userid") is None:
-            print("No userid found, using current userid")
             item["userid"] = get_current_userid()
 
         return next(cls.execute(insert(cls).values(item), commit=True))
@@ -343,7 +341,6 @@ class ScrobbleTable(Base):
     @classmethod
     def add(cls, item: dict[str, Any]):
         if item.get("userid") is None:
-            print("No userid found, using current userid")
             item["userid"] = get_current_userid()
 
         return cls.insert_one(item)

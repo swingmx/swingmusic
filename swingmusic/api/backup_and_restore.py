@@ -135,12 +135,11 @@ class RestoreBackup:
         for playlist in new_playlists:
             try:
                 if playlist.get("_score") is not None:
-                    print("Removing _score from playlist")
                     del playlist["_score"]
 
                 PlaylistTable.add_one(playlist)
             except sqlalchemy.exc.IntegrityError:
-                print("Integrity error, skipping playlist")
+                print("Integrity error, skipping playlist:")
                 print(playlist)
 
     def restore_scrobbles(self, scrobbles: list[dict]):
@@ -159,7 +158,7 @@ class RestoreBackup:
             try:
                 ScrobbleTable.add(scrobble)
             except sqlalchemy.exc.IntegrityError:
-                print("Integrity error, skipping scrobble")
+                print("Integrity error, skipping scrobble:")
                 print(scrobble)
 
 
