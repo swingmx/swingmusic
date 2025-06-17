@@ -29,6 +29,9 @@ class BecauseYouListened(HomepageRoutine):
                 MixesPlugin().get_because_items(list(entry.values()))
             )
 
+            if not because_you_listened_to_artist or not artists_you_might_like:
+                continue
+
             HomepageStore.entries[self.store_keys[0]].items[
                 user.id
             ] = because_you_listened_to_artist
