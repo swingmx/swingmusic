@@ -1,4 +1,5 @@
 import os
+import pathlib
 from swingmusic.db.userdata import PlaylistTable
 from swingmusic.lib.home import find_mix
 from swingmusic.lib.home.recentlyadded import get_recently_added_playlist
@@ -98,9 +99,12 @@ def create_items(entries: list[TrackLog], limit: int):
             if is_home_dir:
                 folder = os.path.expanduser("~")
 
+            if not pathlib.Path(folder).exists():
+                continue
+
             item = {
                 "type": "folder",
-                "hash": entry.type_src,
+                "hash": folder,
                 "timestamp": entry.timestamp,
             }
 
