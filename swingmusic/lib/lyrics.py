@@ -5,6 +5,10 @@ from pathlib import Path
 from swingmusic.store.tracks import TrackStore
 
 
+# # # # # # # # # # # # # # # # # # # #
+# Functions for parsing lyrics lines  #
+# # # # # # # # # # # # # # # # # # # #
+
 def parse_lyrics_lines(lyrics:str) -> list[dict]:
     """
     Split lyrics into lines and determine there tag type.
@@ -119,6 +123,11 @@ def parse_time_tag(lines:list[dict]) -> list[dict]:
             })
 
     return parsed_times
+
+
+# # # # # # # # # # # # # # # # # # # #
+#  Lyrics class for simplified usage  #
+# # # # # # # # # # # # # # # # # # # #
 
 
 class Lyrics:
