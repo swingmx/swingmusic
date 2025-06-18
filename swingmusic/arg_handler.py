@@ -1,7 +1,7 @@
 """
 Handles arguments passed to the program.
 """
-
+import pathlib
 import sys
 from getpass import getpass
 
@@ -52,7 +52,8 @@ def handle_build(*args, **kwargs):
 
     try:
         # write the info to the config file
-        with open("./swingmusic/configs.py", "w", encoding="utf-8") as file:
+        config = pathlib.Path("./swingmusic/configs.py")
+        with config.open("w", encoding="utf-8") as file:
             # copy the api keys to the config file
             file.writelines(lines)
 
@@ -83,7 +84,8 @@ def handle_build(*args, **kwargs):
         sys.exit(0)
     finally:
         # revert and remove the api keys for dev mode
-        with open("./swingmusic/configs.py", "w", encoding="utf-8") as file:
+        config = pathlib.Path( "./swingmusic/configs.py" )
+        with config.open("w", encoding="utf-8") as file:
             lines = [f'{key} = ""\n' for key in info_keys]
             file.writelines(lines)
 

@@ -69,7 +69,7 @@ def backup():
         playlist_dicts.append(playlist)
 
         # copy images
-        img_path = Path(Paths.get_playlist_img_path()) / str(playlist["image"])
+        img_path = Path(Paths().playlist_img_path) / str(playlist["image"])
         if img_path.exists():
             if not img_folder_created:
                 img_folder.mkdir(parents=True)

@@ -461,9 +461,9 @@ def save_item_as_playlist(body: SavePlaylistAsItemBody):
         filename = itemhash + ".webp"
 
         base_path = (
-            Paths.get_lg_artist_img_path()
+            Paths().lg_artist_img_path
             if itemtype == "artist"
-            else Paths.get_lg_thumb_path()
+            else Paths().lg_thumb_path()
         )
         img_path = pathlib.Path(base_path + "/" + filename)
 

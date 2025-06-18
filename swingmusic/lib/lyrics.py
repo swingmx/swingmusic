@@ -51,13 +51,11 @@ def format_synced_lyrics(lines: Iterable[str]):
     return lyrics
 
 
-def get_lyrics_from_lrc(filepath: str | Path):
-    with open(filepath, mode="r") as file:
-        lines = (f.removesuffix("\n") for f in file.readlines())
-        return format_synced_lyrics(lines)
+def get_lyrics_from_lrc(filepath: Path):
+    text = filepath.read_text()
+    format_synced_lyrics(text.splitlines())
 
-
-def get_lyrics_file_rel_to_track(filepath: str):
+def get_lyrics_file_rel_to_track(filepath: str) -> Path:
     """
     Finds the lyrics file relative to the track file
     """
