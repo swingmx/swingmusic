@@ -113,10 +113,6 @@ def run(*args, **kwargs):
     start_swingmusic(kwargs["host"], kwargs["port"], kwargs["debug"])
 
 
-def main():
-    multiprocessing.freeze_support()
-    multiprocessing.set_start_method("fork")
-    run()
-
 if __name__ == "__main__":
-    main()
+    multiprocessing.freeze_support()
+    run()

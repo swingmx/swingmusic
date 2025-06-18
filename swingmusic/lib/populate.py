@@ -1,7 +1,8 @@
-from dataclasses import asdict
 import os
-from concurrent.futures import ProcessPoolExecutor
 import platform
+import multiprocessing
+from dataclasses import asdict
+from concurrent.futures import ProcessPoolExecutor
 
 from requests import ConnectionError as RequestConnectionError
 from requests import ReadTimeout
@@ -63,10 +64,17 @@ def get_image(album: Album):
     :type album: Album
     :return: None
     """
+    log.info("[MP] process was started using: %s", multiprocessing.get_start_method())
+    log.info("[get_image] extract image for album: %s", album.title)
     matching_tracks = AlbumStore.get_album_tracks(album.albumhash)
 
+    log.info("[get_image] Found matching tracks: %s", len(matching_tracks))
+
     for track in matching_tracks:
+        log.info("[get_image] extract image for track: %s", track.title)
         extracted = extract_thumb(track.filepath, track.albumhash + ".webp")
+
+        log.info("[get_image] extracted: %s", extracted)
 
         if extracted:
             return

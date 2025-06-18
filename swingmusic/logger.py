@@ -92,7 +92,7 @@ class CustomFormatter(logging.Formatter):
     bold_red = "\x1b[31;1m"
     reset = "\x1b[0m"
     # format_ = "[%(asctime)s] %(name)s %(levelname)s %(message)s (%(filename)s:%(lineno)d)"
-    format_ = "[%(asctime)s] [%(levelname)s] %(message)s (%(filename)s:%(lineno)d)\n"
+    format_ = "[%(asctime)s] [%(levelname)s] %(message)s (%(filename)s:%(lineno)d)"
     # format_ = "%(message)s"
 
     FORMATS = {
