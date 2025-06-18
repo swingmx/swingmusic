@@ -1,85 +1,14 @@
 """
 Logger module
 """
+import pathlib
+
 from swingmusic.config import Paths
 import logging
 import datetime as dt
 import json
 import logging.config
 import logging.handlers
-
-CONFIG = {
-  "version": 1,
-  "disable_existing_loggers": True,
-
-  "formatters": {
-    "stdout": {
-      "format": "%(levelname)s: %(message)s",
-      "datefmt": "%Y-%m-%dT%H:%M:%S%z"
-    },
-    "json": {
-      "()": "swingmusic.logger.JsonFormat",
-      "fmt_keys": {
-        "level": "levelname",
-        "message": "message",
-        "timestamp": "timestamp",
-        "logger": "name",
-        "module": "module",
-        "function": "funcName",
-        "line": "lineno"
-      }
-    },
-  "custom": {
-      "()": "swingmusic.logger.CustomFormatter",
-      "fmt_keys": {
-          "level": "levelname",
-          "message": "message",
-          "timestamp": "timestamp",
-          "logger": "name",
-          "module": "module",
-          "function": "funcName",
-          "line": "lineno"
-      }
-  }
-  },
-  "handlers": {
-    "stdout": {
-      "class": "logging.StreamHandler",
-      "level": "INFO",
-      "formatter": "custom",
-      "stream": "ext://sys.stderr"
-    },
-    "file": {
-      "class": "logging.handlers.RotatingFileHandler",
-      "level": "DEBUG",
-      "formatter": "json",
-      "maxBytes": 5*1024*1024,
-      "backupCount": 5
-    },
-    "remote": {
-        "class": "logging.handlers.SocketHandler",
-        "level": "DEBUG",
-        "host": "127.0.0.2",
-        "port": "19996"
-    }
-  },
-  "loggers": {
-      "swingmusic": {
-          "level": "DEBUG",
-          "propagate":False,
-          "handlers": [
-              "custom",
-              "file"
-          ]
-      },
-      "P5Automat": {
-          "level": "INFO",
-          "handlers": [
-              "file"
-          ]
-      }
-  }
-}
 
 
 LOG_RECORD_BUILTIN_ATTRS = {
@@ -174,10 +103,82 @@ class CustomFormatter(logging.Formatter):
         logging.CRITICAL: bold_red + format_ + reset,
     }
 
+    def __init__(self, *, fmt_keys: dict[str, str] | None = None,):
+
+        super().__init__()
+        self.fmt_keys = fmt_keys or {}
+
     def format(self, record):
         log_fmt = self.FORMATS.get(record.levelno)
         formatter = logging.Formatter(log_fmt, "%H:%M:%S")
         return formatter.format(record)
+
+
+
+CONFIG = {
+    "version": 1,
+    "disable_existing_loggers": True,
+    "formatters": {
+        "stdout": {
+            "format": "%(levelname)s: %(message)s",
+            "datefmt": "%Y-%m-%dT%H:%M:%S%z"
+        },
+        "json": {
+            "()": JsonFormat,
+            "fmt_keys": {
+                "level": "levelname",
+                "message": "message",
+                "timestamp": "timestamp",
+                "logger": "name",
+                "module": "module",
+                "function": "funcName",
+                "line": "lineno"
+            }
+        },
+        "custom": {
+            "()": CustomFormatter,
+            "fmt_keys": {
+                "level": "levelname",
+                "message": "message",
+                "timestamp": "timestamp",
+                "logger": "name",
+                "module": "module",
+                "function": "funcName",
+                "line": "lineno"
+            }
+        }
+    },
+    "handlers": {
+        "stdout": {
+            "class": "logging.StreamHandler",
+            "level": "INFO",
+            "formatter": "custom",
+            "stream": "ext://sys.stderr"
+        },
+        "file": {
+            "class": "logging.handlers.RotatingFileHandler",
+            "level": "DEBUG",
+            "formatter": "json",
+            "maxBytes": 5*1024*1024, # 5 MB
+            "backupCount": 5
+        },
+        "remote": {
+            "class": "logging.handlers.SocketHandler",
+            "level": "DEBUG",
+            "host": "127.0.0.2",
+            "port": "19996"
+        }
+    },
+    "loggers": {
+        "swingmusic": {
+            "level": "DEBUG",
+            "handlers": [
+                "stdout",
+                "file"
+            ]
+        },
+    }
+}
 
 
 def setup_logger(debug=False):
@@ -188,10 +189,10 @@ def setup_logger(debug=False):
     :param debug: When True Loglevel is set to DEBUG and enable Socket log
     """
 
-    logFolder = Paths.get_app_dir()
-    logFolder.exists() or logFolder.mkdir(parents=True)
+    app_dir = pathlib.Path(Paths.get_app_dir())
+    app_dir.exists() or app_dir.mkdir(parents=True)
 
-    CONFIG["handlers"]["file"]["filename"] = logFolder / "latest.jsonl"
+    CONFIG["handlers"]["file"]["filename"] = app_dir / "log.jsonl"
     # BIG TODO: make log delete or rotate big log files
 
     # enable socket log
@@ -203,6 +204,9 @@ def setup_logger(debug=False):
 
     logging.config.dictConfig(CONFIG)
 
+    global log
+    log = logging.getLogger("swingmusic")
+    log.info("setup successfully")
 
-setup_logger()
-log = logging.getLogger("swingmusic")
+
+log = None
