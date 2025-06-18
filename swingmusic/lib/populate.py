@@ -1,24 +1,23 @@
 import os
-import platform
-import multiprocessing
 from dataclasses import asdict
-from concurrent.futures import ProcessPoolExecutor
-
-from requests import ConnectionError as RequestConnectionError
+from typing import Generator
 from requests import ReadTimeout
+from concurrent.futures import ProcessPoolExecutor
+from requests import ConnectionError as RequestConnectionError
 
 from swingmusic import settings
 from swingmusic.lib.artistlib import CheckArtistImages
-from swingmusic.lib.colorlib import ProcessAlbumColors, ProcessArtistColors
 from swingmusic.lib.taglib import extract_thumb
 from swingmusic.logger import log
 from swingmusic.models import Album, Artist
 from swingmusic.models.lastfm import SimilarArtist
-from swingmusic.requests.artists import fetch_similar_artists
+from swingmusic.models.track import Track
 from swingmusic.store.albums import AlbumStore
 from swingmusic.store.artists import ArtistStore
 from swingmusic.utils.network import has_connection
 from swingmusic.utils.progressbar import tqdm
+from swingmusic.requests.artists import fetch_similar_artists
+from swingmusic.lib.colorlib import ProcessAlbumColors, ProcessArtistColors
 
 from swingmusic.db.userdata import SimilarArtistTable
 
@@ -56,25 +55,17 @@ class CordinateMedia:
             FetchSimilarArtistsLastFM()
 
 
-def get_image(album: Album):
+def get_image(tracks: list[Track]):
     """
-    The function retrieves an image from an album by iterating through its tracks and extracting the thumbnail from the first track that has one.
+    The function retrieves an image from a list of tracks by extracting the thumbnail from the first track that has one.
 
-    :param album: An instance of the `Album` class representing the album to retrieve the image from.
-    :type album: Album
+    :param tracks: A list of Track objects to extract the image from.
+    :type tracks: list[Track]
     :return: None
     """
-    log.info("[MP] process was started using: %s", multiprocessing.get_start_method())
-    log.info("[get_image] extract image for album: %s", album.title)
-    matching_tracks = AlbumStore.get_album_tracks(album.albumhash)
 
-    log.info("[get_image] Found matching tracks: %s", len(matching_tracks))
-
-    for track in matching_tracks:
-        log.info("[get_image] extract image for track: %s", track.title)
+    for track in tracks:
         extracted = extract_thumb(track.filepath, track.albumhash + ".webp")
-
-        log.info("[get_image] extracted: %s", extracted)
 
         if extracted:
             return
@@ -90,24 +81,22 @@ class ProcessTrackThumbnails:
         Extracts the album art with platform specific logic.
         """
 
-        if platform.system() == "Linux":
-            # INFO: Processess are forked with access to global stores
-            # It's "safe" to use a process pool
-            cpus = max(1, os.cpu_count() // 2)
-            with ProcessPoolExecutor(max_workers=cpus) as executor:
-                results = list(
-                    tqdm(
-                        executor.map(get_image, albums),
-                        total=len(albums),
-                        desc="Extracting track images",
-                    )
-                )
+        cpus = max(1, (os.cpu_count() or 1) // 2)
 
-                list(results)
-        else:
-            # INFO: Use a for loop for windows (and others I guess)
-            for album in tqdm(albums, desc="Extracting track images"):
-                get_image(album)
+        albumsMap: Generator[list[Track]] = (
+            AlbumStore.get_album_tracks(album.albumhash) for album in albums
+        )
+
+        with ProcessPoolExecutor(max_workers=cpus) as executor:
+            results = list(
+                tqdm(
+                    executor.map(get_image, albumsMap),
+                    total=len(albums),
+                    desc="Extracting track images",
+                )
+            )
+
+            list(results)
 
     def __init__(self) -> None:
         """
@@ -152,21 +141,22 @@ class FetchSimilarArtistsLastFM:
 
     def __init__(self) -> None:
         # read all artists from db
+        storeArtists = ArtistStore.get_flat_list()
         processed = set(a.artisthash for a in SimilarArtistTable.get_all())
 
-        # filter out artists that already have similar artists
-        artists = filter(
-            lambda a: a.artisthash not in processed, ArtistStore.get_flat_list()
+        # filter out artists that already have similar artists using generator
+        artists = (
+            artist for artist in storeArtists if artist.artisthash not in processed
         )
-        artists = list(artists)
 
-        with ProcessPoolExecutor(max_workers=max(1, os.cpu_count() // 2)) as executor:
+        cpus = max(1, (os.cpu_count() or 1) // 2)
+
+        with ProcessPoolExecutor(max_workers=cpus) as executor:
             try:
-                print("Processing similar artists")
                 results = list(
                     tqdm(
                         executor.map(save_similar_artists, artists),
-                        total=len(artists),
+                        total=len(storeArtists) - len(processed),
                         desc="Fetching similar artists",
                     )
                 )

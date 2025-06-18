@@ -138,7 +138,7 @@ class DownloadImage:
                 img.save(path, format="webp")
                 continue
 
-            img.resize((size, int(size / ratio)), Image.LANCZOS).save(
+            img.resize((size, int(size / ratio)), Image.Resampling.LANCZOS).save(
                 path, format="webp"
             )
 
@@ -146,21 +146,21 @@ class DownloadImage:
 class CheckArtistImages:
     def __init__(self):
         # read all files in the artist image folder
+        storeArtists = ArtistStore.get_flat_list()
         path = settings.Paths.get_sm_artist_img_path()
         processed = set(i.replace(".webp", "") for i in os.listdir(path))
 
-        unprocessed = [
-            a for a in ArtistStore.get_flat_list() if a.artisthash not in processed
-        ]
+        unprocessed = (
+            artist for artist in storeArtists if artist.artisthash not in processed
+        )
 
-        # Use number of CPU cores minus 1 to leave one core free for system processes
-        num_workers = max(1, os.cpu_count() // 2)
+        num_workers = max(1, (os.cpu_count() or 1) // 2)
 
         with ProcessPoolExecutor(max_workers=num_workers) as executor:
             res = list(
                 tqdm(
                     executor.map(self.download_image, unprocessed),
-                    total=len(unprocessed),
+                    total=len(storeArtists) - len(processed),
                     desc="Downloading missing artist images",
                 )
             )
