@@ -58,9 +58,9 @@ Repository = "https://github.com/swingmx/swingmusic"
 Documentation = "https://swingmx.com/guide/introduction.html"
 Issues = "https://github.com/swingmx/swingmusic/issues"
 
-
-[tool.setuptools]
-package-dir = {"swingmusic" = "swingmusic"}
-
 [tool.setuptools.package-data]
 swingmusic = ["client/*"]
+
+[tool.setuptools.package-dir]
+"swingmusic" = "swingmusic"
+"pydub_swing" = "pydub"

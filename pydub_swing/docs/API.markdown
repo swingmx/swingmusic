@@ -17,7 +17,8 @@ Currently Undocumented:
 `AudioSegment` objects are immutable, and support a number of operators.
 
 ```python
-from pydub import AudioSegment
+from pydub_swing import AudioSegment
+
 sound1 = AudioSegment.from_file("/path/to/sound.wav", format="wav")
 sound2 = AudioSegment.from_file("/path/to/another_sound.wav", format="wav")
 
@@ -66,7 +67,7 @@ Any operations that combine multiple `AudioSegment` objects in *any* way will fi
 Open an audio file as an `AudioSegment` instance and return it. there are also a number of wrappers provided for convenience, but you should probably just use this directly.
 
 ```python
-from pydub import AudioSegment
+from pydub_swing import AudioSegment
 
 # wave and raw don’t use ffmpeg
 wav_audio = AudioSegment.from_file("/path/to/sound.wav", format="wav")
@@ -82,6 +83,7 @@ with open("/path/to/sound.wav", "rb") as wav_file:
 
 # also supports the os.PathLike protocol for python >= 3.6
 from pathlib import Path
+
 wav_path = Path("path/to/sound.wav")
 wav_audio = AudioSegment.from_file(wav_path)
 ```
@@ -109,7 +111,8 @@ The first argument is the path (as a string) of the file to read, **or** a file 
 Write the `AudioSegment` object to a file – returns a file handle of the output file (you don't have to do anything with it, though).
 
 ```python
-from pydub import AudioSegment
+from pydub_swing import AudioSegment
+
 sound = AudioSegment.from_file("/path/to/sound.wav", format="wav")
 
 # simple export
@@ -124,8 +127,8 @@ file_handle = sound.export("/path/to/output.mp3",
 
 # split sound in 5-second slices and export
 for i, chunk in enumerate(sound[::5000]):
-  with open("sound-%s.mp3" % i, "wb") as f:
-    chunk.export(f, format="mp3")
+    with open("sound-%s.mp3" % i, "wb") as f:
+        chunk.export(f, format="mp3")
 ```
 
 The first argument is the location (as a string) to write the output, **or** a file handle to write to. If you do not pass an output file or path, a temporary file is generated.
@@ -153,25 +156,27 @@ The first argument is the location (as a string) to write the output, **or** a f
 Creates a zero-duration `AudioSegment`.
 
 ```python
-from pydub import AudioSegment
+from pydub_swing import AudioSegment
+
 empty = AudioSegment.empty()
 
 len(empty) == 0
 ```
 
 This is useful for aggregation loops:
+
 ```python
-from pydub import AudioSegment
+from pydub_swing import AudioSegment
 
 sounds = [
-  AudioSegment.from_wav("sound1.wav"),
-  AudioSegment.from_wav("sound2.wav"),
-  AudioSegment.from_wav("sound3.wav"),
+    AudioSegment.from_wav("sound1.wav"),
+    AudioSegment.from_wav("sound2.wav"),
+    AudioSegment.from_wav("sound3.wav"),
 ]
 
 playlist = AudioSegment.empty()
 for sound in sounds:
-  playlist += sound
+    playlist += sound
 ```
 
 ### AudioSegment.silent()
@@ -179,7 +184,7 @@ for sound in sounds:
 Creates a silent audiosegment, which can be used as a placeholder, spacer, or as a canvas to overlay other sounds on top of.
 
 ```python
-from pydub import AudioSegment
+from pydub_swing import AudioSegment
 
 ten_second_silence = AudioSegment.silent(duration=10000)
 ```
@@ -196,7 +201,7 @@ ten_second_silence = AudioSegment.silent(duration=10000)
 Creates a multi-channel audiosegment out of multiple mono audiosegments (two or more). Each mono audiosegment passed in should be exactly the same length, down to the frame count.
 
 ```python
-from pydub import AudioSegment
+from pydub_swing import AudioSegment
 
 left_channel = AudioSegment.from_wav("sound1.wav")
 right_channel = AudioSegment.from_wav("sound1.wav")
@@ -209,7 +214,8 @@ stereo_sound = AudioSegment.from_mono_audiosegments(left_channel, right_channel)
 Returns the loudness of the `AudioSegment` in dBFS (db relative to the maximum possible loudness). A Square wave at maximum amplitude will be roughly 0 dBFS (maximum loudness), whereas a Sine Wave at maximum amplitude will be roughly -3 dBFS.
 
 ```python
-from pydub import AudioSegment
+from pydub_swing import AudioSegment
+
 sound = AudioSegment.from_file("sound1.wav")
 
 loudness = sound.dBFS
@@ -220,7 +226,8 @@ loudness = sound.dBFS
 Number of channels in this audio segment (1 means mono, 2 means stereo)
 
 ```python
-from pydub import AudioSegment
+from pydub_swing import AudioSegment
+
 sound = AudioSegment.from_file("sound1.wav")
 
 channel_count = sound.channels
@@ -231,7 +238,8 @@ channel_count = sound.channels
 Number of bytes in each sample (1 means 8 bit, 2 means 16 bit, etc). CD Audio is 16 bit, (sample width of 2 bytes).
 
 ```python
-from pydub import AudioSegment
+from pydub_swing import AudioSegment
+
 sound = AudioSegment.from_file("sound1.wav")
 
 bytes_per_sample = sound.sample_width
@@ -242,7 +250,8 @@ bytes_per_sample = sound.sample_width
 CD Audio has a 44.1kHz sample rate, which means `frame_rate` will be `44100` (same as sample rate, see `frame_width`). Common values are `44100` (CD), `48000` (DVD), `22050`, `24000`, `12000` and `11025`.
 
 ```python
-from pydub import AudioSegment
+from pydub_swing import AudioSegment
+
 sound = AudioSegment.from_file("sound1.wav")
 
 frames_per_second = sound.frame_rate
@@ -253,7 +262,8 @@ frames_per_second = sound.frame_rate
 Number of bytes for each "frame". A frame contains a sample for each channel (so for stereo you have 2 samples per frame, which are played simultaneously). `frame_width` is equal to `channels * sample_width`. For CD Audio it'll be `4` (2 channels times 2 bytes per sample).
 
 ```python
-from pydub import AudioSegment
+from pydub_swing import AudioSegment
+
 sound = AudioSegment.from_file("sound1.wav")
 
 bytes_per_frame = sound.frame_width
@@ -264,7 +274,8 @@ bytes_per_frame = sound.frame_width
 A measure of loudness. Used to compute dBFS, which is what you should use in most cases. Loudness is logarithmic (rms is not), which makes dB a much more natural scale.
 
 ```python
-from pydub import AudioSegment
+from pydub_swing import AudioSegment
+
 sound = AudioSegment.from_file("sound1.wav")
 
 loudness = sound.rms
@@ -275,7 +286,8 @@ loudness = sound.rms
 The highest amplitude of any sample in the `AudioSegment`. Useful for things like normalization (which is provided in `pydub.effects.normalize`).
 
 ```python
-from pydub import AudioSegment
+from pydub_swing import AudioSegment
+
 sound = AudioSegment.from_file("sound1.wav")
 
 peak_amplitude = sound.max
@@ -286,7 +298,8 @@ peak_amplitude = sound.max
 The highest amplitude of any sample in the `AudioSegment`, in dBFS (relative to the highest possible amplitude value). Useful for things like normalization (which is provided in `pydub.effects.normalize`).
 
 ```python
-from pydub import AudioSegment
+from pydub_swing import AudioSegment
+
 sound = AudioSegment.from_file("sound1.wav")
 
 normalized_sound = sound.apply_gain(-sound.max_dBFS)
@@ -297,7 +310,8 @@ normalized_sound = sound.apply_gain(-sound.max_dBFS)
 Returns the duration of the `AudioSegment` in seconds (`len(sound)` returns milliseconds). This is provided for convenience; it calls `len()` internally.
 
 ```python
-from pydub import AudioSegment
+from pydub_swing import AudioSegment
+
 sound = AudioSegment.from_file("sound1.wav")
 
 assert sound.duration_seconds == (len(sound) / 1000.0)
@@ -310,7 +324,8 @@ The raw audio data of the AudioSegment. Useful for interacting with other audio 
 You probably don’t need this, but if you do… you’ll know.
 
 ```python
-from pydub import AudioSegment
+from pydub_swing import AudioSegment
+
 sound = AudioSegment.from_file("sound1.wav")
 
 raw_audio_data = sound.raw_data
@@ -321,7 +336,8 @@ raw_audio_data = sound.raw_data
 Returns the number of frames in the `AudioSegment`. Optionally you may pass in a `ms` keywork argument to retrieve the number of frames in that number of milliseconds of audio in the `AudioSegment` (useful for slicing, etc).
 
 ```python
-from pydub import AudioSegment
+from pydub_swing import AudioSegment
+
 sound = AudioSegment.from_file("sound1.wav")
 
 number_of_frames_in_sound = sound.frame_count()
@@ -341,7 +357,8 @@ Returns a new `AudioSegment`, created by appending another `AudioSegment` to thi
 By default a 100ms (0.1 second) crossfade is used to eliminate pops and crackles.
 
 ```python
-from pydub import AudioSegment
+from pydub_swing import AudioSegment
+
 sound1 = AudioSegment.from_file("sound1.wav")
 sound2 = AudioSegment.from_file("sound2.wav")
 
@@ -370,7 +387,8 @@ Overlays an `AudioSegment` onto this one. In the resulting `AudioSegment` they w
 Since `AudioSegment` objects are immutable, you can get around this by overlaying the shorter sound on the longer one, or by creating a silent `AudioSegment` with the appropriate duration, and overlaying both sounds on to that one.
 
 ```python
-from pydub import AudioSegment
+from pydub_swing import AudioSegment
+
 sound1 = AudioSegment.from_file("sound1.wav")
 sound2 = AudioSegment.from_file("sound2.wav")
 
@@ -405,7 +423,8 @@ len(sound1) == len(sound2_plays_a_lot)
 Change the amplitude (generally, loudness) of the `AudioSegment`. Gain is specified in dB. This method is used internally by the `+` operator.
 
 ```python
-from pydub import AudioSegment
+from pydub_swing import AudioSegment
+
 sound1 = AudioSegment.from_file("sound1.wav")
 
 # make sound1 louder by 3.5 dB
@@ -422,7 +441,8 @@ quieter_via_operator = sound1 - 5.7
 A more general (more flexible) fade method. You may specify `start` and `end`, or one of the two along with duration (e.g., `start` and `duration`).
 
 ```python
-from pydub import AudioSegment
+from pydub_swing import AudioSegment
+
 sound1 = AudioSegment.from_file("sound1.wav")
 
 fade_louder_for_3_seconds_in_middle = sound1.fade(to_gain=+6.0, start=7500, duration=3000)
@@ -488,7 +508,8 @@ Splits a stereo `AudioSegment` into two, one for each channel (Left/Right). Retu
 ### AudioSegment(…).apply_gain_stereo()
 
 ```python
-from pydub import AudioSegment
+from pydub_swing import AudioSegment
+
 sound1 = AudioSegment.from_file("sound1.wav")
 
 # make left channel 6dB quieter and right channe 2dB louder
@@ -501,7 +522,8 @@ Both gain arguments are specified in dB.
 ### AudioSegment(…).pan()
 
 ```python
-from pydub import AudioSegment
+from pydub_swing import AudioSegment
+
 sound1 = AudioSegment.from_file("sound1.wav")
 
 # pan the sound 15% to the right
@@ -527,7 +549,8 @@ Returns the raw audio data as an array of (numeric) samples. Note: if the audio 
 This method is mainly for use in implementing effects, and other processing.
 
 ```python
-from pydub import AudioSegment
+from pydub_swing import AudioSegment
+
 sound = AudioSegment.from_file(“sound1.wav”)
 
 samples = sound.get_array_of_samples()
@@ -542,7 +565,7 @@ note that when using numpy or scipy you will need to convert back to an array be
 ```python
 import array
 import numpy as np
-from pydub import AudioSegment
+from pydub_swing import AudioSegment
 
 sound = AudioSegment.from_file(“sound1.wav”)
 samples = sound.get_array_of_samples()
@@ -560,7 +583,7 @@ Here's how to convert to a numpy float32 array:
 
 ```python
 import numpy as np
-from pydub import AudioSegment
+from pydub_swing import AudioSegment
 
 sound = AudioSegment.from_file("sound1.wav")
 sound = sound.set_frame_rate(16000)
@@ -621,7 +644,7 @@ Various functions for finding/manipulating silence in AudioSegments. For creatin
 Returns a list of all silent sections [start, end] in milliseconds of audio_segment. Inverse of detect_nonsilent(). Can be very slow since it has to iterate over the whole segment.
 
 ```python
-from pydub import AudioSegment, silence
+from pydub_swing import AudioSegment, silence
 
 print(silence.detect_silence(AudioSegment.silent(2000)))
 # [[0, 2000]]
@@ -678,7 +701,7 @@ Returns list of audio segments from splitting audio_segment on silent sections.
 Returns the millisecond/index that the leading silence ends. If there is no end it will return the length of the audio_segment.
 
 ```python
-from pydub import AudioSegment, silence
+from pydub_swing import AudioSegment, silence
 
 print(silence.detect_silence(AudioSegment.silent(2000)))
 # 2000
