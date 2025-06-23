@@ -218,7 +218,13 @@ class Lyrics:
             seconds = int(seconds)
             milli = int(milli)
 
-            milliseconds = datetime.timedelta(minutes=minutes, seconds=seconds, milliseconds=milli).total_seconds() * 1000
+            seconds = datetime.timedelta(minutes=minutes, seconds=seconds, milliseconds=milli).total_seconds()
+
+            offset = 0
+            if "offset" in self.meta:
+                offset = int(self.meta["offset"])  # offset in milliseconds
+
+            milliseconds = seconds * 1000 - offset
             lyrics.append({"time": milliseconds, "text": entry["body"]})
 
         return lyrics
