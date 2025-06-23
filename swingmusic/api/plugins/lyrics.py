@@ -2,7 +2,7 @@ from flask_openapi3 import Tag
 from flask_openapi3 import APIBlueprint
 from pydantic import Field
 from swingmusic.api.apischemas import TrackHashSchema
-from swingmusic.lib.lyrics import format_synced_lyrics
+from swingmusic.lib.lyrics import Lyrics as Lyrics_class
 
 from swingmusic.plugins.lyrics import Lyrics
 from swingmusic.settings import Defaults
@@ -56,9 +56,7 @@ def search_lyrics(body: LyricsSearchBody):
     lrc = finder.download_lyrics(track_id, filepath)
 
     if lrc is not None:
-        lines = lrc.split("\n")
-        lyrics = format_synced_lyrics(lines)
-
-        return {"trackhash": trackhash, "lyrics": lyrics}, 200
+        lyrics = Lyrics_class(lrc)
+        return {"trackhash": trackhash, "lyrics": lyrics.format_synced_lyrics()}, 200
 
     return {"trackhash": trackhash, "lyrics": lrc}, 200
