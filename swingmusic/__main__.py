@@ -1,5 +1,7 @@
 import os
 import sys
+from importlib import metadata
+
 import click
 import pathlib
 import multiprocessing
@@ -43,15 +45,7 @@ def print_version(*args, **kwargs):
     if not args[2]:
         return
 
-    path = get_home_res_path("version.txt")
-    if not path:
-        click.echo("Version file not found.")
-        sys.exit(1)
-
-    with open(path, "r") as f:
-        version = f.read()
-
-    click.echo(version)
+    click.echo(metadata.version("swingmusic"))
     sys.exit(0)
 
 

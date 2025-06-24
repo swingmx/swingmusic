@@ -64,6 +64,3 @@ package-dir = {"swingmusic" = "swingmusic"}
 
 [tool.setuptools.package-data]
 swingmusic = ["client/*"]
-
-[tool.setuptools_scm]
-version_file = "version.txt"
