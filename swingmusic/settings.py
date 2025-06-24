@@ -5,6 +5,7 @@ Contains default configs
 import os
 import subprocess
 import sys
+from importlib import metadata
 
 from swingmusic import configs
 from swingmusic.utils.filesystem import get_home_res_path
@@ -302,15 +303,7 @@ class Info:
     TODO: Remove this class entirely, and implement functionality where needed.
     """
 
-    SWINGMUSIC_APP_VERSION = os.environ.get("SWINGMUSIC_APP_VERSION")
-
-    if not SWINGMUSIC_APP_VERSION:
-        path = get_home_res_path("version.txt")
-        if not path:
-            raise ValueError("Version file not found")
-
-        with open(path, "r") as f:
-            SWINGMUSIC_APP_VERSION = f.read().strip()
+    SWINGMUSIC_APP_VERSION = metadata.version("swingmusic")
 
     GIT_LATEST_COMMIT_HASH = "<unset>"
     GIT_CURRENT_BRANCH = "<unset>"
