@@ -66,7 +66,14 @@ class TrackTable(Base):
                 .where(TrackTable.filepath.contains(path))
                 .order_by(TrackTable.last_mod)
             )
-            return tracks_to_dataclasses(result.fetchall())
+
+            clean = []
+            for row in result.fetchall():
+                d = row[0].__dict__
+                del d["_sa_instance_state"]
+                clean.append(d)
+
+            return tracks_to_dataclasses(clean)
 
     @classmethod
     def remove_tracks_by_filepaths(cls, filepaths: set[str]):
