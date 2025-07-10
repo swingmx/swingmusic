@@ -1,3 +1,4 @@
+# swingmusic/api/getall/__init__.py (Updated)
 from flask_openapi3 import Tag
 from flask_openapi3 import APIBlueprint
 from pydantic import BaseModel, Field
@@ -6,6 +7,7 @@ from datetime import datetime
 from swingmusic.api.apischemas import GenericLimitSchema
 from swingmusic.store.albums import AlbumStore
 from swingmusic.store.artists import ArtistStore
+from swingmusic.store.albumartists import AlbumArtistStore
 
 from swingmusic.serializers.album import serialize_for_card as serialize_album
 from swingmusic.serializers.artist import serialize_for_card as serialize_artist
@@ -16,6 +18,7 @@ from swingmusic.utils.dates import (
     seconds_to_time_string,
     timestamp_to_time_passed,
 )
+from swingmusic.utils.article_utils import get_sort_key
 
 bp_tag = Tag(name="Get all", description="List all items")
 api = APIBlueprint("getall", __name__, url_prefix="/getall", abp_tags=[bp_tag])
@@ -42,7 +45,7 @@ class GetAllItemsQuery(GenericLimitSchema):
 
 class GetAllItemsPath(BaseModel):
     itemtype: str = Field(
-        description="The type of items to return (albums | artists)",
+        description="The type of items to return (albums | artists | albumartists)",
         example="albums",
         default="albums",
     )
@@ -53,22 +56,27 @@ def get_all_items(path: GetAllItemsPath, query: GetAllItemsQuery):
     """
     Get all items
 
-    Used to show all albums or artists in the library
+    Used to show all albums, artists, or album artists in the library
 
     Sort keys:
-    -
-    Both albums and artists: `duration`, `created_date`, `playcount`, `playduration`, `lastplayed`, `trackcount`
+   Both albums and artists: `duration`, `created_date`, `playcount`, `playduration`, `lastplayed`, `trackcount`
 
     Albums only: `title`, `albumartists`, `date`
     Artists only: `name`, `albumcount`
+    Album Artists only: `name`, `albumcount`
     """
     is_albums = path.itemtype == "albums"
     is_artists = path.itemtype == "artists"
+    is_album_artists = path.itemtype == "albumartists"
 
     if is_albums:
         items = AlbumStore.get_flat_list()
     elif is_artists:
         items = ArtistStore.get_flat_list()
+    elif is_album_artists:
+        items = AlbumArtistStore.get_flat_list()
+    else:
+        return {"error": "Invalid item type. Must be 'albums', 'artists', or 'albumartists'"}, 400
 
     total = len(items)
 
@@ -87,17 +95,28 @@ def get_all_items(path: GetAllItemsPath, query: GetAllItemsQuery):
     sort_is_date = is_albums and sort == "date"
     sort_is_artist = is_albums and sort == "albumartists"
 
-    sort_is_artist_trackcount = is_artists and sort == "trackcount"
-    sort_is_artist_albumcount = is_artists and sort == "albumcount"
+    sort_is_artist_trackcount = (is_artists or is_album_artists) and sort == "trackcount"
+    sort_is_artist_albumcount = (is_artists or is_album_artists) and sort == "albumcount"
+    sort_is_artist_name = (is_artists or is_album_artists) and sort == "name"
 
     lambda_sort = lambda x: getattr(x, sort)
     lambda_sort_casefold = lambda x: getattr(x, sort).casefold()
 
+    # Special handling for different sort types
     if sort_is_artist:
         lambda_sort = lambda x: getattr(x, sort)[0]["name"].casefold()
+    elif sort_is_artist_name:
+        # Use article-aware sorting for artist names
+        lambda_sort = lambda x: get_sort_key(getattr(x, sort))
+        lambda_sort_casefold = lambda_sort  # Already handles casefolding
 
+    # Apply sorting
     try:
-        sorted_items = sorted(items, key=lambda_sort_casefold, reverse=reverse)
+        if sort_is_artist_name:
+            # Use the article-aware sorting function
+            sorted_items = sorted(items, key=lambda_sort, reverse=reverse)
+        else:
+            sorted_items = sorted(items, key=lambda_sort_casefold, reverse=reverse)
     except AttributeError:
         sorted_items = sorted(items, key=lambda_sort, reverse=reverse)
 
@@ -107,46 +126,51 @@ def get_all_items(path: GetAllItemsPath, query: GetAllItemsQuery):
     for item in items:
         item_dict = serialize_album(item) if is_albums else serialize_artist(item)
 
-        if sort_is_date:
-            item_dict["help_text"] = datetime.fromtimestamp(item.date).year
-
-        if sort_is_create_date:
-            date = create_new_date(datetime.fromtimestamp(item.created_date))
-            timeago = date_string_to_time_passed(date)
-            item_dict["help_text"] = timeago
-
-        if sort_is_count:
-            item_dict["help_text"] = (
-                f"{format_number(item.trackcount)} track{'' if item.trackcount == 1 else 's'}"
-            )
-
-        if sort_is_duration:
-            item_dict["help_text"] = seconds_to_time_string(item.duration)
-
-        if sort_is_artist_trackcount:
-            item_dict["help_text"] = (
-                f"{format_number(item.trackcount)} track{'' if item.trackcount == 1 else 's'}"
-            )
-
-        if sort_is_artist_albumcount:
-            item_dict["help_text"] = (
-                f"{format_number(item.albumcount)} album{'' if item.albumcount == 1 else 's'}"
-            )
-
-        if sort_is_playcount:
-            item_dict["help_text"] = (
-                f"{format_number(item.playcount)} play{'' if item.playcount == 1 else 's'}"
-            )
-
-        if sort_is_lastplayed:
-            if item.playduration == 0:
-                item_dict["help_text"] = "Never played"
-            else:
-                item_dict["help_text"] = timestamp_to_time_passed(item.lastplayed)
-
-        if sort_is_playduration:
-            item_dict["help_text"] = seconds_to_time_string(item.playduration)
+        if is_albums:
+            item_dict["help_text"] = f"{item.trackcount} track{'' if item.trackcount == 1 else 's'}"
+            item_dict["time"] = timestamp_to_time_passed(item.created_date)
+        else:  # artists or album artists
+            tracks_text = f"{item.trackcount} track{'' if item.trackcount == 1 else 's'}"
+            albums_text = f"{item.albumcount} album{'' if item.albumcount == 1 else 's'}"
+            item_dict["help_text"] = f"{albums_text} • {tracks_text}"
+            item_dict["time"] = timestamp_to_time_passed(item.created_date)
 
         album_list.append(item_dict)
 
-    return {"items": album_list, "total": total}
+    # Calculate pagination info
+    has_more = (start + limit) < total
+    next_start = start + limit if has_more else None
+
+    return {
+        "items": album_list,
+        "total": total,
+        "start": start,
+        "limit": limit,
+        "has_more": has_more,
+        "next_start": next_start,
+    }
+
+
+@api.get("/stats")
+def get_library_stats():
+    """
+    Get library statistics
+    
+    Returns counts for albums, artists, album artists, and tracks
+    """
+    albums = AlbumStore.get_flat_list()
+    artists = ArtistStore.get_flat_list()  
+    album_artists = AlbumArtistStore.get_flat_list()
+    
+    # Calculate total tracks
+    total_tracks = sum(album.trackcount for album in albums)
+    total_duration = sum(getattr(album, 'duration', 0) for album in albums)
+    
+    return {
+        "albums": len(albums),
+        "artists": len(artists),
+        "album_artists": len(album_artists),
+        "tracks": total_tracks,
+        "total_duration": total_duration,
+        "duration_formatted": seconds_to_time_string(total_duration) if total_duration else "0:00"
+    }

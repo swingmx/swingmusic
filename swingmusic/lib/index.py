@@ -1,3 +1,4 @@
+# swingmusic/lib/index.py (Updated)
 import gc
 from time import time
 from swingmusic.lib.mapstuff import (
@@ -11,6 +12,7 @@ from swingmusic.lib.recipes.recents import RecentlyAdded
 from swingmusic.lib.tagger import IndexTracks
 from swingmusic.store.albums import AlbumStore
 from swingmusic.store.artists import ArtistStore
+from swingmusic.store.albumartists import AlbumArtistStore  # New import
 from swingmusic.store.folder import FolderStore
 from swingmusic.store.tracks import TrackStore
 from swingmusic.utils.threading import background
@@ -24,6 +26,7 @@ class IndexEverything:
         TrackStore.load_all_tracks(key)
         AlbumStore.load_albums(key)
         ArtistStore.load_artists(key)
+        AlbumArtistStore.load_album_artists(key)  # Load album artists
         FolderStore.load_filepaths()
 
         # NOTE: Rebuild recently added items on the homepage store
