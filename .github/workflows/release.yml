@@ -44,7 +44,7 @@ jobs:
   build:
     strategy:
       matrix:
-        os: [ubuntu-22.04, windows-2019, macos-13, macos-14]
+        os: [ubuntu-22.04, windows-2022, macos-13, macos-14]
     if: ${{ github.event.inputs.binary_build == 'true' }}
     runs-on: ${{ matrix.os }}
     name: Create binary on ${{ matrix.os }}

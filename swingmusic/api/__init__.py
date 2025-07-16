@@ -60,7 +60,7 @@ def create_api():
     Creates the Flask instance, registers modules and registers all the API blueprints.
     """
     api_info = Info(
-        title=f"Swing Music",
+        title="Swing Music",
         version=f"v{AppInfo.SWINGMUSIC_APP_VERSION}",
         description=open_api_description,
     )

@@ -8,13 +8,12 @@ import tempfile
 import time
 from typing import Literal
 
-from flask import send_file, request, Response, send_from_directory
-from flask_openapi3 import APIBlueprint, Tag
 from pydantic import BaseModel, Field
-import werkzeug.wsgi
+from flask_openapi3 import APIBlueprint, Tag
 from swingmusic.api.apischemas import TrackHashSchema
-from swingmusic.lib.trackslib import get_silence_paddings
 from swingmusic.lib.transcoder import start_transcoding
+from flask import request, Response, send_from_directory
+from swingmusic.lib.trackslib import get_silence_paddings
 
 from swingmusic.store.tracks import TrackStore
 from swingmusic.utils.files import guess_mime_type

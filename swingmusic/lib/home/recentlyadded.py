@@ -1,3 +1,4 @@
+import pathlib
 from datetime import datetime
 
 from swingmusic.lib.playlistlib import get_first_4_images
@@ -148,6 +149,9 @@ def get_recently_added_items(limit: int = 7):
 
     # INFO: sort tracks by last modified date in descending order to get the most recent last modified date
     for folder, trackgroup in groups.items():
+        if not pathlib.Path(folder).exists():
+            continue
+
         trackgroup.sort(key=lambda t: t.last_mod, reverse=True)
         grouplist.append(
             {
