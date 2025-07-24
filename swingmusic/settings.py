@@ -34,6 +34,25 @@ else:
 paths = None
 
 
+def default_base_path():
+    xdg_config_home = os.environ.get("XDG_CONFIG_HOME")
+    swing_xdg_config_home = os.environ.get("SWINGMUSIC_XDG_CONFIG_DIR")
+    alt_dir = pathlib.Path.home() / ".config"
+
+    base_path = pathlib.Path.home()
+
+    if not swing_xdg_config_home is None:
+        base_path = pathlib.Path(swing_xdg_config_home)
+
+    elif not xdg_config_home is None:
+        base_path = pathlib.Path(xdg_config_home)
+
+    elif alt_dir.exists():
+        base_path = alt_dir
+
+    return base_path
+
+
 class Paths(metaclass=Singleton):
     """
     This class is a singleton.
@@ -59,25 +78,10 @@ class Paths(metaclass=Singleton):
         user's home directory.
         """
 
-        xdg_config_home = os.environ.get("XDG_CONFIG_HOME")
-        swing_xdg_config_home = os.environ.get("SWINGMUSIC_XDG_CONFIG_DIR")
-        alt_dir = Path.home() / ".config"
-
-
-        if not base_path is None:
-            self.base_path = Path(base_path)
-
-        elif not swing_xdg_config_home is None:
-            self.base_path = Path(swing_xdg_config_home)
-
-        elif not xdg_config_home is None:
-            self.base_path =  Path(xdg_config_home)
-
-        elif alt_dir.exists():
-            self.base_path = alt_dir
-
+        if base_path is not None:
+            self.base_path = base_path
         else:
-            self.base_path = Path.home()
+            self.base_path = default_base_path()
 
         self.mkdir_config_folders()
 
@@ -171,7 +175,6 @@ class Paths(metaclass=Singleton):
             copy_function=shutil.copy2,
             dirs_exist_ok=True,
         )
-
 
 
     @property

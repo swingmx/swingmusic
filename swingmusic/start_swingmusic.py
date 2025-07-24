@@ -1,5 +1,4 @@
 import pathlib
-
 from swingmusic import settings
 from swingmusic.api import create_api
 from swingmusic.crons import start_cron_jobs
@@ -23,7 +22,7 @@ import os
 from datetime import datetime, timezone
 
 
-def start_swingmusic(host: str, port: int, debug: bool):
+def start_swingmusic(host: str, port: int, debug: bool, base_path:pathlib.Path):
     """
     Creates and starts the Flask application server for Swing Music.
 
@@ -35,6 +34,7 @@ def start_swingmusic(host: str, port: int, debug: bool):
         host (str): The host address to bind the server to (e.g., 'localhost' or '0.0.0.0')
         port (int): The port number to run the server on
         debug (bool): If swingmusic should start in debug mode
+        base_path (Path): On which pathe to store config
 
     Note:
         The application uses either bjoern or waitress as the WSGI server,
@@ -85,7 +85,7 @@ def start_swingmusic(host: str, port: int, debug: bool):
 
     # Setup function calls
     settings.Info.load()
-    settings.Paths()
+    settings.Paths(base_path)
 
     run_setup()
 

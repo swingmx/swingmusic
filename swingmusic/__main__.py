@@ -5,8 +5,8 @@ import pathlib
 import multiprocessing
 from PIL import Image
 
+from swingmusic.settings import default_base_path
 from swingmusic.start_swingmusic import start_swingmusic
-from swingmusic.utils.xdg_utils import get_xdg_config_dir
 from swingmusic.utils.filesystem import get_home_res_path
 from swingmusic.arg_handler import handle_build, handle_password_reset
 
@@ -36,25 +36,6 @@ def create_image(width, height, color1, color2):
     return padded_image
 
 
-def print_version(*args, **kwargs):
-    """
-    Prints the version of the application.
-    """
-    if not args[2]:
-        return
-
-    path = get_home_res_path("version.txt")
-    if not path:
-        click.echo("Version file not found.")
-        sys.exit(1)
-
-    with open(path, "r") as f:
-        version = f.read()
-
-    click.echo(version)
-    sys.exit(0)
-
-
 @click.command(options_metavar="<options>", context_settings={"show_default": True})
 @click.option(
     "--build",
@@ -68,7 +49,7 @@ def print_version(*args, **kwargs):
 @click.option("--port", default=1970, help="HTTP port to run the app on.")
 @click.option(
     "--config",
-    default=lambda: get_xdg_config_dir(),
+    default=default_base_path,
     show_default="XDG_CONFIG_HOME",
     help="Path to the config file.",
     type=click.Path(
@@ -93,24 +74,26 @@ def print_version(*args, **kwargs):
     default=False,
     help="If swingmusic should start in debug mode"
 )
-@click.option(
-    "--version",
-    is_flag=True,
-    default=False,
-    callback=print_version,
-    help="Show the version and exit",
-    is_eager=True,
+@click.version_option(
+    package_name="swingmusic",
+    prog_name="swingmusic"
 )
 def run(*args, **kwargs):
     """
     Swing Music entry point. All commandline arguments are handled
     here by the click decorators and configuration.
     """
-    # INFO: Set the config dir as an environment variable
-    os.environ["SWINGMUSIC_XDG_CONFIG_DIR"] = str(
-        pathlib.Path(kwargs["config"]).resolve()
+
+    # pass None if default path.
+    if kwargs["config"] == default_base_path():
+        kwargs["config"] = None
+
+    start_swingmusic(
+        host=kwargs["host"],
+        port=kwargs["port"],
+        debug=kwargs["debug"],
+        base_path=kwargs["config"]
     )
-    start_swingmusic(kwargs["host"], kwargs["port"], kwargs["debug"])
 
 
 if __name__ == "__main__":
