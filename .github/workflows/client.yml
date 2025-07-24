@@ -118,10 +118,34 @@ jobs:
           path: ./dist/*
           compression-level: 0
 
-      - name: upload artefact to release
+  upload-builds:
+    name: Build wheels
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Download client artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: client
+          path: client
+
+      - name: Download wheel artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: wheels
+          path: wheels
+
+      - name: Download all Pyinstaller builds
+        uses: actions/download-artifact@v4
+        with:
+          pattern: Pyinstaller-*
+          path: pyinstaller
+          merge-multiple: true
+
+      - name: Upload artifacts to GitHub Release
         uses: softprops/action-gh-release@v2
         with:
           files: |
-            wheels
-            client
-            Pyinstaller*
+            client/**
+            wheels/**
+            pyinstaller/**
