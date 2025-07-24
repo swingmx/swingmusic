@@ -3,7 +3,6 @@ on:
   workflow_dispatch:
   release:
     types:
-      - created
       - prereleased
       - released
 
