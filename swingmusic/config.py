@@ -1,8 +1,9 @@
-from dataclasses import dataclass, asdict, field
-import json
+import pathlib
 from pathlib import Path
+from dataclasses import dataclass, asdict, field, InitVar
+import json
 from typing import Any
-from .settings import Paths
+from swingmusic.settings import Paths
 
 # TODO: Publish this on PyPi
 
@@ -34,14 +35,14 @@ def load_user_artist_ignore_list() -> set[str]:
     Loads the user-defined artist ignore list from the config directory.
     Returns an empty set if the file doesn't exist.
     """
-    user_file = Path(Paths.get_config_file_path()).parent / "artist_split_ignore.txt"
+    user_file = Path(Paths().config_file_path).parent / "artist_split_ignore.txt"
     return load_artist_ignore_list_from_file(user_file)
 
 
 @dataclass
 class UserConfig:
-    _config_path: str = ""
-    _artist_split_ignore_file_name: str = "artist_split_ignore.txt"
+    _config_path: InitVar[pathlib.Path] = ""
+    _artist_split_ignore_file_name: InitVar[str] = "artist_split_ignore.txt"
     # NOTE: only auth stuff are used (the others are still reading/writing to db)
     # TODO: Move the rest of the settings to the config file
 
@@ -84,12 +85,12 @@ class UserConfig:
     lastfmApiSecret: str = "5e5306fbf3e8e3bc92f039b6c6c4bd4e"
     lastfmSessionKeys: dict[str, str] = field(default_factory=dict)
 
-    def __post_init__(self):
+    def __post_init__(self, _config_path, _artist_split_ignore_file_name):
         """
         Loads the config file and sets the values to this instance
         """
         # set config path locally to avoid writing to file
-        config_path = Paths.get_config_file_path()
+        config_path = Paths().config_file_path
 
         try:
             config = self.load_config(config_path)
@@ -116,18 +117,17 @@ class UserConfig:
         if it doesn't exist
         """
         # if not exists, create the config file
-        if not Path(self._config_path).exists():
+        config = Path(self._config_path)
+        if not config.exists():
             self.write_to_file(asdict(self))
 
-    def load_config(self, path: str) -> dict[str, Any]:
+
+    def load_config(self, path: Path) -> dict[str, Any]:
         """
         Reads the settings from the config file.
         Returns a dictget_root_dirs
         """
-        with open(path, "r") as f:
-            settings = json.load(f)
-
-        return settings
+        return json.loads(path.read_text())
 
     def write_to_file(self, settings: dict[str, Any]):
         """
@@ -136,7 +136,7 @@ class UserConfig:
         # remove internal attributes
         settings = {k: v for k, v in settings.items() if not k.startswith("_")}
 
-        with open(self._config_path, "w") as f:
+        with self._config_path.open(mode="w") as f:
             json.dump(settings, f, indent=4, default=list)
 
     def __setattr__(self, key: str, value: Any) -> None:

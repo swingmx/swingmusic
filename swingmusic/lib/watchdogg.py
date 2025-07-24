@@ -73,7 +73,7 @@ class Watcher:
         #     dirs = [settings.USER_HOME_DIR]
 
         if any([d == "$home" for d in dirs]):
-            dirs = [settings.Paths.USER_HOME_DIR]
+            dirs = [settings.Paths().USER_HOME_DIR]
 
         event_handler = Handler(root_dirs=dirs, dir_map=dir_map)
 

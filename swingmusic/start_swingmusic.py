@@ -1,3 +1,4 @@
+import pathlib
 from swingmusic import settings
 from swingmusic.api import create_api
 from swingmusic.crons import start_cron_jobs
@@ -7,6 +8,7 @@ from swingmusic.start_info_logger import log_startup_info
 from swingmusic.utils.filesystem import get_home_res_path
 from swingmusic.utils.paths import getClientFilesExtensions
 from swingmusic.utils.threading import background
+from swingmusic.logger import setup_logger
 
 
 import setproctitle
@@ -20,7 +22,7 @@ import os
 from datetime import datetime, timezone
 
 
-def start_swingmusic(host: str, port: int):
+def start_swingmusic(host: str, port: int, debug: bool, base_path:pathlib.Path):
     """
     Creates and starts the Flask application server for Swing Music.
 
@@ -31,6 +33,8 @@ def start_swingmusic(host: str, port: int):
     Args:
         host (str): The host address to bind the server to (e.g., 'localhost' or '0.0.0.0')
         port (int): The port number to run the server on
+        debug (bool): If swingmusic should start in debug mode
+        base_path (Path): On which pathe to store config
 
     Note:
         The application uses either bjoern or waitress as the WSGI server,
@@ -38,6 +42,9 @@ def start_swingmusic(host: str, port: int):
         static file serving with gzip compression support, and automatic
         token refresh functionality.
     """
+
+    setup_logger(debug=debug)
+
 
     # Example: Setting up dirs, database, and loading stuff into memory.
     # TIP: Be careful with the order of the setup functions.
@@ -69,8 +76,6 @@ def start_swingmusic(host: str, port: int):
     waitress_logger = logging.getLogger("waitress")
     waitress_logger.setLevel(logging.ERROR)
 
-    log_startup_info(host, port)
-
     @background
     def run_swingmusic():
         register_plugins()
@@ -80,6 +85,8 @@ def start_swingmusic(host: str, port: int):
 
     # Setup function calls
     settings.Info.load()
+    settings.Paths(base_path)
+
     run_setup()
 
     # Create the Flask app
@@ -172,7 +179,13 @@ def start_swingmusic(host: str, port: int):
         accepts_gzip = request.headers.get("Accept-Encoding", "").find("gzip") >= 0
 
         if accepts_gzip:
-            if os.path.exists(os.path.join(app.static_folder or "", gzipped_path)):
+            if app.static_folder is None:
+                static_folder = pathlib.Path("")
+            else:
+                static_folder = pathlib.Path(app.static_folder)
+
+            joined = static_folder / gzipped_path
+            if joined.exists():
                 response = app.make_response(app.send_static_file(gzipped_path))
                 response.headers["Content-Encoding"] = "gzip"
                 return response
@@ -186,6 +199,8 @@ def start_swingmusic(host: str, port: int):
         """
         return app.send_static_file("index.html")
 
+
+    log_startup_info(host, port)
     load_into_mem()
     run_swingmusic()
     # TrackStore.export()

@@ -1,3 +1,4 @@
+import pathlib
 from dataclasses import dataclass
 import math
 import os
@@ -16,7 +17,6 @@ from swingmusic.config import UserConfig
 from swingmusic.settings import Defaults, Paths
 from swingmusic.utils.hashing import create_hash
 from swingmusic.utils.parsers import split_artists
-from swingmusic.utils.wintools import win_replace_slash
 
 
 def parse_album_art(filepath: str):
@@ -37,10 +37,10 @@ def extract_thumb(filepath: str, webp_path: str, overwrite=False) -> bool:
     Extracts the thumbnail from an audio file.
     Returns the path to the thumbnail.
     """
-    lg_img_path = os.path.join(Paths.get_lg_thumb_path(), webp_path)
-    sm_img_path = os.path.join(Paths.get_sm_thumb_path(), webp_path)
-    xms_img_path = os.path.join(Paths.get_xsm_thumb_path(), webp_path)
-    md_img_path = os.path.join(Paths.get_md_thumb_path(), webp_path)
+    lg_img_path = Paths().lg_thumb_path / webp_path
+    sm_img_path = Paths().sm_thumb_path / webp_path
+    xms_img_path = Paths().xsm_thumb_path / webp_path
+    md_img_path = Paths().md_thumb_path / webp_path
 
     images = [
         (lg_img_path, Defaults.LG_THUMB_SIZE),
@@ -149,8 +149,8 @@ def get_tags(filepath: str, config: UserConfig):
     Returns the tags for a given audio file.
     """
 
-    filetype = filepath.split(".")[-1]
-    filename = (filepath.split("/")[-1]).replace(f".{filetype}", "")
+    filepath = pathlib.Path(filepath)
+    filename = filepath.stem
 
     try:
         last_mod = round(os.path.getmtime(filepath))
@@ -173,8 +173,8 @@ def get_tags(filepath: str, config: UserConfig):
         "artists": tags.artist,
         "title": tags.title,
         "last_mod": last_mod,
-        "filepath": win_replace_slash(filepath),
-        "folder": win_replace_slash(os.path.dirname(filepath)),
+        "filepath": filepath.as_posix(),
+        "folder": filepath.parent.as_posix(),
         "bitrate": tags.bitrate,
         "duration": tags.duration,
         "track": tags.track,

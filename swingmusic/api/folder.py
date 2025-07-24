@@ -1,7 +1,7 @@
 """
 Contains all the folder routes.
 """
-
+import pathlib
 from datetime import datetime
 import os
 from pathlib import Path
@@ -19,7 +19,7 @@ from swingmusic.db.userdata import FavoritesTable, PlaylistTable
 from swingmusic.lib.folderslib import get_files_and_dirs, get_folders
 from swingmusic.serializers.track import serialize_track, serialize_tracks
 from swingmusic.store.tracks import TrackStore
-from swingmusic.utils.wintools import is_windows, win_replace_slash
+from swingmusic.utils.wintools import is_windows
 
 tag = Tag(name="Folders", description="Get folders and tracks in a directory")
 api = APIBlueprint("folder", __name__, url_prefix="/folder", abp_tags=[tag])
@@ -85,7 +85,7 @@ def get_folder_tree(body: FolderTree):
 
     try:
         if req_dir == "$home" and root_dirs[0] == "$home":
-            req_dir = settings.Paths.USER_HOME_DIR
+            req_dir = settings.Paths().USER_HOME_DIR.as_posix()
     except IndexError:
         pass
 
@@ -236,21 +236,31 @@ def list_folders(body: DirBrowserBody):
             "folders": [{"name": d, "path": d} for d in get_all_drives(is_win=is_win)]
         }
 
-    if is_win:
-        req_dir += "/"
-    else:
-        req_dir = "/" + req_dir + "/"
-        req_dir = str(Path(req_dir).resolve())
+
+    req_dir = pathlib.Path(req_dir)
 
     try:
         entries = os.scandir(req_dir)
     except PermissionError:
         return {"folders": []}
 
-    dirs = [e.name for e in entries if e.is_dir() and not e.name.startswith(".")]
-    dirs = [
-        {"name": d, "path": win_replace_slash(os.path.join(req_dir, d))} for d in dirs
-    ]
+    # only get dirs and remove hidden dirs
+    dirs = []
+    for entry in entries:
+        entry = pathlib.Path(entry)
+        name = entry.name
+
+        if name.startswith("$"): # ignore windows system folder
+            continue
+
+        if name.startswith("."): # ignore unix hidden folder
+            continue
+
+        if entry.is_dir():  # lastly, check if is dir
+            dirs.append({
+                "name": name,
+                "path": entry.as_posix()
+            })
 
     return {
         "folders": sorted(dirs, key=lambda i: i["name"]),
