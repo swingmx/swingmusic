@@ -1,5 +1,7 @@
 import os
 import sys
+from importlib import metadata
+
 import click
 import pathlib
 import multiprocessing
@@ -34,6 +36,25 @@ def create_image(width, height, color1, color2):
     padded_image.paste(image, (x, y), image)
 
     return padded_image
+
+
+def print_version(*args, **kwargs):
+    """
+    Prints the version of the application.
+    """
+    if not args[2]:
+        return
+
+    path = get_home_res_path("version.txt")
+    if not path:
+        click.echo("Version file not found.")
+        sys.exit(1)
+
+    with open(path, "r") as f:
+        version = f.read()
+
+    click.echo(version)
+    sys.exit(0)
 
 
 @click.command(options_metavar="<options>", context_settings={"show_default": True})
