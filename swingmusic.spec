@@ -1,11 +1,15 @@
 # -*- mode: python ; coding: utf-8 -*-
 from PyInstaller.utils.hooks import collect_submodules, collect_data_files
+from platform import system, machine
 
 hiddenimports = []
 # hiddenimports += collect_submodules('swingmusic')
 
+
 datas=[('assets', 'assets'), ('client', 'client')]
 datas += collect_data_files('swingmusic', True, excludes=['**/*.py'], includes=['**/*.*'])
+
+
 
 
 a = Analysis(
@@ -29,7 +33,7 @@ exe = EXE(
     a.binaries,
     a.datas,
     [],
-    name='swingmusic',
+    name=f'swingmusic_{system()}_{machine()}',
     debug=False,
     bootloader_ignore_signals=False,
     strip=False,
