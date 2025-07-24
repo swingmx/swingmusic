@@ -95,9 +95,9 @@ class DownloadImage:
         if img is None:
             return
 
-        sm_path = Path(settings.Paths.get_sm_artist_img_path()) / name
-        lg_path = Path(settings.Paths.get_lg_artist_img_path()) / name
-        md_path = Path(settings.Paths.get_md_artist_img_path()) / name
+        sm_path = settings.Paths().sm_artist_img_path / name
+        lg_path = settings.Paths().lg_artist_img_path / name
+        md_path = settings.Paths().md_artist_img_path / name
 
         entries = [
             (lg_path, None),  # save in the original size
@@ -147,7 +147,7 @@ class CheckArtistImages:
     def __init__(self):
         # read all files in the artist image folder
         storeArtists = ArtistStore.get_flat_list()
-        path = settings.Paths.get_sm_artist_img_path()
+        path = settings.Paths().sm_artist_img_path
         processed = set(i.replace(".webp", "") for i in os.listdir(path))
 
         unprocessed = (
@@ -175,7 +175,7 @@ class CheckArtistImages:
         :param artist: The artist name
         """
         img_path = (
-            Path(settings.Paths.get_sm_artist_img_path()) / f"{artist.artisthash}.webp"
+            settings.Paths().sm_artist_img_path / f"{artist.artisthash}.webp"
         )
 
         if img_path.exists():

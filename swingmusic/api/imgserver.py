@@ -23,7 +23,7 @@ def cache_thumbnails(filepath: Path, trackhash: str):
     Resizes the image and stores it in the cache directory.
     """
     image = Image.open(filepath)
-    path = Path(Paths.get_image_cache_path())
+    path = Path(Paths().image_cache_path)
     aspect_ratio = image.width / image.height
 
     sizes = {
@@ -89,7 +89,7 @@ def send_fallback_img(filename: str = "default.webp"):
     """
     Returns the fallback image from the assets folder.
     """
-    folder = Paths.get_assets_path()
+    folder = Paths().assets_path
     img = Path(folder) / filename
 
     if not img.exists():
@@ -111,7 +111,7 @@ def send_file_or_fallback(
 
     if pathhash != "":
         # INFO: Check if the image is in the cache
-        cache_path = Path(Paths.get_image_cache_path()) / fpath.parent.name / filename
+        cache_path = Paths().image_cache_path / fpath.parent.name / filename
         if cache_path.exists():
             return send_from_directory(cache_path.parent, cache_path.name)
 
@@ -162,7 +162,7 @@ def send_lg_thumbnail(path: ImagePath, query: ImageQuery):
     """
     Get large thumbnail (500 x 500)
     """
-    folder = Paths.get_lg_thumb_path()
+    folder = Paths().lg_thumb_path
     return send_file_or_fallback(folder, path.imgpath, pathhash=query.pathhash)
 
 
@@ -171,7 +171,7 @@ def send_xsm_thumbnail(path: ImagePath, query: ImageQuery):
     """
     Get extra small thumbnail (64px)
     """
-    folder = Paths.get_xsm_thumb_path()
+    folder = Paths().xsm_thumb_path
     return send_file_or_fallback(folder, path.imgpath, pathhash=query.pathhash)
 
 
@@ -180,7 +180,7 @@ def send_sm_thumbnail(path: ImagePath, query: ImageQuery):
     """
     Get small thumbnail (96px)
     """
-    folder = Paths.get_sm_thumb_path()
+    folder = Paths().sm_thumb_path
     return send_file_or_fallback(folder, path.imgpath, pathhash=query.pathhash)
 
 
@@ -189,7 +189,7 @@ def send_md_thumbnail(path: ImagePath, query: ImageQuery):
     """
     Get medium thumbnail (256px)
     """
-    folder = Paths.get_md_thumb_path()
+    folder = Paths().md_thumb_path
     return send_file_or_fallback(folder, path.imgpath, pathhash=query.pathhash)
 
 
@@ -199,8 +199,8 @@ def send_lg_artist_image(path: ImagePath):
     """
     Get large artist image (500 x 500)
     """
-    folder = Paths.get_lg_artist_img_path()
-    return send_file_or_fallback(folder, path.imgpath, "artist.webp")
+    folder = Paths().lg_artist_img_path
+    return send_file_or_fallback(str(folder), path.imgpath, "artist.webp")
 
 
 @api.get("/artist/small/<imgpath>")
@@ -208,8 +208,8 @@ def send_sm_artist_image(path: ImagePath):
     """
     Get small artist image (128)
     """
-    folder = Paths.get_sm_artist_img_path()
-    return send_file_or_fallback(folder, path.imgpath, "artist.webp")
+    folder = Paths().sm_artist_img_path
+    return send_file_or_fallback(str(folder), path.imgpath, "artist.webp")
 
 
 @api.get("/artist/medium/<imgpath>")
@@ -217,7 +217,7 @@ def send_md_artist_image(path: ImagePath):
     """
     Get medium artist image (256px)
     """
-    folder = Paths.get_md_artist_img_path()
+    folder = Paths().md_artist_img_path
     return send_file_or_fallback(folder, path.imgpath, "artist.webp")
 
 
@@ -236,7 +236,7 @@ def send_playlist_image(path: PlaylistImagePath):
 
     Images are constructed as '{playlist_id}.webp'
     """
-    folder = Paths.get_playlist_img_path()
+    folder = Paths().playlist_img_path
     return send_file_or_fallback(folder, path.imgpath, "playlist.svg")
 
 
@@ -246,7 +246,7 @@ def send_md_mix_image(path: ImagePath):
     """
     Get medium mix image
     """
-    folder = Paths.get_md_mixes_img_path()
+    folder = Paths().md_mixes_img_path
     return send_file_or_fallback(folder, path.imgpath, "playlist.svg")
 
 
@@ -255,5 +255,5 @@ def send_sm_mix_image(path: ImagePath):
     """
     Get small mix image
     """
-    folder = Paths.get_sm_mixes_img_path()
+    folder = Paths().sm_mixes_img_path
     return send_file_or_fallback(folder, path.imgpath, "playlist.svg")
