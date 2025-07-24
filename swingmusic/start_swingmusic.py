@@ -9,6 +9,7 @@ from swingmusic.start_info_logger import log_startup_info
 from swingmusic.utils.filesystem import get_home_res_path
 from swingmusic.utils.paths import getClientFilesExtensions
 from swingmusic.utils.threading import background
+from swingmusic.logger import setup_logger
 
 
 import setproctitle
@@ -22,7 +23,7 @@ import os
 from datetime import datetime, timezone
 
 
-def start_swingmusic(host: str, port: int):
+def start_swingmusic(host: str, port: int, debug: bool):
     """
     Creates and starts the Flask application server for Swing Music.
 
@@ -33,6 +34,7 @@ def start_swingmusic(host: str, port: int):
     Args:
         host (str): The host address to bind the server to (e.g., 'localhost' or '0.0.0.0')
         port (int): The port number to run the server on
+        debug (bool): If swingmusic should start in debug mode
 
     Note:
         The application uses either bjoern or waitress as the WSGI server,
@@ -40,6 +42,9 @@ def start_swingmusic(host: str, port: int):
         static file serving with gzip compression support, and automatic
         token refresh functionality.
     """
+
+    setup_logger(debug=debug)
+
 
     # Example: Setting up dirs, database, and loading stuff into memory.
     # TIP: Be careful with the order of the setup functions.
