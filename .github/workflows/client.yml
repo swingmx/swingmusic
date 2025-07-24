@@ -111,8 +111,17 @@ jobs:
       - name: Build with Pyinstaller on ${{ matrix.os }}
         run: pyinstaller swingmusic.spec
 
-      - uses: actions/upload-artifact@v4
+      - name: upload artifact
+        uses: actions/upload-artifact@v4
         with:
-          name: Pyinstaller-${{ matrix.os }}-${{ strategy.job-index }}
+          name: Pyinstaller-${{ matrix.os }}
           path: ./dist/*
           compression-level: 0
+
+      - name: upload artefact to release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            wheels
+            client
+            Pyinstaller*
