@@ -84,12 +84,8 @@ jobs:
 
       # install system packages
 
-      - name: debug
-        run:
-          tree
-
       - name: Install swingmusic
-        run: pip install *.whl
+        run: pip install wheels/*.whl
 
       - name: Build with Pyinstaller on ${{ matrix.os }}
         run: pyinstaller swingmusic.spec
