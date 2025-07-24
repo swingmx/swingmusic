@@ -85,6 +85,20 @@ jobs:
         uses: actions/download-artifact@v4
 
       # install system packages
+      - name: Setup Homebrew
+        if: ${{ startsWith(matrix.os, 'macos') }}
+        uses: Homebrew/actions/setup-homebrew@master
+
+      - name: Install libev (macOS)
+        if: ${{ startsWith(matrix.os, 'macos') }}
+        run: |
+          brew install libev
+
+      - name: Install libev (Linux)
+        if: ${{ startsWith(matrix.os, 'ubuntu') }}
+        run: |
+          sudo apt-get install libev-dev -y > /dev/null
+
 
       - name: Install swingmusic
         run: | 
