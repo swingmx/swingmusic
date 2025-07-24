@@ -89,6 +89,11 @@ def print_version(*args, **kwargs):
     callback=handle_password_reset,
 )
 @click.option(
+    "--debug",
+    default=False,
+    help="If swingmusic should start in debug mode"
+)
+@click.option(
     "--version",
     is_flag=True,
     default=False,
@@ -105,7 +110,7 @@ def run(*args, **kwargs):
     os.environ["SWINGMUSIC_XDG_CONFIG_DIR"] = str(
         pathlib.Path(kwargs["config"]).resolve()
     )
-    start_swingmusic(kwargs["host"], kwargs["port"])
+    start_swingmusic(kwargs["host"], kwargs["port"], kwargs["debug"])
 
 
 if __name__ == "__main__":
