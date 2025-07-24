@@ -39,6 +39,7 @@ jobs:
           compression-level: 0
           name: 'client'
 
+
   build-wheels:
     name: Build wheel
     runs-on: ubuntu-latest
@@ -47,7 +48,7 @@ jobs:
       - name: Checkout swingmusic
         uses: actions/checkout@v4
         with:
-          fetch-tags: true
+          fetch-depth: 0
 
       - uses: actions/setup-python@v5
         with:
