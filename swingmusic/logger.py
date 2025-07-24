@@ -189,7 +189,7 @@ def setup_logger(debug=False):
     :param debug: When True Loglevel is set to DEBUG and enable Socket log
     """
 
-    app_dir = pathlib.Path(Paths.get_app_dir())
+    app_dir = pathlib.Path(Paths().app_dir)
     app_dir.exists() or app_dir.mkdir(parents=True)
 
     CONFIG["handlers"]["file"]["filename"] = app_dir / "log.jsonl"
