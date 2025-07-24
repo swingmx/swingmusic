@@ -99,11 +99,13 @@ jobs:
         run: |
           sudo apt-get install libev-dev -y > /dev/null
 
-
       - name: Install swingmusic
         run: | 
           WHEEL=$(ls wheels/swingmusic-*.whl | head -n 1)
           pip install "$WHEEL"
+
+      - name: DEBUG
+        run: tree
 
       - name: Build with Pyinstaller on ${{ matrix.os }}
         run: pyinstaller swingmusic.spec
