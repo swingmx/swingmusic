@@ -12,10 +12,9 @@ jobs:
     steps:
       - name: Clone client
         uses: actions/checkout@v4
-
-      - name: Clone client
-        run: |
-          git clone https://github.com/cwilvx/swingmusic-client.git
+        with:
+          repository: 'swingmx/webclient'
+          path: swingmusic-client
 
       - name: Setup Node 20
         uses: actions/setup-node@v3
