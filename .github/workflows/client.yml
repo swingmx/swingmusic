@@ -1,9 +1,8 @@
-name: Build Webclient
+name: Build and Upload
 on:
   workflow_dispatch:
-  push:
-    tags:
-      - '*'
+  release:
+
 
 jobs:
   build-client:
@@ -105,9 +104,6 @@ jobs:
       - name: Install swingmusic
         run: | 
           pip install --find-links=wheels/ swingmusic
-
-      - name: DEBUG
-        run: tree
 
       - name: Build with Pyinstaller on ${{ matrix.os }}
         run: pyinstaller swingmusic.spec
