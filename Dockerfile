@@ -25,14 +25,17 @@ VOLUME /music
 
 VOLUME /config
 
-
-RUN apt-get update && apt-get install -y gcc python3-dev -y ffmpeg libavcodec-extra gcc-aarch64-linux-gnu && \
+RUN apt-get update && apt-get install -y gcc libev-dev python3-dev -y ffmpeg libavcodec-extra gcc-aarch64-linux-gnu && \
 apt-get clean && \
 rm -rf /var/lib/apt/lists/*
 
 RUN pip install -r requirements.txt
+RUN pip install bjoern
 
 ARG app_version
 ENV SWINGMUSIC_APP_VERSION=$app_version
 
-ENTRYPOINT ["python", "manage.py", "--host", "0.0.0.0", "--config", "/config"]
+# dump the app_version to the version.txt file
+RUN echo $app_version > version.txt
+
+ENTRYPOINT ["python", "run.py", "--host", "0.0.0.0", "--config", "/config"]

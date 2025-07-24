@@ -7,10 +7,10 @@ on:
         description: "Tag"
         required: true
         default: "1.x.x"
-      skip_binary_build:
-        description: "Skip binary build"
+      binary_build:
+        description: "Build platform binaries"
         required: true
-        default: "false"
+        default: "true"
         type: choice
         options:
           - true
@@ -18,7 +18,7 @@ on:
       is_latest:
         description: "Set as latest"
         required: true
-        default: "true"
+        default: "false"
         type: choice
         options:
           - true
@@ -32,10 +32,10 @@ on:
           - true
           - false
       build_docker:
-        description: "Release Docker image"
+        description: "Build Docker image"
         required: true
         type: choice
-        default: "false"
+        default: "true"
         options:
           - true
           - false
@@ -44,17 +44,17 @@ jobs:
   build:
     strategy:
       matrix:
-        os: [ubuntu-20.04, windows-2019]
-    if: ${{ github.event.inputs.skip_binary_build == 'false' }}
+        os: [ubuntu-22.04, windows-2022, macos-13, macos-14]
+    if: ${{ github.event.inputs.binary_build == 'true' }}
     runs-on: ${{ matrix.os }}
     name: Create binary on ${{ matrix.os }}
     steps:
       - name: Clone client
         uses: actions/checkout@v3
-      - name: Setup Node 16
+      - name: Setup Node 20
         uses: actions/setup-node@v3
         with:
-          node-version: 16.x
+          node-version: 20.x
       - name: Install yarn
         run: |
           npm install -g yarn
@@ -67,24 +67,38 @@ jobs:
           yarn install
           yarn build --outDir ../client
           cd ..
-      - name: Install Python 3.10.11
+      - name: Install Python 3.11
         uses: actions/setup-python@v2
         with:
-          python-version: "3.10.11"
+          python-version: "3.11.x"
       - name: Create virtualenv
         run: |
           python -m venv .venv
-      - name: Activate virtualenv (linux)
-        if: matrix.os == 'ubuntu-20.04'
+      - name: Setup Homebrew
+        if: ${{ startsWith(matrix.os, 'macos') }}
+        uses: Homebrew/actions/setup-homebrew@master
+      - name: Install libev (macOS)
+        if: ${{ startsWith(matrix.os, 'macos') }}
         run: |
-          source .venv/bin/activate
+          brew install libev
+      - name: Install libev (Linux)
+        if: ${{ startsWith(matrix.os, 'ubuntu') }}
+        run: |
+          sudo apt-get install libev-dev -y > /dev/null
+      - name: Activate virtualenv (unix)
+        if: ${{ !startsWith(matrix.os, 'win') }}
+        run: |
+          source .venv/bin/activate && echo "bjoern==3.2.2" >> requirements.txt
       - name: Activate virtualenv (windows)
-        if: matrix.os == 'windows-2019'
+        if: ${{ startsWith(matrix.os, 'win') }}
         run: |
-          .venv\Scripts\Activate
+          .venv\Scripts\Activate && echo "waitress==3.0.2" >> requirements.txt
       - name: Install dependencies
         run: |
           pip install -r requirements.txt
+      - name: Write version file
+        run: |
+          echo ${{ inputs.tag }} > version.txt
       # - name: Install Poetry
       #   run: |
       #     pip install poetry
@@ -93,53 +107,133 @@ jobs:
       #     python -m poetry install
       - name: Build server
         run: |
-          python manage.py --build
+          python run.py --build
         env:
           SWINGMUSIC_APP_VERSION: ${{ inputs.tag }}
-      - name: Verify Linux build success
-        if: matrix.os == 'ubuntu-20.04'
+      - name: Rename Unix binary
+        if: ${{ !startsWith(matrix.os, 'win') }}
         run: |
-          if [ ! -f "./dist/swingmusic" ]; then
-            echo "Build failed"
-            exit 1
+          if [[ "${{ matrix.os }}" == *"macos"* ]]; then
+            if [[ "${{ matrix.os }}" == *"14"* ]]; then
+              mv dist/swingmusic dist/swingmusic_macos_arm64
+            else
+              mv dist/swingmusic dist/swingmusic_macos_amd64
+            fi
+          elif [[ "${{ matrix.os }}" == *"arm64"* ]]; then
+            mv dist/swingmusic dist/swingmusic_linux_arm64
+          else
+            mv dist/swingmusic dist/swingmusic_linux_amd64
+          fi
+      - name: Verify Unix build success
+        if: ${{ !startsWith(matrix.os, 'win') }}
+        run: |
+          if [[ "${{ matrix.os }}" == *"macos"* ]]; then
+            if [[ "${{ matrix.os }}" == *"14"* ]]; then
+              if [ ! -f "./dist/swingmusic_macos_arm64" ]; then
+                echo "Build failed"
+                exit 1
+              fi
+            else
+              if [ ! -f "./dist/swingmusic_macos_amd64" ]; then
+                echo "Build failed"
+                exit 1
+              fi
+            fi
+          elif [[ "${{ matrix.os }}" == *"arm64"* ]]; then
+            if [ ! -f "./dist/swingmusic_linux_arm64" ]; then
+              echo "Build failed"
+              exit 1
+            fi
+          else
+            if [ ! -f "./dist/swingmusic_linux_amd64" ]; then
+              echo "Build failed"
+              exit 1
+            fi
           fi
       - name: Verify Windows build success
-        if: matrix.os == 'windows-2019'
+        if: ${{ startsWith(matrix.os, 'win') }}
         run: |
-          if (-not (Test-Path "./dist/swingmusic.exe")) {
-            Write-Host "Build failed"
-            exit 1
+          if ($env:matrix_os -like "*arm*") {
+            if (-not (Test-Path "./dist/swingmusic_arm64.exe")) {
+              Write-Host "Build failed"
+              exit 1
+            }
+          } else {
+            if (-not (Test-Path "./dist/swingmusic.exe")) {
+              Write-Host "Build failed"
+              exit 1
+            }
           }
-      - name: Upload Linux binary
-        if: matrix.os == 'ubuntu-20.04'
-        uses: actions/upload-artifact@v3
+      - name: Upload Unix binary
+        if: ${{ !startsWith(matrix.os, 'win') }}
+        uses: actions/upload-artifact@v4
         with:
-          name: linux
-          path: dist/swingmusic
+          name: ${{ matrix.os == 'ubuntu-22.04-arm64' && 'linux-arm64' || matrix.os == 'macos-14' && 'macos-arm64' || matrix.os == 'macos-13' && 'macos-amd64' || 'linux-amd64' }}
+          path: ${{ matrix.os == 'ubuntu-22.04-arm64' && 'dist/swingmusic_linux_arm64' || matrix.os == 'macos-14' && 'dist/swingmusic_macos_arm64' || matrix.os == 'macos-13' && 'dist/swingmusic_macos_amd64' || 'dist/swingmusic_linux_amd64' }}
           retention-days: 1
       - name: Upload Windows binary
-        if: matrix.os == 'windows-2019'
-        uses: actions/upload-artifact@v3
+        if: ${{ startsWith(matrix.os, 'win') }}
+        uses: actions/upload-artifact@v4
         with:
-          name: win32
-          path: dist/swingmusic.exe
+          name: ${{ matrix.os == 'windows-11-arm' && 'win-arm64' || 'win-amd64' }}
+          path: ${{ matrix.os == 'windows-11-arm' && 'dist/swingmusic_arm64.exe' || 'dist/swingmusic.exe' }}
           retention-days: 1
+
+  # build_aarch64:
+  #   runs-on: [ubuntu-22.04]
+  #   name: Building aarch64 binary
+  #   steps:
+  #     - name: Checking out buildscript
+  #       uses: actions/checkout@v4
+  #       with:
+  #         sparse-checkout: |
+  #           aarch64_buildscript
+  #         sparse-checkout-cone-mode: false
+  #     - name: Installing Packages
+  #       run: |
+  #         sudo apt -qq update -y > /dev/null
+  #         sudo apt -y -qq install binfmt-support qemu-user-static systemd-container wget > /dev/null
+  #     - name: Starting Services
+  #       run: |
+  #         sudo systemctl restart systemd-binfmt
+  #         sudo systemctl start systemd-resolved
+  #     - name: Downloading Arch Linux Arm Tarball for rpi4 aarch64
+  #       run: |
+  #         wget -q http://os.archlinuxarm.org/os/ArchLinuxARM-rpi-aarch64-latest.tar.gz
+  #     - name: Extracting Tarball
+  #       run: |
+  #         mkdir root
+  #         sudo tar xpf ArchLinuxARM-rpi-aarch64-latest.tar.gz -C root --warning=no-unknown-keyword
+  #     - name: Building Swingmusic in qemu
+  #       run: |
+  #         chmod +x aarch64_buildscript
+  #         sed -i -e 's/TAG/${{ github.event.inputs.tag }}/g' aarch64_buildscript
+  #         mv aarch64_buildscript root/
+  #         sudo systemd-nspawn --bind-ro=/etc/resolv.conf -D root ./aarch64_buildscript
+  #     - name: Upload aarch64 binary
+  #       uses: actions/upload-artifact@v4
+  #       with:
+  #         name: arm64
+  #         path: root/swingmusicbuilder/swingmusic/dist/swingmusic_linux_arm64
+  #         retention-days: 1
 
   release:
     name: Create New Release
     runs-on: ubuntu-latest
-    needs: build
+    # if: false
+    needs: [build]
     permissions: write-all
     steps:
       - name: Checkout into repo
         uses: actions/checkout@v3
       - name: Download all binaries
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
       - name: Upload binaries to GitHub Release
         uses: ncipollo/release-action@v1
         with:
           allowUpdates: true
-          artifacts: "./linux/swingmusic, ./win32/swingmusic.exe"
+          artifacts: "./linux-amd64/swingmusic_linux_amd64, ./win-amd64/swingmusic.exe, ./macos-amd64/swingmusic_macos_amd64, ./macos-arm64/swingmusic_macos_arm64"
+          # artifacts: "./linux/swingmusic_linux_amd64, ./win32/swingmusic.exe, ./arm64/swingmusic_linux_arm64"
           token: ${{ secrets.GITHUB_TOKEN }}
           tag: ${{ format('v{0}',inputs.tag) }}
           commit: ${{ github.sha }}
@@ -151,9 +245,9 @@ jobs:
   docker:
     name: Build and push Docker image
     runs-on: ubuntu-latest
-    # needs: build
     permissions: write-all
     if: inputs.build_docker == 'true'
+    # if: false
     steps:
       - name: Checkout into repo
         uses: actions/checkout@v3

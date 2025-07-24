@@ -31,3 +31,8 @@ logs.txt
 testdata.py
 test.py
 nohup.out
+*s.json
+
+
+.DS_Store
+*.egg-info
