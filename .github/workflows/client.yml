@@ -7,7 +7,7 @@ on:
 
 jobs:
   build-client:
-    runs-on: 'ubuntu-20.04'
+    runs-on: ubuntu-latest
     name: Build client
     steps:
       - name: Clone client
