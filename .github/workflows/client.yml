@@ -41,7 +41,7 @@ jobs:
 
 
   build-wheels:
-    name: Build wheel
+    name: Build wheels
     runs-on: ubuntu-latest
 
     steps:
@@ -71,6 +71,7 @@ jobs:
     needs: [build-client, build-wheels]
 
     strategy:
+      fail-fast: false
       matrix:
         os: [ ubuntu-latest, ubuntu-24.04-arm, windows-latest, windows-11-arm, macos-13, macos-latest ]
 
@@ -86,7 +87,9 @@ jobs:
       # install system packages
 
       - name: Install swingmusic
-        run: pip install wheels/*.whl
+        run: | 
+          WHEEL=$(ls wheels/swingmusic-*.whl | head -n 1)
+          pip install "$WHEEL"
 
       - name: Build with Pyinstaller on ${{ matrix.os }}
         run: pyinstaller swingmusic.spec
