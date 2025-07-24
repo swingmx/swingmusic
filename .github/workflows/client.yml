@@ -7,13 +7,15 @@ on:
 
 jobs:
   build-client:
-    runs-on: [ubuntu-20.04]
+    runs-on: ubuntu-20.04
     name: Build client
     steps:
       - name: Clone client
         uses: actions/checkout@v4
         with:
+          token: ${{ secrets.GITHUB_TOKEN }}
           repository: 'swingmx/webclient'
+          path: swingmusic-client
 
       - name: Setup Node 20
         uses: actions/setup-node@v3
