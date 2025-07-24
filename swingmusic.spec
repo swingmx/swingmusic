@@ -33,7 +33,7 @@ exe = EXE(
     a.binaries,
     a.datas,
     [],
-    name=f'swingmusic_{system()}_{machine()}',
+    name=f'swingmusic_{system().lower()}_{machine().lower()}',
     debug=False,
     bootloader_ignore_signals=False,
     strip=False,
