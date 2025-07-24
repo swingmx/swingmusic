@@ -121,6 +121,7 @@ jobs:
   upload-builds:
     name: Build wheels
     runs-on: ubuntu-latest
+    needs: [build-client, build-wheels, build-pyinstaller]
 
     steps:
       - name: Download client artifact
