@@ -37,6 +37,7 @@ jobs:
         with:
           path: "client/"
           compression-level: 0
+          name: 'client'
 
   build-wheels:
     name: Build wheel
@@ -59,6 +60,9 @@ jobs:
         with:
           # name: cibw-wheels-${{ matrix.os }}-${{ strategy.job-index }}
           path: ./wheelhouse/*.whl
+          compression-level: 0
+          name: 'wheels'
+
 
   build-pyinstaller:
     name: Build binary on ${{ matrix.os }}
