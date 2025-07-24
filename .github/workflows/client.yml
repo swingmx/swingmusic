@@ -39,16 +39,12 @@ jobs:
           compression-level: 0
 
   build-wheels:
-    name: Create builds on ${{ matrix.os }}
-    runs-on: ${{ matrix.os }}
-
-    strategy:
-      matrix:
-        os: [ubuntu-latest, ubuntu-24.04-arm, windows-latest, windows-11-arm, macos-13, macos-latest]
+    name: Build wheel
+    runs-on: ubuntu-latest
 
     steps:
       - name: Checkout swingmusic
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           fetch-tags: true
 
@@ -56,16 +52,8 @@ jobs:
         with:
           python-version: '3.11'
 
-
-      - name: Install cibuildwheel
-        run: python -m pip install cibuildwheel==3.1.0
-
       - name: Build wheels
-        run: python -m cibuildwheel --output-dir wheelhouse
-        # to supply options, put them in 'env', like:
-        # env:
-        #   CIBW_SOME_OPTION: value
-        #   ...
+        run: pip wheel . -w wheelhouse --no-deps
 
       - uses: actions/upload-artifact@v4
         with:

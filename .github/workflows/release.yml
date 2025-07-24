@@ -51,6 +51,8 @@ jobs:
     steps:
       - name: Clone client
         uses: actions/checkout@v3
+        with:
+          fetch-tags: true
 
       - name: Install Python 3.11
         uses: actions/setup-python@v2
