@@ -101,11 +101,13 @@ jobs:
 
       - name: Install swingmusic
         run: | 
-          WHEEL=$(ls wheels/swingmusic-*.whl | head -n 1)
-          pip install "$WHEEL"
+          pip install --no-index --find-links=wheels/ swingmusic
 
       - name: DEBUG
         run: tree
+
+      - name: Checkout swingmusic
+        uses: actions/checkout@v4
 
       - name: Build with Pyinstaller on ${{ matrix.os }}
         run: pyinstaller swingmusic.spec
