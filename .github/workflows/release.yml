@@ -52,26 +52,6 @@ jobs:
       - name: Clone client
         uses: actions/checkout@v3
 
-      - name: Setup Node 20
-        uses: actions/setup-node@v3
-        with:
-          node-version: 20.x
-
-      - name: Install yarn
-        run: |
-          npm install -g yarn
-
-      - name: Clone client
-        run: |
-          git clone https://github.com/cwilvx/swingmusic-client.git
-
-      - name: Install dependencies & Build client
-        run: |
-          cd swingmusic-client
-          yarn install
-          yarn build --outDir ../client
-          cd ..
-
       - name: Install Python 3.11
         uses: actions/setup-python@v2
         with:
