@@ -57,5 +57,36 @@ jobs:
 
       - uses: actions/upload-artifact@v4
         with:
-          name: cibw-wheels-${{ matrix.os }}-${{ strategy.job-index }}
+          # name: cibw-wheels-${{ matrix.os }}-${{ strategy.job-index }}
           path: ./wheelhouse/*.whl
+
+  build-pyinstaller:
+    name: Build binary on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    needs: [build-client, build-wheels]
+
+    strategy:
+      matrix:
+        os: [ ubuntu-latest, ubuntu-24.04-arm, windows-latest, windows-11-arm, macos-13, macos-latest ]
+
+    steps:
+      - name: Install Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11.x"
+
+      - name: Download artifact
+        uses: actions/download-artifact@v4
+
+      # install system packages
+
+      - name: debug
+        run:
+          tree
+
+      - name: Install swingmusic
+        run: pip install *.whl
+
+      - name: Build with Pyinstaller on ${{ matrix.os }}
+        run: pyinstaller swingmusic.spec
+
