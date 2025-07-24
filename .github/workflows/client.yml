@@ -12,7 +12,4 @@ jobs:
     steps:
       - name: Clone client
         uses: actions/checkout@v4
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          repository: 'swingmx/webclient'
-          path: swingmusic-client
+
