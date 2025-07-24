@@ -76,6 +76,9 @@ jobs:
         os: [ ubuntu-latest, ubuntu-24.04-arm, windows-latest, windows-11-arm, macos-13, macos-latest ]
 
     steps:
+      - name: Checkout swingmusic
+        uses: actions/checkout@v4
+
       - name: Install Python 3.11
         uses: actions/setup-python@v5
         with:
@@ -105,9 +108,6 @@ jobs:
 
       - name: DEBUG
         run: tree
-
-      - name: Checkout swingmusic
-        uses: actions/checkout@v4
 
       - name: Build with Pyinstaller on ${{ matrix.os }}
         run: pyinstaller swingmusic.spec
