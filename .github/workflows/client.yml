@@ -11,5 +11,30 @@ jobs:
     name: Build client
     steps:
       - name: Clone client
-        uses: actions/checkout@v4
+        uses: actions/checkout@v3
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          repository: 'swingmx/webclient'
+          path: swingmusic-client
 
+      - name: Setup Node 20
+        uses: actions/setup-node@v3
+        with:
+          node-version: 20.x
+
+      - name: Install yarn
+        run: |
+          npm install -g yarn
+
+      - name: Install dependencies & Build client
+        run: |
+          cd swingmusic-client
+          yarn install
+          yarn build --outDir ../client
+          cd ..
+
+      - name: Upload client
+        uses: actions/upload-artifact@v4
+        with:
+          path: "client/"
+          compression-level: 0
