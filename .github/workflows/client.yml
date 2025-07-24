@@ -119,7 +119,7 @@ jobs:
           compression-level: 0
 
   upload-builds:
-    name: Build wheels
+    name: Uploading builds to release
     runs-on: ubuntu-latest
     needs: [build-client, build-wheels, build-pyinstaller]
 
@@ -129,6 +129,10 @@ jobs:
         with:
           name: client
           path: client
+
+      - name: compress client
+        run: |
+          zip -r client.zip client
 
       - name: Download wheel artifacts
         uses: actions/download-artifact@v4
@@ -147,6 +151,6 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           files: |
-            client/**
+            client.zip
             wheels/**
             pyinstaller/**
