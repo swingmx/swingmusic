@@ -1,15 +1,20 @@
-name: Build Webclient
+name: Build and Upload
 on:
   workflow_dispatch:
-  push:
-    tags:
-      - '*'
+  release:
+
 
 jobs:
   build-client:
-    runs-on: [ubuntu-20.04]
+    runs-on: ubuntu-latest
     name: Build client
     steps:
+      - name: Clone client
+        uses: actions/checkout@v4
+        with:
+          repository: 'swingmx/webclient'
+          path: swingmusic-client
+
       - name: Setup Node 20
         uses: actions/setup-node@v3
         with:
@@ -18,11 +23,6 @@ jobs:
       - name: Install yarn
         run: |
           npm install -g yarn
-
-      - name: Clone client
-        uses: actions/checkout@v4
-        with:
-          repository: 'swingmx/webclient'
 
       - name: Install dependencies & Build client
         run: |
@@ -36,5 +36,80 @@ jobs:
         with:
           path: "client/"
           compression-level: 0
+          name: 'client'
 
 
+  build-wheels:
+    name: Build wheels
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout swingmusic
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Build wheels
+        run: pip wheel . -w wheelhouse --no-deps
+
+      - uses: actions/upload-artifact@v4
+        with:
+          # name: cibw-wheels-${{ matrix.os }}-${{ strategy.job-index }}
+          path: ./wheelhouse/*.whl
+          compression-level: 0
+          name: 'wheels'
+
+
+  build-pyinstaller:
+    name: Build binary on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    needs: [build-client, build-wheels]
+
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ ubuntu-latest, ubuntu-24.04-arm, windows-latest, windows-11-arm, macos-13, macos-latest ]
+
+    steps:
+      - name: Checkout swingmusic
+        uses: actions/checkout@v4
+
+      - name: Install Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11.x"
+
+      - name: Download artifact
+        uses: actions/download-artifact@v4
+
+      # install system packages
+      - name: Setup Homebrew
+        if: ${{ startsWith(matrix.os, 'macos') }}
+        uses: Homebrew/actions/setup-homebrew@master
+
+      - name: Install libev (macOS)
+        if: ${{ startsWith(matrix.os, 'macos') }}
+        run: |
+          brew install libev
+
+      - name: Install libev (Linux)
+        if: ${{ startsWith(matrix.os, 'ubuntu') }}
+        run: |
+          sudo apt-get install libev-dev -y > /dev/null
+
+      - name: Install swingmusic
+        run: | 
+          pip install --find-links=wheels/ swingmusic
+
+      - name: Build with Pyinstaller on ${{ matrix.os }}
+        run: pyinstaller swingmusic.spec
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Pyinstaller-${{ matrix.os }}-${{ strategy.job-index }}
+          path: ./dist/*
+          compression-level: 0
