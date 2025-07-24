@@ -1,0 +1,40 @@
+name: CI
+on:
+  workflow_dispatch:
+  push:
+    tags:
+      - '*'
+
+jobs:
+  build-client:
+    runs-on: [ubuntu-20.04]
+    name: Build client
+    steps:
+      - name: Setup Node 20
+        uses: actions/setup-node@v3
+        with:
+          node-version: 20.x
+
+      - name: Install yarn
+        run: |
+          npm install -g yarn
+
+      - name: Clone client
+        uses: actions/checkout@v4
+        with:
+          repository: 'swingmx/webclient'
+
+      - name: Install dependencies & Build client
+        run: |
+          cd swingmusic-client
+          yarn install
+          yarn build --outDir ../client
+          cd ..
+
+      - name: Upload client
+        uses: actions/upload-artifact@v4
+        with:
+          path: "client/"
+          compression-level: 0
+
+
