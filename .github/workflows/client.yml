@@ -2,6 +2,10 @@ name: Build and Upload
 on:
   workflow_dispatch:
   release:
+    types:
+      - created
+      - prereleased
+      - released
 
 
 jobs:
