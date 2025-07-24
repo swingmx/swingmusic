@@ -84,7 +84,6 @@ def start_swingmusic(host: str, port: int, debug: bool, base_path:pathlib.Path):
         start_cron_jobs()
 
     # Setup function calls
-    settings.Info.load()
     settings.Paths(base_path)
 
     run_setup()

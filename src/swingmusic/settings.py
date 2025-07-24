@@ -461,20 +461,3 @@ class Info:
     """
 
     SWINGMUSIC_APP_VERSION = metadata.version("swingmusic")
-
-    GIT_LATEST_COMMIT_HASH = "<unset>"
-    GIT_CURRENT_BRANCH = "<unset>"
-
-    @classmethod
-    def load(cls):
-        if IS_BUILD:
-            cls.SWINGMUSIC_APP_VERSION = configs.SWINGMUSIC_APP_VERSION
-            cls.GIT_LATEST_COMMIT_HASH = configs.GIT_LATEST_COMMIT_HASH
-            cls.GIT_CURRENT_BRANCH = configs.GIT_CURRENT_BRANCH
-        else:
-            cls.GIT_LATEST_COMMIT_HASH = getLatestCommitHash()
-            cls.GIT_CURRENT_BRANCH = getCurrentBranch()
-
-    @classmethod
-    def get(cls, key: str):
-        return getattr(cls, key, None)

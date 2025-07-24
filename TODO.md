@@ -1,3 +1,8 @@
+# TMP
+
+* docker builds
+
+
 # TODO
 
 - Migrations:
@@ -14,6 +19,7 @@
 - Disable the watchdog by default, and mark it as experimental
 - rename userid to server id in config file
 - Look into seeding jwts using user password + server id
+
 
 <!-- CHECKPOINT -->
 <!-- ALBUM PAGE! -->
