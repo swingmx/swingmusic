@@ -177,6 +177,13 @@ CONFIG = {
                 "file"
             ]
         },
+        "waitress": {
+            "level": "ERROR",
+            "handlers": [
+                "stdout",
+                "file"
+            ]
+        }
     }
 }
 

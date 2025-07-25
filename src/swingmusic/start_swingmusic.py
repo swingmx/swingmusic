@@ -1,4 +1,3 @@
-import pathlib
 from swingmusic import settings
 from swingmusic.api import create_api
 from swingmusic.crons import start_cron_jobs
@@ -10,83 +9,16 @@ from swingmusic.utils.paths import getClientFilesExtensions
 from swingmusic.utils.threading import background
 from swingmusic.logger import setup_logger
 
-
+import pathlib
 import setproctitle
 from flask import Response, request
 from flask_jwt_extended import create_access_token, get_jwt, get_jwt_identity, set_access_cookies, verify_jwt_in_request
 
-
-import logging
 import mimetypes
-import os
 from datetime import datetime, timezone
 
 
-def start_swingmusic(host: str, port: int, debug: bool, base_path:pathlib.Path):
-    """
-    Creates and starts the Flask application server for Swing Music.
-
-    This function sets up the Flask application with all necessary
-    configurations, including static file handling, authentication middleware, and
-    server setup, then runs it. It also sets up background tasks and cron jobs.
-
-    Args:
-        host (str): The host address to bind the server to (e.g., 'localhost' or '0.0.0.0')
-        port (int): The port number to run the server on
-        debug (bool): If swingmusic should start in debug mode
-        base_path (Path): On which pathe to store config
-
-    Note:
-        The application uses either bjoern or waitress as the WSGI server,
-        depending on availability. It also includes JWT authentication,
-        static file serving with gzip compression support, and automatic
-        token refresh functionality.
-    """
-
-    setup_logger(debug=debug)
-
-
-    # Example: Setting up dirs, database, and loading stuff into memory.
-    # TIP: Be careful with the order of the setup functions.
-
-    # Load mimetypes for the web client's static files
-    # Loading mimetypes should happen automatically but
-    # sometimes the mimetypes are not loaded correctly
-    # eg. when the Registry is messed up on Windows.
-
-    # See the following issues:
-    # https://github.com/swingmx/swingmusic/issues/137
-
-    mimetypes.add_type("text/css", ".css")
-    mimetypes.add_type("text/javascript", ".js")
-    mimetypes.add_type("text/plain", ".txt")
-    mimetypes.add_type("text/html", ".html")
-    mimetypes.add_type("image/webp", ".webp")
-    mimetypes.add_type("image/svg+xml", ".svg")
-    mimetypes.add_type("image/png", ".png")
-    mimetypes.add_type("image/vnd.microsoft.icon", ".ico")
-    mimetypes.add_type("image/gif", ".gif")
-    mimetypes.add_type("font/woff", ".woff")
-    mimetypes.add_type("application/manifest+json", ".webmanifest")
-
-    # logging.disable(logging.CRITICAL)
-    # werkzeug = logging.getLogger("werkzeug")
-    # werkzeug.setLevel(logging.ERROR)
-
-    waitress_logger = logging.getLogger("waitress")
-    waitress_logger.setLevel(logging.ERROR)
-
-    @background
-    def run_swingmusic():
-        register_plugins()
-
-        setproctitle.setproctitle(f"swingmusic {host}:{port}")
-        start_cron_jobs()
-
-    # Setup function calls
-    settings.Paths(base_path)
-
-    run_setup()
+def app_builder():
 
     # Create the Flask app
     app = create_api()
@@ -157,39 +89,29 @@ def start_swingmusic(host: str, port: int, debug: bool, base_path:pathlib.Path):
         """
         Serves the static files in the client folder.
         """
+
         js_or_css = path.endswith(".js") or path.endswith(".css")
+
         if not js_or_css:
             return app.send_static_file(path)
 
-        gzipped_path = path + ".gz"
-        user_agent = request.headers.get("User-Agent")
-
         # INFO: Safari doesn't support gzip encoding
         # See issue: https://github.com/swingmx/swingmusic/issues/155
-        is_safari = (
-            user_agent
-            and user_agent.find("Safari") >= 0
-            and user_agent.find("Chrome") < 0
-        )
-
-        if is_safari:
+        user_agent = request.headers.get("User-Agent")
+        if "Safari" in user_agent and not "Chrome" in user_agent:
             return app.send_static_file(path)
 
-        accepts_gzip = request.headers.get("Accept-Encoding", "").find("gzip") >= 0
+        gzipped_path = pathlib.Path(app.static_folder or "") / path
+        gzipped_path = gzipped_path.with_suffix(".gz")
 
-        if accepts_gzip:
-            if app.static_folder is None:
-                static_folder = pathlib.Path("")
-            else:
-                static_folder = pathlib.Path(app.static_folder)
-
-            joined = static_folder / gzipped_path
-            if joined.exists():
-                response = app.make_response(app.send_static_file(gzipped_path))
+        if "gzip" in request.headers.get("Accept-Encoding", ""):
+            if gzipped_path.exists():
+                response = app.make_response(app.send_static_file(str(gzipped_path)))
                 response.headers["Content-Encoding"] = "gzip"
                 return response
 
-        return app.send_static_file(path)
+        else:
+            return app.send_static_file(path)
 
     @app.route("/")
     def serve_client():
@@ -198,6 +120,68 @@ def start_swingmusic(host: str, port: int, debug: bool, base_path:pathlib.Path):
         """
         return app.send_static_file("index.html")
 
+    return app
+
+
+def config_mimetypes():
+    # Load mimetypes for the web client's static files
+    # Loading mimetypes should happen automatically but
+    # sometimes the mimetypes are not loaded correctly
+    # eg. when the Registry is messed up on Windows.
+
+    # See the following issues:
+    # https://github.com/swingmx/swingmusic/issues/137
+
+    mimetypes.add_type("text/css", ".css")
+    mimetypes.add_type("text/javascript", ".js")
+    mimetypes.add_type("text/plain", ".txt")
+    mimetypes.add_type("text/html", ".html")
+    mimetypes.add_type("image/webp", ".webp")
+    mimetypes.add_type("image/svg+xml", ".svg")
+    mimetypes.add_type("image/png", ".png")
+    mimetypes.add_type("image/vnd.microsoft.icon", ".ico")
+    mimetypes.add_type("image/gif", ".gif")
+    mimetypes.add_type("font/woff", ".woff")
+    mimetypes.add_type("application/manifest+json", ".webmanifest")
+
+
+def start_swingmusic(host: str, port: int, debug: bool, base_path:pathlib.Path):
+    """
+    Creates and starts the Flask application server for Swing Music.
+
+    This function sets up the Flask application with all necessary
+    configurations, including static file handling, authentication middleware, and
+    server setup, then runs it. It also sets up background tasks and cron jobs.
+
+    Args:
+        host (str): The host address to bind the server to (e.g., 'localhost' or '0.0.0.0')
+        port (int): The port number to run the server on
+        debug (bool): If swingmusic should start in debug mode
+        base_path (Path): On which pathe to store config
+
+    Note:
+        The application uses either bjoern or waitress as the WSGI server,
+        depending on availability. It also includes JWT authentication,
+        static file serving with gzip compression support, and automatic
+        token refresh functionality.
+    """
+
+    # Example: Setting up dirs, database, and loading stuff into memory.
+    # TIP: Be careful with the order of the setup functions.
+    setup_logger(debug=debug)
+    config_mimetypes()
+    settings.Paths(base_path)
+    run_setup()
+
+    @background
+    def run_swingmusic():
+        register_plugins()
+
+        setproctitle.setproctitle(f"swingmusic {host}:{port}")
+        start_cron_jobs()
+
+
+    app = app_builder()
 
     log_startup_info(host, port)
     load_into_mem()
