@@ -1,3 +1,4 @@
+import importlib.resources
 import pathlib
 from pathlib import Path
 from dataclasses import dataclass, asdict, field, InitVar
@@ -26,8 +27,10 @@ def load_default_artist_ignore_list() -> set[str]:
     Loads the default artist ignore list from the text file.
     Returns an empty set if the file doesn't exist.
     """
-    default_file = Path(__file__).parent / "data" / "artist_split_ignore.txt"
-    return load_artist_ignore_list_from_file(default_file)
+    text = importlib.resources.read_text("swingmusic.data","artist_split_ignore.txt")
+    # only return unique and not empty lines
+    lines = text.splitlines()
+    return set([ line.strip() for line in lines if line.strip()])
 
 
 def load_user_artist_ignore_list() -> set[str]:
@@ -35,8 +38,12 @@ def load_user_artist_ignore_list() -> set[str]:
     Loads the user-defined artist ignore list from the config directory.
     Returns an empty set if the file doesn't exist.
     """
-    user_file = Path(Paths().config_file_path).parent / "artist_split_ignore.txt"
-    return load_artist_ignore_list_from_file(user_file)
+    user_file = Paths().app_dir / "artist_split_ignore.txt"
+    if user_file.exists():
+        lines = user_file.read_text().splitlines()
+        return set([ line.strip() for line in lines if line.strip()])
+    else:
+        raise FileNotFoundError(user_file)
 
 
 @dataclass
