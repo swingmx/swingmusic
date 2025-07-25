@@ -53,7 +53,8 @@ parser.add_argument(
 parser.add_argument(
     "--port",
     default=1970,
-    help="HTTP port to run the app on."
+    help="HTTP port to run the app on.",
+    type=int
 )
 parser.add_argument(
     "--debug",
