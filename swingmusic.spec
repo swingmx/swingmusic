@@ -1,7 +1,7 @@
 # -*- mode: python ; coding: utf-8 -*-
 from PyInstaller.utils.hooks import collect_submodules, collect_data_files
 from platform import system, machine
-
+import pathlib
 
 hiddenimports =[]
 # hiddenimports += collect_submodules('swingmusic')
@@ -49,7 +49,7 @@ exe = EXE(
     target_arch=None,
     codesign_identity=None,
     entitlements_file=None,
-    icon=['assets\\logo-fill.light.ico'],
+    icon=[pathlib.Path('assets\\logo-fill.light.ico')],
 )
 
 coll = COLLECT(

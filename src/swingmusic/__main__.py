@@ -59,6 +59,7 @@ parser.add_argument(
 parser.add_argument(
     "--debug",
     default=False,
+    action="store_true",
     help="If swingmusic should start in debug mode"
 )
 parser.add_argument(

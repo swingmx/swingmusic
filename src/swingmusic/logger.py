@@ -116,12 +116,9 @@ class CustomFormatter(logging.Formatter):
 
 CONFIG = {
     "version": 1,
-    "disable_existing_loggers": True,
+    "disable_existing_loggers": False,
+
     "formatters": {
-        "stdout": {
-            "format": "%(levelname)s: %(message)s",
-            "datefmt": "%Y-%m-%dT%H:%M:%S%z"
-        },
         "json": {
             "()": JsonFormat,
             "fmt_keys": {
@@ -164,6 +161,7 @@ CONFIG = {
         "remote": {
             "class": "logging.handlers.SocketHandler",
             "level": "DEBUG",
+            "formatter": "json",
             "host": "127.0.0.2",
             "port": "19996"
         }
@@ -171,6 +169,7 @@ CONFIG = {
     "loggers": {
         "swingmusic": {
             "level": "DEBUG",
+            "propagate": False,
             "handlers": [
                 "stdout",
                 "file"
@@ -178,6 +177,7 @@ CONFIG = {
         },
         "waitress": {
             "level": "ERROR",
+            "propagate": False,
             "handlers": [
                 "stdout",
                 "file"
