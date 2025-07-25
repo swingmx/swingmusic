@@ -4,11 +4,11 @@ from typing import Generator
 from requests import ReadTimeout
 from concurrent.futures import ProcessPoolExecutor
 from requests import ConnectionError as RequestConnectionError
+import logging
 
 from swingmusic import settings
 from swingmusic.lib.artistlib import CheckArtistImages
 from swingmusic.lib.taglib import extract_thumb
-from swingmusic.logger import log
 from swingmusic.models import Album, Artist
 from swingmusic.models.lastfm import SimilarArtist
 from swingmusic.models.track import Track
@@ -20,6 +20,8 @@ from swingmusic.requests.artists import fetch_similar_artists
 from swingmusic.lib.colorlib import ProcessAlbumColors, ProcessArtistColors
 
 from swingmusic.db.userdata import SimilarArtistTable
+
+log = logging.getLogger(__name__)
 
 
 class CordinateMedia:

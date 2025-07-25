@@ -55,10 +55,10 @@ def extract_color_worker(item_data: dict) -> dict:
     Works for both albums and artists based on item_data configuration.
     """
     hash_field: str = item_data["hash_field"]
-    path_func: Callable = item_data["path_func"]
+    path_func: Path = item_data["path_func"]
     item_hash: str = item_data[hash_field]
 
-    path = Path(path_func()) / (item_hash + ".webp")
+    path = path_func / (item_hash + ".webp")
 
     if not path.exists():
         return {hash_field: item_hash, "color": None, "error": "Image not found"}
@@ -85,7 +85,7 @@ class ColorProcessor:
         self,
         item_type: str,
         store: AlbumStore | ArtistStore,
-        path_func: Callable,
+        path_func: Path,
         hash_field: str,
     ):
         """
@@ -251,7 +251,7 @@ class ProcessAlbumColors:
         ColorProcessor(
             item_type="album",
             store=AlbumStore,
-            path_func=settings.Paths.get_sm_thumb_path,
+            path_func=settings.Paths().sm_thumb_path,
             hash_field="albumhash",
         )
 
@@ -266,6 +266,6 @@ class ProcessArtistColors:
         ColorProcessor(
             item_type="artist",
             store=ArtistStore,
-            path_func=settings.Paths.get_sm_artist_img_path,
+            path_func=settings.Paths().sm_artist_img_path,
             hash_field="artisthash",
         )
