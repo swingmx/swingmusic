@@ -149,7 +149,7 @@ class Paths(metaclass=Singleton):
                 file.rmdir()
 
             if not file.exists():
-                file.parent.mkdir(parents=True)
+                file.parent.mkdir(parents=True, exist_ok=True)
                 file.touch()
 
 
