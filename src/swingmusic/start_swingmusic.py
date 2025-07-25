@@ -169,9 +169,10 @@ def start_swingmusic(host: str, port: int, debug: bool, base_path:pathlib.Path):
 
     # Example: Setting up dirs, database, and loading stuff into memory.
     # TIP: Be careful with the order of the setup functions.
-    setup_logger(debug=debug)
-    config_mimetypes()
     settings.Paths(base_path)
+    setup_logger(debug=debug)
+
+    config_mimetypes()
     run_setup()
 
     @background

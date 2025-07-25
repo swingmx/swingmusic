@@ -1,5 +1,4 @@
 import os
-import pathlib
 from pathlib import Path
 import importlib.resources as imres
 
@@ -66,7 +65,7 @@ def get_home_res_path(filename: str):
     """
 
     try:
-        swing_modele_path = pathlib.Path( imres.files("swingmusic") / ".." )
+        swing_modele_path = Path( imres.files("swingmusic") / ".." )
         return ( swing_modele_path / filename).resolve()
     except ValueError:
         return None

@@ -114,7 +114,6 @@ class CustomFormatter(logging.Formatter):
         return formatter.format(record)
 
 
-
 CONFIG = {
     "version": 1,
     "disable_existing_loggers": True,
@@ -187,6 +186,7 @@ CONFIG = {
     }
 }
 
+log = None
 
 def setup_logger(debug=False):
     """
@@ -214,6 +214,3 @@ def setup_logger(debug=False):
     global log
     log = logging.getLogger("swingmusic")
     log.info("setup successfully")
-
-
-log = None
