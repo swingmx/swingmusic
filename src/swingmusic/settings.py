@@ -5,9 +5,7 @@ import pathlib
 import shutil
 from pathlib import Path
 import os
-import subprocess
 import sys
-from importlib import metadata
 
 from swingmusic.utils.filesystem import get_home_res_path
 
@@ -158,7 +156,7 @@ class Paths(metaclass=Singleton):
         Copies assets to the app directory.
         """
 
-        # TODO: rework this file.
+        # TODO: rework this function.
         #  Either import assets from inside the module, no need for copy
         #  or copy files with explicit location to config folder
 
@@ -427,38 +425,3 @@ class TCOLOR:
     BOLD = "\033[1m"
     UNDERLINE = "\033[4m"
     # credits: https://stackoverflow.com/a/287944
-
-
-def getLatestCommitHash():
-    """
-    Returns the latest git commit hash for the current branch
-    """
-
-    try:
-        hash = subprocess.check_output(["git", "rev-parse", "--short", "HEAD"])
-        return hash.decode("utf-8").strip()
-    except:
-        return ""
-
-
-def getCurrentBranch():
-    """
-    Returns the current git branch
-    """
-
-    try:
-        branch = subprocess.check_output(["git", "rev-parse", "--abbrev-ref", "HEAD"])
-        return branch.decode("utf-8").strip()
-    except:
-        return ""
-
-
-class Info:
-    """
-    Contains information about the app
-
-    NOTE: This class initially written to load keys when running in build mode.
-    TODO: Remove this class entirely, and implement functionality where needed.
-    """
-
-    SWINGMUSIC_APP_VERSION = metadata.version("swingmusic")

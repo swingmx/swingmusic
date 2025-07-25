@@ -1,4 +1,5 @@
 from dataclasses import asdict
+from importlib import metadata
 from typing import Any
 from flask_openapi3 import Tag
 from flask_openapi3 import APIBlueprint
@@ -102,7 +103,7 @@ def get_all_settings():
             config[key] = sorted(list(value))
 
     config["plugins"] = [p for p in PluginTable.get_all()]
-    config["version"] = Info.SWINGMUSIC_APP_VERSION
+    config["version"] = metadata.version("swingmusic")
 
     # only return lastfmSessionKey for the current user
     current_user = get_current_userid()
