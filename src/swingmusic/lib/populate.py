@@ -166,5 +166,5 @@ class FetchSimilarArtistsLastFM:
                 list(results)
             # any exception that can be raised by the pool
             except Exception as e:
-                log.warn(e)
+                log.warning(e)
                 return

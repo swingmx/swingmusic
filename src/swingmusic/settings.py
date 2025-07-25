@@ -145,8 +145,11 @@ class Paths(metaclass=Singleton):
         ]
 
         for file in empty_files:
+            if file.is_dir():
+                file.rmdir()
+
             if not file.exists():
-                file.mkdir(parents=True)
+                file.parent.mkdir(parents=True)
                 file.touch()
 
 
