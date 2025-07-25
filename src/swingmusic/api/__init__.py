@@ -3,6 +3,8 @@ This module combines all API blueprints into a single Flask app instance.
 """
 
 import datetime
+from importlib import metadata
+
 from flask_cors import CORS
 from flask_compress import Compress
 
@@ -12,7 +14,6 @@ from flask_jwt_extended import JWTManager
 from swingmusic.config import UserConfig
 
 from swingmusic.db.userdata import UserTable
-from swingmusic.settings import Info as AppInfo
 from .plugins import lyrics as lyrics_plugin
 from .plugins import mixes as mixes_plugin
 from swingmusic.api import (
@@ -61,7 +62,7 @@ def create_api():
     """
     api_info = Info(
         title="Swing Music",
-        version=f"v{AppInfo.SWINGMUSIC_APP_VERSION}",
+        version=f"v{metadata.version('swingmusic')}",
         description=open_api_description,
     )
 

@@ -80,7 +80,7 @@ class ProcessTrackThumbnails:
 
     def extract(self, albums: list[Album]):
         """
-        Extracts the album art with platform specific logic.
+        Extracts the album art with platform-specific logic.
         """
 
         cpus = max(1, (os.cpu_count() or 1) // 2)

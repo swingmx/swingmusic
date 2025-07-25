@@ -8,7 +8,6 @@ from swingmusic.api.auth import admin_required
 
 from swingmusic.db.userdata import PluginTable
 from swingmusic.lib.index import index_everything
-from swingmusic.settings import Info
 from swingmusic.config import UserConfig
 from swingmusic.utils.auth import get_current_userid
 

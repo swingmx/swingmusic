@@ -1,20 +1,20 @@
 """
 Contains everything that deals with image color extraction.
 """
-
+import logging
 import os
 import colorgram
 from pathlib import Path
-from typing import Callable, Generator
+from typing import Generator
 from swingmusic.utils.progressbar import tqdm
 from concurrent.futures import ProcessPoolExecutor, as_completed
 
 from swingmusic import settings
-from swingmusic.logger import log
 from swingmusic.store.albums import AlbumStore
 from swingmusic.db.userdata import LibDataTable
 from swingmusic.store.artists import ArtistStore
 
+log = logging.getLogger(__name__)
 
 def get_image_colors(image: str, count=1) -> list[str]:
     """
