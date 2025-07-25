@@ -110,7 +110,7 @@ def get_files_and_dirs(
 
     folders = []
     if not tracks_only:
-        folders = get_folders([folder.as_posix() for folder in dirs])
+        folders = get_folders(dirs)
         folders = sort_folders(folders, foldersortby, foldersort_reverse)
 
     if skip_empty_folders and len(folders) == 1 and len(tracks) == 0:
