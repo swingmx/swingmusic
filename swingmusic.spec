@@ -2,13 +2,16 @@
 from PyInstaller.utils.hooks import collect_submodules, collect_data_files
 from platform import system, machine
 
-hiddenimports = []
-# hiddenimports += collect_submodules('swingmusic')
 
+hiddenimports =[]
+# hiddenimports += collect_submodules('swingmusic')
 
 datas=[('assets', 'assets'), ('client', 'client')]
 datas += collect_data_files('swingmusic', True, excludes=['**/*.py'], includes=['**/*.*'])
+datas += collect_data_files('flask_openapi3', True, excludes=['**/*.py'], includes=['**/*.*'])
 
+def getFlaskOpenApiPath():
+    return importlib.resources.files("flask_openapi3")
 
 
 
@@ -46,4 +49,15 @@ exe = EXE(
     target_arch=None,
     codesign_identity=None,
     entitlements_file=None,
+    icon=['assets\\logo-fill.light.ico'],
+)
+
+coll = COLLECT(
+    exe,
+    a.binaries,
+    a.datas,
+    strip=False,
+    upx=True,
+    upx_exclude=[],
+    name='name_test',
 )

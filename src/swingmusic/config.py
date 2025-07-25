@@ -43,7 +43,7 @@ def load_user_artist_ignore_list() -> set[str]:
         lines = user_file.read_text().splitlines()
         return set([ line.strip() for line in lines if line.strip()])
     else:
-        raise FileNotFoundError(user_file)
+        return set()
 
 
 @dataclass
