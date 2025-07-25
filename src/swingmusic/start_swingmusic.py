@@ -92,7 +92,7 @@ def app_builder():
 
         js_or_css = path.endswith(".js") or path.endswith(".css")
 
-        if js_or_css:
+        if not js_or_css:
             return app.send_static_file(path)
 
         # INFO: Safari doesn't support gzip encoding
@@ -110,8 +110,9 @@ def app_builder():
                 response.headers["Content-Encoding"] = "gzip"
                 return response
 
-        else:
-            return app.send_static_file(path)
+
+        return app.send_static_file(path)
+
 
     @app.route("/")
     def serve_client():
