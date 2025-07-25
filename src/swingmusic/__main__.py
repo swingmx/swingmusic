@@ -1,16 +1,13 @@
-import os
-import sys
-from importlib import metadata
+import argparse
+from importlib.metadata import version
 
-import click
-import pathlib
 import multiprocessing
 from PIL import Image
 
 from swingmusic.settings import default_base_path
 from swingmusic.start_swingmusic import start_swingmusic
 from swingmusic.utils.filesystem import get_home_res_path
-from swingmusic.arg_handler import handle_build, handle_password_reset
+from swingmusic import tools as swing_tools
 
 
 def create_image(width, height, color1, color2):
@@ -38,83 +35,65 @@ def create_image(width, height, color1, color2):
     return padded_image
 
 
-def print_version(*args, **kwargs):
-    """
-    Prints the version of the application.
-    """
-    if not args[2]:
-        return
-
-    path = get_home_res_path("version.txt")
-    if not path:
-        click.echo("Version file not found.")
-        sys.exit(1)
-
-    with open(path, "r") as f:
-        version = f.read()
-
-    click.echo(version)
-    sys.exit(0)
-
-
-@click.command(options_metavar="<options>", context_settings={"show_default": True})
-@click.option(
-    "--build",
-    default=False,
-    help="Build the project.",
-    is_eager=True,
-    callback=handle_build,
-    is_flag=True,
+parser = argparse.ArgumentParser(
+    prog='swingmusic',
+    description='Awesome Music',
+    formatter_class=argparse.ArgumentDefaultsHelpFormatter
 )
-@click.option("--host", default="0.0.0.0", help="Host to run the app on.")
-@click.option("--port", default=1970, help="HTTP port to run the app on.")
-@click.option(
-    "--config",
-    default=default_base_path,
-    show_default="XDG_CONFIG_HOME",
-    help="Path to the config file.",
-    type=click.Path(
-        exists=True,
-        file_okay=False,
-        dir_okay=True,
-        writable=True,
-        resolve_path=True,
-        allow_dash=False,
-        path_type=pathlib.Path,
-    ),
+
+parser.add_argument(
+    '-v', '--version',
+    action='version',
+    version=f"swingmusic v{version('swingmusic')}")
+parser.add_argument(
+    "--host",
+    default="0.0.0.0",
+    help="Host to run the app on."
 )
-@click.option(
-    "--password-reset",
-    is_flag=True,
-    help="Reset the password.",
-    is_eager=True,
-    callback=handle_password_reset,
+parser.add_argument(
+    "--port",
+    default=1970,
+    help="HTTP port to run the app on."
 )
-@click.option(
+parser.add_argument(
     "--debug",
     default=False,
     help="If swingmusic should start in debug mode"
 )
-@click.version_option(
-    package_name="swingmusic",
-    prog_name="swingmusic"
+parser.add_argument(
+    "--config",
+    default=default_base_path(),
+    help="Path to the config file."
 )
+
+tools = parser.add_argument_group(
+    title="Tools"
+)
+tools.add_argument(
+    "--password-reset",
+    help="Reset the password.",
+    action='store_true'
+)
+
 def run(*args, **kwargs):
     """
-    Swing Music entry point. All commandline arguments are handled
-    here by the click decorators and configuration.
+    Swing Music entry point
     """
+    args = parser.parse_args()
+    args = vars(args)
 
-    # pass None if default path.
-    if kwargs["config"] == default_base_path():
-        kwargs["config"] = None
+    # check tools
+    if args["password_reset"]:
+        swing_tools.handle_password_reset()
 
-    start_swingmusic(
-        host=kwargs["host"],
-        port=kwargs["port"],
-        debug=kwargs["debug"],
-        base_path=kwargs["config"]
-    )
+    # else start swingmusik
+    else:
+        start_swingmusic(
+            host=args["host"],
+            port=args["port"],
+            debug=args["debug"],
+            base_path=args["config"]
+        )
 
 
 if __name__ == "__main__":

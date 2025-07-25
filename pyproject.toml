@@ -49,7 +49,7 @@ dependency-metadata = [
 ]
 
 [project.scripts]
-swingmusic = "swingmusic.__main__:main"
+swingmusic = "swingmusic.__main__:run"
 
 
 [project.urls]
