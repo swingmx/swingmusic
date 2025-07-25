@@ -9,7 +9,6 @@ import subprocess
 import sys
 from importlib import metadata
 
-from swingmusic import configs
 from swingmusic.utils.filesystem import get_home_res_path
 
 
@@ -32,7 +31,6 @@ else:
 
 # global object
 paths = None
-
 
 def default_base_path():
     xdg_config_home = os.environ.get("XDG_CONFIG_HOME")
