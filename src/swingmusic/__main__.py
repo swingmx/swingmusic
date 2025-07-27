@@ -1,4 +1,5 @@
 import argparse
+import pathlib
 from importlib.metadata import version
 
 import multiprocessing
@@ -65,7 +66,8 @@ parser.add_argument(
 parser.add_argument(
     "--config",
     default=default_base_path(),
-    help="Path to the config file."
+    help="Path to the config file.",
+    type=pathlib.Path
 )
 
 tools = parser.add_argument_group(
