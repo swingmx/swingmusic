@@ -1,12 +1,9 @@
 """
 This library contains all the functions related to playlists.
 """
-
-import os
 import random
 import string
-from typing import Any
-
+import logging
 from PIL import Image, ImageSequence
 
 from swingmusic import settings
@@ -14,49 +11,60 @@ from swingmusic.models.track import Track
 from swingmusic.store.albums import AlbumStore
 from swingmusic.store.tracks import TrackStore
 
+logger = logging.getLogger("swingmusic")
 
-def create_thumbnail(image: Any, img_path: str) -> str:
+def create_thumbnail(image: Image, img_name: str) -> str:
     """
-    Creates a 250 x 250 thumbnail from a playlist image
+    Creates a 250 px high thumbnail from the Image.
+    It will keep the aspect ratio.
+
+    Images are saved in the playlist-img path
+
+    :param image: Image object.
+    :param img_name: Name of image.
+    :return: Filename of image.
     """
-    thumb_path = "thumb_" + img_path
-    full_thumb_path = ( settings.Paths().app_dir / "images" / "playlists" / thumb_path ).resolve()
 
     aspect_ratio = image.width / image.height
-
     new_w = round(250 * aspect_ratio)
-
     thumb = image.resize((new_w, 250), Image.Resampling.LANCZOS)
-    thumb.save(str(full_thumb_path), "webp")
 
-    return thumb_path
+    thumb_filename = "thumb_" + img_name
+    thumb_path = settings.Paths().playlist_img_path / thumb_filename
+
+    thumb.save(thumb_path, "webp")
+
+    return thumb_filename
 
 
-def create_gif_thumbnail(image: Any, img_path: str):
+def create_gif_thumbnail(image: Image, img_name: str):
     """
-    Creates a 250 x 250 thumbnail from a playlist image
+    Creates a 250 px high thumbnail from the provided GIF.
+    Keeps the aspect ratio.
+
+    Images are saved in the playlist-img path
+
+    :param image: Image object.
+    :param img_name: Name of image.
+    :return: Filename of image.
     """
-    thumb_path = "thumb_" + img_path
-    full_thumb_path = ( settings.Paths().app_dir / "images" / "playlists" / thumb_path ).resolve()
+    thumb_name = "thumb_" + img_name
+    thumb_path = settings.Paths().playlist_img_path / thumb_name
 
     frames = []
-
     for frame in ImageSequence.Iterator(image):
         aspect_ratio = frame.width / frame.height
-
         new_w = round(250 * aspect_ratio)
-
         thumb = frame.resize((new_w, 250), Image.Resampling.LANCZOS)
+
         frames.append(thumb)
 
-    frames[0].save(str(full_thumb_path), save_all=True, append_images=frames[1:])
+    frames[0].save(thumb_path, save_all=True, append_images=frames[1:])
 
-    return thumb_path
+    return thumb_name
 
 
-def save_p_image(
-    img: Image, pid: int, content_type: str = None, filename: str = None
-) -> str:
+def save_p_image(img: Image, pid: int, content_type: str = None, filename: str = None) -> str:
     """
     Saves a playlist banner image and returns the filepath.
     """
@@ -81,7 +89,7 @@ def save_p_image(
         return filename
 
     img.save(full_img_path, "webp")
-    create_thumbnail(img, img_path=filename)
+    create_thumbnail(img, img_name=filename)
 
     return filename
 
@@ -96,9 +104,10 @@ def duplicate_images(images: list):
 
     return images
 
-
+# TODO: mutable var in param.
 def get_first_4_images(
-    tracks: list[Track] = [], trackhashes: list[str] = []
+        tracks: list[Track] = [],
+        trackhashes: list[str] = []
 ) -> list[dict["str", str]]:
     """
     Returns images of the first 4 albums that appear in the track list.
@@ -133,10 +142,10 @@ def get_first_4_images(
     return duplicate_images(images)
 
 
-def cleanup_playlist_images():
+def cleanup_playlist_images() -> None:
     """
-    Cleans up unlinked playlist images by comparing files in the playlist image directory
-    against the .image property of all playlists.
+    Deletes all unlinked files in playlist-img folder.
+    All files not present in the PlaylistTable will get deleted
     """
     # Import here to avoid circular import
     from swingmusic.db.userdata import PlaylistTable
@@ -145,23 +154,18 @@ def cleanup_playlist_images():
     linked_images = {p.image for p in playlists if p.image and p.image != "None"}
 
     playlist_dir = settings.Paths().playlist_img_path
-    all_files = os.listdir(playlist_dir)
 
     # Find unlinked images (including thumbnails)
-    unlinked_files = []
-    for file in all_files:
-        if file.startswith("thumb_"):
-            base_file = file[6:]  # Remove "thumb_" prefix
-            if base_file not in linked_images:
-                unlinked_files.append(file)
+    for file in playlist_dir.iterdir():
+        if not file.isfile:
+            continue
 
-        elif file not in linked_images:
-            unlinked_files.append(file)
+        name = file.name # not stem. PlaylistTable saves with extension
+        if file not in linked_images:
+            if name.removeprefix("thumb_") not in linked_images:
+                continue
 
-    for file in unlinked_files:
-        try:
-            path = playlist_dir / file
-            path.unlink()
-        except OSError:
-            # Skip if file doesn't exist or can't be deleted
-            pass
+            try:
+                file.unlink(missing_ok=True)
+            except OSError as e:
+                logger.exception("could not delete file", exc_info=e)

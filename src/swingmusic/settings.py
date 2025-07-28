@@ -214,77 +214,77 @@ class Paths(metaclass=Singleton):
         return self.artist_img_path / "small"
 
     @property
-    def md_artist_img_path(self):
+    def md_artist_img_path(self) -> pathlib.Path:
         return self.artist_img_path / "medium"
 
     @property
-    def lg_artist_img_path(self):
+    def lg_artist_img_path(self) -> pathlib.Path:
         return self.artist_img_path / "large"
 
     # TRACK THUMBNAILS
     @property
-    def thumbs_path(self):
+    def thumbs_path(self) -> pathlib.Path:
         return self.img_path / "thumbnails"
 
     @property
-    def sm_thumb_path(self):
+    def sm_thumb_path(self) -> pathlib.Path:
         return self.thumbs_path / "small"
 
     @property
-    def xsm_thumb_path(self):
+    def xsm_thumb_path(self) -> pathlib.Path:
         return self.thumbs_path / "xsmall"
 
     @property
-    def md_thumb_path(self):
+    def md_thumb_path(self) -> pathlib.Path:
         return self.thumbs_path / "medium"
 
     @property
-    def lg_thumb_path(self):
+    def lg_thumb_path(self) -> pathlib.Path:
         return self.thumbs_path/ "large"
 
     # OTHERS
     @property
-    def playlist_img_path(self):
+    def playlist_img_path(self) -> pathlib.Path:
         return self.img_path / "playlists"
 
     @property
-    def assets_path(self):
+    def assets_path(self) -> pathlib.Path:
         return self.app_dir / "assets"
 
     @property
-    def plugins_path(self):
+    def plugins_path(self) -> pathlib.Path:
         return self.app_dir / "plugins"
 
     @property
-    def lyrics_plugins_path(self):
+    def lyrics_plugins_path(self) -> pathlib.Path:
         return self.plugins_path / "lyrics"
 
     @property
-    def config_file_path(self):
+    def config_file_path(self) -> pathlib.Path:
         return self.app_dir/ "settings.json"
 
     @property
-    def mixes_img_path(self):
+    def mixes_img_path(self) -> pathlib.Path:
         return self.img_path/ "mixes"
 
     @property
-    def artist_mixes_img_path(self):
+    def artist_mixes_img_path(self) -> pathlib.Path:
         return self.mixes_img_path/ "artists"
 
     @property
-    def og_mixes_img_path(self):
+    def og_mixes_img_path(self) -> pathlib.Path:
         return self.mixes_img_path/ "original"
 
     @property
-    def md_mixes_img_path(self):
+    def md_mixes_img_path(self) -> pathlib.Path:
         return self.mixes_img_path/ "medium"
 
     @property
-    def sm_mixes_img_path(self):
+    def sm_mixes_img_path(self) -> pathlib.Path:
         return self.mixes_img_path / "small"
 
     @property
-    def image_cache_path(self):
+    def image_cache_path(self) -> pathlib.Path:
         return self.img_path / "cache"
 
 
