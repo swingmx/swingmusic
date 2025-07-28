@@ -83,11 +83,9 @@ class ProcessTrackThumbnails:
         Extracts the album art with platform-specific logic.
         """
 
-        cpus = max(1, (os.cpu_count() or 1) // 2)
+        cpus = max(1, os.cpu_count() // 2)
 
-        albumsMap: Generator[list[Track]] = (
-            AlbumStore.get_album_tracks(album.albumhash) for album in albums
-        )
+        albumsMap = ( AlbumStore.get_album_tracks(album.albumhash) for album in albums )
 
         with ProcessPoolExecutor(max_workers=cpus) as executor:
             results = list(
