@@ -158,7 +158,7 @@ def start_swingmusic(host: str, port: int, debug: bool, base_path:pathlib.Path):
         host (str): The host address to bind the server to (e.g., 'localhost' or '0.0.0.0')
         port (int): The port number to run the server on
         debug (bool): If swingmusic should start in debug mode
-        base_path (Path): On which pathe to store config
+        base_path (Path): On which path to store config
 
     Note:
         The application uses either bjoern or waitress as the WSGI server,
@@ -170,7 +170,7 @@ def start_swingmusic(host: str, port: int, debug: bool, base_path:pathlib.Path):
     # Example: Setting up dirs, database, and loading stuff into memory.
     # TIP: Be careful with the order of the setup functions.
     # NOTE: concurrent and multithreading create own sys.modules -> no globals
-    settings.Paths(base_path)
+    settings.Paths(base_path.resolve())
     setup_logger(debug=debug)
 
     config_mimetypes()
