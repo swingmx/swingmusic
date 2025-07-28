@@ -47,9 +47,7 @@ def search_lyrics(body: LyricsSearchBody):
         i_title = track["title"]
         i_album = track["album"]
 
-        if create_hash(i_title) == create_hash(title) and create_hash(
-            i_album
-        ) == create_hash(album):
+        if create_hash(i_title) == create_hash(title) and create_hash(i_album) == create_hash(album):
             perfect_match = track
 
     track_id = perfect_match["track_id"]
