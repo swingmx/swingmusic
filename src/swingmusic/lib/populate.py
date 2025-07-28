@@ -1,6 +1,7 @@
+import functools
 import os
 from dataclasses import asdict
-from typing import Generator
+import multiprocessing as mp
 from requests import ReadTimeout
 from concurrent.futures import ProcessPoolExecutor
 from requests import ConnectionError as RequestConnectionError
@@ -88,8 +89,8 @@ class ProcessTrackThumbnails:
         albumsMap = ( AlbumStore.get_album_tracks(album.albumhash) for album in albums )
 
         # Create process pool with worker function
-        with Pool(processes=cpus) as pool:
-            worker = partial(get_image, paths=settings.Paths())
+        with mp.Pool(processes=cpus) as pool:
+            worker = functools.partial(get_image, paths=settings.Paths())
             # Process files and track progress
 
             results = list(
@@ -110,7 +111,7 @@ class ProcessTrackThumbnails:
         path = settings.Paths().sm_thumb_path
 
         # read all the files in the thumbnail directory
-        processed = set(i.replace(".webp", "") for i in os.listdir(path))
+        processed = set(file.stem for file in path.iterdir())
         # filter out albums that already have thumbnails
         albums = filter(
             lambda album: album.albumhash not in processed,
@@ -149,19 +150,22 @@ class FetchSimilarArtistsLastFM:
         processed = set(a.artisthash for a in SimilarArtistTable.get_all())
 
         # filter out artists that already have similar artists using generator
-        artists = (
-            artist for artist in storeArtists if artist.artisthash not in processed
-        )
+        def artist_generator():
+            for artist in storeArtists:
+                if artist.artisthash in processed:
+                    yield artist
 
-        cpus = max(1, (os.cpu_count() or 1) // 2)
+        artists = list(artist_generator())
+
+        cpus = max(1, os.cpu_count() // 2)
 
         with ProcessPoolExecutor(max_workers=cpus) as executor:
             try:
                 # negative total length
                 results = list(
                     tqdm(
-                        executor.map(save_similar_artists, artists),
-                        total=len(storeArtists) - len(processed),
+                        executor.map(save_similar_artists, artist_generator()),
+                        total=len(artists),
                         desc="Fetching similar artists",
                     )
                 )

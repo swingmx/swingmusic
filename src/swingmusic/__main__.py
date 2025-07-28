@@ -1,5 +1,6 @@
 import argparse
 import pathlib
+import platform
 from importlib.metadata import version
 
 import multiprocessing
@@ -101,5 +102,10 @@ def run(*args, **kwargs):
 
 
 if __name__ == "__main__":
+    # only fork on windows.
+    # or else all globals revert to default
+    # windows multiprocessing is currently buggy
+    # TODO: find a platform independent way to access module globals like `Paths`
+    # if platform.system() == "Windows":
     multiprocessing.set_start_method("spawn")
     run()
