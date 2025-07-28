@@ -1,6 +1,4 @@
-import hashlib
 import xxhash
-
 from unidecode import unidecode
 
 
