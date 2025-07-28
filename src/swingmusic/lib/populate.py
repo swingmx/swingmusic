@@ -87,6 +87,20 @@ class ProcessTrackThumbnails:
 
         albumsMap = ( AlbumStore.get_album_tracks(album.albumhash) for album in albums )
 
+        # Create process pool with worker function
+        with Pool(processes=cpus) as pool:
+            worker = partial(get_image, paths=config)
+
+            # Process files and track progress
+            results = []
+            for result in tqdm(
+                    pool.imap_unordered(worker, files),
+                    total=len(files),
+                    desc="Reading files",
+            ):
+                if result is not None:
+                    results.append(result)
+
         with ProcessPoolExecutor(max_workers=cpus) as executor:
             results = list(
                 tqdm(
