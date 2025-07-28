@@ -239,6 +239,9 @@ def list_folders(body: DirBrowserBody):
 
     req_dir = pathlib.Path(req_dir)
 
+    if not req_dir.exists():
+        req_dir = "/" / req_dir
+
     try:
         entries = os.scandir(req_dir)
     except PermissionError:

@@ -157,6 +157,7 @@ class FetchSimilarArtistsLastFM:
 
         with ProcessPoolExecutor(max_workers=cpus) as executor:
             try:
+                # negative total length
                 results = list(
                     tqdm(
                         executor.map(save_similar_artists, artists),

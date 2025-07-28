@@ -16,11 +16,10 @@ from swingmusic.utils import flatten
 from swingmusic.utils.filesystem import run_fast_scandir
 from swingmusic.utils.parsers import get_base_album_title
 from swingmusic.utils.progressbar import tqdm
-
-import logging
 from swingmusic.utils.remove_duplicates import remove_duplicates
 
-log = logging.getLogger("swingmusic")
+from logging import getLogger
+log = getLogger("swingmusic")
 
 class IndexTracks:
     def __init__(self) -> None:
