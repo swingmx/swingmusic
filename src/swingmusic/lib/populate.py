@@ -57,7 +57,7 @@ class CordinateMedia:
             FetchSimilarArtistsLastFM()
 
 
-def get_image(tracks: list[Track]):
+def get_image(tracks: list[Track], paths=None):
     """
     The function retrieves an image from a list of tracks by extracting the thumbnail from the first track that has one.
 
@@ -67,7 +67,7 @@ def get_image(tracks: list[Track]):
     """
 
     for track in tracks:
-        extracted = extract_thumb(track.filepath, track.albumhash + ".webp")
+        extracted = extract_thumb(track.filepath, track.albumhash + ".webp", paths)
 
         if extracted:
             return
@@ -88,23 +88,13 @@ class ProcessTrackThumbnails:
         albumsMap = ( AlbumStore.get_album_tracks(album.albumhash) for album in albums )
 
         # Create process pool with worker function
-        #with Pool(processes=cpus) as pool:
-        #    worker = partial(get_image, paths=config)
-        #
-        #    # Process files and track progress
-        #    results = []
-        #    for result in tqdm(
-        #            pool.imap_unordered(worker, files),
-        #            total=len(files),
-        #            desc="Reading files",
-        #    ):
-        #        if result is not None:
-        #            results.append(result)
+        with Pool(processes=cpus) as pool:
+            worker = partial(get_image, paths=settings.Paths())
+            # Process files and track progress
 
-        with ProcessPoolExecutor(max_workers=cpus) as executor:
             results = list(
                 tqdm(
-                    executor.map(get_image, albumsMap),
+                    pool.imap_unordered(worker, albumsMap),
                     total=len(albums),
                     desc="Extracting track images",
                 )

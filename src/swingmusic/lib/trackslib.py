@@ -3,17 +3,18 @@ This library contains all the functions related to tracks.
 """
 
 import os
+import pathlib
 
 from swingmusic.lib.pydub.pydub import AudioSegment
 from swingmusic.lib.pydub.pydub.silence import detect_leading_silence, detect_silence
 from swingmusic.utils.threading import ProcessWithReturnValue
 
 
-def get_leading_silence_end(filepath: str):
+def get_leading_silence_end(filepath: pathlib.Path):
     """
     Returns the leading silence of a track.
     """
-    format = filepath.split(".")[-1]
+    format = filepath.suffix.replace(".", "")
     try:
         audio = AudioSegment.from_file(filepath, format=format)
         silence = detect_leading_silence(audio, silence_threshold=-40.0, chunk_size=10)
@@ -27,7 +28,8 @@ def get_trailing_silence_start(filepath: str):
     """
     Returns the trailing silence of a track.
     """
-    format = filepath.split(".")[-1]
+    format = filepath.suffix.replace(".", "")
+
     try:
         audio = AudioSegment.from_file(filepath, format=format)
         duration = len(audio)
@@ -53,11 +55,15 @@ def get_silence_paddings(ending_file: str, starting_file: str):
     """
     Returns the ending silence of a track and the starting silence of the next.
     """
+    starting_file = pathlib.Path(starting_file)
+    ending_file = pathlib.Path(ending_file)
+
+
     silence = {"starting_file": 0, "ending_file": 0}
     ending_thread = None
     starting_thread = None
 
-    if os.path.exists(ending_file):
+    if ending_file.exists():
         ending_thread = ProcessWithReturnValue(
             target=get_trailing_silence_start, args=(ending_file,)
         )
