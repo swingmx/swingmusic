@@ -37,6 +37,9 @@ def extract_thumb(filepath: str, webp_path: str, overwrite=False) -> bool:
     Extracts the thumbnail from an audio file.
     Returns the path to the thumbnail.
     """
+    # this function will be run multithreaded.
+    # Modules are not cached in concurrent runs.
+    # If Paths is tried to be imported
     lg_img_path = Paths().lg_thumb_path / webp_path
     sm_img_path = Paths().sm_thumb_path / webp_path
     xms_img_path = Paths().xsm_thumb_path / webp_path
@@ -58,7 +61,7 @@ def extract_thumb(filepath: str, webp_path: str, overwrite=False) -> bool:
 
         del img
 
-    if not overwrite and os.path.exists(sm_img_path):
+    if not overwrite and sm_img_path.exists():
         img_size = os.path.getsize(sm_img_path)
 
         if img_size > 0:

@@ -17,9 +17,10 @@ from swingmusic.utils.filesystem import run_fast_scandir
 from swingmusic.utils.parsers import get_base_album_title
 from swingmusic.utils.progressbar import tqdm
 
-from swingmusic.logger import log
+import logging
 from swingmusic.utils.remove_duplicates import remove_duplicates
 
+log = logging.getLogger("swingmusic")
 
 class IndexTracks:
     def __init__(self) -> None:
