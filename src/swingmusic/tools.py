@@ -3,13 +3,10 @@ Handles arguments passed to the program.
 """
 import sys
 from getpass import getpass
-from swingmusic import settings
 from swingmusic.db.userdata import UserTable
 from swingmusic.setup.sqlite import setup_sqlite
 from swingmusic.utils.auth import hash_password
 
-ALLARGS = settings.ALLARGS
-ARGS = sys.argv[1:]
 
 def handle_password_reset():
     """
@@ -17,9 +14,6 @@ def handle_password_reset():
     """
 
     setup_sqlite()
-
-    username: str = ""
-    password: str = ""
 
     # collect username
     try:

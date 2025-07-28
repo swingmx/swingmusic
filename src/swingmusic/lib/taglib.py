@@ -1,12 +1,9 @@
 import pathlib
 from dataclasses import dataclass
-import math
 import os
 from io import BytesIO
 from pathlib import Path
-from pprint import pprint
 import re
-import sys
 from typing import Any
 
 import pendulum
@@ -22,6 +19,9 @@ from swingmusic.utils.parsers import split_artists
 def parse_album_art(filepath: str):
     """
     Returns the album art for a given audio file.
+
+    :params filepath: Path to file
+    :returns: `Pil.Image` if available else None
     """
     tags = TinyTag.get(filepath, image=True)
     image = tags.images.any

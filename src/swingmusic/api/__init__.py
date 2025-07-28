@@ -14,8 +14,8 @@ from flask_jwt_extended import JWTManager
 from swingmusic.config import UserConfig
 
 from swingmusic.db.userdata import UserTable
-from .plugins import lyrics as lyrics_plugin
-from .plugins import mixes as mixes_plugin
+from swingmusic.api.plugins import lyrics as lyrics_plugin
+from swingmusic.api.plugins import mixes as mixes_plugin
 from swingmusic.api import (
     album,
     artist,
