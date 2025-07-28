@@ -6,31 +6,30 @@ import json
 from typing import Any
 from swingmusic.settings import Paths
 
-# TODO: Publish this on PyPi
-
 
 def load_artist_ignore_list_from_file(filepath: Path) -> set[str]:
     """
     Loads artist names from a text file.
-    Returns an empty set if the file doesn't exist.
+
+    :params filepath: filepath to file
+    :returns: Lines with content as ``set``, else empty ``set``
     """
-    try:
-        return {
-            line.strip() for line in filepath.read_text().splitlines() if line.strip()
-        }
-    except FileNotFoundError:
+    if filepath.exists():
+        text = filepath.read_text()
+        return set([ line.strip() for line in text.splitlines() if line.strip() ])
+    else:
         return set()
 
 
 def load_default_artist_ignore_list() -> set[str]:
     """
-    Loads the default artist ignore list from the text file.
+    Loads the default artist-ignore-list from the text file.
     Returns an empty set if the file doesn't exist.
     """
     text = importlib.resources.read_text("swingmusic.data","artist_split_ignore.txt")
     # only return unique and not empty lines
     lines = text.splitlines()
-    return set([ line.strip() for line in lines if line.strip()])
+    return set([ line.strip() for line in lines if line.strip() ])
 
 
 def load_user_artist_ignore_list() -> set[str]:
