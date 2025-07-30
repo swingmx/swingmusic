@@ -1,9 +1,8 @@
 import importlib.resources
-import pathlib
-from pathlib import Path
-from dataclasses import dataclass, asdict, field, InitVar
 import json
+from pathlib import Path
 from typing import Any
+from dataclasses import dataclass, asdict, field, InitVar
 from swingmusic.settings import Paths
 
 
@@ -47,7 +46,7 @@ def load_user_artist_ignore_list() -> set[str]:
 
 @dataclass
 class UserConfig:
-    _config_path: InitVar[pathlib.Path] = ""
+    _config_path: InitVar[Path] = Path("")
     _artist_split_ignore_file_name: InitVar[str] = "artist_split_ignore.txt"
     # NOTE: only auth stuff are used (the others are still reading/writing to db)
     # TODO: Move the rest of the settings to the config file
@@ -98,9 +97,9 @@ class UserConfig:
         # set config path locally to avoid writing to file
         config_path = Paths().config_file_path
 
-        try:
+        if not config_path.exists():
             config = self.load_config(config_path)
-        except FileNotFoundError:
+        else:
             self._config_path = config_path
             return
 
