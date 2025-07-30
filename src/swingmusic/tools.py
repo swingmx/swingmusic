@@ -1,7 +1,7 @@
 """
-Handles arguments passed to the program.
+All tools ``swingmusic`` provide without UI
 """
-import sys
+
 from getpass import getpass
 from swingmusic.db.userdata import UserTable
 from swingmusic.setup.sqlite import setup_sqlite
@@ -18,20 +18,15 @@ def handle_password_reset():
     # collect username
     try:
         username = input("Enter username: ")
-    except KeyboardInterrupt:
-        print("\nOperation cancelled! Exiting ...")
-        return
+        username = username.strip()
+        user = UserTable.get_by_username(username)
 
-    username = username.strip()
-    user = UserTable.get_by_username(username)
+        if not user:
+            print(f"User {username} not found")
+            return
 
-    if not user:
-        print(f"User {username} not found")
-        return
-
-    # collect password
-    try:
         password = getpass("Enter new password: ")
+
     except KeyboardInterrupt:
         print("\nOperation cancelled! Exiting ...")
         return
@@ -41,4 +36,3 @@ def handle_password_reset():
         print("Password reset successfully!")
     except Exception as e:
         print(f"Error resetting password: {e}")
-        return
