@@ -6,11 +6,10 @@ Applies migrations.
 from sqlalchemy import create_engine
 from swingmusic.db.userdata import UserTable
 from swingmusic.migrations import apply_migrations
-from swingmusic.settings import DbPaths
+from swingmusic.settings import Paths
 
 from swingmusic.db.engine import DbEngine
 from swingmusic.db import create_all_tables
-# from swingmusic.db.libdata import create_all as create_user_tables
 
 
 def run_migrations():
@@ -25,7 +24,7 @@ def setup_sqlite():
     Create Sqlite databases and tables.
     """
     DbEngine._engine = create_engine(
-        f"sqlite+pysqlite:///{DbPaths.get_app_db_path()}",
+        f"sqlite+pysqlite:///{Paths().app_db_path}",
         echo=False,
         max_overflow=20,
         pool_size=10,

@@ -67,7 +67,6 @@ class FolderStore:
         Uses a ThreadPoolExecutor to count the number of tracks
         in each directory for fast execution time.
         """
-        results: list[dict[str, int | str]] = []
 
         with ThreadPoolExecutor() as executor:
             res = executor.map(count_filepaths_in_dir, ((path, FolderStore.filepaths) for path in paths))

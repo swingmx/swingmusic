@@ -1,13 +1,14 @@
 import pathlib
 from pathlib import Path
+import logging
 
 from swingmusic.lib.sortlib import sort_folders, sort_tracks
-from swingmusic.logger import log
 from swingmusic.models import Folder
 from swingmusic.serializers.track import serialize_tracks
 from swingmusic.utils.filesystem import SUPPORTED_FILES
 from swingmusic.store.folder import FolderStore
 
+log = logging.getLogger("swingmusic")
 
 def create_folder(path: str, trackcount=0) -> Folder:
     """

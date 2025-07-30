@@ -1,14 +1,20 @@
 """
+This file contains all global variables.
+All Variables should be read only after an initial set.
+
 Contains default configs
 """
+
 import pathlib
 import shutil
 from pathlib import Path
 import os
-import sys
-
 from swingmusic.utils.filesystem import get_home_res_path
 
+
+# # # # # # # # #
+#  Meta-classes  #
+# # # # # # # # #
 
 class Singleton(type):
     _instances = {}
@@ -20,18 +26,29 @@ class Singleton(type):
 
 
 
-if getattr(sys, "frozen", False) and hasattr(sys, "_MEIPASS"):
-    IS_BUILD = True
-else:
-    IS_BUILD = False
+# # # # # # # # #
+#  Path  Logic  #
+# # # # # # # # #
 
 
-# global object
-paths = None
+def default_base_path() -> pathlib.Path:
+    """
+    | Calculates the default config path for ``swingmusic``.
+    | Checks for the first valid path.
+    | If no Path is valid, will use Home dir (4.)
 
-def default_base_path():
-    xdg_config_home = os.environ.get("XDG_CONFIG_HOME")
+    Check order:
+
+    1. Env:``SWINGMUSIC_XDG_CONFIG_DIR``
+    2. Env:``xdg_config_home``
+    3. <User Home>/.config
+    4. <User Home>
+
+    :return: Calculated Path
+    """
+
     swing_xdg_config_home = os.environ.get("SWINGMUSIC_XDG_CONFIG_DIR")
+    xdg_config_home = os.environ.get("xdg_config_home")
     alt_dir = pathlib.Path.home() / ".config"
 
     base_path = pathlib.Path.home()
@@ -50,21 +67,32 @@ def default_base_path():
 
 class Paths(metaclass=Singleton):
     """
+    This class stores all paths for ``swingmusic``s config.
+    * Configs
+    * DBs
+    * Assets
+    * Cache
+
     This class is a singleton.
-    That means only the first instantiation of Paths can set the swingmusic config path.
     You cannot change the config path later.
+
+    Not multiprocessing save:
+    Multiprocessing will create separate environment without configs
     """
 
     base_path:Path = Path.home().resolve()
     USER_HOME_DIR = Path.home().resolve()
+    APP_DB_NAME = "swingmusic.db"
+    USER_DATA_DB_NAME = "userdata.db"
 
 
     def __init__(self, base_path:Path=None):
         """
         Create config-folder structure and check permissions.
-        This Class can be used
+        Copy all assets if needed.
 
-        :param base_path: The location where the swingmusic config folder will be created.
+        :param self: Own object
+        :param base_path: Parent path of ``swingmusic``s config path
         """
 
         """
@@ -286,8 +314,24 @@ class Paths(metaclass=Singleton):
     def image_cache_path(self) -> pathlib.Path:
         return self.img_path / "cache"
 
+    @property
+    def app_db_path(self):
+        return Paths().app_dir / self.APP_DB_NAME
 
-# defaults
+    @property
+    def userdata_db_path(self):
+        return Paths().app_dir / self.USER_DATA_DB_NAME
+
+    @property
+    def json_config_path(self):
+        return Paths().app_dir / "config.json"
+
+
+# # # # # # # # # # # # #
+# Default and Konstants #
+# # # # # # # # # # # # #
+
+
 class Defaults:
     """
     Contains default values for various settings.
@@ -297,7 +341,7 @@ class Defaults:
     MD_THUMB_SIZE: medium thumbnail size for web client album cards
     LG_THUMB_SIZE: large thumbnail size for web client now playing album art
 
-    NOTE: LG_ARTIST_IMG_SIZE is not defined as the images are saved in the original size (500px)
+    NOTE: LG_ARTIST_IMG_SIZE is undefined to save the images in their original size (500px)
     """
 
     XSM_THUMB_SIZE = 64
@@ -316,98 +360,6 @@ class Defaults:
     API_ARTISTNAME = "Polo G"
     API_TRACKNAME = "Martin & Gina"
     API_CARD_LIMIT = 6
-
-
-# ===== SQLite =====
-class DbPaths:
-    APP_DB_NAME = "swingmusic.db"
-    USER_DATA_DB_NAME = "userdata.db"
-
-    @classmethod
-    def get_app_db_path(cls):
-        return Paths().app_dir / cls.APP_DB_NAME
-
-    @classmethod
-    def get_userdata_db_path(cls):
-        return Paths().app_dir / cls.USER_DATA_DB_NAME
-
-    @classmethod
-    def get_json_config_path(cls):
-        return Paths().app_dir / "config.json"
-
-
-class FLASKVARS:
-    FLASK_PORT = 1970
-    FLASK_HOST = "localhost"
-
-    @classmethod
-    def get_flask_port(cls):
-        return cls.FLASK_PORT
-
-    @classmethod
-    def get_flask_host(cls):
-        return cls.FLASK_HOST
-
-    @classmethod
-    def set_flask_port(cls, port):
-        cls.FLASK_PORT = port
-
-    @classmethod
-    def set_flask_host(cls, host):
-        cls.FLASK_HOST = host
-
-
-class ALLARGS:
-    """
-    Enumerates the possible app arguments.
-    """
-
-    build = "--build"
-    port = "--port"
-    host = "--host"
-    config = "--config"
-
-    pswd = "--pswd"
-
-    show_feat = ("--show-feat", "-sf")
-    show_prod = ("--show-prod", "-sp")
-    dont_clean_albums = ("--no-clean-albums", "-nca")
-    dont_clean_tracks = ("--no-clean-tracks", "-nct")
-    no_periodic_scan = ("--no-periodic-scan", "-nps")
-    periodic_scan_interval = ("--scan-interval", "-psi")
-
-    help = ("--help", "-h")
-    version = ("--version", "-v")
-
-
-class SessionVars:
-    """
-    Variables that can be altered per session.
-    """
-
-    EXTRACT_FEAT = True
-    """
-    Whether to extract the featured artists from the song title.
-    """
-
-    REMOVE_PROD = True
-    """
-    Whether to remove the producers from the song title.
-    """
-
-    CLEAN_ALBUM_TITLE = True
-    REMOVE_REMASTER_FROM_TRACK = True
-
-    DO_PERIODIC_SCANS = True
-    PERIODIC_SCAN_INTERVAL = 600  # 10 minutes
-    """
-    The interval between periodic scans in seconds.
-    """
-
-    MERGE_ALBUM_VERSIONS = False
-    ARTIST_SEPARATORS = set()
-    SHOW_ALBUMS_AS_SINGLES = False
-
 
 class TCOLOR:
     """

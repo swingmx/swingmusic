@@ -157,9 +157,15 @@ def extract_artist_title(filename: str, config: UserConfig):
     return ParseData(artist, title, config)
 
 
-def get_tags(filepath: str, config: UserConfig):
+def get_tags(filepath: str, config: UserConfig) -> dict:
     """
-    Returns the tags for a given audio file.
+    Parse tags from an audio file.
+    If tag entries are missing, try getting them from the file name
+
+    :param filepath: Path to file.
+    :param config: UserConfig for ``split`` and ``splitignore`` config
+    :return: Metadata dict
+    :raise FileNotFoundError: If filepath is invalid
     """
 
     filepath = pathlib.Path(filepath)
