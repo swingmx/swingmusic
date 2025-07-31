@@ -25,7 +25,6 @@ class Singleton(type):
         return cls._instances[cls]
 
 
-
 # # # # # # # # #
 #  Path  Logic  #
 # # # # # # # # #

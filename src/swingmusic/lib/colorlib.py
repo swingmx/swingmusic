@@ -1,8 +1,10 @@
 """
-Contains everything that deals with image color extraction.
+Contains everything that deals with image colour extraction.
 """
 import logging
 import os
+import pathlib
+
 import colorgram
 from pathlib import Path
 from typing import Generator
@@ -16,13 +18,18 @@ from swingmusic.store.artists import ArtistStore
 
 log = logging.getLogger(__name__)
 
-def get_image_colors(image: str, count=1) -> list[str]:
+def get_image_colors(image: pathlib.Path, count=1) -> list[str]:
     """
-    Extracts n number of the most dominant colors from an image.
+    Extracts ``count`` numbers of the most dominant colours from an image.
+
+    :params image: Path to image.
+    :params count: How many colours should be extracted?
+    :returns: List["rgb(red, green, blue)", ...]
     """
-    try:
+
+    if image.exists():
         colors = sorted(colorgram.extract(image, count), key=lambda c: c.hsl.h)
-    except OSError:
+    else:
         return []
 
     formatted_colors = []
@@ -34,23 +41,31 @@ def get_image_colors(image: str, count=1) -> list[str]:
     return formatted_colors
 
 
-def process_color(item_hash: str, is_album=True):
-    path = (
-        settings.Paths().sm_thumb_path
-        if is_album
-        else settings.Paths().sm_artist_img_path
-    )
-    path = Path(path) / (item_hash + ".webp")
+def process_color(item_hash: str, is_album=True) -> list[str]:
+    """
+    Parse colours from images associated with song
+
+    :param item_hash: hash of item for colour calculation
+    :param is_album: if item is an album
+    :return: list with colour strings
+    """
+
+    if is_album:
+        path = settings.Paths().sm_thumb_path
+    else:
+        path = settings.Paths().sm_artist_img_path
+
+    path = path / (item_hash + ".webp")
 
     if not path.exists():
-        return
+        return []
 
-    return get_image_colors(str(path))
+    return get_image_colors(path)
 
 
 def extract_color_worker(item_data: dict) -> dict:
     """
-    Generic worker function for extracting colors in parallel.
+    Generic worker function for extracting colours in parallel.
     Returns data to main process for batch database operations.
     Works for both albums and artists based on item_data configuration.
     """
@@ -63,7 +78,7 @@ def extract_color_worker(item_data: dict) -> dict:
     if not path.exists():
         return {hash_field: item_hash, "color": None, "error": "Image not found"}
 
-    colors = get_image_colors(str(path))
+    colors = get_image_colors(path)
 
     if not colors:
         return {
@@ -258,8 +273,8 @@ class ProcessAlbumColors:
 
 class ProcessArtistColors:
     """
-    Extracts the most dominant color from the artist art and saves it to the database.
-    Uses multiprocessing for parallel color extraction and batch database operations.
+    Extracts the most dominant colour from the artist art and saves it to the database.
+    Uses multiprocessing for parallel colour extraction and batch database operations.
     """
 
     def __init__(self) -> None:

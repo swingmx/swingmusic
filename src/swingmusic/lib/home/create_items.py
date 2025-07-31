@@ -11,6 +11,14 @@ from swingmusic.store.tracks import TrackStore
 
 
 def create_items(entries: list[TrackLog], limit: int):
+    """
+    TODO: rework so that returns a dict with
+    {
+        "recently_played": ...,
+        "artist_mixes_for_you": ...
+    }
+    also keep in mind that the web-ui is beeing translated.
+    """
     custom_playlists = [
         {"name": "recentlyadded", "handler": get_recently_added_playlist},
         {"name": "recentlyplayed", "handler": get_recently_played_playlist},
