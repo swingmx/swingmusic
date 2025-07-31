@@ -3,7 +3,7 @@ import json
 from pathlib import Path
 from typing import Any
 from dataclasses import dataclass, asdict, field, InitVar
-from swingmusic.settings import Paths
+from swingmusic.settings import Paths, Singleton
 
 
 def load_artist_ignore_list_from_file(filepath: Path) -> set[str]:
@@ -45,7 +45,7 @@ def load_user_artist_ignore_list() -> set[str]:
 
 
 @dataclass
-class UserConfig:
+class UserConfig(metaclass=Singleton):
     _config_path: InitVar[Path] = Path("")
     _artist_split_ignore_file_name: InitVar[str] = "artist_split_ignore.txt"
     # NOTE: only auth stuff are used (the others are still reading/writing to db)
@@ -90,6 +90,7 @@ class UserConfig:
     lastfmApiSecret: str = "5e5306fbf3e8e3bc92f039b6c6c4bd4e"
     lastfmSessionKeys: dict[str, str] = field(default_factory=dict)
 
+
     def __post_init__(self, _config_path, _artist_split_ignore_file_name):
         """
         Loads the config file and sets the values to this instance
@@ -97,7 +98,7 @@ class UserConfig:
         # set config path locally to avoid writing to file
         config_path = Paths().config_file_path
 
-        if not config_path.exists():
+        if config_path.exists():
             config = self.load_config(config_path)
         else:
             self._config_path = config_path
@@ -113,8 +114,10 @@ class UserConfig:
             else:
                 setattr(self, key, value)
 
-        # finally set the config path
+        # finally, set the config path
         self._config_path = config_path
+        self.__finished = True
+
 
     def setup_config_file(self) -> None:
         """
@@ -134,6 +137,7 @@ class UserConfig:
         """
         return json.loads(path.read_text())
 
+
     def write_to_file(self, settings: dict[str, Any]):
         """
         Writes the settings to the config file
@@ -144,10 +148,18 @@ class UserConfig:
         with self._config_path.open(mode="w") as f:
             json.dump(settings, f, indent=4, default=list)
 
+
     def __setattr__(self, key: str, value: Any) -> None:
         """
         Writes to the config file whenever a value is set
         """
+
+        # protection.
+        # only write to file if post_init completed
+        if not hasattr(self, "__finished"):
+            super().__setattr__(key, value)
+            return
+
         super().__setattr__(key, value)
 
         # if is internal attribute, don't write to file
