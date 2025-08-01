@@ -2,7 +2,7 @@ from contextlib import contextmanager
 from sqlalchemy import Engine, create_engine, event
 from sqlalchemy.orm import sessionmaker
 
-from swingmusic.settings import DbPaths
+from swingmusic.settings import Paths
 
 
 @event.listens_for(Engine, "connect")
@@ -38,7 +38,7 @@ class DbEngine:
     def engine(cls) -> Engine:
         if not cls._engine:
             cls._engine = create_engine(
-                f"sqlite+pysqlite:///{DbPaths.get_app_db_path()}",
+                f"sqlite+pysqlite:///{Paths().app_db_path}",
                 echo=False,
                 max_overflow=20,
                 pool_size=10,

@@ -83,11 +83,8 @@ def get_folder_tree(body: FolderTree):
     config = UserConfig()
     root_dirs = config.rootDirs
 
-    try:
-        if req_dir == "$home" and root_dirs[0] == "$home":
-            req_dir = settings.Paths().USER_HOME_DIR.as_posix()
-    except IndexError:
-        pass
+    if req_dir == "$home" and "$home" in root_dirs[0]:
+        req_dir = settings.Paths().USER_HOME_DIR.as_posix()
 
     if req_dir == "$home":
         if len(root_dirs) == 1:
@@ -148,16 +145,8 @@ def get_folder_tree(body: FolderTree):
             "path": req_dir,
         }
 
-    if is_windows():
-        # Trailing slash needed when drive letters are passed,
-        # Remember, the trailing slash is removed in the client.
-        # req_dir += "/"
-        pass
-    else:
-        req_dir = "/" + req_dir if not req_dir.startswith("/") else req_dir
-
     results = get_files_and_dirs(
-        req_dir,
+        pathlib.Path(req_dir),
         start=body.start,
         limit=body.limit,
         tracks_only=tracks_only,
@@ -238,6 +227,9 @@ def list_folders(body: DirBrowserBody):
 
 
     req_dir = pathlib.Path(req_dir)
+
+    if not req_dir.exists():
+        req_dir = "/" / req_dir
 
     try:
         entries = os.scandir(req_dir)

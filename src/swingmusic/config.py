@@ -1,36 +1,34 @@
 import importlib.resources
-import pathlib
-from pathlib import Path
-from dataclasses import dataclass, asdict, field, InitVar
 import json
+from pathlib import Path
 from typing import Any
-from swingmusic.settings import Paths
-
-# TODO: Publish this on PyPi
+from dataclasses import dataclass, asdict, field, InitVar
+from swingmusic.settings import Paths, Singleton
 
 
 def load_artist_ignore_list_from_file(filepath: Path) -> set[str]:
     """
     Loads artist names from a text file.
-    Returns an empty set if the file doesn't exist.
+
+    :params filepath: filepath to file
+    :returns: Lines with content as ``set``, else empty ``set``
     """
-    try:
-        return {
-            line.strip() for line in filepath.read_text().splitlines() if line.strip()
-        }
-    except FileNotFoundError:
+    if filepath.exists():
+        text = filepath.read_text()
+        return set([ line.strip() for line in text.splitlines() if line.strip() ])
+    else:
         return set()
 
 
 def load_default_artist_ignore_list() -> set[str]:
     """
-    Loads the default artist ignore list from the text file.
+    Loads the default artist-ignore-list from the text file.
     Returns an empty set if the file doesn't exist.
     """
     text = importlib.resources.read_text("swingmusic.data","artist_split_ignore.txt")
     # only return unique and not empty lines
     lines = text.splitlines()
-    return set([ line.strip() for line in lines if line.strip()])
+    return set([ line.strip() for line in lines if line.strip() ])
 
 
 def load_user_artist_ignore_list() -> set[str]:
@@ -47,8 +45,8 @@ def load_user_artist_ignore_list() -> set[str]:
 
 
 @dataclass
-class UserConfig:
-    _config_path: InitVar[pathlib.Path] = ""
+class UserConfig(metaclass=Singleton):
+    _config_path: InitVar[Path] = Path("")
     _artist_split_ignore_file_name: InitVar[str] = "artist_split_ignore.txt"
     # NOTE: only auth stuff are used (the others are still reading/writing to db)
     # TODO: Move the rest of the settings to the config file
@@ -92,6 +90,7 @@ class UserConfig:
     lastfmApiSecret: str = "5e5306fbf3e8e3bc92f039b6c6c4bd4e"
     lastfmSessionKeys: dict[str, str] = field(default_factory=dict)
 
+
     def __post_init__(self, _config_path, _artist_split_ignore_file_name):
         """
         Loads the config file and sets the values to this instance
@@ -99,9 +98,9 @@ class UserConfig:
         # set config path locally to avoid writing to file
         config_path = Paths().config_file_path
 
-        try:
+        if config_path.exists():
             config = self.load_config(config_path)
-        except FileNotFoundError:
+        else:
             self._config_path = config_path
             return
 
@@ -115,8 +114,10 @@ class UserConfig:
             else:
                 setattr(self, key, value)
 
-        # finally set the config path
+        # finally, set the config path
         self._config_path = config_path
+        self.__finished = True
+
 
     def setup_config_file(self) -> None:
         """
@@ -136,6 +137,7 @@ class UserConfig:
         """
         return json.loads(path.read_text())
 
+
     def write_to_file(self, settings: dict[str, Any]):
         """
         Writes the settings to the config file
@@ -146,10 +148,18 @@ class UserConfig:
         with self._config_path.open(mode="w") as f:
             json.dump(settings, f, indent=4, default=list)
 
+
     def __setattr__(self, key: str, value: Any) -> None:
         """
         Writes to the config file whenever a value is set
         """
+
+        # protection.
+        # only write to file if post_init completed
+        if not hasattr(self, "__finished"):
+            super().__setattr__(key, value)
+            return
+
         super().__setattr__(key, value)
 
         # if is internal attribute, don't write to file

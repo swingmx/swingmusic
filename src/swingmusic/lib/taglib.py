@@ -1,12 +1,9 @@
 import pathlib
 from dataclasses import dataclass
-import math
 import os
 from io import BytesIO
 from pathlib import Path
-from pprint import pprint
 import re
-import sys
 from typing import Any
 
 import pendulum
@@ -22,6 +19,9 @@ from swingmusic.utils.parsers import split_artists
 def parse_album_art(filepath: str):
     """
     Returns the album art for a given audio file.
+
+    :params filepath: Path to file
+    :returns: `Pil.Image` if available else None
     """
     tags = TinyTag.get(filepath, image=True)
     image = tags.images.any
@@ -32,15 +32,21 @@ def parse_album_art(filepath: str):
     return None
 
 
-def extract_thumb(filepath: str, webp_path: str, overwrite=False) -> bool:
+def extract_thumb(filepath: str, webp_path: str, overwrite=False, paths:Paths=None) -> bool:
     """
     Extracts the thumbnail from an audio file.
     Returns the path to the thumbnail.
     """
-    lg_img_path = Paths().lg_thumb_path / webp_path
-    sm_img_path = Paths().sm_thumb_path / webp_path
-    xms_img_path = Paths().xsm_thumb_path / webp_path
-    md_img_path = Paths().md_thumb_path / webp_path
+    # this function will be run multithreaded.
+    # Modules are not cached in concurrent runs.
+    # If Paths is tried to be imported
+    if paths is None:
+        paths = Paths()
+
+    lg_img_path = paths.lg_thumb_path / webp_path
+    sm_img_path = paths.sm_thumb_path / webp_path
+    xms_img_path = paths.xsm_thumb_path / webp_path
+    md_img_path = paths.md_thumb_path / webp_path
 
     images = [
         (lg_img_path, Defaults.LG_THUMB_SIZE),
@@ -58,7 +64,7 @@ def extract_thumb(filepath: str, webp_path: str, overwrite=False) -> bool:
 
         del img
 
-    if not overwrite and os.path.exists(sm_img_path):
+    if not overwrite and sm_img_path.exists():
         img_size = os.path.getsize(sm_img_path)
 
         if img_size > 0:
@@ -114,6 +120,13 @@ class ParseData:
 
 
 def extract_artist_title(filename: str, config: UserConfig):
+    """
+    extract data from filename with specified separators
+
+    :params filename: filename
+    :params config: UserConfig for user separators
+    """
+
     path = Path(filename).with_suffix("")
 
     path = clean_filename(str(path))
@@ -144,27 +157,29 @@ def extract_artist_title(filename: str, config: UserConfig):
     return ParseData(artist, title, config)
 
 
-def get_tags(filepath: str, config: UserConfig):
+def get_tags(filepath: str, config: UserConfig) -> dict:
     """
-    Returns the tags for a given audio file.
+    Parse tags from an audio file.
+    If tag entries are missing, try getting them from the file name
+
+    :param filepath: Path to file.
+    :param config: UserConfig for ``split`` and ``splitignore`` config
+    :return: Metadata dict
+    :raise FileNotFoundError: If filepath is invalid
     """
 
     filepath = pathlib.Path(filepath)
     filename = filepath.stem
 
-    try:
-        last_mod = round(os.path.getmtime(filepath))
-    except FileNotFoundError:
-        return None
+    if not filepath.exists():
+        raise FileNotFoundError(filepath)
 
-    try:
-        tags = TinyTag.get(filepath)
-    except Exception as e:  # noqa: E722
-        return None
+    last_mod = round(filepath.stat().st_mtime)
+    tags = TinyTag.get(filepath)
 
-    try:
+    if hasattr(tags, "other"):
         other = tags.other
-    except AttributeError:
+    else:
         other = {}
 
     metadata: dict[str, Any] = {
@@ -180,10 +195,13 @@ def get_tags(filepath: str, config: UserConfig):
         "track": tags.track,
         "disc": tags.disc,
         "genres": tags.genre,
-        "copyright": " ".join(other.get("copyright", [])),
+        "copyright": " ".join(other.get("copyright", [])), # INFO: Extract copyright from extra data
         "extra": {},
+        "date": parse_date(tags.year or "") or int(last_mod)
     }
 
+
+    # check the necessary tags and set them
     no_albumartist: bool = (tags.albumartist == "") or (tags.albumartist is None)
     no_artist: bool = (tags.artist == "") or (tags.artist is None)
 
@@ -223,18 +241,19 @@ def get_tags(filepath: str, config: UserConfig):
             else:
                 metadata[tag] = "Unknown"
 
+
+    # make values beautiful
     # INFO: If these are empty, set to "Unknown"
     to_check = ["album", "albumartists"]
     for prop in to_check:
-        p = metadata[prop]
-        if (p is None) or (p == ""):
+        if not metadata[prop]:
             metadata[prop] = "Unknown"
 
     # INFO: Round the bitrate and duration
     to_round = ["bitrate", "duration"]
     for prop in to_round:
         try:
-            metadata[prop] = math.floor(getattr(tags, prop))
+            metadata[prop] = int(getattr(tags, prop))
         except TypeError:
             metadata[prop] = 0
 
@@ -246,9 +265,8 @@ def get_tags(filepath: str, config: UserConfig):
         except (ValueError, TypeError):
             metadata[prop] = 1
 
-    # INFO: Extract copyright from extra data
-    metadata["date"] = parse_date(tags.year or "") or int(last_mod)
 
+    # generate hash
     # create albumhash using og_album
     metadata["albumhash"] = create_hash(
         tags.album or "", metadata.get("albumartists", "")
@@ -260,8 +278,11 @@ def get_tags(filepath: str, config: UserConfig):
         metadata.get("title", ""),
     )
 
+
+
+    # extract extra information not already in tags
     extra: dict[str, Any] = {
-        k: v for k, v in tags.as_dict().items() if metadata.get(k, "meh") == "meh"
+        k: v for k, v in tags.as_dict().items() if not k in metadata
     }
 
     extra["hashinfo"] = {
@@ -269,20 +290,25 @@ def get_tags(filepath: str, config: UserConfig):
         "format": "[:5]+[-5:]",  # first 5 + last 5 chars
     }
 
-    to_pop = ["filename", "artists", "albumartist", "year"]
 
     # REMOVE EMPTY VALUES
+    to_pop = ["filename", "artists", "albumartist", "year"]
     for key, value in extra.items():
-        if (
-            value is None
-            or value == ""
-            # INFO: If value is a list, check if it's empty or if the first element is empty
-            or (type(value) is list and "".join(value) == "")
-        ):
+        # None --bool--> False --not--> True
+        # []   --bool--> False --not--> True
+        # ""   --bool--> False --not--> True
+        # [""] --bool--> True  --not--> False
+
+        if isinstance(value, list) and not "".join(value):
+            to_pop.append(key)
+            continue
+
+        if not value:
             to_pop.append(key)
 
     for key in to_pop:
         extra.pop(key, None)
+
 
     metadata["extra"] = extra
     return metadata

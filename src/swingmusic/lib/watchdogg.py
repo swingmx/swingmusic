@@ -137,7 +137,7 @@ def handle_color(albumhash: str):
 
     colors = process_color(albumhash, is_album=True)
 
-    if colors is None:
+    if colors:
         return
 
     if entry is None:

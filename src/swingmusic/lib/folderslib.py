@@ -1,13 +1,14 @@
 import pathlib
 from pathlib import Path
+import logging
 
 from swingmusic.lib.sortlib import sort_folders, sort_tracks
-from swingmusic.logger import log
 from swingmusic.models import Folder
 from swingmusic.serializers.track import serialize_tracks
 from swingmusic.utils.filesystem import SUPPORTED_FILES
 from swingmusic.store.folder import FolderStore
 
+log = logging.getLogger("swingmusic")
 
 def create_folder(path: str, trackcount=0) -> Folder:
     """
@@ -37,7 +38,7 @@ def get_folders(paths: list[str]):
 
 
 def get_files_and_dirs(
-    path: str|pathlib.Path,
+    path: pathlib.Path,
     start: int,
     limit: int,
     tracksortby: str,
@@ -46,20 +47,33 @@ def get_files_and_dirs(
     foldersort_reverse: bool,
     tracks_only: bool = False,
     skip_empty_folders=True,
-):
+) -> dict[str: list|int|str]:
     """
-    Given a path, returns a list of tracks and folders in that immediate path.
+    Scan folder for files and folders.
+    Will only return files in `swingmusic.utils.filesystem.SUPPORTED_FILES`.
+    If `skip_empty_folders` is True
 
-    Can recursively call itself to skip through empty folders.
+    :param path:
+    :param start:
+    :param limit:
+    :param tracksortby:
+    :param foldersortby:
+    :param tracksort_reverse:
+    :param foldersort_reverse:
+    :param tracks_only: If True, will only return tracks with no folders
+    :param skip_empty_folders: If True, will call recursively and skip empty folders until >0 supported file found.
+    :returns: List of tracks and folders in that immediate path.
     """
 
     path = pathlib.Path(path)
 
-    if not ( path.exists() and path.is_dir() ):
+    # if file or non-existent
+    if not path.exists() or not path.is_dir():
         return {
             "path": path.as_posix(),
             "tracks": [],
             "folders": [],
+            "total": 0
         }
 
 
@@ -72,7 +86,8 @@ def get_files_and_dirs(
 
         if entry.is_dir() and not entry.stem.startswith("."):
             dirs.append((entry / "").as_posix())
-            # only append as posix for FolderStore, sort_tracks and sort_folder function
+            # only append as posix for FolderStore and sort_folder function
+            # TODO: rework everything to support pathlib
             # add a trailing slash to the folder path
             # to avoid matching a folder starting with the same name as the root path
             # eg. .../Music and .../Music VideosI
@@ -80,7 +95,9 @@ def get_files_and_dirs(
         elif entry.is_file() and ext in SUPPORTED_FILES:
             files.append(entry)
 
+    """
     # sort files by most recent
+    # TODO: rework if realy needed.
     files_with_mtime = []
     for file in files:
         try:
@@ -95,18 +112,20 @@ def get_files_and_dirs(
 
     files_with_mtime.sort(key=lambda f: f["time"])
     files = [f["path"] for f in files_with_mtime]
+    """
 
-
-    # if supported files were found,
-    #
+    # if supported files were found
+    # convert files to tracks
     tracks = []
-    if files:
+    if len(files) > 0:
         if limit == -1:
             limit = len(files)
 
+        # only return tracks already indexed by us
         tracks = list(FolderStore.get_tracks_by_filepaths(files))
         tracks = sort_tracks(tracks, tracksortby, tracksort_reverse)
         tracks = tracks[start : start + limit]
+
 
     folders = []
     if not tracks_only:
