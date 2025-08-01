@@ -11,6 +11,12 @@ def run_fast_scandir(path: str, full=False) -> tuple[list[str], list[str]]:
     """
     Scans a directory for files with a specific extension.
     Returns a list of files and folders in the directory.
+
+    TODO: possible recursion error on link inside link: ``dir/folder1/subfolder1/<link-to-folder1>/subfolder1/...``
+
+    :param path: folder to scan
+    :param full: will call recursively until end of path.
+    :return: (folder:[], files:[])
     """
 
     # filter out unwanted known folders
@@ -63,6 +69,9 @@ def get_home_res_path(filename: str):
     Returns a path to resources in the home directory of this project.
     Used to resolve resources in builds.
     """
+
+    # TODO: used to get client or assets.
+    #   Either copy to config or move inside module?
 
     try:
         swing_modele_path = Path( imres.files("swingmusic") / ".." )

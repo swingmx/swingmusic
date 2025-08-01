@@ -1,7 +1,7 @@
 import os
 from swingmusic.utils.filesystem import get_home_res_path
 
-def getClientFilesExtensions():
+def get_client_files_extensions():
     """
     Get all the file extensions for the client files
     """
