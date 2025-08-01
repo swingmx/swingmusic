@@ -1,4 +1,5 @@
 import gc
+import logging
 from time import time
 from swingmusic.lib.mapstuff import (
     map_album_colors,
@@ -15,6 +16,7 @@ from swingmusic.store.folder import FolderStore
 from swingmusic.store.tracks import TrackStore
 from swingmusic.utils.threading import background
 
+log = logging.getLogger("swingmusic")
 
 @background
 def index_everything():
@@ -38,3 +40,4 @@ def index_everything():
 
     CordinateMedia(instance_key=str(time()))
     gc.collect()
+    log.info("Indexing completed")

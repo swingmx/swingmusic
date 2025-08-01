@@ -1,6 +1,11 @@
 # TMP
 
 * docker builds
+* arm builds
+* Fix singleton global in multiprocessing - own process, own memory, own sys.modules cache
+* rework Trackhash to only hash audio stream and not metadata. <- also removes multiples hashes on same file
+* Publish this on PyPi
+* when selecting Paths returns wrong path and content
 
 
 # TODO

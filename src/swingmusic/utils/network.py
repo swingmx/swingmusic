@@ -18,7 +18,8 @@ def has_connection(host="google.it", port=80, timeout=3):
 
 def get_ip():
     """
-    Returns the IP address of this device.
+    Get the IP address of the current system.
+    Will return address of default outgoing chanel.
     """
     soc = Socket.socket(Socket.AF_INET, Socket.SOCK_DGRAM)
     try:

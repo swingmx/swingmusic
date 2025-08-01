@@ -1,10 +1,10 @@
 import dataclasses
 from dataclasses import dataclass
 
-from .track import Track
-from ..utils.hashing import create_hash
+from swingmusic.models.track import Track
+from swingmusic.utils.hashing import create_hash
 from swingmusic.utils.auth import get_current_userid
-from ..utils.parsers import get_base_title_and_versions
+from swingmusic.utils.parsers import get_base_title_and_versions
 
 
 @dataclass(slots=True)

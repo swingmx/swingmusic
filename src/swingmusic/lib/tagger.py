@@ -16,9 +16,20 @@ from swingmusic.utils import flatten
 from swingmusic.utils.filesystem import run_fast_scandir
 from swingmusic.utils.parsers import get_base_album_title
 from swingmusic.utils.progressbar import tqdm
-
-from swingmusic.logger import log
 from swingmusic.utils.remove_duplicates import remove_duplicates
+
+
+from logging import getLogger
+log = getLogger("swingmusic")
+
+
+def parse_file_tags(file: str, config: UserConfig) -> dict | None:
+    """Worker function to process individual files"""
+    try:
+        return get_tags(file, config=config)
+    except Exception as e:
+        log.warning(f"Failed to process file {file}: {e}")
+        return None
 
 
 class IndexTracks:
@@ -67,7 +78,7 @@ class IndexTracks:
         for track in tracks:
             try:
                 extract_thumb(
-                    track["filepath"], track["albumhash"] + ".webp", overwrite=True
+                    track["filepath"], track["albumhash"] + ".webp", overwrite=True, paths=settings.Paths()
                 )
             except FileNotFoundError:
                 continue
@@ -115,21 +126,13 @@ class IndexTracks:
 
         return unmodified_paths, modified_tracks
 
-    @staticmethod
-    def _process_file(file: str, config: UserConfig) -> dict | None:
-        """Worker function to process individual files"""
-        try:
-            return get_tags(file, config=config)
-        except Exception as e:
-            log.warning(f"Failed to process file {file}: {e}")
-            return None
 
     def tag_untagged(self, files: set[str]):
         config = UserConfig()
 
         # Create process pool with worker function
         with Pool(processes=max(1, cpu_count() // 2)) as pool:
-            worker = partial(self._process_file, config=config)
+            worker = partial(parse_file_tags, config=config)
 
             # Process files and track progress
             results = []
@@ -149,6 +152,11 @@ class IndexTracks:
         print(f"{len(results)} new files indexed")
         print("Done")
 
+
+
+#
+# Create functions
+#
 
 def create_albums(_trackhashes: list[str] = []) -> list[tuple[Album, set[str]]]:
     """
@@ -225,9 +233,7 @@ def create_albums(_trackhashes: list[str] = []) -> list[tuple[Album, set[str]]]:
     return list(albums.values())
 
 
-def create_artists(
-    artisthashes: list[str] = [],
-) -> list[tuple[Artist, set[str], set[str]]]:
+def create_artists( artisthashes: list[str]) -> list[tuple[Artist, set[str], set[str]]]:
     """
     Creates artist objects using the indexed tracks. Takes in an optional
     list of artisthashes to create the artists from. If no list is provided,
@@ -239,6 +245,7 @@ def create_artists(
 
     >>> list[tuple[Artist, set[str], set[str]]]
     """
+
     if artisthashes:
         all_tracks: list[Track] = flatten(
             [TrackStore.get_tracks_by_artisthash(hash) for hash in artisthashes]

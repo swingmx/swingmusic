@@ -115,7 +115,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: Pyinstaller-${{ matrix.os }}
-          path: ./dist/*
+          path: ./dist/swingmusic_*
           compression-level: 0
 
   upload-builds:
@@ -133,6 +133,7 @@ jobs:
       - name: compress client
         run: |
           zip -r client.zip client
+          rm -r client
 
       - name: Download wheel artifacts
         uses: actions/download-artifact@v4
