@@ -9,8 +9,11 @@ import pathlib
 import shutil
 from pathlib import Path
 import os
+import logging
+
 from swingmusic.utils.filesystem import get_home_res_path
 
+log = logging.getLogger("swingmusic")
 
 # # # # # # # # #
 #  Meta-classes  #
@@ -188,18 +191,21 @@ class Paths(metaclass=Singleton):
 
         assets_dir = get_home_res_path("assets")
 
-        src = Path(".").resolve() / assets_dir
+        src = assets_dir
         dest = (self.app_dir / "assets").resolve()
 
-        shutil.copytree(
-            src,
-            dest,
-            ignore=shutil.ignore_patterns(
-                "*.pyc",
-            ),
-            copy_function=shutil.copy2,
-            dirs_exist_ok=True,
-        )
+        if src.exists():
+            shutil.copytree(
+                src,
+                dest,
+                ignore=shutil.ignore_patterns(
+                    "*.pyc",
+                ),
+                copy_function=shutil.copy2,
+                dirs_exist_ok=True,
+            )
+        else:
+            log.warning(f"Assets dir could not be found: {src.as_posix()}")
 
 
     @property

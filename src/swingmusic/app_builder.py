@@ -13,7 +13,8 @@ from swingmusic import api as swing_api
 from swingmusic.config import UserConfig
 from swingmusic.db.userdata import UserTable
 from swingmusic.utils.filesystem import get_home_res_path
-from swingmusic.utils.paths import getClientFilesExtensions
+from swingmusic.utils.paths import get_client_files_extensions
+
 from swingmusic.api.plugins import lyrics as lyrics_plugin
 from swingmusic.api.plugins import mixes as mixes_plugin
 
@@ -127,7 +128,7 @@ def check_auth_need() -> bool:
     files = {
         ".webp",
         ".jpg",
-        *getClientFilesExtensions()
+        *get_client_files_extensions()
     }
 
     # convert from no double to tuple
