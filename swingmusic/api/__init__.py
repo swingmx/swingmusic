@@ -34,6 +34,8 @@ from swingmusic.api import (
     auth,
     stream,
     backup_and_restore,
+    albumartist,  # Added this line
+
 )
 
 # TODO: Move this description to a separate file
@@ -113,6 +115,8 @@ def create_api():
         app.register_api(lyrics.api)
         app.register_api(backup_and_restore.api)
         app.register_api(collections.api)
+        app.register_api(albumartist.api)  # Added this line
+
         # Plugins
         app.register_api(plugins.api)
         app.register_api(lyrics_plugin.api)
