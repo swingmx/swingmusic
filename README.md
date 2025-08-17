@@ -1,9 +1,9 @@
 <div align="center" style="display: flex; justify-content: center; align-items: center;">
   <img class="lo" src='.github/images/logo-fill.light.svg' style="height: 4rem">
 </div>
-<div align="center" style="font-size: 2rem"><b>Swing Music</b></div>
+<div align="center" style="font-size: 2rem"><b>Swing Music Android Client</b></div>
 
-<!-- <div align="center"><b><sub><code>v2.0.3</code></sub></b></div> -->
+<div align="center"><b><sub><code>v2.0.9</code></sub></b></div>
  
 **<div align="center" style="padding-top: 1.25rem">[Download](https://swingmx.com/downloads) • [Get Android Client](https://github.com/swingmx/android) •  <a href="https://github.com/sponsors/swingmx" target="_blank">Support Development</a> • [Docs](https://swingmx.com/guide/introduction.html) • [Screenshots](https://swingmx.com) • [r/SwingMusicApp](https://www.reddit.com/r/SwingMusicApp)</div>**
 
@@ -173,7 +173,7 @@ uv run python run.py
 
 ### License
 
-This software is provided to you with terms stated in the [AGPLv3 License](https://github.com/swingmx/swingmusic/blob/master/LICENSE) or any later version.
+This software is provided to you with terms stated in the [AGPLv3 License](https://github.com/swingmx/swingmusic/blob/master/LICENSE) or any later version. Read the full text in the `LICENSE` file located at the root of this repository.
 
 ### Contributors
 
