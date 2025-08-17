@@ -1,7 +1,7 @@
 <div align="center" style="display: flex; justify-content: center; align-items: center;">
   <img class="lo" src='.github/images/logo-fill.light.svg' style="height: 4rem">
 </div>
-<div align="center" style="font-size: 2rem"><b>Swing Music Android Client</b></div>
+<div align="center" style="font-size: 2rem"><b>Swing Music</b></div>
 
 <div align="center"><b><sub><code>v2.0.9</code></sub></b></div>
  
