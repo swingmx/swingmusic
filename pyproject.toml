@@ -37,9 +37,13 @@ dependencies = [
     "rapidfuzz==3.11.0",
     "pendulum>=3.0.0",
     "pystray>=0.19.5",
-    "pyinstaller==6.12.0",
     "waitress>=3.0.2; sys_platform == 'win32'",
     "bjoern >=3.2.2; sys_platform != 'win32'"
+]
+
+[project.optional-dependencies]
+build = [
+    "pyinstaller"
 ]
 
 [tool.uv]

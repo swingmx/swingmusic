@@ -1,0 +1,1 @@
+cd src && exec {{ python-executable }} -m swingmusic "$@"
