@@ -13,7 +13,7 @@ import logging
 
 from swingmusic.utils.filesystem import get_home_res_path
 
-log = logging.getLogger("swingmusic")
+log = logging.getLogger(__name__)
 
 # # # # # # # # #
 #  Meta-classes  #

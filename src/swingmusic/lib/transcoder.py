@@ -41,12 +41,9 @@ def start_transcoding(
         "-compression_level",
         str(compression_level),
         # REVIEW: Idk what any flag below this point does!
-        "-movflags",
-        "faststart+frag_keyframe+empty_moov",
-        "-write_xing",
-        "0",
-        "-fflags",
-        "+bitexact",
+        "-movflags", "faststart+frag_keyframe+empty_moov", # TODO. specify fragment size
+        "-write_xing", "0", # ffmpeg.org/ffmpeg-formats.html
+        "-fflags", "+bitexact", #
     ]
 
     # Add format-specific parameters

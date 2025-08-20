@@ -8,7 +8,7 @@ from swingmusic.serializers.track import serialize_tracks
 from swingmusic.utils.filesystem import SUPPORTED_FILES
 from swingmusic.store.folder import FolderStore
 
-log = logging.getLogger("swingmusic")
+log = logging.getLogger(__name__)
 
 def create_folder(path: str, trackcount=0) -> Folder:
     """

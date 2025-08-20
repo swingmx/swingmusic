@@ -212,5 +212,5 @@ def setup_logger(debug=False):
     logging.config.dictConfig(CONFIG)
 
     global log
-    log = logging.getLogger("swingmusic")
+    log = logging.getLogger(__name__)
     log.info("setup successfully")

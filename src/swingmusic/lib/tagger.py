@@ -20,7 +20,7 @@ from swingmusic.utils.remove_duplicates import remove_duplicates
 
 
 from logging import getLogger
-log = getLogger("swingmusic")
+log = getLogger(__name__)
 
 
 def parse_file_tags(file: str, config: UserConfig) -> dict | None:

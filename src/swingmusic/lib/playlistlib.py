@@ -11,7 +11,7 @@ from swingmusic.models.track import Track
 from swingmusic.store.albums import AlbumStore
 from swingmusic.store.tracks import TrackStore
 
-logger = logging.getLogger("swingmusic")
+logger = logging.getLogger(__name__)
 
 def create_thumbnail(image: Image, img_name: str) -> str:
     """

@@ -2,20 +2,13 @@
 This library contains all the functions related to the search functionality.
 """
 
-from typing import Any, Generator, List, TypeVar
-
 from rapidfuzz import process, utils, fuzz
 from unidecode import unidecode
 
 from swingmusic import models
-from swingmusic.config import UserConfig
 
-# from swingmusic.db.libdata import AlbumTable, ArtistTable, TrackTable
-
-# from swingmusic.db.sqlite.favorite import SQLiteFavoriteMethods as favdb
 from swingmusic.models.album import Album
 from swingmusic.models.artist import Artist
-from swingmusic.models.enums import FavType
 from swingmusic.models.playlist import Playlist
 from swingmusic.models.track import Track
 from swingmusic.serializers.album import serialize_for_card as serialize_album
@@ -60,7 +53,7 @@ class SearchTracks:
         self.query = query
         self.tracks = TrackStore.get_flat_list()
 
-    def __call__(self, limit: int = Limit.tracks) -> List[models.Track]:
+    def __call__(self, limit: int = Limit.tracks) -> list[models.Track]:
         """
         Gets all songs with a given title.
         """
@@ -147,7 +140,7 @@ class SearchAlbums:
 
 
 class SearchPlaylists:
-    def __init__(self, playlists: List[models.Playlist], query: str) -> None:
+    def __init__(self, playlists: list[models.Playlist], query: str) -> None:
         self.playlists = playlists
         self.query = query
 

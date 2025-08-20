@@ -16,7 +16,7 @@ from swingmusic.store.folder import FolderStore
 from swingmusic.store.tracks import TrackStore
 from swingmusic.utils.threading import background
 
-log = logging.getLogger("swingmusic")
+log = logging.getLogger(__name__)
 
 @background
 def index_everything():

@@ -145,6 +145,12 @@ def get_folder_tree(body: FolderTree):
             "path": req_dir,
         }
 
+    # TODO: currently only fixed on unix. Windows/Mac still pending.
+    # note
+
+    if not pathlib.Path(req_dir).exists():
+        req_dir = "/" + req_dir
+
     results = get_files_and_dirs(
         pathlib.Path(req_dir),
         start=body.start,
