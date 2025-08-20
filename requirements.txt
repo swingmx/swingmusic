@@ -24,4 +24,6 @@ flask-openapi3==3.0.2
 rapidfuzz==3.11.0
 pendulum>=3.0.0
 pystray>=0.19.5
-bjoern==3.2.2
+#waitress==3.0.2; sys_platform == 'win32'
+bjoern>=3.2.2 #; sys_platform != 'win32' fix for appimage.
+              # When installing with pip, system dependent are still resolved

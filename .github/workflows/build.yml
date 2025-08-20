@@ -6,6 +6,8 @@ on:
       - prereleased
       - released
 
+env:
+  PIP_USE_PEP517: true
 
 jobs:
   build-client:
