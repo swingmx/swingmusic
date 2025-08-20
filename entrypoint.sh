@@ -1,1 +1,1 @@
-cd src && exec {{ python-executable }} -m swingmusic "$@"
+exec {{ python-executable }} -m swingmusic "$@"
