@@ -57,7 +57,7 @@ jobs:
           python-version: '3.11'
 
       - name: Build wheels
-        run: pip wheel . -w wheelhouse --no-deps
+        run: pip wheel .[build] -w wheelhouse --no-deps
 
       - uses: actions/upload-artifact@v4
         with:
@@ -81,9 +81,7 @@ jobs:
           python-version: '3.11'
 
       - name: Install libev (Linux)
-        if: ${{ startsWith(matrix.os, 'ubuntu') }}
-        run: |
-          sudo apt-get install libev-dev -y > /dev/null
+        run: sudo apt-get install libev-dev -y > /dev/null
 
       - name: Install appimage builder
         run: pip install python-appimage
