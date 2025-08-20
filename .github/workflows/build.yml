@@ -59,7 +59,7 @@ jobs:
           python-version: '3.11'
 
       - name: Build wheels
-        run: pip wheel .[build] -w wheelhouse --no-deps
+        run: pip wheel . -w wheelhouse --no-deps
 
       - uses: actions/upload-artifact@v4
         with:
@@ -136,7 +136,7 @@ jobs:
 
       - name: Install swingmusic
         run: | 
-          pip install --find-links=wheels/ swingmusic
+          pip install --find-links=wheels/ swingmusic[build]
 
       - name: Build with Pyinstaller on ${{ matrix.os }}
         run: pyinstaller swingmusic.spec
