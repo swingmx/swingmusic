@@ -66,31 +66,31 @@ jobs:
           compression-level: 0
           name: 'wheels'
 
-  #build-appimage:
-  #  name: Build Appimage
-  #  runs-on: ubuntu-latest
-  #
-  #  steps:
-  #    - name: Checkout swingmusic
-  #      uses: actions/checkout@v4
-  #      with:
-  #        fetch-depth: 0
-  #
-  #    - uses: actions/setup-python@v5
-  #      with:
-  #        python-version: '3.11'
-  #
-  #    - name: Install appimage builder
-  #      run: pip install python-appimage
-  #
-  #    - name: Build appimage
-  #      run: python-appimage build app -p 3.11 .
-  #
-  #    - uses: actions/upload-artifact@v4
-  #      with:
-  #        path: ./*.AppImage
-  #        compression-level: 0
-  #        name: 'appimage'
+  build-appimage:
+    name: Build Appimage
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout swingmusic
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install appimage builder
+        run: pip install python-appimage
+
+      - name: Build appimage
+        run: python-appimage build app -p 3.11 .
+
+      - uses: actions/upload-artifact@v4
+        with:
+          path: ./*.AppImage
+          compression-level: 0
+          name: 'appimage'
 
   build-pyinstaller:
     name: Build binary on ${{ matrix.os }}

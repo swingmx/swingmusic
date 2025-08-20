@@ -24,4 +24,4 @@ flask-openapi3==3.0.2
 rapidfuzz==3.11.0
 pendulum>=3.0.0
 pystray>=0.19.5
-bjoern >=3.2.2
+bjoern==3.2.2
