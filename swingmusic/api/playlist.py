@@ -167,6 +167,30 @@ class AddItemToPlaylistBody(BaseModel):
     )
     itemhash: str = Field(..., description="The hash of the item to add")
 
+class ReorderPlaylistBody(BaseModel):
+    trackhashes: list[str] = Field(
+        ...,
+        description="A list of track hashes in the new order",
+        example=["trackhash1", "trackhash2", "trackhash3"],
+    )
+
+@api.post("/<playlistid>/reorder")
+def reorder_playlist(path: PlaylistIDPath, body: ReorderPlaylistBody):
+    """
+    Reorder playlist.
+
+    The body should be a list of track hashes in the new order.
+    """
+    playlist_id = path.playlistid
+    trackhashes = body.trackhashes
+
+    print(f"Reordering playlist {playlist_id} with track hashes: {trackhashes}")
+
+    if not isinstance(trackhashes, list):
+        return {"error": "Invalid request body"}, 400
+
+    PlaylistTable.reorder_playlist(int(playlist_id), trackhashes)
+    return {"msg": "Done"}, 200
 
 @api.post("/<playlistid>/add")
 def add_item_to_playlist(path: PlaylistIDPath, body: AddItemToPlaylistBody):
