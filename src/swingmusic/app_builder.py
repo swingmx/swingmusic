@@ -18,7 +18,7 @@ from swingmusic.utils.paths import get_client_files_extensions
 from swingmusic.api.plugins import lyrics as lyrics_plugin
 from swingmusic.api.plugins import mixes as mixes_plugin
 
-
+log = logging.getLogger(__name__)
 # # # # # # # # # # # # # # # # # #
 # Grouped configuration function  #
 # # # # # # # # # # # # # # # # # #
@@ -198,6 +198,7 @@ def build() -> OpenAPI:
 
     # set late state config
     app.static_folder = get_home_res_path("client")
+    log.info(f"Serving client from {app.static_folder}")
 
     @app.before_request
     def verify_auth():
