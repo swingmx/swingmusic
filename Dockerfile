@@ -14,25 +14,23 @@ RUN yarn build
 FROM python:3.11-slim
 WORKDIR /app/swingmusic
 
+# TODO: optimise and use wheel from releases while building?
 # Copy the files in the current dir into the container
 COPY . .
 
 COPY --from=CLIENT /client/dist/ client
 
+
+LABEL "author"="swing music"
 EXPOSE 1970/tcp
-
 VOLUME /music
-
 VOLUME /config
 
-RUN apt-get update && apt-get install -y gcc libev-dev python3-dev -y ffmpeg libavcodec-extra gcc-aarch64-linux-gnu && \
+RUN apt-get update && apt-get install -y gcc git libev-dev python3-dev -y ffmpeg libavcodec-extra && \
 apt-get clean && \
 rm -rf /var/lib/apt/lists/*
 
 RUN --mount=source=.git,target=.git,type=bind \
     pip install --no-cache-dir .
-
-RUN pip install bjoern
-
 
 ENTRYPOINT ["python", "-m", "swingmusic", "--host", "0.0.0.0", "--config", "/config"]

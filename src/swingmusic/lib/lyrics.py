@@ -138,11 +138,11 @@ class Lyrics:
         "al": "album",
         "au": "author",
         "lr": "lyricist",
-        "length": "lenght",
+        "length": "length",
         "by": "lrc_author",
         "offset": "offset",
         "re": "recorder",
-        "tool": "recorder",
+        "tool": "tool",
         "ve": "version"
     }
 
