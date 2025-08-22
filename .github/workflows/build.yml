@@ -96,7 +96,7 @@ jobs:
           path: swingmusic/src/client
 
       - name: Build appimage
-        run: python-appimage build app -p 3.11 . -x . -n swingmusic
+        run: python-appimage build app -p 3.11 appimage/ -x . -n swingmusic
 
       - uses: actions/upload-artifact@v4
         with:
