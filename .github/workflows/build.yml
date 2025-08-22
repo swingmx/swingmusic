@@ -83,8 +83,8 @@ jobs:
         with:
           python-version: '3.11'
 
-      - name: Install libev (Linux)
-        run: sudo apt-get install libev-dev -y > /dev/null
+      - name: Install linux dependencies
+        run: sudo apt-get install libev-dev libfuse-dev -y > /dev/null
 
       - name: Install appimage builder
         run: |

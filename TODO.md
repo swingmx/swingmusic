@@ -5,6 +5,7 @@
 * Auto update WebUI
 * UI - Remove https from index.html for http support
 * UI should resolve into config dir <- for auto update -> update all build files with this change
+* UI could use continues build like https://github.com/AppImage/AppImageKit/releases/download/continuous/
 
 * AppImage build is currently broken view [python-appimage: Issues 95](https://github.com/niess/python-appimage/issues/94)
 
