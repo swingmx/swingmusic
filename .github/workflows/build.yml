@@ -81,17 +81,17 @@ jobs:
       - name: Install linux dependencies
         run: sudo apt-get install libev-dev libfuse-dev -y > /dev/null
 
-      - name: Install appimage builder
-        run: |
-          pip install python-appimage
-          wget -nv -c https://github.com/AppImage/AppImageKit/releases/download/continuous/appimagetool-x86_64.AppImage
-          chmod +x appimagetool-x86_64.AppImage
-
       - name: Checkout swingmusic
         uses: actions/checkout@v5
         with:
           fetch-depth: 0
           sparse-checkout: appimage
+
+      - name: Install appimage builder
+        run: |
+          pip install python-appimage
+          wget -nv -c https://github.com/AppImage/AppImageKit/releases/download/continuous/appimagetool-x86_64.AppImage
+          chmod +x appimagetool-x86_64.AppImage
 
       - name: Download client artifact
         uses: actions/download-artifact@v4
@@ -109,6 +109,7 @@ jobs:
         run: |
           python-appimage build app -p 3.11 appimage/ -n "appimage-x86_64" --no-packaging
           pip install --target "appimage-x86_64/opt/python3.11/lib/python3.11/" --no-deps --find-links=wheels/ swingmusic
+          ls
           ./appimagetool-x86_64.AppImage --no-appstream "appimage-x86_64/" "swingmusic-${{github.ref_name}}-x86_64.AppImage"
 
       - uses: actions/upload-artifact@v4
