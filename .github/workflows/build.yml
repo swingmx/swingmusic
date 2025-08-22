@@ -87,16 +87,28 @@ jobs:
         run: sudo apt-get install libev-dev -y > /dev/null
 
       - name: Install appimage builder
-        run: pip install python-appimage
+        run: |
+          pip install python-appimage
+          wget -nv -c https://github.com/AppImage/AppImageKit/releases/download/continuous/appimagetool-x86_64.AppImage
+          chmod +x appimagetool-x86_64.AppImage
 
       - name: Download client artifact
         uses: actions/download-artifact@v4
         with:
           name: client
-          path: swingmusic/src/client
+          path: client
+
+      - name: Download wheel artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: wheels
+          path: wheels
 
       - name: Build appimage
-        run: python-appimage build app -p 3.11 appimage/ -x . -n swingmusic
+        run: |
+          python-appimage build app -p 3.11 appimage/ -x . -n swingmusic --no-packaging
+          pip install --target swingmusic-x86_64/opt/python3.11/ --no-deps .
+          ./appimagetool-x86_64.AppImage --no-appstream swingmusic-x86_64/ swingmusic-${{github.ref_name}}-x86_64.AppImage
 
       - uses: actions/upload-artifact@v4
         with:

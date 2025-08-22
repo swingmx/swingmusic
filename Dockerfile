@@ -12,7 +12,7 @@ EXPOSE 1970/tcp
 VOLUME /music
 VOLUME /config
 
-RUN apt-get update && apt-get install -y gcc git libev-dev python3-dev -y ffmpeg libavcodec-extra && \
+RUN apt-get update && apt-get install -y gcc git libev-dev python3-dev ffmpeg libavcodec-extra && \
 apt-get clean && \
 rm -rf /var/lib/apt/lists/*
 

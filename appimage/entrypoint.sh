@@ -1,1 +1,1 @@
-cd "${APPDIR}/swingmusic/src" && exec "${APPDIR}/usr/bin/python" -m swingmusic "$@"
+exec "${APPDIR}/usr/bin/python" -m swingmusic --client "${APPDIR}/client" "$@"

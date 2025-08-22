@@ -1,8 +1,12 @@
 # TMP
 
-* UI - Remove https from index.html for http support
-* AppImage build is currently broken view [python-appimage: Issues 95](https://github.com/niess/python-appimage/issues/94)
 
+## UI
+* Auto update WebUI
+* UI - Remove https from index.html for http support
+* UI should resolve into config dir <- for auto update -> update all build files with this change
+
+* AppImage build is currently broken view [python-appimage: Issues 95](https://github.com/niess/python-appimage/issues/94)
 
 * Assets should either move to UI or inside the project. Importlib cannot securely resolve this path if it is not inside the src dir.
 * arm builds
@@ -11,8 +15,6 @@
 
 * Multiprocessing creates new paths - sync between processes.
 * Fix singleton global in multiprocessing - own process, own memory, own sys.modules cache
-* Auto update WebUI
-* let UI folder be settable by user
 
 # TODO
 
