@@ -1,12 +1,16 @@
 # TMP
 
+* UI - Remove https from index.html for http support
+
 * docker builds
 * arm builds
-* Fix singleton global in multiprocessing - own process, own memory, own sys.modules cache
-* rework Trackhash to only hash audio stream and not metadata. <- also removes multiples hashes on same file
+* Rework parsing to only support tags and fall back only when enabled and set to parsing with name/path. see Telegram
 * Publish this on PyPi
-* when selecting Paths returns wrong path and content
 
+* Multiprocessing creates new paths - sync between processes.
+* Fix singleton global in multiprocessing - own process, own memory, own sys.modules cache
+* Auto update WebUI
+* let UI folder be settable by user
 
 # TODO
 

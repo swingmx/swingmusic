@@ -26,6 +26,6 @@ def start_cron_jobs():
     schedule.run_all()
 
     # Run all CRON jobs on a loop.
-    while False:
+    while True:
         schedule.run_pending()
         time.sleep(1)
