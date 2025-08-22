@@ -1,8 +1,9 @@
 [Desktop Entry]
 Type=Application
 Name=swingmusic
+GenericName=Music player
 Exec=swingmusic
 Comment=A Music Server running on {{ python-fullversion }}
 Icon=swingmusic
-Categories=Music;
-Terminal=false
+Categories=AudioVideo;Music;
+Terminal=true

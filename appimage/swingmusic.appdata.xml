@@ -1,16 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <component type="desktop-application">
-    <id>swingmusic</id>
-    <metadata_license>MIT</metadata_license>
-    <project_license>Python-3.11</project_license>
-    <name>Swing Music</name>
-    <summary>A Python {{ python-fullversion }} runtime with {{ requirements }}</summary>
-    <description>
-        <p></p>
-    </description>
-    <launchable type="desktop-id">swingmusic.desktop</launchable>
-    <url type="homepage">todo</url>
-    <provides>
-        <binary>python{{ python-version }}</binary>
-    </provides>
+	<id>swingmusic</id>
+	<metadata_license>MIT</metadata_license>
+	<project_license>AGPL-3.0</project_license>
+	<name>Swing Music</name>
+	<summary>Music server for your files running on Python {{ python-fullversion }}</summary>
+	<description>
+		<p>
+            Swing Music is a fast and beautiful, self-hosted music player for your local audio files.
+            Like a cooler Spotify ... but bring your own music.
+            Just run the app and enjoy your music library in a web browser.
+        </p>
+	</description>
+	<launchable type="desktop-id">swingmusic.desktop</launchable>
+	<url type="homepage">https://swingmx.com/</url>
+	<screenshots>
+		<screenshot type="default">
+			<image>https://raw.githubusercontent.com/swing-opensource/swingmusic/master/.github/images/artist.webp</image>
+		</screenshot>
+	</screenshots>
+	<provides>
+		<id>swingmusic.desktop</id>
+	</provides>
 </component>
