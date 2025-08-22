@@ -1,1 +1,0 @@
-exec {{ python-executable }} -m swingmusic "$@"

@@ -68,39 +68,46 @@ jobs:
           compression-level: 0
           name: 'wheels'
 
-  #build-appimage:
-  #  name: Build Appimage
-  #  runs-on: ubuntu-latest
-  #
-  #  steps:
-  #    - name: Checkout swingmusic
-  #      uses: actions/checkout@v4
-  #      with:
-  #        fetch-depth: 0
-  #
-  #    - uses: actions/setup-python@v5
-  #      with:
-  #        python-version: '3.11'
-  #
-  #    - name: Install libev (Linux)
-  #      run: sudo apt-get install libev-dev -y > /dev/null
-  #
-  #    - name: Install appimage builder
-  #      run: pip install python-appimage
-  #
-  #    - name: Build appimage
-  #      run: python-appimage build app -p 3.11 .
-  #
-  #    - uses: actions/upload-artifact@v4
-  #      with:
-  #        path: ./*.AppImage
-  #        compression-level: 0
-  #        name: 'appimage'
+  build-appimage:
+    name: Build Appimage
+    runs-on: ubuntu-latest
+    needs: [ build-client ]
+
+    steps:
+      - name: Checkout swingmusic
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install libev (Linux)
+        run: sudo apt-get install libev-dev -y > /dev/null
+
+      - name: Install appimage builder
+        run: pip install python-appimage
+
+      - name: Download client artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: client
+          path: swingmusic/src/client
+
+      - name: Build appimage
+        run: python-appimage build app -p 3.11 . -x . -n swingmusic
+
+      - uses: actions/upload-artifact@v4
+        with:
+          path: ./*.AppImage
+          compression-level: 0
+          name: 'appimage'
 
   docker:
     name: Build and push Docker image
     runs-on: ubuntu-latest
-    needs: [build-client, build-wheels]
+    needs: [ build-client, build-wheels ]
     permissions: write-all
 
     steps:
@@ -141,7 +148,7 @@ jobs:
   build-pyinstaller:
     name: Build binary on ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
-    needs: [build-client, build-wheels]
+    needs: [ build-client, build-wheels ]
 
     strategy:
       fail-fast: false
@@ -176,7 +183,7 @@ jobs:
           sudo apt-get install libev-dev -y > /dev/null
 
       - name: Install swingmusic
-        run: | 
+        run: |
           pip install --find-links=wheels/ swingmusic[build]
 
       - name: Build with Pyinstaller on ${{ matrix.os }}
@@ -192,7 +199,7 @@ jobs:
   upload-builds:
     name: Uploading builds to release
     runs-on: ubuntu-latest
-    needs: [build-client, build-wheels, build-pyinstaller, build-appimage]
+    needs: [ build-client, build-wheels, build-pyinstaller, build-appimage ]
 
     steps:
       - name: Download client artifact
@@ -219,6 +226,13 @@ jobs:
           path: pyinstaller
           merge-multiple: true
 
+      - name: Download AppImages build
+        uses: actions/download-artifact@v4
+        with:
+          pattern: AppImage-*
+          path: appimage
+          merge-multiple: true
+
       - name: Upload artifacts to GitHub Release
         uses: softprops/action-gh-release@v2
         with:
@@ -226,3 +240,4 @@ jobs:
             client.zip
             wheels/**
             pyinstaller/**
+            appimage/**

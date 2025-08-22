@@ -1,6 +1,7 @@
 # TMP
 
 * UI - Remove https from index.html for http support
+* AppImage build is currently broken view [python-appimage: Issues 95](https://github.com/niess/python-appimage/issues/94)
 
 * docker builds
 * arm builds
