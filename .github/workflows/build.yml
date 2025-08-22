@@ -112,7 +112,7 @@ jobs:
 
       - uses: actions/upload-artifact@v4
         with:
-          path: ./*.AppImage
+          path: ./swing*.AppImage
           compression-level: 0
           name: 'appimage'
 
