@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=swingmusic
+Exec=swingmusic
+Comment=A Music Server running on {{ python-fullversion }}
+Icon=swingmusic
+Categories=Music;
+Terminal=false

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop-application">
+    <id>swingmusic</id>
+    <metadata_license>MIT</metadata_license>
+    <project_license>Python-3.11</project_license>
+    <name>Swing Music</name>
+    <summary>A Python {{ python-fullversion }} runtime with {{ requirements }}</summary>
+    <description>
+        <p></p>
+    </description>
+    <launchable type="desktop-id">swingmusic.desktop</launchable>
+    <url type="homepage">todo</url>
+    <provides>
+        <binary>python{{ python-version }}</binary>
+    </provides>
+</component>
