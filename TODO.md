@@ -7,7 +7,9 @@
 * UI should resolve into config dir <- for auto update -> update all build files with this change
 * UI could use continues build like https://github.com/AppImage/AppImageKit/releases/download/continuous/
 
+## Building:
 * AppImage build is currently broken view [python-appimage: Issues 95](https://github.com/niess/python-appimage/issues/94)
+* AppImage contains entire dict should not need to.
 
 * Assets should either move to UI or inside the project. Importlib cannot securely resolve this path if it is not inside the src dir.
 * arm builds

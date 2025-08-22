@@ -37,3 +37,4 @@ nohup.out
 
 .DS_Store
 *.egg-info
+/wheels/
