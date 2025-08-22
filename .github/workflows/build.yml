@@ -229,7 +229,7 @@ jobs:
       - name: Download AppImages build
         uses: actions/download-artifact@v4
         with:
-          pattern: AppImage-*
+          pattern: appimage*
           path: appimage
           merge-multiple: true
 
