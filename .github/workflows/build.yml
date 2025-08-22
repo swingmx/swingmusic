@@ -78,6 +78,13 @@ jobs:
         with:
           python-version: '3.11'
 
+      - name: Checkout swingmusic
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+          sparse-checkout: appimage
+          path: swing
+
       - name: Install linux dependencies
         run: sudo apt-get install libev-dev libfuse-dev -y > /dev/null
 
@@ -101,9 +108,9 @@ jobs:
 
       - name: Build appimage
         run: |
-          python-appimage build app -p 3.11 appimage/ -x . -n swingmusic --no-packaging
-          pip install --target "swingmusic-x86_64/opt/python3.11/lib/python3.11/" --no-deps --find-links=wheels/ swingmusic
-          ./appimagetool-x86_64.AppImage --no-appstream "swingmusic-x86_64/" "swingmusic-${{github.ref_name}}-x86_64.AppImage"
+          python-appimage build app -p 3.11 swing/appimage/ -n "appimage-x86_64" --no-packaging
+          pip install --target "appimage-x86_64/opt/python3.11/lib/python3.11/" --no-deps --find-links=wheels/ swingmusic
+          ./appimagetool-x86_64.AppImage --no-appstream "appimage-x86_64/" "swingmusic-${{github.ref_name}}-x86_64.AppImage"
 
       - uses: actions/upload-artifact@v4
         with:
