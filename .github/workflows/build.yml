@@ -105,14 +105,9 @@ jobs:
           name: wheels
           path: wheels
 
-      - name: Debug
-        run: |
-          sudo apt-get install tree -y > /dev/null
-          tree
-
       - name: Build appimage
         run: |
-          python-appimage build app -p 3.11 swing/appimage/ -n "appimage-x86_64" --no-packaging
+          python-appimage build app -p 3.11 appimage/ -n "appimage-x86_64" --no-packaging
           pip install --target "appimage-x86_64/opt/python3.11/lib/python3.11/" --no-deps --find-links=wheels/ swingmusic
           ./appimagetool-x86_64.AppImage --no-appstream "appimage-x86_64/" "swingmusic-${{github.ref_name}}-x86_64.AppImage"
 
