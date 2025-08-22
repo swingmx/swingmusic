@@ -3,7 +3,8 @@
 * UI - Remove https from index.html for http support
 * AppImage build is currently broken view [python-appimage: Issues 95](https://github.com/niess/python-appimage/issues/94)
 
-* docker builds
+
+* Assets should either move to UI or inside the project. Importlib cannot securely resolve this path if it is not inside the src dir.
 * arm builds
 * Rework parsing to only support tags and fall back only when enabled and set to parsing with name/path. see Telegram
 * Publish this on PyPi
