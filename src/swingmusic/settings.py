@@ -10,6 +10,7 @@ import shutil
 from pathlib import Path
 import os
 import logging
+import importlib.resources as imres
 
 from swingmusic.utils.filesystem import get_home_res_path
 
@@ -88,20 +89,30 @@ class Paths(metaclass=Singleton):
     USER_DATA_DB_NAME = "userdata.db"
 
 
-    def __init__(self, base_path:Path=None):
+    def __init__(self, base_path:Path=None, client_path:Path=None):
         """
         Create config-folder structure and check permissions.
         Copy all assets if needed.
 
         :param self: Own object
-        :param base_path: Parent path of ``swingmusic``s config path
+        :param base_path: Parent path of ``swingmusic``s config path.
+        :param client_path: Path to static Web client folder.
         """
 
         """
         Returns the XDG_CONFIG_HOME environment variable if it exists, otherwise
         returns the default config directory. If none of those exist, returns the
         user's home directory.
+        
+        
         """
+
+        if client_path is not None:
+            self.client_path = client_path
+        else:
+            self.client_path = Path(imres.files("swingmusic") / "..") / "client"
+
+        self.client_path = self.client_path.resolve()
 
         if base_path is not None:
             self.base_path = base_path
@@ -109,6 +120,7 @@ class Paths(metaclass=Singleton):
             self.base_path = default_base_path()
 
         self.mkdir_config_folders()
+        self.copy_assets_dir()
 
         # set global easier access?
         global paths

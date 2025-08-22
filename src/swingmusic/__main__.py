@@ -70,6 +70,11 @@ parser.add_argument(
     help="Path to the config file.",
     type=pathlib.Path
 )
+parser.add_argument(
+    "--client",
+    help="Path to the Web UI folder.",
+    type=pathlib.Path
+)
 
 tools = parser.add_argument_group(
     title="Tools"
@@ -97,15 +102,12 @@ def run(*args, **kwargs):
             host=args["host"],
             port=args["port"],
             debug=args["debug"],
-            base_path=args["config"]
+            base_path=args["config"],
+            client=args["client"]
         )
 
 
 if __name__ == "__main__":
-    # only fork on windows.
-    # or else all globals revert to default
-    # windows multiprocessing is currently buggy
     # TODO: find a platform independent way to access module globals like `Paths`
-    # if platform.system() == "Windows":
     multiprocessing.set_start_method("spawn")
     run()

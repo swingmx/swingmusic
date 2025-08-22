@@ -10,6 +10,7 @@ env:
   PIP_USE_PEP517: true
 
 jobs:
+
   build-client:
     runs-on: ubuntu-latest
     name: Build client
@@ -42,7 +43,6 @@ jobs:
           path: "client/"
           compression-level: 0
           name: 'client'
-
 
   build-wheels:
     name: Build wheels
@@ -113,6 +113,9 @@ jobs:
     steps:
       - name: Checkout into repo
         uses: actions/checkout@v3
+
+      - name: Download artifact
+        uses: actions/download-artifact@v4
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v1

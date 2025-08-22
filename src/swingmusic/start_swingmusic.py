@@ -35,7 +35,7 @@ def config_mimetypes():
     mimetypes.add_type("application/manifest+json", ".webmanifest")
 
 
-def start_swingmusic(host: str, port: int, debug: bool, base_path:pathlib.Path):
+def start_swingmusic(host: str, port: int, debug: bool, base_path:pathlib.Path, client:pathlib.Path|None):
     """
     Creates and starts the Flask application server for Swing Music.
 
@@ -43,23 +43,23 @@ def start_swingmusic(host: str, port: int, debug: bool, base_path:pathlib.Path):
     configurations, including static file handling, authentication middleware, and
     server setup, then runs it. It also sets up background tasks and cron jobs.
 
-    Args:
-        host (str): The host address to bind the server to (e.g., 'localhost' or '0.0.0.0')
-        port (int): The port number to run the server on
-        debug (bool): If swingmusic should start in debug mode
-        base_path (Path): On which path to store config
-
-    Note:
+    .. note::
         The application uses either bjoern or waitress as the WSGI server,
         depending on availability. It also includes JWT authentication,
         static file serving with gzip compression support, and automatic
         token refresh functionality.
+
+    :param host: The host address to bind the server to (e.g., 'localhost' or '0.0.0.0')
+    :param port: The port number to run the server on
+    :param debug: If swingmusic should start in debug mode
+    :param base_path: On which path to store config
+    :param client: Path to static client file
     """
 
     # Example: Setting up dirs, database, and loading stuff into memory.
     # TIP: Be careful with the order of the setup functions.
     # NOTE: concurrent and multithreading create own sys.modules -> no globals
-    settings.Paths(base_path.resolve())
+    settings.Paths(base_path.resolve(), client)
     setup_logger(debug=debug)
 
     config_mimetypes()
@@ -80,6 +80,9 @@ def start_swingmusic(host: str, port: int, debug: bool, base_path:pathlib.Path):
     run_swingmusic()
     # TrackStore.export()
     # ArtistStore.export()
+
+    # docker needs manual flush
+    print("", end="", flush=True)
 
     try:
         import bjoern

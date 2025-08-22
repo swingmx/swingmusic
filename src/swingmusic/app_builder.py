@@ -13,7 +13,7 @@ from flask_jwt_extended import JWTManager, create_access_token, get_jwt, get_jwt
 from swingmusic import api as swing_api
 from swingmusic.config import UserConfig
 from swingmusic.db.userdata import UserTable
-from swingmusic.utils.filesystem import get_home_res_path
+from swingmusic.settings import Paths
 from swingmusic.utils.paths import get_client_files_extensions
 
 from swingmusic.api.plugins import lyrics as lyrics_plugin
@@ -149,7 +149,7 @@ def check_auth_need() -> bool:
 # global endpoint logic #
 # # # # # # # # # # # # #
 
-@app.route("/<path:path>")
+@app.route("/client/<path:path>")
 def serve_client_files(path: str):
     """
     Serves the static files in the client folder.
@@ -198,8 +198,8 @@ def build() -> OpenAPI:
     """
 
     # set late state config
-    app.static_folder = get_home_res_path("client")
-    log.info(f"Serving client from {app.static_folder}")
+    app.static_folder = Paths().client_path
+    log.info(f"Serving client from '{app.static_folder}'")
 
     @app.before_request
     def verify_auth():
