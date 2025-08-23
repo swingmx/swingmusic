@@ -107,17 +107,19 @@ class Paths(metaclass=Singleton):
         
         """
 
-        if client_path is not None:
-            self.client_path = client_path
-        else:
-            self.client_path = Path(imres.files("swingmusic") / "..") / "client"
-
-        self.client_path = self.client_path.resolve()
-
         if base_path is not None:
             self.base_path = base_path
         else:
             self.base_path = default_base_path()
+
+
+        if client_path is not None:
+            self.client_path = client_path
+        else:
+            self.client_path = base_path / "client"
+
+        self.client_path = self.client_path.resolve()
+
 
         self.mkdir_config_folders()
         self.copy_assets_dir()
@@ -218,6 +220,20 @@ class Paths(metaclass=Singleton):
             )
         else:
             log.warning(f"Assets dir could not be found: {src.as_posix()}")
+
+
+    def populate_client(self):
+        """
+        Check if client folder contains content.
+        Client needs to have at least an index.html file.
+        If not, latest client is parsed from GitHub builds.
+        """
+
+        index = self.client_path / "index.html"
+        if not index.exists():
+            # TODO: download client from remote
+            pass
+
 
 
     @property
