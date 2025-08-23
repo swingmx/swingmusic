@@ -1,23 +1,34 @@
-# TMP
-
+# @michily TODO
 
 ## UI
 * Auto update WebUI
 * UI - Remove https from index.html for http support
-* UI should resolve into config dir <- for auto update -> update all build files with this change
 * UI could use continues build like https://github.com/AppImage/AppImageKit/releases/download/continuous/
+* Assets should either move to UI or inside the project. Importlib cannot securely resolve this path if it is not inside the src dir.
 
 ## Building:
-* AppImage build is currently broken view [python-appimage: Issues 95](https://github.com/niess/python-appimage/issues/94)
-* AppImage contains entire dict should not need to.
+* AppImage build is currently broken view [python-appimage: Issues 95](https://github.com/niess/python-appimage/issues/94) aka I bypassed it.
+* AppImage build arm 
+* Optimise docker/speed build up
+* arm builds - what is build there. Are we already building arm?
 
-* Assets should either move to UI or inside the project. Importlib cannot securely resolve this path if it is not inside the src dir.
-* arm builds
-* Rework parsing to only support tags and fall back only when enabled and set to parsing with name/path. see Telegram
+## Server:
+* Rework song name/autor/.. parsing to only support filetags. Only fall back when user-enabled and manual regex is set. see Telegram
 * Publish this on PyPi
 
-* Multiprocessing creates new paths - sync between processes.
-* Fix singleton global in multiprocessing - own process, own memory, own sys.modules cache
+## Multithreading
+* Multiprocessing creates new paths - sync between processes. <- env is recommended.
+* Fix singleton global in multiprocessing - own process, own memory, own sys.modules cache <- env is recommended.
+
+## Auth:
+* more multiuser control
+* audit log
+* one auth method for all e.g. jwt in Header?
+
+## Bugs:
+* assets moved inside project?
+* Mime type disallowed
+
 
 # TODO
 
@@ -70,4 +81,4 @@
 - Duplicates on search
 - Audio stops on ending
 - Show users on account settings when logged in as admin and show users on login is disabled.
-- Save both filepath and trackhash in favorites and playlists
+- Save both filepath and trackhash in favorites and playlists~~
