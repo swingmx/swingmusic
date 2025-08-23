@@ -87,4 +87,4 @@
 - Duplicates on search
 - Audio stops on ending
 - Show users on account settings when logged in as admin and show users on login is disabled.
-- Save both filepath and trackhash in favorites and playlists~~
+- Save both filepath and trackhash in favorites and playlists
