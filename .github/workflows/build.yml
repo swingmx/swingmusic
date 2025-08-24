@@ -130,7 +130,7 @@ jobs:
         with:
           path: ./swing*.AppImage
           compression-level: 0
-          name: 'appimage-$APPIMAGE_ARCH'
+          name: appimage-${{ env.APPIMAGE_ARCH }}
 
   docker:
     name: Build and push Docker image
