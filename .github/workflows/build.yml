@@ -91,6 +91,7 @@ jobs:
         with:
           fetch-depth: 0
           sparse-checkout: appimage
+
       - name: Set architecture-specific variables
         run: |
           if ${{ endsWith(matrix.os, 'arm') }}; then
@@ -116,6 +117,7 @@ jobs:
         with:
           name: wheels
           path: wheels
+          merge-multiple: true
 
       - name: Build appimage
         run: |
@@ -128,7 +130,7 @@ jobs:
         with:
           path: ./swing*.AppImage
           compression-level: 0
-          name: 'appimage'
+          name: 'appimage-$APPIMAGE_ARCH'
 
   docker:
     name: Build and push Docker image
@@ -247,6 +249,7 @@ jobs:
         with:
           name: wheels
           path: wheels
+          merge-multiple: true
 
       - name: Download all Pyinstaller builds
         uses: actions/download-artifact@v4
