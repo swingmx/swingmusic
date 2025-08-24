@@ -96,7 +96,7 @@ jobs:
           if ${{ endsWith(matrix.os, 'arm') }}; then
             echo "APPIMAGE_ARCH=aarch64" >> $GITHUB_ENV
           else
-            echo "APPIMAGE_ARCH=${{ matrix.arch }}" >> $GITHUB_ENV
+            echo "APPIMAGE_ARCH=x86_64" >> $GITHUB_ENV
           fi
 
       - name: Install appimage builder
