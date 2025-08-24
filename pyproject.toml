@@ -66,3 +66,4 @@ Issues = "https://github.com/swingmx/swingmusic/issues"
 [tool.setuptools_scm]
 version_scheme = "only-version"
 local_scheme = "no-local-version"
+fallback_version = "v0.0.0"
