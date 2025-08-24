@@ -70,8 +70,13 @@ jobs:
 
   build-appimage:
     name: Build Appimage
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
     needs: [ build-client ]
+
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ ubuntu-latest, ubuntu-24.04-arm]
 
     steps:
       - uses: actions/setup-python@v5
@@ -87,11 +92,19 @@ jobs:
           fetch-depth: 0
           sparse-checkout: appimage
 
+      - name: Set architecture-specific variables
+        run: |
+          if [ "${{ matrix.arch }}" = "arm64" ]; then
+            echo "APPIMAGE_ARCH=aarch64" >> $GITHUB_ENV
+          else
+            echo "APPIMAGE_ARCH=${{ matrix.arch }}" >> $GITHUB_ENV
+          fi
+
       - name: Install appimage builder
         run: |
           pip install python-appimage
-          wget -nv -c https://github.com/AppImage/AppImageKit/releases/download/continuous/appimagetool-x86_64.AppImage
-          chmod +x appimagetool-x86_64.AppImage
+          wget -nv -c "https://github.com/AppImage/AppImageKit/releases/download/continuous/appimagetool-$APPIMAGE_ARCH.AppImage"
+          chmod +x "appimagetool-$APPIMAGE_ARCH.AppImage"
 
       - name: Download client artifact
         uses: actions/download-artifact@v4
@@ -107,10 +120,10 @@ jobs:
 
       - name: Build appimage
         run: |
-          python-appimage build app -p 3.11 appimage/ -n "swingmusic-x86_64" --no-packaging
-          pip install --target "swingmusic-x86_64/opt/python3.11/lib/python3.11/" --no-deps --find-links=wheels/ swingmusic
+          python-appimage build app -p 3.11 appimage/ -n "swingmusic-$APPIMAGE_ARCH" --no-packaging
+          pip install --target "swingmusic-$APPIMAGE_ARCH/opt/python3.11/lib/python3.11/" --no-deps --find-links=wheels/ swingmusic
           ls
-          ./appimagetool-x86_64.AppImage --no-appstream "swingmusic-x86_64" "swingmusic-${{github.ref_name}}-x86_64.AppImage"
+          ./appimagetool-$APPIMAGE_ARCH.AppImage --no-appstream "swingmusic-$APPIMAGE_ARCH" "swingmusic-${{github.ref_name}}-$APPIMAGE_ARCH.AppImage"
 
       - uses: actions/upload-artifact@v4
         with:

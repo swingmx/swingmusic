@@ -1,8 +1,7 @@
 # @michily TODO
 
 ## priority
-* build not working <- client + assets
-* auto client download
+* build not working <- client/fallback + assets
 * resolve assets path
 * arm build
 
@@ -16,7 +15,6 @@
 * AppImage build is currently broken view [python-appimage: Issues 95](https://github.com/niess/python-appimage/issues/94) aka I bypassed it.
 * AppImage build arm 
 * Optimise docker/speed build up
-* arm builds - what is build there. Are we already building arm?
 * workflow - add test run / manually + no upload
 
 ## Server:
