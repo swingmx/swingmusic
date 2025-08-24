@@ -91,10 +91,9 @@ jobs:
         with:
           fetch-depth: 0
           sparse-checkout: appimage
-
       - name: Set architecture-specific variables
         run: |
-          if [ "${{ matrix.arch }}" = "arm64" ]; then
+          if: ${{ endsWith(matrix.os, 'arm') }}; then
             echo "APPIMAGE_ARCH=aarch64" >> $GITHUB_ENV
           else
             echo "APPIMAGE_ARCH=${{ matrix.arch }}" >> $GITHUB_ENV
