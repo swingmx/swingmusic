@@ -17,6 +17,7 @@
 * AppImage build arm 
 * Optimise docker/speed build up
 * arm builds - what is build there. Are we already building arm?
+* workflow - add test run / manually + no upload
 
 ## Server:
 * Rework song name/autor/.. parsing to only support filetags. Only fall back when user-enabled and manual regex is set. see Telegram

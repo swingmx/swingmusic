@@ -4,13 +4,15 @@ All Variables should be read only after an initial set.
 
 Contains default configs
 """
-
+import io
 import pathlib
 import shutil
+import tempfile
+import zipfile
 from pathlib import Path
 import os
 import logging
-import importlib.resources as imres
+import requests
 
 from swingmusic.utils.filesystem import get_home_res_path
 
@@ -42,7 +44,7 @@ def default_base_path() -> pathlib.Path:
 
     Check order:
 
-    1. Env:``SWINGMUSIC_XDG_CONFIG_DIR``
+    1. Env:``SWINGMUSIC_CONFIG_DIR``
     2. Env:``xdg_config_home``
     3. <User Home>/.config
     4. <User Home>
@@ -50,7 +52,7 @@ def default_base_path() -> pathlib.Path:
     :return: Calculated Path
     """
 
-    swing_xdg_config_home = os.environ.get("SWINGMUSIC_XDG_CONFIG_DIR")
+    swing_xdg_config_home = os.environ.get("SWINGMUSIC_CONFIG_DIR")
     xdg_config_home = os.environ.get("xdg_config_home")
     alt_dir = pathlib.Path.home() / ".config"
 
@@ -78,10 +80,10 @@ class Paths(metaclass=Singleton):
 
     This class is a singleton.
     You cannot change the config path later.
-
-    Not multiprocessing save:
-    Multiprocessing will create separate environment without configs
     """
+
+    CLIENT_RELEASES_URL = "https://api.github.com/repos/michilyy/swingmusic/releases/latest"
+    # TODO: update to real client repo
 
     base_path:Path = Path.home().resolve()
     USER_HOME_DIR = Path.home().resolve()
@@ -94,39 +96,44 @@ class Paths(metaclass=Singleton):
         Create config-folder structure and check permissions.
         Copy all assets if needed.
 
+        If `base_path` or `client_path` are provided, they are used exclusively.
+        In case of multithread, the environment vars are used.
+        The detailed decision can be viewed in :func:`default_base_path`.
+
         :param self: Own object
         :param base_path: Parent path of ``swingmusic``s config path.
-        :param client_path: Path to static Web client folder.
+        :param client_path: Path to static Web client folder.c
         """
 
         """
         Returns the XDG_CONFIG_HOME environment variable if it exists, otherwise
         returns the default config directory. If none of those exist, returns the
         user's home directory.
-        
-        
         """
 
         if base_path is not None:
-            self.base_path = base_path
+            self.base_path = base_path.resolve()
         else:
             self.base_path = default_base_path()
 
 
         if client_path is not None:
             self.client_path = client_path
+        elif "SWINGMUSIC_CLIENT_DIR" in os.environ:
+            self.client_path = Path(os.environ["SWINGMUSIC_CLIENT_DIR"])
         else:
             self.client_path = base_path / "client"
 
         self.client_path = self.client_path.resolve()
 
 
+        # TODO: move this into multithreading management class
+        os.environ["SWINGMUSIC_CONFIG_DIR"] = self.base_path.resolve().as_posix()
+        os.environ["SWINGMUSIC_CLIENT_DIR"] = self.client_path.resolve().as_posix()
+
         self.mkdir_config_folders()
         self.copy_assets_dir()
-
-        # set global easier access?
-        global paths
-        paths = self
+        self.populate_client()
 
 
     def mkdir_config_folders(self):
@@ -229,10 +236,42 @@ class Paths(metaclass=Singleton):
         If not, latest client is parsed from GitHub builds.
         """
 
+        # TODO: check for new releases. Currently only download when client is not found
+
         index = self.client_path / "index.html"
         if not index.exists():
-            # TODO: download client from remote
-            pass
+            log.warning(f"'index.html' could not be found in '{self.client_path.as_posix()}'.")
+            log.info("Downloading latest client from GitHub.")
+            try:
+
+                answer = requests.get(self.CLIENT_RELEASES_URL).json()
+
+                for asset in answer["assets"]:
+                    if asset["name"] == "client.zip":
+                        # download and convert client
+                        client = requests.get(asset["browser_download_url"])
+                        mem_file = io.BytesIO(client.content)
+                        file = zipfile.ZipFile(mem_file)
+
+                        # create new dir for extraction
+                        with tempfile.TemporaryDirectory() as temp_folder:
+                            file.extractall(temp_folder)
+
+                            shutil.copytree(
+                                Path(temp_folder) / "client",
+                                self.client_path,
+                                copy_function=shutil.copy2,
+                                dirs_exist_ok=True,
+                            )
+
+                        break
+
+            except requests.exceptions.RequestException as e:
+                log.warning(f"Client could not be downloaded from releases. NETWORK ERROR", exc_info=e)
+            except requests.exceptions.InvalidJSONError as e:
+                log.warning(f"Client could not be downloaded from releases. JSON ERROR", exc_info=e)
+            except zipfile.BadZipfile as e:
+                log.warning(f"Client could not be unpacked. ZIP ERROR", exc_info=e)
 
 
 
