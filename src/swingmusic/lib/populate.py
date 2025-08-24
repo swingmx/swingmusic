@@ -17,7 +17,7 @@ from swingmusic.store.albums import AlbumStore
 from swingmusic.store.artists import ArtistStore
 from swingmusic.utils.network import has_connection
 from swingmusic.utils.progressbar import tqdm
-from swingmusic.requests.artists import fetch_similar_artists
+from swingmusic.request.artists import fetch_similar_artists
 from swingmusic.lib.colorlib import ProcessAlbumColors, ProcessArtistColors
 
 from swingmusic.db.userdata import SimilarArtistTable
