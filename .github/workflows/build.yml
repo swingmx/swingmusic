@@ -168,7 +168,7 @@ jobs:
 
       - name: Determine if image should be uploaded
         run: |
-          if [ "${{ github.event_name" = "workflow_dispatch" ]; then
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
             echo "UPLOAD=false" >> $GITHUB_ENV
           else
             echo "UPLOAD=true" >> $GITHUB_ENV
