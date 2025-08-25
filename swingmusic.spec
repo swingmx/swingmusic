@@ -6,7 +6,6 @@ import pathlib
 hiddenimports =[]
 # hiddenimports += collect_submodules('swingmusic')
 
-datas=[('assets', 'assets'), ('client', 'client')]
 datas += collect_data_files('swingmusic', True, excludes=['**/*.py'], includes=['**/*.*'])
 datas += collect_data_files('flask_openapi3', True, excludes=['**/*.py'], includes=['**/*.*'])
 
@@ -49,7 +48,7 @@ exe = EXE(
     target_arch=None,
     codesign_identity=None,
     entitlements_file=None,
-    icon=[pathlib.Path('assets\\logo-fill.light.ico')],
+    icon=[pathlib.Path('src\\swingmusic\\assets\\logo-fill.light.ico')],
 )
 
 coll = COLLECT(

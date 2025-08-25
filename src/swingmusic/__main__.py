@@ -1,41 +1,12 @@
 import argparse
 import pathlib
-import platform
 from importlib.metadata import version
 
 import multiprocessing
-from PIL import Image
 
 from swingmusic.settings import default_base_path
 from swingmusic.start_swingmusic import start_swingmusic
-from swingmusic.utils.filesystem import get_home_res_path
 from swingmusic import tools as swing_tools
-
-
-def create_image(width, height, color1, color2):
-    # Generate an image and draw a pattern
-    padding = 7
-    icon_path = get_home_res_path("assets/logo-fill.light.ico")
-    image = Image.open(icon_path)
-
-    # Calculate new size with padding
-    new_size = (width - 2 * padding, height - 2 * padding)
-
-    # Resize the image while maintaining aspect ratio
-    image.thumbnail(new_size, Image.Resampling.LANCZOS)
-
-    # Create a new image with padding
-    padded_image = Image.new("RGBA", (width, height), (0, 0, 0, 0))
-
-    # Calculate position to center the image
-    x = (width - image.width) // 2
-    y = (height - image.height) // 2
-
-    # Paste the resized image onto the padded image
-    padded_image.paste(image, (x, y), image)
-
-    return padded_image
-
 
 parser = argparse.ArgumentParser(
     prog='swingmusic',
@@ -94,7 +65,7 @@ def run(*args, **kwargs):
 
     # check tools
     if args["password_reset"]:
-        swing_tools.handle_password_reset()
+        swing_tools.handle_password_reset(args["config"])
 
     # else start swingmusic
     else:

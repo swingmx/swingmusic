@@ -62,19 +62,3 @@ def run_fast_scandir(path: str, full=False) -> tuple[list[str], list[str]]:
         return [], []
 
     return subfolders, files
-
-
-def get_home_res_path(filename: str):
-    """
-    Returns a path to resources in the home directory of this project.
-    Used to resolve resources in builds.
-    """
-
-    # TODO: used to get client or assets.
-    #   Either copy to config or move inside module?
-
-    try:
-        swing_modele_path = Path( imres.files("swingmusic") / ".." )
-        return ( swing_modele_path / filename).resolve()
-    except ValueError:
-        return None

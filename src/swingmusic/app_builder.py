@@ -177,7 +177,6 @@ def serve_client_files(path: str):
             response.headers["Content-Encoding"] = "gzip"
             return response
 
-
     return app.send_static_file(path)
 
 

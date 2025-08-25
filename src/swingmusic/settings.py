@@ -14,8 +14,7 @@ from pathlib import Path
 import os
 import logging
 import requests
-
-from swingmusic.utils.filesystem import get_home_res_path
+from importlib import resources as imres
 
 log = logging.getLogger(__name__)
 
@@ -214,19 +213,12 @@ class Paths(metaclass=Singleton):
         Copies assets to the app directory.
         """
 
-        # TODO: rework this function.
-        #  Either import assets from inside the module, no need for copy
-        #  or copy files with explicit location to config folder
+        assets_source = imres.files("swingmusic") / "assets"
 
-        assets_dir = get_home_res_path("assets")
-
-        src = assets_dir
-        dest = (self.app_dir / "assets").resolve()
-
-        if src.exists():
+        if assets_source.exists():
             shutil.copytree(
-                src,
-                dest,
+                assets_source,
+                self.assets_path,
                 ignore=shutil.ignore_patterns(
                     "*.pyc",
                 ),

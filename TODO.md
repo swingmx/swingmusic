@@ -1,14 +1,12 @@
 # @michily TODO
 
 ## priority
-* build not working <- client/fallback + assets
-* resolve assets path
+* fallback client dir
 
 ## UI
 * Auto update WebUI
 * UI - Remove https from index.html for http support
 * UI could use continues build like https://github.com/AppImage/AppImageKit/releases/download/continuous/
-* Assets should either move to UI or inside the project. Importlib cannot securely resolve this path if it is not inside the src dir.
 
 ## Building:
 * AppImage build is currently broken view [python-appimage: Issues 95](https://github.com/niess/python-appimage/issues/94) aka I bypassed it.
@@ -29,7 +27,6 @@
 * one auth method for all e.g. jwt in Header?
 
 ## Bugs:
-* assets moved inside project?
 * Mime type disallowed
 
 
