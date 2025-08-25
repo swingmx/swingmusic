@@ -132,7 +132,6 @@ def check_auth_need() -> bool:
         *get_client_files_extensions()
     }
 
-    # convert from no double to tuple
     urls = tuple(urls)
     files = tuple(files)
 
@@ -156,7 +155,7 @@ def serve_client_files(path: str):
     """
 
     # TODO: rule out possible double /client path.
-    # path sometimes prepended with /client like '/client/some.js'
+    # path sometimes prepended with /client like '/client/some.js' resolves to '/client/client/some.js'
 
     js_or_css = path.endswith(".js") or path.endswith(".css")
 
@@ -165,16 +164,16 @@ def serve_client_files(path: str):
 
     # INFO: Safari doesn't support gzip encoding
     # See issue: https://github.com/swingmx/swingmusic/issues/155
-    user_agent = request.headers.get("User-Agent")
+    user_agent = request.headers.get("User-Agent", "")
     if "Safari" in user_agent and not "Chrome" in user_agent:
         return app.send_static_file(path)
 
-    gzipped_path = pathlib.Path(app.static_folder or "") / path
-    gzipped_path = gzipped_path.with_suffix(".gz")
-
     if "gzip" in request.headers.get("Accept-Encoding", ""):
+        gz_name = path + ".gz"
+        gzipped_path = pathlib.Path(app.static_folder or "") / gz_name
+
         if gzipped_path.exists():
-            response = app.make_response(app.send_static_file(str(gzipped_path)))
+            response = app.make_response(app.send_static_file(gz_name))
             response.headers["Content-Encoding"] = "gzip"
             return response
 

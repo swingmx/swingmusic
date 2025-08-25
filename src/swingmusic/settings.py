@@ -5,6 +5,7 @@ All Variables should be read only after an initial set.
 Contains default configs
 """
 import io
+import multiprocessing
 import pathlib
 import shutil
 import tempfile
@@ -126,18 +127,21 @@ class Paths(metaclass=Singleton):
 
         self.client_path = self.client_path.resolve()
 
-        if not self.app_dir.exists():
-            self.app_dir.mkdir(parents=True)
+
+        if multiprocessing.current_process().name == "MainProcess":
+            # Path copy only on MainProcess
+            if not self.app_dir.exists():
+                self.app_dir.mkdir(parents=True)
 
 
-        # TODO: find a platform independent way to access module globals like `Paths`
-        # TODO: move this into multithreading management class
-        os.environ["SWINGMUSIC_CONFIG_DIR"] = self.base_path.resolve().as_posix()
-        os.environ["SWINGMUSIC_CLIENT_DIR"] = self.client_path.resolve().as_posix()
+            # TODO: find a platform independent way to access module globals like `Paths`
+            # TODO: move this into multithreading management class
+            os.environ["SWINGMUSIC_CONFIG_DIR"] = self.base_path.resolve().as_posix()
+            os.environ["SWINGMUSIC_CLIENT_DIR"] = self.client_path.resolve().as_posix()
 
-        self.mkdir_config_folders()
-        self.copy_assets_dir()
-        self.populate_client()
+            self.mkdir_config_folders()
+            self.copy_assets_dir()
+            self.populate_client()
 
 
     def mkdir_config_folders(self):
