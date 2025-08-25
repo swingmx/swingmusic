@@ -166,12 +166,20 @@ jobs:
           images: |
             ghcr.io/${{ github.repository }}
 
+      - name: Determine if image should be uploaded
+        run: |
+          if [ "${{github.ref_name}}" = "master" ]; then
+            echo "UPLOAD=false" >> $GITHUB_ENV
+          else
+            echo "UPLOAD=true" >> $GITHUB_ENV
+          fi
+
       - name: Build and push
-        uses: docker/build-push-action@v2
+        uses: docker/build-push-action@v6
         with:
           context: .
           platforms: linux/amd64, linux/arm64 #,linux/arm
-          push: true
+          push: ${{ env.UPLOAD }}
           tags: ghcr.io/${{github.repository}}:${{format('v{0}', github.ref_name)}}, ghcr.io/${{github.repository}}:latest
           labels: org.opencontainers.image.title=Docker
 
@@ -264,9 +272,18 @@ jobs:
           path: appimage
           merge-multiple: true
 
+      - name: Determine if current run is draft
+        run: |
+          if [ "${{github.ref_name}}" = "master" ]; then
+            echo "DRAFT=true" >> $GITHUB_ENV
+          else
+            echo "DRAFT=false" >> $GITHUB_ENV
+          fi
+
       - name: Upload artifacts to GitHub Release
         uses: softprops/action-gh-release@v2
         with:
+          draft: ${{ env.DRAFT }}
           files: |
             client.zip
             wheels/**
