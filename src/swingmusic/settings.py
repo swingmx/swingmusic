@@ -122,7 +122,7 @@ class Paths(metaclass=Singleton):
         elif "SWINGMUSIC_CLIENT_DIR" in os.environ:
             self.client_path = Path(os.environ["SWINGMUSIC_CLIENT_DIR"])
         else:
-            self.client_path = self.base_path / "client"
+            self.client_path = self.app_dir / "client"
 
         self.client_path = self.client_path.resolve()
 
