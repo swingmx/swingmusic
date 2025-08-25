@@ -126,7 +126,6 @@ class Paths(metaclass=Singleton):
 
         self.client_path = self.client_path.resolve()
 
-        log.warning(f"name: {multiprocessing.current_process().name}")
         if multiprocessing.current_process().name == "MainProcess":
             # Path copy only on MainProcess
             if not self.app_dir.exists():
