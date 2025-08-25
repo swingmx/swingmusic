@@ -126,7 +126,7 @@ class Paths(metaclass=Singleton):
 
         self.client_path = self.client_path.resolve()
 
-
+        breakpoint()
         if multiprocessing.current_process().name == "MainProcess":
             # Path copy only on MainProcess
             if not self.app_dir.exists():
@@ -226,7 +226,7 @@ class Paths(metaclass=Singleton):
                 dirs_exist_ok=True,
             )
         else:
-            log.warning(f"Assets dir could not be found: {src.as_posix()}")
+            log.error(f"Assets dir could not be found: {assets_source.as_posix()}")
 
 
     def populate_client(self):
@@ -242,7 +242,7 @@ class Paths(metaclass=Singleton):
         index = self.client_path / "index.html"
         if not index.exists():
             log.warning(f"'index.html' could not be found in '{self.client_path.as_posix()}'.")
-            log.info("Downloading latest client from GitHub.")
+            log.warning("Downloading latest client from GitHub.")
             try:
 
                 answer = requests.get(self.CLIENT_RELEASES_URL).json()
@@ -268,11 +268,11 @@ class Paths(metaclass=Singleton):
                         break
 
             except (requests.exceptions.RequestException, KeyError )as e:
-                log.warning(f"Client could not be downloaded from releases. NETWORK ERROR", exc_info=e)
+                log.error(f"Client could not be downloaded from releases. NETWORK ERROR", exc_info=e)
             except requests.exceptions.InvalidJSONError as e:
-                log.warning(f"Client could not be downloaded from releases. JSON ERROR", exc_info=e)
+                log.error(f"Client could not be downloaded from releases. JSON ERROR", exc_info=e)
             except zipfile.BadZipfile as e:
-                log.warning(f"Client could not be unpacked. ZIP ERROR", exc_info=e)
+                log.error(f"Client could not be unpacked. ZIP ERROR", exc_info=e)
 
 
     @property
