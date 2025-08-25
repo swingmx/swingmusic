@@ -126,7 +126,7 @@ class Paths(metaclass=Singleton):
 
         self.client_path = self.client_path.resolve()
 
-        breakpoint()
+        log.warning(f"name: {multiprocessing.current_process().name}")
         if multiprocessing.current_process().name == "MainProcess":
             # Path copy only on MainProcess
             if not self.app_dir.exists():
@@ -255,6 +255,7 @@ class Paths(metaclass=Singleton):
                         file = zipfile.ZipFile(mem_file)
 
                         # create new dir for extraction
+                        log.info(f"Storing client in '{self.client_path.as_posix()}'.")
                         with tempfile.TemporaryDirectory() as temp_folder:
                             file.extractall(temp_folder)
 
