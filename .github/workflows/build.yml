@@ -123,7 +123,6 @@ jobs:
         run: |
           python-appimage build app -p 3.11 appimage/ -n "swingmusic-$APPIMAGE_ARCH" --no-packaging
           pip install --target "swingmusic-$APPIMAGE_ARCH/opt/python3.11/lib/python3.11/" --no-deps --find-links=wheels/ swingmusic
-          ls
           ./appimagetool-$APPIMAGE_ARCH.AppImage --no-appstream "swingmusic-$APPIMAGE_ARCH" "swingmusic-${{github.ref_name}}-$APPIMAGE_ARCH.AppImage"
 
       - uses: actions/upload-artifact@v4

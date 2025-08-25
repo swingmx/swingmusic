@@ -3,7 +3,6 @@
 ## priority
 * build not working <- client/fallback + assets
 * resolve assets path
-* arm build
 
 ## UI
 * Auto update WebUI
@@ -13,7 +12,6 @@
 
 ## Building:
 * AppImage build is currently broken view [python-appimage: Issues 95](https://github.com/niess/python-appimage/issues/94) aka I bypassed it.
-* AppImage build arm 
 * Optimise docker/speed build up
 * workflow - add test run / manually + no upload
 

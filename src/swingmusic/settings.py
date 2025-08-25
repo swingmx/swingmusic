@@ -122,7 +122,7 @@ class Paths(metaclass=Singleton):
         elif "SWINGMUSIC_CLIENT_DIR" in os.environ:
             self.client_path = Path(os.environ["SWINGMUSIC_CLIENT_DIR"])
         else:
-            self.client_path = base_path / "client"
+            self.client_path = self.base_path / "client"
 
         self.client_path = self.client_path.resolve()
 
@@ -130,6 +130,8 @@ class Paths(metaclass=Singleton):
         # TODO: move this into multithreading management class
         os.environ["SWINGMUSIC_CONFIG_DIR"] = self.base_path.resolve().as_posix()
         os.environ["SWINGMUSIC_CLIENT_DIR"] = self.client_path.resolve().as_posix()
+
+        log.warning("Config path: %s", self.base_path)
 
         self.mkdir_config_folders()
         self.copy_assets_dir()
@@ -266,7 +268,7 @@ class Paths(metaclass=Singleton):
 
                         break
 
-            except requests.exceptions.RequestException as e:
+            except (requests.exceptions.RequestException, KeyError )as e:
                 log.warning(f"Client could not be downloaded from releases. NETWORK ERROR", exc_info=e)
             except requests.exceptions.InvalidJSONError as e:
                 log.warning(f"Client could not be downloaded from releases. JSON ERROR", exc_info=e)
