@@ -96,7 +96,7 @@ def run(*args, **kwargs):
     if args["password_reset"]:
         swing_tools.handle_password_reset()
 
-    # else start swingmusik
+    # else start swingmusic
     else:
         start_swingmusic(
             host=args["host"],
@@ -108,6 +108,5 @@ def run(*args, **kwargs):
 
 
 if __name__ == "__main__":
-    # TODO: find a platform independent way to access module globals like `Paths`
     multiprocessing.set_start_method("spawn")
     run()

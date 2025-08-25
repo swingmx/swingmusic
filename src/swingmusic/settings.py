@@ -126,12 +126,10 @@ class Paths(metaclass=Singleton):
 
         self.client_path = self.client_path.resolve()
 
-
+        # TODO: find a platform independent way to access module globals like `Paths`
         # TODO: move this into multithreading management class
         os.environ["SWINGMUSIC_CONFIG_DIR"] = self.base_path.resolve().as_posix()
         os.environ["SWINGMUSIC_CLIENT_DIR"] = self.client_path.resolve().as_posix()
-
-        log.warning("Config path: %s", self.base_path)
 
         self.mkdir_config_folders()
         self.copy_assets_dir()
@@ -277,12 +275,6 @@ class Paths(metaclass=Singleton):
 
 
 
-    @property
-    def config_dir(self) -> pathlib.Path:
-        """
-        return the resolved base path of swingmusic config folder
-        """
-        return self.base_path.resolve()
 
     @property
     def config_folder_name(self) -> str:
@@ -292,14 +284,14 @@ class Paths(metaclass=Singleton):
         When the base path is the same as the home dir,
         it returns `.swingmusic` else `swingmusic`
         """
-        if self.config_dir == self.USER_HOME_DIR:
+        if self.base_path == self.USER_HOME_DIR:
             return ".swingmusic"
         else:
             return "swingmusic"
 
     @property
     def app_dir(self) -> Path:
-        return self.config_dir / self.config_folder_name
+        return self.base_path / self.config_folder_name
 
     @property
     def img_path(self) -> Path:
