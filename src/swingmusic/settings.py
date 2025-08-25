@@ -217,7 +217,7 @@ class Paths(metaclass=Singleton):
 
         if assets_source.exists():
             shutil.copytree(
-                assets_source,
+                Path(assets_source),
                 self.assets_path,
                 ignore=shutil.ignore_patterns(
                     "*.pyc",
