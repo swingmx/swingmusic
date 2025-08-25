@@ -196,15 +196,14 @@ def setup_logger(debug=False):
     :param debug: When True Loglevel is set to DEBUG and enable Socket log
     """
 
-    app_dir = pathlib.Path(Paths().app_dir)
-    app_dir.exists() or app_dir.mkdir(parents=True)
+    app_dir = Paths().app_dir
 
     CONFIG["handlers"]["file"]["filename"] = app_dir / "log.jsonl"
     # BIG TODO: make log delete or rotate big log files
 
     # enable socket log
     if debug:
-        print("YOU ARE IN DEBUG MODE.")
+        logging.warning("YOU ARE IN DEBUG MODE.")
         for key in CONFIG["loggers"].keys():
             CONFIG["loggers"][key]["handlers"].append("remote")
             CONFIG["loggers"][key]["level"] = "DEBUG"

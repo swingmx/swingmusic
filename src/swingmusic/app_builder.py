@@ -149,11 +149,14 @@ def check_auth_need() -> bool:
 # global endpoint logic #
 # # # # # # # # # # # # #
 
-@app.route("/client/<path:path>")
+@app.route("/<path:path>")
 def serve_client_files(path: str):
     """
     Serves the static files in the client folder.
     """
+
+    # TODO: rule out possible double /client path.
+    # path sometimes prepended with /client like '/client/some.js'
 
     js_or_css = path.endswith(".js") or path.endswith(".css")
 

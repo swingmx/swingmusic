@@ -126,6 +126,10 @@ class Paths(metaclass=Singleton):
 
         self.client_path = self.client_path.resolve()
 
+        if not self.app_dir.exists():
+            self.app_dir.mkdir(parents=True)
+
+
         # TODO: find a platform independent way to access module globals like `Paths`
         # TODO: move this into multithreading management class
         os.environ["SWINGMUSIC_CONFIG_DIR"] = self.base_path.resolve().as_posix()
@@ -237,6 +241,7 @@ class Paths(metaclass=Singleton):
         """
 
         # TODO: check for new releases. Currently only download when client is not found
+        # TODO: move this outside. `Paths` only does path routing.
 
         index = self.client_path / "index.html"
         if not index.exists():
@@ -272,8 +277,6 @@ class Paths(metaclass=Singleton):
                 log.warning(f"Client could not be downloaded from releases. JSON ERROR", exc_info=e)
             except zipfile.BadZipfile as e:
                 log.warning(f"Client could not be unpacked. ZIP ERROR", exc_info=e)
-
-
 
 
     @property
