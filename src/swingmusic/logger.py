@@ -108,14 +108,21 @@ class CustomFormatter(logging.Formatter):
 
     def format(self, record):
         log_fmt = self.FORMATS.get(record.levelno)
-        formatter = logging.Formatter(log_fmt, "%H:%M:%S")
-        return formatter.format(record)
+        #record.exc_info = None
+        #record.exc_text = None
+        self._style = logging.PercentStyle(log_fmt)
+        self._fmt = self._style._fmt
+
+        self.datefmt = "%H:%M:%S"
+        return super().format(record)
 
     def formatException(self, e):
         # do not print on cli only in file.
-        # TODO: inform user that non terminal exception happend?
+        # TODO: inform user that non terminal exception happened?
         return ""
 
+    def formatStack(self, stack_info):
+        return ""
 
 CONFIG = {
     "version": 1,
