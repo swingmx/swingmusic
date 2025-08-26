@@ -35,7 +35,7 @@ def config_mimetypes():
     mimetypes.add_type("application/manifest+json", ".webmanifest")
 
 
-def start_swingmusic(host: str, port: int, debug: bool, path:dict[str,pathlib.Path|None]):
+def start_swingmusic(host: str, port: int, path:dict[str,pathlib.Path|None]):
     """
     Creates and starts the Flask application server for Swing Music.
 
@@ -58,7 +58,6 @@ def start_swingmusic(host: str, port: int, debug: bool, path:dict[str,pathlib.Pa
     # Example: Setting up dirs, database, and loading stuff into memory.
     # TIP: Be careful with the order of the setup functions.
     # NOTE: concurrent and multithreading create own sys.modules -> no globals
-    setup_logger(debug=debug, app_dir=path["config"])
     settings.Paths(**path)
 
     config_mimetypes()

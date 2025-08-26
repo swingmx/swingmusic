@@ -10,12 +10,12 @@ from swingmusic.settings import Paths
 from pathlib import Path
 from PIL import Image
 
-def handle_password_reset(base_path:Path|None):
+def handle_password_reset(path:dict[str,Path]):
     """
     Handles the --password-reset argument. Resets the password.
     """
 
-    Paths(base_path.resolve(), None)
+    Paths(**path)
 
     setup_sqlite()
 

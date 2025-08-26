@@ -4,6 +4,7 @@ from importlib.metadata import version
 
 import multiprocessing
 
+from swingmusic.logger import setup_logger
 from swingmusic.settings import default_base_path
 from swingmusic.start_swingmusic import start_swingmusic
 from swingmusic import tools as swing_tools
@@ -69,21 +70,25 @@ def run(*args, **kwargs):
     args = parser.parse_args()
     args = vars(args)
 
+    path = {
+        "config": args["config"],
+        "client": args["client"],
+        "fallback": args["fallback_client"]
+    }
+
+    setup_logger(debug=args["debug"], app_dir=path["config"])
+
+
     # check tools
     if args["password_reset"]:
-        swing_tools.handle_password_reset(args["config"])
+        swing_tools.handle_password_reset(path)
 
     # else start swingmusic
     else:
         start_swingmusic(
             host=args["host"],
             port=args["port"],
-            debug=args["debug"],
-            path={
-                "config":args["config"],
-                "client":args["client"],
-                "fallback":args["fallback_client"]
-            }
+            path=path
         )
 
 
