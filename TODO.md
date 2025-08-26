@@ -1,13 +1,5 @@
 # @michily TODO
 
-## priority
-* fallback client dir
-
-## Bugs:
-* Mime type disallowed
-
-
-
 ## UI
 * Auto update WebUI - version check + api missing
 * Web UI - Remove https from index.html for http support?
@@ -18,7 +10,6 @@
 ## Building:
 * AppImage build is currently broken view [python-appimage: Issues 95](https://github.com/niess/python-appimage/issues/94) aka I bypassed it.
 * Optimise docker/speed build up
-* workflow - do not upload files if ref is master
 
 ## Server:
 * Rework song name/autor/.. parsing to only support filetags. Only fall back when user-enabled and manual regex is set. see Telegram
@@ -32,8 +23,6 @@
 * more multiuser control
 * audit log
 * one auth method for all e.g. jwt in Header?
-
-
 
 # TODO
 
