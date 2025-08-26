@@ -5,8 +5,8 @@ import pathlib
 
 hiddenimports =[]
 # hiddenimports += collect_submodules('swingmusic')
-
-datas = collect_data_files('swingmusic', True, excludes=['**/*.py'], includes=['**/*.*'])
+datas = [('client', 'client')]
+datas += collect_data_files('swingmusic', True, excludes=['**/*.py'], includes=['**/*.*'])
 datas += collect_data_files('flask_openapi3', True, excludes=['**/*.py'], includes=['**/*.*'])
 
 def getFlaskOpenApiPath():

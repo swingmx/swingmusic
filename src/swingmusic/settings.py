@@ -30,10 +30,110 @@ class Singleton(type):
             cls._instances[cls] = super(Singleton, cls).__call__(*args, **kwargs)
         return cls._instances[cls]
 
+# # # # # # # #
+# Downloader  #
+# # # # # # # #
+
+def populate_client(path:Path) -> bool:
+        """
+        Checks if client folder contains content.
+        Client needs to have at least an index.html file.
+        If not, latest client is parsed from GitHub builds.
+
+        :param path: path to client folder
+        :return: True if successful else False
+        """
+
+        CLIENT_RELEASES_URL = "https://api.github.com/repos/michilyy/swingmusic/releases/latest"
+        # TODO: update to real client repo
+
+        # TODO: check for new releases. Currently only download when client is not found
+        # TODO: move this outside. `Paths` only does path routing.
+
+        index = path / "index.html"
+        if not index.exists():
+            log.warning(f"'index.html' could not be found in '{path.as_posix()}'.")
+            log.warning("Try downloading latest client from GitHub.")
+            try:
+
+                answer = requests.get(CLIENT_RELEASES_URL).json()
+
+                for asset in answer["assets"]:
+                    if asset["name"] == "client.zip":
+                        # download and convert client
+                        client = requests.get(asset["browser_download_url"])
+                        mem_file = io.BytesIO(client.content)
+                        file = zipfile.ZipFile(mem_file)
+
+                        # create new dir for extraction
+                        log.info(f"Storing client in '{path.as_posix()}'.")
+                        with tempfile.TemporaryDirectory() as temp_folder:
+                            file.extractall(temp_folder)
+
+                            shutil.copytree(
+                                Path(temp_folder) / "client",
+                                path,
+                                copy_function=shutil.copy2,
+                                dirs_exist_ok=True,
+                            )
+
+                        break
+
+            except (requests.exceptions.RequestException, KeyError )as e:
+                log.error(f"Client could not be downloaded from releases. NETWORK ERROR", exc_info=e)
+                return False
+            except requests.exceptions.InvalidJSONError as e:
+                log.error(f"Client could not be downloaded from releases. JSON ERROR", exc_info=e)
+                return False
+            except zipfile.BadZipfile as e:
+                log.error(f"Client could not be unpacked. ZIP ERROR", exc_info=e)
+                return False
+
+        return True
 
 # # # # # # # # #
 #  Path  Logic  #
 # # # # # # # # #
+
+def default_client_path(app_dir:Path, fallback_client:Path|None=None) -> Path:
+    """
+    | Calculates the default config path for ``client``.
+    | Checks for the first valid path.
+
+    Check order:
+
+    1. Env:``SWINGMUSIC_CLIENT_DIR``
+    2. if ``<app_dir>/client/`` exists
+        1. use ``<app_dir>/client/``
+    3. if ``<app_dir>/client/`` not exists
+        1. try downloading client from GitHub
+        2. if successful
+            1. use ``<app_dir>/client/``
+        3. if not successful
+            1. use ``<fallback_client>``
+
+    :param app_dir:
+    :param fallback_client: optional path to client. Used in pyinstaller/AppImage build
+    :return: Calculated Path
+    """
+
+    client_path = app_dir / 'client'
+
+    env_client_dir = os.environ.get("SWINGMUSIC_CLIENT_DIR")
+
+    if not env_client_dir is None:
+        return Path(env_client_dir)
+
+
+    if (client_path / "index.html").exists():
+        return client_path
+    else:
+        if populate_client(client_path):
+            return client_path
+        elif fallback_client is not None:
+            return fallback_client
+        else:
+            raise NotImplementedError(f"Client could not be determined. Neither download or fallback.")
 
 
 def default_base_path() -> pathlib.Path:
@@ -82,16 +182,13 @@ class Paths(metaclass=Singleton):
     You cannot change the config path later.
     """
 
-    CLIENT_RELEASES_URL = "https://api.github.com/repos/michilyy/swingmusic/releases/latest"
-    # TODO: update to real client repo
-
     base_path:Path = Path.home().resolve()
     USER_HOME_DIR = Path.home().resolve()
     APP_DB_NAME = "swingmusic.db"
     USER_DATA_DB_NAME = "userdata.db"
 
 
-    def __init__(self, base_path:Path=None, client_path:Path=None):
+    def __init__(self, base_path:Path|None=None, client_path:Path|None=None, fallback:Path|None=None):
         """
         Create config-folder structure and check permissions.
         Copy all assets if needed.
@@ -103,6 +200,7 @@ class Paths(metaclass=Singleton):
         :param self: Own object
         :param base_path: Parent path of ``swingmusic``s config path.
         :param client_path: Path to static Web client folder.c
+        :param fallback: Path to fallback client folder.
         """
 
         """
@@ -117,14 +215,13 @@ class Paths(metaclass=Singleton):
             self.base_path = default_base_path()
 
 
+        env_client_dir = os.environ.get("SWINGMUSIC_CLIENT_DIR")
         if client_path is not None:
-            self.client_path = client_path
-        elif "SWINGMUSIC_CLIENT_DIR" in os.environ:
-            self.client_path = Path(os.environ["SWINGMUSIC_CLIENT_DIR"])
+            self.client_path = client_path.resolve()
+        elif not env_client_dir is None:
+            self.client_path = Path(env_client_dir)
         else:
-            self.client_path = self.app_dir / "client"
-
-        self.client_path = self.client_path.resolve()
+            self.client_path = default_client_path(self.app_dir, fallback)
 
         if multiprocessing.current_process().name == "MainProcess":
             # Path copy only on MainProcess
@@ -139,7 +236,6 @@ class Paths(metaclass=Singleton):
 
             self.mkdir_config_folders()
             self.copy_assets_dir()
-            self.populate_client()
 
 
     def mkdir_config_folders(self):
@@ -226,53 +322,6 @@ class Paths(metaclass=Singleton):
             )
         else:
             log.error(f"Assets dir could not be found: {assets_source.as_posix()}")
-
-
-    def populate_client(self):
-        """
-        Check if client folder contains content.
-        Client needs to have at least an index.html file.
-        If not, latest client is parsed from GitHub builds.
-        """
-
-        # TODO: check for new releases. Currently only download when client is not found
-        # TODO: move this outside. `Paths` only does path routing.
-
-        index = self.client_path / "index.html"
-        if not index.exists():
-            log.warning(f"'index.html' could not be found in '{self.client_path.as_posix()}'.")
-            log.warning("Downloading latest client from GitHub.")
-            try:
-
-                answer = requests.get(self.CLIENT_RELEASES_URL).json()
-
-                for asset in answer["assets"]:
-                    if asset["name"] == "client.zip":
-                        # download and convert client
-                        client = requests.get(asset["browser_download_url"])
-                        mem_file = io.BytesIO(client.content)
-                        file = zipfile.ZipFile(mem_file)
-
-                        # create new dir for extraction
-                        log.info(f"Storing client in '{self.client_path.as_posix()}'.")
-                        with tempfile.TemporaryDirectory() as temp_folder:
-                            file.extractall(temp_folder)
-
-                            shutil.copytree(
-                                Path(temp_folder) / "client",
-                                self.client_path,
-                                copy_function=shutil.copy2,
-                                dirs_exist_ok=True,
-                            )
-
-                        break
-
-            except (requests.exceptions.RequestException, KeyError )as e:
-                log.error(f"Client could not be downloaded from releases. NETWORK ERROR", exc_info=e)
-            except requests.exceptions.InvalidJSONError as e:
-                log.error(f"Client could not be downloaded from releases. JSON ERROR", exc_info=e)
-            except zipfile.BadZipfile as e:
-                log.error(f"Client could not be unpacked. ZIP ERROR", exc_info=e)
 
 
     @property

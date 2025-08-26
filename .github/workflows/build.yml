@@ -121,7 +121,7 @@ jobs:
 
       - name: Build appimage
         run: |
-          python-appimage build app -p 3.11 appimage/ -n "swingmusic-$APPIMAGE_ARCH" --no-packaging
+          python-appimage build app -p 3.11 appimage/ -n "swingmusic-$APPIMAGE_ARCH" -x client --no-packaging
           pip install --target "swingmusic-$APPIMAGE_ARCH/opt/python3.11/lib/python3.11/" --no-deps --find-links=wheels/ swingmusic
           ./appimagetool-$APPIMAGE_ARCH.AppImage --no-appstream "swingmusic-$APPIMAGE_ARCH" "swingmusic-${{github.ref_name}}-$APPIMAGE_ARCH.AppImage"
 
@@ -196,14 +196,27 @@ jobs:
     steps:
       - name: Checkout swingmusic
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          sparse-checkout: swingmusic.spec
 
       - name: Install Python 3.11
         uses: actions/setup-python@v5
         with:
           python-version: "3.11.x"
 
-      - name: Download artifact
+      - name: Download client artifact
         uses: actions/download-artifact@v4
+        with:
+          name: client
+          path: client
+
+      - name: Download wheel artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: wheels
+          path: wheels
+          merge-multiple: true
 
       # install system packages
       - name: Setup Homebrew

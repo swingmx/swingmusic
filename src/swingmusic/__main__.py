@@ -47,6 +47,12 @@ parser.add_argument(
     type=pathlib.Path
 )
 
+parser.add_argument(
+    "--fallback-client",
+    help="Path to the Web UI folder if no valid client is found. Used in pyinstaller and appimage.",
+    type=pathlib.Path
+)
+
 tools = parser.add_argument_group(
     title="Tools"
 )
