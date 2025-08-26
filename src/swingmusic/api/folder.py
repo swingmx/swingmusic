@@ -83,13 +83,10 @@ def get_folder_tree(body: FolderTree):
     config = UserConfig()
     root_dirs = config.rootDirs
 
-    if req_dir == "$home" and "$home" in root_dirs[0]:
+    if req_dir == "$home" and "$home" in root_dirs:
         req_dir = settings.Paths().USER_HOME_DIR.as_posix()
 
     if req_dir == "$home":
-        if len(root_dirs) == 1:
-            req_dir = root_dirs[0]
-        else:
             folders = get_folders(root_dirs)
 
             return {

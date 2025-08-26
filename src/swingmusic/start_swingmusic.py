@@ -51,7 +51,6 @@ def start_swingmusic(host: str, port: int, path:dict[str,pathlib.Path|None]):
 
     :param host: The host address to bind the server to (e.g., 'localhost' or '0.0.0.0')
     :param port: The port number to run the server on
-    :param debug: If swingmusic should start in debug mode
     :param path: dict with all path config
     """
 

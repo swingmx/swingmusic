@@ -16,7 +16,9 @@ from swingmusic.store.artists import ArtistStore
 from swingmusic.store.folder import FolderStore
 from swingmusic.store.tracks import TrackStore
 from swingmusic.utils.generators import get_random_str
+
 from swingmusic.config import UserConfig
+from dataclasses import asdict
 
 
 def run_setup():
@@ -30,6 +32,7 @@ def run_setup():
 
     if not config.serverId:
         config.serverId = str(uuid.uuid4())
+        config.write_to_file(asdict(config))
 
     setup_sqlite()
     run_migrations()
