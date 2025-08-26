@@ -197,8 +197,9 @@ jobs:
       - name: Checkout swingmusic
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0
-          sparse-checkout: swingmusic.spec
+          sparse-checkout: |
+            swingmusic.spec
+            src/swingmusic/assets
 
       - name: Install Python 3.11
         uses: actions/setup-python@v5
