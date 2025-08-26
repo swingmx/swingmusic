@@ -46,6 +46,7 @@ def load_user_artist_ignore_list() -> set[str]:
 
 @dataclass
 class UserConfig(metaclass=Singleton):
+    _finished: bool = field(default=False, init=False) # if post init succesfully
     _config_path: InitVar[Path] = Path("")
     _artist_split_ignore_file_name: InitVar[str] = "artist_split_ignore.txt"
     # NOTE: only auth stuff are used (the others are still reading/writing to db)
@@ -116,7 +117,7 @@ class UserConfig(metaclass=Singleton):
 
         # finally, set the config path
         self._config_path = config_path
-        self.__finished = True
+        self._finished = True
 
 
     def setup_config_file(self) -> None:
@@ -156,7 +157,7 @@ class UserConfig(metaclass=Singleton):
 
         # protection.
         # only write to file if post_init completed
-        if not hasattr(self, "__finished"):
+        if not self._finished:
             super().__setattr__(key, value)
             return
 
