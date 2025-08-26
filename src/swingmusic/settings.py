@@ -16,6 +16,7 @@ import logging
 import requests
 from importlib import resources as imres
 
+
 log = logging.getLogger(__name__)
 
 # # # # # # # # #
@@ -79,7 +80,7 @@ def populate_client(path:Path) -> bool:
 
                         break
 
-            except (requests.exceptions.RequestException, KeyError )as e:
+            except (requests.exceptions.RequestException, KeyError, requests.exceptions.ConnectionError)as e:
                 log.error(f"Client could not be downloaded from releases. NETWORK ERROR", exc_info=e)
                 return False
             except requests.exceptions.InvalidJSONError as e:
@@ -214,7 +215,6 @@ class Paths(metaclass=Singleton):
         else:
             self.base_path = default_base_path()
 
-
         env_client_dir = os.environ.get("SWINGMUSIC_CLIENT_DIR")
         if client is not None:
             self.client_path = client.resolve()
@@ -227,7 +227,6 @@ class Paths(metaclass=Singleton):
             # Path copy only on MainProcess
             if not self.app_dir.exists():
                 self.app_dir.mkdir(parents=True)
-
 
             # TODO: find a platform independent way to access module globals like `Paths`
             # TODO: move this into multithreading management class

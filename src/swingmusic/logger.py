@@ -1,8 +1,7 @@
 """
 Logger module
 """
-import pathlib
-
+from pathlib import Path
 from swingmusic.config import Paths
 import logging
 import datetime as dt
@@ -188,18 +187,22 @@ CONFIG = {
 
 log = None
 
-def setup_logger(debug=False):
+def setup_logger(app_dir:Path, debug=False):
     """
     setup logger
     needs to be called at the beginning and at least once
 
+    :param app_dir: logging directory
     :param debug: When True Loglevel is set to DEBUG and enable Socket log
     """
 
-    app_dir = Paths().app_dir
+    if Path.home().resolve().as_posix() == app_dir.resolve().as_posix():
+        app_name = ".swingmusic"
+    else:
+        app_name = "swingmusic"
 
-    CONFIG["handlers"]["file"]["filename"] = app_dir / "log.jsonl"
-    # BIG TODO: make log delete or rotate big log files
+    log_dir = Path(app_dir) / app_name / "logs"
+    CONFIG["handlers"]["file"]["filename"] = (log_dir / "log.jsonl").as_posix()
 
     # enable socket log
     if debug:

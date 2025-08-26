@@ -58,8 +58,8 @@ def start_swingmusic(host: str, port: int, debug: bool, path:dict[str,pathlib.Pa
     # Example: Setting up dirs, database, and loading stuff into memory.
     # TIP: Be careful with the order of the setup functions.
     # NOTE: concurrent and multithreading create own sys.modules -> no globals
+    setup_logger(debug=debug, app_dir=path["config"])
     settings.Paths(**path)
-    setup_logger(debug=debug)
 
     config_mimetypes()
     run_setup()
