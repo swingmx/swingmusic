@@ -2,7 +2,6 @@
 Logger module
 """
 from pathlib import Path
-from swingmusic.config import Paths
 import logging
 import datetime as dt
 import json
