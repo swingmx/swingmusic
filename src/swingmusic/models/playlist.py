@@ -36,7 +36,7 @@ class Playlist:
 
         self.pinned = self.settings.get("pinned", False)
         self.has_image = (
-            settings.Paths().playlist_img_path / str(self.image)
+                settings.Paths().playlist_img_path / str(self.image)
         ).exists()
 
         if self.image is not None:

@@ -79,8 +79,11 @@ def run(*args, **kwargs):
             host=args["host"],
             port=args["port"],
             debug=args["debug"],
-            base_path=args["config"],
-            client=args["client"]
+            path={
+                "config":args["config"],
+                "client":args["client"],
+                "fallback":args["fallback_client"]
+            }
         )
 
 

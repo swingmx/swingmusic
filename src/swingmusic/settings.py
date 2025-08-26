@@ -188,18 +188,18 @@ class Paths(metaclass=Singleton):
     USER_DATA_DB_NAME = "userdata.db"
 
 
-    def __init__(self, base_path:Path|None=None, client_path:Path|None=None, fallback:Path|None=None):
+    def __init__(self, config:Path|None=None, client:Path|None=None, fallback:Path|None=None):
         """
         Create config-folder structure and check permissions.
         Copy all assets if needed.
 
-        If `base_path` or `client_path` are provided, they are used exclusively.
+        If `config` or `client` are provided, they are used exclusively.
         In case of multithread, the environment vars are used.
         The detailed decision can be viewed in :func:`default_base_path`.
 
         :param self: Own object
-        :param base_path: Parent path of ``swingmusic``s config path.
-        :param client_path: Path to static Web client folder.c
+        :param config: Parent path of ``swingmusic``s config path.
+        :param client: Path to static Web client folder.c
         :param fallback: Path to fallback client folder.
         """
 
@@ -209,15 +209,15 @@ class Paths(metaclass=Singleton):
         user's home directory.
         """
 
-        if base_path is not None:
-            self.base_path = base_path.resolve()
+        if config is not None:
+            self.base_path = config.resolve()
         else:
             self.base_path = default_base_path()
 
 
         env_client_dir = os.environ.get("SWINGMUSIC_CLIENT_DIR")
-        if client_path is not None:
-            self.client_path = client_path.resolve()
+        if client is not None:
+            self.client_path = client.resolve()
         elif not env_client_dir is None:
             self.client_path = Path(env_client_dir)
         else:

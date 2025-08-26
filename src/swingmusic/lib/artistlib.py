@@ -175,7 +175,7 @@ class CheckArtistImages:
         :param artist: The artist name
         """
         img_path = (
-            settings.Paths().sm_artist_img_path / f"{artist.artisthash}.webp"
+                settings.Paths().sm_artist_img_path / f"{artist.artisthash}.webp"
         )
 
         if img_path.exists():
