@@ -35,7 +35,7 @@ def config_mimetypes():
     mimetypes.add_type("application/manifest+json", ".webmanifest")
 
 
-def start_swingmusic(host: str, port: int, debug: bool, path:dict[str,Path|None]):
+def start_swingmusic(host: str, port: int, debug: bool, path:dict[str,pathlib.Path|None]):
     """
     Creates and starts the Flask application server for Swing Music.
 
