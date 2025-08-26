@@ -3,9 +3,9 @@
 </div>
 <div align="center" style="font-size: 2rem"><b>Swing Music</b></div>
 
-<div align="center"><b><sub><code>v2.0.3</code></sub></b></div>
+<div align="center"><b><sub><code>v2.0.9</code></sub></b></div>
  
-**<div align="center" style="padding-top: 1.25rem">[Download](https://swingmusic.vercel.app/downloads) • <a href="https://swingmusic.vercel.app/support-us.html" target="_blank">Support Development</a> • [Docs](https://swingmusic.vercel.app/guide/introduction.html) • [Screenshots](https://swingmusic.vercel.app) • [r/SwingMusicApp](https://www.reddit.com/r/SwingMusicApp)</div>**
+**<div align="center" style="padding-top: 1.25rem">[Download](https://swingmx.com/downloads) • [Get Android Client](https://github.com/swingmx/android) •  <a href="https://github.com/sponsors/swingmx" target="_blank">Sponsor Us ❤️</a> • [Docs](https://swingmx.com/guide/introduction.html) • [Screenshots](https://swingmx.com) • [r/SwingMusicApp](https://www.reddit.com/r/SwingMusicApp)</div>**
 
 ##
 
@@ -76,6 +76,8 @@ The app should start at <http://localhost:1970> by default. Open it in your brow
 
 > [!IMPORTANT]
 > The default password for user `admin` is "admin". Please change the password via the settings after first login.
+
+To stream your music from your Android device, you can download the [Android mobile client](https://github.com/swingmx/android).
 
 ### Options
 
@@ -171,9 +173,7 @@ uv run python run.py
 
 ### License
 
-This software is provided to you with terms stated in the MIT License. Read the full text in the `LICENSE` file located at the root of this repository.
-
-[MIT License](https://opensource.org/licenses/MIT) | Copyright (c) 2021 - Present, Mungai Njoroge
+This software is provided to you with terms stated in the [AGPLv3 License](https://github.com/swingmx/swingmusic/blob/master/LICENSE) or any later version. Read the full text in the `LICENSE` file located at the root of this repository.
 
 ### Contributors
 
