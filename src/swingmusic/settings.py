@@ -310,6 +310,10 @@ class Paths(metaclass=Singleton):
 
         assets_source = imres.files("swingmusic") / "assets"
 
+        if self.assets_path.exists():
+            # no need to copy what's already copied
+            return
+
         if assets_source.exists():
             shutil.copytree(
                 Path(assets_source),
