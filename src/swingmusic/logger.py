@@ -201,7 +201,10 @@ def setup_logger(app_dir:Path, debug=False):
         app_name = "swingmusic"
 
     log_dir = Path(app_dir) / app_name / "logs"
-    CONFIG["handlers"]["file"]["filename"] = (log_dir / "log.jsonl").as_posix()
+    if not log_dir.exists():
+        log_dir.mkdir(parents=True)
+
+    CONFIG["handlers"]["file"]["filename"] = log_dir / "log.jsonl"
 
     # enable socket log
     if debug:
