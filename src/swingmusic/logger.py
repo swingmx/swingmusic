@@ -111,6 +111,11 @@ class CustomFormatter(logging.Formatter):
         formatter = logging.Formatter(log_fmt, "%H:%M:%S")
         return formatter.format(record)
 
+    def formatException(self, e):
+        # do not print on cli only in file.
+        # TODO: inform user that non terminal exception happend?
+        return ""
+
 
 CONFIG = {
     "version": 1,
