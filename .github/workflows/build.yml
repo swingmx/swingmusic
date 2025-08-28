@@ -1,4 +1,4 @@
-name: New Release
+name: New Release (v2)
 run-name: Release v${{ github.event.inputs.tag }}
 on:
   workflow_dispatch:
@@ -257,9 +257,15 @@ jobs:
           name: client
           path: client
 
-      - name: Compress client
+      - name: Compress client (Unix)
+        if: runner.os != 'Windows'
         run: |
           zip -r client.zip client
+
+      - name: Compress client (Windows)
+        if: runner.os == 'Windows'
+        run: |
+          Compress-Archive -Path client -DestinationPath client.zip -Force
 
       - name: Download wheel artifact
         uses: actions/download-artifact@v4
