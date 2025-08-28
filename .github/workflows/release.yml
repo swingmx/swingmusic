@@ -51,65 +51,50 @@ jobs:
     steps:
       - name: Clone client
         uses: actions/checkout@v3
-      - name: Setup Node 20
-        uses: actions/setup-node@v3
         with:
-          node-version: 20.x
-      - name: Install yarn
-        run: |
-          npm install -g yarn
-      - name: Clone client
-        run: |
-          git clone https://github.com/cwilvx/swingmusic-client.git
-      - name: Install dependencies & Build client
-        run: |
-          cd swingmusic-client
-          yarn install
-          yarn build --outDir ../client
-          cd ..
+          fetch-tags: true
+
       - name: Install Python 3.11
         uses: actions/setup-python@v2
         with:
           python-version: "3.11.x"
+
       - name: Create virtualenv
         run: |
           python -m venv .venv
+
       - name: Setup Homebrew
         if: ${{ startsWith(matrix.os, 'macos') }}
         uses: Homebrew/actions/setup-homebrew@master
+
       - name: Install libev (macOS)
         if: ${{ startsWith(matrix.os, 'macos') }}
         run: |
           brew install libev
+
       - name: Install libev (Linux)
         if: ${{ startsWith(matrix.os, 'ubuntu') }}
         run: |
           sudo apt-get install libev-dev -y > /dev/null
+
       - name: Activate virtualenv (unix)
         if: ${{ !startsWith(matrix.os, 'win') }}
         run: |
-          source .venv/bin/activate && echo "bjoern==3.2.2" >> requirements.txt
+          source .venv/bin/activate
+
       - name: Activate virtualenv (windows)
         if: ${{ startsWith(matrix.os, 'win') }}
         run: |
-          .venv\Scripts\Activate && echo "waitress==3.0.2" >> requirements.txt
-      - name: Install dependencies
+          .venv\Scripts\Activate
+
+      - name: Install swingmusic
         run: |
-          pip install -r requirements.txt
-      - name: Write version file
-        run: |
-          echo ${{ inputs.tag }} > version.txt
-      # - name: Install Poetry
-      #   run: |
-      #     pip install poetry
-      # - name: Install dependencies
-      #   run: |
-      #     python -m poetry install
+          pip install .
+
       - name: Build server
         run: |
           python run.py --build
-        env:
-          SWINGMUSIC_APP_VERSION: ${{ inputs.tag }}
+
       - name: Rename Unix binary
         if: ${{ !startsWith(matrix.os, 'win') }}
         run: |
@@ -124,6 +109,7 @@ jobs:
           else
             mv dist/swingmusic dist/swingmusic_linux_amd64
           fi
+
       - name: Verify Unix build success
         if: ${{ !startsWith(matrix.os, 'win') }}
         run: |
@@ -150,6 +136,7 @@ jobs:
               exit 1
             fi
           fi
+
       - name: Verify Windows build success
         if: ${{ startsWith(matrix.os, 'win') }}
         run: |
@@ -164,6 +151,7 @@ jobs:
               exit 1
             }
           }
+
       - name: Upload Unix binary
         if: ${{ !startsWith(matrix.os, 'win') }}
         uses: actions/upload-artifact@v4
@@ -171,6 +159,7 @@ jobs:
           name: ${{ matrix.os == 'ubuntu-22.04-arm64' && 'linux-arm64' || matrix.os == 'macos-14' && 'macos-arm64' || matrix.os == 'macos-13' && 'macos-amd64' || 'linux-amd64' }}
           path: ${{ matrix.os == 'ubuntu-22.04-arm64' && 'dist/swingmusic_linux_arm64' || matrix.os == 'macos-14' && 'dist/swingmusic_macos_arm64' || matrix.os == 'macos-13' && 'dist/swingmusic_macos_amd64' || 'dist/swingmusic_linux_amd64' }}
           retention-days: 1
+
       - name: Upload Windows binary
         if: ${{ startsWith(matrix.os, 'win') }}
         uses: actions/upload-artifact@v4
@@ -277,6 +266,7 @@ jobs:
           # list of Docker images to use as base name for tags
           images: |
             ghcr.io/${{ github.repository }}
+
       - name: Build and push
         uses: docker/build-push-action@v2
         with:

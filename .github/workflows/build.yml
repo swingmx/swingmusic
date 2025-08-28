@@ -1,0 +1,305 @@
+name: Build and Upload
+on:
+  workflow_dispatch:
+  release:
+    types:
+      - prereleased
+      - released
+
+env:
+  PIP_USE_PEP517: true
+
+jobs:
+
+  build-client:
+    runs-on: ubuntu-latest
+    name: Build client
+    steps:
+      - name: Clone client
+        uses: actions/checkout@v4
+        with:
+          repository: 'swingmx/webclient'
+          path: swingmusic-client
+
+      - name: Setup Node 20
+        uses: actions/setup-node@v3
+        with:
+          node-version: 20.x
+
+      - name: Install yarn
+        run: |
+          npm install -g yarn
+
+      - name: Install dependencies & Build client
+        run: |
+          cd swingmusic-client
+          yarn install
+          yarn build --outDir ../client
+          cd ..
+
+      - name: Upload client
+        uses: actions/upload-artifact@v4
+        with:
+          path: "client/"
+          compression-level: 0
+          name: 'client'
+
+  build-wheels:
+    name: Build wheels
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout swingmusic
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Build wheels
+        run: pip wheel . -w wheelhouse --no-deps
+
+      - uses: actions/upload-artifact@v4
+        with:
+          # name: cibw-wheels-${{ matrix.os }}-${{ strategy.job-index }}
+          path: ./wheelhouse/*.whl
+          compression-level: 0
+          name: 'wheels'
+
+  build-appimage:
+    name: Build Appimage
+    runs-on: ${{ matrix.os }}
+    needs: [ build-client ]
+
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ ubuntu-latest, ubuntu-24.04-arm]
+
+    steps:
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install linux dependencies
+        run: sudo apt-get install libev-dev libfuse-dev -y > /dev/null
+
+      - name: Checkout swingmusic
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+          sparse-checkout: appimage
+
+      - name: Set architecture-specific variables
+        run: |
+          if ${{ endsWith(matrix.os, 'arm') }}; then
+            echo "APPIMAGE_ARCH=aarch64" >> $GITHUB_ENV
+          else
+            echo "APPIMAGE_ARCH=x86_64" >> $GITHUB_ENV
+          fi
+
+      - name: Install appimage builder
+        run: |
+          pip install python-appimage
+          wget -nv -c "https://github.com/AppImage/AppImageKit/releases/download/continuous/appimagetool-$APPIMAGE_ARCH.AppImage"
+          chmod +x "appimagetool-$APPIMAGE_ARCH.AppImage"
+
+      - name: Download client artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: client
+          path: client
+
+      - name: Download wheel artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: wheels
+          path: wheels
+          merge-multiple: true
+
+      - name: Build appimage
+        run: |
+          python-appimage build app -p 3.11 appimage/ -n "swingmusic-$APPIMAGE_ARCH" -x client --no-packaging
+          pip install --target "swingmusic-$APPIMAGE_ARCH/opt/python3.11/lib/python3.11/" --no-deps --find-links=wheels/ swingmusic
+          ./appimagetool-$APPIMAGE_ARCH.AppImage --no-appstream "swingmusic-$APPIMAGE_ARCH" "swingmusic-${{github.ref_name}}-$APPIMAGE_ARCH.AppImage"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          path: ./swing*.AppImage
+          compression-level: 0
+          name: appimage-${{ env.APPIMAGE_ARCH }}
+
+  docker:
+    name: Build and push Docker image
+    runs-on: ubuntu-latest
+    needs: [ build-client, build-wheels ]
+    permissions: write-all
+
+    steps:
+      - name: Checkout into repo
+        uses: actions/checkout@v3
+
+      - name: Download artifact
+        uses: actions/download-artifact@v4
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v1
+
+      - name: Set up Docker Buildx
+        id: buildx
+        uses: docker/setup-buildx-action@v1
+
+      - name: Login to GHCR
+        uses: docker/login-action@v1
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Docker meta
+        id: meta # you'll use this in the next step
+        uses: docker/metadata-action@v3
+        with:
+          # list of Docker images to use as base name for tags
+          images: |
+            ghcr.io/${{ github.repository }}
+
+      - name: Determine if image should be uploaded
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "UPLOAD=false" >> $GITHUB_ENV
+          else
+            echo "UPLOAD=true" >> $GITHUB_ENV
+          fi
+
+      - name: Build and push
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          platforms: linux/amd64, linux/arm64 #,linux/arm
+          push: ${{ env.UPLOAD }}
+          tags: ghcr.io/${{github.repository}}:${{format('{0}', github.ref_name)}}, ghcr.io/${{github.repository}}:latest
+          labels: org.opencontainers.image.title=Docker
+
+  build-pyinstaller:
+    name: Build binary on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    needs: [ build-client, build-wheels ]
+
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ ubuntu-latest, ubuntu-24.04-arm, windows-latest, windows-11-arm, macos-13, macos-latest ]
+
+    steps:
+      - name: Checkout swingmusic
+        uses: actions/checkout@v4
+        with:
+          sparse-checkout: |
+            swingmusic.spec
+            src/swingmusic/assets
+
+      - name: Install Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11.x"
+
+      - name: Download client artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: client
+          path: client
+
+      - name: Download wheel artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: wheels
+          path: wheels
+          merge-multiple: true
+
+      # install system packages
+      - name: Setup Homebrew
+        if: ${{ startsWith(matrix.os, 'macos') }}
+        uses: Homebrew/actions/setup-homebrew@master
+
+      - name: Install libev (macOS)
+        if: ${{ startsWith(matrix.os, 'macos') }}
+        run: |
+          brew install libev
+
+      - name: Install libev (Linux)
+        if: ${{ startsWith(matrix.os, 'ubuntu') }}
+        run: |
+          sudo apt-get install libev-dev -y > /dev/null
+
+      - name: Install swingmusic
+        run: |
+          pip install --find-links=wheels/ swingmusic[build]
+
+      - name: Build with Pyinstaller on ${{ matrix.os }}
+        run: pyinstaller swingmusic.spec
+
+      - name: upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: Pyinstaller-${{ matrix.os }}
+          path: ./dist/swingmusic_*
+          compression-level: 0
+
+  upload-builds:
+    name: Uploading builds to release
+    runs-on: ubuntu-latest
+    needs: [ build-client, build-wheels, build-pyinstaller, build-appimage ]
+
+    steps:
+      - name: Download client artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: client
+          path: client
+
+      - name: compress client
+        run: |
+          zip -r client.zip client
+          rm -r client
+
+      - name: Download wheel artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: wheels
+          path: wheels
+          merge-multiple: true
+
+      - name: Download all Pyinstaller builds
+        uses: actions/download-artifact@v4
+        with:
+          pattern: Pyinstaller-*
+          path: pyinstaller
+          merge-multiple: true
+
+      - name: Download AppImages build
+        uses: actions/download-artifact@v4
+        with:
+          pattern: appimage*
+          path: appimage
+          merge-multiple: true
+
+      - name: Determine if current run is draft
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "DRAFT=true" >> $GITHUB_ENV
+          else
+            echo "DRAFT=false" >> $GITHUB_ENV
+          fi
+
+      - name: Upload artifacts to GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          draft: ${{ env.DRAFT }}
+          files: |
+            client.zip
+            wheels/**
+            pyinstaller/**
+            appimage/**

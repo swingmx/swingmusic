@@ -1,13 +1,13 @@
 [build-system]
-requires = ["setuptools"]
+requires = ["setuptools", "setuptools-scm"]
 build-backend = "setuptools.build_meta"
 
 [project]
 name = "swingmusic"
-version = "2.0.6"
 description = "Swing Music"
 readme = "README.md"
 requires-python = ">=3.11, <=3.12"
+dynamic = ["version"]
 
 dependencies = [
     "pillow>=11.1.0",
@@ -37,9 +37,13 @@ dependencies = [
     "rapidfuzz==3.11.0",
     "pendulum>=3.0.0",
     "pystray>=0.19.5",
-    "pyinstaller==6.12.0",
     "waitress>=3.0.2; sys_platform == 'win32'",
     "bjoern >=3.2.2; sys_platform != 'win32'"
+]
+
+[project.optional-dependencies]
+build = [
+    "pyinstaller"
 ]
 
 [tool.uv]
@@ -49,7 +53,7 @@ dependency-metadata = [
 ]
 
 [project.scripts]
-swingmusic = "swingmusic.__main__:main"
+swingmusic = "swingmusic.__main__:run"
 
 
 [project.urls]
@@ -59,8 +63,7 @@ Documentation = "https://swingmx.com/guide/introduction.html"
 Issues = "https://github.com/swingmx/swingmusic/issues"
 
 
-[tool.setuptools]
-package-dir = {"swingmusic" = "swingmusic"}
-
-[tool.setuptools.package-data]
-swingmusic = ["client/*"]
+[tool.setuptools_scm]
+version_scheme = "only-version"
+local_scheme = "no-local-version"
+fallback_version = "v0.0.0"

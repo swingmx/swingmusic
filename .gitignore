@@ -2,6 +2,7 @@
 .env.local
 .env.*.local
 venv
+.venv
 
 # Editor directories and files
 .idea
@@ -25,7 +26,7 @@ client
 .gitignore
 
 logs.txt
-*.spec
+
 
 # TODO.md
 testdata.py
@@ -36,3 +37,4 @@ nohup.out
 
 .DS_Store
 *.egg-info
+/wheels/
