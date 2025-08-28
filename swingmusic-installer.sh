@@ -72,15 +72,61 @@ check_requirements() {
     fi
 }
 
+# Install system dependencies (libev)
+install_system_deps() {
+    log_info "Installing system dependencies..."
+    
+    case "$(uname -s)" in
+        Linux*)
+            if command -v apt-get &> /dev/null; then
+                log_info "Installing libev-dev via apt-get..."
+                sudo apt-get update -qq
+                sudo apt-get install -y ffmpeg libev-dev libavcodec-extra
+            elif command -v dnf &> /dev/null; then
+                log_info "Installing libev-devel via dnf..."
+                sudo dnf install -y libev-devel
+            elif command -v pacman &> /dev/null; then
+                log_info "Installing libev via pacman..."
+                sudo pacman -S --noconfirm libev
+            elif command -v yum &> /dev/null; then
+                log_info "Installing libev-devel via yum..."
+                sudo yum install -y libev-devel
+            else
+                log_warning "Could not detect package manager for libev installation"
+                log_info "Please install libev manually and try again"
+                log_info "See README.md for installation instructions"
+            fi
+            ;;
+        Darwin*)
+            if command -v brew &> /dev/null; then
+                log_info "Installing libev via Homebrew..."
+                export HOMEBREW_NO_AUTO_UPDATE=1
+                brew install libev
+            else
+                log_warning "Homebrew not found. Please install libev manually:"
+                log_info "brew install libev"
+                exit 1
+            fi
+            ;;
+        *)
+            log_error "Unsupported operating system for automatic libev installation"
+            log_info "Please install libev manually and try again"
+            exit 1
+            ;;
+    esac
+    
+    log_success "System dependencies installed successfully"
+}
+
 # Download file with fallback
 download_file() {
     local url="$1"
     local output="$2"
     
     if command -v curl &> /dev/null; then
-        curl -sL -o "$output" "$url"
+        curl -L -o "$output" "$url" --progress-bar
     elif command -v wget &> /dev/null; then
-        wget -q -O "$output" "$url"
+        wget -O "$output" "$url" --progress=bar
     else
         log_error "Neither curl nor wget is available"
         exit 1
@@ -171,6 +217,7 @@ install_swingmusic() {
     log_info "Latest version: $latest_version"
     
     local source_url="https://github.com/swingmx/swingmusic/archive/refs/tags/${latest_version}.tar.gz"
+    log_info "Downloading from: $source_url"
     download_file "$source_url" "swingmusic.tar.gz"
     
     # Extract
@@ -195,8 +242,15 @@ install_swingmusic() {
     # Check Python version and create virtual environment if needed
     log_info "Checking Python version..."
     local python_version
-    python_version=$(uv run python --version 2>/dev/null | cut -d' ' -f2)
     
+    # First try to check system Python directly
+    if command -v python3 &> /dev/null; then
+        python_version=$(python3 --version 2>/dev/null | cut -d' ' -f2)
+    elif command -v python &> /dev/null; then
+        python_version=$(python --version 2>/dev/null | cut -d' ' -f2)
+    fi
+    
+    # If no suitable Python found, create venv with specific version
     if [[ -z "$python_version" ]] || [[ ! "$python_version" =~ ^3\.(1[1-9]|[2-9][0-9]) ]]; then
         log_info "Python 3.11+ not found, creating virtual environment with Python 3.11..."
         UV_VENV_CLEAR=1 uv venv --python 3.11
@@ -281,6 +335,9 @@ main() {
     local platform
     platform=$(detect_platform)
     log_info "Detected platform: $platform"
+    
+    # Install system dependencies
+    install_system_deps
     
     # Install uv
     install_uv
