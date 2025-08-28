@@ -36,7 +36,7 @@ def load_user_artist_ignore_list() -> set[str]:
     Loads the user-defined artist ignore list from the config directory.
     Returns an empty set if the file doesn't exist.
     """
-    user_file = Paths().app_dir / "artist_split_ignore.txt"
+    user_file = Paths().config_dir / "artist_split_ignore.txt"
     if user_file.exists():
         lines = user_file.read_text().splitlines()
         return set([ line.strip() for line in lines if line.strip()])

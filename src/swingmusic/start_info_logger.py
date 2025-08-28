@@ -18,4 +18,4 @@ def log_startup_info(host: str, port: int):
             f"{TCOLOR.OKGREEN}http://{address}:{port}{TCOLOR.ENDC}"
         )
 
-    print(f"\n{TCOLOR.YELLOW}Data folder: {Paths().app_dir}{TCOLOR.ENDC}\n")
+    print(f"\n{TCOLOR.YELLOW}Data folder: {Paths().config_dir}{TCOLOR.ENDC}\n")

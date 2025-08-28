@@ -1,16 +1,41 @@
-name: Build and Upload
+name: New Release
+run-name: Release v${{ github.event.inputs.tag }}
 on:
   workflow_dispatch:
-  release:
-    types:
-      - prereleased
-      - released
+    inputs:
+      tag:
+        description: "Version number"
+        required: true
+        default: "0.0.0"
+      binary_build:
+        description: "Build binaries"
+        required: true
+        default: "true"
+        type: choice
+        options:
+          - true
+          - false
+      is_latest:
+        description: "Set as latest"
+        required: true
+        default: "false"
+        type: choice
+        options:
+          - true
+          - false
+      build_docker:
+        description: "Build Docker image"
+        required: true
+        type: choice
+        default: "true"
+        options:
+          - true
+          - false
 
 env:
   PIP_USE_PEP517: true
 
 jobs:
-
   build-client:
     runs-on: ubuntu-latest
     name: Build client
@@ -18,7 +43,7 @@ jobs:
       - name: Clone client
         uses: actions/checkout@v4
         with:
-          repository: 'swingmx/webclient'
+          repository: "swingmx/webclient"
           path: swingmusic-client
 
       - name: Setup Node 20
@@ -42,11 +67,12 @@ jobs:
         with:
           path: "client/"
           compression-level: 0
-          name: 'client'
+          name: "client"
 
   build-wheels:
     name: Build wheels
     runs-on: ubuntu-latest
+    needs: [build-client]
 
     steps:
       - name: Checkout swingmusic
@@ -54,9 +80,25 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Download client artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: client
+          path: client
+
+      - name: Compress client and copy to src/swingmusic/client.zip
+        run: |
+          zip -r client.zip client
+          rm -r client
+          cp client.zip src/swingmusic/client.zip
+
       - uses: actions/setup-python@v5
         with:
-          python-version: '3.11'
+          python-version: "3.11"
+
+      - name: Create git tag
+        run: |
+          git tag v${{ github.event.inputs.tag }}
 
       - name: Build wheels
         run: pip wheel . -w wheelhouse --no-deps
@@ -66,22 +108,23 @@ jobs:
           # name: cibw-wheels-${{ matrix.os }}-${{ strategy.job-index }}
           path: ./wheelhouse/*.whl
           compression-level: 0
-          name: 'wheels'
+          name: "wheels"
 
   build-appimage:
     name: Build Appimage
     runs-on: ${{ matrix.os }}
-    needs: [ build-client ]
+    needs: [build-client]
+    if: ${{ github.event.inputs.binary_build == 'true' }}
 
     strategy:
       fail-fast: false
       matrix:
-        os: [ ubuntu-latest, ubuntu-24.04-arm]
+        os: [ubuntu-latest, ubuntu-24.04-arm]
 
     steps:
       - uses: actions/setup-python@v5
         with:
-          python-version: '3.11'
+          python-version: "3.11"
 
       - name: Install linux dependencies
         run: sudo apt-get install libev-dev libfuse-dev -y > /dev/null
@@ -134,8 +177,9 @@ jobs:
   docker:
     name: Build and push Docker image
     runs-on: ubuntu-latest
-    needs: [ build-client, build-wheels ]
+    needs: [build-client, build-wheels]
     permissions: write-all
+    if: ${{ github.event.inputs.build_docker == 'true' }}
 
     steps:
       - name: Checkout into repo
@@ -166,32 +210,33 @@ jobs:
           images: |
             ghcr.io/${{ github.repository }}
 
-      - name: Determine if image should be uploaded
-        run: |
-          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
-            echo "UPLOAD=false" >> $GITHUB_ENV
-          else
-            echo "UPLOAD=true" >> $GITHUB_ENV
-          fi
-
       - name: Build and push
         uses: docker/build-push-action@v6
         with:
           context: .
           platforms: linux/amd64, linux/arm64 #,linux/arm
-          push: ${{ env.UPLOAD }}
+          push: true
           tags: ghcr.io/${{github.repository}}:${{format('{0}', github.ref_name)}}, ghcr.io/${{github.repository}}:latest
           labels: org.opencontainers.image.title=Docker
 
   build-pyinstaller:
     name: Build binary on ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
-    needs: [ build-client, build-wheels ]
+    needs: [build-client, build-wheels]
+    if: ${{ github.event.inputs.binary_build == 'true' }}
 
     strategy:
       fail-fast: false
       matrix:
-        os: [ ubuntu-latest, ubuntu-24.04-arm, windows-latest, windows-11-arm, macos-13, macos-latest ]
+        os:
+          [
+            ubuntu-latest,
+            ubuntu-24.04-arm,
+            windows-latest,
+            windows-11-arm,
+            macos-13,
+            macos-latest,
+          ]
 
     steps:
       - name: Checkout swingmusic
@@ -211,6 +256,10 @@ jobs:
         with:
           name: client
           path: client
+
+      - name: Compress client
+        run: |
+          zip -r client.zip client
 
       - name: Download wheel artifact
         uses: actions/download-artifact@v4
@@ -251,7 +300,7 @@ jobs:
   upload-builds:
     name: Uploading builds to release
     runs-on: ubuntu-latest
-    needs: [ build-client, build-wheels, build-pyinstaller, build-appimage ]
+    needs: [build-client, build-wheels, build-pyinstaller, build-appimage]
 
     steps:
       - name: Download client artifact
@@ -286,18 +335,15 @@ jobs:
           path: appimage
           merge-multiple: true
 
-      - name: Determine if current run is draft
-        run: |
-          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
-            echo "DRAFT=true" >> $GITHUB_ENV
-          else
-            echo "DRAFT=false" >> $GITHUB_ENV
-          fi
-
       - name: Upload artifacts to GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          draft: ${{ env.DRAFT }}
+          draft: true
+          name: ${{ format('v{0}',github.event.inputs.tag) }}
+          body_path: .github/changelog.md
+          fail_on_unmatched_files: true
+          target_commitish: ${{ github.sha }}
+          make_latest: ${{github.event.inputs.is_latest == 'true' }}
           files: |
             client.zip
             wheels/**

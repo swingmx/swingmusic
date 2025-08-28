@@ -60,7 +60,7 @@ def config_jwt(web):
             return user.todict()
 
 
-def load_endpoints(web):
+def load_endpoints(web: OpenAPI):
     # Register all the API blueprints
     with web.app_context():
         web.register_api(swing_api.album.api)
@@ -88,7 +88,7 @@ def load_endpoints(web):
         web.register_api(swing_api.auth.api)
 
 
-def load_plugins(web):
+def load_plugins(web: OpenAPI):
         # TODO: rework plugin support
         # Plugins
         web.register_api(swing_api.plugins.api)
@@ -165,7 +165,7 @@ def serve_client_files(path: str):
     # INFO: Safari doesn't support gzip encoding
     # See issue: https://github.com/swingmx/swingmusic/issues/155
     user_agent = request.headers.get("User-Agent", "")
-    if "Safari" in user_agent and not "Chrome" in user_agent:
+    if "Safari" in user_agent and "Chrome" not in user_agent:
         return app.send_static_file(path)
 
     if "gzip" in request.headers.get("Accept-Encoding", ""):
@@ -200,7 +200,6 @@ def build() -> OpenAPI:
 
     # set late state config
     app.static_folder = Paths().client_path
-    log.info(f"Serving client from '{app.static_folder}'")
 
     @app.before_request
     def verify_auth():

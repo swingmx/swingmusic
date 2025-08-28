@@ -229,4 +229,3 @@ def setup_logger(app_dir:Path, debug=False):
 
     global log
     log = logging.getLogger(__name__)
-    log.info("setup successfully")

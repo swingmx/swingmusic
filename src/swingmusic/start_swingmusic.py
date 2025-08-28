@@ -1,16 +1,15 @@
-from swingmusic import settings, app_builder
+import socket
+import sys
+from swingmusic import app_builder
 from swingmusic.crons import start_cron_jobs
 from swingmusic.plugins.register import register_plugins
 from swingmusic.setup import load_into_mem, run_setup
 from swingmusic.start_info_logger import log_startup_info
 from swingmusic.utils.threading import background
-from swingmusic.logger import setup_logger
 
-import pathlib
 import setproctitle
 
 import mimetypes
-
 
 
 def config_mimetypes():
@@ -35,7 +34,24 @@ def config_mimetypes():
     mimetypes.add_type("application/manifest+json", ".webmanifest")
 
 
-def start_swingmusic(host: str, port: int, path:dict[str,pathlib.Path|None]):
+class PortManager:
+    def __init__(self, host: str):
+        self.host = host
+
+    def test_port(self, port: int):
+        try:
+            http_server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            http_server.bind((self.host, port))
+            http_server.close()
+            return True
+        except socket.error as e:
+            if e.errno == 48:
+                return False
+            else:
+                raise e
+
+
+def start_swingmusic(host: str, port: int):
     """
     Creates and starts the Flask application server for Swing Music.
 
@@ -51,13 +67,20 @@ def start_swingmusic(host: str, port: int, path:dict[str,pathlib.Path|None]):
 
     :param host: The host address to bind the server to (e.g., 'localhost' or '0.0.0.0')
     :param port: The port number to run the server on
-    :param path: dict with all path config
     """
+
+    port_manager = PortManager(host)
+
+    # Try starting a server on port 1970
+    # If it fails, exit with error
+    if not port_manager.test_port(port):
+        print(f"Error 48: Port {port} already in use.")
+        print("Please specify a different port using the --port argument.")
+        sys.exit(1)
 
     # Example: Setting up dirs, database, and loading stuff into memory.
     # TIP: Be careful with the order of the setup functions.
     # NOTE: concurrent and multithreading create own sys.modules -> no globals
-    settings.Paths(**path)
 
     config_mimetypes()
     run_setup()
@@ -68,7 +91,6 @@ def start_swingmusic(host: str, port: int, path:dict[str,pathlib.Path|None]):
 
         setproctitle.setproctitle(f"swingmusic {host}:{port}")
         start_cron_jobs()
-
 
     app = app_builder.build()
 

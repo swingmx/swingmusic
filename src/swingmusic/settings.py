@@ -4,10 +4,12 @@ All Variables should be read only after an initial set.
 
 Contains default configs
 """
+
 import io
 import multiprocessing
 import pathlib
 import shutil
+import sys
 import tempfile
 import zipfile
 from pathlib import Path
@@ -23,6 +25,7 @@ log = logging.getLogger(__name__)
 #  Meta-classes  #
 # # # # # # # # #
 
+
 class Singleton(type):
     _instances = {}
 
@@ -31,144 +34,135 @@ class Singleton(type):
             cls._instances[cls] = super(Singleton, cls).__call__(*args, **kwargs)
         return cls._instances[cls]
 
+
 # # # # # # # #
 # Downloader  #
 # # # # # # # #
 
-def populate_client(path:Path) -> bool:
+
+class AssetHandler:
+    """
+    Handles all assets configuration
+    """
+
+    CLIENT_RELEASES_URL = (
+        "https://api.github.com/repos/swingmx/swingmusic/releases/latest"
+    )
+
+    @staticmethod
+    def copy_assets_dir():
         """
-        Checks if client folder contains content.
-        Client needs to have at least an index.html file.
-        If not, latest client is parsed from GitHub builds.
-
-        :param path: path to client folder
-        :return: True if successful else False
+        Copies assets to the app directory.
         """
 
-        CLIENT_RELEASES_URL = "https://api.github.com/repos/michilyy/swingmusic/releases/latest"
-        # TODO: update to real client repo
+        assets_source = imres.files("swingmusic") / "assets"
+        assets_path = Paths().assets_path
+        # INFO: this only works for wheels and source
+        # TODO: Handle this for pyinstaller builds
 
-        # TODO: check for new releases. Currently only download when client is not found
-        # TODO: move this outside. `Paths` only does path routing.
+        if assets_path.exists():
+            # no need to copy what's already copied?
+            return
 
-        index = path / "index.html"
-        if not index.exists():
-            log.warning(f"'index.html' could not be found in '{path.as_posix()}'.")
-            log.warning("Try downloading latest client from GitHub.")
-            try:
+        if assets_source.exists():
+            shutil.copytree(
+                Path(assets_source),
+                assets_path,
+                ignore=shutil.ignore_patterns(
+                    "*.pyc",
+                ),
+                copy_function=shutil.copy2,
+                dirs_exist_ok=True,
+            )
+        else:
+            log.error(f"Assets dir could not be found: {assets_source.as_posix()}")
 
-                answer = requests.get(CLIENT_RELEASES_URL).json()
+    @staticmethod
+    def extract_default_client(path: Path) -> bool:
+        """
+        Extracts the default client which is bundled with the wheel
+        into the swingmusic client folder.
+        """
+        # INFO: Locate the client.zip file using imres, extract it to the swingmusic client folder
+        client_zip_path = imres.files("swingmusic") / "client.zip"
+        if not client_zip_path.exists():
+            log.error("Client zip could not be found. Please provide a valid path.")
+            return False
 
-                for asset in answer["assets"]:
-                    if asset["name"] == "client.zip":
-                        # download and convert client
-                        client = requests.get(asset["browser_download_url"])
-                        mem_file = io.BytesIO(client.content)
-                        file = zipfile.ZipFile(mem_file)
-
-                        # create new dir for extraction
-                        log.info(f"Storing client in '{path.as_posix()}'.")
-                        with tempfile.TemporaryDirectory() as temp_folder:
-                            file.extractall(temp_folder)
-
-                            shutil.copytree(
-                                Path(temp_folder) / "client",
-                                path,
-                                copy_function=shutil.copy2,
-                                dirs_exist_ok=True,
-                            )
-
-                        break
-
-            except (requests.exceptions.RequestException, KeyError, requests.exceptions.ConnectionError)as e:
-                log.error(f"Client could not be downloaded from releases. NETWORK ERROR", exc_info=e)
-                return False
-            except requests.exceptions.InvalidJSONError as e:
-                log.error(f"Client could not be downloaded from releases. JSON ERROR", exc_info=e)
-                return False
-            except zipfile.BadZipfile as e:
-                log.error(f"Client could not be unpacked. ZIP ERROR", exc_info=e)
-                return False
+        with zipfile.ZipFile(client_zip_path, "r") as zip_ref:
+            zip_ref.extractall(path)
 
         return True
 
-# # # # # # # # #
-#  Path  Logic  #
-# # # # # # # # #
+    @staticmethod
+    def download_client_from_github():
+        """
+        Downloads the latest supported client from Github
+        and places it in the swingmusic client folder.
+        """
+        path = Paths().config_parent / "client"
 
-def default_client_path(app_dir:Path, fallback_client:Path|None=None) -> Path:
-    """
-    | Calculates the default config path for ``client``.
-    | Checks for the first valid path.
+        try:
+            answer = requests.get(AssetHandler.CLIENT_RELEASES_URL).json()
 
-    Check order:
+            for asset in answer["assets"]:
+                if asset["name"] == "client.zip":
+                    # download and convert client
+                    client = requests.get(asset["browser_download_url"])
+                    mem_file = io.BytesIO(client.content)
+                    file = zipfile.ZipFile(mem_file)
 
-    1. Env:``SWINGMUSIC_CLIENT_DIR``
-    2. if ``<app_dir>/client/`` exists
-        1. use ``<app_dir>/client/``
-    3. if ``<app_dir>/client/`` not exists
-        1. try downloading client from GitHub
-        2. if successful
-            1. use ``<app_dir>/client/``
-        3. if not successful
-            1. use ``<fallback_client>``
+                    # create new dir for extraction
+                    log.info(f"Storing client in '{path.as_posix()}'.")
+                    with tempfile.TemporaryDirectory() as temp_folder:
+                        file.extractall(temp_folder)
 
-    :param app_dir:
-    :param fallback_client: optional path to client. Used in pyinstaller/AppImage build
-    :return: Calculated Path
-    """
+                        shutil.copytree(
+                            Path(temp_folder) / "client",
+                            path,
+                            copy_function=shutil.copy2,
+                            dirs_exist_ok=True,
+                        )
 
-    client_path = app_dir / 'client'
+                    break
 
-    env_client_dir = os.environ.get("SWINGMUSIC_CLIENT_DIR")
+        except (
+            requests.exceptions.RequestException,
+            KeyError,
+            requests.exceptions.ConnectionError,
+        ) as e:
+            log.error(
+                "Client could not be downloaded from releases. NETWORK ERROR",
+                exc_info=e,
+            )
+            return False
+        except requests.exceptions.InvalidJSONError as e:
+            log.error(
+                "Client could not be downloaded from releases. JSON ERROR",
+                exc_info=e,
+            )
+            return False
+        except zipfile.BadZipfile as e:
+            log.error("Client could not be unpacked. ZIP ERROR", exc_info=e)
+            return False
 
-    if not env_client_dir is None:
-        return Path(env_client_dir)
+    @classmethod
+    def setup_default_client(cls):
+        """
+        Runs on startup to ensure the default client is present.
+        """
+        client_path = Paths().client_path
+        extracted = False
 
+        if not client_path.exists() or not (client_path / "index.html").exists():
+            extracted = cls.extract_default_client(Paths().config_dir)
 
-    if (client_path / "index.html").exists():
-        return client_path
-    else:
-        if populate_client(client_path):
-            return client_path
-        elif fallback_client is not None:
-            return fallback_client
-        else:
-            raise NotImplementedError(f"Client could not be determined. Neither download or fallback.")
+        if not extracted:
+            extracted = cls.download_client_from_github()
 
-
-def default_base_path() -> pathlib.Path:
-    """
-    | Calculates the default config path for ``swingmusic``.
-    | Checks for the first valid path.
-    | If no Path is valid, will use Home dir (4.)
-
-    Check order:
-
-    1. Env:``SWINGMUSIC_CONFIG_DIR``
-    2. Env:``xdg_config_home``
-    3. <User Home>/.config
-    4. <User Home>
-
-    :return: Calculated Path
-    """
-
-    swing_xdg_config_home = os.environ.get("SWINGMUSIC_CONFIG_DIR")
-    xdg_config_home = os.environ.get("xdg_config_home")
-    alt_dir = pathlib.Path.home() / ".config"
-
-    base_path = pathlib.Path.home()
-
-    if not swing_xdg_config_home is None:
-        base_path = pathlib.Path(swing_xdg_config_home)
-
-    elif not xdg_config_home is None:
-        base_path = pathlib.Path(xdg_config_home)
-
-    elif alt_dir.exists():
-        base_path = alt_dir
-
-    return base_path
+        if not (client_path / "index.html").exists():
+            log.error("Web client not found. Exiting ...")
+            sys.exit(1)
 
 
 class Paths(metaclass=Singleton):
@@ -183,13 +177,21 @@ class Paths(metaclass=Singleton):
     You cannot change the config path later.
     """
 
-    base_path:Path = Path.home().resolve()
+    config_parent: Path = Path.home().resolve()
+    """
+    The parent directory of the config folder.
+    This is the directory where the config folder is located.
+    """
+
     USER_HOME_DIR = Path.home().resolve()
     APP_DB_NAME = "swingmusic.db"
     USER_DATA_DB_NAME = "userdata.db"
 
-
-    def __init__(self, config:Path|None=None, client:Path|None=None, fallback:Path|None=None):
+    def __init__(
+        self,
+        config_parent: Path | None = None,
+        client_dir: Path | None = None,
+    ):
         """
         Create config-folder structure and check permissions.
         Copy all assets if needed.
@@ -210,34 +212,63 @@ class Paths(metaclass=Singleton):
         user's home directory.
         """
 
-        if config is not None:
-            self.base_path = config.resolve()
+        if config_parent is not None:
+            self.config_parent = config_parent.resolve()
         else:
-            self.base_path = default_base_path()
-
-        env_client_dir = os.environ.get("SWINGMUSIC_CLIENT_DIR")
-        if client is not None:
-            self.client_path = client.resolve()
-        elif not env_client_dir is None:
-            self.client_path = Path(env_client_dir)
-        else:
-            self.client_path = default_client_path(self.app_dir, fallback)
+            self.config_parent = Paths.get_default_config_parent_dir()
 
         if multiprocessing.current_process().name == "MainProcess":
+            # INFO: Setup client path
+            env_client_dir = os.environ.get("SWINGMUSIC_CLIENT_DIR")
+            if client_dir is not None:
+                self.client_path = client_dir.resolve()
+            elif env_client_dir is not None:
+                self.client_path = Path(env_client_dir).resolve()
+            else:
+                self.client_path = self.config_dir / "client"
+
             # Path copy only on MainProcess
-            if not self.app_dir.exists():
-                self.app_dir.mkdir(parents=True)
+            if not self.config_dir.exists():
+                self.config_dir.mkdir(parents=True)
 
             # TODO: find a platform independent way to access module globals like `Paths`
             # TODO: move this into multithreading management class
-            os.environ["SWINGMUSIC_CONFIG_DIR"] = self.base_path.resolve().as_posix()
+            os.environ["SWINGMUSIC_CONFIG_DIR"] = (
+                self.config_parent.resolve().as_posix()
+            )
             os.environ["SWINGMUSIC_CLIENT_DIR"] = self.client_path.resolve().as_posix()
 
-            self.mkdir_config_folders()
-            self.copy_assets_dir()
+            self.setup_config_dirs()
 
+    @classmethod
+    def get_default_config_parent_dir(cls) -> pathlib.Path:
+        """
+        Determines the default config path in the following order:
 
-    def mkdir_config_folders(self):
+        1. Env:``SWINGMUSIC_CONFIG_DIR``
+        2. Env:``xdg_config_home``
+        3. <User Home>/.config
+        4. <User Home>
+
+        :return: First valid path
+        """
+
+        config_dir_from_env = os.environ.get("SWINGMUSIC_CONFIG_DIR")
+        xdg_config_home = os.environ.get("XDG_CONFIG_HOME")
+
+        if config_dir_from_env is not None:
+            return pathlib.Path(config_dir_from_env)
+
+        if xdg_config_home is not None:
+            return pathlib.Path(xdg_config_home)
+
+        fallback_dir = pathlib.Path.home() / ".config"
+        if fallback_dir.exists():
+            return fallback_dir
+
+        return pathlib.Path.home()
+
+    def setup_config_dirs(self):
         """
         Create the config/cache folder structure.
 
@@ -262,10 +293,9 @@ class Paths(metaclass=Singleton):
                 └───lyrics
         """
 
-
         # all dirs relative to `swingmusic` config dir
         dirs = [
-            "",                                 # `swingmusic` or `.swingmusic`
+            "",  # `swingmusic` or `.swingmusic`
             "plugins/lyrics",
             "images/playlists",
             "images/thumbnails/small",
@@ -282,7 +312,7 @@ class Paths(metaclass=Singleton):
         ]
 
         for folder in dirs:
-            path = self.base_path / self.config_folder_name / folder
+            path = self.config_parent / self.config_folder_name / folder
             if not path.exists():
                 path.mkdir(parents=True)
                 path.chmod(mode=0o755)
@@ -290,7 +320,9 @@ class Paths(metaclass=Singleton):
         # Empty files to create
         empty_files = [
             # artist split ignore list
-            self.app_dir / "data" / "artist_split_ignore.txt" # TODO: use USERCONFIG -> circular import error
+            self.config_dir
+            / "data"
+            / "artist_split_ignore.txt"  # TODO: use USERCONFIG -> circular import error
         ]
 
         for file in empty_files:
@@ -301,32 +333,6 @@ class Paths(metaclass=Singleton):
                 file.parent.mkdir(parents=True, exist_ok=True)
                 file.touch()
 
-
-    def copy_assets_dir(self):
-        """
-        Copies assets to the app directory.
-        """
-
-        assets_source = imres.files("swingmusic") / "assets"
-
-        if self.assets_path.exists():
-            # no need to copy what's already copied
-            return
-
-        if assets_source.exists():
-            shutil.copytree(
-                Path(assets_source),
-                self.assets_path,
-                ignore=shutil.ignore_patterns(
-                    "*.pyc",
-                ),
-                copy_function=shutil.copy2,
-                dirs_exist_ok=True,
-            )
-        else:
-            log.error(f"Assets dir could not be found: {assets_source.as_posix()}")
-
-
     @property
     def config_folder_name(self) -> str:
         """
@@ -335,18 +341,18 @@ class Paths(metaclass=Singleton):
         When the base path is the same as the home dir,
         it returns `.swingmusic` else `swingmusic`
         """
-        if self.base_path == self.USER_HOME_DIR:
+        if self.config_parent == self.USER_HOME_DIR:
             return ".swingmusic"
         else:
             return "swingmusic"
 
     @property
-    def app_dir(self) -> Path:
-        return self.base_path / self.config_folder_name
+    def config_dir(self) -> Path:
+        return self.config_parent / self.config_folder_name
 
     @property
     def img_path(self) -> Path:
-        return self.app_dir / "images"
+        return self.config_dir / "images"
 
     # ARTISTS
     @property
@@ -384,7 +390,7 @@ class Paths(metaclass=Singleton):
 
     @property
     def lg_thumb_path(self) -> pathlib.Path:
-        return self.thumbs_path/ "large"
+        return self.thumbs_path / "large"
 
     # OTHERS
     @property
@@ -393,11 +399,11 @@ class Paths(metaclass=Singleton):
 
     @property
     def assets_path(self) -> pathlib.Path:
-        return self.app_dir / "assets"
+        return self.config_dir / "assets"
 
     @property
     def plugins_path(self) -> pathlib.Path:
-        return self.app_dir / "plugins"
+        return self.config_dir / "plugins"
 
     @property
     def lyrics_plugins_path(self) -> pathlib.Path:
@@ -405,23 +411,23 @@ class Paths(metaclass=Singleton):
 
     @property
     def config_file_path(self) -> pathlib.Path:
-        return self.app_dir/ "settings.json"
+        return self.config_dir / "settings.json"
 
     @property
     def mixes_img_path(self) -> pathlib.Path:
-        return self.img_path/ "mixes"
+        return self.img_path / "mixes"
 
     @property
     def artist_mixes_img_path(self) -> pathlib.Path:
-        return self.mixes_img_path/ "artists"
+        return self.mixes_img_path / "artists"
 
     @property
     def og_mixes_img_path(self) -> pathlib.Path:
-        return self.mixes_img_path/ "original"
+        return self.mixes_img_path / "original"
 
     @property
     def md_mixes_img_path(self) -> pathlib.Path:
-        return self.mixes_img_path/ "medium"
+        return self.mixes_img_path / "medium"
 
     @property
     def sm_mixes_img_path(self) -> pathlib.Path:
@@ -433,15 +439,15 @@ class Paths(metaclass=Singleton):
 
     @property
     def app_db_path(self):
-        return Paths().app_dir / self.APP_DB_NAME
+        return Paths().config_dir / self.APP_DB_NAME
 
     @property
     def userdata_db_path(self):
-        return Paths().app_dir / self.USER_DATA_DB_NAME
+        return Paths().config_dir / self.USER_DATA_DB_NAME
 
     @property
     def json_config_path(self):
-        return Paths().app_dir / "config.json"
+        return Paths().config_dir / "config.json"
 
 
 # # # # # # # # # # # # #
@@ -477,6 +483,7 @@ class Defaults:
     API_ARTISTNAME = "Polo G"
     API_TRACKNAME = "Martin & Gina"
     API_CARD_LIMIT = 6
+
 
 class TCOLOR:
     """

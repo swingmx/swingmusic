@@ -6,7 +6,7 @@ build-backend = "setuptools.build_meta"
 name = "swingmusic"
 description = "Swing Music"
 readme = "README.md"
-requires-python = ">=3.11, <=3.12"
+requires-python = ">=3.11, <=3.12.9"
 dynamic = ["version"]
 
 dependencies = [
@@ -38,7 +38,8 @@ dependencies = [
     "pendulum>=3.0.0",
     "pystray>=0.19.5",
     "waitress>=3.0.2; sys_platform == 'win32'",
-    "bjoern >=3.2.2; sys_platform != 'win32'"
+    "bjoern >=3.2.2; sys_platform != 'win32'",
+    "pyinstaller>=6.12.0",
 ]
 
 [project.optional-dependencies]

@@ -1,1 +1,1 @@
-exec "${APPDIR}/usr/bin/python" -m swingmusic --fallback-client "${APPDIR}/client" "$@"
+exec "${APPDIR}/usr/bin/python" -m swingmusic --client "${APPDIR}/client" "$@"
