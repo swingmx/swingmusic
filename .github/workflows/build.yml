@@ -361,3 +361,4 @@ jobs:
             wheels/**
             pyinstaller/**
             appimage/**
+          token: ${{ secrets.GITHUB_TOKEN }}

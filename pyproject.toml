@@ -6,7 +6,7 @@ build-backend = "setuptools.build_meta"
 name = "swingmusic"
 description = "Swing Music"
 readme = "README.md"
-requires-python = ">=3.11, <=3.12.9"
+requires-python = ">=3.11"
 dynamic = ["version"]
 
 dependencies = [
