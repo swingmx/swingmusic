@@ -86,6 +86,10 @@ class AssetHandler:
         # INFO: Locate the client.zip file using imres, extract it to the swingmusic client folder
         client_zip_path = imres.files("swingmusic") / "client.zip"
         if not client_zip_path.exists():
+            # INFO: if client path contains an index.html file, return true
+            if (path / "index.html").exists():
+                return True
+
             log.error("Client zip could not be found. Please provide a valid path.")
             return False
 
