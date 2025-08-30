@@ -348,17 +348,15 @@ jobs:
           merge-multiple: true
 
       - name: Upload artifacts to GitHub Release
-        uses: softprops/action-gh-release@v2
+        uses: ncipollo/release-action@v1
         with:
+          allowUpdates: true
           draft: true
           name: ${{ format('v{0}',github.event.inputs.tag) }}
-          body_path: .github/changelog.md
-          fail_on_unmatched_files: true
-          target_commitish: ${{ github.sha }}
-          make_latest: ${{github.event.inputs.is_latest == 'true' }}
-          files: |
-            client.zip
-            wheels/**
-            pyinstaller/**
-            appimage/**
+          tag: ${{ format('v{0}',github.event.inputs.tag) }}
+          bodyFile: .github/changelog.md
+          artifactErrorsFailBuild: true
+          commit: ${{ github.sha }}
+          makeLatest: ${{github.event.inputs.is_latest == 'true'}}
+          artifacts: "client.zip,wheels/*,pyinstaller/*,appimage/*"
           token: ${{ secrets.GITHUB_TOKEN }}
