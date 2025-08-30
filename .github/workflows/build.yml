@@ -359,4 +359,4 @@ jobs:
           commit: ${{ github.sha }}
           makeLatest: ${{github.event.inputs.is_latest == 'true'}}
           artifacts: "client.zip,wheels/*,pyinstaller/*,appimage/*"
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.PAT }}
