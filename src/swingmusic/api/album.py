@@ -2,19 +2,17 @@
 Contains all the album routes.
 """
 
-from dataclasses import asdict
-from pprint import pprint
 import random
+from dataclasses import asdict
 
-from pydantic import BaseModel, Field
 from flask_openapi3 import Tag
+from pydantic import BaseModel, Field
 from flask_openapi3 import APIBlueprint
 from swingmusic.api.apischemas import AlbumHashSchema, AlbumLimitSchema, ArtistHashSchema
 
 from swingmusic.config import UserConfig
 from swingmusic.db.userdata import SimilarArtistTable
 from swingmusic.models.album import Album
-from swingmusic.settings import Defaults
 from swingmusic.store.albums import AlbumStore
 from swingmusic.store.artists import ArtistStore
 from swingmusic.store.tracks import TrackStore
