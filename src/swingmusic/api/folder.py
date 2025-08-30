@@ -107,7 +107,7 @@ def get_folder_tree(body: FolderTree):
             )
 
             return {
-                "path": req_dir,
+                "path": f"$playlist/{playlist.name}",
                 "folders": [],
                 "tracks": serialize_tracks(tracks),
             }
