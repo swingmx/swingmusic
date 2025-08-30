@@ -27,7 +27,7 @@ on:
         description: "Build Docker image"
         required: true
         type: choice
-        default: "true"
+        default: "false"
         options:
           - true
           - false
@@ -166,7 +166,7 @@ jobs:
         run: |
           python-appimage build app -p 3.11 appimage/ -n "swingmusic-$APPIMAGE_ARCH" -x client --no-packaging
           pip install --target "swingmusic-$APPIMAGE_ARCH/opt/python3.11/lib/python3.11/" --no-deps --find-links=wheels/ swingmusic
-          ./appimagetool-$APPIMAGE_ARCH.AppImage --no-appstream "swingmusic-$APPIMAGE_ARCH" "swingmusic-${{github.ref_name}}-$APPIMAGE_ARCH.AppImage"
+          ./appimagetool-$APPIMAGE_ARCH.AppImage --no-appstream "swingmusic-$APPIMAGE_ARCH" "swingmusic-v${{inputs.tag}}-$APPIMAGE_ARCH.AppImage"
 
       - uses: actions/upload-artifact@v4
         with:
