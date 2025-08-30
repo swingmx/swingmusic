@@ -95,7 +95,6 @@ def get_files_and_dirs(
         elif entry.is_file() and ext in SUPPORTED_FILES:
             files.append(entry)
 
-    """
     # sort files by most recent
     # TODO: rework if realy needed.
     files_with_mtime = []
@@ -112,7 +111,6 @@ def get_files_and_dirs(
 
     files_with_mtime.sort(key=lambda f: f["time"])
     files = [f["path"] for f in files_with_mtime]
-    """
 
     # if supported files were found
     # convert files to tracks

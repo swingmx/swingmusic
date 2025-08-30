@@ -69,14 +69,14 @@ def start_swingmusic(host: str, port: int):
     :param port: The port number to run the server on
     """
 
-    port_manager = PortManager(host)
+    # port_manager = PortManager(host)
 
     # Try starting a server on port 1970
     # If it fails, exit with error
-    if not port_manager.test_port(port):
-        print(f"Error 48: Port {port} already in use.")
-        print("Please specify a different port using the --port argument.")
-        sys.exit(1)
+    # if not port_manager.test_port(port):
+    #     print(f"Error 48: Port {port} already in use.")
+    #     print("Please specify a different port using the --port argument.")
+    #     sys.exit(1)
 
     # Example: Setting up dirs, database, and loading stuff into memory.
     # TIP: Be careful with the order of the setup functions.
