@@ -67,3 +67,8 @@ Issues = "https://github.com/swingmx/swingmusic/issues"
 version_scheme = "only-version"
 local_scheme = "no-local-version"
 fallback_version = "v0.0.0"
+
+[dependency-groups]
+dev = [
+    "twine>=6.1.0",
+]

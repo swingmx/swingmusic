@@ -31,6 +31,14 @@ on:
         options:
           - true
           - false
+      publish_pypi:
+        description: "Publish to PyPI"
+        required: true
+        type: choice
+        default: "false"
+        options:
+          - true
+          - false
 
 env:
   PIP_USE_PEP517: true
@@ -360,3 +368,24 @@ jobs:
           makeLatest: ${{github.event.inputs.is_latest == 'true'}}
           artifacts: "client.zip,wheels/*,pyinstaller/*,appimage/*"
           token: ${{ secrets.PAT }}
+
+  publish-pypi:
+    name: Publish to PyPI
+    runs-on: ubuntu-latest
+    needs: [build-wheels]
+    if: ${{ github.event.inputs.publish_pypi == 'true' }}
+    permissions:
+      id-token: write
+    
+    steps:
+      - name: Download wheel artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: wheels
+          path: dist
+          merge-multiple: true
+      
+      - name: Publish to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          verbose: true

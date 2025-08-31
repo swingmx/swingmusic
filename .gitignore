@@ -40,3 +40,4 @@ nohup.out
 /wheels/
 client.zip
 *.whl
+.pypirc
