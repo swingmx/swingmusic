@@ -28,7 +28,7 @@ The data folder is used to store all the files and data used in Swing Music. Thi
 
 This folder contains a few folders inside:
 
-- `/assets` - stores static assets used by the clients. THink logos, etc.
+- `/assets` - stores static assets used by the clients. Think logos, etc.
 - `/images` - stores thumbnails, artist images and playlist covers.
 - `/plugins` - stores data used by plugins
 

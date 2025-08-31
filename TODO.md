@@ -1,3 +1,29 @@
+# @michily TODO
+
+## UI
+* Auto update WebUI - version check + api missing
+* Web UI - Remove https from index.html for http support?
+* Web UI could use continues build like https://github.com/AppImage/AppImageKit/releases/download/continuous/
+* Web UI - playlist not shown in folder view
+* rework argparse with subparser. Currently not clear what commands allow what args
+
+## Building:
+* AppImage build is currently broken view [python-appimage: Issues 95](https://github.com/niess/python-appimage/issues/94) aka I bypassed it.
+* Optimise docker/speed build up
+
+## Server:
+* Rework song name/autor/.. parsing to only support filetags. Only fall back when user-enabled and manual regex is set. see Telegram
+* Publish this on PyPi
+
+## Multithreading
+* Multiprocessing creates new paths - sync between processes. <- env is recommended.
+* Fix singleton global in multiprocessing - own process, own memory, own sys.modules cache <- env is recommended.
+
+## Auth:
+* more multiuser control
+* audit log
+* one auth method for all e.g. jwt in Header?
+
 # TODO
 
 - Migrations:
@@ -14,6 +40,7 @@
 - Disable the watchdog by default, and mark it as experimental
 - rename userid to server id in config file
 - Look into seeding jwts using user password + server id
+
 
 <!-- CHECKPOINT -->
 <!-- ALBUM PAGE! -->

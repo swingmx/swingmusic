@@ -1,0 +1,1 @@
+exec "${APPDIR}/usr/bin/python" -m swingmusic --client "${APPDIR}/client" "$@"
