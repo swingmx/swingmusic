@@ -96,7 +96,6 @@ def get_files_and_dirs(
             files.append(entry)
 
     # sort files by most recent
-    # TODO: rework if realy needed.
     files_with_mtime = []
     for file in files:
         try:

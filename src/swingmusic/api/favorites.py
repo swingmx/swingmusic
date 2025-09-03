@@ -8,7 +8,7 @@ from swingmusic.api.apischemas import GenericLimitSchema
 from swingmusic.db.userdata import FavoritesTable
 from swingmusic.lib.extras import get_extra_info
 from swingmusic.models import FavType
-from swingmusic.settings import Defaults
+from swingmusic.shared import Defaults
 
 from swingmusic.store.albums import AlbumStore
 from swingmusic.store.artists import ArtistStore

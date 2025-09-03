@@ -5,7 +5,8 @@ from flask_openapi3 import APIBlueprint
 from pydantic import BaseModel, Field
 from flask import send_from_directory
 
-from swingmusic.settings import Defaults, Paths
+from swingmusic.settings import Paths
+from swingmusic.shared import Defaults
 from swingmusic.store.albums import AlbumStore
 from swingmusic.store.tracks import TrackStore
 from swingmusic.utils.threading import background

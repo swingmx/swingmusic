@@ -16,7 +16,7 @@ from flask import request, Response, send_from_directory
 from swingmusic.lib.trackslib import get_silence_paddings
 
 from swingmusic.store.tracks import TrackStore
-from swingmusic.utils.files import guess_mime_type
+from swingmusic.utils.filesystem import guess_mime_type
 
 bp_tag = Tag(name="File", description="Audio files")
 api = APIBlueprint("track", __name__, url_prefix="/file", abp_tags=[bp_tag])

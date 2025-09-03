@@ -4,7 +4,7 @@ Reusable Pydantic basic schemas for the API
 
 from pydantic import BaseModel, Field
 
-from swingmusic.settings import Defaults
+from swingmusic.shared import Defaults
 
 
 class AlbumHashSchema(BaseModel):

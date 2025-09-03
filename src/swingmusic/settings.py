@@ -17,7 +17,7 @@ import os
 import logging
 import requests
 from importlib import resources as imres
-
+from swingmusic.shared import Singleton
 
 log = logging.getLogger(__name__)
 

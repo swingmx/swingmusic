@@ -5,7 +5,7 @@ from swingmusic.api.apischemas import TrackHashSchema
 from swingmusic.lib.lyrics import Lyrics as Lyrics_class
 
 from swingmusic.plugins.lyrics import Lyrics
-from swingmusic.settings import Defaults
+from swingmusic.shared import Defaults
 from swingmusic.utils.hashing import create_hash
 
 bp_tag = Tag(name="Lyrics Plugin", description="Musixmatch lyrics plugin")

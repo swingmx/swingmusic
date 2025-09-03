@@ -1,4 +1,5 @@
-from swingmusic.settings import TCOLOR, Paths
+from swingmusic.settings import Paths
+from swingmusic.shared import TCOLOR
 from swingmusic.utils.network import get_ip
 from importlib import metadata
 

@@ -12,7 +12,7 @@ from swingmusic import models
 from swingmusic.api.apischemas import GenericLimitSchema
 from swingmusic.lib import searchlib
 from swingmusic.serializers.artist import serialize_for_cards
-from swingmusic.settings import Defaults
+from swingmusic.shared import Defaults
 from swingmusic.store.tracks import TrackStore
 
 

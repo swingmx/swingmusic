@@ -12,6 +12,7 @@ from PIL import Image, PngImagePlugin, UnidentifiedImageError
 from requests.exceptions import ConnectionError as RequestConnectionError
 from requests.exceptions import ReadTimeout
 
+import swingmusic.shared
 from swingmusic import settings
 from swingmusic.models.artist import Artist
 from swingmusic.store.artists import ArtistStore
@@ -101,8 +102,8 @@ class DownloadImage:
 
         entries = [
             (lg_path, None),  # save in the original size
-            (sm_path, settings.Defaults.SM_ARTIST_IMG_SIZE),
-            (md_path, settings.Defaults.MD_ARTIST_IMG_SIZE),
+            (sm_path, swingmusic.shared.Defaults.SM_ARTIST_IMG_SIZE),
+            (md_path, swingmusic.shared.Defaults.MD_ARTIST_IMG_SIZE),
         ]
 
         self.save_img(img, entries)

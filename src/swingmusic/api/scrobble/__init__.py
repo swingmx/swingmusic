@@ -17,7 +17,7 @@ from swingmusic.plugins.lastfm import LastFmPlugin
 from swingmusic.serializers.artist import serialize_for_card
 from swingmusic.serializers.album import serialize_for_card as serialize_for_album_card
 from swingmusic.serializers.track import serialize_track, serialize_tracks
-from swingmusic.settings import Defaults
+from swingmusic.shared import Defaults
 from swingmusic.store.albums import AlbumStore
 from swingmusic.store.artists import ArtistStore
 from swingmusic.store.tracks import TrackStore

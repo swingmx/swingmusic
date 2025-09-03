@@ -11,7 +11,8 @@ from PIL import Image, UnidentifiedImageError
 from tinytag import TinyTag
 
 from swingmusic.config import UserConfig
-from swingmusic.settings import Defaults, Paths
+from swingmusic.settings import Paths
+from swingmusic.shared import Defaults
 from swingmusic.utils.hashing import create_hash
 from swingmusic.utils.parsers import split_artists
 

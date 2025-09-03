@@ -1,5 +1,6 @@
 import os
 from pathlib import Path
+import mimetypes
 
 
 FILES = ["flac", "mp3", "wav", "m4a", "ogg", "wma", "opus", "alac", "aiff"]
@@ -86,3 +87,16 @@ def run_fast_scandir(path: str, full=False) -> tuple[list[str], list[str]]:
         return [], []
 
     return subfolders, files
+
+
+def guess_mime_type(filename: str):
+    """
+    Guess the mime type of a file.
+    """
+    type = mimetypes.guess_type(filename)[0]
+
+    if type is None:
+        ext = filename.rsplit(".", maxsplit=1)[-1]
+        return f"audio/{ext}"
+
+    return type
