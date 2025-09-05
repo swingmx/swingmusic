@@ -41,11 +41,6 @@ dependencies = [
     "bjoern >=3.2.2; sys_platform != 'win32'",
 ]
 
-[project.optional-dependencies]
-build = [
-    "pyinstaller"
-]
-
 [tool.uv]
 dependency-metadata = [
     { name = "waitress", version = "3.0.2", requires-dist = [], requires-python = ">=3.11" },
@@ -63,6 +58,9 @@ Documentation = "https://swingmx.com/guide/introduction.html"
 Issues = "https://github.com/swingmx/swingmusic/issues"
 
 
+[tool.setuptools.package-data]
+swingmusic = ["*.zip"]
+
 [tool.setuptools_scm]
 version_scheme = "only-version"
 local_scheme = "no-local-version"
@@ -71,4 +69,9 @@ fallback_version = "v0.0.0"
 [dependency-groups]
 dev = [
     "twine>=6.1.0",
+    "pyinstaller",
+    "ruff"
 ]
+
+[tool.ruff]
+lint.extend-select = ["I"]

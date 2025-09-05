@@ -30,3 +30,22 @@ def get_ip():
     soc.close()
 
     return ip_address
+
+
+def is_address_used(host:str, port: int) -> False:
+    """
+    Tests if address on host is used
+
+    :returns: True if used else False
+    :raises socket.error:
+    """
+    try:
+        http_server = Socket.socket(Socket.AF_INET, Socket.SOCK_STREAM)
+        http_server.bind((host, port))
+        http_server.close()
+        return False
+    except Socket.error as e:
+        if e.errno == 48:
+            return True
+        else:
+            raise e

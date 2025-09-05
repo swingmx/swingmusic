@@ -1,10 +1,9 @@
-import socket
-import sys
 from swingmusic import app_builder
 from swingmusic.crons import start_cron_jobs
 from swingmusic.plugins.register import register_plugins
 from swingmusic.setup import load_into_mem, run_setup
 from swingmusic.start_info_logger import log_startup_info
+from swingmusic.utils import assets
 from swingmusic.utils.threading import background
 
 import setproctitle
@@ -14,9 +13,9 @@ import mimetypes
 
 def config_mimetypes():
     # Load mimetypes for the web client's static files
-    # Loading mimetypes should happen automaticaly but
+    # Loading mimetypes should happen automatically but
     # sometimes the mimetypes are not loaded correctly
-    # eg. when the Registry is messed up on Windows.
+    # e.g. when the Registry on Windows is messed up.
 
     # See the following issues:
     # https://github.com/swingmx/swingmusic/issues/137
@@ -32,23 +31,6 @@ def config_mimetypes():
     mimetypes.add_type("image/gif", ".gif")
     mimetypes.add_type("font/woff", ".woff")
     mimetypes.add_type("application/manifest+json", ".webmanifest")
-
-
-class PortManager:
-    def __init__(self, host: str):
-        self.host = host
-
-    def test_port(self, port: int):
-        try:
-            http_server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            http_server.bind((self.host, port))
-            http_server.close()
-            return True
-        except socket.error as e:
-            if e.errno == 48:
-                return False
-            else:
-                raise e
 
 
 def start_swingmusic(host: str, port: int):
@@ -69,18 +51,10 @@ def start_swingmusic(host: str, port: int):
     :param port: The port number to run the server on
     """
 
-    # port_manager = PortManager(host)
+    assets.setup_config_dirs()
+    assets.copy_assets_dir()
 
-    # Try starting a server on port 1970
-    # If it fails, exit with error
-    # if not port_manager.test_port(port):
-    #     print(f"Error 48: Port {port} already in use.")
-    #     print("Please specify a different port using the --port argument.")
-    #     sys.exit(1)
 
-    # Example: Setting up dirs, database, and loading stuff into memory.
-    # TIP: Be careful with the order of the setup functions.
-    # NOTE: concurrent and multithreading create own sys.modules -> no globals
 
     config_mimetypes()
     run_setup()

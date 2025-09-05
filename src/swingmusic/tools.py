@@ -28,13 +28,13 @@ def handle_password_reset(config_parent: Path):
 
         if not user:
             print(f"User {username} not found")
-            return
+            return 1
 
         password = getpass("Enter new password: ")
 
     except KeyboardInterrupt:
         print("\nOperation cancelled! Exiting ...")
-        return
+        return 1
 
     try:
         UserTable.update_one({"id": user.id, "password": hash_password(password)})

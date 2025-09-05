@@ -1,19 +1,8 @@
-"""
-This file contains classes, metaclasses and functions to provide a multiprocessing save way to user configuration.
-Metaclasses:
-> Singleton
-
-
-Default Globals:
->
-"""
-
+# Only external imports - circular import error
+import multiprocessing as mp
 import os
-
-
-# # # # # # # # #
-#  Meta-classes #
-# # # # # # # # #
+from pathlib import Path
+# ----- Metaclasses -----
 
 
 class Singleton(type):
@@ -25,9 +14,7 @@ class Singleton(type):
         return cls._instances[cls]
 
 
-# # # # # # # # # # # # #
-# Default and Konstants #
-# # # # # # # # # # # # #
+# ----- Default and Constants -----
 
 
 class Defaults:
@@ -75,3 +62,84 @@ class TCOLOR:
     BOLD = "\033[1m"
     UNDERLINE = "\033[4m"
     # credits: https://stackoverflow.com/a/287944
+
+
+# ----- Config Store for multithreading -----
+
+def is_main_process() -> bool:
+    """
+    Test if current process is main process.
+
+    :returns: True if main process else False
+    """
+    return mp.current_process().name == "MainProcess"
+
+def main_protection(func) -> callable:
+    """
+    decorator only allows action when process is main process.
+
+    :returns: wrapper function
+    """
+
+    def wrapper(*args, **kwargs):
+        if is_main_process():
+            func(*args, **kwargs)
+        else:
+            raise RuntimeWarning("You are trying to set a variable in a forked process. Values are not saved!")
+
+    return wrapper
+
+class EnvStore(metaclass=Singleton):
+    """
+    This class stores variables in a multiprocessing save way.
+    Vars can only be written in the main process, other resolve to exception.
+    """
+
+    # config used in class
+    env_name = "SWINGMUSIC_STORE_"
+
+    def __init__(self, config:Path|None=None):
+
+        if mp.current_process() == "MainProcess":
+            if config is None:
+                raise ValueError("client or config cannot be None")
+            else:
+                self["SWINGMUSIC_STORE_CONFIG_DIR"] = config
+
+    @main_protection
+    def __setitem__(self, key, value):
+        key = self.env_name + str(key)
+        if key in os.environ:
+            raise KeyError("Key already exists and cannot be overwritten")
+        else:
+            os.environ[key] = str(value)
+
+    def __getitem__(self, item):
+        key = self.env_name  + str(item)
+        if key in os.environ:
+            return os.environ[key]
+        else:
+            raise KeyError(f"Key '{key}' could not be found in EnvStore")
+
+    @main_protection
+    def __delitem__(self, key):
+        del self[key]
+
+    @main_protection
+    def __setattr__(self, key, value):
+        self[key] = value
+
+    def __getattr__(self, item):
+        return self[item]
+
+    @main_protection
+    def __delattr__(self, item):
+        del self[item]
+
+    def __iter__(self):
+        for key, value in os.environ.items():
+            if key.startswith(self.env_name):
+                yield key,value
+
+    def __contains__(self, item):
+        return item in os.environ
