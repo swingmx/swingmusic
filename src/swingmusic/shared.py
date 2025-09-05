@@ -100,7 +100,7 @@ class EnvStore(metaclass=Singleton):
 
     def __init__(self, config:Path|None=None):
 
-        if mp.current_process() == "MainProcess":
+        if mp.current_process().name == "MainProcess":
             if config is None:
                 raise ValueError("client or config cannot be None")
             else:

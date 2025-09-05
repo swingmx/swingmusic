@@ -48,8 +48,8 @@ class Paths(metaclass=Singleton):
         """
 
         store = EnvStore()
-        self.config_parent = store["CONFIG_DIR"]
-        self.client_path = store["CLIENT_DIR"]
+        self.config_parent = Path(store["CONFIG_DIR"])
+        self.client_path = Path(store["CLIENT_DIR"])
 
     @property
     def config_folder_name(self) -> str:

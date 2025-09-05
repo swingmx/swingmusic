@@ -70,18 +70,19 @@ def run(*args, **kwargs):
 
     else:
         # calculate config and client path and store globally.
-        config_path = fsys.get_default_config_path(args["config"])
+        config_path = fsys.get_default_config_path(args["config"]).resolve()
         setup_logger(debug=args["debug"], app_dir=config_path)
         store = shared.EnvStore(config_path)
 
         if args["client"] is not None:
             if fsys.validate_client_path(args["client"]):
-                store["CLIENT_DIR"] = args["client"]
+                store["CLIENT_DIR"] = pathlib.Path(args["client"]).resolve()
             else:
-                print(shared.TCOLOR.FAIL + "User provided web client path is not valid." + shared.TCOLOR.ENDC)
+                print(shared.TCOLOR.BOLD + shared.TCOLOR.FAIL + f"The client path '{args['client']}' is not valid.")
+                print("Please update the client path. Exiting" + shared.TCOLOR.ENDC)
                 return 1
         else:
-            store["CLIENT_DIR"] = fsys.get_default_client_path(config_path)
+            store["CLIENT_DIR"] = fsys.get_default_client_path(config_path).resolve()
 
 
         host = args["host"]
@@ -90,7 +91,8 @@ def run(*args, **kwargs):
         if not network.is_address_used(host, port):
             return start_swingmusic(host=host, port=port)
         else:
-            print(shared.TCOLOR.FAIL + f"Provided address '{host}:{port}'" + shared.TCOLOR.ENDC)
+            print(shared.TCOLOR.FAIL + f"Provided address '{host}:{port}' is already used.")
+            print("Please either update the 'host' or 'port'. Exiting." + shared.TCOLOR.ENDC)
             return 1
 
 
