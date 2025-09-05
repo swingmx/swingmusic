@@ -104,7 +104,7 @@ class EnvStore(metaclass=Singleton):
             if config is None:
                 raise ValueError("client or config cannot be None")
             else:
-                self["SWINGMUSIC_STORE_CONFIG_DIR"] = config
+                self["CONFIG_DIR"] = config
 
     @main_protection
     def __setitem__(self, key, value):
