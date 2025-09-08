@@ -310,13 +310,13 @@ def get_lyrics_from_tags(trackhash: str) -> Lyrics:
     if entry is None:
         return Lyrics()
 
+    lyrics = ""
     for track in entry.tracks:
-        if "lyrics" in track.extra:
-            lyrics = track.extra["lyrics"]
-            if lyrics:
-                return Lyrics(lyrics)
+        for key, item in track.extra.items():
+            if "lyrics" in key:
+                lyrics = lyrics + f"[00:00.00]Your lyrics could be tagged with {key}\n"
 
-    return Lyrics("")
+    return Lyrics(lyrics)
 
 
 def check_lyrics_file(filepath: str, trackhash: str):
