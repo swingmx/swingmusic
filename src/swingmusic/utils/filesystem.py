@@ -91,17 +91,20 @@ def run_fast_scandir(path: str, full=False) -> tuple[list[str], list[str]]:
 
     return subfolders, files
 
-def guess_mime_type(filename: str):
+def guess_mime_type(filename: str) -> str:
     """
     Guess the mime type of file.
-    """
-    type = mimetypes.guess_type(filename)[0]
 
-    if type is None:
+    :params filename: name of file
+    :returns: 'audio/{guessed mime}'
+    """
+    mtype = mimetypes.guess_type(filename)[0]
+
+    if mtype is None:
         ext = filename.rsplit(".", maxsplit=1)[-1]
         return f"audio/{ext}"
 
-    return type
+    return mtype
 
 def validate_client_path(path:Path) -> bool:
     """
