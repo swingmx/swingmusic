@@ -85,9 +85,9 @@ def get_folder_tree(body: FolderTree):
     results = {
         "path": req_dir,
         "folders": [],
-        "tracks": []
+        "tracks": [],
+        "count": 0
     }
-
 
     if req_dir.startswith("$playlist"):
         splits = req_dir.split("/")
@@ -150,21 +150,27 @@ def get_folder_tree(body: FolderTree):
 
             results["folders"].insert(0, playlists_item)
             results["folders"].insert(0, favorites_item)
-            results["folders"].extend(get_folders(root_dirs))
 
-        results["folders"].extend( get_folders(root_dirs) )
+        # show source folder in $home
+        # direct enter root if only one root
+        #
+
+        results["folders"].extend(get_folders(root_dirs))
+
+        if len(root_dirs) == 1:
+            results["path"] = root_dirs[0]
 
         if "$home" in root_dirs:
             req_dir = settings.Paths().USER_HOME_DIR.as_posix()
+            root_dirs.remove("$home")
         else:
             return results
 
-
-    # TODO: ?path on unix systems would sometimes resolve relative
+    # TODO?: path on unix systems would sometimes resolve relative
     if not pathlib.Path(req_dir).exists():
         req_dir = "/" + req_dir
 
-    results = get_files_and_dirs(
+    found = get_files_and_dirs(
         pathlib.Path(req_dir),
         start=body.start,
         limit=body.limit,
@@ -175,22 +181,12 @@ def get_folder_tree(body: FolderTree):
         foldersort_reverse=body.foldersort_reverse,
     )
 
-    if og_req_dir == "$home" and config.showPlaylistsInFolderView:
-        # Get all playlists and return them as a list of folders
-        playlists_item = {
-            "name": "Playlists",
-            "path": "$playlists",
-            "trackcount": sum(p.count for p in PlaylistTable.get_all()),
-        }
-
-        favorites_item = {
-            "name": "Favorites",
-            "path": "$favorites",
-            "trackcount": FavoritesTable.get_fav_tracks(0, -1)[1],
-        }
-
-        results["folders"].insert(0, playlists_item)
-        results["folders"].insert(0, favorites_item)
+    # merge results with findings
+    for key, item in found.items():
+        if isinstance(item, list):
+            results[key].extend(item)
+        else:
+            results[key] = item
 
     return results
 
