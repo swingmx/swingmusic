@@ -153,16 +153,11 @@ def get_folder_tree(body: FolderTree):
 
         # show source folder in $home
         # direct enter root if only one root
-        #
 
         results["folders"].extend(get_folders(root_dirs))
 
-        if len(root_dirs) == 1:
-            results["path"] = root_dirs[0]
-
         if "$home" in root_dirs:
             req_dir = settings.Paths().USER_HOME_DIR.as_posix()
-            root_dirs.remove("$home")
         else:
             return results
 
