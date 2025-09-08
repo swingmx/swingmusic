@@ -1,0 +1,67 @@
+name: Bug report
+description: File a bug report.
+title: "[Bug]: "
+labels: [""]
+projects: [""]
+body:
+  - type: dropdown
+    id: dist
+    attributes:
+      label: What package do you use?
+      description: What package did you use to install swingmusic?
+      multiple: false
+      options:
+        - "Pyinstaller (win: .exe, mac/linux: no extension)"
+        - AppImage
+        - Wheel / pip
+        - Docker
+        - Source
+      default: 0
+    validations:
+      required: true
+
+  - type: input
+    id: os-version
+    attributes:
+      label: What OS are you using?
+      description: On what version and OS did the error occur?
+      placeholder: Windows 11
+    validations:
+      required: true
+
+
+  - type: input
+    id: version
+    attributes:
+      label: Version
+      description: What version of swingmusic did you run?
+    validations:
+      required: true
+
+  - type: dropdown
+    id: browsers
+    attributes:
+      label: Where did the bug happen?
+      multiple: true
+      options:
+        - Firefox
+        - Chrome
+        - Safari
+        - Microsoft Edge
+        - Android
+
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened?
+      description: What ?
+      placeholder: Tell us what you see!
+    validations:
+      required: true
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: Relevant log output
+      description: Please copy and paste any relevant log output. This will be automatically formatted into code, so no need for backticks.
+      render: shell
