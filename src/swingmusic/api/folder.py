@@ -151,14 +151,19 @@ def get_folder_tree(body: FolderTree):
             results["folders"].insert(0, playlists_item)
             results["folders"].insert(0, favorites_item)
 
-        # show source folder in $home
-        # direct enter root if only one root
+        sourced_folders = get_folders(root_dirs)
 
-        results["folders"].extend(get_folders(root_dirs))
-
+        # display tracks in home if in root_dir
         if "$home" in root_dirs:
             req_dir = settings.Paths().USER_HOME_DIR.as_posix()
+
+        # enter folder if only one
+        elif len(sourced_folders) == 1:
+            results["path"] = sourced_folders[0].path
+            req_dir = sourced_folders[0].path
+
         else:
+            results["folders"].extend(get_folders(sourced_folders))
             return results
 
     # TODO?: path on unix systems would sometimes resolve relative
