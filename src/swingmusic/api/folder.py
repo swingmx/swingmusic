@@ -76,28 +76,24 @@ def get_folder_tree(body: FolderTree):
 
     Returns a list of all the folders and tracks in the given folder.
     """
-    og_req_dir = body.folder
     req_dir = body.folder
     tracks_only = body.tracks_only
 
     config = UserConfig()
     root_dirs = config.rootDirs
 
-    if req_dir == "$home" and "$home" in root_dirs:
-        req_dir = settings.Paths().USER_HOME_DIR.as_posix()
+    results = {
+        "path": req_dir,
+        "folders": [],
+        "tracks": []
+    }
 
-    if req_dir == "$home":
-            folders = get_folders(root_dirs)
-
-            return {
-                "folders": folders,
-                "tracks": [],
-            }
 
     if req_dir.startswith("$playlist"):
         splits = req_dir.split("/")
 
         if len(splits) == 2:
+            # return requests playlist
             pid = splits[1]
             playlist = PlaylistTable.get_by_id(int(pid))
             tracks = TrackStore.get_tracks_by_trackhashes(
@@ -106,45 +102,65 @@ def get_folder_tree(body: FolderTree):
                 ]
             )
 
-            return {
-                "path": f"$playlist/{playlist.name}",
-                "folders": [],
-                "tracks": serialize_tracks(tracks),
-            }
+            results["path"] = f"$playlist/{playlist.name}"
+            results["tracks"] = serialize_tracks(tracks)
 
-        playlists = PlaylistTable.get_all()
-        playlists = sorted(
-            playlists,
-            key=lambda p: datetime.strptime(p.last_updated, "%Y-%m-%d %H:%M:%S"),
-            reverse=True,
-        )
+        else:
+            # return overview of playlist
+            playlists = PlaylistTable.get_all()
+            playlists = sorted(
+                playlists,
+                key=lambda p: datetime.strptime(p.last_updated, "%Y-%m-%d %H:%M:%S"),
+                reverse=True,
+            )
 
-        return {
-            "path": req_dir,
-            "folders": [
-                {
-                    "name": p.name,
-                    "path": f"$playlist/{p.id}",
-                    "trackcount": p.count,
-                }
-                for p in playlists
-            ],
-            "tracks": [],
-        }
+            results["folders"] = [
+                    {
+                        "name": p.name,
+                        "path": f"$playlist/{p.id}",
+                        "trackcount": p.count,
+                    }
+                    for p in playlists
+                ]
+
+        return results
 
     if req_dir == "$favorites":
         tracks, total = FavoritesTable.get_fav_tracks(body.start, body.limit)
         tracks = TrackStore.get_tracks_by_trackhashes([t.hash for t in tracks])
 
-        return {
-            "tracks": serialize_tracks(tracks),
-            "folders": [],
-            "path": req_dir,
-        }
+        results["tracks"] = serialize_tracks(tracks)
+        return results
 
-    # TODO: currently only fixed on unix. Windows/Mac still pending.
-    # note
+    if req_dir == "$home":
 
+        if config.showPlaylistsInFolderView:
+            # extend results with playlists and favs
+            playlists_item = {
+                "name": "Playlists",
+                "path": "$playlists",
+                "trackcount": sum(p.count for p in PlaylistTable.get_all()),
+            }
+
+            favorites_item = {
+                "name": "Favorites",
+                "path": "$favorites",
+                "trackcount": FavoritesTable.get_fav_tracks(0, -1)[1],
+            }
+
+            results["folders"].insert(0, playlists_item)
+            results["folders"].insert(0, favorites_item)
+            results["folders"].extend(get_folders(root_dirs))
+
+        results["folders"].extend( get_folders(root_dirs) )
+
+        if "$home" in root_dirs:
+            req_dir = settings.Paths().USER_HOME_DIR.as_posix()
+        else:
+            return results
+
+
+    # TODO: ?path on unix systems would sometimes resolve relative
     if not pathlib.Path(req_dir).exists():
         req_dir = "/" + req_dir
 

@@ -24,7 +24,7 @@ def create_folder(path: str, trackcount=0) -> Folder:
     )
 
 
-def get_folders(paths: list[str]):
+def get_folders(paths: list[str]) -> list:
     """
     Filters out folders that don't have any tracks and
     returns a list of folder objects.
@@ -96,7 +96,6 @@ def get_files_and_dirs(
             files.append(entry)
 
     # sort files by most recent
-    # TODO: rework if realy needed.
     files_with_mtime = []
     for file in files:
         try:
