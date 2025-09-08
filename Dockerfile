@@ -19,4 +19,4 @@ rm -rf /var/lib/apt/lists/*
 RUN pip install --no-cache-dir --find-links=wheels/ swingmusic
 Run rm -rf /app/swingmusic/wheels
 
-ENTRYPOINT ["python", "-m", "swingmusic", "--host", "0.0.0.0", "--config", "/config", "--client", "/config/client"]
+ENTRYPOINT ["python", "-m", "swingmusic", "--host", "0.0.0.0", "--config", "/config"]
