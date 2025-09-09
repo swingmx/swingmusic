@@ -4,6 +4,15 @@ title: "[Bug]: "
 labels: [""]
 projects: [""]
 body:
+  - type: input
+    id: os-version
+    attributes:
+      label: What OS are you using?
+      description: On what version and OS did the error occur?
+      placeholder: Windows 11
+    validations:
+      required: true
+
   - type: dropdown
     id: dist
     attributes:
@@ -21,14 +30,12 @@ body:
       required: true
 
   - type: input
-    id: os-version
+    id: command
     attributes:
-      label: What OS are you using?
-      description: On what version and OS did the error occur?
-      placeholder: Windows 11
+      label: Used command
+      description: What command if any did you use to launch swingmusic
     validations:
-      required: true
-
+      required: false
 
   - type: input
     id: version
