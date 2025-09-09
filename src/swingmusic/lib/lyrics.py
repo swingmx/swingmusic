@@ -204,6 +204,7 @@ class Lyrics:
         lyrics = []
 
         time_tags = parse_time_tag(self.parsed_lyrics)
+        colour = "blue"
 
         for entry in time_tags:
             minutes = entry["minute"]
@@ -225,7 +226,18 @@ class Lyrics:
                 offset = int(self.meta["offset"])  # offset in milliseconds
 
             milliseconds = seconds * 1000 - offset
-            lyrics.append({"time": milliseconds, "text": entry["body"]})
+
+            text = entry["body"].lower()
+            if "m:" in text:
+                colour = "blue"
+            elif "f:" in text:
+                colour = "red"
+            elif "d:":
+                colour = "pink"
+
+            text = f"<a style='color: light{colour};'>'" + entry["body"] + "</p>"
+
+            lyrics.append({"time": milliseconds, "text": text})
 
         return lyrics
 
