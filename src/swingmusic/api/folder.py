@@ -171,11 +171,14 @@ def get_folder_tree(body: FolderTree):
 
         # enter folder if only one
         elif len(sourced_folders) == 1:
+            log.debug(f"found only folder '{sourced_folders[0]}'")
+
             results["path"] = sourced_folders[0].path
             req_dir = sourced_folders[0].path
 
         else:
             results["folders"].extend(get_folders(sourced_folders))
+
             log.debug("returning home", extra=results)
             return results
 
