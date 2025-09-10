@@ -1,7 +1,9 @@
+import logging
+
 from flask_openapi3 import Tag
 from flask_openapi3 import APIBlueprint
 from pydantic import Field
-
+import logging
 from swingmusic.store.tracks import TrackStore
 from swingmusic.api.apischemas import TrackHashSchema
 from swingmusic.lib.lyrics import (
@@ -13,6 +15,7 @@ from swingmusic.lib.lyrics import (
 bp_tag = Tag(name="Lyrics", description="Get lyrics")
 api = APIBlueprint("lyrics", __name__, url_prefix="/lyrics", abp_tags=[bp_tag])
 
+log = logging.getLogger(__name__)
 
 class SendLyricsBody(TrackHashSchema):
     filepath: str = Field(description="The path to the file")
@@ -31,6 +34,8 @@ def send_lyrics(body: SendLyricsBody):
     filepath = body.filepath
     trackhash = body.trackhash
 
+    log.debug(f"requesting lyrics from filepath:'{filepath}' with trackhash:'{trackhash}'")
+
     # get copyright first
     copyright = ""
     if entry:=TrackStore.trackhashmap.get(trackhash, None):
@@ -41,17 +46,20 @@ def send_lyrics(body: SendLyricsBody):
                 break
 
     lyrics = get_lyrics_file(filepath)
+    log.debug("lyrics file result", extra={"lyrics": lyrics})
 
     if not lyrics:
         lyrics = get_lyrics_from_tags(trackhash) # type: ignore
+        log.debug("lyrics tag result", extra={"lyrics": lyrics})
 
     if not lyrics:
         lyrics = get_lyrics_from_duplicates(filepath, trackhash)
+        log.debug("lyrics duplicate result", extra={"lyrics": lyrics})
 
 
     # check lyrics plugins
-
     if not lyrics:
+        log.debug("No lyrics could be found")
         return {"error": "No lyrics found"}
 
     if lyrics.is_synced:

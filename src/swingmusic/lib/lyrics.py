@@ -1,9 +1,12 @@
 import datetime
 import pathlib
 from pathlib import Path
+import logging
 
 from swingmusic.store.tracks import TrackStore
 
+
+log = logging.getLogger(__name__)
 
 # # # # # # # # # # # # # # # # # # # #
 # Functions for parsing lyrics lines  #
@@ -307,14 +310,21 @@ def get_lyrics_from_tags(trackhash: str) -> Lyrics:
 
     entry = TrackStore.trackhashmap.get(trackhash, None)
 
+    log.debug("Lyrics from tag", extra={"entry": entry})
+
     if entry is None:
         return Lyrics()
+
+    lyrics_tag = {"lyrics", "unsyncedlyrics", "sylt", "uslt"}
+
 
     lyrics = ""
     for track in entry.tracks:
         for key, item in track.extra.items():
-            if "lyrics" in key:
-                lyrics = lyrics + f"[00:00.00]Your lyrics could be tagged with {key}\n"
+            for support in lyrics_tag:
+                if support in key:
+                    print(f"Key: {key} matched as lyrics.")
+                    lyrics = item
 
     return Lyrics(lyrics)
 
