@@ -5,6 +5,7 @@ import pathlib
 from datetime import datetime
 import os
 from pathlib import Path
+import logging
 
 import psutil
 from pydantic import BaseModel, Field
@@ -24,6 +25,7 @@ from swingmusic.utils.wintools import is_windows
 tag = Tag(name="Folders", description="Get folders and tracks in a directory")
 api = APIBlueprint("folder", __name__, url_prefix="/folder", abp_tags=[tag])
 
+log = logging.getLogger(__name__)
 
 class FolderTree(BaseModel):
     folder: str = Field("$home", description="The folder to things from")
@@ -89,6 +91,12 @@ def get_folder_tree(body: FolderTree):
         "count": 0
     }
 
+    log.debug("handling folder tree", extra={
+        "req_dir": req_dir,
+        "tracks_only": tracks_only,
+        "root_dirs": root_dirs
+    })
+
     if req_dir.startswith("$playlist"):
         splits = req_dir.split("/")
 
@@ -123,6 +131,7 @@ def get_folder_tree(body: FolderTree):
                     for p in playlists
                 ]
 
+        log.debug("returning playlist", extra=results)
         return results
 
     if req_dir == "$favorites":
@@ -130,6 +139,7 @@ def get_folder_tree(body: FolderTree):
         tracks = TrackStore.get_tracks_by_trackhashes([t.hash for t in tracks])
 
         results["tracks"] = serialize_tracks(tracks)
+        log.debug("returning favorites", extra=results)
         return results
 
     if req_dir == "$home":
@@ -150,9 +160,11 @@ def get_folder_tree(body: FolderTree):
 
             results["folders"].insert(0, playlists_item)
             results["folders"].insert(0, favorites_item)
+            log.debug("added playlists to $home")
 
         sourced_folders = get_folders(root_dirs)
 
+        log.debug("sourcing folders", extra={"sourced_folders":sourced_folders})
         # display tracks in home if in root_dir
         if "$home" in root_dirs:
             req_dir = settings.Paths().USER_HOME_DIR.as_posix()
@@ -164,6 +176,7 @@ def get_folder_tree(body: FolderTree):
 
         else:
             results["folders"].extend(get_folders(sourced_folders))
+            log.debug("returning home", extra=results)
             return results
 
     # TODO?: path on unix systems would sometimes resolve relative
@@ -188,6 +201,7 @@ def get_folder_tree(body: FolderTree):
         else:
             results[key] = item
 
+    log.debug("returning default result", extra=results)
     return results
 
 
