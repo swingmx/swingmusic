@@ -109,8 +109,6 @@ class CustomFormatter(logging.Formatter):
 
     def format(self, record):
         log_fmt = self.FORMATS.get(record.levelno)
-        #record.exc_info = None
-        #record.exc_text = None
         self._style = logging.PercentStyle(log_fmt)
         self._fmt = self._style._fmt
 
@@ -170,14 +168,14 @@ CONFIG = {
         },
         "file": {
             "class": "logging.handlers.RotatingFileHandler",
-            "level": "DEBUG",
+            "level": "INFO",
             "formatter": "json",
             "maxBytes": 5*1024*1024, # 5 MB
             "backupCount": 5
         },
         "remote": {
             "class": "logging.handlers.SocketHandler",
-            "level": "DEBUG",
+            "level": "INFO",
             "formatter": "json",
             "host": "127.0.0.2",
             "port": "19996"
@@ -185,7 +183,7 @@ CONFIG = {
     },
     "loggers": {
         "swingmusic": {
-            "level": "DEBUG",
+            "level": "INFO",
             "propagate": False,
             "handlers": [
                 "stdout",
@@ -231,6 +229,9 @@ def setup_logger(app_dir:Path, debug=False):
         for key in CONFIG["loggers"].keys():
             CONFIG["loggers"][key]["handlers"].append("remote")
             CONFIG["loggers"][key]["level"] = "DEBUG"
+
+        for key in CONFIG["handlers"].keys():
+            CONFIG["handlers"][key]["level"] = "DEBUG"
 
     logging.config.dictConfig(CONFIG)
 
