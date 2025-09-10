@@ -7,6 +7,7 @@ import datetime as dt
 import json
 import logging.config
 import logging.handlers
+import sys
 
 
 LOG_RECORD_BUILTIN_ATTRS = {
@@ -119,10 +120,16 @@ class CustomFormatter(logging.Formatter):
     def formatException(self, e):
         # do not print on cli only in file.
         # TODO: inform user that non terminal exception happened?
-        return ""
+        if "debug" in sys.argv:
+            return super().formatException(e)
+        else:
+            return ""
 
     def formatStack(self, stack_info):
-        return ""
+        if "debug" in sys.argv:
+            return super().formatStack(stack_info)
+        else:
+            return ""
 
 CONFIG = {
     "version": 1,
