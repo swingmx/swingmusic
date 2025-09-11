@@ -41,11 +41,6 @@ parser.add_argument(
     help=f"The config folder directory (default: {fsys.get_default_config_path()})",
     type=pathlib.Path
 )
-parser.add_argument(
-    "--client",
-    help=f"Path to the Web UI folder. (default: {fsys.get_default_config_path() / 'client'})",
-    type=pathlib.Path
-)
 
 tools = parser.add_argument_group(title="Tools")
 tools.add_argument(
@@ -72,18 +67,8 @@ def run(*args, **kwargs):
         # calculate config and client path and store globally.
         config_path = fsys.get_default_config_path(args["config"]).resolve()
         setup_logger(debug=args["debug"], app_dir=config_path)
-        store = shared.EnvStore(config_path)
-
-        if args["client"] is not None:
-            if fsys.validate_client_path(args["client"]):
-                store["CLIENT_DIR"] = pathlib.Path(args["client"]).resolve()
-            else:
-                print(shared.TCOLOR.BOLD + shared.TCOLOR.FAIL + f"The client path '{args['client']}' is not valid.")
-                print("Please update the client path. Exiting" + shared.TCOLOR.ENDC)
-                return 1
-        else:
-            store["CLIENT_DIR"] = fsys.get_default_client_path(config_path).resolve()
-
+        shared.EnvStore(config_path)
+        fsys.setup_client_path(config_path)
 
         host = args["host"]
         port = args["port"]

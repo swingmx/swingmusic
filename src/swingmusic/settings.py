@@ -49,7 +49,8 @@ class Paths(metaclass=Singleton):
 
         store = EnvStore()
         self.config_parent = Path(store["CONFIG_DIR"])
-        self.client_path = Path(store["CLIENT_DIR"])
+
+
 
     @property
     def config_folder_name(self) -> str:
@@ -67,6 +68,10 @@ class Paths(metaclass=Singleton):
     @property
     def config_dir(self) -> Path:
         return self.config_parent / self.config_folder_name
+
+    @property
+    def client_path(self) -> Path:
+        return self.config_dir / "client"
 
     @property
     def img_path(self) -> Path:

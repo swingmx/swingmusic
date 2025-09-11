@@ -1,10 +1,7 @@
 import os
-import pathlib
-import sys
 from pathlib import Path
 import mimetypes
 
-from swingmusic.settings import log
 from swingmusic.utils import assets
 
 FILES = ["flac", "mp3", "wav", "m4a", "ogg", "wma", "opus", "alac", "aiff"]
@@ -119,7 +116,7 @@ def validate_client_path(path:Path) -> bool:
     return index.exists()
 
 
-def get_default_config_path(path:Path=None) -> pathlib.Path:
+def get_default_config_path(path:Path=None) -> Path:
     """
     Determines the default config path in the following order:
 
@@ -140,21 +137,20 @@ def get_default_config_path(path:Path=None) -> pathlib.Path:
         return path
 
     if container_config_dir is not None:
-        return pathlib.Path(container_config_dir)
+        return Path(container_config_dir)
 
     if xdg_config_home is not None:
-        return pathlib.Path(xdg_config_home)
+        return Path(xdg_config_home)
 
-    fallback_dir = pathlib.Path.home() / ".config"
+    fallback_dir = Path.home() / ".config"
     if fallback_dir.exists():
         return fallback_dir
 
-    return pathlib.Path.home()
+    return Path.home()
 
-def get_default_client_path(config_path:Path) -> Path:
+def setup_client_path(config_path) -> Path:
     """
     Determines the first valid client path.
-    If always tries to use the provided path.
     If the path is empty, try downloading the client.
     On fail, switch to next path.
 
@@ -168,19 +164,21 @@ def get_default_client_path(config_path:Path) -> Path:
 
 
     env_client_dir = os.environ.get("SWINGMUSIC_CLIENT_DIR")
-    default_config_path = config_path / "client"
 
-    if env_client_dir is not None:
-        env_client_dir = Path(env_client_dir)
+    # check env
+    if env_client_dir is None:
+        wanted_client = config_path / "client"
+    else:
+        # likely container env vars
+        # create and download client if necessary
+        wanted_client = Path(env_client_dir)
 
-        if env_client_dir.exists() and validate_client_path(env_client_dir):
-            return env_client_dir
-        else:
-            env_client_dir.mkdir(parents=True, exist_ok=True)
-            if assets.download_client_from_github(env_client_dir):
-                return env_client_dir
 
-    default_config_path.mkdir(parents=True, exist_ok=True)
+    if wanted_client.exists() and validate_client_path(wanted_client):
+        return wanted_client
+    else:
+        wanted_client.mkdir(parents=True, exist_ok=True)
+        assets.download_client_from_github(wanted_client) or \
+        assets.extract_default_client(wanted_client)
 
-    assets.download_client_from_github(default_config_path) or assets.extract_default_client(default_config_path)
-    return default_config_path
+    return wanted_client
