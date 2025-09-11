@@ -313,20 +313,17 @@ def get_lyrics_from_tags(trackhash: str) -> Lyrics:
     log.debug("Lyrics from tag", extra={"entry": entry})
 
     if entry is None:
-        return Lyrics()
+        return Lyrics("")
 
     lyrics_tag = {"lyrics", "unsyncedlyrics", "sylt", "uslt"}
 
 
-    lyrics = ""
     for track in entry.tracks:
         for key, item in track.extra.items():
-            for support in lyrics_tag:
-                if support in key:
-                    print(f"Key: {key} matched as lyrics.")
-                    lyrics = item
+            if key in lyrics_tag:
+                    return Lyrics(item)
 
-    return Lyrics(lyrics)
+    return Lyrics("")
 
 
 def check_lyrics_file(filepath: str, trackhash: str):
