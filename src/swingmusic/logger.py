@@ -116,8 +116,7 @@ class CustomFormatter(logging.Formatter):
         return super().format(record)
 
     def formatException(self, e):
-        # do not print on cli only in file.
-        # TODO: inform user that non terminal exception happened?
+        # Only print to cli if in debug mode
         if "debug" in sys.argv:
             return super().formatException(e)
         else:
