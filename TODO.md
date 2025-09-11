@@ -2,10 +2,9 @@
 
 ## UI
 * Auto update WebUI - version check + api missing
-* Web UI - Remove https from index.html for http support?
 * Web UI could use continues build like https://github.com/AppImage/AppImageKit/releases/download/continuous/
-* Web UI - playlist not shown in folder view
 * rework argparse with subparser. Currently not clear what commands allow what args
+* localisation of 'time ago'
 
 ## Building:
 * AppImage build is currently broken view [python-appimage: Issues 95](https://github.com/niess/python-appimage/issues/94) aka I bypassed it.
