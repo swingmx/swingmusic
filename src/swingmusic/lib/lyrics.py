@@ -125,6 +125,34 @@ def parse_time_tag(lines:list[dict]) -> list[dict]:
     return parsed_times
 
 
+# ---- extended lyrics support function ----
+
+def lyrics_line_voices(line:str) -> bool|str:
+    """
+    Check if the current lyrics line has voice information.
+    If the line starts with 'm', 'f' or 'd' followed by ':'.
+    The check is not case-sensitive.
+
+    | accepted format are:
+    | 'M: lyrics line'
+    | 'M:lyrics line'
+    | ' M : lyrics line'
+    | ' M:lyrics line'
+
+    :param line: Lyrics line in format 'm: lyrics text'.
+    :returns: If no voice found: False else return voice char
+    """
+
+    part = line[:5]
+    if ":" in part:
+        voice = part.split(":", 1)[0]
+        voice = voice.strip().lower()
+        if voice in ("m","f", "d"):
+            return voice
+
+    return False
+
+
 # # # # # # # # # # # # # # # # # # # #
 #  Lyrics class for simplified usage  #
 # # # # # # # # # # # # # # # # # # # #
@@ -193,18 +221,21 @@ class Lyrics:
 
         # TODO: add support for multilanguage lyrics
 
-
-    def format_synced_lyrics(self):
+    def format_synced_lyrics(self) -> list[dict]:
         """
         Formats synced lyrics into a list of dicts
+        The dicts contain the keys '{'colour', 'text', 'time'}'
+
+        :raises ValueError: If lyrics are not synced
+        :returns: List of dicts
         """
         if not self.is_synced:
-            raise ValueError("Cannot format synced lyrics if no synced lyrics exist for track.\nPlease use `format_unsynced_lyrics()`")
+            raise ValueError("Lyrics are not synced.\nPlease use `format_unsynced_lyrics()`")
 
         lyrics = []
 
         time_tags = parse_time_tag(self.parsed_lyrics)
-        colour = "blue"
+        colour = "grey"
 
         for entry in time_tags:
             minutes = entry["minute"]
@@ -221,23 +252,28 @@ class Lyrics:
 
             seconds = datetime.timedelta(minutes=minutes, seconds=seconds, milliseconds=milli).total_seconds()
 
+            # -- respect offset in lyrics
+
             offset = 0
             if "offset" in self.meta:
                 offset = int(self.meta["offset"])  # offset in milliseconds
 
             milliseconds = seconds * 1000 - offset
 
-            text = entry["body"].lower()
-            if "m:" in text:
-                colour = "blue"
-            elif "f:" in text:
-                colour = "red"
-            elif "d:":
-                colour = "pink"
+            # -- add colour information
 
-            text = f"<a style='color: light{colour};'>'" + entry["body"] + "</p>"
+            text = entry["body"]
 
-            lyrics.append({"time": milliseconds, "text": text})
+            if voice:=lyrics_line_voices(text):
+                text = text.split(":")[-1].strip()
+                if "m" in voice:
+                    colour = "blue"
+                elif "f" in voice:
+                    colour = "red"
+                elif "d" in voice:
+                    colour = "pink"
+
+            lyrics.append({"time": milliseconds, "text": text, "colour": colour})
 
         return lyrics
 
@@ -272,7 +308,7 @@ def get_lyrics_file(track_path: str|pathlib.Path) -> Lyrics:
 
     track_path = Path(track_path)
     lyrics_path = track_path.with_suffix(".lrc")
-    extended_path = track_path.with_suffix(".rlrc")
+    extended_path = track_path.with_suffix(".elrc")
 
     # check paths
     if lyrics_path.exists():
