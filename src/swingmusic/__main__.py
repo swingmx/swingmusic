@@ -72,7 +72,7 @@ def run(*args, **kwargs):
     AssetHandler.copy_assets_dir()
     AssetHandler.setup_default_client()
 
-    setup_logger(debug=args["debug"], app_dir=settings.Paths().config_dir)
+    # setup_logger(debug=args["debug"], app_dir=settings.Paths().config_dir)
 
     # handle tools
     if args["password_reset"]:

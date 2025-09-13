@@ -1,5 +1,6 @@
 import json
 from functools import wraps
+from pathlib import Path
 import sqlite3
 from flask import current_app, jsonify
 from flask_jwt_extended import (
@@ -204,11 +205,31 @@ def update_profile(body: UpdateProfileBody):
 
 
 @api.post("/profile/create")
-@admin_required()
+@jwt_required(optional=True)
 def create_user(body: UpdateProfileBody):
     """
     Create a new user
     """
+    # INFO: If there are no existing users in the database, add the new user as admin
+    users = UserTable.get_all()
+    if not list(users):
+        user = {
+            "username": body.username,
+            "password": hash_password(body.password),
+            "roles": ["admin"],
+        }
+        UserTable.insert_one(user)
+        user = UserTable.get_by_username(user["username"])
+
+        # INFO: Also return the user home directory.
+        # This is used to show the user home directory in the onboarding screen.
+        response = {"user": user.todict(), "userhome": str(Path.home().resolve())}
+        # return response with cookies
+        res = jsonify(response)
+        token = create_new_token(user.todict())
+        set_access_cookies(res, token["accesstoken"], max_age=token["maxage"])
+        return res
+
     if not body.username or not body.password:
         return {"msg": "Username and password are required"}, 400
 
@@ -226,6 +247,7 @@ def create_user(body: UpdateProfileBody):
     user = UserTable.get_by_username(user["username"])
 
     if user:
+        # TODO: Return the user inside a dict and refactor webclient
         HomepageStore.entries["recently_played"].add_new_user(user.id)
         return user.todict()
 

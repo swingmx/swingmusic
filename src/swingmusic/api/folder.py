@@ -1,6 +1,7 @@
 """
 Contains all the folder routes.
 """
+
 import pathlib
 from datetime import datetime
 import os
@@ -87,12 +88,12 @@ def get_folder_tree(body: FolderTree):
         req_dir = settings.Paths().USER_HOME_DIR.as_posix()
 
     if req_dir == "$home":
-            folders = get_folders(root_dirs)
+        folders = get_folders(root_dirs)
 
-            return {
-                "folders": folders,
-                "tracks": [],
-            }
+        return {
+            "folders": folders,
+            "tracks": [],
+        }
 
     if req_dir.startswith("$playlist"):
         splits = req_dir.split("/")
@@ -228,6 +229,8 @@ def list_folders(body: DirBrowserBody):
             "folders": [{"name": d, "path": d} for d in get_all_drives(is_win=is_win)]
         }
 
+    if req_dir == "$home":
+        req_dir = settings.Paths().USER_HOME_DIR.as_posix()
 
     req_dir = pathlib.Path(req_dir)
 
@@ -240,25 +243,29 @@ def list_folders(body: DirBrowserBody):
         return {"folders": []}
 
     # only get dirs and remove hidden dirs
-    dirs = []
+    dirs: list[dict[str, str]] = []
     for entry in entries:
         entry = pathlib.Path(entry)
         name = entry.name
 
-        if name.startswith("$"): # ignore windows system folder
+        if name.startswith("$"):  # ignore windows system folder
             continue
 
-        if name.startswith("."): # ignore unix hidden folder
+        if name.startswith("."):  # ignore unix hidden folder
             continue
 
         if entry.is_dir():  # lastly, check if is dir
-            dirs.append({
-                "name": name,
-                "path": entry.as_posix()
-            })
+            dirs.append({"name": name, "path": entry.as_posix()})
+
+    dirs = sorted(dirs, key=lambda i: i["name"])
+
+    # prepend the parent as ".."
+    dirs.insert(0, {"name": "↑", "path": req_dir.parent.as_posix()})
+    # add current dir as . at index 1
+    dirs.insert(1, {"name": ". (this folder)", "path": req_dir.as_posix()})
 
     return {
-        "folders": sorted(dirs, key=lambda i: i["name"]),
+        "folders": dirs,
     }
 
 

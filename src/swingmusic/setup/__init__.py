@@ -10,7 +10,7 @@ from swingmusic.lib.mapstuff import (
     map_favorites,
     map_scrobble_data,
 )
-from swingmusic.setup.sqlite import run_migrations, setup_sqlite
+from swingmusic.setup.sqlite import setup_sqlite
 from swingmusic.store.albums import AlbumStore
 from swingmusic.store.artists import ArtistStore
 from swingmusic.store.folder import FolderStore
@@ -35,7 +35,7 @@ def run_setup():
         config.write_to_file(asdict(config))
 
     setup_sqlite()
-    run_migrations()
+    # run_migrations()
 
 
 def load_into_mem():

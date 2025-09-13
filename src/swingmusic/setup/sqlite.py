@@ -4,19 +4,9 @@ Applies migrations.
 """
 
 from sqlalchemy import create_engine
-from swingmusic.db.userdata import UserTable
-from swingmusic.migrations import apply_migrations
 from swingmusic.settings import Paths
-
 from swingmusic.db.engine import DbEngine
 from swingmusic.db import create_all_tables
-
-
-def run_migrations():
-    """
-    Run migrations and updates migration version.
-    """
-    apply_migrations()
 
 
 def setup_sqlite():
@@ -31,7 +21,3 @@ def setup_sqlite():
     )
 
     create_all_tables()
-    # create_user_tables()
-
-    if not list(UserTable.get_all()):
-        UserTable.insert_default_user()
