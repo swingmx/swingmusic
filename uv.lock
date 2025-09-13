@@ -2,10 +2,14 @@ version = 1
 revision = 3
 requires-python = ">=3.11"
 resolution-markers = [
-    "python_full_version >= '3.12' and platform_python_implementation != 'PyPy'",
-    "python_full_version < '3.12' and platform_python_implementation != 'PyPy'",
-    "python_full_version >= '3.12' and platform_python_implementation == 'PyPy'",
-    "python_full_version < '3.12' and platform_python_implementation == 'PyPy'",
+    "python_full_version >= '3.12' and platform_python_implementation != 'PyPy' and sys_platform == 'win32'",
+    "python_full_version >= '3.12' and platform_python_implementation != 'PyPy' and sys_platform != 'win32'",
+    "python_full_version < '3.12' and platform_python_implementation != 'PyPy' and sys_platform == 'win32'",
+    "python_full_version < '3.12' and platform_python_implementation != 'PyPy' and sys_platform != 'win32'",
+    "python_full_version >= '3.12' and platform_python_implementation == 'PyPy' and sys_platform == 'win32'",
+    "python_full_version >= '3.12' and platform_python_implementation == 'PyPy' and sys_platform != 'win32'",
+    "python_full_version < '3.12' and platform_python_implementation == 'PyPy' and sys_platform == 'win32'",
+    "python_full_version < '3.12' and platform_python_implementation == 'PyPy' and sys_platform != 'win32'",
 ]
 
 [manifest]
@@ -55,12 +59,6 @@ sdist = { url = "https://files.pythonhosted.org/packages/9a/6e/026678aa5a830e07c
 wheels = [
     { url = "https://files.pythonhosted.org/packages/99/37/e8730c3587a65eb5645d4aba2d27aae48e8003614d6aaf15dda67f702f1f/bidict-0.23.1-py3-none-any.whl", hash = "sha256:5dae8d4d79b552a71cbabc7deb25dfe8ce710b17ff41711e13010ead2abfc3e5", size = 32764, upload-time = "2024-02-18T19:09:04.156Z" },
 ]
-
-[[package]]
-name = "bjoern"
-version = "3.2.2"
-source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/d5/a0/fba55eb58a502dabc0915137ff44eaacaba58a60196fd94dc8cd4e9fe67d/bjoern-3.2.2.tar.gz", hash = "sha256:16e5a02a9a17a7f5f8bea0d7c58650e78ab80ead6fe3e390037573d4355baf31", size = 45716, upload-time = "2022-09-11T18:48:13.99Z" }
 
 [[package]]
 name = "blinker"
@@ -291,7 +289,7 @@ name = "cryptography"
 version = "45.0.6"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "cffi", marker = "platform_python_implementation != 'PyPy'" },
+    { name = "cffi", marker = "platform_python_implementation != 'PyPy' and sys_platform != 'win32'" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/d6/0d/d13399c94234ee8f3df384819dc67e0c5ce215fb751d567a55a1f4b028c7/cryptography-45.0.6.tar.gz", hash = "sha256:5c966c732cf6e4a276ce83b6e4c729edda2df6929083a952cc7da973c539c719", size = 744949, upload-time = "2025-08-05T23:59:27.93Z" }
 wheels = [
@@ -744,7 +742,7 @@ name = "macholib"
 version = "1.16.3"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "altgraph" },
+    { name = "altgraph", marker = "sys_platform != 'win32'" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/95/ee/af1a3842bdd5902ce133bd246eb7ffd4375c38642aeb5dc0ae3a0329dfa2/macholib-1.16.3.tar.gz", hash = "sha256:07ae9e15e8e4cd9a788013d81f5908b3609aa76f9b1421bae9c4d7606ec86a30", size = 59309, upload-time = "2023-09-25T09:10:16.155Z" }
 wheels = [
@@ -1191,7 +1189,7 @@ name = "pyobjc-framework-cocoa"
 version = "11.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "pyobjc-core" },
+    { name = "pyobjc-core", marker = "sys_platform != 'win32'" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/c5/32/53809096ad5fc3e7a2c5ddea642590a5f2cb5b81d0ad6ea67fdb2263d9f9/pyobjc_framework_cocoa-11.0.tar.gz", hash = "sha256:00346a8cb81ad7b017b32ff7bf596000f9faa905807b1bd234644ebd47f692c5", size = 6173848, upload-time = "2025-01-14T19:03:00.125Z" }
 wheels = [
@@ -1206,8 +1204,8 @@ name = "pyobjc-framework-quartz"
 version = "11.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "pyobjc-core" },
-    { name = "pyobjc-framework-cocoa" },
+    { name = "pyobjc-core", marker = "sys_platform != 'win32'" },
+    { name = "pyobjc-framework-cocoa", marker = "sys_platform != 'win32'" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/a5/ad/f00f3f53387c23bbf4e0bb1410e11978cbf87c82fa6baff0ee86f74c5fb6/pyobjc_framework_quartz-11.0.tar.gz", hash = "sha256:3205bf7795fb9ae34747f701486b3db6dfac71924894d1f372977c4d70c3c619", size = 3952463, upload-time = "2025-01-14T19:05:07.931Z" }
 wheels = [
@@ -1279,7 +1277,7 @@ name = "python-xlib"
 version = "0.33"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "six" },
+    { name = "six", marker = "sys_platform != 'win32'" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/86/f5/8c0653e5bb54e0cbdfe27bf32d41f27bc4e12faa8742778c17f2a71be2c0/python-xlib-0.33.tar.gz", hash = "sha256:55af7906a2c75ce6cb280a584776080602444f75815a7aff4d287bb2d7018b32", size = 269068, upload-time = "2022-12-25T18:53:00.824Z" }
 wheels = [
@@ -1507,8 +1505,8 @@ name = "secretstorage"
 version = "3.3.3"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "cryptography" },
-    { name = "jeepney" },
+    { name = "cryptography", marker = "sys_platform != 'win32'" },
+    { name = "jeepney", marker = "sys_platform != 'win32'" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/53/a4/f48c9d79cb507ed1373477dbceaba7401fd8a23af63b837fa61f1dcd3691/SecretStorage-3.3.3.tar.gz", hash = "sha256:2403533ef369eca6d2ba81718576c5e0f564d5cca1b58f73a8b23e7d4eeebd77", size = 19739, upload-time = "2022-08-13T16:22:46.976Z" }
 wheels = [
@@ -1653,7 +1651,6 @@ wheels = [
 name = "swingmusic"
 source = { editable = "." }
 dependencies = [
-    { name = "bjoern", marker = "sys_platform != 'win32'" },
     { name = "colorgram-py" },
     { name = "ffmpeg-python" },
     { name = "flask" },
@@ -1678,7 +1675,7 @@ dependencies = [
     { name = "tinytag" },
     { name = "tqdm" },
     { name = "unidecode" },
-    { name = "waitress", marker = "sys_platform == 'win32'" },
+    { name = "waitress" },
     { name = "watchdog" },
     { name = "xxhash" },
 ]
@@ -1695,7 +1692,6 @@ dev = [
 
 [package.metadata]
 requires-dist = [
-    { name = "bjoern", marker = "sys_platform != 'win32'", specifier = ">=3.2.2" },
     { name = "colorgram-py", specifier = ">=1.2.0" },
     { name = "ffmpeg-python", specifier = ">=0.2.0" },
     { name = "flask", specifier = ">=3.1.0" },
@@ -1721,6 +1717,7 @@ requires-dist = [
     { name = "tinytag", specifier = ">=2.1.1" },
     { name = "tqdm", specifier = ">=4.65.0" },
     { name = "unidecode", specifier = ">=1.3.6" },
+    { name = "waitress", specifier = ">=3.0.2" },
     { name = "waitress", marker = "sys_platform == 'win32'", specifier = ">=3.0.2" },
     { name = "watchdog", specifier = ">=4.0.0" },
     { name = "xxhash", specifier = ">=3.4.1" },

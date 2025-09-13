@@ -94,6 +94,9 @@ def load_endpoints(web: OpenAPI):
         # Auth
         web.register_api(swing_api.auth.api)
 
+        # Events
+        web.register_api(swing_api.events)
+
 
 def load_plugins(web: OpenAPI):
     # TODO: rework plugin support

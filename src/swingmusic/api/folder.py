@@ -21,6 +21,7 @@ from swingmusic.lib.folderslib import get_files_and_dirs, get_folders
 from swingmusic.serializers.track import serialize_track, serialize_tracks
 from swingmusic.store.tracks import TrackStore
 from swingmusic.utils.wintools import is_windows
+from swingmusic.events import events
 
 tag = Tag(name="Folders", description="Get folders and tracks in a directory")
 api = APIBlueprint("folder", __name__, url_prefix="/folder", abp_tags=[tag])
@@ -221,6 +222,10 @@ def list_folders(body: DirBrowserBody):
     Returns a list of all the folders in the given folder.
     Used when selecting root dirs.
     """
+    events.dispatch("folder_list_requested", {
+        "folder": body.folder,
+    })
+
     req_dir = body.folder
     is_win = is_windows()
 
