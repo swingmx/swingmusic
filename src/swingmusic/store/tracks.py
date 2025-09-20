@@ -6,6 +6,7 @@ from typing import Callable, Iterable
 from swingmusic.db.libdata import TrackTable
 
 from swingmusic.models import Track
+from swingmusic.utils import classproperty
 from swingmusic.utils.auth import get_current_userid
 from swingmusic.utils.remove_duplicates import remove_duplicates
 
@@ -61,14 +62,6 @@ class TrackGroup:
         return len(self.tracks)
 
 
-class classproperty(property):
-    """
-    A class property decorator.
-    """
-
-    def __get__(self, owner_self, owner_cls):
-        if self.fget:
-            return self.fget(owner_cls)
 
 
 class TrackStore:

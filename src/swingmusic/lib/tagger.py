@@ -1,25 +1,27 @@
 import os
 from functools import partial
 from multiprocessing import Pool, cpu_count
+import math
 
 from swingmusic import settings
 from swingmusic.config import UserConfig
 from swingmusic.db.libdata import TrackTable
+from swingmusic.events import events
 
 from swingmusic.lib.taglib import extract_thumb, get_tags
-from swingmusic.models.album import Album
 from swingmusic.models.artist import Artist
 from swingmusic.models.track import Track
 from swingmusic.store.folder import FolderStore
+from swingmusic.store.general import GeneralStore
 from swingmusic.store.tracks import TrackStore
 from swingmusic.utils import flatten
 from swingmusic.utils.filesystem import run_fast_scandir
-from swingmusic.utils.parsers import get_base_album_title
 from swingmusic.utils.progressbar import tqdm
 from swingmusic.utils.remove_duplicates import remove_duplicates
 
 
 from logging import getLogger
+
 log = getLogger(__name__)
 
 
@@ -78,7 +80,10 @@ class IndexTracks:
         for track in tracks:
             try:
                 extract_thumb(
-                    track["filepath"], track["albumhash"] + ".webp", overwrite=True, paths=settings.Paths()
+                    track["filepath"],
+                    track["albumhash"] + ".webp",
+                    overwrite=True,
+                    paths=settings.Paths(),
                 )
             except FileNotFoundError:
                 continue
@@ -126,114 +131,83 @@ class IndexTracks:
 
         return unmodified_paths, modified_tracks
 
-
     def tag_untagged(self, files: set[str]):
+        if not files:
+            print("No files to process")
+            return
+
         config = UserConfig()
+        batch_size = 150
+
+        # Convert set to list for batching
+        files_list = list(files)
+        total_files = len(files_list)
+        batches = math.ceil(total_files / batch_size)
 
         # Create process pool with worker function
+        total_processed = 0
+
+        events.dispatch(
+            "scan_batch_cleared",
+            {
+                "batch": f"0/{batches}",
+            },
+        )
+        GeneralStore.scan_message = "scan_batch_cleared: " + f"0/{batches}"
+
         with Pool(processes=max(1, cpu_count() // 2)) as pool:
             worker = partial(parse_file_tags, config=config)
 
-            # Process files and track progress
-            results = []
-            for result in tqdm(
-                pool.imap_unordered(worker, files),
-                total=len(files),
-                desc="Reading files",
-            ):
-                if result is not None:
-                    results.append(result)
+            for batch_num in range(batches):
+                start_idx = batch_num * batch_size
+                end_idx = min(start_idx + batch_size, total_files)
+                batch_files = files_list[start_idx:end_idx]
 
-        # Bulk insert results
-        for tags in results:
-            TrackTable.insert_one(tags)
-            FolderStore.filepaths.add(tags["filepath"])
+                if not batch_files:
+                    break
 
-        print(f"{len(results)} new files indexed")
+                # Process current batch
+                batch_results = []
+                for result in tqdm(
+                    pool.imap_unordered(worker, batch_files),
+                    total=len(batch_files),
+                    desc=f"Batch {batch_num + 1}/{batches}",
+                ):
+                    if result is not None:
+                        batch_results.append(result)
+
+                # Bulk insert batch results
+                for tags in batch_results:
+                    TrackTable.insert_one(tags)
+                    FolderStore.filepaths.add(tags["filepath"])
+
+                total_processed += len(batch_results)
+
+                # Dispatch event for batch completion
+                events.dispatch(
+                    "scan_batch_cleared",
+                    {
+                        "batch": f"{batch_num + 1}/{batches}",
+                    },
+                )
+                GeneralStore.scan_message = (
+                    "scan_batch_cleared: " + f"{batch_num + 1}/{batches}"
+                )
+
+                print(
+                    f"Completed batch {batch_num + 1}/{batches}: {len(batch_results)} files indexed"
+                )
+
+        print(f"{total_processed} new files indexed")
         print("Done")
-
 
 
 #
 # Create functions
 #
 
-def create_albums(_trackhashes: list[str] = []) -> list[tuple[Album, set[str]]]:
-    """
-    Creates album objects using the indexed tracks. Takes in an optional
-    list of trackhashes to create the albums from. If no list is provided,
-    all tracks are used.
 
-    The trackhashes are passed when creating albums from the watchdogg module.
-
-    Returns a list of tuples containing the album and the trackhashes in the album.
-    ie:
-
-    >>> list[tuple[Album, set[str]]]
-    """
-    albums = dict()
-
-    if _trackhashes:
-        all_tracks: list[Track] = TrackStore.get_tracks_by_trackhashes(_trackhashes)
-    else:
-        all_tracks: list[Track] = TrackStore.get_flat_list()
-
-    all_tracks = remove_duplicates(all_tracks)
-
-    for track in all_tracks:
-        if track.albumhash not in albums:
-            albums[track.albumhash] = {
-                "albumartists": track.albumartists,
-                "artisthashes": [a["artisthash"] for a in track.albumartists],
-                "albumhash": track.albumhash,
-                "base_title": None,
-                "color": None,
-                "created_date": track.last_mod,
-                "date": track.date,
-                "duration": track.duration,
-                "genres": [*track.genres] if track.genres else [],
-                "og_title": track.og_album,
-                "lastplayed": track.lastplayed,
-                "playcount": track.playcount,
-                "playduration": track.playduration,
-                "title": track.album,
-                "tracks": {track.trackhash},
-                "pathhash": track.pathhash,
-                "extra": {},
-            }
-        else:
-            album = albums[track.albumhash]
-            album["tracks"].add(track.trackhash)
-            album["playcount"] += track.playcount
-            album["playduration"] += track.playduration
-            album["lastplayed"] = max(album["lastplayed"], track.lastplayed)
-            album["duration"] += track.duration
-            album["date"] = min(album["date"], track.date)
-            album["created_date"] = min(album["created_date"], track.last_mod)
-
-            if track.genres:
-                album["genres"].extend(track.genres)
-
-    for album in albums.values():
-        genres = []
-        for genre in album["genres"]:
-            if genre not in genres:
-                genres.append(genre)
-
-        album["genres"] = genres
-        album["genrehashes"] = " ".join([g["genrehash"] for g in genres])
-        album["base_title"], _ = get_base_album_title(album["og_title"])
-
-        del genres
-        trackhashes = album.pop("tracks")
-        album["trackcount"] = len(trackhashes)
-
-        albums[album["albumhash"]] = (Album(**album), trackhashes)
-
-    return list(albums.values())
-
-
-def create_artists( artisthashes: list[str]) -> list[tuple[Artist, set[str], set[str]]]:
+def create_artists(artisthashes: list[str]) -> list[tuple[Artist, set[str], set[str]]]:
     """
     Creates artist objects using the indexed tracks. Takes in an optional
     list of artisthashes to create the artists from. If no list is provided,

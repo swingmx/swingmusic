@@ -209,7 +209,7 @@ def get_all_drives(is_win: bool = False):
 
 class DirBrowserBody(BaseModel):
     folder: str = Field(
-        "$root",
+        "$home",
         description="The folder to list directories from",
     )
 
@@ -222,12 +222,11 @@ def list_folders(body: DirBrowserBody):
     Returns a list of all the folders in the given folder.
     Used when selecting root dirs.
     """
-    events.dispatch("folder_list_requested", {
-        "folder": body.folder,
-    })
-
-    req_dir = body.folder
+    req_dir = body.folder.strip()
     is_win = is_windows()
+
+    if req_dir == "":
+        req_dir = "$home"
 
     if req_dir == "$root":
         return {

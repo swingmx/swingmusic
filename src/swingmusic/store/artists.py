@@ -1,9 +1,10 @@
 import json
 from typing import Iterable
+
 from swingmusic.lib.tagger import create_artists
 from swingmusic.models import Artist
-from swingmusic.utils.auth import get_current_userid
 from swingmusic.store.tracks import TrackStore
+from swingmusic.utils.auth import get_current_userid
 
 ARTIST_LOAD_KEY = ""
 

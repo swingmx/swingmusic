@@ -15,7 +15,7 @@ def load_artist_ignore_list_from_file(filepath: Path) -> set[str]:
     """
     if filepath.exists():
         text = filepath.read_text()
-        return set([ line.strip() for line in text.splitlines() if line.strip() ])
+        return set([line.strip() for line in text.splitlines() if line.strip()])
     else:
         return set()
 
@@ -25,10 +25,10 @@ def load_default_artist_ignore_list() -> set[str]:
     Loads the default artist-ignore-list from the text file.
     Returns an empty set if the file doesn't exist.
     """
-    text = importlib.resources.read_text("swingmusic.data","artist_split_ignore.txt")
+    text = importlib.resources.read_text("swingmusic.data", "artist_split_ignore.txt")
     # only return unique and not empty lines
     lines = text.splitlines()
-    return set([ line.strip() for line in lines if line.strip() ])
+    return set([line.strip() for line in lines if line.strip()])
 
 
 def load_user_artist_ignore_list() -> set[str]:
@@ -39,14 +39,14 @@ def load_user_artist_ignore_list() -> set[str]:
     user_file = Paths().config_dir / "artist_split_ignore.txt"
     if user_file.exists():
         lines = user_file.read_text().splitlines()
-        return set([ line.strip() for line in lines if line.strip()])
+        return set([line.strip() for line in lines if line.strip()])
     else:
         return set()
 
 
 @dataclass
 class UserConfig(metaclass=Singleton):
-    _finished: bool = field(default=False, init=False) # if post init succesfully
+    _finished: bool = field(default=False, init=False)  # if post init succesfully
     _config_path: InitVar[Path] = Path("")
     _artist_split_ignore_file_name: InitVar[str] = "artist_split_ignore.txt"
     # NOTE: only auth stuff are used (the others are still reading/writing to db)
@@ -91,7 +91,6 @@ class UserConfig(metaclass=Singleton):
     lastfmApiSecret: str = "5e5306fbf3e8e3bc92f039b6c6c4bd4e"
     lastfmSessionKeys: dict[str, str] = field(default_factory=dict)
 
-
     def __post_init__(self, _config_path, _artist_split_ignore_file_name):
         """
         Loads the config file and sets the values to this instance
@@ -119,7 +118,6 @@ class UserConfig(metaclass=Singleton):
         self._config_path = config_path
         self._finished = True
 
-
     def setup_config_file(self) -> None:
         """
         Creates the config file with the default settings
@@ -130,14 +128,12 @@ class UserConfig(metaclass=Singleton):
         if not config.exists():
             self.write_to_file(asdict(self))
 
-
     def load_config(self, path: Path) -> dict[str, Any]:
         """
         Reads the settings from the config file.
         Returns a dictget_root_dirs
         """
         return json.loads(path.read_text())
-
 
     def write_to_file(self, settings: dict[str, Any]):
         """
@@ -148,7 +144,6 @@ class UserConfig(metaclass=Singleton):
 
         with self._config_path.open(mode="w") as f:
             json.dump(settings, f, indent=4, default=list)
-
 
     def __setattr__(self, key: str, value: Any) -> None:
         """
@@ -167,4 +162,10 @@ class UserConfig(metaclass=Singleton):
         if key.startswith("_") or not self._config_path:
             return
 
+        self.save()
+
+    def save(self):
+        """
+        Saves the config to the file
+        """
         self.write_to_file(asdict(self))

@@ -2,8 +2,12 @@
 Prepares the server for use.
 """
 
-from time import time
 import uuid
+from dataclasses import asdict
+from time import time
+
+from swingmusic.config import UserConfig
+from swingmusic.db.userdata import UserTable
 from swingmusic.lib.mapstuff import (
     map_album_colors,
     map_artist_colors,
@@ -14,11 +18,9 @@ from swingmusic.setup.sqlite import setup_sqlite
 from swingmusic.store.albums import AlbumStore
 from swingmusic.store.artists import ArtistStore
 from swingmusic.store.folder import FolderStore
+from swingmusic.store.general import GeneralStore
 from swingmusic.store.tracks import TrackStore
 from swingmusic.utils.generators import get_random_str
-
-from swingmusic.config import UserConfig
-from dataclasses import asdict
 
 
 def run_setup():
@@ -44,6 +46,7 @@ def load_into_mem():
     """
     # INFO: Load all tracks, albums, and artists data into memory
     key = str(time())
+    GeneralStore.load_onboarding_data(list(UserTable.get_all()))
     TrackStore.load_all_tracks(get_random_str())
     AlbumStore.load_albums(key)
     ArtistStore.load_artists(key)

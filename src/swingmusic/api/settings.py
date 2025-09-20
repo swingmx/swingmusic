@@ -9,7 +9,9 @@ from swingmusic.api.auth import admin_required
 from swingmusic.db.userdata import PluginTable
 from swingmusic.lib.index import index_everything
 from swingmusic.config import UserConfig
+from swingmusic.store.general import GeneralStore
 from swingmusic.utils.auth import get_current_userid
+from swingmusic.utils.paths import normalize_paths
 
 bp_tag = Tag(name="Settings", description="Customize stuff")
 api = APIBlueprint("settings", __name__, url_prefix="/notsettings", abp_tags=[bp_tag])
@@ -42,42 +44,21 @@ def add_root_dirs(body: AddRootDirsBody):
     removed_dirs = body.removed
 
     config = UserConfig()
-    db_dirs = config.rootDirs
-    home = "$home"
+    db_dirs = [*config.rootDirs]
 
-    db_home = any([d == home for d in db_dirs])  # if $home is in db
-    incoming_home = any([d == home for d in new_dirs])  # if $home is in incoming
-
-    # handle $home case
-    if db_home and incoming_home:
-        return {"msg": "Not changed!"}, 304
-
-    # if $home is the current root dir or the incoming root dir
-    # is $home, remove all root dirs
-    if db_home or incoming_home:
-        config.rootDirs = []
-
-    if incoming_home:
-        config.rootDirs = [home]
-        index_everything()
-        return {"root_dirs": [home]}
-
-    # ---
-
-    for _dir in new_dirs:
-        children = get_child_dirs(_dir, db_dirs)
-        removed_dirs.extend(children)
-
-    for _dir in removed_dirs:
+    for dir in removed_dirs:
         try:
-            db_dirs.remove(_dir)
+            db_dirs.remove(dir)
         except ValueError:
             pass
 
-    db_dirs.extend(new_dirs)
-    config.rootDirs = [dir_ for dir_ in db_dirs if dir_ != home]
+    final_paths = [*db_dirs, *new_dirs]
+    config.rootDirs = normalize_paths(final_paths)
+    config.save()
 
     index_everything()
+    GeneralStore.root_dirs_set = True
+
     return {"root_dirs": config.rootDirs}
 
 

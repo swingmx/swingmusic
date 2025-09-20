@@ -10,6 +10,16 @@ locale.setlocale(locale.LC_ALL, "")
 # locale.setlocale(locale.LC_ALL, 'en_US.UTF-8')
 
 
+class classproperty(property):
+    """
+    A class property decorator.
+    """
+
+    def __get__(self, owner_self, owner_cls):
+        if self.fget:
+            return self.fget(owner_cls)
+
+
 def format_number(number: float) -> str:
     return locale.format_string("%d", number, grouping=True)
 

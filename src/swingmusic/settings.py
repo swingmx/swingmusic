@@ -504,3 +504,5 @@ class TCOLOR:
     BOLD = "\033[1m"
     UNDERLINE = "\033[4m"
     # credits: https://stackoverflow.com/a/287944
+
+

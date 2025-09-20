@@ -1,4 +1,5 @@
-from flask import Response, stream_template_string, request
+import json
+from flask import Response, request
 from flask_openapi3 import APIBlueprint
 
 from swingmusic.events import events
@@ -22,8 +23,19 @@ def stream_events():
         for message_id, message_data in events.listen(timeout=5):
             # Format as SSE
             yield f"id: {message_id}\n"
-            yield f"event: {message_data['type']}\n"
-            yield f"data: {message_data}\n\n"
+
+            if message_data['type'] == 'heartbeat':
+                # Keep heartbeat as named event
+                yield "event: heartbeat\n"
+                yield f"data: {message_data}\n\n"
+            else:
+                # Move event name into data for onmessage compatibility
+                data_with_event = {
+                    'event': message_data['type'],
+                    'data': message_data['data'],
+                    'timestamp': message_data['timestamp']
+                }
+                yield f"data: {json.dumps(data_with_event)}\n\n"
 
     return Response(
         event_stream(),

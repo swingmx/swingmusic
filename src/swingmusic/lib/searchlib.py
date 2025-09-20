@@ -254,6 +254,14 @@ class TopResults:
         all_results = artists + tracks + albums
         all_results = sorted(all_results, key=lambda x: int(x._score), reverse=True)
 
+        if not all_results:
+            return {
+                "top_result": None,
+                "tracks": [],
+                "artists": [],
+                "albums": [],
+            }
+
         # INFO: Get the top result
         top_result = all_results[0]
         top_tracks = []

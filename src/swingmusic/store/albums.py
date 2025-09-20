@@ -1,10 +1,10 @@
-import random
 from typing import Iterable
-from swingmusic.lib.tagger import create_albums
+
+from swingmusic.lib.albumslib import create_albums
 from swingmusic.models import Album, Track
 from swingmusic.store.artists import ArtistStore
-from swingmusic.utils.auth import get_current_userid
 from swingmusic.store.tracks import TrackStore
+from swingmusic.utils.auth import get_current_userid
 
 ALBUM_LOAD_KEY = ""
 

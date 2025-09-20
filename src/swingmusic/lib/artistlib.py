@@ -1,13 +1,12 @@
 import os
-import time
 import random
+import time
 import urllib
-import requests
-
+from concurrent.futures import ProcessPoolExecutor
 from io import BytesIO
 from pathlib import Path
-from concurrent.futures import ProcessPoolExecutor
 
+import requests
 from PIL import Image, PngImagePlugin, UnidentifiedImageError
 from requests.exceptions import ConnectionError as RequestConnectionError
 from requests.exceptions import ReadTimeout
@@ -15,14 +14,8 @@ from requests.exceptions import ReadTimeout
 from swingmusic import settings
 from swingmusic.models.artist import Artist
 from swingmusic.store.artists import ArtistStore
-
-# from swingmusic.db.libdata import ArtistTable
-
-# from swingmusic.store import artists as artist_store
-# from swingmusic.store.tracks import TrackStore
 from swingmusic.utils.hashing import create_hash
 from swingmusic.utils.progressbar import tqdm
-
 
 LARGE_ENOUGH_NUMBER = 100
 PngImagePlugin.MAX_TEXT_CHUNK = LARGE_ENOUGH_NUMBER * (1024**2)
