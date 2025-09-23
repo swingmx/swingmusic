@@ -575,7 +575,7 @@ create_wrapper_script() {
     # Create wrapper script
     cat > "$wrapper_script" << 'EOF'
 #!/bin/sh
-# SwingMusic wrapper script
+# Swing Music wrapper script
 # This script activates the virtual environment and runs swingmusic
 
 set -e
@@ -611,7 +611,7 @@ install_swingmusic() {
     
     venv_dir="$1"
     
-    say "Installing SwingMusic in virtual environment..."
+    say "Installing Swing Music in virtual environment..."
     say_verbose "Virtual environment: $venv_dir"
 
     # Get Python and pip commands from virtual environment
@@ -628,26 +628,26 @@ install_swingmusic() {
     fi
 
     
-    # Install SwingMusic
+    # Install Swing Music
     say "Installing Swing Music package. This may take a while..."
     ensure "$pip_cmd" install swingmusic --quiet
     
     # Verify installation
     say "Verifying installation..."
     if ! "$python_cmd" -m swingmusic --version >/dev/null 2>&1; then
-        err "Failed to verify SwingMusic installation"
+        err "Failed to verify Swing Music installation"
     fi
     
     local version
     version=$("$python_cmd" -m swingmusic --version 2>/dev/null | head -n1)
-    say "SwingMusic installed successfully: $version"
+    say "Swing Music installed successfully: $version"
 }
 
-# Kill all SwingMusic processes
+# Kill all Swing Music processes
 kill_swingmusic_processes() {
-    say "Stopping SwingMusic processes..."
+    say "Stopping Swing Music processes..."
 
-    # Find and kill all SwingMusic processes
+    # Find and kill all Swing Music processes
     local killed_count=0
 
     # Use pkill to find and kill processes matching "swingmusic "
@@ -657,15 +657,15 @@ kill_swingmusic_processes() {
             killed_count=$(pgrep -f "swingmusic " | wc -l)
         fi
 
-        # Kill all SwingMusic processes
+        # Kill all Swing Music processes
         if pkill -9 -f "swingmusic " >/dev/null 2>&1; then
             if [ "$killed_count" -gt 0 ]; then
-                say "Killed $killed_count SwingMusic process(es)"
+                say "Killed $killed_count Swing Music process(es)"
             else
-                say "No SwingMusic processes found"
+                say "No Swing Music processes found"
             fi
         else
-            say "No SwingMusic processes found"
+            say "No Swing Music processes found"
         fi
     else
         # Fallback: use ps and kill manually
@@ -677,9 +677,9 @@ kill_swingmusic_processes() {
             for pid in $pids; do
                 kill -9 "$pid" >/dev/null 2>&1
             done
-            say "Killed $killed_count SwingMusic process(es)"
+            say "Killed $killed_count Swing Music process(es)"
         else
-            say "No SwingMusic processes found"
+            say "No Swing Music processes found"
         fi
     fi
 }
@@ -699,16 +699,16 @@ remove_systemd_service() {
 
     # Stop the service
     if systemctl --user stop swingmusic.service >/dev/null 2>&1; then
-        say "Stopped SwingMusic service"
+        say "Stopped Swing Music service"
     else
-        warn "Failed to stop SwingMusic service (may not be running)"
+        warn "Failed to stop Swing Music service (may not be running)"
     fi
 
     # Disable the service
     if systemctl --user disable swingmusic.service >/dev/null 2>&1; then
-        say "Disabled SwingMusic service"
+        say "Disabled Swing Music service"
     else
-        warn "Failed to disable SwingMusic service"
+        warn "Failed to disable Swing Music service"
     fi
 
     # Remove service file
@@ -741,9 +741,9 @@ remove_launchd_service() {
 
     # Unload the service
     if launchctl unload "$service_file" >/dev/null 2>&1; then
-        say "Unloaded SwingMusic service"
+        say "Unloaded Swing Music service"
     else
-        warn "Failed to unload SwingMusic service (may not be loaded)"
+        warn "Failed to unload Swing Music service (may not be loaded)"
     fi
 
     # Remove service file
@@ -802,10 +802,10 @@ remove_virtual_environment() {
 
 # Main uninstall function
 uninstall() {
-    say "Starting SwingMusic uninstallation..."
+    say "Starting Swing Music uninstallation..."
     say ""
 
-    # Kill any running SwingMusic processes
+    # Kill any running Swing Music processes
     kill_swingmusic_processes
 
     # Remove system services based on OS
@@ -826,7 +826,7 @@ uninstall() {
     remove_virtual_environment
 
     say ""
-    say "SwingMusic uninstalled successfully!"
+    say "Swing Music uninstalled successfully!"
     say "Note: Python installation and PATH modifications were preserved"
 }
 
@@ -847,7 +847,7 @@ test_installation() {
     
     # Test swingmusic command
     if ! "$wrapper_script" --version >/dev/null 2>&1; then
-        err "SwingMusic command failed"
+        err "Swing Music command failed"
     fi
     
     local version
@@ -874,7 +874,7 @@ create_systemd_service() {
     service_dir="$HOME/.config/systemd/user"
     service_file="$service_dir/swingmusic.service"
     
-    say "Creating systemd service for SwingMusic..."
+    say "Creating systemd service for Swing Music..."
     
     # Check if systemd is available
     if ! command -v systemctl >/dev/null 2>&1; then
@@ -888,7 +888,7 @@ create_systemd_service() {
     # Create service file
     cat > "$service_file" << EOF
 [Unit]
-Description=SwingMusic Music Server
+Description=Swing Music Music Server
 After=network.target
 
 [Service]
@@ -907,17 +907,17 @@ EOF
     say_verbose "Reloading systemd user daemon..."
     ensure systemctl --user daemon-reload
     
-    say_verbose "Enabling SwingMusic service..."
+    say_verbose "Enabling Swing Music service..."
     ensure systemctl --user enable swingmusic.service
     
     say "Systemd service created and enabled successfully"
     say "Service file: $service_file"
     say ""
     say "Service Management Commands:"
-    say "To start SwingMusic service:"
+    say "To start Swing Music service:"
     say "    systemctl --user start swingmusic"
     say ""
-    say "To stop SwingMusic service:"
+    say "To stop Swing Music service:"
     say "    systemctl --user stop swingmusic"
     say ""
     say "To check service status:"
@@ -938,7 +938,7 @@ create_launchd_service() {
     service_dir="$HOME/Library/LaunchAgents"
     service_file="$service_dir/com.swingmusic.plist"
     
-    say "Creating launchd service for SwingMusic..."
+    say "Creating launchd service for Swing Music..."
     
     # Create service directory
     ensure mkdir -p "$service_dir"
@@ -972,17 +972,17 @@ create_launchd_service() {
 EOF
     
     # Load the service
-    say_verbose "Loading SwingMusic service..."
+    say_verbose "Loading Swing Music service..."
     ensure launchctl load "$service_file"
     
     say "Launchd service created and loaded successfully"
     say "Service file: $service_file"
     say ""
     say "Service Management Commands:"
-    say "To start SwingMusic service:"
+    say "To start Swing Music service:"
     say "    launchctl start com.swingmusic"
     say ""
-    say "To stop SwingMusic service:"
+    say "To stop Swing Music service:"
     say "    launchctl stop com.swingmusic"
     say ""
     say "To check if service is running:"
@@ -1000,7 +1000,7 @@ add_to_path() {
     
     install_dir=$(get_install_dir)
     
-    say "Adding SwingMusic to PATH..."
+    say "Adding Swing Music to PATH..."
     say_verbose "Installation directory: $install_dir"
     
     # Detect user's shell and appropriate rc file
@@ -1024,9 +1024,9 @@ add_to_path() {
     
     say_verbose "Using shell configuration file: $shell_rc"
     
-    # Check if SwingMusic path already exists in rc file
+    # Check if Swing Music path already exists in rc file
     if [ -f "$shell_rc" ] && grep -q "$install_dir" "$shell_rc"; then
-        say "SwingMusic PATH already configured in $shell_rc"
+        say "Swing Music PATH already configured in $shell_rc"
         return 0
     fi
     
@@ -1038,10 +1038,10 @@ add_to_path() {
     # Add path to rc file
     path_line="export PATH=\"$install_dir:\$PATH\""
     echo "" >> "$shell_rc"
-    echo "# SwingMusic installation" >> "$shell_rc"
+    echo "# Swing Music installation" >> "$shell_rc"
     echo "$path_line" >> "$shell_rc"
     
-    say "Added SwingMusic to PATH in $shell_rc"
+    say "Added Swing Music to PATH in $shell_rc"
     say "Please restart your shell or run: source $shell_rc"
     
     # Also add to current session PATH
@@ -1054,7 +1054,7 @@ main() {
     local venv_dir
     local wrapper_script
     
-    say "Starting SwingMusic installation..."
+    say "Starting Swing Music installation..."
     say_verbose "Architecture: $(get_architecture)"
     say_verbose "OS Type: $(get_os_type)"
     say_verbose "Package Manager: $(get_package_manager)"
@@ -1070,7 +1070,7 @@ main() {
     # Create virtual environment
     venv_dir=$(create_virtual_environment)
     
-    # Install SwingMusic
+    # Install Swing Music
     install_swingmusic "$venv_dir"
     
     # Create wrapper script
@@ -1109,13 +1109,13 @@ usage() {
     cat << EOF
 Usage: $0 [OPTIONS]
 
-Install or uninstall SwingMusic on Unix-based systems.
+Install or uninstall Swing Music on Unix-based systems.
 
 OPTIONS:
     -v, --verbose      Enable verbose output
     -q, --quiet        Suppress normal output
     -h, --help         Show this help message
-    --uninstall        Uninstall SwingMusic and remove all files
+    --uninstall        Uninstall Swing Music and remove all files
 
 ENVIRONMENT VARIABLES:
     VERBOSE=1          Enable verbose output
@@ -1124,7 +1124,7 @@ ENVIRONMENT VARIABLES:
 EXAMPLES:
     $0                      # Normal installation
     $0 --verbose           # Verbose installation
-    $0 --uninstall        # Uninstall SwingMusic
+    $0 --uninstall        # Uninstall Swing Music
     VERBOSE=1 $0          # Verbose installation via environment
 
 EOF
