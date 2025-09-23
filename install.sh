@@ -734,11 +734,11 @@ remove_launchd_service() {
     fi
 
     # Stop the service
-    launchctl stop com.swingmusic >/dev/null 2>&1
+    launchctl stop com.swingmusic >/dev/null 2>&1 || true
     say "Stopped Swing Music service"
 
     # Unload the service
-    launchctl unload "$service_file" >/dev/null 2>&1
+    launchctl unload "$service_file" >/dev/null 2>&1 || true
     say "Unloaded Swing Music service"
 
     # Remove service file
@@ -957,8 +957,6 @@ create_launchd_service() {
     <key>WorkingDirectory</key>
     <string>$install_dir</string>
     <key>RunAtLoad</key>
-    <true/>
-    <key>KeepAlive</key>
     <true/>
     <key>StandardOutPath</key>
     <string>/tmp/swingmusic.log</string>
