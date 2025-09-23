@@ -2,6 +2,8 @@
 
 ## Onboarding
 
-- Remove default user creation
-- Create SSE endpoint for notification
 - Figure out logger situation
+- Fix create account image on the webclient
+- Fix: Add folder to playlist not using the enabled order at the time
+- Fix: Add queue to playlist not using the queue order
+- Test out other "add to playlist" functions

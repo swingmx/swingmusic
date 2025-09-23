@@ -2,11 +2,11 @@
 Prepares the server for use.
 """
 
-import uuid
 from dataclasses import asdict
 from time import time
 
 from swingmusic.config import UserConfig
+from swingmusic.lib.crypto import Cryptography
 from swingmusic.db.userdata import UserTable
 from swingmusic.lib.mapstuff import (
     map_album_colors,
@@ -33,11 +33,14 @@ def run_setup():
     config.setup_config_file()
 
     if not config.serverId:
-        config.serverId = str(uuid.uuid4())
+        # Generate new ed25519 keypair
+        crypto = Cryptography()
+
+        # Set serverId to the public key
+        config.serverId = crypto.public_key
         config.write_to_file(asdict(config))
 
     setup_sqlite()
-    # run_migrations()
 
 
 def load_into_mem():
