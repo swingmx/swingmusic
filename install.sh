@@ -30,10 +30,7 @@ PYTHON_MAX_VERSION="3.12"
 VERBOSE=${VERBOSE:-0}
 QUIET=${QUIET:-0}
 
-# Script options
-if [ "${VERBOSE:-0}" = "1" ]; then
-    set -x
-fi
+# No global verbose options - handled by say_verbose() function
 
 # Utility functions
 say() {
@@ -44,7 +41,7 @@ say() {
 
 say_verbose() {
     if [ "$VERBOSE" = "1" ]; then
-        printf '[VERBOSE] %s\n' "$1" >&2
+        printf '\033[90m%s\033[0m\n' "$1" >&2
     fi
 }
 
@@ -611,7 +608,7 @@ install_swingmusic() {
     
     venv_dir="$1"
     
-    say "Installing Swing Music in virtual environment..."
+    say_verbose "Installing Swing Music in virtual environment..."
     say_verbose "Virtual environment: $venv_dir"
 
     # Get Python and pip commands from virtual environment
@@ -629,7 +626,7 @@ install_swingmusic() {
 
     
     # Install Swing Music
-    say "Installing Swing Music package. This may take a while..."
+    say "Installing Swing Music. This may take a while..."
     ensure "$pip_cmd" install swingmusic --disable-pip-version-check --quiet 
     
     # Verify installation
@@ -646,21 +643,25 @@ install_swingmusic() {
 # Kill all Swing Music processes
 kill_swingmusic_processes() {
     say "Stopping Swing Music processes..."
+    say_verbose "Searching for running Swing Music processes"
 
     # Find and kill all Swing Music processes
     local killed_count=0
 
     # Use pkill to find and kill processes matching "swingmusic "
     if command -v pkill >/dev/null 2>&1; then
+        say_verbose "Using pkill to find and kill processes"
         # Count processes before killing
         if command -v pgrep >/dev/null 2>&1; then
             killed_count=$(pgrep -f "swingmusic " 2>/dev/null | wc -l) || killed_count=0
+            say_verbose "Found $killed_count Swing Music processes"
         fi
 
         # Kill all Swing Music processes
         if pkill -9 -f "swingmusic " >/dev/null 2>&1; then
             if [ "$killed_count" -gt 0 ]; then
                 say "Killed $killed_count Swing Music process(es)"
+                say_verbose "Successfully killed processes using SIGKILL"
             else
                 say "No Swing Music processes found"
             fi
@@ -668,13 +669,16 @@ kill_swingmusic_processes() {
             say "No Swing Music processes found"
         fi
     else
+        say_verbose "pkill not available, using ps and kill fallback"
         # Fallback: use ps and kill manually
         local pids
         pids=$(ps aux | grep "swingmusic " | grep -v grep | awk '{print $2}')
 
         if [ -n "$pids" ]; then
             killed_count=$(echo "$pids" | wc -w)
+            say_verbose "Found PIDs: $pids"
             for pid in $pids; do
+                say_verbose "Killing process $pid"
                 kill -9 "$pid" >/dev/null 2>&1
             done
             say "Killed $killed_count Swing Music process(es)"
@@ -690,23 +694,29 @@ remove_systemd_service() {
     local service_file="$service_dir/swingmusic.service"
 
     say "Removing systemd service..."
+    say_verbose "Service directory: $service_dir"
+    say_verbose "Service file: $service_file"
 
     # Check if systemd is available
     if ! command -v systemctl >/dev/null 2>&1; then
         say "systemd not available, skipping service removal"
+        say_verbose "systemctl command not found"
         return 0
     fi
 
     # Stop the service
+    say_verbose "Stopping systemd service: swingmusic.service"
     systemctl --user stop swingmusic.service >/dev/null 2>&1
     say "Stopped Swing Music service"
 
     # Disable the service
+    say_verbose "Disabling systemd service: swingmusic.service"
     systemctl --user disable swingmusic.service >/dev/null 2>&1
     say "Disabled Swing Music service"
 
     # Remove service file
     if [ -f "$service_file" ]; then
+        say_verbose "Removing service file: $service_file"
         if rm "$service_file" 2>/dev/null; then
             say "Removed: $service_file"
         else
@@ -714,9 +724,11 @@ remove_systemd_service() {
         fi
     else
         say "Service file not found: $service_file"
+        say_verbose "Service file does not exist, nothing to remove"
     fi
 
     # Reload systemd
+    say_verbose "Reloading systemd user daemon"
     systemctl --user daemon-reload >/dev/null 2>&1 || true
 }
 
@@ -726,23 +738,29 @@ remove_launchd_service() {
     local service_file="$service_dir/com.swingmusic.plist"
 
     say "Removing launchd service..."
+    say_verbose "Service directory: $service_dir"
+    say_verbose "Service file: $service_file"
 
     # Check if launchctl is available
     if ! command -v launchctl >/dev/null 2>&1; then
         say "launchctl not available, skipping service removal"
+        say_verbose "launchctl command not found"
         return 0
     fi
 
     # Stop the service
+    say_verbose "Stopping launchd service: com.swingmusic"
     launchctl stop com.swingmusic >/dev/null 2>&1 || true
     say "Stopped Swing Music service"
 
     # Unload the service
+    say_verbose "Unloading launchd service: $service_file"
     launchctl unload "$service_file" >/dev/null 2>&1 || true
     say "Unloaded Swing Music service"
 
     # Remove service file
     if [ -f "$service_file" ]; then
+        say_verbose "Removing service file: $service_file"
         if rm "$service_file" 2>/dev/null; then
             say "Removed: $service_file"
         else
@@ -750,6 +768,7 @@ remove_launchd_service() {
         fi
     else
         say "Service file not found: $service_file"
+        say_verbose "Service file does not exist, nothing to remove"
     fi
 }
 
@@ -762,8 +781,11 @@ remove_wrapper_script() {
     wrapper_script="$install_dir/swingmusic"
 
     say "Removing wrapper script..."
+    say_verbose "Install directory: $install_dir"
+    say_verbose "Wrapper script path: $wrapper_script"
 
     if [ -f "$wrapper_script" ]; then
+        say_verbose "Removing wrapper script file"
         if rm "$wrapper_script" 2>/dev/null; then
             say "Removed: $wrapper_script"
         else
@@ -771,6 +793,7 @@ remove_wrapper_script() {
         fi
     else
         say "Wrapper script not found: $wrapper_script"
+        say_verbose "Wrapper script does not exist, nothing to remove"
     fi
 }
 
@@ -783,8 +806,11 @@ remove_virtual_environment() {
     venv_dir="$install_dir/swingmusic-venv"
 
     say "Removing virtual environment..."
+    say_verbose "Install directory: $install_dir"
+    say_verbose "Virtual environment path: $venv_dir"
 
     if [ -d "$venv_dir" ]; then
+        say_verbose "Removing virtual environment directory and contents"
         if rm -rf "$venv_dir" 2>/dev/null; then
             say "Removed: $venv_dir"
         else
@@ -792,24 +818,34 @@ remove_virtual_environment() {
         fi
     else
         say "Virtual environment not found: $venv_dir"
+        say_verbose "Virtual environment directory does not exist, nothing to remove"
     fi
 }
 
 # Main uninstall function
 uninstall() {
     say "Starting Swing Music uninstallation..."
+    say_verbose "Uninstall mode activated"
+    say_verbose "OS type: $(get_os_type)"
     say ""
 
     # Stop and remove system services based on OS
-    case "$(get_os_type)" in
+    local os_type
+    os_type=$(get_os_type)
+    say_verbose "Detected OS type: $os_type"
+
+    case "$os_type" in
         "macos")
+            say_verbose "Running macOS service removal"
             remove_launchd_service
             ;;
         "linux"|"debian"|"arch"|"redhat"|"alpine")
+            say_verbose "Running Linux systemd service removal"
             remove_systemd_service
             ;;
         *)
             say "Unknown OS, skipping service removal"
+            say_verbose "Unsupported OS type: $os_type"
             ;;
     esac
 
@@ -822,6 +858,7 @@ uninstall() {
 
     say ""
     say "Swing Music uninstalled successfully!"
+    say_verbose "Uninstallation process completed"
 }
 
 # Test basic functionality
@@ -1091,12 +1128,12 @@ main() {
     esac
     
     say ""
+    say "Service file: $service_file"
     say "Executable path: $wrapper_script"
     say "Installation directory: $venv_dir"
-    say "Installation completed successfully! 🎉"
     say ""
-    say "To check version, run:"
-    say "    swingmusic --version"
+    say "Installation completed successfully! 🎉"
+    say "Open http://localhost:1970 in your browser to start using Swing Music"
 }
 
 # Show usage information
