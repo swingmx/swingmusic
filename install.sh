@@ -629,8 +629,8 @@ install_swingmusic() {
 
     
     # Install SwingMusic
-    say "Installing SwingMusic package..."
-    ensure "$pip_cmd" install swingmusic
+    say "Installing Swing Music package. This may take a while..."
+    ensure "$pip_cmd" install swingmusic --quiet
     
     # Verify installation
     say "Verifying installation..."
@@ -951,11 +951,11 @@ create_launchd_service() {
 <dict>
     <key>Label</key>
     <string>com.swingmusic</string>
+    <key>Program</key>
+    <string>$install_dir/swingmusic</string>
     <key>ProgramArguments</key>
     <array>
-        <string>$venv_dir/bin/python</string>
-        <string>-m</string>
-        <string>swingmusic</string>
+        <string>$install_dir/swingmusic</string>
     </array>
     <key>WorkingDirectory</key>
     <string>$install_dir</string>
