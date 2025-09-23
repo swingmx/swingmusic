@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 # shellcheck shell=dash
 # shellcheck disable=SC2039  # local is non-POSIX
 #
