@@ -643,6 +643,193 @@ install_swingmusic() {
     say "SwingMusic installed successfully: $version"
 }
 
+# Kill all SwingMusic processes
+kill_swingmusic_processes() {
+    say "Stopping SwingMusic processes..."
+
+    # Find and kill all SwingMusic processes
+    local killed_count=0
+
+    # Use pkill to find and kill processes matching "swingmusic "
+    if command -v pkill >/dev/null 2>&1; then
+        # Count processes before killing
+        if command -v pgrep >/dev/null 2>&1; then
+            killed_count=$(pgrep -f "swingmusic " | wc -l)
+        fi
+
+        # Kill all SwingMusic processes
+        if pkill -9 -f "swingmusic " >/dev/null 2>&1; then
+            if [ "$killed_count" -gt 0 ]; then
+                say "Killed $killed_count SwingMusic process(es)"
+            else
+                say "No SwingMusic processes found"
+            fi
+        else
+            say "No SwingMusic processes found"
+        fi
+    else
+        # Fallback: use ps and kill manually
+        local pids
+        pids=$(ps aux | grep "swingmusic " | grep -v grep | awk '{print $2}')
+
+        if [ -n "$pids" ]; then
+            killed_count=$(echo "$pids" | wc -w)
+            for pid in $pids; do
+                kill -9 "$pid" >/dev/null 2>&1
+            done
+            say "Killed $killed_count SwingMusic process(es)"
+        else
+            say "No SwingMusic processes found"
+        fi
+    fi
+}
+
+# Remove systemd service
+remove_systemd_service() {
+    local service_dir="$HOME/.config/systemd/user"
+    local service_file="$service_dir/swingmusic.service"
+
+    say "Removing systemd service..."
+
+    # Check if systemd is available
+    if ! command -v systemctl >/dev/null 2>&1; then
+        say "systemd not available, skipping service removal"
+        return 0
+    fi
+
+    # Stop the service
+    if systemctl --user stop swingmusic.service >/dev/null 2>&1; then
+        say "Stopped SwingMusic service"
+    else
+        warn "Failed to stop SwingMusic service (may not be running)"
+    fi
+
+    # Disable the service
+    if systemctl --user disable swingmusic.service >/dev/null 2>&1; then
+        say "Disabled SwingMusic service"
+    else
+        warn "Failed to disable SwingMusic service"
+    fi
+
+    # Remove service file
+    if [ -f "$service_file" ]; then
+        if rm "$service_file" 2>/dev/null; then
+            say "Removed: $service_file"
+        else
+            warn "Failed to remove: $service_file"
+        fi
+    else
+        say "Service file not found: $service_file"
+    fi
+
+    # Reload systemd
+    systemctl --user daemon-reload >/dev/null 2>&1 || true
+}
+
+# Remove launchd service
+remove_launchd_service() {
+    local service_dir="$HOME/Library/LaunchAgents"
+    local service_file="$service_dir/com.swingmusic.plist"
+
+    say "Removing launchd service..."
+
+    # Check if launchctl is available
+    if ! command -v launchctl >/dev/null 2>&1; then
+        say "launchctl not available, skipping service removal"
+        return 0
+    fi
+
+    # Unload the service
+    if launchctl unload "$service_file" >/dev/null 2>&1; then
+        say "Unloaded SwingMusic service"
+    else
+        warn "Failed to unload SwingMusic service (may not be loaded)"
+    fi
+
+    # Remove service file
+    if [ -f "$service_file" ]; then
+        if rm "$service_file" 2>/dev/null; then
+            say "Removed: $service_file"
+        else
+            warn "Failed to remove: $service_file"
+        fi
+    else
+        say "Service file not found: $service_file"
+    fi
+}
+
+# Remove wrapper script
+remove_wrapper_script() {
+    local install_dir
+    local wrapper_script
+
+    install_dir=$(get_install_dir)
+    wrapper_script="$install_dir/swingmusic"
+
+    say "Removing wrapper script..."
+
+    if [ -f "$wrapper_script" ]; then
+        if rm "$wrapper_script" 2>/dev/null; then
+            say "Removed: $wrapper_script"
+        else
+            warn "Failed to remove: $wrapper_script"
+        fi
+    else
+        say "Wrapper script not found: $wrapper_script"
+    fi
+}
+
+# Remove virtual environment
+remove_virtual_environment() {
+    local install_dir
+    local venv_dir
+
+    install_dir=$(get_install_dir)
+    venv_dir="$install_dir/swingmusic-venv"
+
+    say "Removing virtual environment..."
+
+    if [ -d "$venv_dir" ]; then
+        if rm -rf "$venv_dir" 2>/dev/null; then
+            say "Removed: $venv_dir"
+        else
+            warn "Failed to remove: $venv_dir"
+        fi
+    else
+        say "Virtual environment not found: $venv_dir"
+    fi
+}
+
+# Main uninstall function
+uninstall() {
+    say "Starting SwingMusic uninstallation..."
+    say ""
+
+    # Kill any running SwingMusic processes
+    kill_swingmusic_processes
+
+    # Remove system services based on OS
+    case "$(get_os_type)" in
+        "macos")
+            remove_launchd_service
+            ;;
+        "linux"|"debian"|"arch"|"redhat"|"alpine")
+            remove_systemd_service
+            ;;
+        *)
+            say "Unknown OS, skipping service removal"
+            ;;
+    esac
+
+    # Remove application files
+    remove_wrapper_script
+    remove_virtual_environment
+
+    say ""
+    say "SwingMusic uninstalled successfully!"
+    say "Note: Python installation and PATH modifications were preserved"
+}
+
 # Test basic functionality
 test_installation() {
     local wrapper_script
@@ -706,7 +893,6 @@ After=network.target
 
 [Service]
 Type=simple
-User=%i
 WorkingDirectory=$install_dir
 Environment=PATH=$venv_dir/bin:/usr/local/bin:/usr/bin:/bin
 ExecStart=$venv_dir/bin/python -m swingmusic
@@ -816,9 +1002,9 @@ add_to_path() {
     
     say_verbose "Using shell configuration file: $shell_rc"
     
-    # Check if path already exists in rc file
+    # Check if SwingMusic path already exists in rc file
     if [ -f "$shell_rc" ] && grep -q "$install_dir" "$shell_rc"; then
-        say_verbose "PATH already configured in $shell_rc"
+        say "SwingMusic PATH already configured in $shell_rc"
         return 0
     fi
     
@@ -906,26 +1092,30 @@ usage() {
     cat << EOF
 Usage: $0 [OPTIONS]
 
-Install SwingMusic on Unix-based systems.
+Install or uninstall SwingMusic on Unix-based systems.
 
 OPTIONS:
-    -v, --verbose    Enable verbose output
-    -q, --quiet      Suppress normal output
-    -h, --help       Show this help message
+    -v, --verbose      Enable verbose output
+    -q, --quiet        Suppress normal output
+    -h, --help         Show this help message
+    --uninstall        Uninstall SwingMusic and remove all files
 
 ENVIRONMENT VARIABLES:
-    VERBOSE=1        Enable verbose output
-    QUIET=1          Suppress normal output
+    VERBOSE=1          Enable verbose output
+    QUIET=1            Suppress normal output
 
 EXAMPLES:
-    $0                    # Normal installation
-    $0 --verbose         # Verbose installation
-    VERBOSE=1 $0        # Verbose installation via environment
+    $0                      # Normal installation
+    $0 --verbose           # Verbose installation
+    $0 --uninstall        # Uninstall SwingMusic
+    VERBOSE=1 $0          # Verbose installation via environment
 
 EOF
 }
 
 # Parse command line arguments
+UNINSTALL_MODE=0
+
 while [ $# -gt 0 ]; do
     case "$1" in
         -v|--verbose)
@@ -940,11 +1130,19 @@ while [ $# -gt 0 ]; do
             usage
             exit 0
             ;;
+        --uninstall)
+            UNINSTALL_MODE=1
+            shift
+            ;;
         *)
             err "Unknown option: $1"
             ;;
     esac
 done
 
-# Run main installation
-main "$@"
+# Run appropriate function based on mode
+if [ "$UNINSTALL_MODE" = "1" ]; then
+    uninstall
+else
+    main
+fi

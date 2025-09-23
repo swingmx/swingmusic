@@ -76,3 +76,95 @@
 - Audio stops on ending
 - Show users on account settings when logged in as admin and show users on login is disabled.
 - Save both filepath and trackhash in favorites and playlists
+
+```
+Traceback (most recent call last):
+  File "/Users/cwilvx/code/swingmusic/.venv/lib/python3.12/site-packages/flask/app.py", line 1511, in wsgi_app
+    response = self.full_dispatch_request()
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/cwilvx/code/swingmusic/.venv/lib/python3.12/site-packages/flask/app.py", line 919, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/cwilvx/code/swingmusic/.venv/lib/python3.12/site-packages/flask_cors/extension.py", line 176, in wrapped_function
+    return cors_after_request(app.make_response(f(*args, **kwargs)))
+                                                ^^^^^^^^^^^^^^^^^^
+  File "/Users/cwilvx/code/swingmusic/.venv/lib/python3.12/site-packages/flask/app.py", line 917, in full_dispatch_request
+    rv = self.dispatch_request()
+         ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/cwilvx/code/swingmusic/.venv/lib/python3.12/site-packages/flask/app.py", line 902, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/cwilvx/code/swingmusic/.venv/lib/python3.12/site-packages/flask_openapi3/scaffold.py", line 117, in view_func
+    response = func(**func_kwargs)
+               ^^^^^^^^^^^^^^^^^^^
+  File "/Users/cwilvx/code/swingmusic/src/swingmusic/api/scrobble/__init__.py", line 86, in log_track
+    RecentlyPlayed(userid=scrobble_data["userid"])
+  File "/Users/cwilvx/code/swingmusic/src/swingmusic/lib/recipes/recents.py", line 23, in __init__
+    super().__init__()
+  File "/Users/cwilvx/code/swingmusic/src/swingmusic/lib/recipes/__init__.py", line 21, in __init__
+    self.run()
+  File "/Users/cwilvx/code/swingmusic/src/swingmusic/lib/recipes/recents.py", line 40, in run
+    store_entry = HomepageStore.entries[self.store_key].items[
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+KeyError: 1
+ERROR:swingmusic.app_builder:Exception on /logger/track/log [POST]
+Traceback (most recent call last):
+  File "/Users/cwilvx/code/swingmusic/.venv/lib/python3.12/site-packages/flask/app.py", line 1511, in wsgi_app
+    response = self.full_dispatch_request()
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/cwilvx/code/swingmusic/.venv/lib/python3.12/site-packages/flask/app.py", line 919, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/cwilvx/code/swingmusic/.venv/lib/python3.12/site-packages/flask_cors/extension.py", line 176, in wrapped_function
+    return cors_after_request(app.make_response(f(*args, **kwargs)))
+                                                ^^^^^^^^^^^^^^^^^^
+  File "/Users/cwilvx/code/swingmusic/.venv/lib/python3.12/site-packages/flask/app.py", line 917, in full_dispatch_request
+    rv = self.dispatch_request()
+         ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/cwilvx/code/swingmusic/.venv/lib/python3.12/site-packages/flask/app.py", line 902, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/cwilvx/code/swingmusic/.venv/lib/python3.12/site-packages/flask_openapi3/scaffold.py", line 117, in view_func
+    response = func(**func_kwargs)
+               ^^^^^^^^^^^^^^^^^^^
+  File "/Users/cwilvx/code/swingmusic/src/swingmusic/api/scrobble/__init__.py", line 86, in log_track
+    RecentlyPlayed(userid=scrobble_data["userid"])
+  File "/Users/cwilvx/code/swingmusic/src/swingmusic/lib/recipes/recents.py", line 23, in __init__
+    super().__init__()
+  File "/Users/cwilvx/code/swingmusic/src/swingmusic/lib/recipes/__init__.py", line 21, in __init__
+    self.run()
+  File "/Users/cwilvx/code/swingmusic/src/swingmusic/lib/recipes/recents.py", line 40, in run
+    store_entry = HomepageStore.entries[self.store_key].items[
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+KeyError: 1
+ERROR:swingmusic.app_builder:Exception on /logger/track/log [POST]
+Traceback (most recent call last):
+  File "/Users/cwilvx/code/swingmusic/.venv/lib/python3.12/site-packages/flask/app.py", line 1511, in wsgi_app
+    response = self.full_dispatch_request()
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/cwilvx/code/swingmusic/.venv/lib/python3.12/site-packages/flask/app.py", line 919, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/cwilvx/code/swingmusic/.venv/lib/python3.12/site-packages/flask_cors/extension.py", line 176, in wrapped_function
+    return cors_after_request(app.make_response(f(*args, **kwargs)))
+                                                ^^^^^^^^^^^^^^^^^^
+  File "/Users/cwilvx/code/swingmusic/.venv/lib/python3.12/site-packages/flask/app.py", line 917, in full_dispatch_request
+    rv = self.dispatch_request()
+         ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/cwilvx/code/swingmusic/.venv/lib/python3.12/site-packages/flask/app.py", line 902, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/cwilvx/code/swingmusic/.venv/lib/python3.12/site-packages/flask_openapi3/scaffold.py", line 117, in view_func
+    response = func(**func_kwargs)
+               ^^^^^^^^^^^^^^^^^^^
+  File "/Users/cwilvx/code/swingmusic/src/swingmusic/api/scrobble/__init__.py", line 86, in log_track
+    RecentlyPlayed(userid=scrobble_data["userid"])
+  File "/Users/cwilvx/code/swingmusic/src/swingmusic/lib/recipes/recents.py", line 23, in __init__
+    super().__init__()
+  File "/Users/cwilvx/code/swingmusic/src/swingmusic/lib/recipes/__init__.py", line 21, in __init__
+    self.run()
+  File "/Users/cwilvx/code/swingmusic/src/swingmusic/lib/recipes/recents.py", line 40, in run
+    store_entry = HomepageStore.entries[self.store_key].items[
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+KeyError: 1
+```
