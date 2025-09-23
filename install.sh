@@ -1128,7 +1128,6 @@ main() {
     esac
     
     say ""
-    say "Service file: $service_file"
     say "Executable path: $wrapper_script"
     say "Installation directory: $venv_dir"
     say ""
