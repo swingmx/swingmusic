@@ -912,8 +912,19 @@ EOF
     
     say "Systemd service created and enabled successfully"
     say "Service file: $service_file"
-    say "To start the service: systemctl --user start swingmusic"
-    say "To check status: systemctl --user status swingmusic"
+    say ""
+    say "Service Management Commands:"
+    say "To start SwingMusic service:"
+    say "    systemctl --user start swingmusic"
+    say ""
+    say "To stop SwingMusic service:"
+    say "    systemctl --user stop swingmusic"
+    say ""
+    say "To check service status:"
+    say "    systemctl --user status swingmusic"
+    say ""
+    say "To view service logs:"
+    say "    journalctl --user -u swingmusic -f"
 }
 
 create_launchd_service() {
@@ -966,8 +977,19 @@ EOF
     
     say "Launchd service created and loaded successfully"
     say "Service file: $service_file"
-    say "To start the service: launchctl start com.swingmusic"
-    say "To stop the service: launchctl stop com.swingmusic"
+    say ""
+    say "Service Management Commands:"
+    say "To start SwingMusic service:"
+    say "    launchctl start com.swingmusic"
+    say ""
+    say "To stop SwingMusic service:"
+    say "    launchctl stop com.swingmusic"
+    say ""
+    say "To check if service is running:"
+    say "    launchctl list | grep swingmusic"
+    say ""
+    say "To view service logs:"
+    say "    tail -f /tmp/swingmusic.log"
 }
 
 # Add swingmusic command to user's PATH
@@ -1074,17 +1096,12 @@ main() {
     esac
     
     say ""
-    say "Installation completed successfully!"
-    say "SwingMusic is now available as 'swingmusic' command"
-    say ""
-    say "To start SwingMusic:"
-    say "  swingmusic"
-    say ""
-    say "To check version:"
-    say "  swingmusic --version"
-    say ""
+    say "Executable path: $wrapper_script"
     say "Installation directory: $venv_dir"
-    say "Wrapper script: $wrapper_script"
+    say "Installation completed successfully! 🎉"
+    say ""
+    say "To check version, run:"
+    say "    swingmusic --version"
 }
 
 # Show usage information
