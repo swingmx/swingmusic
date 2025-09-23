@@ -630,7 +630,7 @@ install_swingmusic() {
     
     # Install Swing Music
     say "Installing Swing Music package. This may take a while..."
-    ensure "$pip_cmd" install swingmusic --quiet
+    ensure "$pip_cmd" install swingmusic --disable-pip-version-check --quiet 
     
     # Verify installation
     say "Verifying installation..."
@@ -654,7 +654,7 @@ kill_swingmusic_processes() {
     if command -v pkill >/dev/null 2>&1; then
         # Count processes before killing
         if command -v pgrep >/dev/null 2>&1; then
-            killed_count=$(pgrep -f "swingmusic " | wc -l)
+            killed_count=$(pgrep -f "swingmusic " 2>/dev/null | wc -l) || killed_count=0
         fi
 
         # Kill all Swing Music processes
@@ -698,18 +698,12 @@ remove_systemd_service() {
     fi
 
     # Stop the service
-    if systemctl --user stop swingmusic.service >/dev/null 2>&1; then
-        say "Stopped Swing Music service"
-    else
-        warn "Failed to stop Swing Music service (may not be running)"
-    fi
+    systemctl --user stop swingmusic.service >/dev/null 2>&1
+    say "Stopped Swing Music service"
 
     # Disable the service
-    if systemctl --user disable swingmusic.service >/dev/null 2>&1; then
-        say "Disabled Swing Music service"
-    else
-        warn "Failed to disable Swing Music service"
-    fi
+    systemctl --user disable swingmusic.service >/dev/null 2>&1
+    say "Disabled Swing Music service"
 
     # Remove service file
     if [ -f "$service_file" ]; then
@@ -739,12 +733,13 @@ remove_launchd_service() {
         return 0
     fi
 
+    # Stop the service
+    launchctl stop com.swingmusic >/dev/null 2>&1
+    say "Stopped Swing Music service"
+
     # Unload the service
-    if launchctl unload "$service_file" >/dev/null 2>&1; then
-        say "Unloaded Swing Music service"
-    else
-        warn "Failed to unload Swing Music service (may not be loaded)"
-    fi
+    launchctl unload "$service_file" >/dev/null 2>&1
+    say "Unloaded Swing Music service"
 
     # Remove service file
     if [ -f "$service_file" ]; then
@@ -805,10 +800,7 @@ uninstall() {
     say "Starting Swing Music uninstallation..."
     say ""
 
-    # Kill any running Swing Music processes
-    kill_swingmusic_processes
-
-    # Remove system services based on OS
+    # Stop and remove system services based on OS
     case "$(get_os_type)" in
         "macos")
             remove_launchd_service
@@ -821,13 +813,15 @@ uninstall() {
             ;;
     esac
 
+    # Kill any remaining Swing Music processes
+    kill_swingmusic_processes
+
     # Remove application files
     remove_wrapper_script
     remove_virtual_environment
 
     say ""
     say "Swing Music uninstalled successfully!"
-    say "Note: Python installation and PATH modifications were preserved"
 }
 
 # Test basic functionality
@@ -888,7 +882,7 @@ create_systemd_service() {
     # Create service file
     cat > "$service_file" << EOF
 [Unit]
-Description=Swing Music Music Server
+Description=Swing Music Server
 After=network.target
 
 [Service]
@@ -909,8 +903,11 @@ EOF
     
     say_verbose "Enabling Swing Music service..."
     ensure systemctl --user enable swingmusic.service
-    
-    say "Systemd service created and enabled successfully"
+
+    say_verbose "Starting Swing Music service..."
+    ensure systemctl --user start swingmusic.service
+
+    say "Systemd service created, enabled, and started successfully"
     say "Service file: $service_file"
     say ""
     say "Service Management Commands:"
