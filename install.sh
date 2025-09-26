@@ -23,10 +23,6 @@ has_local 2>/dev/null || alias local=typeset
 set -euo pipefail
 
 # Global variables
-APP_NAME="swingmusic"
-APP_VERSION="2.0.6"
-PYTHON_MIN_VERSION="3.11"
-PYTHON_MAX_VERSION="3.12"
 VERBOSE=${VERBOSE:-0}
 QUIET=${QUIET:-0}
 
@@ -484,27 +480,27 @@ install_platform_dependencies() {
 # Phase 3: Python Environment Management
 install_python() {
     local python_cmd
-    
+
     say "Checking Python installation..."
-    
-    # Check if suitable Python already exists
-    python_cmd=$(check_python_version)
+
+    # Check if suitable Python already exists (allow failure)
+    python_cmd=$(check_python_version || true)
     if [ -n "$python_cmd" ]; then
         say "Found suitable Python: $python_cmd"
         say_verbose "Python version: $($python_cmd --version 2>/dev/null)"
         return 0
     fi
-    
+
     say "No suitable Python found, installing dependencies..."
     install_platform_dependencies
-    
-    # Check again after installing dependencies
-    python_cmd=$(check_python_version)
+
+    # Check again after installing dependencies (allow failure)
+    python_cmd=$(check_python_version || true)
     if [ -n "$python_cmd" ]; then
         say "Python installed successfully: $python_cmd"
         return 0
     fi
-    
+
     err "Failed to install suitable Python version"
 }
 
@@ -526,8 +522,8 @@ create_virtual_environment() {
     
     install_dir=$(get_install_dir)
     venv_dir="$install_dir/swingmusic-venv"
-    python_cmd=$(check_python_version)
-    
+    python_cmd=$(check_python_version || true)
+
     if [ -z "$python_cmd" ]; then
         err "No suitable Python found for virtual environment"
     fi
