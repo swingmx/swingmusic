@@ -70,12 +70,18 @@ jobs:
           yarn build --outDir ../client
           cd ..
 
-      - name: Upload client
+      - name: Create version.txt and package client
+        run: |
+          echo "${{ github.event.inputs.tag }}" > client/version.txt
+          zip -r client.zip client
+          rm -r client
+
+      - name: Upload client.zip
         uses: actions/upload-artifact@v4
         with:
-          path: "client/"
+          path: "client.zip"
           compression-level: 0
-          name: "client"
+          name: "client.zip"
 
   build-wheels:
     name: Build wheels
@@ -88,16 +94,14 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Download client artifact
+      - name: Download client.zip artifact
         uses: actions/download-artifact@v4
         with:
-          name: client
-          path: client
+          name: client.zip
+          path: .
 
-      - name: Compress client and copy to src/swingmusic/client.zip
+      - name: Copy client.zip to src/swingmusic/
         run: |
-          zip -r client.zip client
-          rm -r client
           cp client.zip src/swingmusic/client.zip
 
       - uses: actions/setup-python@v5
@@ -121,7 +125,7 @@ jobs:
   build-appimage:
     name: Build Appimage
     runs-on: ${{ matrix.os }}
-    needs: [build-client]
+    needs: [build-wheels]
     if: ${{ github.event.inputs.binary_build == 'true' }}
 
     strategy:
@@ -157,12 +161,6 @@ jobs:
           wget -nv -c "https://github.com/AppImage/AppImageKit/releases/download/continuous/appimagetool-$APPIMAGE_ARCH.AppImage"
           chmod +x "appimagetool-$APPIMAGE_ARCH.AppImage"
 
-      - name: Download client artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: client
-          path: client
-
       - name: Download wheel artifact
         uses: actions/download-artifact@v4
         with:
@@ -172,7 +170,7 @@ jobs:
 
       - name: Build appimage
         run: |
-          python-appimage build app -p 3.11 appimage/ -n "swingmusic-$APPIMAGE_ARCH" -x client --no-packaging
+          python-appimage build app -p 3.11 appimage/ -n "swingmusic-$APPIMAGE_ARCH" --no-packaging
           pip install --target "swingmusic-$APPIMAGE_ARCH/opt/python3.11/lib/python3.11/" --no-deps --find-links=wheels/ swingmusic
           ./appimagetool-$APPIMAGE_ARCH.AppImage --no-appstream "swingmusic-$APPIMAGE_ARCH" "swingmusic-v${{inputs.tag}}-$APPIMAGE_ARCH.AppImage"
 
@@ -185,7 +183,7 @@ jobs:
   docker:
     name: Build and push Docker image
     runs-on: ubuntu-latest
-    needs: [build-client, build-wheels]
+    needs: [build-wheels]
     permissions: write-all
     if: ${{ github.event.inputs.build_docker == 'true' }}
 
@@ -193,8 +191,11 @@ jobs:
       - name: Checkout into repo
         uses: actions/checkout@v3
 
-      - name: Download artifact
+      - name: Download wheels artifact
         uses: actions/download-artifact@v4
+        with:
+          name: wheels
+          path: wheels
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v1
@@ -259,21 +260,11 @@ jobs:
         with:
           python-version: "3.11.x"
 
-      - name: Download client artifact
+      - name: Download client.zip artifact
         uses: actions/download-artifact@v4
         with:
-          name: client
-          path: client
-
-      - name: Compress client (Unix)
-        if: runner.os != 'Windows'
-        run: |
-          zip -r client.zip client
-
-      - name: Compress client (Windows)
-        if: runner.os == 'Windows'
-        run: |
-          Compress-Archive -Path client -DestinationPath client.zip -Force
+          name: client.zip
+          path: .
 
       - name: Download wheel artifact
         uses: actions/download-artifact@v4
@@ -323,16 +314,11 @@ jobs:
           sparse-checkout: |
             .github/changelog.md
 
-      - name: Download client artifact
+      - name: Download client.zip artifact
         uses: actions/download-artifact@v4
         with:
-          name: client
-          path: client
-
-      - name: compress client
-        run: |
-          zip -r client.zip client
-          rm -r client
+          name: client.zip
+          path: .
 
       - name: Download wheel artifacts
         uses: actions/download-artifact@v4
