@@ -222,7 +222,7 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           context: .
-          platforms: linux/amd64, linux/arm64 #,linux/arm
+          platforms: linux/amd64, linux/arm64, linux/riscv64 #,linux/arm
           push: true
           tags: ghcr.io/${{github.repository}}:${{format('{0}', github.ref_name)}}, ghcr.io/${{github.repository}}:latest
           labels: org.opencontainers.image.title=Docker
