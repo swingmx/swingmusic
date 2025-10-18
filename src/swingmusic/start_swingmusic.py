@@ -1,3 +1,6 @@
+import asyncio
+import os
+import signal
 import socket
 import sys
 from swingmusic import app_builder
@@ -5,7 +8,6 @@ from swingmusic.crons import start_cron_jobs
 from swingmusic.plugins.register import register_plugins
 from swingmusic.setup import load_into_mem, run_setup
 from swingmusic.start_info_logger import log_startup_info
-from swingmusic.utils.threading import background
 
 import setproctitle
 
@@ -85,7 +87,6 @@ def start_swingmusic(host: str, port: int):
     config_mimetypes()
     run_setup()
 
-    @background
     def run_swingmusic():
         register_plugins()
 
@@ -96,25 +97,28 @@ def start_swingmusic(host: str, port: int):
 
     log_startup_info(host, port)
     load_into_mem()
-    run_swingmusic()
+
+    # Start background thread and keep reference
+    import threading
+
+    background_thread = threading.Thread(target=run_swingmusic, daemon=True)
+    background_thread.start()
     # TrackStore.export()
     # ArtistStore.export()
 
     # docker needs manual flush
     print("", end="", flush=True)
 
+    from asgiref.wsgi import WsgiToAsgi
+    from granian.constants import Interfaces
+    from granian.server.embed import Server
+
+    asgi_app = WsgiToAsgi(app)
+    server = Server(asgi_app, host, port, interface=Interfaces.ASGINL)
+
     try:
-        import bjoern
-
-        bjoern.run(app, host, port)
-    except ImportError:
-        import waitress
-
-        waitress.serve(
-            app,
-            host=host,
-            port=port,
-            threads=100,
-            ipv6=True,
-            ipv4=True,
-        )
+        asyncio.run(server.serve())
+    except KeyboardInterrupt:
+        print("Shutting down server...")
+        server.stop()
+        sys.exit(0)

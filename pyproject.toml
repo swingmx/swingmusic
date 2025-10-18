@@ -40,6 +40,8 @@ dependencies = [
     "cryptography>=46.0.1",
     "waitress>=3.0.2; sys_platform == 'win32'",
     "waitress>=3.0.2",
+    "granian>=2.5.5",
+    "asgiref>=3.10.0",
 ]
 
 [project.optional-dependencies]

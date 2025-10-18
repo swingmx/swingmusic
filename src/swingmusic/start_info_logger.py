@@ -1,10 +1,12 @@
+import os
 from swingmusic.settings import TCOLOR, Paths
 from swingmusic.utils.network import get_ip
 from importlib import metadata
 
 
 def log_startup_info(host: str, port: int):
-    print(f"{TCOLOR.HEADER}Swing Music v{metadata.version('swingmusic')} {TCOLOR.ENDC}")
+    pid = os.getpid()
+    print(f"{TCOLOR.HEADER}Swing Music v{metadata.version('swingmusic')} (PID: {pid}) {TCOLOR.ENDC}")
 
     addresses = [host]
 
