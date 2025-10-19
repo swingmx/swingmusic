@@ -469,7 +469,7 @@ def save_item_as_playlist(body: SavePlaylistAsItemBody):
             if itemtype == "artist"
             else Paths().lg_thumb_path
         )
-        img_path = pathlib.Path(base_path + "/" + filename)
+        img_path = pathlib.Path(base_path / filename)
 
         if img_path.exists():
             img = Image.open(img_path)
