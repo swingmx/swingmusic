@@ -435,7 +435,9 @@ class PlaylistTable(Base):
     @classmethod
     def append_to_playlist(cls, id: int, trackhashes: list[str]):
         dbtrackhashes = cls.get_trackhashes(id) or []
-        trackhashes = list(set(dbtrackhashes).union(set(trackhashes)))
+        # Preserve order: start with existing hashes, then add new ones that aren't already present
+        seen = set(dbtrackhashes)
+        trackhashes = dbtrackhashes + [h for h in trackhashes if h not in seen]
 
         return next(
             cls.execute(

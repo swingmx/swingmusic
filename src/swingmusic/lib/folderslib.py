@@ -10,6 +10,7 @@ from swingmusic.store.folder import FolderStore
 
 log = logging.getLogger(__name__)
 
+
 def create_folder(path: str, trackcount=0) -> Folder:
     """
     Creates a folder object from a path.
@@ -47,7 +48,7 @@ def get_files_and_dirs(
     foldersort_reverse: bool,
     tracks_only: bool = False,
     skip_empty_folders=True,
-) -> dict[str: list|int|str]:
+) -> dict[str : list | int | str]:
     """
     Scan folder for files and folders.
     Will only return files in `swingmusic.utils.filesystem.SUPPORTED_FILES`.
@@ -69,13 +70,7 @@ def get_files_and_dirs(
 
     # if file or non-existent
     if not path.exists() or not path.is_dir():
-        return {
-            "path": path.as_posix(),
-            "tracks": [],
-            "folders": [],
-            "total": 0
-        }
-
+        return {"path": path.as_posix(), "tracks": [], "folders": [], "total": 0}
 
     # iter through all folders
     # add files with supported suffix
@@ -109,7 +104,7 @@ def get_files_and_dirs(
         except OSError as e:
             log.error(e)
 
-    files_with_mtime.sort(key=lambda f: f["time"])
+    # files_with_mtime.sort(key=lambda f: f["time"])
     files = [f["path"] for f in files_with_mtime]
 
     # if supported files were found
@@ -122,8 +117,8 @@ def get_files_and_dirs(
         # only return tracks already indexed by us
         tracks = list(FolderStore.get_tracks_by_filepaths(files))
         tracks = sort_tracks(tracks, tracksortby, tracksort_reverse)
-        tracks = tracks[start : start + limit]
 
+        tracks = tracks[start : start + limit]
 
     folders = []
     if not tracks_only:

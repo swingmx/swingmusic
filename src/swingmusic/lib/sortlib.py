@@ -1,22 +1,31 @@
-from itertools import groupby
 import os
-from typing import Callable
-from swingmusic.lib.albumslib import sort_by_track_no
-from swingmusic.models.folder import Folder
-from swingmusic.models.track import Track
+from itertools import groupby
 from swingmusic.utils import flatten
+from swingmusic.models.track import Track
+from swingmusic.models.folder import Folder
+from swingmusic.lib.albumslib import sort_by_track_no
 
 
 def sort_tracks(tracks: list[Track], key: str, reverse: bool = False):
     """
     Sorts a list of tracks by a key.
     """
-    if key == "default":
-        return tracks
 
-    sortfunc: Callable[[Track], str] = lambda track: getattr(track, key)
+    def primary_sortfunc(track: Track) -> str:
+        return track.title.casefold()
+
+    if key == "default":
+
+        def primary_sortfunc(track: Track) -> float:
+            return track.last_mod
+
+    def sortfunc(track: Track) -> str:
+        return getattr(track, key)
+
     if key == "artists" or key == "albumartists":
-        sortfunc = lambda track: getattr(track, key)[0]["name"]
+
+        def sortfunc(track):
+            return getattr(track, key)[0]["name"]
 
     if key == "disc":
         # INFO: Group tracks into albums, then sort them by disc number.
@@ -25,11 +34,12 @@ def sort_tracks(tracks: list[Track], key: str, reverse: bool = False):
 
         return flatten([sort_by_track_no(list(g)) for k, g in groups])
 
-    # INFO: sort tracks by title for a fallback value
-    tracks = sorted(tracks, key=lambda t: t.title.casefold())
+    # INFO: sort tracks to get base sort order
+    tracks = sorted(tracks, key=primary_sortfunc)
 
-    if key == "title" and not reverse:
-        return tracks
+    # INFO: return tracks here if already sorted (with base sort key)
+    if key in ("default", "last_mod", "title"):
+        return tracks if not reverse else tracks[::-1]
 
     return sorted(
         tracks,
@@ -47,9 +57,12 @@ def sort_folders(folders: list[Folder], key: str, reverse: bool = False):
     if key == "default":
         return folders
 
-    sortfunc: Callable[[Folder], str | float] = lambda folder: getattr(folder, key)
+    def sortfunc(folder: Folder) -> str | float:
+        return getattr(folder, key)
 
     if key == "lastmod":
-        sortfunc = lambda folder: os.path.getmtime(folder.path)
+
+        def sortfunc(folder):
+            return os.path.getmtime(folder.path)
 
     return sorted(folders, key=sortfunc, reverse=reverse)

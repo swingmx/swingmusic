@@ -182,7 +182,9 @@ def add_item_to_playlist(path: PlaylistIDPath, body: AddItemToPlaylistBody):
 
     if itemtype == "tracks":
         trackhashes = itemhash.split(",")
-        if len(trackhashes) == 1 and trackhashes[0] in PlaylistTable.get_trackhashes(playlist_id):
+        if len(trackhashes) == 1 and trackhashes[0] in PlaylistTable.get_trackhashes(
+            playlist_id
+        ):
             return {"msg": "Track already exists in playlist"}, 409
     elif itemtype == "folder":
         trackhashes = get_path_trackhashes(
@@ -465,7 +467,7 @@ def save_item_as_playlist(body: SavePlaylistAsItemBody):
         base_path = (
             Paths().lg_artist_img_path
             if itemtype == "artist"
-            else Paths().lg_thumb_path()
+            else Paths().lg_thumb_path
         )
         img_path = pathlib.Path(base_path + "/" + filename)
 
