@@ -91,6 +91,11 @@ class MixesPlugin(Plugin):
 
         try:
             response = requests.post(f"{self.server}/radio", json=queries, timeout=30)
+
+            if response.status_code != 200:
+                # REVIEW: Maybe do something here?
+                return [], [], []
+
         except (requests.exceptions.ConnectionError, requests.exceptions.ReadTimeout):
             print("Failed to connect to recommendation server")
             return [], [], []
@@ -599,8 +604,7 @@ class MixesPlugin(Plugin):
             )
 
         because_you_listened_to_artist = {
-            "title": "Because you listened to "
-            + pivot_artist.name,
+            "title": "Because you listened to " + pivot_artist.name,
             "items": albums[pivot_artist.artisthash][:15],
         }
 

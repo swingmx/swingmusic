@@ -3,6 +3,7 @@ import os
 import signal
 import socket
 import sys
+import warnings
 from swingmusic import app_builder
 from swingmusic.crons import start_cron_jobs
 from swingmusic.plugins.register import register_plugins
@@ -12,6 +13,9 @@ from swingmusic.start_info_logger import log_startup_info
 import setproctitle
 
 import mimetypes
+
+# Suppress the async_to_sync warning from asgiref when using WsgiToAsgi adapter
+warnings.filterwarnings('ignore', message='async_to_sync was passed a non-async-marked callable')
 
 
 def config_mimetypes():
