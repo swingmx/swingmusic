@@ -1,14 +1,11 @@
 import pathlib
 from pathlib import Path
-import logging
 
-from swingmusic.lib.sortlib import sort_folders, sort_tracks
 from swingmusic.models import Folder
-from swingmusic.serializers.track import serialize_tracks
-from swingmusic.utils.filesystem import SUPPORTED_FILES
 from swingmusic.store.folder import FolderStore
-
-log = logging.getLogger(__name__)
+from swingmusic.utils.filesystem import SUPPORTED_FILES
+from swingmusic.serializers.track import serialize_tracks
+from swingmusic.lib.sortlib import sort_folders, sort_tracks
 
 
 def create_folder(path: str, trackcount=0) -> Folder:
@@ -75,7 +72,9 @@ def get_files_and_dirs(
     # iter through all folders
     # add files with supported suffix
     # ignore hidden folder
-    dirs, files = [], []
+    dirs: list[str] = []
+    files: list[str] = []
+
     for entry in path.iterdir():
         ext = entry.suffix.lower()
 
@@ -85,29 +84,11 @@ def get_files_and_dirs(
             # TODO: rework everything to support pathlib
             # add a trailing slash to the folder path
             # to avoid matching a folder starting with the same name as the root path
-            # eg. .../Music and .../Music VideosI
+            # eg. "/.../Music" and "/.../Music Videos"
 
         elif entry.is_file() and ext in SUPPORTED_FILES:
-            files.append(entry)
+            files.append(entry.as_posix())
 
-    # sort files by most recent
-    # TODO: rework if realy needed.
-    files_with_mtime = []
-    for file in files:
-        try:
-            files_with_mtime.append(
-                {
-                    "path": file.as_posix(),
-                    "time": file.lstat().st_mtime,
-                }
-            )
-        except OSError as e:
-            log.error(e)
-
-    # files_with_mtime.sort(key=lambda f: f["time"])
-    files = [f["path"] for f in files_with_mtime]
-
-    # if supported files were found
     # convert files to tracks
     tracks = []
     if len(files) > 0:
@@ -117,7 +98,6 @@ def get_files_and_dirs(
         # only return tracks already indexed by us
         tracks = list(FolderStore.get_tracks_by_filepaths(files))
         tracks = sort_tracks(tracks, tracksortby, tracksort_reverse)
-
         tracks = tracks[start : start + limit]
 
     folders = []

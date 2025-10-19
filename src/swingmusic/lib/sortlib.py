@@ -11,19 +11,21 @@ def sort_tracks(tracks: list[Track], key: str, reverse: bool = False):
     Sorts a list of tracks by a key.
     """
 
+    # INFO: This is the primary sortfunc used to get base sort order
     def primary_sortfunc(track: Track) -> str:
         return track.title.casefold()
 
     if key == "default":
-
+        # INFO: When sorting using default sort, use last_mod as base sort order
         def primary_sortfunc(track: Track) -> float:
             return track.last_mod
 
+    # INFO: This is the secondary sortfunc
     def sortfunc(track: Track) -> str:
         return getattr(track, key)
 
     if key == "artists" or key == "albumartists":
-
+        # INFO: Sort artists by first artist name
         def sortfunc(track):
             return getattr(track, key)[0]["name"]
 
@@ -34,13 +36,14 @@ def sort_tracks(tracks: list[Track], key: str, reverse: bool = False):
 
         return flatten([sort_by_track_no(list(g)) for k, g in groups])
 
-    # INFO: sort tracks to get base sort order
+    # INFO: Primary sort: Sort tracks to get base sort order
     tracks = sorted(tracks, key=primary_sortfunc)
 
     # INFO: return tracks here if already sorted (with base sort key)
     if key in ("default", "last_mod", "title"):
         return tracks if not reverse else tracks[::-1]
 
+    # INFO: Final sort and return results
     return sorted(
         tracks,
         key=lambda track: sortfunc(track).casefold()
