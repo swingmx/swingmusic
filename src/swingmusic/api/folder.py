@@ -7,6 +7,7 @@ from datetime import datetime
 import os
 from pathlib import Path
 
+from natsort import natsorted
 import psutil
 from pydantic import BaseModel, Field
 from flask_openapi3 import Tag
@@ -21,7 +22,6 @@ from swingmusic.lib.folderslib import get_files_and_dirs, get_folders
 from swingmusic.serializers.track import serialize_track, serialize_tracks
 from swingmusic.store.tracks import TrackStore
 from swingmusic.utils.wintools import is_windows
-from swingmusic.events import events
 
 tag = Tag(name="Folders", description="Get folders and tracks in a directory")
 api = APIBlueprint("folder", __name__, url_prefix="/folder", abp_tags=[tag])
@@ -261,7 +261,7 @@ def list_folders(body: DirBrowserBody):
         if entry.is_dir():  # lastly, check if is dir
             dirs.append({"name": name, "path": entry.as_posix()})
 
-    dirs = sorted(dirs, key=lambda i: i["name"])
+    dirs = natsorted(dirs, key=lambda i: i["name"])
 
     # prepend the parent as ".."
     dirs.insert(0, {"name": "↑", "path": req_dir.parent.as_posix()})

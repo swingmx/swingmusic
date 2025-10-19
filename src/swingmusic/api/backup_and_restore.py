@@ -1,19 +1,17 @@
 from dataclasses import asdict
 import json
-import os
 from pathlib import Path
-from pprint import pprint
 import shutil
 from time import time
 from flask_openapi3 import Tag
 from flask_openapi3 import APIBlueprint
+from natsort import natsorted
 import sqlalchemy.exc
 from swingmusic.api.auth import admin_required
 
 from swingmusic.db.userdata import FavoritesTable, PlaylistTable, ScrobbleTable, CollectionTable
 from swingmusic.lib.index import index_everything
 from swingmusic.settings import Paths
-from datetime import datetime
 from swingmusic.utils.dates import timestamp_to_time_passed
 
 from pydantic import BaseModel, Field
@@ -233,7 +231,7 @@ def restore(body: RestoreBackupBody):
         if not backup_dirs:
             return {"msg": "No backups found"}, 404
 
-        for backup_dir in sorted(backup_dirs, key=lambda x: x.name, reverse=True):
+        for backup_dir in natsorted(backup_dirs, key=lambda x: x.name, reverse=True):
             restore_backup = RestoreBackup(backup_dir)
             restore_backup.restore()
             backups.append(backup_dir.name)

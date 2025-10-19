@@ -1,4 +1,5 @@
 import os
+from natsort import natsorted
 from itertools import groupby
 from swingmusic.utils import flatten
 from swingmusic.models.track import Track
@@ -31,20 +32,20 @@ def sort_tracks(tracks: list[Track], key: str, reverse: bool = False):
 
     if key == "disc":
         # INFO: Group tracks into albums, then sort them by disc number.
-        tracks = sorted(tracks, key=lambda x: x.album.casefold())
+        tracks = natsorted(tracks, key=lambda x: x.album.casefold())
         groups = groupby(tracks, lambda x: x.albumhash)
 
         return flatten([sort_by_track_no(list(g)) for k, g in groups])
 
     # INFO: Primary sort: Sort tracks to get base sort order
-    tracks = sorted(tracks, key=primary_sortfunc)
+    tracks = natsorted(tracks, key=primary_sortfunc)
 
-    # INFO: return tracks here if already sorted (with base sort key)
+    # INFO: return tracks here if already natsorted (with base sort key)
     if key in ("default", "last_mod", "title"):
         return tracks if not reverse else tracks[::-1]
 
     # INFO: Final sort and return results
-    return sorted(
+    return natsorted(
         tracks,
         key=lambda track: sortfunc(track).casefold()
         if isinstance(sortfunc(track), str)
@@ -68,4 +69,4 @@ def sort_folders(folders: list[Folder], key: str, reverse: bool = False):
         def sortfunc(folder):
             return os.path.getmtime(folder.path)
 
-    return sorted(folders, key=sortfunc, reverse=reverse)
+    return natsorted(folders, key=sortfunc, reverse=reverse)

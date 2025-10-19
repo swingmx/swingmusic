@@ -3,6 +3,8 @@ from functools import partial
 from multiprocessing import Pool, cpu_count
 import math
 
+from natsort import natsorted
+
 from swingmusic import settings
 from swingmusic.config import UserConfig
 from swingmusic.db.libdata import TrackTable
@@ -290,7 +292,7 @@ def create_artists(artisthashes: list[str]) -> list[tuple[Artist, set[str], set[
 
         artist["genres"] = genres
         artist["genrehashes"] = " ".join([g["genrehash"] for g in genres])
-        artist["name"] = sorted(artist["names"])[0]
+        artist["name"] = natsorted(artist["names"])[0]
 
         # INFO: Delete temporary keys
         del artist["names"]

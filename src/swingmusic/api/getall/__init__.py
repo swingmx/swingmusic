@@ -1,5 +1,6 @@
 from flask_openapi3 import Tag
 from flask_openapi3 import APIBlueprint
+from natsort import natsorted
 from pydantic import BaseModel, Field
 
 from datetime import datetime
@@ -90,14 +91,19 @@ def get_all_items(path: GetAllItemsPath, query: GetAllItemsQuery):
     sort_is_artist_trackcount = is_artists and sort == "trackcount"
     sort_is_artist_albumcount = is_artists and sort == "albumcount"
 
-    lambda_sort = lambda x: getattr(x, sort)
-    lambda_sort_casefold = lambda x: getattr(x, sort).casefold()
+    def lambda_sort(x):
+        return getattr(x, sort)
+
+    def lambda_sort_casefold(x):
+        return getattr(x, sort).casefold()
 
     if sort_is_artist:
-        lambda_sort = lambda x: getattr(x, sort)[0]["name"].casefold()
+
+        def lambda_sort(x):
+            return getattr(x, sort)[0]["name"].casefold()
 
     try:
-        sorted_items = sorted(items, key=lambda_sort_casefold, reverse=reverse)
+        sorted_items = natsorted(items, key=lambda_sort_casefold, reverse=reverse)
     except AttributeError:
         sorted_items = sorted(items, key=lambda_sort, reverse=reverse)
 
