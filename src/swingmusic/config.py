@@ -201,7 +201,6 @@ class UserConfig(metaclass=Singleton):
                     # Temporarily disable the finished flag to prevent recursion during reload
                     super().__setattr__("_finished", False)
                     try:
-                        print("reloading config")
                         self.__post_init__(
                             config_path,
                             super().__getattribute__("_artist_split_ignore_file_name"),
