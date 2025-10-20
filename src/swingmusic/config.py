@@ -47,8 +47,8 @@ def load_user_artist_ignore_list() -> set[str]:
 @dataclass
 class UserConfig(metaclass=Singleton):
     _finished: bool = field(default=False, init=False)  # if post init succesfully
-    _config_path: InitVar[Path] = Path("")
-    _artist_split_ignore_file_name: InitVar[str] = "artist_split_ignore.txt"
+    _config_path: Path = Path("")
+    _last_updated: float = 0.0
     # NOTE: only auth stuff are used (the others are still reading/writing to db)
     # TODO: Move the rest of the settings to the config file
 
@@ -90,6 +90,21 @@ class UserConfig(metaclass=Singleton):
     lastfmApiKey: str = "0553005e93f9a4b4819d835182181806"
     lastfmApiSecret: str = "5e5306fbf3e8e3bc92f039b6c6c4bd4e"
     lastfmSessionKeys: dict[str, str] = field(default_factory=dict)
+    artistArticleAwareSorting: bool = True
+
+    artistSortingArticles: set[str] = field(
+        default_factory=lambda: {
+            "the",
+            "a",
+            "an",
+        }  # English
+        | {"de", "het", "een"}  # Dutch
+        | {"le", "la", "les", "un", "une", "des"}  # French
+        | {"o", "os", "as", "um", "uma", "uns", "umas"}  # Portuguese
+        | {"il", "lo", "la", "gli", "le", "un", "uno", "una"}  # Italian
+        | {"el", "la", "los", "las", "un", "una", "unos", "unas"}  # Spanish
+        | {"der", "die", "das", "ein", "eine", "einen", "einem", "einer"}  # German
+    )
 
     def __post_init__(self, _config_path, _artist_split_ignore_file_name):
         """
@@ -114,8 +129,10 @@ class UserConfig(metaclass=Singleton):
             else:
                 setattr(self, key, value)
 
+        self.artistSortingArticles = set(self.artistSortingArticles)
         # finally, set the config path
         self._config_path = config_path
+        self._last_updated = config_path.stat().st_mtime
         self._finished = True
 
     def setup_config_file(self) -> None:
@@ -164,8 +181,43 @@ class UserConfig(metaclass=Singleton):
 
         self.save()
 
+    def __getattribute__(self, name: str) -> Any:
+        """
+        Overrides the __getattribute__ method to check for config file updates outside the app
+        and reloads the config if needed.
+        """
+        # Only check for config file updates if we're accessing non-internal
+        # attributes and the instance is finished initializing
+        if not name.startswith("_") and hasattr(self, "_finished") and self._finished:
+            try:
+                config_path: Path = super().__getattribute__("_config_path")
+                last_updated = super().__getattribute__("_last_updated")
+
+                if (
+                    config_path
+                    and config_path.exists()
+                    and last_updated < config_path.stat().st_mtime
+                ):
+                    # Temporarily disable the finished flag to prevent recursion during reload
+                    super().__setattr__("_finished", False)
+                    try:
+                        print("reloading config")
+                        self.__post_init__(
+                            config_path,
+                            super().__getattribute__("_artist_split_ignore_file_name"),
+                        )
+                    finally:
+                        super().__setattr__("_finished", True)
+            except (AttributeError, OSError):
+                # If we can't access the config path or it doesn't exist, just continue
+                pass
+
+        # Return latest value of the attribute
+        return super().__getattribute__(name)
+
     def save(self):
         """
         Saves the config to the file
         """
         self.write_to_file(asdict(self))
+        self._last_updated = self._config_path.stat().st_mtime

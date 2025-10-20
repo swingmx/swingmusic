@@ -32,12 +32,8 @@ class Singleton(type):
     def __call__(cls, *args, **kwargs):
         if cls not in Singleton._instances:
             cls._instances[cls] = super(Singleton, cls).__call__(*args, **kwargs)
+
         return cls._instances[cls]
-
-
-# # # # # # # #
-# Downloader  #
-# # # # # # # #
 
 
 class AssetHandler:
@@ -504,5 +500,3 @@ class TCOLOR:
     BOLD = "\033[1m"
     UNDERLINE = "\033[4m"
     # credits: https://stackoverflow.com/a/287944
-
-

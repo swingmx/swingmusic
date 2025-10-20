@@ -204,3 +204,16 @@ def clean_title(title: str) -> str:
     rem_2 = remove_hyphen_remasters(title)
 
     return rem_1 if len(rem_2) > len(rem_1) else rem_2
+
+
+def get_sort_name(name: str, articles: set[str]) -> str:
+    """
+    Returns artist name stripped of articles for sorting purposes.
+    """
+    # Early return if no whitespace (single word)
+    if " " not in name:
+        return name
+
+    # Split into words
+    [article, sort_name] = name.split(maxsplit=1)
+    return sort_name if article.casefold() in articles else name

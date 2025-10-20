@@ -1,10 +1,12 @@
 import os
 from natsort import natsorted
 from itertools import groupby
+from swingmusic.config import UserConfig
 from swingmusic.utils import flatten
 from swingmusic.models.track import Track
 from swingmusic.models.folder import Folder
 from swingmusic.lib.albumslib import sort_by_track_no
+from swingmusic.utils.parsers import get_sort_name
 
 
 def sort_tracks(tracks: list[Track], key: str, reverse: bool = False):
@@ -26,9 +28,18 @@ def sort_tracks(tracks: list[Track], key: str, reverse: bool = False):
         return getattr(track, key)
 
     if key == "artists" or key == "albumartists":
-        # INFO: Sort artists by first artist name
-        def sortfunc(track):
-            return getattr(track, key)[0]["name"]
+        config = UserConfig()
+
+        if config.artistArticleAwareSorting:
+
+            def sortfunc(track):
+                return get_sort_name(
+                    getattr(track, key)[0]["name"], articles=config.artistSortingArticles
+                )
+        else:
+            # INFO: Sort artists by first artist name
+            def sortfunc(track):
+                return getattr(track, key)[0]["name"]
 
     if key == "disc":
         # INFO: Group tracks into albums, then sort them by disc number.

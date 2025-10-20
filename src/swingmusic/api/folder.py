@@ -45,6 +45,7 @@ class FolderTree(BaseModel):
             "playduration",
             "playcount",
             "title",
+            "filepath"
         ]""",
     )
     tracksort_reverse: bool = Field(

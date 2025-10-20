@@ -1,15 +1,14 @@
 from flask_openapi3 import Tag
-from flask_openapi3 import APIBlueprint
 from natsort import natsorted
 from pydantic import BaseModel, Field
+from flask_openapi3 import APIBlueprint
 
 from datetime import datetime
-from swingmusic.api.apischemas import GenericLimitSchema
+from swingmusic.config import UserConfig
 from swingmusic.store.albums import AlbumStore
 from swingmusic.store.artists import ArtistStore
+from swingmusic.api.apischemas import GenericLimitSchema
 
-from swingmusic.serializers.album import serialize_for_card as serialize_album
-from swingmusic.serializers.artist import serialize_for_card as serialize_artist
 from swingmusic.utils import format_number
 from swingmusic.utils.dates import (
     create_new_date,
@@ -17,6 +16,9 @@ from swingmusic.utils.dates import (
     seconds_to_time_string,
     timestamp_to_time_passed,
 )
+from swingmusic.utils.parsers import get_sort_name
+from swingmusic.serializers.album import serialize_for_card as serialize_album
+from swingmusic.serializers.artist import serialize_for_card as serialize_artist
 
 bp_tag = Tag(name="Get all", description="List all items")
 api = APIBlueprint("getall", __name__, url_prefix="/getall", abp_tags=[bp_tag])
@@ -75,37 +77,59 @@ def get_all_items(path: GetAllItemsPath, query: GetAllItemsQuery):
 
     start = query.start
     limit = query.limit
-    sort = query.sortby
+    sortkey = query.sortby
     reverse = query.reverse == "1"
 
-    sort_is_count = sort == "trackcount"
-    sort_is_duration = sort == "duration"
-    sort_is_create_date = sort == "created_date"
-    sort_is_playcount = sort == "playcount"
-    sort_is_playduration = sort == "playduration"
-    sort_is_lastplayed = sort == "lastplayed"
+    sort_is_count = sortkey == "trackcount"
+    sort_is_duration = sortkey == "duration"
+    sort_is_create_date = sortkey == "created_date"
+    sort_is_playcount = sortkey == "playcount"
+    sort_is_playduration = sortkey == "playduration"
+    sort_is_lastplayed = sortkey == "lastplayed"
 
-    sort_is_date = is_albums and sort == "date"
-    sort_is_artist = is_albums and sort == "albumartists"
+    sort_is_date = is_albums and sortkey == "date"
+    sort_is_albumartists = is_albums and sortkey == "albumartists"
+    sort_is_artistname = is_artists and sortkey == "name"
 
-    sort_is_artist_trackcount = is_artists and sort == "trackcount"
-    sort_is_artist_albumcount = is_artists and sort == "albumcount"
+    sort_is_artist_trackcount = is_artists and sortkey == "trackcount"
+    sort_is_artist_albumcount = is_artists and sortkey == "albumcount"
 
-    def lambda_sort(x):
-        return getattr(x, sort)
+    def sortfunc(x):
+        return getattr(x, sortkey)
 
-    def lambda_sort_casefold(x):
-        return getattr(x, sort).casefold()
+    def sortfunc_casefold(x):
+        return getattr(x, sortkey).casefold()
 
-    if sort_is_artist:
+    if sort_is_albumartists:
+        config = UserConfig()
 
-        def lambda_sort(x):
-            return getattr(x, sort)[0]["name"].casefold()
+        if config.artistArticleAwareSorting:
+
+            def sortfunc(x):
+                return get_sort_name(
+                    getattr(x, sortkey)[0]["name"],
+                    articles=config.artistSortingArticles,
+                )
+        else:
+
+            def sortfunc(x):
+                return getattr(x, sortkey)[0]["name"].casefold()
+
+    if sort_is_artistname:
+        config = UserConfig()
+
+        if config.artistArticleAwareSorting:
+
+            def sortfunc_casefold(x):
+                return get_sort_name(
+                    getattr(x, sortkey),
+                    articles=config.artistSortingArticles,
+                )
 
     try:
-        sorted_items = natsorted(items, key=lambda_sort_casefold, reverse=reverse)
+        sorted_items = natsorted(items, key=sortfunc_casefold, reverse=reverse)
     except AttributeError:
-        sorted_items = sorted(items, key=lambda_sort, reverse=reverse)
+        sorted_items = sorted(items, key=sortfunc, reverse=reverse)
 
     items = sorted_items[start : start + limit]
     album_list = []
