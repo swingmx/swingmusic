@@ -106,7 +106,7 @@ class UserConfig(metaclass=Singleton):
         | {"der", "die", "das", "ein", "eine", "einen", "einem", "einer"}  # German
     )
 
-    def __post_init__(self, _config_path, _artist_split_ignore_file_name):
+    def __post_init__(self):
         """
         Loads the config file and sets the values to this instance
         """
@@ -191,7 +191,7 @@ class UserConfig(metaclass=Singleton):
         if not name.startswith("_") and hasattr(self, "_finished") and self._finished:
             try:
                 config_path: Path = super().__getattribute__("_config_path")
-                last_updated = super().__getattribute__("_last_updated")
+                last_updated: float = super().__getattribute__("_last_updated")
 
                 if (
                     config_path
@@ -201,10 +201,7 @@ class UserConfig(metaclass=Singleton):
                     # Temporarily disable the finished flag to prevent recursion during reload
                     super().__setattr__("_finished", False)
                     try:
-                        self.__post_init__(
-                            config_path,
-                            super().__getattribute__("_artist_split_ignore_file_name"),
-                        )
+                        self.__post_init__()
                     finally:
                         super().__setattr__("_finished", True)
             except (AttributeError, OSError):
