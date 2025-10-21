@@ -14,7 +14,7 @@ def load_artist_ignore_list_from_file(filepath: Path) -> set[str]:
     :returns: Lines with content as ``set``, else empty ``set``
     """
     if filepath.exists():
-        text = filepath.read_text()
+        text = filepath.read_text(encoding="utf-8")
         return set([ line.strip() for line in text.splitlines() if line.strip() ])
     else:
         return set()
@@ -25,7 +25,7 @@ def load_default_artist_ignore_list() -> set[str]:
     Loads the default artist-ignore-list from the text file.
     Returns an empty set if the file doesn't exist.
     """
-    text = importlib.resources.read_text("swingmusic.data","artist_split_ignore.txt")
+    text = importlib.resources.read_text("swingmusic.data","artist_split_ignore.txt", encoding="utf-8")
     # only return unique and not empty lines
     lines = text.splitlines()
     return set([ line.strip() for line in lines if line.strip() ])
@@ -38,7 +38,7 @@ def load_user_artist_ignore_list() -> set[str]:
     """
     user_file = Paths().config_dir / "artist_split_ignore.txt"
     if user_file.exists():
-        lines = user_file.read_text().splitlines()
+        lines = user_file.read_text(encoding="utf-8").splitlines()
         return set([ line.strip() for line in lines if line.strip()])
     else:
         return set()
@@ -136,7 +136,7 @@ class UserConfig(metaclass=Singleton):
         Reads the settings from the config file.
         Returns a dictget_root_dirs
         """
-        return json.loads(path.read_text())
+        return json.loads(path.read_text(encoding="utf-8"))
 
 
     def write_to_file(self, settings: dict[str, Any]):

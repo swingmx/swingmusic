@@ -264,11 +264,11 @@ def get_lyrics_file(track_path: str|pathlib.Path) -> Lyrics:
 
     # check paths
     if lyrics_path.exists():
-        lyrics = Lyrics(lyrics_path.read_text())
+        lyrics = Lyrics(lyrics_path.read_text(encoding="utf-8"))
         return lyrics
 
     elif extended_path.exists():
-        lyrics = Lyrics(extended_path.read_text())
+        lyrics = Lyrics(extended_path.read_text(encoding="utf-8"))
         return lyrics
 
     else:
