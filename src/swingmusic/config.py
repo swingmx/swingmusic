@@ -47,7 +47,7 @@ def load_user_artist_ignore_list() -> set[str]:
 @dataclass
 class UserConfig(metaclass=Singleton):
     _finished: bool = field(default=False, init=False)  # if post init succesfully
-    _config_path: Path = Path("")
+    _config_path: InitVar[Path] = Path("")
     _last_updated: float = 0.0
     # NOTE: only auth stuff are used (the others are still reading/writing to db)
     # TODO: Move the rest of the settings to the config file
@@ -106,7 +106,7 @@ class UserConfig(metaclass=Singleton):
         | {"der", "die", "das", "ein", "eine", "einen", "einem", "einer"}  # German
     )
 
-    def __post_init__(self):
+    def __post_init__(self, *args, **kwargs):
         """
         Loads the config file and sets the values to this instance
         """
