@@ -6,6 +6,7 @@ import json
 class User:
     id: int
     image: str
+    lang: str
     password: str
     username: str
     roles: list[str]
@@ -30,6 +31,7 @@ class User:
     def todict_simplified(self):
         return {
             "id": self.id,
+            "lang": self.lang,
             "username": self.username,
             "firstname": self.extra["firstname"] if self.extra else "",
         }

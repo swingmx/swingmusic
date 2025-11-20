@@ -40,6 +40,7 @@ class UserTable(Base):
     id: Mapped[int] = mapped_column(primary_key=True)
     image: Mapped[str] = mapped_column(String(), nullable=True)
     password: Mapped[str] = mapped_column(String())
+    lang: Mapped[str] = mapped_column(String(), nullable=True)
     username: Mapped[str] = mapped_column(String(), index=True)
     roles: Mapped[list[str]] = mapped_column(JSON(), default_factory=lambda: [])
     extra: Mapped[dict[str, Any]] = mapped_column(

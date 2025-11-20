@@ -146,6 +146,7 @@ class UpdateProfileBody(BaseModel):
     username: str = Field("", description="The username", example="user0")
     password: str = Field("", description="The password", example="password0")
     roles: list[str] = Field(None, description="The roles")
+    lang: str = Field(None, description="The preferred user language")
 
 
 @api.put("/profile/update")
@@ -158,6 +159,7 @@ def update_profile(body: UpdateProfileBody):
         "username": body.username,
         "password": body.password,
         "roles": body.roles,
+        "lang": body.lang,
     }
 
     # prevent updating guest
@@ -191,6 +193,11 @@ def update_profile(body: UpdateProfileBody):
 
     if user["password"]:
         user["password"] = hash_password(user["password"])
+
+    # TODO: Validate language existence? vue-i18n will fall back to english regardless,
+    #       so this might be unneeded
+    if user["lang"]:
+        user["lang"] = body.lang
 
     # remove empty values
     clean_user = {k: v for k, v in user.items() if v}
