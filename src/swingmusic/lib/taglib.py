@@ -32,7 +32,9 @@ def parse_album_art(filepath: str):
     return None
 
 
-def extract_thumb(filepath: str, webp_path: str, overwrite=False, paths:Paths=None) -> bool:
+def extract_thumb(
+    filepath: str, webp_path: str, overwrite=False, paths: Paths = None
+) -> bool:
     """
     Extracts the thumbnail from an audio file.
     Returns the path to the thumbnail.
@@ -47,12 +49,14 @@ def extract_thumb(filepath: str, webp_path: str, overwrite=False, paths:Paths=No
     sm_img_path = paths.sm_thumb_path / webp_path
     xms_img_path = paths.xsm_thumb_path / webp_path
     md_img_path = paths.md_thumb_path / webp_path
+    og_img_path = paths.og_thumb_path / webp_path
 
     images = [
         (lg_img_path, Defaults.LG_THUMB_SIZE),
         (sm_img_path, Defaults.SM_THUMB_SIZE),
         (xms_img_path, Defaults.XSM_THUMB_SIZE),
         (md_img_path, Defaults.MD_THUMB_SIZE),
+        (og_img_path, Defaults.OG_THUMB_SIZE),
     ]
 
     def save_image(img: Image.Image):
@@ -60,12 +64,16 @@ def extract_thumb(filepath: str, webp_path: str, overwrite=False, paths:Paths=No
         ratio = width / height
 
         for path, size in images:
-            img.resize((size, int(size / ratio)), Image.LANCZOS).save(path, "webp")
+            # prevent resizing if the image is already smaller than $size
+            if width <= size:
+                img.save(path, "webp")
+            else:
+                img.resize((size, int(size / ratio)), Image.LANCZOS).save(path, "webp")
 
         del img
 
-    if not overwrite and sm_img_path.exists():
-        img_size = os.path.getsize(sm_img_path)
+    if not overwrite and og_img_path.exists():
+        img_size = os.path.getsize(og_img_path)
 
         if img_size > 0:
             return True
@@ -84,7 +92,7 @@ def extract_thumb(filepath: str, webp_path: str, overwrite=False, paths:Paths=No
             try:
                 png = img.convert("RGB")
                 save_image(png)
-            except:  # pylint: disable=bare-except
+            except:  # pylint: disable=bare-except  # noqa: E722
                 return False
 
         return True
@@ -195,11 +203,12 @@ def get_tags(filepath: str, config: UserConfig) -> dict:
         "track": tags.track,
         "disc": tags.disc,
         "genres": tags.genre,
-        "copyright": " ".join(other.get("copyright", [])), # INFO: Extract copyright from extra data
+        "copyright": " ".join(
+            other.get("copyright", [])
+        ),  # INFO: Extract copyright from extra data
         "extra": {},
-        "date": parse_date(tags.year or "") or int(last_mod)
+        "date": parse_date(tags.year or "") or int(last_mod),
     }
-
 
     # check the necessary tags and set them
     no_albumartist: bool = (tags.albumartist == "") or (tags.albumartist is None)
@@ -241,7 +250,6 @@ def get_tags(filepath: str, config: UserConfig) -> dict:
             else:
                 metadata[tag] = "Unknown"
 
-
     # make values beautiful
     # INFO: If these are empty, set to "Unknown"
     to_check = ["album", "albumartists"]
@@ -265,7 +273,6 @@ def get_tags(filepath: str, config: UserConfig) -> dict:
         except (ValueError, TypeError):
             metadata[prop] = 1
 
-
     # generate hash
     # create albumhash using og_album
     metadata["albumhash"] = create_hash(
@@ -278,8 +285,6 @@ def get_tags(filepath: str, config: UserConfig) -> dict:
         metadata.get("title", ""),
     )
 
-
-
     # extract extra information not already in tags
     extra: dict[str, Any] = {
         k: v for k, v in tags.as_dict().items() if not k in metadata
@@ -289,7 +294,6 @@ def get_tags(filepath: str, config: UserConfig) -> dict:
         "algo": "sha1",
         "format": "[:5]+[-5:]",  # first 5 + last 5 chars
     }
-
 
     # REMOVE EMPTY VALUES
     to_pop = ["filename", "artists", "albumartist", "year"]
@@ -308,7 +312,6 @@ def get_tags(filepath: str, config: UserConfig) -> dict:
 
     for key in to_pop:
         extra.pop(key, None)
-
 
     metadata["extra"] = extra
     return metadata

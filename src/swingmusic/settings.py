@@ -302,6 +302,7 @@ class Paths(metaclass=Singleton):
             "images/thumbnails/large",
             "images/thumbnails/medium",
             "images/thumbnails/xsmall",
+            "images/thumbnails/original",
             "images/artists/medium",
             "images/artists/small",
             "images/artists/large",
@@ -392,6 +393,10 @@ class Paths(metaclass=Singleton):
     def lg_thumb_path(self) -> pathlib.Path:
         return self.thumbs_path / "large"
 
+    @property
+    def og_thumb_path(self) -> pathlib.Path:
+        return self.thumbs_path / "original"
+
     # OTHERS
     @property
     def playlist_img_path(self) -> pathlib.Path:
@@ -471,6 +476,7 @@ class Defaults:
     SM_THUMB_SIZE = 96
     MD_THUMB_SIZE = 256
     LG_THUMB_SIZE = 512
+    OG_THUMB_SIZE = 1200
 
     SM_ARTIST_IMG_SIZE = 128
     MD_ARTIST_IMG_SIZE = 256

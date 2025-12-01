@@ -133,6 +133,12 @@ class ImagePath(BaseModel):
         description="The image filename",
         example=Defaults.API_ALBUMHASH + ".webp",
     )
+    size: str = Field(
+        default="large",
+        description="The size of the image",
+        example="large",
+        enum=["large", "xsmall", "small", "medium", "original"],
+    )
 
 
 class ImageQuery(BaseModel):
@@ -157,40 +163,29 @@ class ImageQuery(BaseModel):
 
 
 # TRACK THUMBNAILS
+_THUMBNAIL_FOLDERS = {
+    "large": lambda: Paths().lg_thumb_path,
+    "xsmall": lambda: Paths().xsm_thumb_path,
+    "small": lambda: Paths().sm_thumb_path,
+    "medium": lambda: Paths().md_thumb_path,
+    "original": lambda: Paths().og_thumb_path,
+}
+
+
 @api.get("/thumbnail/<imgpath>")
-def send_lg_thumbnail(path: ImagePath, query: ImageQuery):
+@api.get("/thumbnail/<size>/<imgpath>")
+def send_thumbnail(path: ImagePath, query: ImageQuery):
     """
-    Get large thumbnail (500 x 500)
-    """
-    folder = Paths().lg_thumb_path
-    return send_file_or_fallback(folder, path.imgpath, pathhash=query.pathhash)
+    Get thumbnail image
 
+    Size options: large (500x500), xsmall (64px), small (96px), medium (256px)
+    """
+    size = path.size
+    if size not in _THUMBNAIL_FOLDERS:
+        size = "large"
 
-@api.get("/thumbnail/xsmall/<imgpath>")
-def send_xsm_thumbnail(path: ImagePath, query: ImageQuery):
-    """
-    Get extra small thumbnail (64px)
-    """
-    folder = Paths().xsm_thumb_path
-    return send_file_or_fallback(folder, path.imgpath, pathhash=query.pathhash)
-
-
-@api.get("/thumbnail/small/<imgpath>")
-def send_sm_thumbnail(path: ImagePath, query: ImageQuery):
-    """
-    Get small thumbnail (96px)
-    """
-    folder = Paths().sm_thumb_path
-    return send_file_or_fallback(folder, path.imgpath, pathhash=query.pathhash)
-
-
-@api.get("/thumbnail/medium/<imgpath>")
-def send_md_thumbnail(path: ImagePath, query: ImageQuery):
-    """
-    Get medium thumbnail (256px)
-    """
-    folder = Paths().md_thumb_path
-    return send_file_or_fallback(folder, path.imgpath, pathhash=query.pathhash)
+    folder = _THUMBNAIL_FOLDERS[size]()
+    return send_file_or_fallback(str(folder), path.imgpath, pathhash=query.pathhash)
 
 
 # ARTISTS
