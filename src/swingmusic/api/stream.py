@@ -11,6 +11,7 @@ from typing import Literal
 from pydantic import BaseModel, Field
 from flask_openapi3 import APIBlueprint, Tag
 from swingmusic.api.apischemas import TrackHashSchema
+from swingmusic.config import UserConfig
 from swingmusic.lib.transcoder import start_transcoding
 from flask import request, Response, send_from_directory
 from swingmusic.lib.trackslib import get_silence_paddings
@@ -59,22 +60,45 @@ def send_track_file_legacy(path: TrackHashSchema, query: SendTrackFileQuery):
 
     NOTE: Does not support range requests or transcoding.
     """
-    trackhash = path.trackhash
-    filepath = query.filepath
+    requested_trackhash = path.trackhash.strip()
+    filepath = query.filepath.strip()
+
     msg = {"msg": "File Not Found"}
+
+    # prevent path traversal
+    if "/../" in filepath:
+        return {"msg": "Invalid filepath", "error": "Path traversal detected"}, 400
+
+    requested_filepath = Path(filepath).resolve()
+
+    # check if filepath is a child of any of the root dirs
+    for root_dir in UserConfig().rootDirs:
+        if root_dir == "$home":
+            root_dir = Path.home()
+        else:
+            root_dir = Path(root_dir).resolve()
+
+        if root_dir not in requested_filepath.parents:
+            return {
+                "msg": "Invalid filepath",
+                "error": "File not inside root directories",
+            }, 400
 
     track = None
     tracks = TrackStore.get_tracks_by_filepaths([filepath])
 
-    if len(tracks) > 0 and os.path.exists(filepath):
-        track = tracks[0]
+    if len(tracks) > 0 and os.path.exists(tracks[0].filepath):
+        for t in tracks:
+            if os.path.exists(t.filepath) and t.trackhash == requested_trackhash:
+                track = t
+                break
     else:
-        res = TrackStore.trackhashmap.get(trackhash)
+        group = TrackStore.trackhashmap.get(requested_trackhash)
 
         # When finding by trackhash, sort by bitrate
         # and get the first track that exists
-        if res is not None:
-            tracks = sorted(res.tracks, key=lambda x: x.bitrate, reverse=True)
+        if group is not None:
+            tracks = sorted(group.tracks, key=lambda x: x.bitrate, reverse=True)
 
             for t in tracks:
                 if os.path.exists(t.filepath):
@@ -82,10 +106,10 @@ def send_track_file_legacy(path: TrackHashSchema, query: SendTrackFileQuery):
                     break
 
     if track is not None:
-        audio_type = guess_mime_type(filepath)
+        audio_type = guess_mime_type(track.filepath)
         return send_from_directory(
-            Path(filepath).parent,
-            Path(filepath).name,
+            Path(track.filepath).parent,
+            Path(track.filepath).name,
             mimetype=audio_type,
             conditional=True,
             as_attachment=True,
@@ -94,59 +118,59 @@ def send_track_file_legacy(path: TrackHashSchema, query: SendTrackFileQuery):
     return msg, 404
 
 
-@api.get("/<trackhash>")
-def send_track_file(path: TrackHashSchema, query: SendTrackFileQuery):
-    """
-    Get a playable audio file with Range headers support
+# @api.get("/<trackhash>")
+# def send_track_file(path: TrackHashSchema, query: SendTrackFileQuery):
+#     """
+#     Get a playable audio file with Range headers support
 
-    Returns a playable audio file that corresponds to the given filepath. Falls back to track hash if filepath is not found.
+#     Returns a playable audio file that corresponds to the given filepath. Falls back to track hash if filepath is not found.
 
-    Transcoding can be done by sending the quality and container query parameters.
+#     Transcoding can be done by sending the quality and container query parameters.
 
-    **NOTES:**
-    - Transcoded streams report incorrect duration during playback (idk why! FFMPEG gurus we need your help here).
-    - The quality parameter is the desired bitrate in kbps.
-    - The mp3 container is the best container for upto 320kbps (and has better duration reporting). The flac container allows for higher bitrates but it produces dramatically larger files (when transcoding from lossy formats).
-    - You can get the transcoded bitrate by checking the X-Transcoded-Bitrate header on the first request's response.
-    """
-    trackhash = path.trackhash
-    filepath = query.filepath
+#     **NOTES:**
+#     - Transcoded streams report incorrect duration during playback (idk why! FFMPEG gurus we need your help here).
+#     - The quality parameter is the desired bitrate in kbps.
+#     - The mp3 container is the best container for upto 320kbps (and has better duration reporting). The flac container allows for higher bitrates but it produces dramatically larger files (when transcoding from lossy formats).
+#     - You can get the transcoded bitrate by checking the X-Transcoded-Bitrate header on the first request's response.
+#     """
+#     trackhash = path.trackhash
+#     filepath = query.filepath
 
-    # If filepath is provided, try to send that
-    track = None
-    tracks = TrackStore.get_tracks_by_filepaths([filepath])
+#     # If filepath is provided, try to send that
+#     track = None
+#     tracks = TrackStore.get_tracks_by_filepaths([filepath])
 
-    if len(tracks) > 0 and os.path.exists(filepath):
-        track = tracks[0]
-    else:
-        res = TrackStore.trackhashmap.get(trackhash)
+#     if len(tracks) > 0 and os.path.exists(filepath):
+#         track = tracks[0]
+#     else:
+#         res = TrackStore.trackhashmap.get(trackhash)
 
-        # When finding by trackhash, sort by bitrate
-        # and get the first track that exists
-        if res is not None:
-            tracks = sorted(res.tracks, key=lambda x: x.bitrate, reverse=True)
+#         # When finding by trackhash, sort by bitrate
+#         # and get the first track that exists
+#         if res is not None:
+#             tracks = sorted(res.tracks, key=lambda x: x.bitrate, reverse=True)
 
-            for t in tracks:
-                if os.path.exists(t.filepath):
-                    track = t
-                    break
+#             for t in tracks:
+#                 if os.path.exists(t.filepath):
+#                     track = t
+#                     break
 
-    if track is not None:
-        if query.quality == "original":
-            return send_file_as_chunks(track.filepath)
+#     if track is not None:
+#         if query.quality == "original":
+#             return send_file_as_chunks(track.filepath)
 
-        # prevent requesting over transcoding
-        max_bitrate = track.bitrate
-        requested_bitrate = int(query.quality)
+#         # prevent requesting over transcoding
+#         max_bitrate = track.bitrate
+#         requested_bitrate = int(query.quality)
 
-        if query.container != "flac":
-            # drop to 320 for non-flac containers
-            requested_bitrate = min(320, requested_bitrate)
+#         if query.container != "flac":
+#             # drop to 320 for non-flac containers
+#             requested_bitrate = min(320, requested_bitrate)
 
-        quality = f"{min(max_bitrate, requested_bitrate)}k"
-        return transcode_and_stream(trackhash, track.filepath, quality, query.container)
+#         quality = f"{min(max_bitrate, requested_bitrate)}k"
+#         return transcode_and_stream(trackhash, track.filepath, quality, query.container)
 
-    return {"msg": "File Not Found"}, 404
+#     return {"msg": "File Not Found"}, 404
 
 
 def transcode_and_stream(trackhash: str, filepath: str, bitrate: str, container: str):
