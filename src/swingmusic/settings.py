@@ -90,7 +90,6 @@ class AssetHandler:
             if (path / "index.html").exists():
                 return True
 
-            log.error("Client zip could not be found. Please provide a valid path.")
             return False
 
         with zipfile.ZipFile(client_zip_path, "r") as zip_ref:
