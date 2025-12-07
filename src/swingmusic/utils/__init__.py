@@ -19,3 +19,13 @@ def flatten(list_: Iterable[list[T]]) -> list[T]:
     Flattens a list of lists into a single list.
     """
     return [item for sublist in list_ for item in sublist]
+
+
+class classproperty(property):
+    """
+    A class property decorator.
+    """
+
+    def __get__(self, owner_self, owner_cls):
+        if self.fget:
+            return self.fget(owner_cls)

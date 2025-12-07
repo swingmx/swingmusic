@@ -193,6 +193,9 @@ jobs:
       - name: Checkout into repo
         uses: actions/checkout@v3
 
+      - name: Create version.txt
+        run: echo ${{ github.event.inputs.tag }} > version.txt
+
       - name: Download artifact
         uses: actions/download-artifact@v4
 
@@ -380,7 +383,7 @@ jobs:
     if: ${{ github.event.inputs.publish_pypi == 'true' }}
     permissions:
       id-token: write
-    
+
     steps:
       - name: Download wheel artifacts
         uses: actions/download-artifact@v4
@@ -388,7 +391,7 @@ jobs:
           name: wheels
           path: dist
           merge-multiple: true
-      
+
       - name: Publish to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
         with:

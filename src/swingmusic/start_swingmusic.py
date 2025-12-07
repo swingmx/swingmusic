@@ -1,5 +1,4 @@
 import socket
-import sys
 from swingmusic import app_builder
 from swingmusic.crons import start_cron_jobs
 from swingmusic.plugins.register import register_plugins

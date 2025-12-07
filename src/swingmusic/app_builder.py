@@ -1,4 +1,3 @@
-from importlib import metadata
 import datetime as dt
 import pathlib
 import logging
@@ -13,7 +12,7 @@ from flask_jwt_extended import JWTManager, create_access_token, get_jwt, get_jwt
 from swingmusic import api as swing_api
 from swingmusic.config import UserConfig
 from swingmusic.db.userdata import UserTable
-from swingmusic.settings import Paths
+from swingmusic.settings import Metadata, Paths
 from swingmusic.utils.paths import get_client_files_extensions
 
 from swingmusic.api.plugins import lyrics as lyrics_plugin
@@ -102,7 +101,7 @@ def load_plugins(web: OpenAPI):
 
 api_info = Info(
     title="Swing Music",
-    version=f"v{metadata.version('swingmusic')}",
+    version=f"v{Metadata.version}",
     description="The REST API exposed by your Swing Music server",
 )
 

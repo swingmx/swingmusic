@@ -16,7 +16,9 @@ from pathlib import Path
 import os
 import logging
 import requests
-from importlib import resources as imres
+from importlib import metadata, resources as imres
+
+from swingmusic.utils import classproperty
 
 
 log = logging.getLogger(__name__)
@@ -45,9 +47,7 @@ class AssetHandler:
     Handles all assets configuration
     """
 
-    CLIENT_RELEASES_URL = (
-        "https://api.github.com/repos/swingmx/swingmusic/releases/latest"
-    )
+    RELEASES_URL = "https://api.github.com/repos/swingmx/swingmusic/releases"
 
     @staticmethod
     def copy_assets_dir():
@@ -104,30 +104,37 @@ class AssetHandler:
         Downloads the latest supported client from Github
         and places it in the swingmusic client folder.
         """
-        path = Paths().config_parent / "client"
+        log.error("Default client not found. Downloading from GitHub ...")
+        path = Paths().client_path
 
         try:
-            answer = requests.get(AssetHandler.CLIENT_RELEASES_URL).json()
+            # INFO: downlaod the current version of the client from GitHub
+            releases = requests.get(AssetHandler.RELEASES_URL).json()
 
-            for asset in answer["assets"]:
-                if asset["name"] == "client.zip":
-                    # download and convert client
-                    client = requests.get(asset["browser_download_url"])
-                    mem_file = io.BytesIO(client.content)
-                    file = zipfile.ZipFile(mem_file)
+            # INFO: find the release for the current version
+            for release in releases:
+                if release["tag_name"] == f"v{Metadata.version}":
+                    # INFO: find the client.zip asset
+                    for asset in release["assets"]:
+                        if asset["name"] == "client.zip":
+                            # download and extract client
+                            clientzip = requests.get(asset["browser_download_url"])
+                            mem_file = io.BytesIO(clientzip.content)
+                            file = zipfile.ZipFile(mem_file)
 
-                    # create new dir for extraction
-                    log.info(f"Storing client in '{path.as_posix()}'.")
-                    with tempfile.TemporaryDirectory() as temp_folder:
-                        file.extractall(temp_folder)
+                            # create new dir for extraction
+                            with tempfile.TemporaryDirectory() as temp_folder:
+                                file.extractall(temp_folder)
 
-                        shutil.copytree(
-                            Path(temp_folder) / "client",
-                            path,
-                            copy_function=shutil.copy2,
-                            dirs_exist_ok=True,
-                        )
+                                shutil.copytree(
+                                    Path(temp_folder) / "client",
+                                    path,
+                                    copy_function=shutil.copy2,
+                                    dirs_exist_ok=True,
+                                )
 
+                            log.info("Client downloaded successfully.")
+                            break
                     break
 
         except (
@@ -140,12 +147,6 @@ class AssetHandler:
                 exc_info=e,
             )
             return False
-        except requests.exceptions.InvalidJSONError as e:
-            log.error(
-                "Client could not be downloaded from releases. JSON ERROR",
-                exc_info=e,
-            )
-            return False
         except zipfile.BadZipfile as e:
             log.error("Client could not be unpacked. ZIP ERROR", exc_info=e)
             return False
@@ -155,8 +156,9 @@ class AssetHandler:
         """
         Runs on startup to ensure the default client is present.
         """
+
+        extracted = True
         client_path = Paths().client_path
-        extracted = False
 
         if not client_path.exists() or not (client_path / "index.html").exists():
             extracted = cls.extract_default_client(Paths().config_dir)
@@ -504,3 +506,18 @@ class TCOLOR:
     BOLD = "\033[1m"
     UNDERLINE = "\033[4m"
     # credits: https://stackoverflow.com/a/287944
+
+
+class Metadata:
+    """
+    Contains metadata for the application.
+    """
+
+    @classproperty
+    def version(self) -> str:
+        version = metadata.version("swingmusic")
+
+        if version == "0.0.0":
+            return open("version.txt", "r").read().strip()
+
+        return version
