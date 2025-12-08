@@ -98,6 +98,36 @@ class AssetHandler:
         return True
 
     @staticmethod
+    def process_release(release: dict, path: Path):
+        """
+        Processes a release from the GitHub API.
+        """
+
+        # INFO: find the client.zip asset
+        for asset in release["assets"]:
+            if asset["name"] == "client.zip":
+                # download and extract client
+                clientzip = requests.get(asset["browser_download_url"])
+                mem_file = io.BytesIO(clientzip.content)
+                file = zipfile.ZipFile(mem_file)
+
+                # create new dir for extraction
+                with tempfile.TemporaryDirectory() as temp_folder:
+                    file.extractall(temp_folder)
+
+                    shutil.copytree(
+                        Path(temp_folder) / "client",
+                        path,
+                        copy_function=shutil.copy2,
+                        dirs_exist_ok=True,
+                    )
+
+                log.info("Client downloaded successfully.")
+                return True
+
+        return False
+
+    @staticmethod
     def download_client_from_github():
         """
         Downloads the latest supported client from Github
@@ -113,28 +143,15 @@ class AssetHandler:
             # INFO: find the release for the current version
             for release in releases:
                 if release["tag_name"] == f"v{Metadata.version}":
-                    # INFO: find the client.zip asset
-                    for asset in release["assets"]:
-                        if asset["name"] == "client.zip":
-                            # download and extract client
-                            clientzip = requests.get(asset["browser_download_url"])
-                            mem_file = io.BytesIO(clientzip.content)
-                            file = zipfile.ZipFile(mem_file)
+                    if AssetHandler.process_release(release, path):
+                        return True
+                    pass
 
-                            # create new dir for extraction
-                            with tempfile.TemporaryDirectory() as temp_folder:
-                                file.extractall(temp_folder)
-
-                                shutil.copytree(
-                                    Path(temp_folder) / "client",
-                                    path,
-                                    copy_function=shutil.copy2,
-                                    dirs_exist_ok=True,
-                                )
-
-                            log.info("Client downloaded successfully.")
-                            break
-                    break
+            # INFO: if no release is found, download the latest release
+            log.error(
+                f"No release found for the v{Metadata.version}. Downloading latest version ..."
+            )
+            return AssetHandler.process_release(releases[0], path)
 
         except (
             requests.exceptions.RequestException,
