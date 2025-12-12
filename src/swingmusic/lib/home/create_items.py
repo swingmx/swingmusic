@@ -150,6 +150,7 @@ def create_items(entries: list[TrackLog], limit: int):
             items.append(
                 {
                     "type": "favorite",
+                    "hash": "favorite",
                     "timestamp": entry.timestamp,
                 }
             )
