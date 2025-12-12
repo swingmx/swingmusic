@@ -92,10 +92,21 @@ def get_folder_tree(body: FolderTree):
     if req_dir == "$home":
         folders = get_folders(root_dirs)
 
-        return {
-            "folders": folders,
-            "tracks": [],
-        }
+        # if $home is a single directory, return its contents
+        if len(folders) > 1:
+            return {
+                "folders": folders,
+                "tracks": [],
+            }
+
+        if not len(folders):
+            return {
+                "msg": "No home directory found",
+                "folders": [],
+                "tracks": [],
+            }, 404
+
+        req_dir = folders[0].path
 
     if req_dir.startswith("$playlist"):
         splits = req_dir.split("/")
