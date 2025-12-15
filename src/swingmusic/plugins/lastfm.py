@@ -9,7 +9,6 @@ from urllib.parse import quote_plus
 from swingmusic.config import UserConfig
 from swingmusic.models.track import Track
 from swingmusic.settings import Paths
-from swingmusic.utils.auth import get_current_userid
 from swingmusic.utils.threading import background
 from swingmusic.plugins import Plugin, plugin_method
 
@@ -23,14 +22,15 @@ class LastFmPlugin(Plugin):
 
     UPLOADING_DUMPS = False
 
-    def __init__(self):
+    def __init__(self, current_userid: int):
         self.config = UserConfig()
+        self.current_userid = current_userid
         super().__init__("lastfm", "Last.fm scrobbler")
         self.set_active(
             bool(
                 self.config.lastfmApiKey
                 and self.config.lastfmApiSecret
-                and self.config.lastfmSessionKeys.get(str(get_current_userid()))
+                and self.config.lastfmSessionKeys.get(str(self.current_userid))
             )
         )
 
@@ -46,7 +46,7 @@ class LastFmPlugin(Plugin):
         url = "http://ws.audioscrobbler.com/2.0/?format=json"
         data["api_key"] = self.config.lastfmApiKey
         if useSessionKey:
-            data["sk"] = self.config.lastfmSessionKeys.get(str(get_current_userid()))
+            data["sk"] = self.config.lastfmSessionKeys.get(str(self.current_userid))
 
         data["api_sig"] = self.get_api_signature(data)
 
@@ -113,7 +113,7 @@ class LastFmPlugin(Plugin):
                 log.error("LAST.FM: Invalid session key")
                 # Invalid session key
                 try:
-                    self.config.lastfmSessionKeys.pop(str(get_current_userid()))
+                    self.config.lastfmSessionKeys.pop(str(self.current_userid))
                 except KeyError:
                     pass
 
