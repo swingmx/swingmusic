@@ -44,6 +44,6 @@ def get_current_userid() -> int:
         if log:
             log.error("get_current_userid: Unable to get current user id")
             log.error(e)
-        # TODO: possible change to other than real userid 
-        # because it is really hard to debug when no fault but data goes to wrong user
+        # TODO: possible change to other than real userid,
+        #       because it is really hard to debug when no fault but data goes to wrong user
         return 1
