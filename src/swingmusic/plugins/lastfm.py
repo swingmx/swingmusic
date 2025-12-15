@@ -145,7 +145,7 @@ class LastFmPlugin(Plugin):
             return
 
         self.UPLOADING_DUMPS = True
-        dump_dir = Paths.get_plugins_path() / "lastfm"
+        dump_dir = Paths().plugins_path / "lastfm"
 
         if not dump_dir.exists():
             return
