@@ -173,7 +173,7 @@ def update_profile(body: UpdateProfileBody):
         if "admin" not in current_user["roles"]:
             return {"msg": "Only admins can update roles"}, 403
 
-        all_users = UserTable.get_all()
+        all_users = list(UserTable.get_all())
         if "admin" not in body.roles:
             # check if we're removing the last admin
             admins = [user for user in all_users if "admin" in user.roles]
@@ -186,14 +186,17 @@ def update_profile(body: UpdateProfileBody):
         if "guest" in _user.roles:
             return {"msg": "Cannot update guest user"}, 400
 
-        # finally, convert roles to json string
-        user["roles"] = body.roles
-
     if user["password"]:
         user["password"] = hash_password(user["password"])
 
     # remove empty values
     clean_user = {k: v for k, v in user.items() if v}
+
+    # finally, convert roles to json string
+    # doing it here to prevent deleting roles from clean user 
+    # when body.roles is an empty list
+    if body.roles is not None:
+        clean_user["roles"] = body.roles
 
     try:
         # return authdb.update_user(clean_user)
