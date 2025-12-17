@@ -552,7 +552,11 @@ class LibDataTable(Base):
         result = cls.execute(select(cls).where(cls.itemtype == type))
 
         for i in next(result).scalars():
-            yield {"itemhash": i.itemhash.replace(type, ""), "color": i.color}
+            yield {
+                "itemhash": i.itemhash.replace(type, ""),
+                "color": i.color,
+                "extra": i.extra,
+            }
 
 
 class MixTable(Base):

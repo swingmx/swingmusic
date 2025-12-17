@@ -81,7 +81,8 @@ def map_artist_colors():
         artist = ArtistStore.artistmap.get(color["itemhash"])
 
         if artist:
-            artist.set_color(color["color"])
+            blurhash: str = color.get("extra", {}).get("blurhash", "")
+            artist.update_color_info(color["color"], blurhash)
 
 
 def map_album_colors():
@@ -90,5 +91,16 @@ def map_album_colors():
     for color in colors:
         album = AlbumStore.albummap.get(color["itemhash"])
 
-        if album:
-            album.set_color(color["color"])
+        if not album:
+            continue
+
+        blurhash: str = color.get("extra", {}).get("blurhash", "")
+        album.update_color_info(color["color"], blurhash)
+
+        for trackhash in album.trackhashes:
+            group = TrackStore.trackhashmap.get(trackhash)
+
+            if not group:
+                continue
+
+            group.update_color_info(color["color"], blurhash)

@@ -99,6 +99,7 @@ def create_albums(_trackhashes: list[str] = []) -> list[tuple[Album, set[str]]]:
         album["genres"] = genres
         album["genrehashes"] = " ".join([g["genrehash"] for g in genres])
         album["base_title"], _ = get_base_album_title(album["og_title"])
+        album["blurhash"] = ""
 
         del genres
         trackhashes = album.pop("tracks")

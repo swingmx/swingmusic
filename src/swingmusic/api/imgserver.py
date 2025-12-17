@@ -1,5 +1,6 @@
-from fileinput import filename
 from pathlib import Path
+import threading
+import time
 from flask_openapi3 import Tag
 from flask_openapi3 import APIBlueprint
 from pydantic import BaseModel, Field
@@ -104,6 +105,8 @@ def send_file_or_fallback(
     """
     Returns the file from the folder or the fallback image.
     """
+    # sleep for 10s non-blocking
+    threading.Thread(target=time.sleep, args=(10,)).start()
     fpath = Path(folder) / filename
 
     if fpath.exists():

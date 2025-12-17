@@ -43,6 +43,7 @@ dependencies = [
     "granian>=2.5.5",
     "asgiref>=3.10.0",
     "natsort>=8.4.0",
+    "blurhash-python>=1.2.2",
 ]
 
 [project.optional-dependencies]

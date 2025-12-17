@@ -61,7 +61,10 @@ class TrackGroup:
     def __len__(self):
         return len(self.tracks)
 
-
+    def update_color_info(self, color: str, blurhash: str = ""):
+        for track in self.tracks:
+            track.color = color
+            track.blurhash = blurhash
 
 
 class TrackStore:

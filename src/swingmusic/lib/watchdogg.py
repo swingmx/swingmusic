@@ -185,7 +185,7 @@ def add_track(filepath: str) -> None:
         if not trackhash_exists:
             albumentry.trackhashes.add(track.trackhash)
             albumentry.album.trackcount += 1
-            albumentry.set_color(colors[0]) if colors else None
+            albumentry.update_color_info(colors[0]) if colors else None
 
     # SECTION: Index artist
     artists = create_artists(track.artisthashes)

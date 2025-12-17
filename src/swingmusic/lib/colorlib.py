@@ -1,13 +1,16 @@
 """
 Contains everything that deals with image colour extraction.
 """
+
 import logging
 import os
 import pathlib
 
+import blurhash
 import colorgram
+from PIL import Image
 from pathlib import Path
-from typing import Generator
+from typing import Any, Generator, Optional
 from swingmusic.utils.progressbar import tqdm
 from concurrent.futures import ProcessPoolExecutor, as_completed
 
@@ -17,6 +20,7 @@ from swingmusic.db.userdata import LibDataTable
 from swingmusic.store.artists import ArtistStore
 
 log = logging.getLogger(__name__)
+
 
 def get_image_colors(image: pathlib.Path, count=1) -> list[str]:
     """
@@ -63,6 +67,23 @@ def process_color(item_hash: str, is_album=True) -> list[str]:
     return get_image_colors(path)
 
 
+def get_blurhash(image: pathlib.Path) -> str:
+    """
+    Calculates the blurhash of an image.
+    """
+    hash: str = ""
+
+    with Image.open(image) as img:
+        img.thumbnail((100, 100))
+        try:
+            hash = blurhash.encode(img, x_components=4, y_components=4)
+        except Exception as e:
+            print("error extracting blurhash for", image, e)
+            hash = None
+
+    return hash
+
+
 def extract_color_worker(item_data: dict) -> dict:
     """
     Generic worker function for extracting colours in parallel.
@@ -76,18 +97,30 @@ def extract_color_worker(item_data: dict) -> dict:
     path = path_func / (item_hash + ".webp")
 
     if not path.exists():
-        return {hash_field: item_hash, "color": None, "error": "Image not found"}
+        return {
+            hash_field: item_hash,
+            "color": None,
+            "blurhash": "",
+            "error": "Image not found",
+        }
 
     colors = get_image_colors(path)
+    blurhash = get_blurhash(path)
 
     if not colors:
         return {
             hash_field: item_hash,
             "color": None,
+            "blurhash": "",
             "error": "Color extraction failed",
         }
 
-    return {hash_field: item_hash, "color": colors[0], "error": None}
+    return {
+        hash_field: item_hash,
+        "color": colors[0],
+        "blurhash": blurhash,
+        "error": None,
+    }
 
 
 class ColorProcessor:
@@ -120,7 +153,10 @@ class ColorProcessor:
         # Read existing colors from database to filter out already processed items
         existing_colors = set()
         for color_data in LibDataTable.get_all_colors(item_type):
-            if color_data["color"]:
+            if (
+                color_data["color"]
+                and (color_data["extra"] or {}).get("blurhash") is not None
+            ):
                 existing_colors.add(color_data["itemhash"])
 
         # Filter items that need color processing
@@ -139,7 +175,7 @@ class ColorProcessor:
         """
         for item in self.store.get_flat_list():
             # Skip if item already has color in memory store
-            if item.color:
+            if item.color and item.blurhash:
                 continue
 
             # Skip if item already has color in database
@@ -220,7 +256,9 @@ class ColorProcessor:
             color = result["color"]
 
             # Check if record exists in database
-            existing_record = LibDataTable.find_one(item_hash, type=self.item_type)
+            existing_record: Optional[dict[str, Any]] = LibDataTable.find_one(
+                item_hash, type=self.item_type
+            )
 
             if existing_record is None:
                 db_inserts.append(
@@ -228,11 +266,21 @@ class ColorProcessor:
                         "itemhash": self.item_type + item_hash,
                         "color": color,
                         "itemtype": self.item_type,
+                        "extra": {
+                            "blurhash": result["blurhash"],
+                        },
                     }
                 )
             else:
                 db_updates.append(
-                    {"itemhash": self.item_type + item_hash, "color": color}
+                    {
+                        "itemhash": self.item_type + item_hash,
+                        "color": color,
+                        "extra": {
+                            **(existing_record.get("extra", {})),
+                            "blurhash": result["blurhash"],
+                        },
+                    }
                 )
 
         # Batch database operations
@@ -241,8 +289,14 @@ class ColorProcessor:
 
         if db_updates:
             for update_data in db_updates:
-                clean_hash = update_data["itemhash"].replace(self.item_type, "")
-                LibDataTable.update_one(clean_hash, {"color": update_data["color"]})
+                clean_hash = update_data["itemhash"]
+                LibDataTable.update_one(
+                    clean_hash,
+                    {
+                        "color": update_data["color"],
+                        "extra": update_data["extra"],
+                    },
+                )
 
         # Update in-memory store
         store_map = getattr(self.store, f"{self.item_type}map")

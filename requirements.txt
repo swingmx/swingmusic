@@ -25,5 +25,6 @@ rapidfuzz==3.11.0
 pendulum>=3.0.0
 pystray>=0.19.5
 cryptography>=46.0.1
+blurhash-python>=1.2.2
 waitress==3.0.2; sys_platform == 'win32'
 bjoern>=3.2.2; sys_platform != 'win32'

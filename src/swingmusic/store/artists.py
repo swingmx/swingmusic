@@ -28,8 +28,9 @@ class ArtistMapEntry:
 
         self.artist.toggle_favorite_user(userid)
 
-    def set_color(self, color: str):
+    def update_color_info(self, color: str, blurhash: str):
         self.artist.color = color
+        self.artist.blurhash = blurhash
 
 
 class ArtistStore:
