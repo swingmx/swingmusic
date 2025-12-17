@@ -50,6 +50,8 @@ def config_jwt(web):
     web.config["JWT_TOKEN_LOCATION"] = ["cookies", "headers"]
     web.config["JWT_COOKIE_CSRF_PROTECT"] = False
     web.config["JWT_SESSION_COOKIE"] = False
+    web.config["JWT_COOKIE_SAMESITE"] = None
+    web.config["JWT_COOKIE_SECURE"] = True
 
     jwt_expiry = int(dt.timedelta(days=30).total_seconds())
     web.config["JWT_ACCESS_TOKEN_EXPIRES"] = jwt_expiry
