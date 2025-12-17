@@ -277,7 +277,7 @@ class ColorProcessor:
                         "itemhash": self.item_type + item_hash,
                         "color": color,
                         "extra": {
-                            **(existing_record.get("extra", {})),
+                            **(existing_record.get("extra") or {}),
                             "blurhash": result["blurhash"],
                         },
                     }

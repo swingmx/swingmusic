@@ -545,7 +545,17 @@ class LibDataTable(Base):
         result = cls.execute(
             select(cls).where((cls.itemhash == type + hash) & (cls.itemtype == type))
         )
-        return next(result).scalar()
+
+        item = next(result).scalar()
+        if item:
+            return {
+                "itemhash": item.itemhash.replace(type, ""),
+                "type": type,
+                "color": item.color,
+                "extra": item.extra,
+            }
+
+        return None
 
     @classmethod
     def get_all_colors(cls, type: str) -> Iterable[dict[str, str]]:
@@ -554,6 +564,7 @@ class LibDataTable(Base):
         for i in next(result).scalars():
             yield {
                 "itemhash": i.itemhash.replace(type, ""),
+                "type": type,
                 "color": i.color,
                 "extra": i.extra,
             }
