@@ -15,9 +15,9 @@ from swingmusic.utils.progressbar import tqdm
 from concurrent.futures import ProcessPoolExecutor, as_completed
 
 from swingmusic import settings
-from swingmusic.store.albums import AlbumStore
+from swingmusic.store.albums import AlbumMapEntry, AlbumStore
 from swingmusic.db.userdata import LibDataTable
-from swingmusic.store.artists import ArtistStore
+from swingmusic.store.artists import ArtistMapEntry, ArtistStore
 
 log = logging.getLogger(__name__)
 
@@ -303,11 +303,10 @@ class ColorProcessor:
 
         for result in batch:
             item_hash = result[self.hash_field]
-            color = result["color"]
 
-            item = store_map.get(item_hash)
+            item: AlbumMapEntry | ArtistMapEntry = store_map.get(item_hash)
             if item:
-                item.set_color(color)
+                item.update_color_info(result["color"], result["blurhash"])
 
 
 class ProcessAlbumColors:
