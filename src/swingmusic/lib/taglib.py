@@ -72,7 +72,7 @@ def extract_thumb(
 
         del img
 
-    if not overwrite and og_img_path.exists():
+    if not overwrite and (og_img_path.exists() and sm_img_path.exists()):
         img_size = os.path.getsize(og_img_path)
 
         if img_size > 0:

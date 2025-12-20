@@ -11,6 +11,7 @@ import colorgram
 from PIL import Image
 from pathlib import Path
 from typing import Any, Generator, Optional
+from swingmusic.store.tracks import TrackStore
 from swingmusic.utils.progressbar import tqdm
 from concurrent.futures import ProcessPoolExecutor, as_completed
 
@@ -305,8 +306,19 @@ class ColorProcessor:
             item_hash = result[self.hash_field]
 
             item: AlbumMapEntry | ArtistMapEntry = store_map.get(item_hash)
+
             if item:
                 item.update_color_info(result["color"], result["blurhash"])
+
+            # INFO: update track store if item type is album
+            if self.item_type == "album":
+                for trackhash in item.trackhashes:
+                    group = TrackStore.trackhashmap.get(trackhash)
+
+                    if not group:
+                        continue
+
+                    group.update_color_info(result["color"], result["blurhash"])
 
 
 class ProcessAlbumColors:
