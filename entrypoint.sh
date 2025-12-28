@@ -29,7 +29,9 @@ if [ "$(id -u)" = "0" ]; then
         fi
     fi
 
-    chown -R ${USER_NAME}:${USER_NAME} /app /config 2>/dev/null || true
+    if ! chown -R ${USER_NAME}:${USER_NAME} /app /config 2>/dev/null; then
+        echo "Warning: failed to chown /app and /config for user '${USER_NAME}'. This may indicate permission issues or read-only volumes." >&2
+    fi
 
     exec gosu ${USER_NAME} "$@"
 fi
