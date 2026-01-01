@@ -433,6 +433,13 @@ class PlaylistTable(Base):
         return next(result).scalar() is not None
 
     @classmethod
+    def get_by_name(cls, name: str):
+        result = cls.execute(
+            select(cls).where((cls.name == name) & (cls.userid == get_current_userid()))
+        )
+        return next(result).scalar()
+
+    @classmethod
     def append_to_playlist(cls, id: int, trackhashes: list[str]):
         dbtrackhashes = cls.get_trackhashes(id) or []
         # Preserve order: start with existing hashes, then add new ones that aren't already present

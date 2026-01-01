@@ -112,11 +112,24 @@ def get_folder_tree(body: FolderTree):
         splits = req_dir.split("/")
 
         if len(splits) == 2:
-            pid = splits[1]
-            playlist = PlaylistTable.get_by_id(int(pid))
+            pid = splits[1].strip()
+            playlist = None
+
+            try:
+                playlist = PlaylistTable.get_by_id(int(pid))
+            except ValueError:
+                # find playlist by name
+                playlist = PlaylistTable.get_by_name(pid)
+                if playlist is None:
+                    return {
+                        "msg": "Playlist not found",
+                        "folders": [],
+                        "tracks": [],
+                    }, 404
+
             tracks = TrackStore.get_tracks_by_trackhashes(
                 playlist.trackhashes[
-                    body.start : body.start + body.limit if body.limit != -1 else None
+                    body.start : body.start + body.limit if body.limit > 0 else None
                 ]
             )
 
