@@ -106,7 +106,7 @@ def parse_date(date_str: str) -> int | None:
     try:
         date = pendulum.parse(date_str, strict=False)
         return int(date.timestamp())
-    except Exception as e:
+    except Exception:
         return None
 
 
@@ -287,7 +287,7 @@ def get_tags(filepath: str, config: UserConfig) -> dict:
 
     # extract extra information not already in tags
     extra: dict[str, Any] = {
-        k: v for k, v in tags.as_dict().items() if not k in metadata
+        k: v for k, v in tags.as_dict().items() if k not in metadata
     }
 
     extra["hashinfo"] = {
