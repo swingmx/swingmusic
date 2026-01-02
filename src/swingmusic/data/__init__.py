@@ -12,4 +12,6 @@ ARTIST_SPLIT_IGNORE_LIST = {
     "C & C Music Factory",
     "FO&O",
     "The Product G&B",
+    "Big Brother and the Holding Company",
+    "Tyler, The Creator"
 }
