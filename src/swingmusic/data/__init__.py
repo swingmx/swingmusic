@@ -70,5 +70,6 @@ ARTIST_SPLIT_IGNORE_LIST = {
     "Nathaniel Rateliff & The Night Sweats",
     "Aly & AJ",
     "Maddie & Tae",
-    "Nico & Vinz"
+    "Nico & Vinz",
+    "Yusuf / Cat Stevens"
 }
