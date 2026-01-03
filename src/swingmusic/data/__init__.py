@@ -12,7 +12,7 @@ ARTIST_SPLIT_IGNORE_LIST = {
     "C & C Music Factory",
     "FO&O",
     "The Product G&B",
-    "Big Brother and the Holding Company",
+    "Big Brother & the Holding Company",
     "Tyler, The Creator",
     "Eric B. & Rakim",
     "DJ Jazzy Jeff & The Fresh Prince",
@@ -46,6 +46,7 @@ ARTIST_SPLIT_IGNORE_LIST = {
     "Gladys Knight & the Pips",
     "Martha & the Vandellas",
     "? and the Mysterians",
+    "Question Mark & the Mysterians"
     "Kool & the Gang",
     "Josie & the Pussycats",
     "Dan + Shay",
