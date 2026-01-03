@@ -1,12 +1,11 @@
 import os
-from swingmusic.settings import TCOLOR, Paths
+from swingmusic.settings import TCOLOR, Metadata, Paths
 from swingmusic.utils.network import get_ip
-from importlib import metadata
 
 
 def log_startup_info(host: str, port: int):
     pid = os.getpid()
-    print(f"{TCOLOR.HEADER}Swing Music v{metadata.version('swingmusic')} (PID: {pid}) {TCOLOR.ENDC}")
+    print(f"{TCOLOR.HEADER}Swing Music v{Metadata.version} (PID: {pid}) {TCOLOR.ENDC}")
 
     addresses = [host]
 
@@ -16,8 +15,6 @@ def log_startup_info(host: str, port: int):
 
     print("Server running on:\n")
     for address in addresses:
-        print(
-            f"{TCOLOR.OKGREEN}http://{address}:{port}{TCOLOR.ENDC}"
-        )
+        print(f"{TCOLOR.OKGREEN}http://{address}:{port}{TCOLOR.ENDC}")
 
     print(f"\n{TCOLOR.YELLOW}Data folder: {Paths().config_dir}{TCOLOR.ENDC}\n")

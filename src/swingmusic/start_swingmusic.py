@@ -2,7 +2,6 @@ import asyncio
 import os
 import signal
 import socket
-import sys
 import warnings
 from swingmusic import app_builder
 from swingmusic.crons import start_cron_jobs

@@ -2,12 +2,11 @@ import sys
 import pathlib
 import argparse
 import multiprocessing
-from importlib.metadata import version
 
 from swingmusic import settings
 from swingmusic.logger import setup_logger
 from swingmusic import tools as swing_tools
-from swingmusic.settings import AssetHandler
+from swingmusic.settings import AssetHandler, Metadata
 from swingmusic.start_swingmusic import start_swingmusic
 
 parser = argparse.ArgumentParser(
@@ -17,7 +16,7 @@ parser = argparse.ArgumentParser(
 )
 
 parser.add_argument(
-    "-v", "--version", action="version", version=f"swingmusic v{version('swingmusic')}"
+    "-v", "--version", action="version", version=f"swingmusic v{Metadata.version}"
 )
 parser.add_argument("--host", default="0.0.0.0", help="Host to run the app on.")
 parser.add_argument(

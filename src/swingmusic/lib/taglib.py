@@ -190,6 +190,10 @@ def get_tags(filepath: str, config: UserConfig) -> dict:
     else:
         other = {}
 
+    date = parse_date(tags.year or "")
+    if date is None:
+        date = int(last_mod)
+
     metadata: dict[str, Any] = {
         "album": tags.album,
         "albumartists": tags.albumartist,
@@ -207,7 +211,7 @@ def get_tags(filepath: str, config: UserConfig) -> dict:
             other.get("copyright", [])
         ),  # INFO: Extract copyright from extra data
         "extra": {},
-        "date": parse_date(tags.year or "") or int(last_mod),
+        "date": date
     }
 
     # check the necessary tags and set them

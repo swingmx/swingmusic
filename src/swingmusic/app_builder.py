@@ -22,7 +22,7 @@ from swingmusic.api.plugins import lyrics as lyrics_plugin
 from swingmusic.api.plugins import mixes as mixes_plugin
 from swingmusic.config import UserConfig
 from swingmusic.db.userdata import UserTable
-from swingmusic.settings import Paths
+from swingmusic.settings import Metadata, Paths
 from swingmusic.store.general import GeneralStore
 from swingmusic.utils.paths import get_client_files_extensions
 # log = logging.getLogger(__name__)
@@ -113,7 +113,7 @@ def load_plugins(web: OpenAPI):
 
 api_info = Info(
     title="Swing Music",
-    version=f"v{metadata.version('swingmusic')}",
+    version=f"v{Metadata.version}",
     description="The REST API exposed by your Swing Music server",
 )
 

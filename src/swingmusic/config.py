@@ -1,8 +1,8 @@
-import importlib.resources
 import json
 from pathlib import Path
 from typing import Any
 from dataclasses import dataclass, asdict, field, InitVar
+from swingmusic.data import ARTIST_SPLIT_IGNORE_LIST
 from swingmusic.settings import Paths, Singleton
 
 
@@ -25,10 +25,7 @@ def load_default_artist_ignore_list() -> set[str]:
     Loads the default artist-ignore-list from the text file.
     Returns an empty set if the file doesn't exist.
     """
-    text = importlib.resources.read_text("swingmusic.data", "artist_split_ignore.txt")
-    # only return unique and not empty lines
-    lines = text.splitlines()
-    return set([line.strip() for line in lines if line.strip()])
+    return ARTIST_SPLIT_IGNORE_LIST
 
 
 def load_user_artist_ignore_list() -> set[str]:
@@ -217,3 +214,4 @@ class UserConfig(metaclass=Singleton):
         """
         self.write_to_file(asdict(self))
         self._last_updated = self._config_path.stat().st_mtime
+

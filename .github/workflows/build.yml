@@ -191,6 +191,9 @@ jobs:
       - name: Checkout into repo
         uses: actions/checkout@v3
 
+      - name: Create version.txt
+        run: echo ${{ github.event.inputs.tag }} > version.txt
+
       - name: Download wheels artifact
         uses: actions/download-artifact@v4
         with:
@@ -225,8 +228,12 @@ jobs:
           context: .
           platforms: linux/amd64, linux/arm64 #,linux/arm
           push: true
-          tags: ghcr.io/${{github.repository}}:${{format('{0}', github.ref_name)}}, ghcr.io/${{github.repository}}:latest
+          tags: ghcr.io/${{github.repository}}:${{format('v{0}', github.event.inputs.tag)}}, ${{env.LATEST_TAG}}
           labels: org.opencontainers.image.title=Docker
+          build-args: |
+            app_version=${{github.event.inputs.tag}}
+        env:
+          LATEST_TAG: ${{ github.event.inputs.is_latest == 'true' && format('ghcr.io/{0}:latest', github.repository) || '' }}
 
   build-pyinstaller:
     name: Build binary on ${{ matrix.os }}
@@ -239,8 +246,8 @@ jobs:
       matrix:
         os:
           [
-            ubuntu-latest,
-            ubuntu-24.04-arm,
+            ubuntu-22.04,
+            ubuntu-22.04-arm,
             windows-latest,
             windows-11-arm,
             macos-13,
@@ -362,7 +369,7 @@ jobs:
     if: ${{ github.event.inputs.publish_pypi == 'true' }}
     permissions:
       id-token: write
-    
+
     steps:
       - name: Download wheel artifacts
         uses: actions/download-artifact@v4
@@ -370,7 +377,7 @@ jobs:
           name: wheels
           path: dist
           merge-multiple: true
-      
+
       - name: Publish to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
         with:

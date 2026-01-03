@@ -104,10 +104,16 @@ class Album:
         """
         Checks if the album is a soundtrack.
         """
+        title = self.og_title.lower()
+
         keywords = ["motion picture", "soundtrack"]
         for keyword in keywords:
-            if keyword in self.og_title.lower():
+            if keyword in title:
                 return True
+
+        # if og_title ends with "the album"
+        if len(title) > 10 and title.endswith("the album"):
+            return True
 
         return False
 

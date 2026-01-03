@@ -1,5 +1,4 @@
 from dataclasses import asdict
-from importlib import metadata
 from typing import Any
 from flask_openapi3 import Tag
 from flask_openapi3 import APIBlueprint
@@ -10,6 +9,7 @@ from swingmusic.db.userdata import PluginTable
 from swingmusic.lib.index import index_everything
 from swingmusic.config import UserConfig
 from swingmusic.store.general import GeneralStore
+from swingmusic.settings import Metadata
 from swingmusic.utils.auth import get_current_userid
 from swingmusic.utils.paths import normalize_paths
 
@@ -83,7 +83,11 @@ def get_all_settings():
             config[key] = sorted(list(value))
 
     config["plugins"] = [p for p in PluginTable.get_all()]
-    config["version"] = metadata.version("swingmusic")
+    config["version"] = Metadata.version
+
+    if config["version"] == "0.0.0":
+        # fallback to version.txt (useful for docker builds)
+        config["version"] = open("version.txt", "r").read().strip()
 
     # only return lastfmSessionKey for the current user
     current_user = get_current_userid()
