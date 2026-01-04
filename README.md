@@ -124,6 +124,9 @@ services:
     restart: unless-stopped
 ```
 
+> [!TIP]
+> You can set user permissions by adding the `PUID` and `PGID` environment variables to the compose file. Default values are `PUID=1000` and `PGID=1000`.
+
 ### Contributing and Development
 
 Swing Music is looking for contributors. If you're interested, please join us at the [Swing Music Community](https://t.me/+9n61PFcgKhozZDE0) group on Telegram. For more information, take a look at https://github.com/swing-opensource/swingmusic/issues/186.
