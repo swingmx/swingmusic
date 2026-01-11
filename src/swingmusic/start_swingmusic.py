@@ -1,20 +1,10 @@
-import asyncio
-import os
-import signal
 import socket
-import warnings
-from swingmusic import app_builder
-from swingmusic.crons import start_cron_jobs
-from swingmusic.plugins.register import register_plugins
-from swingmusic.setup import load_into_mem, run_setup
-from swingmusic.start_info_logger import log_startup_info
+import threading
+import mimetypes
 
 import setproctitle
 
-import mimetypes
-
-# Suppress the async_to_sync warning from asgiref when using WsgiToAsgi adapter
-warnings.filterwarnings('ignore', message='async_to_sync was passed a non-async-marked callable')
+from swingmusic.start_info_logger import log_startup_info
 
 
 def config_mimetypes():
@@ -56,72 +46,89 @@ class PortManager:
                 raise e
 
 
+def wsgi_loader(target: str):
+    """
+    Target loader for Granian's WSGI worker process.
+
+    Called by Granian in each worker process before serving requests.
+    Performs all application initialization:
+    - Configures mimetypes for static file serving
+    - Sets up database and config files
+    - Loads all data into memory stores
+    - Starts background tasks (plugins, cron jobs)
+    - Builds and returns the Flask application
+
+    :param target: The target string passed by Granian (ignored, we build our own app)
+    :return: The WSGI application callable
+    """
+    import os
+    from swingmusic import app_builder
+    from swingmusic.crons import start_cron_jobs
+    from swingmusic.plugins.register import register_plugins
+    from swingmusic.setup import load_into_mem, run_setup
+
+    # Configure mimetypes for static file serving
+    config_mimetypes()
+
+    # Setup config files and database
+    run_setup()
+
+    # Build the Flask/OpenAPI application
+    app = app_builder.build()
+
+    # Load all data into memory stores
+    load_into_mem()
+
+    # Get host:port from environment for process title
+    proc_title = os.environ.get("SWINGMUSIC_PROC_TITLE", "swingmusic")
+
+    # Start background tasks in a daemon thread
+    def background_tasks():
+        register_plugins()
+        setproctitle.setproctitle(proc_title)
+        start_cron_jobs()
+
+    background_thread = threading.Thread(target=background_tasks, daemon=True)
+    background_thread.start()
+
+    return app
+
+
 def start_swingmusic(host: str, port: int):
     """
     Creates and starts the Flask application server for Swing Music.
 
-    This function sets up the Flask application with all necessary
-    configurations, including static file handling, authentication middleware, and
-    server setup, then runs it. It also sets up background tasks and cron jobs.
+    This function configures Granian as a WSGI server with multiple blocking
+    threads to support concurrent SSE connections without blocking other requests.
 
-    .. note::
-        The application uses either bjoern or waitress as the WSGI server,
-        depending on availability. It also includes JWT authentication,
-        static file serving with gzip compression support, and automatic
-        token refresh functionality.
+    The application initialization happens in the worker process via the
+    wsgi_loader function, which sets up the database, loads data into memory,
+    and starts background tasks.
 
     :param host: The host address to bind the server to (e.g., 'localhost' or '0.0.0.0')
     :param port: The port number to run the server on
     """
+    import os
+    from granian import Granian
+    from granian.constants import Interfaces
 
-    # port_manager = PortManager(host)
+    # Set process title for worker to pick up
+    os.environ["SWINGMUSIC_PROC_TITLE"] = f"swingmusic {host}:{port}"
 
-    # Try starting a server on port 1970
-    # If it fails, exit with error
-    # if not port_manager.test_port(port):
-    #     print(f"Error 48: Port {port} already in use.")
-    #     print("Please specify a different port using the --port argument.")
-    #     sys.exit(1)
-
-    # Example: Setting up dirs, database, and loading stuff into memory.
-    # TIP: Be careful with the order of the setup functions.
-    # NOTE: concurrent and multithreading create own sys.modules -> no globals
-
-    config_mimetypes()
-    run_setup()
-
-    def run_swingmusic():
-        register_plugins()
-
-        setproctitle.setproctitle(f"swingmusic {host}:{port}")
-        start_cron_jobs()
-
-    app = app_builder.build()
-
+    # Log startup info before Granian takes over
     log_startup_info(host, port)
-    load_into_mem()
-
-    # Start background thread and keep reference
-    import threading
-
-    background_thread = threading.Thread(target=run_swingmusic, daemon=True)
-    background_thread.start()
-    # TrackStore.export()
-    # ArtistStore.export()
 
     # docker needs manual flush
     print("", end="", flush=True)
 
-    from asgiref.wsgi import WsgiToAsgi
-    from granian.constants import Interfaces
-    from granian.server.embed import Server
+    server = Granian(
+        target="swingmusic.app_builder:app",  # Placeholder, loader overrides this
+        address=host,
+        port=port,
+        interface=Interfaces.WSGI,
+        workers=1,
+        blocking_threads=8,
+        workers_kill_timeout=5,
+    )
 
-    asgi_app = WsgiToAsgi(app)
-    server = Server(asgi_app, host, port, interface=Interfaces.ASGINL)
-
-    try:
-        asyncio.run(server.serve())
-    except KeyboardInterrupt:
-        print("Shutting down server...")
-        server.stop()
-        sys.exit(0)
+    server.serve(target_loader=wsgi_loader)

@@ -257,6 +257,13 @@ class Paths(metaclass=Singleton):
             os.environ["SWINGMUSIC_CLIENT_DIR"] = self.client_path.resolve().as_posix()
 
             self.setup_config_dirs()
+        else:
+            # Worker process: read client path from environment variable set by main process
+            env_client_dir = os.environ.get("SWINGMUSIC_CLIENT_DIR")
+            if env_client_dir is not None:
+                self.client_path = Path(env_client_dir).resolve()
+            else:
+                self.client_path = self.config_dir / "client"
 
     @classmethod
     def get_default_config_parent_dir(cls) -> pathlib.Path:
