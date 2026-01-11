@@ -128,7 +128,7 @@ def start_swingmusic(host: str, port: int):
         interface=Interfaces.WSGI,
         workers=1,
         blocking_threads=8,
-        workers_kill_timeout=5,
+        workers_kill_timeout=1,
     )
 
     server.serve(target_loader=wsgi_loader)
