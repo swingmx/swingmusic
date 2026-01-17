@@ -42,6 +42,37 @@ def run_setup():
 
     setup_sqlite()
 
+    # Validate license on startup
+    _validate_license()
+
+
+def _validate_license():
+    """
+    Validates the license with the cloud server on startup.
+
+    If a license key exists, attempts to validate with the server.
+    Failures are handled gracefully - the LicenseManager state will
+    reflect the validation result, and premium features will be
+    gated accordingly.
+    """
+    from swingmusic.lib.license import LicenseManager, LicenseError
+
+    manager = LicenseManager()
+
+    if not manager.license_key:
+        return
+
+    try:
+        manager.validate()
+    except LicenseError:
+        # Validation errors (expired, revoked, not registered)
+        # State is already updated - premium features will be disabled
+        pass
+    except Exception:
+        # Network errors or unexpected issues
+        # Grace period will apply based on last_validated timestamp
+        pass
+
 
 def load_into_mem():
     """

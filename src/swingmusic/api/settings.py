@@ -6,7 +6,9 @@ from pydantic import BaseModel, Field
 from swingmusic.api.auth import admin_required
 
 from swingmusic.db.userdata import PluginTable
+from swingmusic.lib.cloud import CloudAuthError, CloudError
 from swingmusic.lib.index import index_everything
+from swingmusic.lib.license import LicenseManager, LicenseError
 from swingmusic.config import UserConfig
 from swingmusic.store.general import GeneralStore
 from swingmusic.settings import Metadata
@@ -157,3 +159,115 @@ def update_config(body: UpdateConfigBody):
     return {
         "msg": "Config updated!",
     }
+
+
+# =============================================================================
+# License Management
+# =============================================================================
+
+
+class RegisterLicenseBody(BaseModel):
+    license_key: str = Field(
+        description="The Polar.sh license key",
+        example="XXXX-XXXX-XXXX-XXXX",
+    )
+    device_name: str = Field(
+        description="Human-readable device name",
+        example="MacBook Pro",
+    )
+
+
+@api.post("/license/register")
+@admin_required()
+def register_license(body: RegisterLicenseBody):
+    """
+    Register this device with a license key.
+
+    Activates premium features for this device.
+    Each license supports up to 3 devices.
+    """
+    try:
+        manager = LicenseManager()
+        result = manager.register(body.license_key, body.device_name)
+
+        return {
+            "msg": "License activated successfully",
+            "license": result.get("user"),
+            "customer": result.get("customer"),
+            "devices": result.get("devices"),
+        }
+    except CloudAuthError as e:
+        return {"error": str(e)}, e.status_code or 400
+    except CloudError as e:
+        return {"error": str(e)}, e.status_code or 500
+
+
+@api.get("/license/status")
+def get_license_status():
+    """
+    Get current license status.
+
+    Returns license info if registered, or null if not.
+    """
+    manager = LicenseManager()
+    info = manager.get_license_info()
+
+    if not info:
+        return {"license": None}
+
+    return {"license": info}
+
+
+@api.delete("/license/deactivate")
+@admin_required()
+def deactivate_license():
+    """
+    Deactivate the license on this device.
+
+    Clears local license state. Does not revoke the device from the server.
+    """
+    manager = LicenseManager()
+    manager.deactivate()
+
+    return {"msg": "License deactivated"}
+
+
+class DeviceIdPath(BaseModel):
+    device_id: str = Field(
+        description="The device ID to revoke",
+        example="a1b2c3d4e5f67890",
+    )
+
+
+@api.delete("/license/device/<device_id>")
+@admin_required()
+def revoke_device(path: DeviceIdPath):
+    """
+    Revoke a device from the license.
+
+    Can revoke any device on your license, including yourself.
+    """
+    device_id = path.device_id
+
+    try:
+        from swingmusic.lib.cloud import CloudClient
+
+        client = CloudClient()
+        result = client.revoke_device(device_id)
+
+        # Re-validate to update local state
+        manager = LicenseManager()
+        try:
+            manager.validate()
+        except LicenseError:
+            pass  # State already updated
+
+        return {
+            "msg": "Device revoked",
+            "revoked": result.get("revoked"),
+            "devices": result.get("devices"),
+        }
+    except CloudAuthError as e:
+        return {"error": str(e)}, e.status_code or 400
+    except CloudError as e:
+        return {"error": str(e)}, e.status_code or 500

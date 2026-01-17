@@ -1,6 +1,7 @@
 import time
 import schedule
 
+from swingmusic.crons.license import LicenseValidation
 from swingmusic.crons.mixes import Mixes
 from swingmusic.lib.recipes.recents import RecentlyAdded, RecentlyPlayed
 from swingmusic.lib.recipes.topstreamed import TopArtists
@@ -21,6 +22,7 @@ def start_cron_jobs():
     TopArtists()
     TopArtists(duration="week")
     Mixes()
+    LicenseValidation()
 
     # Trigger all CRON jobs when the app is started.
     schedule.run_all()

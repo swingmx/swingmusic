@@ -89,6 +89,9 @@ class UserConfig(metaclass=Singleton):
     lastfmSessionKeys: dict[str, str] = field(default_factory=dict)
     artistArticleAwareSorting: bool = False
 
+    # license
+    licenseKey: str = ""
+
     artistSortingArticles: set[str] = field(
         default_factory=lambda: {
             "the",
