@@ -1,28 +1,51 @@
 """
 Contains all the folder routes.
 """
-import pathlib
-from datetime import datetime
+
 import os
+import pathlib
 from pathlib import Path
+from datetime import datetime
 
 import psutil
-from pydantic import BaseModel, Field
 from flask_openapi3 import Tag
+from pydantic import BaseModel, Field
 from flask_openapi3 import APIBlueprint
 from showinfm import show_in_file_manager
 
 from swingmusic import settings
 from swingmusic.config import UserConfig
 from swingmusic.db.libdata import TrackTable
+from swingmusic.api.auth import admin_required
+from swingmusic.store.tracks import TrackStore
+from swingmusic.utils.wintools import is_windows
 from swingmusic.db.userdata import FavoritesTable, PlaylistTable
 from swingmusic.lib.folderslib import get_files_and_dirs, get_folders
 from swingmusic.serializers.track import serialize_track, serialize_tracks
-from swingmusic.store.tracks import TrackStore
-from swingmusic.utils.wintools import is_windows
 
 tag = Tag(name="Folders", description="Get folders and tracks in a directory")
 api = APIBlueprint("folder", __name__, url_prefix="/folder", abp_tags=[tag])
+
+
+def is_path_within_root_dirs(filepath: str) -> bool:
+    """
+    Check if a filepath is within one of the configured root directories.
+    Prevents directory traversal attacks.
+    """
+    config = UserConfig()
+    resolved_path = Path(filepath).resolve()
+
+    for root_dir in config.rootDirs:
+        if root_dir == "$home":
+            root_path = Path.home().resolve()
+        else:
+            root_path = Path(root_dir).resolve()
+
+        # Check if resolved_path is the root or a child of root
+        if resolved_path == root_path or root_path in resolved_path.parents:
+            return True
+
+    return False
 
 
 class FolderTree(BaseModel):
@@ -87,12 +110,12 @@ def get_folder_tree(body: FolderTree):
         req_dir = settings.Paths().USER_HOME_DIR.as_posix()
 
     if req_dir == "$home":
-            folders = get_folders(root_dirs)
+        folders = get_folders(root_dirs)
 
-            return {
-                "folders": folders,
-                "tracks": [],
-            }
+        return {
+            "folders": folders,
+            "tracks": [],
+        }
 
     if req_dir.startswith("$playlist"):
         splits = req_dir.split("/")
@@ -142,14 +165,26 @@ def get_folder_tree(body: FolderTree):
             "path": req_dir,
         }
 
-    # TODO: currently only fixed on unix. Windows/Mac still pending.
-    # note
+    # Resolve path to prevent directory traversal attacks
+    resolved_path = pathlib.Path(req_dir).resolve()
 
-    if not pathlib.Path(req_dir).exists():
-        req_dir = "/" + req_dir
+    # Validate path is within configured root directories
+    if not is_path_within_root_dirs(str(resolved_path)):
+        return {
+            "folders": [],
+            "tracks": [],
+            "error": "Path not within allowed directories",
+        }, 403
+
+    if not resolved_path.exists() or not resolved_path.is_dir():
+        return {
+            "folders": [],
+            "tracks": [],
+            "error": "Invalid directory",
+        }, 400
 
     results = get_files_and_dirs(
-        pathlib.Path(req_dir),
+        resolved_path,
         start=body.start,
         limit=body.limit,
         tracks_only=tracks_only,
@@ -213,12 +248,13 @@ class DirBrowserBody(BaseModel):
 
 
 @api.post("/dir-browser")
+@admin_required()
 def list_folders(body: DirBrowserBody):
     """
     List folders
 
     Returns a list of all the folders in the given folder.
-    Used when selecting root dirs.
+    Used when selecting root dirs. Admin only.
     """
     req_dir = body.folder
     is_win = is_windows()
@@ -228,11 +264,11 @@ def list_folders(body: DirBrowserBody):
             "folders": [{"name": d, "path": d} for d in get_all_drives(is_win=is_win)]
         }
 
+    # Resolve path to prevent directory traversal attacks
+    req_dir = pathlib.Path(req_dir).resolve()
 
-    req_dir = pathlib.Path(req_dir)
-
-    if not req_dir.exists():
-        req_dir = "/" / req_dir
+    if not req_dir.exists() or not req_dir.is_dir():
+        return {"folders": [], "error": "Invalid directory"}, 400
 
     try:
         entries = os.scandir(req_dir)
@@ -245,17 +281,14 @@ def list_folders(body: DirBrowserBody):
         entry = pathlib.Path(entry)
         name = entry.name
 
-        if name.startswith("$"): # ignore windows system folder
+        if name.startswith("$"):
             continue
 
-        if name.startswith("."): # ignore unix hidden folder
+        if name.startswith("."):
             continue
 
-        if entry.is_dir():  # lastly, check if is dir
-            dirs.append({
-                "name": name,
-                "path": entry.as_posix()
-            })
+        if entry.is_dir():
+            dirs.append({"name": name, "path": entry.resolve().as_posix()})
 
     return {
         "folders": sorted(dirs, key=lambda i: i["name"]),
@@ -274,8 +307,19 @@ def open_in_file_manager(query: FolderOpenInFileManagerQuery):
     Open in file manager
 
     Opens the given path in the file manager on the host machine.
+    Path must be within configured root directories.
     """
-    show_in_file_manager(query.path)
+    # Resolve path to prevent directory traversal
+    resolved_path = Path(query.path).resolve()
+
+    # Validate path is within root directories
+    if not is_path_within_root_dirs(query.path):
+        return {"success": False, "error": "Path not within allowed directories"}, 403
+
+    if not resolved_path.exists():
+        return {"success": False, "error": "Path does not exist"}, 404
+
+    show_in_file_manager(str(resolved_path))
 
     return {"success": True}
 
@@ -295,7 +339,14 @@ def get_tracks_in_path(query: GetTracksInPathQuery):
 
     Used when adding tracks to the queue.
     """
-    tracks = TrackTable.get_tracks_in_path(query.path)
+    # Resolve path to prevent directory traversal
+    resolved_path = Path(query.path).resolve()
+
+    # Validate path is within root directories
+    if not is_path_within_root_dirs(str(resolved_path)):
+        return {"tracks": [], "error": "Path not within allowed directories"}, 403
+
+    tracks = TrackTable.get_tracks_in_path(str(resolved_path))
     tracks = (serialize_track(t) for t in tracks if Path(t.filepath).exists())
 
     return {
