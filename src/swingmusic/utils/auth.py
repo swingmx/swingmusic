@@ -4,6 +4,7 @@ import hashlib
 from flask_jwt_extended import current_user
 
 from swingmusic.config import UserConfig
+from swingmusic.logger import log
 
 
 def hash_password(password: str) -> str:
@@ -38,6 +39,11 @@ def get_current_userid() -> int:
     """
     try:
         return current_user["id"]
-    except RuntimeError:
+    except RuntimeError as e:
         # Catch this error raised during migration execution
+        if log:
+            log.error("get_current_userid: Unable to get current user id")
+            log.error(e)
+        # TODO: possible change to other than real userid,
+        #       because it is really hard to debug when no fault but data goes to wrong user
         return 1
