@@ -42,13 +42,16 @@ class MixesPlugin(Plugin):
 
     def __init__(self):
         super().__init__("mixes", "Mixes")
-        self.server = "https://smcloud.mungaist.com"
-        # self.server = "http://localhost:1956"
+        # self.server = "https://smcloud.mungaist.com"
+        self.server = "http://localhost:1956"
+        server_online = self.ping_server()
 
-        # server_online = self.ping_server()
-        self.set_active(True)
+        self.set_active(server_online)
 
-    def ping_server(self):
+    def ping_server(self) -> bool:
+        """
+        Pings the recommendation server to check if it is online.
+        """
         max_retries = 3
         retry_delay = 2  # seconds
 
