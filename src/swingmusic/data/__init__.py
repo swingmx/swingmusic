@@ -1,5 +1,6 @@
 ARTIST_SPLIT_IGNORE_LIST = {
     "AC/DC",
+    "Sonny & Cher",
     "Bob marley & the wailers",
     "Crosby, Stills, Nash & Young",
     "Smith & Thell",
