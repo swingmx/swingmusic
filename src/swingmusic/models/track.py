@@ -221,7 +221,8 @@ class Track:
         Recreates the trackhash based on the current title, album, and artist information.
         """
         self.trackhash = create_hash(
-            self.title, self.album, *(artist["name"] for artist in self.artists)
+            self.title, self.album, *(artist["name"] for artist in self.artists),
+            str(self.track), str(self.disc),
         )
 
     def copy(self):
