@@ -50,6 +50,7 @@ ARTIST_SPLIT_IGNORE_LIST = {
     "Katrina & the Waves",
     "Gladys Knight & the Pips",
     "Martha & the Vandellas",
+    "Martha Reeves and the Vandellas",
     "? and the Mysterians",
     "Kool & the Gang",
     "Josie & the Pussycats",
