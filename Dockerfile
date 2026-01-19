@@ -1,22 +1,47 @@
-FROM python:3.11-slim
-WORKDIR /app
+ARG PYTHON_VERSION=3.11
+FROM python:${PYTHON_VERSION}-slim
 
 LABEL "author"="swing music"
+LABEL "description"="Swing Music is a beautiful, self-hosted music player for your local audio files. Like a cooler Spotify ... but bring your own music."
+
+# Default user and group IDs
+ENV PUID=1000 \
+    PGID=1000 \
+    USER_NAME=swingmusic
+
 EXPOSE 1970/tcp
 VOLUME /music
 VOLUME /config
 
-RUN apt-get update 
+# Prevents Python from writing pyc files.
+ENV PYTHONDONTWRITEBYTECODE=1
+# Keeps Python from buffering stdout and stderr to avoid situations where
+# the application crashes without emitting any logs due to buffering.
+ENV PYTHONUNBUFFERED=1
 
-RUN apt-get install -y gcc libev-dev 
-RUN apt-get install -y ffmpeg libavcodec-extra 
-RUN apt-get clean && rm -rf /var/lib/apt/lists/*
+ENV DEBIAN_FRONTEND=noninteractive
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends \
+        gcc \
+        libev-dev \
+        libc6-dev \
+        ffmpeg \
+        libavcodec-extra \
+        gosu \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
 
-# Copy repo root files needed for installation
-COPY pyproject.toml requirements.txt version.txt ./ 
+WORKDIR /app
+
+RUN groupadd -g ${PGID} ${USER_NAME} \
+    && useradd -u ${PUID} -g ${PGID} -m ${USER_NAME}
+
+COPY pyproject.toml requirements.txt version.txt README.md* ./
 COPY src/ ./src/
 
-# Install the package and its dependencies
-RUN pip install --no-cache-dir .
+RUN --mount=type=cache,target=/root/.cache/pip \
+    python -m pip install .
 
-ENTRYPOINT ["python", "-m", "swingmusic", "--host", "0.0.0.0", "--config", "/config"]
+COPY entrypoint.sh /entrypoint.sh
+
+ENTRYPOINT ["/entrypoint.sh", "python", "-m", "swingmusic", "--host", "0.0.0.0", "--config", "/config"]
