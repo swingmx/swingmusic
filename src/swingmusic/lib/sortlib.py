@@ -5,6 +5,7 @@ from swingmusic.lib.albumslib import sort_by_track_no
 from swingmusic.models.folder import Folder
 from swingmusic.models.track import Track
 from swingmusic.utils import flatten
+import random
 
 
 def sort_tracks(tracks: list[Track], key: str, reverse: bool = False):
@@ -13,6 +14,9 @@ def sort_tracks(tracks: list[Track], key: str, reverse: bool = False):
     """
     if key == "default":
         return tracks
+
+    if key == "random":
+        return random.sample(tracks, len(tracks))
 
     sortfunc: Callable[[Track], str] = lambda track: getattr(track, key)
     if key == "artists" or key == "albumartists":
