@@ -10,6 +10,7 @@ from typing import Any
 import requests
 
 from swingmusic.lib.crypto import Cryptography
+from swingmusic.lib.device import get_device_type
 
 
 class CloudError(Exception):
@@ -171,6 +172,7 @@ class CloudClient:
                 "license_key": license_key,
                 "device_id": device_id,
                 "device_name": device_name,
+                "device_type": get_device_type(),
             },
         )
 
@@ -219,3 +221,4 @@ class CloudClient:
             Revocation result with updated device count
         """
         return self._make_request("DELETE", f"/auth/device/{device_id}")
+

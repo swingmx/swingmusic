@@ -300,6 +300,7 @@ class LicenseManager(metaclass=Singleton):
         }
         self._save_to_cache()
 
+        response["license_key"] = license_key
         return response
 
     def deactivate(self) -> None:
@@ -341,15 +342,10 @@ class LicenseManager(metaclass=Singleton):
         user = self._state.get("user", {})
         customer = self._state.get("customer", {})
         devices = self._state.get("devices", {})
-        meta = self._state.get("_meta", {})
 
         return {
-            "license_type": user.get("license_type"),
-            "status": user.get("status"),
-            "expires_at": user.get("expires_at"),
-            "customer_email": customer.get("email"),
-            "customer_name": customer.get("name"),
-            "device_count": devices.get("active", 0),
-            "device_limit": devices.get("limit", 3),
-            "last_validated": meta.get("last_validated"),
+            "license_key": UserConfig().licenseKey,
+            "license": user,
+            "customer": customer,
+            "devices": devices,
         }

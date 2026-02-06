@@ -13,6 +13,7 @@ from swingmusic.config import UserConfig
 from swingmusic.store.general import GeneralStore
 from swingmusic.settings import Metadata
 from swingmusic.utils.auth import get_current_userid
+from swingmusic.utils.hardware_id import get_device_id, get_device_name
 from swingmusic.utils.paths import normalize_paths
 
 bp_tag = Tag(name="Settings", description="Customize stuff")
@@ -95,6 +96,14 @@ def get_all_settings():
     current_user = get_current_userid()
     config["lastfmSessionKey"] = config["lastfmSessionKeys"].get(str(current_user), "")
     del config["lastfmSessionKeys"]
+
+    # remove license info if user is not admin
+    # if "admin" not in UserTable.get_by_id(current_user).roles:
+    del config["licenseKey"]
+
+    # add device name to config
+    config["deviceName"] = get_device_name()
+    config["deviceId"] = get_device_id()
 
     return config
 
@@ -203,6 +212,7 @@ def register_license(body: RegisterLicenseBody):
 
 
 @api.get("/license/status")
+@admin_required()
 def get_license_status():
     """
     Get current license status.
@@ -213,23 +223,23 @@ def get_license_status():
     info = manager.get_license_info()
 
     if not info:
-        return {"license": None}
+        return {"error": "No license found"}, 404
 
-    return {"license": info}
+    return info, 200
 
 
-@api.delete("/license/deactivate")
-@admin_required()
-def deactivate_license():
-    """
-    Deactivate the license on this device.
+# @api.delete("/license/deactivate")
+# @admin_required()
+# def deactivate_license():
+#     """
+#     Deactivate the license on this device.
 
-    Clears local license state. Does not revoke the device from the server.
-    """
-    manager = LicenseManager()
-    manager.deactivate()
+#     Clears local license state. Does not revoke the device from the server.
+#     """
+#     manager = LicenseManager()
+#     manager.deactivate()
 
-    return {"msg": "License deactivated"}
+#     return {"msg": "License deactivated"}
 
 
 class DeviceIdPath(BaseModel):
@@ -254,6 +264,11 @@ def revoke_device(path: DeviceIdPath):
 
         client = CloudClient()
         result = client.revoke_device(device_id)
+
+        # if the device is the current device, deactivate the license
+        if device_id == get_device_id():
+            manager = LicenseManager()
+            manager.deactivate()
 
         # Re-validate to update local state
         manager = LicenseManager()
