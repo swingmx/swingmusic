@@ -37,6 +37,8 @@ from swingmusic.utils.stats import (
     get_artists_in_period,
     get_tracks_in_period,
 )
+from swingmusic.utils.auth import get_current_userid
+
 
 bp_tag = Tag(name="Logger", description="Log item plays")
 api = APIBlueprint("logger", __name__, url_prefix="/logger", abp_tags=[bp_tag])
@@ -101,7 +103,7 @@ def log_track(body: LogTrackBody):
     trackentry.increment_playcount(duration, timestamp)
     track = trackentry.tracks[0]
 
-    lastfm = LastFmPlugin()
+    lastfm = LastFmPlugin(current_userid=get_current_userid())
 
     if (
         lastfm.enabled

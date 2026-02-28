@@ -6,6 +6,10 @@ from pathlib import Path
 import swingmusic.__main__ as app
 
 if __name__ == "__main__":
+	# Fixed: freeze_support() must be called immediately to prevent 
+	# recursive process spawning and ArgumentParser errors on Windows EXE.
+    multiprocessing.freeze_support()
+    
     # this entry should only be used by pyinstaller.
     # add freeze support here as pyinstaller uses this entry
 
@@ -20,5 +24,4 @@ if __name__ == "__main__":
         sys.argv.extend(["--client", client_str])
         sys.orig_argv.extend(["--client", client_str])
 
-    multiprocessing.freeze_support()
     app.run()

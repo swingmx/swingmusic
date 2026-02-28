@@ -1,7 +1,12 @@
 ARTIST_SPLIT_IGNORE_LIST = {
     "AC/DC",
+    "Sonny & Cher",
     "Bob marley & the wailers",
     "Crosby, Stills, Nash & Young",
+    "Booker T. & the M.G.'s",
+    "Maurice Williams & The Zodiacs",
+    "Frank DeVol and His Orchestra",
+    "Tommy James & the Shondells",
     "Smith & Thell",
     "Peter, Paul & Mary",
     "Simon & Garfunkel",
@@ -45,6 +50,7 @@ ARTIST_SPLIT_IGNORE_LIST = {
     "Katrina & the Waves",
     "Gladys Knight & the Pips",
     "Martha & the Vandellas",
+    "Martha Reeves and the Vandellas",
     "? and the Mysterians",
     "Question Mark & the Mysterians"
     "Kool & the Gang",

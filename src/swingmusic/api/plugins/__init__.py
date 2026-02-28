@@ -78,7 +78,7 @@ def create_lastfm_session(body: LastFmSessionBody):
     if not body.token:
         return {"error": "Missing token"}, 400
 
-    lastfm = LastFmPlugin()
+    lastfm = LastFmPlugin(current_userid=get_current_userid())
     session_key = lastfm.get_session_key(body.token)
 
     if session_key:
