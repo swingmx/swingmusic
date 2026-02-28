@@ -72,17 +72,22 @@ def send_track_file_legacy(path: TrackHashSchema, query: SendTrackFileQuery):
     requested_filepath = Path(filepath).resolve()
 
     # check if filepath is a child of any of the root dirs
+    inside_root = False
     for root_dir in UserConfig().rootDirs:
         if root_dir == "$home":
             root_dir = Path.home()
         else:
             root_dir = Path(root_dir).resolve()
 
-        if root_dir not in requested_filepath.parents:
-            return {
-                "msg": "Invalid filepath",
-                "error": "File not inside root directories",
-            }, 400
+        if root_dir in requested_filepath.parents:
+            inside_root = True
+            break
+
+    if not inside_root:
+        return {
+            "msg": "Invalid filepath",
+            "error": "File not inside root directories",
+        }, 400
 
     track = None
     tracks = TrackStore.get_tracks_by_filepaths([filepath])
