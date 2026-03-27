@@ -2,10 +2,10 @@
 Cloud API client with Ed25519 request signing for Swing Music Cloud services.
 """
 
-import hashlib
 import json
 import time
-from typing import Any
+import hashlib
+from typing import Any, Literal
 
 import requests
 
@@ -41,7 +41,8 @@ class CloudClient:
     The signature format is: {timestamp}:{METHOD}:{path}:{sha256(body)}
     """
 
-    BASE_URL = "http://localhost:1956"
+    BASE_URL = "http://localhost:1957"
+    # BASE_URL = "https://cloud.swingmx.com"
     REQUEST_TIMEOUT = 30
 
     def __init__(self):
@@ -51,9 +52,7 @@ class CloudClient:
         """Compute SHA-256 hash of string data, return as hex."""
         return hashlib.sha256(data.encode("utf-8")).hexdigest()
 
-    def _sign_request(
-        self, method: str, path: str, body: str, timestamp: int
-    ) -> str:
+    def _sign_request(self, method: str, path: str, body: str, timestamp: int) -> str:
         """
         Sign a request using Ed25519.
 
@@ -65,7 +64,7 @@ class CloudClient:
 
     def _make_request(
         self,
-        method: str,
+        method: Literal["GET", "POST", "PATCH", "DELETE"],
         path: str,
         body: dict[str, Any] | list | None = None,
     ) -> dict[str, Any]:
@@ -116,19 +115,21 @@ class CloudClient:
                 response = requests.delete(
                     url, headers=headers, timeout=self.REQUEST_TIMEOUT
                 )
-            else:
-                raise ValueError(f"Unsupported HTTP method: {method}")
 
         except requests.exceptions.ConnectionError as e:
             raise CloudNetworkError(f"Failed to connect to cloud server: {e}")
-        except requests.exceptions.Timeout as e:
+        except (requests.exceptions.Timeout, requests.exceptions.ReadTimeout) as e:
             raise CloudNetworkError(f"Request timed out: {e}")
         except requests.exceptions.RequestException as e:
             raise CloudNetworkError(f"Request failed: {e}")
 
+
         # Handle response
         if response.status_code == 200:
-            return response.json()
+            try:
+                return response.json()
+            except json.JSONDecodeError:
+                return response.content
 
         # Parse error message
         try:
@@ -221,4 +222,3 @@ class CloudClient:
             Revocation result with updated device count
         """
         return self._make_request("DELETE", f"/auth/device/{device_id}")
-

@@ -57,12 +57,8 @@ def _validate_license():
     """
     from swingmusic.lib.license import LicenseManager, LicenseError
 
-    manager = LicenseManager()
-
-    if not manager.license_key:
-        return
-
     try:
+        manager = LicenseManager()
         manager.validate()
     except LicenseError:
         # Validation errors (expired, revoked, not registered)

@@ -16,11 +16,6 @@ from swingmusic.settings import Paths, Singleton
 from swingmusic.utils.hardware_id import get_device_id
 
 
-# =============================================================================
-# Exceptions
-# =============================================================================
-
-
 class LicenseError(Exception):
     """Base exception for license issues."""
 
@@ -51,24 +46,15 @@ class LicenseValidationError(LicenseError):
     pass
 
 
-# =============================================================================
-# LicenseManager
-# =============================================================================
-
-
 class LicenseManager(metaclass=Singleton):
     """
     Manages license state in memory with file-based caching.
 
-    Key design decisions:
     - _state: in-memory source of truth (never read from file after init)
     - license.json: cache file, written after every validation
     - check_license(): reads from _state only
     - validate(): calls server → updates _state → writes file
     - register(): calls server → updates _state → writes file
-
-    This prevents users from just editing license.json to bypass checks,
-    since the file is only loaded once at startup and immediately validated.
     """
 
     GRACE_PERIOD_DAYS = 3
@@ -80,21 +66,6 @@ class LicenseManager(metaclass=Singleton):
 
         self._load_from_cache()
         self._license_key = UserConfig().licenseKey or ""
-
-    @property
-    def license_key(self) -> str:
-        """The license key from UserConfig."""
-        return self._license_key
-
-    @property
-    def is_registered(self) -> bool:
-        """Whether a license key is configured."""
-        return bool(self._license_key)
-
-    @property
-    def state(self) -> dict[str, Any]:
-        """Read-only access to current license state."""
-        return self._state.copy()
 
     def _load_from_cache(self) -> None:
         """Load license.json into memory (startup only)."""
@@ -133,11 +104,15 @@ class LicenseManager(metaclass=Singleton):
         except ValueError:
             return None
 
+    def _is_github_sponsor(self) -> bool:
+        """Whether the license is a github sponsor."""
+        return self._state.get("user", {}).get("license_type") == "gh_sponsor"
+
     def check_license(self) -> None:
         """
         Validates license from in-memory state.
 
-        This method reads ONLY from _state (memory), never from file.
+        This method reads ONLY from _state (memory).
         Called by @license_required decorator.
 
         Raises:
@@ -146,15 +121,14 @@ class LicenseManager(metaclass=Singleton):
             LicenseRevokedError: Device was revoked
             LicenseValidationError: Grace period exceeded
         """
-        # 1. No license key configured
-        if not self._license_key:
-            raise LicenseNotFoundError("No license key configured")
 
-        # 2. No state loaded (not activated)
         if not self._state or "user" not in self._state:
             raise LicenseNotFoundError("License not activated")
 
-        user = self._state.get("user", {})
+        user = self._state["user"]
+
+        if not self._is_github_sponsor() and not self._license_key:
+            raise LicenseNotFoundError("No license key configured")
 
         # 3. Check status
         status = user.get("status", "")
@@ -179,7 +153,7 @@ class LicenseManager(metaclass=Singleton):
         if my_device_id not in device_ids:
             raise LicenseRevokedError("This device is no longer authorized")
 
-        # 6. Check grace period (3 days since last validation)
+        # 6. Check grace period ($GRACE_PERIOD days since last validation)
         meta = self._state.get("_meta", {})
         last_validated = self._parse_datetime(meta.get("last_validated"))
         if last_validated:
@@ -191,7 +165,7 @@ class LicenseManager(metaclass=Singleton):
                     "Please connect to the internet to re-validate."
                 )
 
-    def validate(self) -> bool:
+    def validate(self, override: bool = False) -> bool:
         """
         Validate license with cloud server using GET /auth/status.
 
@@ -207,7 +181,7 @@ class LicenseManager(metaclass=Singleton):
             LicenseExpiredError: License expired (403 with expired)
             LicenseRevokedError: Device revoked (403 or device not in list)
         """
-        if not self._license_key:
+        if not override and not self._is_github_sponsor() and not self._license_key:
             return False
 
         try:
@@ -234,6 +208,7 @@ class LicenseManager(metaclass=Singleton):
             return True
 
         except CloudAuthError as e:
+            print("CloudAuthError", e)
             # 401 - User not registered
             if e.status_code == 401:
                 self._state = {}
@@ -301,6 +276,16 @@ class LicenseManager(metaclass=Singleton):
         self._save_to_cache()
 
         response["license_key"] = license_key
+
+        try:
+            self.check_license()
+
+            from swingmusic.crons import start_cron_jobs
+
+            start_cron_jobs(and_exit=True)
+        except LicenseError as e:
+            print("LicenseError", e)
+
         return response
 
     def deactivate(self) -> None:
@@ -319,16 +304,9 @@ class LicenseManager(metaclass=Singleton):
         self._state = {}
         self._delete_cache()
 
-    def get_devices(self) -> list[dict[str, Any]]:
-        """
-        Get list of devices on the license.
-
-        Returns:
-            List of device dicts with device_id, device_name, current
-        """
-        return self._state.get("devices", {}).get("list", [])
-
-    def get_license_info(self) -> dict[str, Any] | None:
+    def get_license_info(
+        self, check_github_sponsors: bool = False
+    ) -> dict[str, Any] | None:
         """
         Get license information for display.
 
@@ -336,12 +314,31 @@ class LicenseManager(metaclass=Singleton):
             Dict with license_type, status, expires_at, customer info
             or None if not registered
         """
+
+        def has_license():
+            return self._state.get("user", {}).get("status", "") == "active"
+
+        had_license = has_license()
+
+        if check_github_sponsors:
+            try:
+                self.validate(override=True)
+            except LicenseError as e:
+                print("LicenseError", e)
+                return None
+
         if not self._state or "user" not in self._state:
             return None
 
         user = self._state.get("user", {})
         customer = self._state.get("customer", {})
         devices = self._state.get("devices", {})
+
+        if not had_license and has_license():
+            # License was activated
+            from swingmusic.crons import start_cron_jobs
+
+            start_cron_jobs(and_exit=True)
 
         return {
             "license_key": UserConfig().licenseKey,

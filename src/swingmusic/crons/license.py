@@ -19,7 +19,7 @@ class LicenseValidation(CronJob):
     """
 
     name: str = "license_validation"
-    hours: int = 72  # 3 days
+    hours: int = 24  # 1 day
 
     def __init__(self):
         super().__init__()
@@ -35,12 +35,8 @@ class LicenseValidation(CronJob):
         # Import here to avoid circular imports at module load time
         from swingmusic.lib.license import LicenseManager, LicenseError
 
-        manager = LicenseManager()
-
-        if not manager.license_key:
-            return
-
         try:
+            manager = LicenseManager()
             manager.validate()
         except LicenseError:
             # Validation errors are expected (expired, revoked, etc.)

@@ -1,25 +1,29 @@
-from gettext import ngettext
-from io import BytesIO
-import json
-import random
 import time
-from urllib.parse import quote
+import random
 import requests
 from PIL import Image
+from io import BytesIO
 
-from swingmusic.db.userdata import MixTable
-from swingmusic.models.artist import Artist
+from gettext import ngettext
+from urllib.parse import quote
+
+from swingmusic.settings import Paths
 from swingmusic.models.mix import Mix
 from swingmusic.models.track import Track
-from swingmusic.plugins import Plugin, plugin_method
-from swingmusic.settings import Paths
+from swingmusic.models.artist import Artist
+from swingmusic.db.userdata import MixTable
 from swingmusic.store.albums import AlbumStore
-from swingmusic.store.artists import ArtistStore
 from swingmusic.store.tracks import TrackStore
-from swingmusic.utils.dates import get_date_range, get_duration_ago
-from swingmusic.utils.hashing import create_hash
+from swingmusic.lib.license import LicenseError
+from swingmusic.store.artists import ArtistStore
+from swingmusic.lib.cloud import CloudClient, CloudError
+
 from swingmusic.utils.mixes import balance_mix
+from swingmusic.utils.hashing import create_hash
+from swingmusic.plugins import Plugin, plugin_method
+from swingmusic.utils.decorators import license_required
 from swingmusic.utils.stats import get_artists_in_period
+from swingmusic.utils.dates import get_date_range, get_duration_ago
 
 
 class MixAlreadyExists(Exception):
@@ -43,7 +47,7 @@ class MixesPlugin(Plugin):
     def __init__(self):
         super().__init__("mixes", "Mixes")
         # self.server = "https://smcloud.mungaist.com"
-        self.server = "http://localhost:1956"
+        self.cloud = CloudClient()
         server_online = self.ping_server()
 
         self.set_active(server_online)
@@ -57,12 +61,13 @@ class MixesPlugin(Plugin):
 
         for attempt in range(max_retries):
             try:
-                requests.get(self.server, timeout=10)
+                requests.get(self.cloud.BASE_URL, timeout=10)
                 return True
             except Exception as e:
                 print(
                     f"Failed to connect to the recommendation server (attempt {attempt + 1}/{max_retries})"
                 )
+                print(e)
                 if attempt < max_retries - 1:
                     time.sleep(retry_delay)
                 continue
@@ -70,6 +75,7 @@ class MixesPlugin(Plugin):
         return False
 
     @plugin_method
+    @license_required
     def get_track_mix_data(self, tracks: list[Track], with_help: bool = False):
         """
         Given a list of tracks, creates a mix by fetching data from the
@@ -93,24 +99,14 @@ class MixesPlugin(Plugin):
         ]
 
         try:
-            response = requests.post(f"{self.server}/radio", json=queries, timeout=30)
+            results = self.cloud._make_request("POST", "/radio", body=queries)
 
-            if response.status_code != 200:
-                # REVIEW: Maybe do something here?
-                return [], [], []
-
-        except (requests.exceptions.ConnectionError, requests.exceptions.ReadTimeout):
-            print("Failed to connect to recommendation server")
-            return [], [], []
-
-        try:
-            results = response.json()
-        except json.JSONDecodeError:
-            print("Failed to decode JSON response from recommendation server")
+        except CloudError as e:
+            print("Failed to connect to cloud server")
+            print(e)
             return [], [], []
 
         trackhashes: list[str] = results.get("tracks", [])
-
         trackmatches = TrackStore.get_flat_list()
         trackmatches = [t for t in trackmatches if t.weakhash in trackhashes]
 
@@ -132,8 +128,7 @@ class MixesPlugin(Plugin):
 
         # Create as many filler tracks as possible
         # Then the mix length will be controlled in the Mix model
-        # if len(trackmatches) < self.TRACK_MIX_LENGTH:
-        if True:
+        if len(trackmatches) < self.MIX_TRACKS_LENGTH:
             filler_tracks = self.fallback_create_artist_mix(
                 similar_artists=results.get("artists", []),
                 similar_albums=results.get("albums", []),
@@ -168,6 +163,7 @@ class MixesPlugin(Plugin):
     #     return (tracks, albums, artists, sourcehash)
 
     @plugin_method
+    @license_required
     def create_artist_mixes(self, userid: int):
         """
         Creates artist mixes for a given userid.
@@ -271,6 +267,7 @@ class MixesPlugin(Plugin):
 
         return f"Featuring {tracks[0].artists[0]['name']}"
 
+    @license_required
     def create_artist_mix(
         self, artist: dict[str, str], trackhashes: list[str], userid: int
     ):
@@ -295,7 +292,12 @@ class MixesPlugin(Plugin):
         if db_mix:
             return db_mix
 
-        mix_tracks, albums, artists = self.get_track_mix_data(tracks)
+        try:
+            mix_tracks, albums, artists = self.get_track_mix_data(tracks)
+        except (LicenseError, CloudError) as e:
+            print("Failed to create artist mix")
+            print(e)
+            return None
 
         if len(mix_tracks) < self.MIN_TRACK_MIX_LENGTH:
             return None
@@ -336,40 +338,41 @@ class MixesPlugin(Plugin):
         MixTable.insert_one(mix)
         return mix
 
+    @license_required
     def download_artist_image(self, artist: Artist):
         try:
-            res = requests.get(
-                f"{self.server}/mix/image?artist={quote(artist.name)}&type=Artist"
+            image_data = self.cloud._make_request(
+                "GET", f"/mix/image?artist={quote(artist.name)}&type=Artist"
             )
-        except requests.exceptions.ConnectionError:
+        except CloudError as e:
+            print("Failed to download artist image")
+            print(e)
             return None
 
-        if res.status_code == 200:
-            filename = f"{artist.artisthash}_{int(time.time())}.webp"
-            path = Paths().md_mixes_img_path / filename
+        filename = f"{artist.artisthash}_{int(time.time())}.webp"
+        path = Paths().md_mixes_img_path / filename
 
-            image = Image.open(BytesIO(res.content))
-            aspect_ratio = image.width / image.height
+        image = Image.open(BytesIO(image_data))
+        aspect_ratio = image.width / image.height
 
-            # resize to 512px
-            md_width = 512
-            md_height = int(md_width / aspect_ratio)
+        # resize to 512px
+        md_width = 512
+        md_height = int(md_width / aspect_ratio)
 
-            image = image.resize((md_width, md_height), Image.LANCZOS)
-            image.save(path, "webp")
+        image = image.resize((md_width, md_height), Image.LANCZOS)
+        image.save(path, "webp")
 
-            # resize to 256px
-            sm_width = 256
-            sm_height = int(sm_width / aspect_ratio)
+        # resize to 256px
+        sm_width = 256
+        sm_height = int(sm_width / aspect_ratio)
 
-            image = image.resize((sm_width, sm_height), Image.LANCZOS)
-            small_path = Paths().sm_mixes_img_path / filename
-            image.save(small_path, "webp")
+        image = image.resize((sm_width, sm_height), Image.LANCZOS)
+        small_path = Paths().sm_mixes_img_path / filename
+        image.save(small_path, "webp")
 
-            return filename
+        return filename
 
-        return None
-
+    @license_required
     def fallback_create_artist_mix(
         self,
         # artist: dict[str, str],
@@ -450,6 +453,7 @@ class MixesPlugin(Plugin):
         pass
 
     @classmethod
+    @license_required
     def get_track_mix(cls, mix: Mix):
         """
         Given a mix, returns the excess tracks as a custom mix.
@@ -493,6 +497,7 @@ class MixesPlugin(Plugin):
         return trackmix
 
     @classmethod
+    @license_required
     def get_custom_mix_images(cls, tracks: list[Track]):
         first_album = tracks[0].albumhash
         first_img = {
@@ -531,6 +536,7 @@ class MixesPlugin(Plugin):
         return images
 
     @staticmethod
+    @license_required
     def get_because_items(mixes: list[Mix]):
         """
         Given a list of mixes, returns a list of artists that are similar to the

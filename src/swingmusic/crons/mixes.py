@@ -1,4 +1,6 @@
 from swingmusic.crons.cron import CronJob
+from swingmusic.lib.cloud import CloudError
+from swingmusic.lib.license import LicenseError
 from swingmusic.lib.recipes.artistmixes import ArtistMixes
 from swingmusic.lib.recipes.because import BecauseYouListened
 
@@ -18,8 +20,12 @@ class Mixes(CronJob):
         """
         Creates the artist mixes
         """
-        ArtistMixes()
+        try:
+            ArtistMixes()
 
-        # INFO: Because you listened to artist items are generated using
-        # the artist mixes, so run them after the artist mixes are created.
-        BecauseYouListened()
+            # INFO: Because you listened to artist items are generated using
+            # the artist mixes, so run them after the artist mixes are created.
+            BecauseYouListened()
+        except (LicenseError, CloudError) as e:
+            print("Failed to run mixes cron job")
+            print(e)

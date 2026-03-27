@@ -2,8 +2,12 @@
 Recipes are a way to create mixes.
 """
 
-from abc import ABC, abstractmethod
 from typing import Any, List
+from abc import ABC, abstractmethod
+
+from swingmusic.lib.cloud import CloudError
+from swingmusic.lib.license import LicenseError
+
 
 class HomepageRoutine(ABC):
     """
@@ -18,7 +22,11 @@ class HomepageRoutine(ABC):
         if not self.is_valid:
             return
 
-        self.run()
+        try:
+            self.run()
+        except (LicenseError, CloudError) as e:
+            print("Failed to run recipe")
+            print(e)
 
     @abstractmethod
     def run(self) -> List[Any]:

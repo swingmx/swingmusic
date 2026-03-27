@@ -9,12 +9,13 @@ from swingmusic.utils.threading import background
 
 
 @background
-def start_cron_jobs():
+def start_cron_jobs(and_exit: bool = False):
     """
     This is the function that triggers the cron jobs.
     """
     # NOTE: RecentlyPlayed is not a CRON job, it's triggered here to
     # populate the values for the very first time.
+    print("start_cron_jobs")
     RecentlyPlayed()
     RecentlyAdded()
 
@@ -26,6 +27,10 @@ def start_cron_jobs():
 
     # Trigger all CRON jobs when the app is started.
     schedule.run_all()
+
+    # To manually trigger cron jobs, only once
+    if and_exit:
+        return
 
     # Run all CRON jobs on a loop.
     while True:

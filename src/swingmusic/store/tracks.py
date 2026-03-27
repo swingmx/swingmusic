@@ -184,9 +184,6 @@ class TrackStore:
         """
         return len(cls.trackhashmap.get(trackhash, []))
 
-    # ================================================
-    # ================== GETTERS =====================
-    # ================================================
 
     @classmethod
     def get_tracks_by_trackhashes(cls, trackhashes: Iterable[str]) -> list[Track]:

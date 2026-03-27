@@ -170,15 +170,10 @@ def update_config(body: UpdateConfigBody):
     }
 
 
-# =============================================================================
-# License Management
-# =============================================================================
-
-
 class RegisterLicenseBody(BaseModel):
     license_key: str = Field(
-        description="The Polar.sh license key",
-        example="XXXX-XXXX-XXXX-XXXX",
+        description="The 40 character license key",
+        example="SMX-XXXX-XXXX-XXXX-XXXX",
     )
     device_name: str = Field(
         description="Human-readable device name",
@@ -210,17 +205,22 @@ def register_license(body: RegisterLicenseBody):
     except CloudError as e:
         return {"error": str(e)}, e.status_code or 500
 
+class GetLicenseStatusQuery(BaseModel):
+    github_sponsors: bool = Field(
+        description="Check if this instance is premium via GitHub Sponsors benefits",
+        example=True,
+    )
 
 @api.get("/license/status")
 @admin_required()
-def get_license_status():
+def get_license_status(query: GetLicenseStatusQuery):
     """
     Get current license status.
 
     Returns license info if registered, or null if not.
     """
     manager = LicenseManager()
-    info = manager.get_license_info()
+    info = manager.get_license_info(check_github_sponsors=query.github_sponsors)
 
     if not info:
         return {"error": "No license found"}, 404

@@ -129,7 +129,6 @@ class IndexTracks:
         track = TrackTable.get_tracks_by_filepaths(list(to_remove)[:1])
         if track:
             raise Exception("Track not removed")
-        # =============================================================
 
         return unmodified_paths, modified_tracks
 

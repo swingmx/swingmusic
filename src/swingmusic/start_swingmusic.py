@@ -1,7 +1,6 @@
 import socket
 import threading
 import mimetypes
-
 import setproctitle
 
 from swingmusic.start_info_logger import log_startup_info
