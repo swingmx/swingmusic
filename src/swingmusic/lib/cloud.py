@@ -41,8 +41,8 @@ class CloudClient:
     The signature format is: {timestamp}:{METHOD}:{path}:{sha256(body)}
     """
 
-    BASE_URL = "http://localhost:1957"
-    # BASE_URL = "https://cloud.swingmx.com"
+    # BASE_URL = "http://localhost:1957"
+    BASE_URL = "https://cloud.swingmx.com"
     REQUEST_TIMEOUT = 30
 
     def __init__(self):
