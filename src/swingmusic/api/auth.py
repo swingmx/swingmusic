@@ -72,10 +72,15 @@ def login(body: LoginBody):
     if user is None:
         return {"msg": "User not found"}, 404
 
-    password_ok = check_password(body.password, user.password)
+    password_ok, with_legacy = check_password(body.password, user.password)
 
     if not password_ok:
         return {"msg": "Hehe! invalid password"}, 401
+
+    # INFO: Rehash password if using legacy uuidv4 serverId
+    if with_legacy:
+        rehashed = hash_password(body.password)
+        UserTable.update_one({"id": user.id, "password": rehashed})
 
     res = create_new_token(user.todict())
     token = res["accesstoken"]
@@ -194,7 +199,7 @@ def update_profile(body: UpdateProfileBody):
     clean_user = {k: v for k, v in user.items() if v}
 
     # finally, convert roles to json string
-    # doing it here to prevent deleting roles from clean user 
+    # doing it here to prevent deleting roles from clean user
     # when body.roles is an empty list
     if body.roles is not None:
         clean_user["roles"] = body.roles

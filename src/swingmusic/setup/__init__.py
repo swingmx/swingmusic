@@ -4,6 +4,7 @@ Prepares the server for use.
 
 from dataclasses import asdict
 from time import time
+import uuid
 
 from swingmusic.config import UserConfig
 from swingmusic.lib.crypto import Cryptography
@@ -21,29 +22,6 @@ from swingmusic.store.folder import FolderStore
 from swingmusic.store.general import GeneralStore
 from swingmusic.store.tracks import TrackStore
 from swingmusic.utils.generators import get_random_str
-
-
-def run_setup():
-    """
-    Creates the config directory, runs migrations, and loads settings.
-    """
-
-    # setup config file
-    config = UserConfig()
-    config.setup_config_file()
-
-    if not config.serverId:
-        # Generate new ed25519 keypair
-        crypto = Cryptography()
-
-        # Set serverId to the public key
-        config.serverId = crypto.public_key
-        config.write_to_file(asdict(config))
-
-    setup_sqlite()
-
-    # Validate license on startup
-    _validate_license()
 
 
 def _validate_license():
@@ -68,6 +46,46 @@ def _validate_license():
         # Network errors or unexpected issues
         # Grace period will apply based on last_validated timestamp
         pass
+
+
+def is_uuid4(value: str) -> bool:
+    """
+    Check if a string is a valid UUID4 used in pre-v3
+    """
+    try:
+        uuid.UUID(value)
+    except (ValueError, TypeError):
+        return False
+
+    return True
+
+
+def run_setup():
+    """
+    Creates the config directory, runs migrations, and loads settings.
+    """
+
+    # setup config file
+    config = UserConfig()
+    config.setup_config_file()
+
+    if config.serverId and is_uuid4(config.serverId):
+        # Save legacy serverId to legacy_serverId
+        config.legacy_serverId = config.serverId
+        config.serverId = ""
+        config.write_to_file(asdict(config))
+
+    if not config.serverId or not Cryptography.private_key_exists():
+        # Generate new ed25519 keypair
+        crypto = Cryptography()
+
+        # Set serverId to the public key
+        config.serverId = crypto.public_key
+        config.write_to_file(asdict(config))
+
+    setup_sqlite()
+    # Validate license on startup
+    _validate_license()
 
 
 def load_into_mem():

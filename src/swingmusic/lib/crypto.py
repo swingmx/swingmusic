@@ -11,7 +11,7 @@ from swingmusic.utils.crypto import (
 
 class Cryptography:
     """
-    This class manages the server's identity, 
+    This class manages the server's identity,
     """
 
     _private_key: ed25519.Ed25519PrivateKey
@@ -70,3 +70,10 @@ class Cryptography:
         return load_public_key_from_hex(public_key).verify(
             signature.encode("utf-8"), message.encode("utf-8")
         )
+
+    @classmethod
+    def private_key_exists(cls) -> bool:
+        """
+        Check if the private key file exists.
+        """
+        return (Paths().config_dir / "private.key").exists()

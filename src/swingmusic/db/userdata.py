@@ -54,16 +54,6 @@ class UserTable(Base):
             yield user_to_dataclass(i)
 
     @classmethod
-    def insert_default_user(cls):
-        user = {
-            "username": "admin",
-            "password": hash_password("admin"),
-            "roles": ["admin"],
-        }
-
-        return cls.insert_one(user)
-
-    @classmethod
     def insert_guest_user(cls):
         user = {
             "username": "guest",

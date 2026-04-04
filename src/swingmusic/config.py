@@ -50,7 +50,7 @@ class UserConfig(metaclass=Singleton):
     # TODO: Move the rest of the settings to the config file
 
     # auth stuff
-    # NOTE: Don't expose the userId via the API
+    legacy_serverId: str = ""
     serverId: str = ""
     usersOnLogin: bool = True
 
