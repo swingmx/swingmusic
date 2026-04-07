@@ -2,7 +2,7 @@ import datetime as dt
 import pathlib
 import logging
 
-from flask import Response, request
+from flask import Response, request, send_from_directory
 from flask_cors import CORS
 from flask_compress import Compress
 from flask_openapi3 import Info
@@ -134,7 +134,7 @@ def check_auth_need() -> bool:
     urls = tuple(urls)
     files = tuple(files)
 
-    if request.path == "/" or request.path.endswith(files):
+    if request.path in ("/", "/manifest.json") or request.path.endswith(files):
         return True
 
     # if request path starts with any of the blacklisted routes, don't verify jwt
@@ -146,6 +146,31 @@ def check_auth_need() -> bool:
 # # # # # # # # # # # # #
 # global endpoint logic #
 # # # # # # # # # # # # #
+
+
+@app.route("/manifest.json")
+def serve_manifest():
+    """
+    Serves the PWA Web App Manifest.
+
+    Prefers a manifest.json from the client folder (allowing the frontend to
+    override it), and falls back to the one bundled with the server assets.
+    """
+    client_manifest = pathlib.Path(app.static_folder or "") / "manifest.json"
+
+    if client_manifest.exists():
+        return send_from_directory(
+            str(client_manifest.parent),
+            "manifest.json",
+            mimetype="application/manifest+json",
+        )
+
+    return send_from_directory(
+        str(Paths().assets_path),
+        "manifest.json",
+        mimetype="application/manifest+json",
+    )
+
 
 @app.route("/<path:path>")
 def serve_client_files(path: str):
