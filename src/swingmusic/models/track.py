@@ -39,13 +39,15 @@ class Track:
     lastplayed: int
     playcount: int
     playduration: int
-
     config: UserConfig
+
+    color: str = ""
     og_album: str = ""
     og_title: str = ""
+    blurhash: str = ""
+    weakhash: str = ""
     artisthashes: list[str] = field(default_factory=list)
     genrehashes: list[str] = field(default_factory=list)
-    weakhash: str = ""
 
     _pos: int = 0
     _ati: str = ""

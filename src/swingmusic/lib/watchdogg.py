@@ -2,21 +2,21 @@
 This library contains the classes and functions related to the watchdog file watcher.
 """
 
-import json
 import os
 import sqlite3
 import time
 
 from watchdog.events import PatternMatchingEventHandler
-from watchdog.observers.api import BaseObserverSubclassCallable
 from watchdog.observers import Observer
+from watchdog.observers.api import BaseObserverSubclassCallable
 
 from swingmusic import settings
 from swingmusic.config import UserConfig
 from swingmusic.db.libdata import TrackTable
 from swingmusic.db.userdata import LibDataTable
+from swingmusic.lib.albumslib import create_albums
 from swingmusic.lib.colorlib import process_color
-from swingmusic.lib.tagger import create_albums, create_artists
+from swingmusic.lib.tagger import create_artists
 from swingmusic.lib.taglib import extract_thumb, get_tags
 from swingmusic.logger import log
 from swingmusic.models import Artist, Track
@@ -185,7 +185,7 @@ def add_track(filepath: str) -> None:
         if not trackhash_exists:
             albumentry.trackhashes.add(track.trackhash)
             albumentry.album.trackcount += 1
-            albumentry.set_color(colors[0]) if colors else None
+            albumentry.update_color_info(colors[0]) if colors else None
 
     # SECTION: Index artist
     artists = create_artists(track.artisthashes)

@@ -54,16 +54,6 @@ class UserTable(Base):
             yield user_to_dataclass(i)
 
     @classmethod
-    def insert_default_user(cls):
-        user = {
-            "username": "admin",
-            "password": hash_password("admin"),
-            "roles": ["admin"],
-        }
-
-        return cls.insert_one(user)
-
-    @classmethod
     def insert_guest_user(cls):
         user = {
             "username": "guest",
@@ -433,9 +423,18 @@ class PlaylistTable(Base):
         return next(result).scalar() is not None
 
     @classmethod
+    def get_by_name(cls, name: str):
+        result = cls.execute(
+            select(cls).where((cls.name == name) & (cls.userid == get_current_userid()))
+        )
+        return next(result).scalar()
+
+    @classmethod
     def append_to_playlist(cls, id: int, trackhashes: list[str]):
         dbtrackhashes = cls.get_trackhashes(id) or []
-        trackhashes = list(set(dbtrackhashes).union(set(trackhashes)))
+        # Preserve order: start with existing hashes, then add new ones that aren't already present
+        seen = set(dbtrackhashes)
+        trackhashes = dbtrackhashes + [h for h in trackhashes if h not in seen]
 
         return next(
             cls.execute(
@@ -543,14 +542,29 @@ class LibDataTable(Base):
         result = cls.execute(
             select(cls).where((cls.itemhash == type + hash) & (cls.itemtype == type))
         )
-        return next(result).scalar()
+
+        item = next(result).scalar()
+        if item:
+            return {
+                "itemhash": item.itemhash.replace(type, ""),
+                "type": type,
+                "color": item.color,
+                "extra": item.extra,
+            }
+
+        return None
 
     @classmethod
     def get_all_colors(cls, type: str) -> Iterable[dict[str, str]]:
         result = cls.execute(select(cls).where(cls.itemtype == type))
 
         for i in next(result).scalars():
-            yield {"itemhash": i.itemhash.replace(type, ""), "color": i.color}
+            yield {
+                "itemhash": i.itemhash.replace(type, ""),
+                "type": type,
+                "color": i.color,
+                "extra": i.extra,
+            }
 
 
 class MixTable(Base):

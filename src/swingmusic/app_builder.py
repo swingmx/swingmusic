@@ -1,30 +1,36 @@
 import datetime as dt
 import pathlib
-import logging
 
 from flask import Response, request
-from flask_cors import CORS
 from flask_compress import Compress
-from flask_openapi3 import Info
-from flask_openapi3 import OpenAPI
-from flask_jwt_extended import JWTManager, create_access_token, get_jwt, get_jwt_identity, set_access_cookies, verify_jwt_in_request
+from flask_cors import CORS
+from flask_jwt_extended import (
+    JWTManager,
+    create_access_token,
+    current_user,
+    get_jwt,
+    get_jwt_identity,
+    jwt_required,
+    set_access_cookies,
+    verify_jwt_in_request,
+)
+from flask_openapi3 import Info, OpenAPI
 
 from swingmusic import api as swing_api
+from swingmusic.api.plugins import lyrics as lyrics_plugin
+from swingmusic.premium import mixes_api
 from swingmusic.config import UserConfig
 from swingmusic.db.userdata import UserTable
 from swingmusic.settings import Metadata, Paths
+from swingmusic.store.general import GeneralStore
 from swingmusic.utils.paths import get_client_files_extensions
-
-from swingmusic.api.plugins import lyrics as lyrics_plugin
-from swingmusic.api.plugins import mixes as mixes_plugin
-
-log = logging.getLogger(__name__)
+# log = logging.getLogger(__name__)
 # # # # # # # # # # # # # # # # # #
 # Grouped configuration function  #
 # # # # # # # # # # # # # # # # # #
 
-def config_app(web):
 
+def config_app(web):
     # CORS
     CORS(web, origins="*", supports_credentials=True)
 
@@ -43,6 +49,11 @@ def config_jwt(web):
     web.config["JWT_TOKEN_LOCATION"] = ["cookies", "headers"]
     web.config["JWT_COOKIE_CSRF_PROTECT"] = False
     web.config["JWT_SESSION_COOKIE"] = False
+    web.config["JWT_COOKIE_SAMESITE"] = None
+
+    # Allow cookies over HTTP for local use
+    # Behind HTTPS proxy, cookies should still be secure
+    web.config["JWT_COOKIE_SECURE"] = False
 
     jwt_expiry = int(dt.timedelta(days=30).total_seconds())
     web.config["JWT_ACCESS_TOKEN_EXPIRES"] = jwt_expiry
@@ -86,13 +97,20 @@ def load_endpoints(web: OpenAPI):
         # Auth
         web.register_api(swing_api.auth.api)
 
+        # Events
+        web.register_api(swing_api.events)
+
 
 def load_plugins(web: OpenAPI):
-        # TODO: rework plugin support
-        # Plugins
-        web.register_api(swing_api.plugins.api)
-        web.register_api(lyrics_plugin.api)
-        web.register_api(mixes_plugin.api)
+    # TODO: rework plugin support
+    # Plugins
+    web.register_api(swing_api.plugins.api)
+    web.register_api(lyrics_plugin.api)
+
+    # The mixes plugin is only registered when the compiled premium
+    # module is present in this build.
+    if mixes_api is not None:
+        web.register_api(mixes_api)
 
 
 # # # # # # # # # # #
@@ -117,35 +135,33 @@ def check_auth_need() -> bool:
     """
 
     # INFO: Routes that don't need authentication
-    urls = {
+    urls = (
         "/auth/login",
         "/auth/users",
         "/auth/pair",
         "/auth/logout",
         "/auth/refresh",
+        "/auth/profile/create",
+        "/events",
         "/docs",
-    }
-    files = {
-        ".webp",
-        ".jpg",
-        *get_client_files_extensions()
-    }
-
-    urls = tuple(urls)
-    files = tuple(files)
+        "/onboarding-data",
+    )
+    files = (".webp", ".jpg", *get_client_files_extensions())
 
     if request.path == "/" or request.path.endswith(files):
         return True
 
     # if request path starts with any of the blacklisted routes, don't verify jwt
-    if request.path.startswith(urls):
+    if any(request.path.startswith(url) for url in urls):
         return True
 
     return False
 
+
 # # # # # # # # # # # # #
 # global endpoint logic #
 # # # # # # # # # # # # #
+
 
 @app.route("/<path:path>")
 def serve_client_files(path: str):
@@ -179,12 +195,50 @@ def serve_client_files(path: str):
     return app.send_static_file(path)
 
 
-@app.route("/")
-def serve_client():
+@app.get("/")
+def get_webclient():
     """
     Serves the index.html file at `client/index.html`.
     """
-    return app.send_static_file("index.html")
+    res = app.send_static_file("index.html")
+    if not GeneralStore.onboarding_complete:
+        res.set_cookie(
+            "x-root-dirs-set", "true" if GeneralStore.root_dirs_set else "false"
+        )
+        res.set_cookie(
+            "x-admin-exists", "true" if GeneralStore.admin_exists else "false"
+        )
+        res.set_cookie("x-onboarding-complete", "false")
+    else:
+        if not request.cookies.get("x-onboarding-complete"):
+            return res
+
+        res.delete_cookie("x-onboarding-complete")
+        res.delete_cookie("x-root-dirs-set")
+        res.delete_cookie("x-admin-exists")
+
+    return res
+
+
+@app.get("/onboarding-data")
+@jwt_required(optional=True)
+def get_onboarding_data():
+    """
+    Returns the onboarding data
+    """
+
+    res = {
+        "onboardingComplete": GeneralStore.onboarding_complete,
+        "rootDirsSet": GeneralStore.root_dirs_set,
+        "adminExists": GeneralStore.admin_exists,
+        "scanMessage": GeneralStore.scan_message,
+    }
+
+    # INFO: If request is authenticated, include user home directory
+    if current_user:
+        res["userHome"] = str(pathlib.Path.home().resolve())
+
+    return res
 
 
 def build() -> OpenAPI:

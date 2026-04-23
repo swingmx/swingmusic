@@ -7,6 +7,7 @@ import pathlib
 from pathlib import Path
 from datetime import datetime
 
+from natsort import natsorted
 import psutil
 from flask_openapi3 import Tag
 from pydantic import BaseModel, Field
@@ -66,6 +67,7 @@ class FolderTree(BaseModel):
             "playduration",
             "playcount",
             "title",
+            "filepath"
         ]""",
     )
     tracksort_reverse: bool = Field(
@@ -112,20 +114,44 @@ def get_folder_tree(body: FolderTree):
     if req_dir == "$home":
         folders = get_folders(root_dirs)
 
-        return {
-            "folders": folders,
-            "tracks": [],
-        }
+        # if $home is a single directory, return its contents
+        if len(folders) > 1:
+            return {
+                "folders": folders,
+                "tracks": [],
+            }
+
+        if not len(folders):
+            return {
+                "msg": "No home directory found",
+                "folders": [],
+                "tracks": [],
+            }, 404
+
+        req_dir = folders[0].path
 
     if req_dir.startswith("$playlist"):
         splits = req_dir.split("/")
 
         if len(splits) == 2:
-            pid = splits[1]
-            playlist = PlaylistTable.get_by_id(int(pid))
+            pid = splits[1].strip()
+            playlist = None
+
+            try:
+                playlist = PlaylistTable.get_by_id(int(pid))
+            except ValueError:
+                # find playlist by name
+                playlist = PlaylistTable.get_by_name(pid)
+                if playlist is None:
+                    return {
+                        "msg": "Playlist not found",
+                        "folders": [],
+                        "tracks": [],
+                    }, 404
+
             tracks = TrackStore.get_tracks_by_trackhashes(
                 playlist.trackhashes[
-                    body.start : body.start + body.limit if body.limit != -1 else None
+                    body.start : body.start + body.limit if body.limit > 0 else None
                 ]
             )
 
@@ -242,7 +268,7 @@ def get_all_drives(is_win: bool = False):
 
 class DirBrowserBody(BaseModel):
     folder: str = Field(
-        "$root",
+        "$home",
         description="The folder to list directories from",
     )
 
@@ -256,8 +282,11 @@ def list_folders(body: DirBrowserBody):
     Returns a list of all the folders in the given folder.
     Used when selecting root dirs. Admin only.
     """
-    req_dir = body.folder
+    req_dir = body.folder.strip()
     is_win = is_windows()
+
+    if req_dir == "":
+        req_dir = "$home"
 
     if req_dir == "$root":
         return {
@@ -265,6 +294,9 @@ def list_folders(body: DirBrowserBody):
         }
 
     # Resolve path to prevent directory traversal attacks
+    if req_dir == "$home":
+        req_dir = settings.Paths().USER_HOME_DIR.as_posix()
+
     req_dir = pathlib.Path(req_dir).resolve()
 
     if not req_dir.exists() or not req_dir.is_dir():
@@ -276,22 +308,29 @@ def list_folders(body: DirBrowserBody):
         return {"folders": []}
 
     # only get dirs and remove hidden dirs
-    dirs = []
+    dirs: list[dict[str, str]] = []
     for entry in entries:
         entry = pathlib.Path(entry)
         name = entry.name
 
-        if name.startswith("$"):
+        if name.startswith("$"):  # ignore windows system folder
             continue
 
-        if name.startswith("."):
+        if name.startswith("."):  # ignore unix hidden folder
             continue
 
-        if entry.is_dir():
+        if entry.is_dir():  # lastly, check if is dir
             dirs.append({"name": name, "path": entry.resolve().as_posix()})
 
+    dirs = natsorted(dirs, key=lambda i: i["name"])
+
+    # prepend the parent as ".."
+    dirs.insert(0, {"name": "↑", "path": req_dir.parent.as_posix()})
+    # add current dir as . at index 1
+    dirs.insert(1, {"name": ". (this folder)", "path": req_dir.as_posix()})
+
     return {
-        "folders": sorted(dirs, key=lambda i: i["name"]),
+        "folders": dirs,
     }
 
 

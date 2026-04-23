@@ -61,8 +61,10 @@ class TrackGroup:
     def __len__(self):
         return len(self.tracks)
 
-
-
+    def update_color_info(self, color: str, blurhash: str = ""):
+        for track in self.tracks:
+            track.color = color
+            track.blurhash = blurhash
 
 
 class TrackStore:
@@ -160,20 +162,23 @@ class TrackStore:
 
         filecount = len(filepaths)
 
-        for trackhash in cls.trackhashmap:
-            group = cls.trackhashmap[trackhash]
+        try:
+            for trackhash in cls.trackhashmap:
+                group = cls.trackhashmap[trackhash]
 
-            for track in group.tracks:
-                if track.filepath in filepaths:
-                    group.remove(track)
+                for track in group.tracks:
+                    if track.filepath in filepaths:
+                        group.remove(track)
 
-                    if len(group) == 0:
-                        del cls.trackhashmap[trackhash]
+                        if len(group) == 0:
+                            del cls.trackhashmap[trackhash]
 
-                    filecount -= 1
+                        filecount -= 1
 
-                if filecount == 0:
-                    break
+                    if filecount == 0:
+                        break
+        except RuntimeError:
+            return
 
     @classmethod
     def count_tracks_by_trackhash(cls, trackhash: str) -> int:
@@ -181,10 +186,6 @@ class TrackStore:
         Counts the number of tracks with a specific trackhash.
         """
         return len(cls.trackhashmap.get(trackhash, []))
-
-    # ================================================
-    # ================== GETTERS =====================
-    # ================================================
 
     @classmethod
     def get_tracks_by_trackhashes(cls, trackhashes: Iterable[str]) -> list[Track]:
@@ -219,15 +220,18 @@ class TrackStore:
 
         tracks: list[Track] = []
 
-        for trackhash in cls.trackhashmap:
-            group = cls.trackhashmap.get(trackhash)
+        try:
+            for trackhash in cls.trackhashmap:
+                group = cls.trackhashmap.get(trackhash)
 
-            if not group:
-                continue
+                if not group:
+                    continue
 
-            for track in group.tracks:
-                if track.filepath in paths:
-                    tracks.append(track)
+                for track in group.tracks:
+                    if track.filepath in paths:
+                        tracks.append(track)
+        except RuntimeError:
+            return []
 
         return tracks
 
@@ -244,16 +248,19 @@ class TrackStore:
         """
         tracks: list[Track] = []
 
-        for trackhash in cls.trackhashmap:
-            group = cls.trackhashmap.get(trackhash, None)
+        try:
+            for trackhash in cls.trackhashmap:
+                group = cls.trackhashmap.get(trackhash, None)
 
-            if not group:
-                continue
+                if not group:
+                    continue
 
-            for track in group.tracks:
-                prop_value = getattr(track, key)
-                if predicate(prop_value, value):
-                    tracks.append(track)
+                for track in group.tracks:
+                    prop_value = getattr(track, key)
+                    if predicate(prop_value, value):
+                        tracks.append(track)
+        except RuntimeError:
+            return []
 
         if including_duplicates:
             return tracks
@@ -282,8 +289,8 @@ class TrackStore:
         """
         Returns all tracks in the given path.
         """
-        predicate: Callable[[str, str], bool] = (
-            lambda track_folder, path: track_folder.startswith(path)
+        predicate: Callable[[str, str], bool] = lambda track_folder, path: (
+            track_folder.startswith(path)
         )
 
         return cls.find_tracks_by(

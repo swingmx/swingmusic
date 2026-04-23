@@ -57,6 +57,7 @@ class Artist:
     _score: float = 0
 
     color: str = ""
+    blurhash: str = ""
     fav_userids: list[int] = dataclasses.field(default_factory=list)
 
     @property

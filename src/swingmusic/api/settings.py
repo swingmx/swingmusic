@@ -6,10 +6,27 @@ from pydantic import BaseModel, Field
 from swingmusic.api.auth import admin_required
 
 from swingmusic.db.userdata import PluginTable
+from swingmusic.premium import (
+    CloudAuthError,
+    CloudError,
+    LicenseError,
+    LicenseManager,
+    CloudClient,
+)
 from swingmusic.lib.index import index_everything
 from swingmusic.config import UserConfig
+from swingmusic.store.general import GeneralStore
 from swingmusic.settings import Metadata
 from swingmusic.utils.auth import get_current_userid
+from swingmusic.utils.hardware_id import get_device_id, get_device_name
+from swingmusic.utils.paths import normalize_paths
+
+# Error payload returned by premium-gated endpoints when the compiled
+# premium module is not shipped in this build (free-tier / OSS clone).
+_PREMIUM_UNAVAILABLE = (
+    {"error": "Premium features are not available in this build"},
+    501,
+)
 
 bp_tag = Tag(name="Settings", description="Customize stuff")
 api = APIBlueprint("settings", __name__, url_prefix="/notsettings", abp_tags=[bp_tag])
@@ -42,42 +59,21 @@ def add_root_dirs(body: AddRootDirsBody):
     removed_dirs = body.removed
 
     config = UserConfig()
-    db_dirs = config.rootDirs
-    home = "$home"
+    db_dirs = [*config.rootDirs]
 
-    db_home = any([d == home for d in db_dirs])  # if $home is in db
-    incoming_home = any([d == home for d in new_dirs])  # if $home is in incoming
-
-    # handle $home case
-    if db_home and incoming_home:
-        return {"msg": "Not changed!"}, 304
-
-    # if $home is the current root dir or the incoming root dir
-    # is $home, remove all root dirs
-    if db_home or incoming_home:
-        config.rootDirs = []
-
-    if incoming_home:
-        config.rootDirs = [home]
-        index_everything()
-        return {"root_dirs": [home]}
-
-    # ---
-
-    for _dir in new_dirs:
-        children = get_child_dirs(_dir, db_dirs)
-        removed_dirs.extend(children)
-
-    for _dir in removed_dirs:
+    for dir in removed_dirs:
         try:
-            db_dirs.remove(_dir)
+            db_dirs.remove(dir)
         except ValueError:
             pass
 
-    db_dirs.extend(new_dirs)
-    config.rootDirs = [dir_ for dir_ in db_dirs if dir_ != home]
+    final_paths = [*db_dirs, *new_dirs]
+    config.rootDirs = normalize_paths(final_paths)
+    config.save()
 
     index_everything()
+    GeneralStore.root_dirs_set = True
+
     return {"root_dirs": config.rootDirs}
 
 
@@ -112,6 +108,14 @@ def get_all_settings():
     current_user = get_current_userid()
     config["lastfmSessionKey"] = config["lastfmSessionKeys"].get(str(current_user), "")
     del config["lastfmSessionKeys"]
+
+    # remove license info if user is not admin
+    # if "admin" not in UserTable.get_by_id(current_user).roles:
+    del config["licenseKey"]
+
+    # add device name to config
+    config["deviceName"] = get_device_name()
+    config["deviceId"] = get_device_id()
 
     return config
 
@@ -176,3 +180,133 @@ def update_config(body: UpdateConfigBody):
     return {
         "msg": "Config updated!",
     }
+
+
+class RegisterLicenseBody(BaseModel):
+    license_key: str = Field(
+        description="The 40 character license key",
+        example="SMX-XXXX-XXXX-XXXX-XXXX",
+    )
+    device_name: str = Field(
+        description="Human-readable device name",
+        example="MacBook Pro",
+    )
+
+
+@api.post("/license/register")
+@admin_required()
+def register_license(body: RegisterLicenseBody):
+    """
+    Register this device with a license key.
+
+    Activates premium features for this device.
+    Each license supports up to 3 devices.
+    """
+    if LicenseManager is None:
+        return _PREMIUM_UNAVAILABLE
+
+    try:
+        manager = LicenseManager()
+        result = manager.register(body.license_key, body.device_name)
+
+        return {
+            "msg": "License activated successfully",
+            "license": result.get("user"),
+            "customer": result.get("customer"),
+            "devices": result.get("devices"),
+        }
+    except CloudAuthError as e:
+        return {"error": str(e)}, e.status_code or 400
+    except CloudError as e:
+        return {"error": str(e)}, e.status_code or 500
+    except LicenseError as e:
+        return {"error": str(e)}, 400
+
+class GetLicenseStatusQuery(BaseModel):
+    github_sponsors: bool = Field(
+        description="Check if this instance is premium via GitHub Sponsors benefits",
+        example=True,
+    )
+
+@api.get("/license/status")
+@admin_required()
+def get_license_status(query: GetLicenseStatusQuery):
+    """
+    Get current license status.
+
+    Returns license info if registered, or null if not.
+    """
+    if LicenseManager is None:
+        return _PREMIUM_UNAVAILABLE
+
+    try:
+        manager = LicenseManager()
+        info = manager.get_license_info(check_github_sponsors=query.github_sponsors)
+    except LicenseError as e:
+        return {"error": str(e)}, 400
+
+    if not info:
+        return {"error": "No license found"}, 404
+
+    return info, 200
+
+
+# @api.delete("/license/deactivate")
+# @admin_required()
+# def deactivate_license():
+#     """
+#     Deactivate the license on this device.
+
+#     Clears local license state. Does not revoke the device from the server.
+#     """
+#     manager = LicenseManager()
+#     manager.deactivate()
+
+#     return {"msg": "License deactivated"}
+
+
+class DeviceIdPath(BaseModel):
+    device_id: str = Field(
+        description="The device ID to revoke",
+        example="a1b2c3d4e5f67890",
+    )
+
+
+@api.delete("/license/device/<device_id>")
+@admin_required()
+def revoke_device(path: DeviceIdPath):
+    """
+    Revoke a device from the license.
+
+    Can revoke any device on your license, including yourself.
+    """
+    if LicenseManager is None or CloudClient is None:
+        return _PREMIUM_UNAVAILABLE
+
+    device_id = path.device_id
+
+    try:
+        client = CloudClient()
+        result = client.revoke_device(device_id)
+
+        # if the device is the current device, deactivate the license
+        if device_id == get_device_id():
+            manager = LicenseManager()
+            manager.deactivate()
+
+        # Re-validate to update local state
+        manager = LicenseManager()
+        try:
+            manager.validate()
+        except LicenseError:
+            pass  # State already updated
+
+        return {
+            "msg": "Device revoked",
+            "revoked": result.get("revoked"),
+            "devices": result.get("devices"),
+        }
+    except CloudAuthError as e:
+        return {"error": str(e)}, e.status_code or 400
+    except CloudError as e:
+        return {"error": str(e)}, e.status_code or 500

@@ -1,10 +1,10 @@
-import random
 from typing import Iterable
-from swingmusic.lib.tagger import create_albums
+
+from swingmusic.lib.albumslib import create_albums
 from swingmusic.models import Album, Track
 from swingmusic.store.artists import ArtistStore
-from swingmusic.utils.auth import get_current_userid
 from swingmusic.store.tracks import TrackStore
+from swingmusic.utils.auth import get_current_userid
 
 ALBUM_LOAD_KEY = ""
 
@@ -29,8 +29,9 @@ class AlbumMapEntry:
 
         self.album.toggle_favorite_user(userid)
 
-    def set_color(self, color: str):
+    def update_color_info(self, color: str, blurhash: str = ""):
         self.album.color = color
+        self.album.blurhash = blurhash
 
 
 class AlbumStore:
@@ -64,7 +65,6 @@ class AlbumStore:
         Returns a flat list of all albums.
         """
         return [a.album for a in cls.albummap.values()]
-
 
     @classmethod
     def get_album_by_hash(cls, albumhash: str) -> Album | None:

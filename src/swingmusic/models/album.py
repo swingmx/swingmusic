@@ -18,6 +18,7 @@ class Album:
     artisthashes: list[str]
     base_title: str
     color: str
+    blurhash: str
     created_date: int
     date: int
     duration: int

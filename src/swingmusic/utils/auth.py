@@ -7,7 +7,7 @@ from swingmusic.config import UserConfig
 from swingmusic.logger import log
 
 
-def hash_password(password: str) -> str:
+def hash_password(password: str, serverId: str = None) -> str:
     """
     Hashes the given password using sha256 algorithm and the user id as salt.
 
@@ -15,8 +15,11 @@ def hash_password(password: str) -> str:
 
     :return: The hashed password.
     """
+    if not serverId:
+        serverId = UserConfig().serverId
+
     return hashlib.pbkdf2_hmac(
-        "sha256", password.encode("utf-8"), UserConfig().serverId.encode("utf-8"), 100000
+        "sha256", password.encode("utf-8"), serverId.encode("utf-8"), 100000
     ).hex()
 
 
@@ -30,7 +33,22 @@ def check_password(password: str, hashed: str) -> bool:
     :return: Whether the password matches.
     """
 
-    return hmac.compare_digest(hash_password(password), hashed)
+    verified = False
+    with_legacy = False
+
+    config = UserConfig()
+
+    # TRY: Verify with legacy serverId
+    if config.legacy_serverId:
+        verified = hmac.compare_digest(
+            hash_password(password, config.legacy_serverId), hashed
+        )
+        with_legacy = verified
+
+    if not verified:
+        verified = hmac.compare_digest(hash_password(password, config.serverId), hashed)
+
+    return verified, with_legacy
 
 
 def get_current_userid() -> int:

@@ -7,8 +7,8 @@ import urllib.parse
 import requests
 from requests import ConnectionError, HTTPError, ReadTimeout
 
-from swingmusic.models.lastfm import SimilarArtistEntry
 from swingmusic.utils.hashing import create_hash
+from swingmusic.models.lastfm import SimilarArtistEntry
 
 
 def fetch_similar_artists(name: str):
@@ -32,7 +32,7 @@ def fetch_similar_artists(name: str):
 
     return [
         SimilarArtistEntry(
-           **{
+            **{
                 "artisthash": create_hash(artist["name"]),
                 "name": artist["name"],
                 "weight": artist["weight"],

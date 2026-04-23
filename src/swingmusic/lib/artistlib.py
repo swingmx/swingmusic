@@ -1,13 +1,13 @@
 import os
-import time
 import random
+import time
+from typing import Any
 import urllib
-import requests
-
+from concurrent.futures import ProcessPoolExecutor
 from io import BytesIO
 from pathlib import Path
-from concurrent.futures import ProcessPoolExecutor
 
+import requests
 from PIL import Image, PngImagePlugin, UnidentifiedImageError
 from requests.exceptions import ConnectionError as RequestConnectionError
 from requests.exceptions import ReadTimeout
@@ -15,14 +15,8 @@ from requests.exceptions import ReadTimeout
 from swingmusic import settings
 from swingmusic.models.artist import Artist
 from swingmusic.store.artists import ArtistStore
-
-# from swingmusic.db.libdata import ArtistTable
-
-# from swingmusic.store import artists as artist_store
-# from swingmusic.store.tracks import TrackStore
 from swingmusic.utils.hashing import create_hash
 from swingmusic.utils.progressbar import tqdm
-
 
 LARGE_ENOUGH_NUMBER = 100
 PngImagePlugin.MAX_TEXT_CHUNK = LARGE_ENOUGH_NUMBER * (1024**2)
@@ -150,22 +144,20 @@ class CheckArtistImages:
         path = settings.Paths().sm_artist_img_path
         processed = set(i.replace(".webp", "") for i in os.listdir(path))
 
-        unprocessed = (
+        unprocessed = [
             artist for artist in storeArtists if artist.artisthash not in processed
-        )
+        ]
 
         num_workers = max(1, (os.cpu_count() or 1) // 2)
 
         with ProcessPoolExecutor(max_workers=num_workers) as executor:
-            res = list(
+            list(
                 tqdm(
                     executor.map(self.download_image, unprocessed),
-                    total=len(storeArtists) - len(processed),
+                    total=len(unprocessed),
                     desc="Downloading missing artist images",
                 )
             )
-
-            list(res)
 
     @staticmethod
     def download_image(artist: Artist):

@@ -37,13 +37,20 @@ dependencies = [
     "rapidfuzz==3.11.0",
     "pendulum>=3.0.0",
     "pystray>=0.19.5",
+    "cryptography>=46.0.1",
     "waitress>=3.0.2; sys_platform == 'win32'",
-    "bjoern >=3.2.2; sys_platform != 'win32'",
+    "waitress>=3.0.2",
+    "granian>=2.5.5",
+    "asgiref>=3.10.0",
+    "natsort>=8.4.0",
+    "blurhash-python>=1.2.2",
+    "nuitka>=4.0.8",
 ]
 
 [project.optional-dependencies]
 build = [
-    "pyinstaller"
+    "pyinstaller",
+    "nuitka>=4.0.8",
 ]
 
 [tool.uv]
@@ -63,6 +70,13 @@ Documentation = "https://swingmx.com/guide/introduction.html"
 Issues = "https://github.com/swingmx/swingmusic/issues"
 
 
+# Include compiled Nuitka extension modules (.so on Linux/macOS, .pyd on
+# Windows) in the wheel. These replace the .py source files after the
+# compile-premium-modules.sh step runs in CI.
+[tool.setuptools.package-data]
+"swingmusic.premium" = ["*.so", "*.pyd"]
+"swingmusic.premium.recipes" = ["*.so", "*.pyd"]
+
 [tool.setuptools_scm]
 version_scheme = "only-version"
 local_scheme = "no-local-version"
@@ -70,5 +84,23 @@ fallback_version = "v0.0.0"
 
 [dependency-groups]
 dev = [
-    "twine>=6.1.0",
+    "pytest>=8.4.1",
 ]
+
+# cibuildwheel produces per-platform wheels containing the Nuitka-compiled
+# premium modules. Each wheel is platform-tagged (manylinux for Linux,
+# macosx for macOS) so `pip install swingmusic` picks the right one and
+# premium logic ships as compiled .so rather than plain Python source.
+[tool.cibuildwheel]
+build = ["cp311-*", "cp312-*", "cp313-*", "cp314-*"]
+skip = "*-musllinux_*"
+archs = ["auto64"]
+before-build = "pip install nuitka>=4.0.8 && bash scripts/compile-premium-modules.sh"
+
+[tool.cibuildwheel.linux]
+manylinux-x86_64-image = "manylinux_2_28"
+manylinux-aarch64-image = "manylinux_2_28"
+
+[tool.cibuildwheel.macos]
+# macOS arm64 runners only (Apple Silicon). Intel macOS support is dropped.
+archs = ["arm64"]

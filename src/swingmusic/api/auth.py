@@ -1,6 +1,7 @@
-import json
-from functools import wraps
 import sqlite3
+from functools import wraps
+from pathlib import Path
+
 from flask import current_app, jsonify
 from flask_jwt_extended import (
     create_access_token,
@@ -10,14 +11,14 @@ from flask_jwt_extended import (
     jwt_required,
     set_access_cookies,
 )
+from flask_openapi3 import APIBlueprint, Tag
 from pydantic import BaseModel, Field
-from flask_openapi3 import Tag
-from flask_openapi3 import APIBlueprint
 
+from swingmusic.config import UserConfig
 from swingmusic.db.userdata import UserTable
+from swingmusic.store.general import GeneralStore
 from swingmusic.store.homepage import HomepageStore
 from swingmusic.utils.auth import check_password, hash_password
-from swingmusic.config import UserConfig
 
 bp_tag = Tag(name="Auth", description="Authentication stuff")
 api = APIBlueprint("auth", __name__, url_prefix="/auth", abp_tags=[bp_tag])
@@ -71,10 +72,15 @@ def login(body: LoginBody):
     if user is None:
         return {"msg": "User not found"}, 404
 
-    password_ok = check_password(body.password, user.password)
+    password_ok, with_legacy = check_password(body.password, user.password)
 
     if not password_ok:
         return {"msg": "Hehe! invalid password"}, 401
+
+    # INFO: Rehash password if using legacy uuidv4 serverId
+    if with_legacy:
+        rehashed = hash_password(body.password)
+        UserTable.update_one({"id": user.id, "password": rehashed})
 
     res = create_new_token(user.todict())
     token = res["accesstoken"]
@@ -193,7 +199,7 @@ def update_profile(body: UpdateProfileBody):
     clean_user = {k: v for k, v in user.items() if v}
 
     # finally, convert roles to json string
-    # doing it here to prevent deleting roles from clean user 
+    # doing it here to prevent deleting roles from clean user
     # when body.roles is an empty list
     if body.roles is not None:
         clean_user["roles"] = body.roles
@@ -207,11 +213,35 @@ def update_profile(body: UpdateProfileBody):
 
 
 @api.post("/profile/create")
-@admin_required()
+@jwt_required(optional=True)
 def create_user(body: UpdateProfileBody):
     """
     Create a new user
     """
+    # INFO: If there are no existing users in the database, add the new user as admin
+    users = UserTable.get_all()
+    if not list(users):
+        user = {
+            "username": body.username,
+            "password": hash_password(body.password),
+            "roles": ["admin"],
+        }
+        UserTable.insert_one(user)
+        user = UserTable.get_by_username(user["username"])
+
+        # INFO: Update general store
+        if user.username == body.username:
+            GeneralStore.admin_exists = True
+
+        # INFO: Also return the user home directory.
+        # This is used to show the user home directory in the onboarding screen.
+        response = {"user": user.todict(), "userhome": str(Path.home().resolve())}
+        # return response with cookies
+        res = jsonify(response)
+        token = create_new_token(user.todict())
+        set_access_cookies(res, token["accesstoken"], max_age=token["maxage"])
+        return res
+
     if not body.username or not body.password:
         return {"msg": "Username and password are required"}, 400
 
@@ -229,6 +259,7 @@ def create_user(body: UpdateProfileBody):
     user = UserTable.get_by_username(user["username"])
 
     if user:
+        # TODO: Return the user inside a dict and refactor webclient
         HomepageStore.entries["recently_played"].add_new_user(user.id)
         return user.todict()
 

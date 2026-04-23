@@ -157,7 +157,7 @@ def cleanup_playlist_images() -> None:
 
     # Find unlinked images (including thumbnails)
     for file in playlist_dir.iterdir():
-        if not file.isfile:
+        if not file.is_file():
             continue
 
         name = file.name # not stem. PlaylistTable saves with extension

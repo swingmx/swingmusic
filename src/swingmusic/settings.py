@@ -34,12 +34,8 @@ class Singleton(type):
     def __call__(cls, *args, **kwargs):
         if cls not in Singleton._instances:
             cls._instances[cls] = super(Singleton, cls).__call__(*args, **kwargs)
+
         return cls._instances[cls]
-
-
-# # # # # # # #
-# Downloader  #
-# # # # # # # #
 
 
 class AssetHandler:
@@ -47,7 +43,7 @@ class AssetHandler:
     Handles all assets configuration
     """
 
-    RELEASES_URL = "https://api.github.com/repos/swingmx/swingmusic/releases"
+    RELEASES_URL = "https://api.github.com/repos/swingmx/webclient/releases"
 
     @staticmethod
     def copy_assets_dir():
@@ -261,6 +257,13 @@ class Paths(metaclass=Singleton):
             os.environ["SWINGMUSIC_CLIENT_DIR"] = self.client_path.resolve().as_posix()
 
             self.setup_config_dirs()
+        else:
+            # Worker process: read client path from environment variable set by main process
+            env_client_dir = os.environ.get("SWINGMUSIC_CLIENT_DIR")
+            if env_client_dir is not None:
+                self.client_path = Path(env_client_dir).resolve()
+            else:
+                self.client_path = self.config_dir / "client"
 
     @classmethod
     def get_default_config_parent_dir(cls) -> pathlib.Path:
@@ -324,6 +327,7 @@ class Paths(metaclass=Singleton):
             "images/thumbnails/large",
             "images/thumbnails/medium",
             "images/thumbnails/xsmall",
+            "images/thumbnails/original",
             "images/artists/medium",
             "images/artists/small",
             "images/artists/large",
@@ -414,6 +418,10 @@ class Paths(metaclass=Singleton):
     def lg_thumb_path(self) -> pathlib.Path:
         return self.thumbs_path / "large"
 
+    @property
+    def og_thumb_path(self) -> pathlib.Path:
+        return self.thumbs_path / "original"
+
     # OTHERS
     @property
     def playlist_img_path(self) -> pathlib.Path:
@@ -471,12 +479,6 @@ class Paths(metaclass=Singleton):
     def json_config_path(self):
         return Paths().config_dir / "config.json"
 
-
-# # # # # # # # # # # # #
-# Default and Konstants #
-# # # # # # # # # # # # #
-
-
 class Defaults:
     """
     Contains default values for various settings.
@@ -493,6 +495,7 @@ class Defaults:
     SM_THUMB_SIZE = 96
     MD_THUMB_SIZE = 256
     LG_THUMB_SIZE = 512
+    OG_THUMB_SIZE = 1200
 
     SM_ARTIST_IMG_SIZE = 128
     MD_ARTIST_IMG_SIZE = 256
@@ -534,6 +537,23 @@ class Metadata:
         version = metadata.version("swingmusic")
 
         if version == "0.0.0":
-            return open("version.txt", "r").read().strip()
+            # In frozen builds (PyInstaller) and Docker, setuptools-scm can't
+            # detect the git tag so the version falls back to 0.0.0. Read the
+            # version.txt shipped alongside the binary / in the repo root.
+            # Try multiple locations: next to the executable (PyInstaller),
+            # repo root (dev), and CWD (legacy).
+            candidates = [
+                Path(sys.executable).parent / "version.txt",
+                Path(__file__).resolve().parent.parent.parent / "version.txt",
+            ]
+            if getattr(sys, "frozen", False) and hasattr(sys, "_MEIPASS"):
+                candidates.insert(0, Path(sys._MEIPASS) / "version.txt")
+
+            for p in candidates:
+                if p.is_file():
+                    return p.read_text().strip()
+
+            return "0.0.0"
 
         return version
+

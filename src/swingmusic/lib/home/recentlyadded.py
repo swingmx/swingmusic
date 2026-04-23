@@ -1,6 +1,8 @@
 import pathlib
 from datetime import datetime
 
+from natsort import natsorted
+
 from swingmusic.lib.playlistlib import get_first_4_images
 from swingmusic.models.playlist import Playlist
 from swingmusic.models.track import Track
@@ -133,7 +135,7 @@ def group_track_by_folders(tracks: list[Track], groups: dict[str, list[Track]]):
     Uses generator expressions to avoid creating intermediate lists.
     """
     # INFO: sort tracks by folder name, then group by folder name
-    tracks = sorted(tracks, key=lambda t: t.folder)
+    tracks = natsorted(tracks, key=lambda t: t.folder)
     thisgroup = groupby(tracks, lambda t: t.folder)
 
     for folder, thistracks in thisgroup:

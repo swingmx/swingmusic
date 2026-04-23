@@ -1,37 +1,62 @@
-from itertools import groupby
 import os
-from typing import Callable
-from swingmusic.lib.albumslib import sort_by_track_no
-from swingmusic.models.folder import Folder
-from swingmusic.models.track import Track
+from natsort import natsorted
+from itertools import groupby
+from swingmusic.config import UserConfig
 from swingmusic.utils import flatten
+from swingmusic.models.track import Track
+from swingmusic.models.folder import Folder
+from swingmusic.lib.albumslib import sort_by_track_no
+from swingmusic.utils.parsers import get_sort_name
 
 
 def sort_tracks(tracks: list[Track], key: str, reverse: bool = False):
     """
     Sorts a list of tracks by a key.
     """
-    if key == "default":
-        return tracks
 
-    sortfunc: Callable[[Track], str] = lambda track: getattr(track, key)
+    # INFO: This is the primary sortfunc used to get base sort order
+    def primary_sortfunc(track: Track) -> str:
+        return track.title.casefold()
+
+    if key == "default":
+        # INFO: When sorting using default sort, use last_mod as base sort order
+        def primary_sortfunc(track: Track) -> float:
+            return track.last_mod
+
+    # INFO: This is the secondary sortfunc
+    def sortfunc(track: Track) -> str:
+        return getattr(track, key)
+
     if key == "artists" or key == "albumartists":
-        sortfunc = lambda track: getattr(track, key)[0]["name"]
+        config = UserConfig()
+
+        if config.artistArticleAwareSorting:
+
+            def sortfunc(track):
+                return get_sort_name(
+                    getattr(track, key)[0]["name"], articles=config.artistSortingArticles
+                )
+        else:
+            # INFO: Sort artists by first artist name
+            def sortfunc(track):
+                return getattr(track, key)[0]["name"]
 
     if key == "disc":
         # INFO: Group tracks into albums, then sort them by disc number.
-        tracks = sorted(tracks, key=lambda x: x.album.casefold())
+        tracks = natsorted(tracks, key=lambda x: x.album.casefold())
         groups = groupby(tracks, lambda x: x.albumhash)
 
         return flatten([sort_by_track_no(list(g)) for k, g in groups])
 
-    # INFO: sort tracks by title for a fallback value
-    tracks = sorted(tracks, key=lambda t: t.title.casefold())
+    # INFO: Primary sort: Sort tracks to get base sort order
+    tracks = natsorted(tracks, key=primary_sortfunc)
 
-    if key == "title" and not reverse:
-        return tracks
+    # INFO: return tracks here if already natsorted (with base sort key)
+    if key in ("default", "last_mod", "title"):
+        return tracks if not reverse else tracks[::-1]
 
-    return sorted(
+    # INFO: Final sort and return results
+    return natsorted(
         tracks,
         key=lambda track: sortfunc(track).casefold()
         if isinstance(sortfunc(track), str)
@@ -47,9 +72,12 @@ def sort_folders(folders: list[Folder], key: str, reverse: bool = False):
     if key == "default":
         return folders
 
-    sortfunc: Callable[[Folder], str | float] = lambda folder: getattr(folder, key)
+    def sortfunc(folder: Folder) -> str | float:
+        return getattr(folder, key)
 
     if key == "lastmod":
-        sortfunc = lambda folder: os.path.getmtime(folder.path)
 
-    return sorted(folders, key=sortfunc, reverse=reverse)
+        def sortfunc(folder):
+            return os.path.getmtime(folder.path)
+
+    return natsorted(folders, key=sortfunc, reverse=reverse)
