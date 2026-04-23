@@ -3,7 +3,9 @@
 </div>
 <div align="center" style="font-size: 2rem"><b>Swing Music</b></div>
 
-<div align="center">![GitHub Release](https://img.shields.io/github/v/release/swingmx/swingmusic)</div>
+<div align="center">
+  <img src="https://img.shields.io/github/v/release/swingmx/swingmusic" alt="Latest GitHub Release" />
+</div>
  
 **<div align="center" style="padding-top: 1.25rem">[Download](https://swingmx.com/downloads) • [Get Android Client](https://github.com/swingmx/android) •  <a href="https://github.com/sponsors/swingmx" target="_blank">Sponsor Us ❤️</a> • [Docs](https://swingmx.com/guide/introduction.html) • [Screenshots](https://swingmx.com) • [r/SwingMusicApp](https://www.reddit.com/r/SwingMusicApp)</div>**
 
