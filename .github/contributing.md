@@ -28,39 +28,14 @@ To contribute to the server development, you need to install [uv package manager
 Fork this repo, git clone and install the dependencies:
 
 ```sh
-git clone https://github.com/swing-opensource/swingmusic.git
+git clone https://github.com/swingmx/swingmusic.git
 
 # or with ssh
 
-git clone git@github.com:swing-opensource/swingmusic.git
+git clone git@github.com:swingmx/swingmusic.git
 
 cd swingmusic
 uv sync
-```
-
-Finally install the wsgi module for the server. If you are on Windows, simply install `waitress`:
-
-```sh
-uv pip install waitress
-```
-
-If you are on Unix, you will need to install `bjoern`. The package requires the `libev` module to be installed on your machine:
-
-```sh
-# Arch Linux
-pacman -S libev
-
-# Fedora, CentOS
-dnf install libev-devel
-
-# MacOS
-brew install libev
-```
-
-Finally:
-
-```sh
-uv pip install bjoern
 ```
 
 Finally, run the server for development on port 1980.
