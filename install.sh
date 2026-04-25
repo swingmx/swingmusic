@@ -706,7 +706,7 @@ install_swingmusic() {
 
     # Install Swing Music
     say "Installing Swing Music. This may take a while..."
-    ensure "$pip_cmd" install swingmusic --only-binary swingmusic --disable-pip-version-check
+    ensure "$pip_cmd" install swingmusic --only-binary swingmusic --disable-pip-version-check --quiet
 
     # Verify installation
     say "Verifying installation..."
