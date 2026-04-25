@@ -584,7 +584,7 @@ if [ "$1" = "--upgrade" ]; then
     echo ""
 
     # Show current version
-    CURRENT_VERSION=$(python -m swingmusic --version 2>/dev/null | head -n1)
+    CURRENT_VERSION=$(python -P -m swingmusic --version 2>/dev/null | head -n1)
     echo "Current version: $CURRENT_VERSION"
     echo ""
 
@@ -611,7 +611,7 @@ if [ "$1" = "--upgrade" ]; then
     echo ""
 
     # Show new version
-    NEW_VERSION=$(python -m swingmusic --version 2>/dev/null | head -n1)
+    NEW_VERSION=$(python -P -m swingmusic --version 2>/dev/null | head -n1)
     echo "Successfully upgraded to: $NEW_VERSION"
     echo ""
 
@@ -651,8 +651,8 @@ if [ "$1" = "--upgrade" ]; then
     exit 0
 fi
 
-# Run swingmusic with all arguments (normal operation)
-exec python -m swingmusic "$@"
+# Run swingmusic with all arguments (normal operation).
+exec python -P -m swingmusic "$@"
 EOF
     
     # Make wrapper script executable
@@ -706,16 +706,18 @@ install_swingmusic() {
 
     # Install Swing Music
     say "Installing Swing Music. This may take a while..."
-    ensure "$pip_cmd" install swingmusic --only-binary swingmusic --disable-pip-version-check --quiet
+    ensure "$pip_cmd" install swingmusic --only-binary swingmusic --disable-pip-version-check
 
     # Verify installation
     say "Verifying installation..."
-    if ! "$python_cmd" -m swingmusic --version >/dev/null 2>&1; then
+    local verify_output
+    if ! verify_output=$("$python_cmd" -P -m swingmusic --version 2>&1); then
+        printf '%s\n' "$verify_output" >&2
         err "Failed to verify Swing Music installation"
     fi
-    
+
     local version
-    version=$("$python_cmd" -m swingmusic --version 2>/dev/null | head -n1)
+    version=$(printf '%s' "$verify_output" | head -n1)
     say "Swing Music installed successfully: $version"
 }
 
@@ -1005,7 +1007,7 @@ After=network.target
 Type=simple
 WorkingDirectory=$install_dir
 Environment=PATH=$venv_dir/bin:/usr/local/bin:/usr/bin:/bin
-ExecStart=$venv_dir/bin/python -m swingmusic
+ExecStart=$venv_dir/bin/python -P -m swingmusic
 Restart=always
 RestartSec=10
 
