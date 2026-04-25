@@ -96,6 +96,11 @@ build = ["cp311-*", "cp312-*", "cp313-*", "cp314-*"]
 skip = "*-musllinux_*"
 archs = ["auto64"]
 before-build = "pip install nuitka>=4.0.8 && bash scripts/compile-premium-modules.sh"
+# Verify each built wheel actually ships working premium modules. Runs in
+# a fresh venv with only the wheel installed, so it catches missing-source
+# bugs (the cause of v2.1.5 silently shipping a broken wheel) at build
+# time instead of at install time.
+test-command = "python {project}/scripts/test-premium-imports.py"
 
 [tool.cibuildwheel.linux]
 manylinux-x86_64-image = "manylinux_2_28"
