@@ -28,6 +28,12 @@ class RecentlyPlayed(HomepageRoutine):
 
     def run(self):
         if self.update_only:
+            if self.userids[0] not in HomepageStore.entries[self.store_key].items:
+                HomepageStore.entries[self.store_key].items[self.userids[0]] = (
+                    get_recently_played(limit=self.ITEM_LIMIT, userid=self.userids[0])
+                )
+                return
+
             last_entry = ScrobbleTable.get_last_entry(self.userids[0])
 
             if last_entry:
@@ -40,7 +46,7 @@ class RecentlyPlayed(HomepageRoutine):
                     store_entry = HomepageStore.entries[self.store_key].items[
                         self.userids[0]
                     ][0]
-                except IndexError:
+                except (IndexError, KeyError):
                     store_entry = None
                     item = None
 
@@ -71,6 +77,8 @@ class RecentlyPlayed(HomepageRoutine):
                         HomepageStore.entries[self.store_key].items[
                             self.userids[0]
                         ].pop()
+
+            return
 
         for userid in self.userids:
             items = get_recently_played(limit=self.ITEM_LIMIT, userid=userid)
