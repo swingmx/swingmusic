@@ -284,9 +284,11 @@ def get_tags(filepath: str, config: UserConfig) -> dict:
     )
 
     metadata["trackhash"] = create_hash(
-        metadata.get("artists", ""),
-        metadata.get("album", ""),
         metadata.get("title", ""),
+        metadata.get("album", ""),
+        *split_artists(metadata.get("artists", ""), config),
+        str(metadata.get("track", "")),
+        str(metadata.get("disc", "")),
     )
 
     # extract extra information not already in tags
