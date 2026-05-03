@@ -20,10 +20,20 @@ api = APIBlueprint(
 
 class CreateCollectionBody(BaseModel):
     name: str = Field(description="The name of the collection")
-    description: str = Field(description="The description of the collection")
+    description: str = Field(
+        description="The description of the collection", default=""
+    )
     items: list[dict[str, Any]] = Field(
+        default_factory=list,
         description="The items to add to the collection",
-        json_schema_extra={"example": [{"type": "album", "hash": "1234567890"}]},
+        json_schema_extra={
+            "example": [
+                {"type": "album", "hash": "1234567890"},
+                {"type": "artist", "hash": "abcdef"},
+                {"type": "playlist", "hash": "1"},
+                {"type": "track", "hash": "trackhash"},
+            ]
+        },
     )
 
 
@@ -32,10 +42,10 @@ def create_collection(body: CreateCollectionBody):
     """
     Create a new collection.
     """
-    items = validate_page_items(body.items, existing=[])
-
-    if len(items) == 0:
-        return {"error": "No items to add"}, 400
+    try:
+        items = validate_page_items(body.items, existing=[])
+    except (KeyError, TypeError, ValueError) as e:
+        return {"error": str(e)}, 400
 
     payload = {
         "name": body.name,
@@ -62,7 +72,7 @@ def get_collections():
 class AddCollectionItemBody(BaseModel):
     item: dict[str, Any] = Field(
         description="The item to add to the collection",
-        json_schema_extra={"example": {"type": "album", "hash": "1234567890"}},
+        json_schema_extra={"example": {"type": "track", "hash": "trackhash"}},
     )
 
 
@@ -83,7 +93,10 @@ def add_collection_item(path: AddCollectionItemPath, body: AddCollectionItemBody
     if collection is None:
         return {"error": "Collection not found"}, 404
 
-    new_items = validate_page_items([body.item], existing=collection["items"])
+    try:
+        new_items = validate_page_items([body.item], existing=collection["items"])
+    except (KeyError, TypeError, ValueError) as e:
+        return {"error": str(e)}, 400
 
     if len(new_items) == 0:
         return {"error": "items already in collection"}, 400
