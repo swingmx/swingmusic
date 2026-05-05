@@ -3,9 +3,8 @@ Contains all the artist(s) routes.
 """
 
 import math
-from pprint import pprint
 import random
-from datetime import datetime
+from datetime import datetime, timezone
 from itertools import groupby
 from typing import Any
 
@@ -69,7 +68,7 @@ def get_artist(path: ArtistHashSchema, query: GetArtistQuery):
         limit = tcount
 
     try:
-        year = datetime.fromtimestamp(artist.date).year
+        year = datetime.fromtimestamp(artist.date, tz=timezone.utc).year
     except ValueError:
         year = 0
 

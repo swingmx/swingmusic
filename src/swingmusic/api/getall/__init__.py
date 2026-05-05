@@ -3,7 +3,7 @@ from natsort import natsorted
 from pydantic import BaseModel, Field
 from flask_openapi3 import APIBlueprint
 
-from datetime import datetime
+from datetime import datetime, timezone
 from swingmusic.config import UserConfig
 from swingmusic.store.albums import AlbumStore
 from swingmusic.store.artists import ArtistStore
@@ -138,7 +138,9 @@ def get_all_items(path: GetAllItemsPath, query: GetAllItemsQuery):
         item_dict = serialize_album(item) if is_albums else serialize_artist(item)
 
         if sort_is_date:
-            item_dict["help_text"] = datetime.fromtimestamp(item.date).year
+            item_dict["help_text"] = datetime.fromtimestamp(
+                item.date, tz=timezone.utc
+            ).year
 
         if sort_is_create_date:
             date = create_new_date(datetime.fromtimestamp(item.created_date))
