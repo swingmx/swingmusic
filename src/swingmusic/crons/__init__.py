@@ -33,7 +33,6 @@ def start_cron_jobs(and_exit: bool = False):
 
     # NOTE: RecentlyPlayed is not a CRON job, it's triggered here to
     # populate the values for the very first time.
-    print("start_cron_jobs")
     RecentlyPlayed()
     RecentlyAdded()
 
@@ -44,10 +43,8 @@ def start_cron_jobs(and_exit: bool = False):
     # Premium cron jobs are only registered when the compiled premium
     # modules are present in this build.
     if premium.MixesCron is not None:
-        print("MixesCron is not None")
         premium.MixesCron()
     if premium.LicenseValidation is not None:
-        print("LicenseValidation is not None")
         premium.LicenseValidation()
 
     # Trigger all CRON jobs when the app is started.

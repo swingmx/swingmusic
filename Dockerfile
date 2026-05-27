@@ -64,6 +64,21 @@ EXPOSE 1970/tcp
 VOLUME /music
 VOLUME /config
 
+# Make /music the apparent home directory inside the container so $home
+# resolves to it across the app: onboarding userHome, dir-browser default,
+# rootDirs="$home" scans, watchdog, and stream auth all pivot to /music.
+# Config and logs are insulated because the entrypoint passes --config /config.
+ENV HOME=/music
+
+# Redirect backup output (backup_and_restore.py writes to ~/swingmusic.backup)
+# into the persistent /config volume — otherwise backups would land inside
+# the user's mounted music library at /music/swingmusic.backup.
+RUN mkdir -p /config/backups /music && ln -sfn /config/backups /music/swingmusic.backup
+
+# Secondary affordance: surface /music as a clickable entry under /root in
+# the dir-browser, in case HOME resolution is bypassed somewhere.
+RUN ln -sfn /music /root/music
+
 # Runtime system packages only.
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
@@ -72,6 +87,11 @@ RUN apt-get update && \
         libavcodec-extra && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
+
+# Fallback for swingmusic/api/settings.py when Metadata.version == "0.0.0"
+# (e.g. when app_version build arg is not supplied). Opened relative to
+# WORKDIR.
+COPY version.txt /app/version.txt
 
 # Install the pre-built wheel from the builder stage.
 COPY --from=builder /wheels/*.whl /tmp/wheels/
