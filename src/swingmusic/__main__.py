@@ -73,12 +73,7 @@ def run(*args, **kwargs):
                 sys.exit(1)
 
     settings.Paths(config_parent=config_parent, client_dir=client_path)
-    AssetHandler.copy_assets_dir()
-    AssetHandler.setup_default_client()
 
-    # setup_logger(debug=args["debug"], app_dir=settings.Paths().config_dir)
-
-    # handle tools
     if args["test_pro_imports"]:
         from swingmusic.premium import (
             PREMIUM_AVAILABLE,
@@ -116,6 +111,11 @@ def run(*args, **kwargs):
         for name, val in symbols.items():
             print(f"  {name}: {val}")
         sys.exit(0)
+
+    AssetHandler.copy_assets_dir()
+    AssetHandler.setup_default_client()
+
+    # setup_logger(debug=args["debug"], app_dir=settings.Paths().config_dir)
 
     if args["password_reset"]:
         swing_tools.handle_password_reset(config_parent)

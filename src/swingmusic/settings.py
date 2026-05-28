@@ -132,30 +132,43 @@ class AssetHandler:
         path = Paths().client_path
 
         try:
-            # INFO: downlaod the current version of the client from GitHub
-            releases = requests.get(AssetHandler.RELEASES_URL).json()
+            response = requests.get(AssetHandler.RELEASES_URL)
+            releases = response.json()
 
-            # INFO: find the release for the current version
+            # GitHub returns a dict like {"message": "API rate limit exceeded ..."}
+            # on errors (rate limit, repo moved, auth required) instead of the
+            # expected list. Iterating that dict would yield its keys as strings,
+            # crashing later with TypeError on release["tag_name"].
+            if not isinstance(releases, list) or not releases:
+                log.error(
+                    "GitHub releases API returned unexpected payload (HTTP %s): %r",
+                    response.status_code,
+                    releases,
+                )
+                return False
+
             for release in releases:
-                if release["tag_name"] == f"v{Metadata.version}":
+                if release.get("tag_name") == f"v{Metadata.version}":
                     if AssetHandler.process_release(release, path):
                         return True
-                    pass
 
+            log.error(
+                "No release found for v%s. Trying latest...", Metadata.version
+            )
             return AssetHandler.process_release(releases[0], path)
 
         except (
             requests.exceptions.RequestException,
             KeyError,
-            requests.exceptions.ConnectionError,
+            TypeError,
+            ValueError,
         ) as e:
             log.error(
-                "Client could not be downloaded from releases. NETWORK ERROR",
-                exc_info=e,
+                "Client could not be downloaded from releases", exc_info=e
             )
             return False
         except zipfile.BadZipfile as e:
-            log.error("Client could not be unpacked. ZIP ERROR", exc_info=e)
+            log.error("Client could not be unpacked", exc_info=e)
             return False
 
     @classmethod
