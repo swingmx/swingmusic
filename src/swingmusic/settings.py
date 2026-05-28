@@ -129,7 +129,6 @@ class AssetHandler:
         Downloads the latest supported client from Github
         and places it in the swingmusic client folder.
         """
-        log.error("Default client not found. Downloading from GitHub ...")
         path = Paths().client_path
 
         try:
@@ -143,10 +142,6 @@ class AssetHandler:
                         return True
                     pass
 
-            # INFO: if no release is found, download the latest release
-            log.error(
-                f"No release found for the v{Metadata.version}. Downloading latest version ..."
-            )
             return AssetHandler.process_release(releases[0], path)
 
         except (
@@ -162,6 +157,79 @@ class AssetHandler:
         except zipfile.BadZipfile as e:
             log.error("Client could not be unpacked. ZIP ERROR", exc_info=e)
             return False
+
+    @classmethod
+    def ensure_client_matches_app_version(cls):
+        """
+        Verify the extracted client's version matches the app version. When
+        they diverge (e.g. after upgrading the app), refresh the client from
+        the bundled client.zip first, then fall back to GitHub.
+
+        Skipped for dev builds (Metadata.version == "0.0.0") where there's no
+        real version to compare against — otherwise every restart would
+        trigger a refresh.
+
+        Legacy clients without a version.txt are treated as mismatched and
+        refreshed once; after the refresh produces a versioned client (from
+        bundle or GitHub), subsequent boots see a match and skip.
+        """
+        app_version = Metadata.version
+
+        if app_version == "0.0.0":
+            return
+
+        client_path = Paths().client_path
+        version_file = client_path / "version.txt"
+
+        def read_client_version() -> str | None:
+            if not version_file.exists():
+                return None
+            try:
+                return version_file.read_text().strip() or None
+            except OSError:
+                return None
+
+        client_version = read_client_version()
+        if client_version == app_version:
+            return
+
+        log.info(
+            "Client version %r does not match app version %r, refreshing client...",
+            client_version,
+            app_version,
+        )
+
+        # Reset the client dir so the new extraction doesn't merge with
+        # stale files left by the previous client.
+        try:
+            if client_path.exists():
+                shutil.rmtree(client_path)
+            client_path.mkdir(parents=True, exist_ok=True)
+        except OSError as e:
+            log.error("Could not reset client directory %s: %s", client_path, e)
+            return
+
+        # Try the bundled client first — offline-friendly, fast. After an
+        # app upgrade this is usually already the right version.
+        cls.extract_default_client(Paths().config_dir)
+
+        if read_client_version() == app_version:
+            log.info("Client refreshed from bundle to %s.", app_version)
+            return
+
+        # Bundle didn't match (or had no version.txt). Pull from GitHub for
+        # the matching tag, falling back to latest. download_client_from_github
+        # already handles that priority order.
+        log.info(
+            "Bundled client did not match app version %r. Downloading from GitHub...",
+            app_version,
+        )
+        if not cls.download_client_from_github():
+            log.warning(
+                "Failed to refresh client to match app version %s. "
+                "Continuing with whichever client is currently on disk.",
+                app_version,
+            )
 
     @classmethod
     def setup_default_client(cls):
@@ -181,6 +249,10 @@ class AssetHandler:
         if not (client_path / "index.html").exists():
             log.error("Web client not found. Exiting ...")
             sys.exit(1)
+
+        # Verify client matches app version; refresh from bundle or GitHub
+        # if not. No-op for dev builds.
+        cls.ensure_client_matches_app_version()
 
 
 class Paths(metaclass=Singleton):
@@ -479,6 +551,7 @@ class Paths(metaclass=Singleton):
     def json_config_path(self):
         return Paths().config_dir / "config.json"
 
+
 class Defaults:
     """
     Contains default values for various settings.
@@ -543,6 +616,7 @@ class Metadata:
             # Try multiple locations: next to the executable (PyInstaller),
             # repo root (dev), and CWD (legacy).
             candidates = [
+                Path("version.txt").resolve(),
                 Path(sys.executable).parent / "version.txt",
                 Path(__file__).resolve().parent.parent.parent / "version.txt",
             ]
@@ -556,4 +630,3 @@ class Metadata:
             return "0.0.0"
 
         return version
-

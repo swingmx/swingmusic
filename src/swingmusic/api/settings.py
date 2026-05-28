@@ -222,11 +222,13 @@ def register_license(body: RegisterLicenseBody):
     except LicenseError as e:
         return {"error": str(e)}, 400
 
+
 class GetLicenseStatusQuery(BaseModel):
     github_sponsors: bool = Field(
         description="Check if this instance is premium via GitHub Sponsors benefits",
         example=True,
     )
+
 
 @api.get("/license/status")
 @admin_required()
@@ -243,12 +245,24 @@ def get_license_status(query: GetLicenseStatusQuery):
         manager = LicenseManager()
         info = manager.get_license_info(check_github_sponsors=query.github_sponsors)
     except LicenseError as e:
-        return {"error": str(e)}, 400
+        return {
+            "error": str(e),
+            "redirect_url": CloudClient.CLIENT_REDIRECT_URL,
+            "client_id": CloudClient.CLIENT_ID,
+        }, 400
 
     if not info:
-        return {"error": "No license found"}, 404
+        return {
+            "error": "No license found",
+            "redirect_url": CloudClient.CLIENT_REDIRECT_URL,
+            "client_id": CloudClient.CLIENT_ID,
+        }, 404
 
-    return info, 200
+    return {
+        **info,
+        "redirect_url": CloudClient.CLIENT_REDIRECT_URL,
+        "client_id": CloudClient.CLIENT_ID,
+    }, 200
 
 
 # @api.delete("/license/deactivate")
