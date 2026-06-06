@@ -1,3 +1,4 @@
+import os
 import sys
 import pathlib
 import argparse
@@ -20,7 +21,10 @@ parser.add_argument(
 )
 parser.add_argument("--host", default="0.0.0.0", help="Host to run the app on.")
 parser.add_argument(
-    "--port", default=1970, help="HTTP port to run the app on.", type=int
+    "--port",
+    default=int(os.environ.get("SWINGMUSIC_PORT") or 1970),
+    help="HTTP port to run the app on. Falls back to $SWINGMUSIC_PORT, then 1970.",
+    type=int,
 )
 parser.add_argument(
     "--debug",
@@ -115,7 +119,8 @@ def run(*args, **kwargs):
     AssetHandler.copy_assets_dir()
     AssetHandler.setup_default_client()
 
-    # setup_logger(debug=args["debug"], app_dir=settings.Paths().config_dir)
+    os.environ["SWINGMUSIC_DEBUG"] = "1" if args["debug"] else "0"
+    setup_logger(debug=args["debug"], app_dir=settings.Paths().config_dir)
 
     if args["password_reset"]:
         swing_tools.handle_password_reset(config_parent)

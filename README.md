@@ -56,13 +56,18 @@ services:
   swingmusic:
     image: ghcr.io/swingmx/swingmusic:latest
     container_name: swingmusic
+    ports:
+      - "1970:1970"
     volumes:
       - /path/to/music:/music
       - /path/to/config:/config
-    ports:
-      - "1970:1970"
+    environment:
+      - SWINGMUSIC_PORT=1970
+      - SWINGMUSIC_DEVICE_NAME=Host name here
     restart: unless-stopped
 ```
+
+The `SWINGMUSIC_DEVICE_NAME` sets the name this server reports to connected clients. To use a different port, change both `SWINGMUSIC_PORT` and the `ports` mapping to match (e.g. `2001:2001` with `SWINGMUSIC_PORT=2001`).
 
 ### Using Docker CLI
 
@@ -73,13 +78,16 @@ docker pull ghcr.io/swingmx/swingmusic:latest
 Then run:
 
 ```sh
-docker run --name swingmusic -p 1970:1970 -v /path/to/music:/music -v /path/to/config:/config --restart unless-stopped ghcr.io/swingmx/swingmusic:latest
+docker run --name swingmusic -p 1970:1970 -e SWINGMUSIC_PORT=1970 -e SWINGMUSIC_DEVICE_NAME="Host Name Here" -v /path/to/music:/music -v /path/to/config:/config --restart unless-stopped ghcr.io/swingmx/swingmusic:latest
 ```
 
-Replace `/path/to/music` and `/path/to/config` with the appropriate values. In addition, specify the `/music` directory as the root directory inside Swing Music.
+Replace the following with appropriate values:
 
-> [!TIP]
-> For more info, see the [Docker section](https://swingmusic.vercel.app/guide/getting-started.html#docker) on the docs.
+1. `/path/to/music` - Your music directory on the host
+2. `/path/to/config` - Path to create Swing Music configs on the host
+3. `Host Name Here` - Your host device name
+
+You can change the Swing Music port by updating both the `-p` mapping and `SWINGMUSIC_PORT` to the same value (e.g. `-p 2001:2001 -e SWINGMUSIC_PORT=2001`).
 
 ### Options
 

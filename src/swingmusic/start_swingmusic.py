@@ -61,8 +61,9 @@ def wsgi_loader(target: str):
     :return: The WSGI application callable
     """
     import os
-    from swingmusic import app_builder
+    from swingmusic import app_builder, settings
     from swingmusic.crons import start_cron_jobs
+    from swingmusic.logger import setup_logger
     from swingmusic.plugins.register import register_plugins
     from swingmusic.setup import load_into_mem, run_setup
 
@@ -71,6 +72,11 @@ def wsgi_loader(target: str):
 
     # Setup config files and database
     run_setup()
+
+    setup_logger(
+        app_dir=settings.Paths().config_dir,
+        debug=os.environ.get("SWINGMUSIC_DEBUG") == "1",
+    )
 
     # Build the Flask/OpenAPI application
     app = app_builder.build()
