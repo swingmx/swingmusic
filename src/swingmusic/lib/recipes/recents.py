@@ -61,9 +61,10 @@ class RecentlyPlayed(HomepageRoutine):
                     HomepageStore.entries[self.store_key].items[self.userids[0]][0][
                         "timestamp"
                     ] = item["timestamp"]
-                else:
+                elif item is not None:
                     # Otherwise, insert the new item
                     # and remove the oldest item if there are more than 15 items
+                    # (guard against a None item when there are no recents yet).
                     HomepageStore.entries[self.store_key].items[self.userids[0]].insert(
                         0, item
                     )

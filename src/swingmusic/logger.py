@@ -117,12 +117,10 @@ class CustomFormatter(logging.Formatter):
         return super().format(record)
 
     def formatException(self, e):
-        # do not print on cli only in file.
-        # TODO: inform user that non terminal exception happened?
-        return ""
+        return super().formatException(e)
 
     def formatStack(self, stack_info):
-        return ""
+        return super().formatStack(stack_info)
 
 CONFIG = {
     "version": 1,

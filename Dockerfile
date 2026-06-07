@@ -95,6 +95,10 @@ VOLUME /config
 # stderr (unbuffered), but app print() statements rely on this.
 ENV PYTHONUNBUFFERED=1
 
+# Lets the app tailor runtime output to containers (e.g. skip printing the
+# unreachable docker bridge IP in startup info).
+ENV SWINGMUSIC_IN_DOCKER=1
+
 # Make /music the apparent home directory inside the container so $home
 # resolves to it across the app: onboarding userHome, dir-browser default,
 # rootDirs="$home" scans, watchdog, and stream auth all pivot to /music.

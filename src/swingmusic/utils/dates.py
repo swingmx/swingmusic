@@ -31,7 +31,11 @@ def timestamp_to_time_passed(timestamp: str | int | float):
     Converts a timestamp to time passed. e.g. 2 minutes ago, 1 hour ago, yesterday, 2 days ago, 2 weeks ago, etc.
     """
     now = datetime.now().timestamp()
-    then = datetime.fromtimestamp(int(timestamp)).timestamp()
+
+    try:
+        then = datetime.fromtimestamp(int(timestamp)).timestamp()
+    except (ValueError, OverflowError, OSError, TypeError):
+        then = now
 
     diff = now - then
     now = pendulum.now()

@@ -22,6 +22,11 @@ def recover_items(items: list[dict]):
     recovered = []
 
     for item in items:
+        if not isinstance(item, dict):
+            # Skip None / malformed entries (e.g. already-persisted bad data)
+            # so a single bad item can't crash the whole homepage.
+            continue
+
         recovered_item = None
 
         if item["type"] == "album":
@@ -148,7 +153,10 @@ def recover_items(items: list[dict]):
             if "secondary_text" in item:
                 secondary_text = item["secondary_text"]
             elif "timestamp" in item:
-                secondary_text = timestamp_to_time_passed(item["timestamp"])
+                try:
+                    secondary_text = timestamp_to_time_passed(item["timestamp"])
+                except Exception:
+                    secondary_text = None
 
             if helptext:
                 recovered_item["item"]["help_text"] = helptext
