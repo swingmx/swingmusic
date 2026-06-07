@@ -223,16 +223,9 @@ def register_license(body: RegisterLicenseBody):
         return {"error": str(e)}, 400
 
 
-class GetLicenseStatusQuery(BaseModel):
-    github_sponsors: bool = Field(
-        description="Check if this instance is premium via GitHub Sponsors benefits",
-        example=True,
-    )
-
-
 @api.get("/license/status")
 @admin_required()
-def get_license_status(query: GetLicenseStatusQuery):
+def get_license_status():
     """
     Get current license status.
 
@@ -243,7 +236,7 @@ def get_license_status(query: GetLicenseStatusQuery):
 
     try:
         manager = LicenseManager()
-        info = manager.get_license_info(check_github_sponsors=query.github_sponsors)
+        info = manager.get_license_info()
     except LicenseError as e:
         return {
             "error": str(e),
