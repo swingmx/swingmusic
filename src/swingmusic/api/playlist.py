@@ -2,11 +2,15 @@
 All playlist-related routes.
 """
 
+import csv
 import json
+import re
 from datetime import datetime
+from io import BytesIO, StringIO
 import pathlib
 from typing import Any
 
+from flask import send_file
 from PIL import UnidentifiedImageError, Image
 from pydantic_core import core_schema
 from pydantic import BaseModel, Field, GetCoreSchemaHandler
@@ -32,6 +36,126 @@ from swingmusic.settings import Paths
 
 tag = Tag(name="Playlists", description="Get and manage playlists")
 api = APIBlueprint("playlists", __name__, url_prefix="/playlists", abp_tags=[tag])
+
+PLAYLIST_SORT_KEYS = {
+    "default",
+    "album",
+    "albumartists",
+    "artists",
+    "bitrate",
+    "date",
+    "disc",
+    "duration",
+    "last_mod",
+    "lastplayed",
+    "playduration",
+    "playcount",
+    "title",
+    "filepath",
+}
+
+
+def normalize_sort_key(key: str | None) -> str:
+    if key in PLAYLIST_SORT_KEYS:
+        return key
+    return "default"
+
+
+def normalize_text(value: str) -> str:
+    value = (value or "").casefold().strip()
+    value = re.sub(r"\s+", " ", value)
+    value = re.sub(r"[^\w\s]", "", value)
+    return value
+
+
+def get_track_isrc(track: models.Track) -> str:
+    value = track.extra.get("isrc") or track.extra.get("ISRC")
+
+    if isinstance(value, list):
+        value = value[0] if value else ""
+
+    return str(value or "").strip().upper()
+
+
+def get_playlist_tracks(playlist: models.Playlist, sorttracksby: str, reverse: bool):
+    tracks = TrackStore.get_tracks_by_trackhashes(playlist.trackhashes)
+    sorttracksby = normalize_sort_key(sorttracksby)
+
+    if sorttracksby != "default":
+        tracks = sort_tracks(tracks, key=sorttracksby, reverse=reverse)
+
+    return tracks
+
+
+def slugify_filename(value: str) -> str:
+    value = normalize_text(value).replace(" ", "_")
+    return value or "playlist"
+
+
+def build_spotify_match_index():
+    exact_index: dict[tuple[str, str, tuple[str, ...]], models.Track] = {}
+    soft_index: dict[tuple[str, tuple[str, ...]], models.Track] = {}
+    title_index: dict[str, list[models.Track]] = {}
+    isrc_index: dict[str, models.Track] = {}
+
+    for track in TrackStore.get_flat_list():
+        artists = tuple(sorted(normalize_text(a["name"]) for a in track.artists))
+        exact_key = (
+            normalize_text(track.title),
+            normalize_text(track.album),
+            artists,
+        )
+        soft_key = (normalize_text(track.title), artists)
+        title_key = normalize_text(track.title)
+        isrc = get_track_isrc(track)
+
+        exact_index.setdefault(exact_key, track)
+        soft_index.setdefault(soft_key, track)
+        title_index.setdefault(title_key, []).append(track)
+
+        if isrc:
+            isrc_index.setdefault(isrc, track)
+
+    return isrc_index, exact_index, soft_index, title_index
+
+
+def match_spotify_row(
+    row: dict[str, str],
+    isrc_index: dict[str, models.Track],
+    exact_index: dict[tuple[str, str, tuple[str, ...]], models.Track],
+    soft_index: dict[tuple[str, tuple[str, ...]], models.Track],
+    title_index: dict[str, list[models.Track]],
+):
+    spotify_isrc = str(row.get("ISRC") or "").strip().upper()
+    track_name = normalize_text(row.get("Track Name", ""))
+    album_name = normalize_text(row.get("Album Name", ""))
+    artists = tuple(
+        sorted(
+            normalize_text(name)
+            for name in str(row.get("Artist Name(s)", "")).split(",")
+            if normalize_text(name)
+        )
+    )
+
+    if spotify_isrc and spotify_isrc in isrc_index:
+        return isrc_index[spotify_isrc], "isrc"
+
+    exact_key = (track_name, album_name, artists)
+    if exact_key in exact_index:
+        return exact_index[exact_key], "exact"
+
+    soft_key = (track_name, artists)
+    if soft_key in soft_index:
+        return soft_index[soft_key], "title_artists"
+
+    for candidate in title_index.get(track_name, []):
+        candidate_artists = {
+            normalize_text(artist["name"]) for artist in candidate.artists
+        }
+        if candidate_artists.intersection(artists):
+            return candidate, "title_overlap"
+
+    return None, None
 
 
 def insert_playlist(name: str, image: str = None):
@@ -206,6 +330,10 @@ def add_item_to_playlist(path: PlaylistIDPath, body: AddItemToPlaylistBody):
 class GetPlaylistQuery(GenericLimitSchema):
     no_tracks: bool = Field(False, description="Whether to include tracks")
     start: int = Field(0, description="The start index of the tracks")
+    sorttracksby: str = Field("default", description="How to sort playlist tracks")
+    tracksort_reverse: bool = Field(
+        False, description="Whether to reverse playlist track sort order"
+    )
 
 
 @api.get("/<playlistid>")
@@ -215,6 +343,8 @@ def get_playlist(path: PlaylistIDPath, query: GetPlaylistQuery):
     """
     no_tracks = query.no_tracks
     playlistid = path.playlistid
+    sorttracksby = normalize_sort_key(query.sorttracksby)
+    reverse = query.tracksort_reverse
 
     custom_playlists = [
         {"name": "recentlyadded", "handler": get_recently_added_playlist},
@@ -232,6 +362,8 @@ def get_playlist(path: PlaylistIDPath, query: GetPlaylistQuery):
             p["handler"] for p in custom_playlists if p["name"] == playlistid
         )
         playlist, tracks = handler()
+        if sorttracksby != "default":
+            tracks = sort_tracks(tracks, key=sorttracksby, reverse=reverse)
         return format_custom_playlist(playlist, tracks)
 
     playlist = PlaylistTable.get_by_id(int(playlistid))
@@ -239,12 +371,13 @@ def get_playlist(path: PlaylistIDPath, query: GetPlaylistQuery):
     if playlist is None:
         return {"msg": "Playlist not found"}, 404
 
-    if query.limit == -1:
-        query.limit = len(playlist.trackhashes) - 1
+    all_tracks = get_playlist_tracks(playlist, sorttracksby, reverse)
 
-    tracks = TrackStore.get_tracks_by_trackhashes(
-        playlist.trackhashes[query.start : query.start + query.limit]
-    )
+    if query.limit == -1:
+        tracks = all_tracks[query.start :]
+    else:
+        tracks = all_tracks[query.start : query.start + query.limit]
+
     duration = sum(t.duration for t in tracks)
     playlist._last_updated = date_string_to_time_passed(playlist.last_updated)
     playlist.duration = duration
@@ -257,12 +390,73 @@ def get_playlist(path: PlaylistIDPath, query: GetPlaylistQuery):
     }
 
 
+@api.get("/<playlistid>/export")
+def export_playlist(path: PlaylistIDPath):
+    """
+    Export a playlist as CSV.
+    """
+    playlist = PlaylistTable.get_by_id(int(path.playlistid))
+
+    if playlist is None:
+        return {"error": "Playlist not found"}, 404
+
+    tracks = get_playlist_tracks(playlist, "default", False)
+
+    csv_buffer = StringIO()
+    writer = csv.DictWriter(
+        csv_buffer,
+        fieldnames=[
+            "Track Name",
+            "Artist Name(s)",
+            "Album Name",
+            "Album Artist Name(s)",
+            "Disc Number",
+            "Track Number",
+            "Track Duration (ms)",
+            "File Path",
+            "Track Hash",
+        ],
+    )
+    writer.writeheader()
+
+    for track in tracks:
+        writer.writerow(
+            {
+                "Track Name": track.title,
+                "Artist Name(s)": ", ".join(artist["name"] for artist in track.artists),
+                "Album Name": track.album,
+                "Album Artist Name(s)": ", ".join(
+                    artist["name"] for artist in track.albumartists
+                ),
+                "Disc Number": track.disc,
+                "Track Number": track.track,
+                "Track Duration (ms)": track.duration,
+                "File Path": track.filepath,
+                "Track Hash": track.trackhash,
+            }
+        )
+
+    payload = BytesIO(csv_buffer.getvalue().encode("utf-8"))
+    payload.seek(0)
+
+    return send_file(
+        payload,
+        mimetype="text/csv; charset=utf-8",
+        as_attachment=True,
+        download_name=f"{slugify_filename(playlist.name)}.csv",
+    )
+
+
 class FileStorage(_FileStorage):
     @classmethod
     def __get_pydantic_core_schema__(
         cls, _source: Any, handler: GetCoreSchemaHandler
     ) -> core_schema.CoreSchema:
         return core_schema.with_info_plain_validator_function(cls.validate)
+
+
+class ImportSpotifyPlaylistForm(BaseModel):
+    csv_file: FileStorage = Field(description="A Spotify playlist CSV export")
 
 
 class UpdatePlaylistForm(BaseModel):
@@ -384,6 +578,83 @@ def remove_playlist(path: PlaylistIDPath):
     PlaylistTable.remove_one(path.playlistid)
     playlistlib.cleanup_playlist_images()
     return {"msg": "Done"}, 200
+
+
+@api.post("/<playlistid>/import-spotify")
+def import_spotify_playlist(path: PlaylistIDPath, form: ImportSpotifyPlaylistForm):
+    """
+    Import Spotify CSV rows into an existing playlist.
+    """
+    playlistid = int(path.playlistid)
+    playlist = PlaylistTable.get_by_id(playlistid)
+
+    if playlist is None:
+        return {"error": "Playlist not found"}, 404
+
+    try:
+        csv_text = form.csv_file.stream.read().decode("utf-8-sig")
+    except UnicodeDecodeError:
+        return {"error": "CSV file must be UTF-8 encoded"}, 400
+
+    rows = list(csv.DictReader(StringIO(csv_text)))
+    if not rows:
+        return {"error": "CSV file is empty"}, 400
+
+    required_columns = {"Track Name", "Artist Name(s)"}
+    if not required_columns.issubset(set(rows[0].keys())):
+        return {"error": "Unsupported CSV format"}, 400
+
+    isrc_index, exact_index, soft_index, title_index = build_spotify_match_index()
+    matched_hashes: list[str] = []
+    unmatched: list[dict[str, str]] = []
+    matched_by: dict[str, int] = {
+        "isrc": 0,
+        "exact": 0,
+        "title_artists": 0,
+        "title_overlap": 0,
+    }
+
+    for row in rows:
+        track, matched_on = match_spotify_row(
+            row, isrc_index, exact_index, soft_index, title_index
+        )
+
+        if track is None:
+            unmatched.append(
+                {
+                    "track": row.get("Track Name", ""),
+                    "artists": row.get("Artist Name(s)", ""),
+                    "album": row.get("Album Name", ""),
+                }
+            )
+            continue
+
+        matched_hashes.append(track.trackhash)
+        if matched_on:
+            matched_by[matched_on] += 1
+
+    if not matched_hashes:
+        return {
+            "error": "No matching local tracks found in this CSV",
+            "matched": 0,
+            "rows": len(rows),
+            "unmatched": unmatched[:25],
+        }, 404
+
+    before_hashes = PlaylistTable.get_trackhashes(playlistid) or []
+    PlaylistTable.append_to_playlist(playlistid, matched_hashes)
+    after_hashes = PlaylistTable.get_trackhashes(playlistid) or []
+    added_count = len(after_hashes) - len(before_hashes)
+
+    return {
+        "msg": "Import complete",
+        "rows": len(rows),
+        "matched": len(matched_hashes),
+        "added": added_count,
+        "already_present": len(matched_hashes) - added_count,
+        "unmatched": unmatched[:25],
+        "matched_by": matched_by,
+    }, 200
 
 
 class RemoveTracksFromPlaylistBody(BaseModel):

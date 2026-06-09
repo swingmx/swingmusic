@@ -22,6 +22,7 @@ from swingmusic.store.tracks import TrackStore
 from swingmusic.utils.wintools import is_windows
 from swingmusic.db.userdata import FavoritesTable, PlaylistTable
 from swingmusic.lib.folderslib import get_files_and_dirs, get_folders
+from swingmusic.lib.sortlib import sort_tracks
 from swingmusic.serializers.track import serialize_track, serialize_tracks
 
 tag = Tag(name="Folders", description="Get folders and tracks in a directory")
@@ -149,11 +150,16 @@ def get_folder_tree(body: FolderTree):
                         "tracks": [],
                     }, 404
 
-            tracks = TrackStore.get_tracks_by_trackhashes(
-                playlist.trackhashes[
-                    body.start : body.start + body.limit if body.limit > 0 else None
-                ]
-            )
+            tracks = TrackStore.get_tracks_by_trackhashes(playlist.trackhashes)
+            if body.sorttracksby != "default":
+                tracks = sort_tracks(
+                    tracks,
+                    key=body.sorttracksby,
+                    reverse=body.tracksort_reverse,
+                )
+            tracks = tracks[
+                body.start : body.start + body.limit if body.limit > 0 else None
+            ]
 
             return {
                 "path": f"$playlist/{playlist.name}",
@@ -224,7 +230,7 @@ def get_folder_tree(body: FolderTree):
         # Get all playlists and return them as a list of folders
         playlists_item = {
             "name": "Playlists",
-            "path": "$playlists",
+            "path": "$playlist",
             "trackcount": sum(p.count for p in PlaylistTable.get_all()),
         }
 
