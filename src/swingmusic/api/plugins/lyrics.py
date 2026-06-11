@@ -6,7 +6,7 @@ from swingmusic.config import UserConfig
 from swingmusic.lib.lyrics import Lyrics as Lyrics_class
 
 from swingmusic.plugins.lyrics import Lyrics
-from swingmusic.premium import CloudError
+from swingmusic.premium import CloudError, LicenseError
 from swingmusic.settings import Defaults
 from swingmusic.utils.hashing import create_hash
 
@@ -62,6 +62,9 @@ def search_lyrics(body: LyricsSearchBody):
             return {"trackhash": trackhash, "lyrics": None, "source": "cloud"}, 404
         else:
             pass
+    except LicenseError as e:
+        print("Error getting lyrics from cloud server: ", e)
+        pass
 
     finder = Lyrics()
     data = finder.search_lyrics_by_title_and_artist(title, artist)
