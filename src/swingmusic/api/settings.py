@@ -116,6 +116,7 @@ def get_all_settings():
     # add device name to config
     config["deviceName"] = get_device_name()
     config["deviceId"] = get_device_id()
+    config["licenseInfo"] = LicenseManager().get_license_info()
 
     return config
 

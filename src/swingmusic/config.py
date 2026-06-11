@@ -88,22 +88,25 @@ class UserConfig(metaclass=Singleton):
     lastfmApiSecret: str = "5e5306fbf3e8e3bc92f039b6c6c4bd4e"
     lastfmSessionKeys: dict[str, str] = field(default_factory=dict)
     artistArticleAwareSorting: bool = False
+    trustCloudLyrics: bool = False
 
     # license
     licenseKey: str = ""
 
     artistSortingArticles: set[str] = field(
-        default_factory=lambda: {
-            "the",
-            "a",
-            "an",
-        }  # English
-        | {"de", "het", "een"}  # Dutch
-        | {"le", "la", "les", "un", "une", "des"}  # French
-        | {"o", "os", "as", "um", "uma", "uns", "umas"}  # Portuguese
-        | {"il", "lo", "la", "gli", "le", "un", "uno", "una"}  # Italian
-        | {"el", "la", "los", "las", "un", "una", "unos", "unas"}  # Spanish
-        | {"der", "die", "das", "ein", "eine", "einen", "einem", "einer"}  # German
+        default_factory=lambda: (
+            {
+                "the",
+                "a",
+                "an",
+            }  # English
+            | {"de", "het", "een"}  # Dutch
+            | {"le", "la", "les", "un", "une", "des"}  # French
+            | {"o", "os", "as", "um", "uma", "uns", "umas"}  # Portuguese
+            | {"il", "lo", "la", "gli", "le", "un", "uno", "una"}  # Italian
+            | {"el", "la", "los", "las", "un", "una", "unos", "unas"}  # Spanish
+            | {"der", "die", "das", "ein", "eine", "einen", "einem", "einer"}
+        )  # German
     )
 
     def __post_init__(self, *args, **kwargs):
@@ -217,4 +220,3 @@ class UserConfig(metaclass=Singleton):
         """
         self.write_to_file(asdict(self))
         self._last_updated = self._config_path.stat().st_mtime
-

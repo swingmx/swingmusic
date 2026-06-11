@@ -82,6 +82,7 @@ def run(*args, **kwargs):
         from swingmusic.premium import (
             PREMIUM_AVAILABLE,
             MixesPlugin,
+            CloudLyricsPlugin,
             LicenseManager,
             CloudClient,
             LicenseValidation,
@@ -93,6 +94,7 @@ def run(*args, **kwargs):
         symbols = {
             "PREMIUM_AVAILABLE": PREMIUM_AVAILABLE,
             "MixesPlugin": MixesPlugin,
+            "CloudLyricsPlugin": CloudLyricsPlugin,
             "LicenseManager": LicenseManager,
             "CloudClient": CloudClient,
             "LicenseValidation": LicenseValidation,

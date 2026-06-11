@@ -68,6 +68,7 @@ def license_required(func):
 # ImportError fallback keeps the module functional.
 try:
     from swingmusic.premium.mixes import MixesPlugin  # noqa: F401
+    from swingmusic.premium.plugins.lyrics import CloudLyricsPlugin  # noqa: F401
     from swingmusic.premium.license import (  # noqa: F401
         LicenseManager,
         LicenseError,

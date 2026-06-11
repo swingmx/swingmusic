@@ -2,9 +2,11 @@ from flask_openapi3 import Tag
 from flask_openapi3 import APIBlueprint
 from pydantic import Field
 from swingmusic.api.apischemas import TrackHashSchema
+from swingmusic.config import UserConfig
 from swingmusic.lib.lyrics import Lyrics as Lyrics_class
 
 from swingmusic.plugins.lyrics import Lyrics
+from swingmusic.premium import CloudError
 from swingmusic.settings import Defaults
 from swingmusic.utils.hashing import create_hash
 
@@ -16,8 +18,12 @@ api = APIBlueprint(
 
 class LyricsSearchBody(TrackHashSchema):
     title: str = Field(description="The track title ", example=Defaults.API_TRACKNAME)
-    artist: str = Field(description="The track artist ", example=Defaults.API_ARTISTNAME)
-    album: str = Field(description="The track track album ", example=Defaults.API_ALBUMNAME)
+    artist: str = Field(
+        description="The track artist ", example=Defaults.API_ARTISTNAME
+    )
+    album: str = Field(
+        description="The track track album ", example=Defaults.API_ALBUMNAME
+    )
     filepath: str = Field(
         description="Track filepath to save the lyrics file relative to",
         example="/home/cwilvx/temp/crazy song.mp3",
@@ -35,6 +41,28 @@ def search_lyrics(body: LyricsSearchBody):
     filepath = body.filepath
     trackhash = body.trackhash
 
+    try:
+        from swingmusic.store.tracks import TrackStore
+        from swingmusic.premium.plugins.lyrics import CloudLyricsPlugin
+
+        track = TrackStore.get_tracks_by_filepaths([body.filepath])[0]
+
+        lrc, _ = CloudLyricsPlugin().get_lyrics(track)
+        if lrc:
+            return {
+                "trackhash": trackhash,
+                "lyrics": lrc.format_synced_lyrics(),
+                "source": "cloud",
+            }, 200
+
+    except CloudError as e:
+        print(f"Error getting lyrics from cloud server: {e}")
+
+        if e.status_code == 404 and UserConfig().trustCloudLyrics:
+            return {"trackhash": trackhash, "lyrics": None, "source": "cloud"}, 404
+        else:
+            pass
+
     finder = Lyrics()
     data = finder.search_lyrics_by_title_and_artist(title, artist)
 
@@ -47,7 +75,9 @@ def search_lyrics(body: LyricsSearchBody):
         i_title = track["title"]
         i_album = track["album"]
 
-        if create_hash(i_title) == create_hash(title) and create_hash(i_album) == create_hash(album):
+        if create_hash(i_title) == create_hash(title) and create_hash(
+            i_album
+        ) == create_hash(album):
             perfect_match = track
 
     track_id = perfect_match["track_id"]
