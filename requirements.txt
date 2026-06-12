@@ -167,7 +167,7 @@ pyxdg==0.28 ; sys_platform == 'linux'
     # via show-in-file-manager
 pyzmq==27.1.0
     # via locust
-rapidfuzz==3.11.0
+rapidfuzz==3.14.5
     # via swingmusic (pyproject.toml)
 requests==2.33.1
     # via
