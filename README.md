@@ -96,6 +96,10 @@ Options flags can be passed when starting the app in the terminal to tweak runti
 > [!TIP]
 > You can read more about options in [the docs](https://swingmx.com/guide/introduction.html#options).
 
+## ☁️ One-Click Deploy
+
+[![Deploy on RepoCloud](https://d16t0pc4846x52.cloudfront.net/deploylobe.svg)](https://repocloud.io/details/Swing%20Music/)
+
 ### Contributing and Development
 
 Swing Music is looking for contributors. If you're interested, please join us at the [Swing Music Community](https://t.me/+9n61PFcgKhozZDE0) group on Telegram. For more information, take a look at https://github.com/swing-opensource/swingmusic/issues/186.
