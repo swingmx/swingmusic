@@ -41,43 +41,24 @@ class RecentlyPlayed(HomepageRoutine):
                     limit=self.ITEM_LIMIT, userid=self.userids[0], _entries=[last_entry]
                 )
 
-                try:
-                    item = items[0]
-                    store_entry = HomepageStore.entries[self.store_key].items[
-                        self.userids[0]
-                    ][0]
-                except (IndexError, KeyError):
-                    store_entry = None
-                    item = None
+                if not items:
+                    return
 
-                if (
-                    store_entry
-                    and item
-                    and store_entry.get("type", "") + store_entry.get("hash", "")
-                    == item.get("type", "") + item.get("hash", "")
-                ):
-                    # If the item is the same as the one in the store
-                    # only update the timestamp
-                    HomepageStore.entries[self.store_key].items[self.userids[0]][0][
-                        "timestamp"
-                    ] = item["timestamp"]
-                elif item is not None:
-                    # Otherwise, insert the new item
-                    # and remove the oldest item if there are more than 15 items
-                    # (guard against a None item when there are no recents yet).
-                    HomepageStore.entries[self.store_key].items[self.userids[0]].insert(
-                        0, item
-                    )
+                # Move the item to the front, dropping any older copy of it
+                item = items[0]
+                key = (item.get("type"), item.get("hash"))
+                store_items = HomepageStore.entries[self.store_key].items[
+                    self.userids[0]
+                ]
 
-                    if (
-                        len(
-                            HomepageStore.entries[self.store_key].items[self.userids[0]]
-                        )
-                        > self.ITEM_LIMIT
-                    ):
-                        HomepageStore.entries[self.store_key].items[
-                            self.userids[0]
-                        ].pop()
+                deduped = [
+                    i for i in store_items if (i.get("type"), i.get("hash")) != key
+                ]
+                deduped.insert(0, item)
+
+                HomepageStore.entries[self.store_key].items[self.userids[0]] = (
+                    deduped[: self.ITEM_LIMIT]
+                )
 
             return
 

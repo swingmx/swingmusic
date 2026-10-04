@@ -1,5 +1,8 @@
 import re
 
+from rapidfuzz.utils import default_process
+from unidecode import unidecode
+
 from swingmusic.config import UserConfig
 from swingmusic.enums.album_versions import AlbumVersionEnum, get_all_keywords
 
@@ -221,3 +224,10 @@ def get_sort_name(name: str, articles: set[str]) -> str:
     # Split into words
     [article, sort_name] = name.split(maxsplit=1)
     return sort_name if article.casefold() in articles else name
+
+
+def normalize_search_text(text: str) -> str:
+    """
+    Lowercase ASCII text with punctuation stripped, for fuzzy matching.
+    """
+    return " ".join(default_process(unidecode(text)).split())

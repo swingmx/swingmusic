@@ -6,6 +6,7 @@ from swingmusic.utils.hashing import create_hash
 from swingmusic.utils.parsers import (
     clean_title,
     get_base_title_and_versions,
+    normalize_search_text,
     parse_feat_from_title,
     remove_prod,
     split_artists,
@@ -53,6 +54,8 @@ class Track:
     _ati: str = ""
     image: str = ""
     _score: float = 0
+    _search_title: str = ""
+    _search_texts: list[str] = field(default_factory=list)
     explicit: bool = False
     fav_userids: list[int] = field(default_factory=list)
     is_classical: bool = False
@@ -127,6 +130,11 @@ class Track:
 
         self.recreate_trackhash()
         self.config = None
+
+        self._search_title = normalize_search_text(self.title)
+        self._search_texts = [
+            normalize_search_text(a["name"] + " " + self.title) for a in self.artists
+        ]
 
     def split_artists(self):
         """

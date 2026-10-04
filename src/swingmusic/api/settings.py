@@ -23,6 +23,34 @@ from swingmusic.utils.paths import normalize_paths
 from swingmusic.utils.auth import get_current_userid
 from swingmusic.utils.hardware_id import get_device_id, get_device_name
 
+# Config keys returned by GET /notsettings
+PUBLIC_SETTINGS = (
+    "serverId",
+    "usersOnLogin",
+    "rootDirs",
+    "excludeDirs",
+    "artistSeparators",
+    "artistSplitIgnoreList",
+    "genreSeparators",
+    "extractFeaturedArtists",
+    "removeProdBy",
+    "removeRemasterInfo",
+    "mergeAlbums",
+    "cleanAlbumTitle",
+    "showAlbumsAsSingles",
+    "enablePeriodicScans",
+    "scanInterval",
+    "enableWatchdog",
+    "showPlaylistsInFolderView",
+    "enablePlugins",
+    "lastfmApiKey",
+    "lastfmApiSecret",
+    "artistArticleAwareSorting",
+    "trustCloudLyrics",
+    "classicalEnabled",
+    "artistSortingArticles",
+)
+
 # Error payload returned by premium-gated endpoints when the compiled
 # premium module is not shipped in this build (free-tier / OSS clone).
 _PREMIUM_UNAVAILABLE = (
@@ -92,7 +120,8 @@ def get_all_settings():
     """
     Get all settings
     """
-    config = asdict(UserConfig())
+    full_config = asdict(UserConfig())
+    config = {key: full_config[key] for key in PUBLIC_SETTINGS}
 
     # Convert sets to lists for JSON serialization
     for key, value in config.items():
@@ -108,12 +137,9 @@ def get_all_settings():
 
     # only return lastfmSessionKey for the current user
     current_user = get_current_userid()
-    config["lastfmSessionKey"] = config["lastfmSessionKeys"].get(str(current_user), "")
-    del config["lastfmSessionKeys"]
-
-    # remove license info if user is not admin
-    # if "admin" not in UserTable.get_by_id(current_user).roles:
-    del config["licenseKey"]
+    config["lastfmSessionKey"] = full_config["lastfmSessionKeys"].get(
+        str(current_user), ""
+    )
 
     # add device name to config
     config["deviceName"] = get_device_name()

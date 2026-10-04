@@ -23,6 +23,19 @@ api = APIBlueprint(
 )
 
 
+def resolve_backup_dir(name: str) -> Path | None:
+    """
+    Return the backup directory called `name`, or None if it is not a direct child of the backup root.
+    """
+    root = (Path("~").expanduser() / "swingmusic.backup").resolve()
+    target = (root / name).resolve()
+
+    if target.parent != root or not target.is_dir():
+        return None
+
+    return target
+
+
 @api.post("/create")
 @admin_required()
 def backup():
@@ -214,8 +227,8 @@ def restore(body: RestoreBackupBody):
 
     if body.backup_dir:
         # Restore from a specific backup
-        specified_backup_dir = backup_base_dir / body.backup_dir
-        if not specified_backup_dir.exists() or not specified_backup_dir.is_dir():
+        specified_backup_dir = resolve_backup_dir(body.backup_dir)
+        if specified_backup_dir is None:
             return {"msg": f"Backup '{body.backup_dir}' not found"}, 404
 
         restore_backup = RestoreBackup(specified_backup_dir)
@@ -303,9 +316,8 @@ def delete_backup(body: DeleteBackupBody):
     """
     Delete a backup.
     """
-    backup_dir = Path("~").expanduser() / "swingmusic.backup"
-    backup_dir = backup_dir / body.backup_dir
-    if not backup_dir.exists() or not backup_dir.is_dir():
+    backup_dir = resolve_backup_dir(body.backup_dir)
+    if backup_dir is None:
         return {"msg": f"Backup '{body.backup_dir}' not found"}, 404
 
     shutil.rmtree(backup_dir)

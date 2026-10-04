@@ -1,3 +1,6 @@
+import os
+import secrets
+
 from cryptography.hazmat.primitives import serialization
 from cryptography.hazmat.primitives.asymmetric import ed25519
 
@@ -77,3 +80,17 @@ class Cryptography:
         Check if the private key file exists.
         """
         return (Paths().config_dir / "private.key").exists()
+
+
+def load_jwt_secret() -> str:
+    """
+    Returns the JWT signing secret from the config directory, creating it if missing.
+    """
+    secret_path = Paths().config_dir / "jwt.key"
+
+    if not secret_path.exists():
+        fd = os.open(secret_path, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
+        with os.fdopen(fd, "w") as f:
+            f.write(secrets.token_hex(32))
+
+    return secret_path.read_text().strip()

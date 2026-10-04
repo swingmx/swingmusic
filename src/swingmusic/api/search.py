@@ -3,7 +3,6 @@ Contains all the search routes.
 """
 
 from typing import Any, Literal
-from unidecode import unidecode
 from pydantic import Field
 from flask_openapi3 import Tag
 from flask_openapi3 import APIBlueprint
@@ -11,9 +10,10 @@ from flask_openapi3 import APIBlueprint
 from swingmusic import models
 from swingmusic.api.apischemas import GenericLimitSchema
 from swingmusic.lib import searchlib
+from swingmusic.serializers.album import serialize_for_card_many as serialize_albums
 from swingmusic.serializers.artist import serialize_for_cards
+from swingmusic.serializers.track import serialize_tracks
 from swingmusic.settings import Defaults
-from swingmusic.store.tracks import TrackStore
 
 
 tag = Tag(name="Search", description="Search for tracks, albums and artists")
@@ -51,36 +51,28 @@ class SearchLoadMoreQuery(SearchQuery):
 
 class Search:
     def __init__(self, query: str) -> None:
-        self.tracks: list[models.Track] = []
-        self.query = unidecode(query)
+        self.query = query
 
     def search_tracks(self):
         """
-        Calls :class:`SearchTracks` which returns the tracks that fuzzily match
-        the search terms. Then adds them to the `SearchResults` store.
+        Returns the tracks that fuzzily match the query.
         """
-        self.tracks = TrackStore.get_flat_list()
-        return searchlib.TopResults().search(self.query, tracks_only=True)
+        return serialize_tracks(searchlib.SearchTracks(self.query)())
 
     def search_artists(self):
-        """Calls :class:`SearchArtists` which returns the artists that fuzzily match
-        the search term. Then adds them to the `SearchResults` store.
         """
-        artists = searchlib.SearchArtists(self.query)()
-        return serialize_for_cards(artists)
+        Returns the artists that fuzzily match the query.
+        """
+        return serialize_for_cards(searchlib.SearchArtists(self.query)())
 
     def search_albums(self):
-        """Calls :class:`SearchAlbums` which returns the albums that fuzzily match
-        the search term. Then adds them to the `SearchResults` store.
         """
-        return searchlib.TopResults().search(self.query, albums_only=True)
+        Returns the albums that fuzzily match the query.
+        """
+        return serialize_albums(searchlib.SearchAlbums(self.query)())
 
-    def get_top_results(
-        self,
-        limit: int,
-    ):
-        finder = searchlib.TopResults()
-        return finder.search(self.query, limit=limit)
+    def get_top_results(self, limit: int):
+        return searchlib.TopResults.search(self.query, limit=limit)
 
 
 @api.get("/top")
