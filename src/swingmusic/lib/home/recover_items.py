@@ -38,7 +38,6 @@ def recover_items(items: list[dict]):
                 album,
                 to_remove={
                     "genres",
-                    "date",
                     "count",
                     "duration",
                     "albumartists_hashes",
