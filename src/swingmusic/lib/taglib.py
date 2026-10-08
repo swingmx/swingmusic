@@ -1,17 +1,15 @@
 import pathlib
 from dataclasses import dataclass
-import os
-from io import BytesIO
 from pathlib import Path
 import re
 from typing import Any
 
 import pendulum
-from PIL import Image, UnidentifiedImageError
 from tinytag import TinyTag
 
 from swingmusic.config import UserConfig
-from swingmusic.settings import Defaults, Paths
+from swingmusic.lib.coverart import refresh_album_art
+from swingmusic.settings import Paths
 from swingmusic.utils.hashing import create_hash
 from swingmusic.utils.parsers import split_artists
 
@@ -36,8 +34,8 @@ def extract_thumb(
     filepath: str, webp_path: str, overwrite=False, paths: Paths = None
 ) -> bool:
     """
-    Extracts the thumbnail from an audio file.
-    Returns the path to the thumbnail.
+    Extracts album art from a folder cover or an audio file.
+    Returns True if thumbs exist after the call.
     """
     # this function will be run multithreaded.
     # Modules are not cached in concurrent runs.
@@ -45,58 +43,14 @@ def extract_thumb(
     if paths is None:
         paths = Paths()
 
-    lg_img_path = paths.lg_thumb_path / webp_path
-    sm_img_path = paths.sm_thumb_path / webp_path
-    xms_img_path = paths.xsm_thumb_path / webp_path
-    md_img_path = paths.md_thumb_path / webp_path
-    og_img_path = paths.og_thumb_path / webp_path
-
-    images = [
-        (lg_img_path, Defaults.LG_THUMB_SIZE),
-        (sm_img_path, Defaults.SM_THUMB_SIZE),
-        (xms_img_path, Defaults.XSM_THUMB_SIZE),
-        (md_img_path, Defaults.MD_THUMB_SIZE),
-        (og_img_path, Defaults.OG_THUMB_SIZE),
-    ]
-
-    def save_image(img: Image.Image):
-        width, height = img.size
-        ratio = width / height
-
-        for path, size in images:
-            # prevent resizing if the image is already smaller than $size
-            if width <= size:
-                img.save(path, "webp")
-            else:
-                img.resize((size, int(size / ratio)), Image.LANCZOS).save(path, "webp")
-
-        del img
-
-    if not overwrite and (og_img_path.exists() and sm_img_path.exists()):
-        img_size = os.path.getsize(og_img_path)
-
-        if img_size > 0:
-            return True
-
-    album_art = parse_album_art(filepath)
-
-    if album_art is not None:
-        try:
-            img = Image.open(BytesIO(album_art))
-        except (UnidentifiedImageError, OSError):
-            return False
-
-        try:
-            save_image(img)
-        except OSError:
-            try:
-                png = img.convert("RGB")
-                save_image(png)
-            except:  # pylint: disable=bare-except  # noqa: E722
-                return False
-
-        return True
-    return False
+    albumhash = Path(webp_path).stem
+    return refresh_album_art(
+        albumhash,
+        Path(filepath).parent,
+        [filepath],
+        paths,
+        overwrite=overwrite,
+    )
 
 
 def parse_date(date_str: str) -> int | None:

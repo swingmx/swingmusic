@@ -2,6 +2,7 @@ import functools
 import os
 from dataclasses import asdict
 import multiprocessing as mp
+from pathlib import Path
 from requests import ReadTimeout
 from concurrent.futures import ProcessPoolExecutor
 from requests import ConnectionError as RequestConnectionError
@@ -9,7 +10,7 @@ import logging
 
 from swingmusic import settings
 from swingmusic.lib.artistlib import CheckArtistImages
-from swingmusic.lib.taglib import extract_thumb
+from swingmusic.lib.coverart import album_art_needs_refresh, refresh_album_art
 from swingmusic.models import Album, Artist
 from swingmusic.models.lastfm import SimilarArtist
 from swingmusic.models.track import Track
@@ -60,18 +61,21 @@ class CordinateMedia:
 
 def get_image(tracks: list[Track], paths=None, overwrite_track_thumbnails: bool = False):
     """
-    The function retrieves an image from a list of tracks by extracting the thumbnail from the first track that has one.
-
-    :param tracks: A list of Track objects to extract the image from.
-    :type tracks: list[Track]
-    :return: None
+    Refresh album art for a group of tracks from a folder cover or embedded tags.
     """
+    if not tracks:
+        return
 
-    for track in tracks:
-        extracted = extract_thumb(track.filepath, track.albumhash + ".webp", overwrite=overwrite_track_thumbnails, paths=paths)
+    if paths is None:
+        paths = settings.Paths()
 
-        if extracted:
-            return
+    refresh_album_art(
+        tracks[0].albumhash,
+        Path(tracks[0].folder),
+        [track.filepath for track in tracks],
+        paths,
+        overwrite=overwrite_track_thumbnails,
+    )
 
 
 class ProcessTrackThumbnails:
@@ -109,20 +113,26 @@ class ProcessTrackThumbnails:
 
     def __init__(self, overwrite_track_thumbnails: bool) -> None:
         """
-        Filters out albums that already have thumbnails and
-        extracts the thumbnail for the other albums.
+        Extracts thumbs for albums that have no cache, a stale folder
+        cover, or when a full overwrite was requested.
         """
-        path = settings.Paths().og_thumb_path
+        paths = settings.Paths()
+        albums = []
 
-        # read all the files in the thumbnail directory
-        processed = set(file.stem for file in path.iterdir())
-        # filter out albums that already have thumbnails
-        albums = filter(
-            lambda album: album.albumhash not in processed,
-            AlbumStore.get_flat_list(),
-        )
+        for album in AlbumStore.get_flat_list():
+            tracks = AlbumStore.get_album_tracks(album.albumhash)
+            if not tracks:
+                continue
 
-        albums = list(albums)
+            folder = Path(tracks[0].folder)
+            if album_art_needs_refresh(
+                album.albumhash,
+                folder,
+                paths,
+                overwrite=overwrite_track_thumbnails,
+            ):
+                albums.append(album)
+
         self.extract(albums, overwrite_track_thumbnails=overwrite_track_thumbnails)
 
 
