@@ -4,7 +4,7 @@ from dataclasses import dataclass
 from swingmusic.models.track import Track
 from swingmusic.utils.hashing import create_hash
 from swingmusic.utils.auth import get_current_userid
-from swingmusic.utils.parsers import get_base_title_and_versions
+from swingmusic.utils.parsers import get_base_title_and_versions, normalize_search_text
 
 
 @dataclass(slots=True)
@@ -37,6 +37,8 @@ class Album:
     type: str = "album"
     image: str = ""
     _score: float = 0
+    _search_title: str = ""
+    _search_texts: list[str] = dataclasses.field(default_factory=list)
     versions: list[str] = dataclasses.field(default_factory=list)
     fav_userids: list[int] = dataclasses.field(default_factory=list)
     weakhash: str = ""
@@ -62,6 +64,11 @@ class Album:
         self.weakhash = create_hash(
             self.og_title, ",".join(a["name"] for a in self.albumartists)
         )
+        self._search_title = normalize_search_text(self.title)
+        self._search_texts = [
+            normalize_search_text(a["name"] + " " + self.title)
+            for a in self.albumartists
+        ]
 
     def populate_versions(self):
         _, self.versions = get_base_title_and_versions(self.og_title, get_versions=True)

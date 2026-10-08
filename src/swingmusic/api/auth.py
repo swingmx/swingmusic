@@ -260,6 +260,9 @@ def create_user(body: UpdateProfileBody):
         set_access_cookies(res, token["accesstoken"], max_age=token["maxage"])
         return res
 
+    if not current_user or "admin" not in current_user["roles"]:
+        return {"msg": "Only admins can do that!"}, 403
+
     if not body.username or not body.password:
         return {"msg": "Username and password are required"}, 400
 
@@ -405,17 +408,21 @@ def get_all_users(query: GetAllUsersQuery):
 
     # reverse list to show latest users first
     users = reversed(users)
-    # bring admins to the front
-    users = sorted(users, key=lambda x: "admin" in x.roles, reverse=True)
-    # bring current user to index 0
     if current_user:
+        # bring admins to the front
+        users = sorted(users, key=lambda x: "admin" in x.roles, reverse=True)
+        # bring current user to index 0
         users = sorted(
             users,
             key=lambda x: x.username == current_user["username"],
             reverse=True,
         )
+    else:
+        # push guest to the end
+        users = sorted(users, key=lambda x: x.username == "guest")
 
-    if query.simplified:
+    # anonymous callers only get what the login picker needs
+    if query.simplified or not current_user:
         res["users"] = [user.todict_simplified() for user in users]
     else:
         res["users"] = [user.todict() for user in users]

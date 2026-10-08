@@ -19,8 +19,8 @@ from flask_openapi3 import Info, OpenAPI
 from swingmusic import api as swing_api
 from swingmusic.api.plugins import lyrics as lyrics_plugin
 from swingmusic.premium import mixes_api
-from swingmusic.config import UserConfig
 from swingmusic.db.userdata import UserTable
+from swingmusic.lib.crypto import load_jwt_secret
 from swingmusic.settings import Metadata, Paths
 from swingmusic.store.general import GeneralStore
 from swingmusic.utils.paths import get_client_files_extensions
@@ -45,7 +45,7 @@ def config_app(web):
 def config_jwt(web):
     # JWT CONFIGS
     web.config["JWT_VERIFY_SUB"] = False
-    web.config["JWT_SECRET_KEY"] = UserConfig().serverId
+    web.config["JWT_SECRET_KEY"] = load_jwt_secret()
     web.config["JWT_TOKEN_LOCATION"] = ["cookies", "headers"]
     web.config["JWT_COOKIE_CSRF_PROTECT"] = False
     web.config["JWT_SESSION_COOKIE"] = False

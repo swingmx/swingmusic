@@ -9,11 +9,10 @@ def serialize_for_card(artist: Artist, include: set[str] = set()):
     except TypeError:
         return {}
 
+    # trackcount, albumcount and duration are kept: clients show them as soon as an artist is
+    # opened from a card, before the artist's own page has loaded.
     props_to_remove = {
         "is_favorite",
-        "trackcount",
-        "duration",
-        "albumcount",
         "playcount",
         "playduration",
         "playcount",
