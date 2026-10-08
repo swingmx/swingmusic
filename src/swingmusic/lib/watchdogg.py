@@ -17,6 +17,7 @@ from swingmusic.db.libdata import TrackTable
 from swingmusic.db.userdata import LibDataTable
 from swingmusic.lib.albumslib import create_albums
 from swingmusic.lib.colorlib import process_color
+from swingmusic.lib.coverart import is_library_image, library_watch_patterns, refresh_art_for_image
 from swingmusic.lib.tagger import create_artists
 from swingmusic.lib.taglib import extract_thumb, get_tags
 from swingmusic.logger import log
@@ -237,11 +238,10 @@ class Handler(PatternMatchingEventHandler):
     def __init__(self, root_dirs: list[str], dir_map: dict[str:str]):
         self.root_dirs = root_dirs
         self.dir_map = dir_map
-        patterns = [f"*{f}" for f in settings.SUPPORTED_FILES]
 
         PatternMatchingEventHandler.__init__(
             self,
-            patterns=patterns,
+            patterns=library_watch_patterns(),
             ignore_directories=True,
         )
 
@@ -278,6 +278,20 @@ class Handler(PatternMatchingEventHandler):
 
         return path
 
+    def _is_indexed_audio(self, path: str) -> bool:
+        abs_path = Path(self.get_abs_path(path)).as_posix()
+        if is_library_image(abs_path):
+            return False
+        return bool(TrackStore.get_tracks_by_filepaths([abs_path]))
+
+    def _process_ready_file(self, path: str) -> None:
+        abs_path = self.get_abs_path(path)
+        if is_library_image(abs_path):
+            refresh_art_for_image(abs_path)
+            return
+
+        add_track(abs_path)
+
     def on_created(self, event):
         """
         Fired when a supported file is created.
@@ -295,6 +309,10 @@ class Handler(PatternMatchingEventHandler):
         Fired when a delete event occurs on a supported file.
         """
         path = self.get_abs_path(event.src_path)
+        if is_library_image(path):
+            refresh_art_for_image(path)
+            return
+
         remove_track(path)
 
     def on_moved(self, event):
@@ -302,19 +320,28 @@ class Handler(PatternMatchingEventHandler):
         Fired when a move event occurs on a supported file.
         """
         trash = "share/Trash"
+        src_path = self.get_abs_path(event.src_path)
+        dest_path = self.get_abs_path(event.dest_path)
+        src_is_image = is_library_image(src_path)
+        dest_is_image = is_library_image(dest_path)
+
+        if src_is_image or dest_is_image:
+            if trash in event.dest_path:
+                refresh_art_for_image(src_path)
+            elif trash in event.src_path:
+                refresh_art_for_image(dest_path)
+            else:
+                refresh_art_for_image(src_path)
+                refresh_art_for_image(dest_path)
+            return
 
         if trash in event.dest_path:
-            path = self.get_abs_path(event.src_path)
-            remove_track(path)
+            remove_track(src_path)
 
         elif trash in event.src_path:
-            path = self.get_abs_path(event.dest_path)
-            add_track(path)
+            add_track(dest_path)
 
         elif trash not in event.dest_path and trash not in event.src_path:
-            dest_path = self.get_abs_path(event.dest_path)
-            src_path = self.get_abs_path(event.src_path)
-
             add_track(dest_path)
             remove_track(src_path)
 
@@ -334,8 +361,7 @@ class Handler(PatternMatchingEventHandler):
             current_size = os.path.getsize(event.src_path)
 
             if current_size > 0 and current_size == initial_size:
-                path = self.get_abs_path(event.src_path)
-                add_track(path)
+                self._process_ready_file(event.src_path)
                 # Remove from processing list only after successful processing
                 self.files_to_process.remove(event.src_path)
             else:
@@ -358,7 +384,16 @@ class Handler(PatternMatchingEventHandler):
         # Linux.
 
         if event.src_path not in self.files_to_process_windows:
-            return
+            if is_library_image(event.src_path) or self._is_indexed_audio(
+                event.src_path
+            ):
+                try:
+                    self.file_sizes[event.src_path] = os.path.getsize(event.src_path)
+                except FileNotFoundError:
+                    return
+                self.files_to_process_windows.append(event.src_path)
+            else:
+                return
 
         # Check if file write operation is complete
         try:
@@ -384,8 +419,11 @@ class Handler(PatternMatchingEventHandler):
                 try:
                     os.rename(event.src_path, event.src_path)
                     path = self.get_abs_path(event.src_path)
-                    remove_track(path)
-                    add_track(path)
+                    if is_library_image(path):
+                        refresh_art_for_image(path)
+                    else:
+                        remove_track(path)
+                        add_track(path)
                     self.files_to_process_windows.remove(event.src_path)
                     del self.file_sizes[event.src_path]
                 except OSError:
