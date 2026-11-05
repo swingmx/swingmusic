@@ -7,6 +7,7 @@ from datetime import datetime, timezone
 from swingmusic.config import UserConfig
 from swingmusic.store.albums import AlbumStore
 from swingmusic.store.artists import ArtistStore
+from swingmusic.store.plays import NO_PLAYS, PlayStore
 from swingmusic.api.apischemas import GenericLimitSchema
 
 from swingmusic.utils import format_number
@@ -16,6 +17,7 @@ from swingmusic.utils.dates import (
     seconds_to_time_string,
     timestamp_to_time_passed,
 )
+from swingmusic.utils.auth import get_current_userid
 from swingmusic.utils.parsers import get_sort_name
 from swingmusic.serializers.album import serialize_for_card as serialize_album
 from swingmusic.serializers.artist import serialize_for_card as serialize_artist
@@ -63,6 +65,7 @@ COMMON_SORT_KEYS = {
 ALBUM_SORT_KEYS = COMMON_SORT_KEYS | {"title", "albumartists"}
 ARTIST_SORT_KEYS = COMMON_SORT_KEYS | {"name", "albumcount"}
 TEXT_SORT_KEYS = {"title", "albumartists", "name"}
+PLAY_SORT_KEYS = {"playcount", "playduration", "lastplayed"}
 
 
 def resolve_sort_key(sortkey: str, is_albums: bool) -> str:
@@ -85,6 +88,11 @@ def build_sort_key(sortkey: str, is_albums: bool, config: UserConfig):
     article_key = "albumartists" if is_albums else "name"
     article_aware = sortkey == article_key and config.artistArticleAwareSorting
     articles = config.artistSortingArticles
+
+    if sortkey in PLAY_SORT_KEYS:
+        plays = PlayStore.of(get_current_userid(), "album" if is_albums else "artist")
+        hashattr = "albumhash" if is_albums else "artisthash"
+        return lambda x: getattr(plays.get(getattr(x, hashattr), NO_PLAYS), sortkey)
 
     def sort_key(x):
         value = getattr(x, sortkey, None)

@@ -2,9 +2,21 @@
 Reusable Pydantic basic schemas for the API
 """
 
-from pydantic import BaseModel, Field
+from typing import Any
+
+from flask_openapi3 import FileStorage as _FileStorage
+from pydantic import BaseModel, Field, GetCoreSchemaHandler
+from pydantic_core import core_schema
 
 from swingmusic.settings import Defaults
+
+
+class FileStorage(_FileStorage):
+    @classmethod
+    def __get_pydantic_core_schema__(
+        cls, _source: Any, handler: GetCoreSchemaHandler
+    ) -> core_schema.CoreSchema:
+        return core_schema.with_info_plain_validator_function(cls.validate)
 
 
 class AlbumHashSchema(BaseModel):

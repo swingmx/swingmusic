@@ -2,9 +2,10 @@ import gc
 import logging
 from time import time
 
+from swingmusic.config import UserConfig
 from swingmusic.db.libdata import TrackTable
-from swingmusic.lib.tagger import IndexTracks
-from swingmusic.lib.populate import CordinateMedia
+from swingmusic.lib.tagger import IndexTracks, resolve_root_dirs, root_prefixes
+from swingmusic.lib.populate import CordinateMedia, CordinateOnlineMedia
 from swingmusic.lib.recipes.recents import RecentlyAdded
 
 from swingmusic.store.albums import AlbumStore
@@ -24,6 +25,27 @@ from swingmusic.premium import ClassicalStore, LicenseError
 from swingmusic.utils.threading import background
 
 log = logging.getLogger(__name__)
+
+
+def prune_outside_roots() -> int:
+    """
+    Delete tracks whose files are outside the configured root directories.
+    Returns the number of rows removed.
+    """
+    roots = resolve_root_dirs(UserConfig().rootDirs)
+    if not roots:
+        return 0
+
+    prefixes = root_prefixes(roots)
+    stale = {
+        filepath
+        for filepath in TrackTable.get_all_filepaths()
+        if not filepath.startswith(prefixes)
+    }
+    if stale:
+        TrackTable.remove_tracks_by_filepaths(stale)
+        log.info(f"Removed {len(stale)} tracks outside the root directories")
+    return len(stale)
 
 
 def prepare_full_scan():
@@ -84,6 +106,7 @@ def index_everything(full_scan: bool = False):
 
     CordinateMedia(instance_key=str(time()), overwrite_track_thumbnails=full_scan)
     GeneralStore.end_full_scan()
-
-    gc.collect()
     log.info("Indexing completed")
+
+    CordinateOnlineMedia()
+    gc.collect()

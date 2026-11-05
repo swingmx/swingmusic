@@ -1,4 +1,5 @@
 import os
+from contextlib import nullcontext
 from functools import partial
 from multiprocessing import Pool, cpu_count
 import math
@@ -25,6 +26,32 @@ from swingmusic.utils.remove_duplicates import remove_duplicates
 from logging import getLogger
 
 log = getLogger(__name__)
+
+# INFO: Batches up to this size are parsed in-process
+INLINE_PARSE_LIMIT = 32
+
+
+def resolve_root_dirs(root_dirs: list[str]) -> list[str]:
+    """
+    Expand the home placeholder into the user's home directory.
+    """
+    if root_dirs and root_dirs[0] == "$home":
+        return [settings.Paths().USER_HOME_DIR.as_posix()]
+    return list(root_dirs)
+
+
+def root_prefixes(root_dirs: list[str]) -> tuple[str, ...]:
+    """
+    Returns the resolved root directories, each ending with a path separator.
+    """
+    return tuple(os.path.join(os.path.realpath(root), "") for root in root_dirs)
+
+
+def is_under_roots(filepath: str, root_dirs: list[str]) -> bool:
+    """
+    Whether a file path lives inside one of the root directories.
+    """
+    return filepath.startswith(root_prefixes(root_dirs))
 
 
 def parse_file_tags(file: str, config: UserConfig) -> dict | None:
@@ -55,18 +82,14 @@ class IndexTracks:
             )
             return
 
-        try:
-            if dirs_to_scan[0] == "$home":
-                dirs_to_scan = [settings.Paths().USER_HOME_DIR.as_posix()]
-        except IndexError:
-            pass
+        dirs_to_scan = resolve_root_dirs(dirs_to_scan)
 
         files = set()
 
         for _dir in dirs_to_scan:
             files = files.union(run_fast_scandir(_dir, full=True)[1])
 
-        unmodified, modified_tracks = self.filter_modded()
+        unmodified, modified_tracks = self.filter_modded(dirs_to_scan)
         untagged = files - unmodified
 
         self.tag_untagged(untagged)
@@ -91,23 +114,25 @@ class IndexTracks:
                 continue
 
     @staticmethod
-    def filter_modded():
+    def filter_modded(root_dirs: list[str]):
         """
-        Removes tracks from the database that have been modified
-        since they were indexed.
-
+        Removes tracks from the database that are hidden, outside the root
+        directories, missing, or modified since they were indexed.
         Returns a tuple of unmodified paths and modified tracks.
-        Unmodified paths are indexed and the modified tracks are
 
+        Reads the indexed tracks from the in-memory track store.
         """
 
         unmodified_paths = set()
         modified_tracks: list[dict[str, str]] = []
 
         to_remove = set()
+        prefixes = root_prefixes(root_dirs)
 
-        for track in TrackTable.get_all():
-            if is_hidden_file(os.path.basename(track.filepath)):
+        for track in TrackStore.get_flat_list():
+            if is_hidden_file(os.path.basename(track.filepath)) or not track.filepath.startswith(
+                prefixes
+            ):
                 to_remove.add(track.filepath)
                 continue
 
@@ -127,12 +152,8 @@ class IndexTracks:
             )
 
         to_remove = to_remove.union(set(t["filepath"] for t in modified_tracks))
-        TrackTable.remove_tracks_by_filepaths(to_remove)
-
-        # REVIEW: Remove after testing!
-        track = TrackTable.get_tracks_by_filepaths(list(to_remove)[:1])
-        if track:
-            raise Exception("Track not removed")
+        if to_remove:
+            TrackTable.remove_tracks_by_filepaths(to_remove)
 
         return unmodified_paths, modified_tracks
 
@@ -160,8 +181,11 @@ class IndexTracks:
         )
         GeneralStore.scan_message = "scan_batch_cleared: " + f"0/{batches}"
 
-        with Pool(processes=max(1, cpu_count() // 2)) as pool:
+        use_pool = total_files > INLINE_PARSE_LIMIT
+
+        with Pool(processes=max(1, cpu_count() // 2)) if use_pool else nullcontext() as pool:
             worker = partial(parse_file_tags, config=config)
+            mapper = pool.imap_unordered if use_pool else map
 
             for batch_num in range(batches):
                 start_idx = batch_num * batch_size
@@ -174,7 +198,7 @@ class IndexTracks:
                 # Process current batch
                 batch_results = []
                 for result in tqdm(
-                    pool.imap_unordered(worker, batch_files),
+                    mapper(worker, batch_files),
                     total=len(batch_files),
                     desc=f"Batch {batch_num + 1}/{batches}",
                 ):
@@ -255,9 +279,6 @@ def create_artists(artisthashes: list[str]) -> list[tuple[Artist, set[str], set[
                     "genres": track.genres if track.genres else [],
                     "name": None,
                     "names": {thisartist["name"]},
-                    "lastplayed": track.lastplayed,
-                    "playcount": track.playcount,
-                    "playduration": track.playduration,
                     "trackcount": None,
                     "tracks": (
                         {track.trackhash} if thisartist.get("in_track", True) else set()
@@ -267,11 +288,8 @@ def create_artists(artisthashes: list[str]) -> list[tuple[Artist, set[str], set[
             else:
                 artist: dict = artists[thisartist["artisthash"]]
                 artist["duration"] += track.duration
-                artist["playcount"] += track.playcount
-                artist["playduration"] += track.playduration
                 artist["albums"].add(track.albumhash)
                 artist["date"] = min(artist["date"], track.date)
-                artist["lastplayed"] = max(artist["lastplayed"], track.lastplayed)
                 artist["created_date"] = min(artist["created_date"], track.last_mod)
                 artist["names"].add(thisartist["name"])
 

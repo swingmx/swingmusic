@@ -79,7 +79,10 @@ def send_fallback_img(filename: str = "default.webp"):
     if not img.exists():
         return "", 404
 
-    return send_from_directory(folder, filename)
+    # not cached, so the real image is fetched once it exists
+    response = send_from_directory(folder, filename)
+    response.headers["Cache-Control"] = "no-store"
+    return response
 
 
 def send_file_or_fallback(
@@ -217,6 +220,15 @@ def send_playlist_image(path: PlaylistImagePath):
     """
     folder = Paths().playlist_img_path
     return send_file_or_fallback(folder, path.imgpath, "playlist.svg")
+
+
+# USERS
+@api.get("/user/<imgpath>")
+def send_user_image(path: PlaylistImagePath):
+    """
+    Get user image
+    """
+    return send_file_or_fallback(Paths().user_img_path, path.imgpath)
 
 
 # MIXES

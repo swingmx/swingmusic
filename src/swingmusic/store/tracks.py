@@ -35,15 +35,6 @@ class TrackGroup:
         """
         self.tracks.remove(track)
 
-    def increment_playcount(self, duration: int, timestamp: int, playcount: int = 1):
-        """
-        Increments the playcount of all tracks in the group.
-        """
-        for track in self.tracks:
-            track.playcount += playcount
-            track.lastplayed = timestamp
-            track.playduration += duration
-
     def toggle_favorite_user(self, userid: int | None = None):
         """
         Adds or removes a user from the list of users who have favorited the track.
@@ -362,10 +353,13 @@ class TrackStore:
     @classmethod
     def get_tracks_in_path(cls, path: str):
         """
-        Returns all tracks in the given path.
+        Returns all tracks in the given path and its subfolders.
         """
-        predicate: Callable[[str, str], bool] = lambda track_folder, path: (
-            track_folder.startswith(path)
+        folder = path.rstrip("/") or "/"
+        prefix = folder if folder == "/" else folder + "/"
+
+        predicate: Callable[[str, str], bool] = lambda track_folder, _: (
+            track_folder == folder or track_folder.startswith(prefix)
         )
 
         return cls.find_tracks_by(

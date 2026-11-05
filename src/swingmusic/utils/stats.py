@@ -1,5 +1,4 @@
 from collections import defaultdict
-import copy
 
 from typing import Any, Callable, TypeVar, List
 from swingmusic.db.userdata import ScrobbleTable
@@ -7,8 +6,9 @@ from swingmusic.models.stats import StatItem
 from swingmusic.models.track import Track
 from swingmusic.models.album import Album
 from swingmusic.store.albums import AlbumStore
+from swingmusic.store.plays import PlayStats, split_playcount
 from swingmusic.store.tracks import TrackStore
-from swingmusic.utils.dates import seconds_to_time_string
+from swingmusic.utils.dates import seconds_to_time_string, timestamp_to_time_passed
 
 
 def get_artists_in_period(
@@ -25,27 +25,33 @@ def get_artists_in_period(
             continue
 
         track = track[0]
+        plays = split_playcount(scrobble.duration, track.duration)
 
         for artist in track.artists:
             artisthash = artist["artisthash"]
 
             artists[artisthash]["artist"] = artist["name"]
             artists[artisthash]["artisthash"] = artist["artisthash"]
-            artists[artisthash]["playcount"] += 1
+            artists[artisthash]["playcount"] += plays
             artists[artisthash]["playduration"] += scrobble.duration
 
             # index the track counts too
             artists[artisthash]["tracks"][track.trackhash] = (
-                artists[artisthash]["tracks"].get(track.trackhash, 0) + 1
+                artists[artisthash]["tracks"].get(track.trackhash, 0) + plays
             )
 
     artists = list(artists.values())
     return sorted(artists, key=lambda x: x["playduration"], reverse=True)
 
 
-def get_albums_in_period(start_time: int, end_time: int, userid: int | None = None):
+def get_albums_in_period(
+    start_time: int, end_time: int, userid: int | None = None
+) -> list[tuple[Album, PlayStats]]:
+    """
+    Returns the albums played in a period with their plays in it.
+    """
     scrobbles = ScrobbleTable.get_all_in_period(start_time, end_time, userid)
-    albums: dict[str, Album] = {}
+    albums: dict[str, tuple[Album, PlayStats]] = {}
 
     for scrobble in scrobbles:
         track = TrackStore.get_tracks_by_trackhashes([scrobble.trackhash])
@@ -53,46 +59,47 @@ def get_albums_in_period(start_time: int, end_time: int, userid: int | None = No
             continue
 
         track = track[0]
-        album_entry = AlbumStore.albummap.get(track.albumhash)
-        if not album_entry:
-            continue
-        album_entry = copy.deepcopy(album_entry)
-
-        albumhash = album_entry.album.albumhash
+        albumhash = track.albumhash
         if albumhash not in albums:
-            albums[albumhash] = album_entry.album
-            albums[albumhash].playcount = 0
-            albums[albumhash].playduration = 0
+            album_entry = AlbumStore.albummap.get(albumhash)
+            if not album_entry:
+                continue
 
-        albums[albumhash].playcount += 1
-        albums[albumhash].playduration += scrobble.duration
+            albums[albumhash] = (album_entry.album, PlayStats())
+
+        albums[albumhash][1].add(
+            scrobble.duration,
+            scrobble.timestamp,
+            split_playcount(scrobble.duration, track.duration),
+        )
 
     return list(albums.values())
 
 
 def get_tracks_in_period(start_time: int, end_time: int, userid: int | None = None):
+    """
+    Returns the tracks played in a period with their plays in it, the scrobble count and total duration.
+    """
     scrobbles = ScrobbleTable.get_all_in_period(start_time, end_time, userid)
-    tracks: dict[str, Track] = {}
+    tracks: dict[str, tuple[Track, PlayStats]] = {}
     duration = 0
 
     total = 0
 
     for scrobble in scrobbles:
-        total += 1
         if scrobble.trackhash not in tracks:
             try:
-                track = copy.deepcopy(
-                    TrackStore.get_tracks_by_trackhashes([scrobble.trackhash])[0]
-                )
+                track = TrackStore.get_tracks_by_trackhashes([scrobble.trackhash])[0]
             except IndexError:
+                total += 1
                 continue
 
-            tracks[scrobble.trackhash] = track
-            tracks[scrobble.trackhash].playcount = 0
-            tracks[scrobble.trackhash].playduration = 0
+            tracks[scrobble.trackhash] = (track, PlayStats())
 
-        tracks[scrobble.trackhash].playcount += 1
-        tracks[scrobble.trackhash].playduration += scrobble.duration
+        track, plays = tracks[scrobble.trackhash]
+        playcount = split_playcount(scrobble.duration, track.duration)
+        plays.add(scrobble.duration, scrobble.timestamp, playcount)
+        total += playcount
         duration += scrobble.duration
 
     return list(tracks.values()), total, duration
@@ -140,10 +147,15 @@ def calculate_trend(
 
 
 def calculate_album_trend(
-    album_entry: Album, current_albums: List[Album], previous_albums: List[Album]
+    album: Album,
+    current_albums: List[tuple[Album, PlayStats]],
+    previous_albums: List[tuple[Album, PlayStats]],
 ):
     return calculate_trend(
-        album_entry, current_albums, previous_albums, lambda a: a.albumhash
+        album.albumhash,
+        [a.albumhash for a, _ in current_albums],
+        [a.albumhash for a, _ in previous_albums],
+        lambda h: h,
     )
 
 
@@ -158,10 +170,15 @@ def calculate_artist_trend(
 
 
 def calculate_track_trend(
-    track: Track, current_tracks: List[Track], previous_tracks: List[Track]
+    track: Track,
+    current_tracks: List[tuple[Track, PlayStats]],
+    previous_tracks: List[tuple[Track, PlayStats]],
 ):
     return calculate_trend(
-        track, current_tracks, previous_tracks, lambda t: t.trackhash
+        track.trackhash,
+        [t.trackhash for t, _ in current_tracks],
+        [t.trackhash for t, _ in previous_tracks],
+        lambda h: h,
     )
 
 
@@ -199,9 +216,12 @@ def calculate_new_artists(
     return len(current_artists_set - previous_artists_set)
 
 
-def calculate_new_albums(current_albums: List[Album], previous_albums: List[Album]):
-    current_albums_set = set(album.albumhash for album in current_albums)
-    previous_albums_set = set(album.albumhash for album in previous_albums)
+def calculate_new_albums(
+    current_albums: List[tuple[Album, PlayStats]],
+    previous_albums: List[tuple[Album, PlayStats]],
+):
+    current_albums_set = set(album.albumhash for album, _ in current_albums)
+    previous_albums_set = set(album.albumhash for album, _ in previous_albums)
 
     return len(current_albums_set - previous_albums_set)
 
@@ -306,3 +326,70 @@ def get_track_group_stats(tracks: list[Track], is_album: bool = False):
         stats.append(completeness_stat)
 
     return stats
+
+
+# a rank is shown only within this many places and past this much listening
+RANK_LIMIT = 100
+RANK_MIN_SECONDS = 10 * 60
+
+
+def listening_rank(key: str, durations: dict[str, int]) -> dict | None:
+    """
+    The position of `key` among everything with listening time, and how
+    many that is. None outside RANK_LIMIT or under RANK_MIN_SECONDS.
+    """
+    played = [duration for duration in durations.values() if duration > 0]
+    mine = durations.get(key, 0)
+    if mine < RANK_MIN_SECONDS:
+        return None
+    position = 1 + sum(1 for duration in played if duration > mine)
+    if position > RANK_LIMIT:
+        return None
+    return {"position": position, "total": len(played)}
+
+
+def listening_summary(tracks: list[Track]) -> dict | None:
+    """
+    Listening totals over a page's tracks with its most played album and
+    track. None when there are no tracks.
+    """
+    if not tracks:
+        return None
+    played = [track for track in tracks if track.playcount > 0]
+    lastplayed = max((track.lastplayed for track in played), default=0)
+
+    by_album: dict[str, int] = defaultdict(int)
+    for track in played:
+        by_album[track.albumhash] += track.playduration
+
+    top_album = None
+    if by_album:
+        albumhash, duration = max(by_album.items(), key=lambda item: item[1])
+        entry = AlbumStore.albummap.get(albumhash)
+        if entry is not None:
+            album = entry.album
+            top_album = {
+                "albumhash": albumhash,
+                "title": album.title,
+                "image": album.image,
+                "artist": album.albumartists[0]["name"] if album.albumartists else None,
+                "playduration": duration,
+            }
+
+    top = max(played, key=lambda track: track.playduration, default=None)
+    top_track = (
+        {"trackhash": top.trackhash, "title": top.title, "image": top.image, "playduration": top.playduration}
+        if top
+        else None
+    )
+
+    return {
+        "playduration": sum(track.playduration for track in played),
+        "playcount": sum(track.playcount for track in played),
+        "lastplayed": lastplayed,
+        "lastplayed_ago": timestamp_to_time_passed(lastplayed) if lastplayed else None,
+        "rank": None,
+        "top_album": top_album,
+        "top_track": top_track,
+    }
+

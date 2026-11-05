@@ -2,10 +2,10 @@ from swingmusic.db.userdata import LibDataTable, FavoritesTable, ScrobbleTable
 from swingmusic.store.albums import AlbumStore
 from swingmusic.store.artists import ArtistStore
 from swingmusic.store.folder import FolderStore
+from swingmusic.store.plays import PlayStore, split_playcount
 from swingmusic.store.tracks import TrackStore
 
 
-from typing import Any
 
 
 def map_trackhash_repairs():
@@ -70,46 +70,26 @@ def map_trackhash_repairs():
 
 def map_scrobble_data():
     """
-    Maps scrobble data to the in-memory stores.
-
-    The scrobble data is loaded from the database and grouped by trackhash.
-    The album and artist scrobble data (for those tracks) are then incremented based on the data.
+    Maps every user's scrobbles to their play stats for tracks, albums and artists.
     """
-    records = ScrobbleTable.get_all(0, None)
+    PlayStore.clear()
 
-    # group records by trackhash
-    grouped: dict[str, dict[str, Any]] = {}
+    for record in ScrobbleTable.get_all_unfiltered():
+        group = TrackStore.trackhashmap.get(record.trackhash)
 
-    for record in records:
-        # aggregate playcount, playduration and lastplayed
-        item = grouped.setdefault(record.trackhash, {})
-        item["playcount"] = item.get("playcount", 0) + 1
-        item["playduration"] = item.get("playduration", 0) + record.duration
-        item["lastplayed"] = max(item.get("lastplayed", 0), record.timestamp)
-
-    # increment playcount, playduration and lastplayed for albums and artists
-    for trackhash, data in grouped.items():
-        track = TrackStore.trackhashmap.get(trackhash)
-
-        if track is None:
+        if group is None:
             continue
 
-        track.increment_playcount(
-            data["playduration"], data["lastplayed"], data["playcount"]
+        track = group.tracks[0]
+        PlayStore.record(
+            record.userid,
+            record.trackhash,
+            track.albumhash,
+            track.artisthashes,
+            record.duration,
+            record.timestamp,
+            split_playcount(record.duration, track.duration),
         )
-
-        album = AlbumStore.albummap.get(track.tracks[0].albumhash)
-        if album:
-            album.increment_playcount(
-                data["playduration"], data["lastplayed"], data["playcount"]
-            )
-
-        for artisthash in track.tracks[0].artisthashes:
-            artist = ArtistStore.artistmap.get(artisthash)
-            if artist:
-                artist.increment_playcount(
-                    data["playduration"], data["lastplayed"], data["playcount"]
-                )
 
 
 def map_favorites():

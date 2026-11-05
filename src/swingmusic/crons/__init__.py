@@ -32,6 +32,8 @@ def start_cron_jobs(and_exit: bool = False):
         jobs.append(premium.MixesCron(register=register))
     if premium.LicenseValidation is not None:
         jobs.append(premium.LicenseValidation(register=register))
+    if premium.ClassicalSync is not None:
+        jobs.append(premium.ClassicalSync(register=register))
 
     # Trigger all CRON jobs when the app is started.
     for job in jobs:

@@ -161,11 +161,10 @@ def cleanup_playlist_images() -> None:
             continue
 
         name = file.name # not stem. PlaylistTable saves with extension
-        if file not in linked_images:
-            if name.removeprefix("thumb_") not in linked_images:
-                continue
+        if name.removeprefix("thumb_") in linked_images:
+            continue
 
-            try:
-                file.unlink(missing_ok=True)
-            except OSError as e:
-                logger.exception("could not delete file", exc_info=e)
+        try:
+            file.unlink(missing_ok=True)
+        except OSError as e:
+            logger.exception("could not delete file", exc_info=e)

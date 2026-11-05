@@ -32,6 +32,7 @@ class TrackLog:
             "ar:": "artist",
             "fo:": "folder",
             "pl:": "playlist",
+            "wk:": "work",
             "favorite": "favorite",
         }
 

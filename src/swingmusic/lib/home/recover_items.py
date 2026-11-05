@@ -14,6 +14,20 @@ from swingmusic.store.tracks import TrackStore
 from swingmusic.utils.dates import timestamp_to_time_passed
 
 
+def _classical_card(name: str, *args):
+    """
+    A work or person card from the classical home module, or None when
+    classical support is off or the item is gone.
+    """
+    from swingmusic.lib.home.create_items import _classical_home
+
+    home = _classical_home()
+    try:
+        return getattr(home, name)(*args) if home else None
+    except Exception:  # noqa: BLE001
+        return None
+
+
 def recover_items(items: list[dict]):
     custom_playlists = [
         {"name": "recentlyadded", "handler": get_recently_added_playlist},
@@ -51,13 +65,21 @@ def recover_items(items: list[dict]):
             }
         elif item["type"] == "artist":
             artist = ArtistStore.get_artist_by_hash(item["hash"])
-            if artist is None:
+            if artist is not None:
+                recovered_item = {
+                    "type": "artist",
+                    "item": serialize_for_card(artist),
+                }
+            else:
+                card = _classical_card("person_card", item["hash"])
+                if card is None:
+                    continue
+                recovered_item = {"type": "artist", "item": card}
+        elif item["type"] == "work":
+            card = _classical_card("work_card", item["hash"], item.get("albumhash"))
+            if card is None:
                 continue
-
-            recovered_item = {
-                "type": "artist",
-                "item": serialize_for_card(artist),
-            }
+            recovered_item = {"type": "work", "item": card}
         elif item["type"] == "folder":
             count = FolderStore.count_tracks_containing_paths([item["hash"]])
 

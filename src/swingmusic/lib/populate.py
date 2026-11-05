@@ -25,9 +25,13 @@ from swingmusic.db.userdata import SimilarArtistTable
 log = logging.getLogger(__name__)
 
 
+# INFO: Batches up to this size are processed in-process
+INLINE_EXTRACT_LIMIT = 8
+
+
 class CordinateMedia:
     """
-    Cordinates the extracting of thumbnails
+    Cordinates the extracting of thumbnails and colors from local files
     """
 
     def __init__(self, instance_key: str, overwrite_track_thumbnails: bool = False):
@@ -35,27 +39,30 @@ class CordinateMedia:
         ProcessAlbumColors()
         ProcessArtistColors()
 
-        tried_to_download_new_images = False
 
-        if has_connection():
-            tried_to_download_new_images = True
-            try:
-                CheckArtistImages()
-            except (RequestConnectionError, ReadTimeout) as e:
-                log.error(
-                    "Internet connection lost. Downloading artist images suspended."
-                )
-                log.error(e)  # REVIEW More informations = good
-        else:
+class CordinateOnlineMedia:
+    """
+    Cordinates downloading artist images and similar artists
+    """
+
+    def __init__(self):
+        if not has_connection():
             log.warning("No internet connection. Downloading artist images suspended!")
+            return
+
+        try:
+            CheckArtistImages()
+        except (RequestConnectionError, ReadTimeout) as e:
+            log.error(
+                "Internet connection lost. Downloading artist images suspended."
+            )
+            log.error(e)  # REVIEW More informations = good
 
         # Re-process the new artist images.
-        if tried_to_download_new_images:
-            ProcessArtistColors()
+        ProcessArtistColors()
 
-        if has_connection():
-            print("Attempting to download similar artists...")
-            FetchSimilarArtistsLastFM()
+        print("Attempting to download similar artists...")
+        FetchSimilarArtistsLastFM()
 
 
 def get_image(tracks: list[Track], paths=None, overwrite_track_thumbnails: bool = False):
@@ -87,6 +94,11 @@ class ProcessTrackThumbnails:
         cpus = max(1, os.cpu_count() // 2)
 
         albumsMap = ( AlbumStore.get_album_tracks(album.albumhash) for album in albums )
+
+        if len(albums) <= INLINE_EXTRACT_LIMIT:
+            for tracks in albumsMap:
+                get_image(tracks, paths=settings.Paths(), overwrite_track_thumbnails=overwrite_track_thumbnails)
+            return
 
         # Create process pool with worker function
         with mp.Pool(processes=cpus) as pool:
@@ -123,6 +135,9 @@ class ProcessTrackThumbnails:
         )
 
         albums = list(albums)
+        if not albums:
+            return
+
         self.extract(albums, overwrite_track_thumbnails=overwrite_track_thumbnails)
 
 
@@ -156,10 +171,13 @@ class FetchSimilarArtistsLastFM:
         # filter out artists that already have similar artists using generator
         def artist_generator():
             for artist in storeArtists:
-                if artist.artisthash in processed:
+                if artist.artisthash not in processed:
                     yield artist
 
         artists = list(artist_generator())
+        if not artists:
+            return
+
         cpus = max(1, os.cpu_count() // 2)
 
         with ProcessPoolExecutor(max_workers=cpus) as executor:

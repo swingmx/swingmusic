@@ -82,14 +82,20 @@ class HomepageStore:
                 }
             )
 
+        userid = get_current_userid()
         homedata = [
-            {entry: cls.entries[entry].get_items(get_current_userid(), limit)}
+            {entry: cls.entries[entry].get_items(userid, limit)}
             for entry in cls.entries.keys()
-            if len(cls.entries[entry].items)
+            if entry != "recently_added" and len(cls.entries[entry].items)
         ]
 
-        recently_added = homedata.pop()
-        return homedata + pagedata + [recently_added]
+        recently_added = []
+        if len(cls.entries["recently_added"].items):
+            recently_added = [
+                {"recently_added": cls.entries["recently_added"].get_items(userid, limit)}
+            ]
+
+        return homedata + pagedata + recently_added
 
     @classmethod
     def find_mix(cls, mixid: str):

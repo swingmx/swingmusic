@@ -70,10 +70,6 @@ Repository = "https://github.com/swingmx/swingmusic"
 Documentation = "https://swingmx.com/guide/introduction.html"
 Issues = "https://github.com/swingmx/swingmusic/issues"
 
-
-# Include compiled Nuitka extension modules (.so on Linux/macOS, .pyd on
-# Windows) in the wheel. These replace the .py source files after the
-# compile-premium-modules.sh step runs in CI.
 [tool.setuptools.packages.find]
 where = ["src"]
 namespaces = true
@@ -85,9 +81,7 @@ exclude = ["*.tests", "*.tests.*"]
 "*" = ["*/tests/*", "tests/*"]
 
 [tool.setuptools.package-data]
-"swingmusic.premium" = ["*.so", "*.pyd"]
-"swingmusic.premium.recipes" = ["*.so", "*.pyd"]
-"swingmusic.premium.classical" = ["*.so", "*.pyd"]
+"*" = ["*.so", "*.pyd"]
 
 [tool.setuptools_scm]
 version_scheme = "only-version"

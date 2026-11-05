@@ -1,9 +1,10 @@
+import json
 import os
 import random
 import time
 from typing import Any
 import urllib
-from concurrent.futures import ProcessPoolExecutor
+from concurrent.futures import ThreadPoolExecutor
 from io import BytesIO
 from pathlib import Path
 
@@ -22,10 +23,13 @@ LARGE_ENOUGH_NUMBER = 100
 PngImagePlugin.MAX_TEXT_CHUNK = LARGE_ENOUGH_NUMBER * (1024**2)
 # https://stackoverflow.com/a/61466412
 
+# INFO: Artists with no image online are looked up again after this many seconds
+IMAGE_MISS_RETRY_AFTER = 14 * 24 * 60 * 60
 
-def get_artist_image_link(artist: str):
+
+def lookup_artist_image_link(artist: str) -> tuple[bool, str | None]:
     """
-    Returns an artist image url.
+    Returns whether the lookup got an answer, and the artist image url if one matched.
     """
     response: requests.Response | None = None
 
@@ -54,16 +58,16 @@ def get_artist_image_link(artist: str):
             try:
                 data = response.json()
             except requests.exceptions.JSONDecodeError:
-                return None
+                return False, None
 
             for res in data["data"]:
                 res_hash = create_hash(res["name"], decode=True)
                 artist_hash = create_hash(artist, decode=True)
 
                 if res_hash == artist_hash:
-                    return str(res["picture_big"])
+                    return True, str(res["picture_big"])
 
-            return None
+            return True, None
         except (RequestConnectionError, ReadTimeout, IndexError, KeyError):
             if attempt == 4:
                 print("Failed to get artist image link  ")
@@ -71,7 +75,7 @@ def get_artist_image_link(artist: str):
             if attempt <= 4:
                 time.sleep(10)
             else:
-                return None
+                return False, None
 
         # except (IndexError, KeyError):
         #     print(f"Encountered index/key error in attempt {attempt}")
@@ -79,6 +83,15 @@ def get_artist_image_link(artist: str):
         #         print(response.headers)
 
         #     return None
+
+    return False, None
+
+
+def get_artist_image_link(artist: str):
+    """
+    Returns an artist image url.
+    """
+    return lookup_artist_image_link(artist)[1]
 
 
 # TODO: Move network calls to utils/network.py
@@ -144,14 +157,23 @@ class CheckArtistImages:
         path = settings.Paths().sm_artist_img_path
         processed = set(i.replace(".webp", "") for i in os.listdir(path))
 
+        misses = self.read_misses()
+        now = time.time()
+
         unprocessed = [
-            artist for artist in storeArtists if artist.artisthash not in processed
+            artist
+            for artist in storeArtists
+            if artist.artisthash not in processed
+            and now - misses.get(artist.artisthash, 0) > IMAGE_MISS_RETRY_AFTER
         ]
+
+        if not unprocessed:
+            return
 
         num_workers = max(1, (os.cpu_count() or 1) // 2)
 
-        with ProcessPoolExecutor(max_workers=num_workers) as executor:
-            list(
+        with ThreadPoolExecutor(max_workers=num_workers) as executor:
+            results = list(
                 tqdm(
                     executor.map(self.download_image, unprocessed),
                     total=len(unprocessed),
@@ -159,21 +181,55 @@ class CheckArtistImages:
                 )
             )
 
-    @staticmethod
-    def download_image(artist: Artist):
-        """
-        Checks if an artist image exists and downloads it if not.
+        for artist, found in zip(unprocessed, results):
+            if found is False:
+                misses[artist.artisthash] = now
+            elif found:
+                misses.pop(artist.artisthash, None)
 
-        :param artist: The artist name
+        self.write_misses(misses)
+
+    @staticmethod
+    def misses_path() -> Path:
+        return settings.Paths().artist_img_path / "misses.json"
+
+    @classmethod
+    def read_misses(cls) -> dict[str, float]:
+        """
+        Returns {artisthash: last lookup time} for artists that had no image online.
+        """
+        try:
+            with open(cls.misses_path()) as f:
+                return json.load(f)
+        except (OSError, ValueError):
+            return {}
+
+    @classmethod
+    def write_misses(cls, misses: dict[str, float]):
+        try:
+            with open(cls.misses_path(), "w") as f:
+                json.dump(misses, f)
+        except OSError:
+            pass
+
+    @staticmethod
+    def download_image(artist: Artist) -> bool | None:
+        """
+        Downloads the artist image if it does not exist.
+
+        Returns True if the image exists, False if none was found online, None if the lookup or download failed.
         """
         img_path = (
                 settings.Paths().sm_artist_img_path / f"{artist.artisthash}.webp"
         )
 
         if img_path.exists():
-            return
+            return True
 
-        url = get_artist_image_link(artist.name)
+        answered, url = lookup_artist_image_link(artist.name)
 
-        if url is not None:
-            return DownloadImage(url, name=f"{artist.artisthash}.webp")
+        if url is None:
+            return False if answered else None
+
+        DownloadImage(url, name=f"{artist.artisthash}.webp")
+        return True if img_path.exists() else None

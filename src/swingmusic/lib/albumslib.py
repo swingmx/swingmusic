@@ -76,9 +76,6 @@ def create_albums(_trackhashes: list[str] = []) -> list[tuple[Album, set[str]]]:
                 "duration": track.duration,
                 "genres": [*track.genres] if track.genres else [],
                 "og_title": track.og_album,
-                "lastplayed": track.lastplayed,
-                "playcount": track.playcount,
-                "playduration": track.playduration,
                 "title": track.album,
                 "tracks": {track.trackhash},
                 "pathhash": track.pathhash,
@@ -87,9 +84,6 @@ def create_albums(_trackhashes: list[str] = []) -> list[tuple[Album, set[str]]]:
         else:
             album = albums[track.albumhash]
             album["tracks"].add(track.trackhash)
-            album["playcount"] += track.playcount
-            album["playduration"] += track.playduration
-            album["lastplayed"] = max(album["lastplayed"], track.lastplayed)
             album["duration"] += track.duration
             album["date"] = min(album["date"], track.date)
             album["created_date"] = min(album["created_date"], track.last_mod)

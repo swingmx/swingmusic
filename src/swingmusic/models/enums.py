@@ -4,3 +4,5 @@ class FavType:
     track = "track"
     album = "album"
     artist = "artist"
+    work = "work"
+    composer = "composer"

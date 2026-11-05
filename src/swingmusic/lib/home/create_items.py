@@ -10,6 +10,44 @@ from swingmusic.store.artists import ArtistStore
 from swingmusic.store.tracks import TrackStore
 
 
+def _classical_home():
+    """
+    The classical home module when classical support is on, else None.
+    """
+    try:
+        from swingmusic.config import UserConfig
+        from swingmusic.premium import classical_available
+
+        if not classical_available():
+            return None
+        from swingmusic.premium.classical import home
+
+        return home
+    except Exception:  # noqa: BLE001
+        return None
+
+
+def _classical_work(workhash: str | None) -> bool:
+    home = _classical_home()
+    try:
+        return bool(home and workhash and home.ClassicalStore.workmap.get(workhash))
+    except Exception:  # noqa: BLE001
+        return False
+
+
+def _classical_person(hash_: str | None) -> bool:
+    home = _classical_home()
+    try:
+        return bool(home and hash_ and home.person_card(hash_))
+    except Exception:  # noqa: BLE001
+        return False
+
+
+def _track_albumhash(trackhash: str) -> str | None:
+    group = TrackStore.trackhashmap.get(trackhash)
+    return group.tracks[0].albumhash if group and group.tracks else None
+
+
 def create_items(entries: list[TrackLog], limit: int):
     """
     TODO: rework so that returns a dict with
@@ -80,7 +118,7 @@ def create_items(entries: list[TrackLog], limit: int):
         if entry.type == "artist":
             artist = ArtistStore.artistmap.get(entry.type_src)
 
-            if artist is None:
+            if artist is None and not _classical_person(entry.type_src):
                 continue
 
             items.append(
@@ -91,6 +129,20 @@ def create_items(entries: list[TrackLog], limit: int):
                 }
             )
 
+            continue
+
+        if entry.type == "work":
+            if not _classical_work(entry.type_src):
+                continue
+
+            items.append(
+                {
+                    "type": "work",
+                    "hash": entry.type_src,
+                    "timestamp": entry.timestamp,
+                    "albumhash": _track_albumhash(entry.trackhash),
+                }
+            )
             continue
 
         if entry.type == "folder":

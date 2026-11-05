@@ -8,25 +8,26 @@ import pathlib
 from typing import Any
 
 from PIL import UnidentifiedImageError, Image
-from pydantic_core import core_schema
-from pydantic import BaseModel, Field, GetCoreSchemaHandler
+from pydantic import BaseModel, Field
 
 from flask_openapi3 import Tag
-from flask_openapi3 import APIBlueprint, FileStorage as _FileStorage
+from flask_openapi3 import APIBlueprint
 
-from swingmusic import models
-from swingmusic.api.apischemas import GenericLimitSchema
-from swingmusic.db.userdata import PlaylistTable
+from swingmusic import models, premium
+from swingmusic.api.apischemas import FileStorage, GenericLimitSchema
+from swingmusic.db.userdata import MixTable, PlaylistTable
 from swingmusic.lib import playlistlib
 from swingmusic.lib.albumslib import sort_by_track_no
 from swingmusic.lib.home.recentlyadded import get_recently_added_playlist
 from swingmusic.lib.home.recentlyplayed import get_recently_played_playlist
+from swingmusic.lib.m3u import sort_folder_tracks
 from swingmusic.lib.sortlib import sort_tracks
 from swingmusic.models.playlist import Playlist
 from swingmusic.serializers.playlist import serialize_for_card
 from swingmusic.serializers.track import serialize_tracks
 
 from swingmusic.store.tracks import TrackStore
+from swingmusic.utils.paths import is_path_within_root_dirs
 from swingmusic.utils.dates import create_new_date, date_string_to_time_passed
 from swingmusic.settings import Paths
 
@@ -61,7 +62,13 @@ def get_path_trackhashes(path: str, tracksortby: str, reverse: bool):
     Returns a list of trackhashes in a folder.
     """
     tracks = TrackStore.get_tracks_in_path(path)
-    tracks = sort_tracks(tracks, key=tracksortby, reverse=reverse)
+
+    folder = pathlib.Path(path).resolve()
+    if is_path_within_root_dirs(folder.as_posix()):
+        tracks = sort_folder_tracks(tracks, folder, tracksortby, reverse)
+    else:
+        tracks = sort_tracks(tracks, key=tracksortby, reverse=reverse)
+
     return [t.trackhash for t in tracks]
 
 
@@ -98,6 +105,22 @@ class SendAllPlaylistsQuery(BaseModel):
     no_images: bool = Field(False, description="Whether to include images")
 
 
+def count_saved_mixes() -> int:
+    """
+    Counts the current user's saved mixes. Track mixes count only when licensed.
+    """
+    if premium.MixesPlugin is None:
+        return 0
+
+    try:
+        premium.LicenseManager().check_license()
+        min_trackmix_tracks = premium.MixesPlugin.MIX_TRACKS_LENGTH + 20
+    except premium.LicenseError:
+        min_trackmix_tracks = None
+
+    return MixTable.count_saved(min_trackmix_tracks)
+
+
 @api.get("")
 def send_all_playlists(query: SendAllPlaylistsQuery):
     """
@@ -123,7 +146,10 @@ def send_all_playlists(query: SendAllPlaylistsQuery):
     #     reverse=True,
     # )
 
-    return {"data": playlists}
+    return {
+        "data": playlists,
+        "saved_mixes": 0 if query.no_images else count_saved_mixes(),
+    }
 
 
 class CreatePlaylistBody(BaseModel):
@@ -257,14 +283,6 @@ def get_playlist(path: PlaylistIDPath, query: GetPlaylistQuery):
     }
 
 
-class FileStorage(_FileStorage):
-    @classmethod
-    def __get_pydantic_core_schema__(
-        cls, _source: Any, handler: GetCoreSchemaHandler
-    ) -> core_schema.CoreSchema:
-        return core_schema.with_info_plain_validator_function(cls.validate)
-
-
 class UpdatePlaylistForm(BaseModel):
     image: FileStorage = Field(description="The image file")
     name: str = Field(..., description="The name of the playlist")
@@ -295,12 +313,13 @@ def update_playlist_info(path: PlaylistIDPath, form: UpdatePlaylistForm):
 
     settings = json.loads(form.settings)
     settings["has_gif"] = False
+    name = str(form.name).strip()
 
     playlist = {
         "id": int(playlistid),
         "image": db_playlist.image,
-        "last_updated": create_new_date(),
-        "name": str(form.name).strip(),
+        "last_updated": create_new_date() if name != db_playlist.name else db_playlist.last_updated,
+        "name": name,
         "settings": settings,
     }
 

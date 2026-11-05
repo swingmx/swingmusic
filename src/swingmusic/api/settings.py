@@ -1,3 +1,5 @@
+import threading
+import time
 from typing import Any
 from flask_openapi3 import Tag
 from flask_openapi3 import APIBlueprint
@@ -144,7 +146,9 @@ def get_all_settings():
     # add device name to config
     config["deviceName"] = get_device_name()
     config["deviceId"] = get_device_id()
-    config["licenseInfo"] = LicenseManager().get_license_info()
+    config["licenseInfo"] = (
+        LicenseManager().get_license_info() if LicenseManager else None
+    )
 
     return config
 
@@ -221,9 +225,36 @@ def update_config(body: UpdateConfigBody):
     if body.key in reset_stores_lists:
         index_everything()
 
+    if body.key == "classicalEnabled":
+        _apply_classical_setting(bool(body.value))
+
     return {
         "msg": "Config updated!",
     }
+
+
+def _apply_classical_setting(enabled: bool) -> None:
+    """
+    Clear the classical index when classical is turned off, and rebuild it
+    in the background when it is turned on with a valid license.
+    """
+    from swingmusic.premium import ClassicalStore, classical_available
+
+    if ClassicalStore is None:
+        return
+    if not enabled:
+        ClassicalStore.clear()
+        return
+    if not classical_available():
+        return
+
+    def load():
+        try:
+            ClassicalStore.load_albums(str(time.time()))
+        except (LicenseError, CloudError) as e:
+            print("Classical: rebuild failed:", e)
+
+    threading.Thread(target=load, name="classical-load", daemon=True).start()
 
 
 class RegisterLicenseBody(BaseModel):

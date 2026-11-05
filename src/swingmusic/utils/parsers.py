@@ -1,3 +1,4 @@
+import functools
 import re
 
 from rapidfuzz.utils import default_process
@@ -5,6 +6,24 @@ from unidecode import unidecode
 
 from swingmusic.config import UserConfig
 from swingmusic.enums.album_versions import AlbumVersionEnum, get_all_keywords
+
+
+@functools.lru_cache(maxsize=8)
+def _split_tokens(
+    ignore_list: tuple[str, ...], separators: tuple[str, ...]
+) -> dict[str, list[tuple[str, bool, int]]]:
+    """
+    Maps a lowercase first character to its (lowercase token, is_ignored, length) candidates, ignored artists first in list order, then separators longest first.
+    """
+    tokens = [(i, True) for i in ignore_list if i]
+    tokens += [(s, False) for s in sorted((s for s in separators if s), key=len, reverse=True)]
+
+    index: dict[str, list[tuple[str, bool, int]]] = {}
+    for token, ignored in tokens:
+        lowered = token.lower()
+        index.setdefault(lowered[0], []).append((lowered, ignored, len(token)))
+
+    return index
 
 
 def split_artists(src: str, config: UserConfig):
@@ -15,41 +34,34 @@ def split_artists(src: str, config: UserConfig):
     result = []
     current = ""
     i = 0
-    separators = sorted((s for s in config.artistSeparators if s), key=len, reverse=True)
+    index = _split_tokens(tuple(config.artistSplitIgnoreList), tuple(config.artistSeparators))
+    lowered = src.lower()
 
     while i < len(src):
-        # Check if any ignored artist starts at this position (case-insensitive)
-        ignored_match = next(
+        match = next(
             (
-                src[i : i + len(ignored)]
-                for ignored in config.artistSplitIgnoreList
-                if src.lower().startswith(ignored.lower(), i)
+                (ignored, length)
+                for token, ignored, length in index.get(lowered[i : i + 1], ())
+                if lowered.startswith(token, i)
             ),
             None,
         )
 
-        if ignored_match:
-            # If we have accumulated any current string, add it to result
-            if current.strip():
-                result.extend([a.strip() for a in current.split(",") if a.strip()])
-                current = ""
-            # Add the ignored artist to the result (preserving original case)
-            result.append(ignored_match)
-            # Move past the ignored artist
-            i += len(ignored_match)
-        elif sep_match := next(
-            (sep for sep in separators if src.lower().startswith(sep.lower(), i)),
-            None,
-        ):
-            # If we encounter a separator, process the current string
-            if current.strip():
-                result.extend([a.strip() for a in current.split(",") if a.strip()])
-                current = ""
-            i += len(sep_match)
-        else:
-            # If it's not an ignored artist or a separator, add to current
+        if match is None:
             current += src[i]
             i += 1
+            continue
+
+        ignored, length = match
+        if current.strip():
+            result.extend([a.strip() for a in current.split(",") if a.strip()])
+            current = ""
+
+        # INFO: Ignored artists keep their original case
+        if ignored:
+            result.append(src[i : i + length])
+
+        i += length
 
     # Process any remaining current string
     if current.strip():
@@ -226,8 +238,16 @@ def get_sort_name(name: str, articles: set[str]) -> str:
     return sort_name if article.casefold() in articles else name
 
 
+SYMBOL_LETTERS = str.maketrans({"$": "s", "¥": "y", "€": "e"})
+INWORD_SYMBOL_LETTERS = re.compile(r"(?<=[A-Za-z])[!@](?=[A-Za-z])")
+
+
 def normalize_search_text(text: str) -> str:
     """
     Lowercase ASCII text with punctuation stripped, for fuzzy matching.
+    Symbols used as letters in names (A$AP, ¥$, P!nk) become the letter.
     """
+    text = INWORD_SYMBOL_LETTERS.sub(
+        lambda m: "i" if m.group() == "!" else "a", text.translate(SYMBOL_LETTERS)
+    )
     return " ".join(default_process(unidecode(text)).split())

@@ -34,6 +34,10 @@ class SearchQuery(GenericLimitSchema):
     limit: int = Field(
         description="The number of items to return", default=SEARCH_COUNT
     )
+    classical: bool = Field(
+        description="Include composers, performers, works and movements, and label classical tracks with their works",
+        default=False,
+    )
 
 
 class TopResultsQuery(SearchQuery):
@@ -43,27 +47,59 @@ class TopResultsQuery(SearchQuery):
 
 
 class SearchLoadMoreQuery(SearchQuery):
-    itemtype: Literal["tracks", "albums", "artists"] = Field(
+    itemtype: Literal["tracks", "movements", "works", "albums", "artists"] = Field(
         description="The type of search",
         json_schema_extra={"example": "tracks"},
     )
 
 
 class Search:
-    def __init__(self, query: str) -> None:
+    def __init__(self, query: str, classical: bool = False) -> None:
         self.query = query
+        self.classical = searchlib.classical_search() if classical else None
 
-    def search_tracks(self):
+    def search_tracks(self, start: int, limit: int, movements: bool = False):
         """
-        Returns the tracks that fuzzily match the query.
+        The page of tracks that fuzzily match the query and whether more
+        follow. With classical on, `movements` picks the classical tracks
+        alone, ordered by the top result, else the non-classical ones.
         """
-        return serialize_tracks(searchlib.SearchTracks(self.query)())
+        cs = self.classical
+        if cs is None:
+            if movements:
+                return [], False
+            tracks = searchlib.SearchTracks(self.query)()
+            return serialize_tracks(tracks[start : start + limit]), len(tracks) > start + limit
+        top, _, tracks, _, _, hits = searchlib.TopResults.classical_top(cs, self.query, SEARCH_COUNT)
+        tracks = [
+            t
+            for t in cs.track_results(tracks, hits, top, self.query)
+            if (t.trackhash in cs.ClassicalStore.trackmap) == movements
+        ]
+        return cs.serialize_tracks(tracks[start : start + limit]), len(tracks) > start + limit
+
+    def search_works(self, start: int, limit: int):
+        """
+        The page of works that match the query, a composer top result's own
+        works first, and whether more follow.
+        """
+        cs = self.classical
+        if cs is None:
+            return [], False
+        top, _, _, _, _, hits = searchlib.TopResults.classical_top(cs, self.query, SEARCH_COUNT)
+        works = cs.work_results(hits, top)
+        return cs.serialize_works(works[start : start + limit]), len(works) > start + limit
 
     def search_artists(self):
         """
-        Returns the artists that fuzzily match the query.
+        Returns the artists that fuzzily match the query, with composers and
+        performers when asked.
         """
-        return serialize_for_cards(searchlib.SearchArtists(self.query)())
+        artists = searchlib.SearchArtists(self.query)()
+        cs = self.classical
+        if cs is None:
+            return serialize_for_cards(artists)
+        return searchlib.merge_people(artists, cs.people(cs.classical_hits(self.query)), searchlib.Limit.artists)
 
     def search_albums(self):
         """
@@ -72,7 +108,7 @@ class Search:
         return serialize_albums(searchlib.SearchAlbums(self.query)())
 
     def get_top_results(self, limit: int):
-        return searchlib.TopResults.search(self.query, limit=limit)
+        return searchlib.TopResults.search(self.query, limit=limit, classical=self.classical is not None)
 
 
 @api.get("/top")
@@ -85,26 +121,31 @@ def get_top_results(query: TopResultsQuery):
     if not query.q:
         return {"error": "No query provided"}, 400
 
-    return Search(query.q).get_top_results(limit=query.limit)
+    return Search(query.q, query.classical).get_top_results(limit=query.limit)
 
 
 @api.get("/")
 def search_items(query: SearchLoadMoreQuery):
     """
-    Find tracks, albums or artists from a search query.
+    Find tracks, movements, works, albums or artists from a search query.
     """
     results: Any = []
 
+    search = Search(query.q, query.classical)
     match query.itemtype:
-        case "tracks":
-            results = Search(query.q).search_tracks()
+        case "tracks" | "movements":
+            page, more = search.search_tracks(query.start, query.limit, query.itemtype == "movements")
+            return {"results": page, "more": more}
+        case "works":
+            page, more = search.search_works(query.start, query.limit)
+            return {"results": page, "more": more}
         case "albums":
-            results = Search(query.q).search_albums()
+            results = search.search_albums()
         case "artists":
-            results = Search(query.q).search_artists()
+            results = search.search_artists()
         case _:
             return {
-                "error": "Invalid item type. Valid types are 'tracks', 'albums' and 'artists'"
+                "error": "Invalid item type. Valid types are 'tracks', 'movements', 'works', 'albums' and 'artists'"
             }, 400
 
     return {

@@ -17,11 +17,6 @@ class ArtistMapEntry:
         self.albumhashes: set[str] = albumhashes
         self.trackhashes: set[str] = trackhashes
 
-    def increment_playcount(self, duration: int, timestamp: int, playcount: int = 1):
-        self.artist.lastplayed = timestamp
-        self.artist.playduration += duration
-        self.artist.playcount += playcount
-
     def toggle_favorite_user(self, userid: int | None = None):
         if userid is None:
             userid = get_current_userid()

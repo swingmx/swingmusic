@@ -49,6 +49,11 @@ class TrackTable(Base):
                 yield track_to_dataclass(d, config)
 
     @classmethod
+    def get_all_filepaths(cls) -> list[str]:
+        with DbEngine.manager() as conn:
+            return list(conn.execute(select(cls.filepath)).scalars())
+
+    @classmethod
     def get_tracks_by_filepaths(cls, filepaths: list[str]):
         with DbEngine.manager() as conn:
             result = conn.execute(
@@ -63,7 +68,7 @@ class TrackTable(Base):
         with DbEngine.manager() as conn:
             result = conn.execute(
                 select(TrackTable)
-                .where(TrackTable.filepath.contains(path))
+                .where(TrackTable.filepath.startswith(path.rstrip("/") + "/", autoescape=True))
                 .order_by(TrackTable.last_mod)
             )
 

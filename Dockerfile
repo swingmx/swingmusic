@@ -147,4 +147,9 @@ RUN --mount=type=cache,target=/root/.cache/pip \
     pip install --no-deps /tmp/wheels/*.whl && \
     rm -rf /tmp/wheels
 
+RUN premium=$(python -c "import swingmusic.premium as p; print(p.__path__[0])") && \
+    if find "$premium" -name "*.so" | grep -q .; then \
+        python -m swingmusic --test-pro-imports --config /config; \
+    fi
+
 ENTRYPOINT ["python", "-m", "swingmusic", "--host", "0.0.0.0", "--config", "/config"]
