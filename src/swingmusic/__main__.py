@@ -88,6 +88,7 @@ def run(*args, **kwargs):
             LicenseValidation,
             MixesCron,
             mixes_api,
+            remote_api,
             license_required,
             ClassicalStore,
         )
@@ -101,6 +102,7 @@ def run(*args, **kwargs):
             "LicenseValidation": LicenseValidation,
             "MixesCron": MixesCron,
             "mixes_api": mixes_api,
+            "remote_api": remote_api,
             "license_required": license_required,
             "ClassicalStore": ClassicalStore,
         }

@@ -18,7 +18,7 @@ from flask_openapi3 import Info, OpenAPI
 
 from swingmusic import api as swing_api
 from swingmusic.api.plugins import lyrics as lyrics_plugin
-from swingmusic.premium import mixes_api
+from swingmusic.premium import mixes_api, remote_api
 from swingmusic.db.userdata import UserTable
 from swingmusic.lib.crypto import load_jwt_secret
 from swingmusic.settings import Metadata, Paths
@@ -113,6 +113,9 @@ def load_plugins(web: OpenAPI):
     # module is present in this build.
     if mixes_api is not None:
         web.register_api(mixes_api)
+
+    if remote_api is not None:
+        web.register_api(remote_api)
 
 
 # # # # # # # # # # #

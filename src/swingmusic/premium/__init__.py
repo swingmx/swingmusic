@@ -11,6 +11,7 @@ LicenseValidation = None
 MixesCron = None
 ClassicalSync = None
 mixes_api = None
+remote_api = None
 ClassicalStore = None
 TranscodeStream = None
 
@@ -124,6 +125,7 @@ try:
     from swingmusic.premium.cron import LicenseValidation  # noqa: F401
     from swingmusic.premium.mixes_cron import Mixes as MixesCron  # noqa: F401
     from swingmusic.premium.api_routes import api as mixes_api  # noqa: F401
+    from swingmusic.premium.remote.api import api as remote_api  # noqa: F401
     from swingmusic.premium.recipes.because import BecauseYouListened  # noqa: F401
     from swingmusic.premium.classical.classicalstore import ClassicalStore  # noqa: F401
     from swingmusic.premium.classical.sync_cron import ClassicalSync  # noqa: F401

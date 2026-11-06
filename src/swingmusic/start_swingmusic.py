@@ -132,7 +132,7 @@ def start_swingmusic(host: str, port: int):
         port=port,
         interface=Interfaces.WSGI,
         workers=1,
-        blocking_threads=16,
+        blocking_threads=64,
         workers_kill_timeout=1,
     )
 
