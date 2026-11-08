@@ -96,6 +96,11 @@ class UserConfig(metaclass=Singleton):
     # classical support
     classicalEnabled: bool = True
 
+    # remote control
+    remoteControlEnabled: bool = True
+    # after this long without playback, the next device to press play takes over (0 = never)
+    remoteIdleMinutes: int = 60
+
     artistSortingArticles: set[str] = field(
         default_factory=lambda: (
             {

@@ -50,6 +50,8 @@ PUBLIC_SETTINGS = (
     "artistArticleAwareSorting",
     "trustCloudLyrics",
     "classicalEnabled",
+    "remoteControlEnabled",
+    "remoteIdleMinutes",
     "artistSortingArticles",
 )
 
