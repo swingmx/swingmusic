@@ -11,6 +11,7 @@ from swingmusic.utils.parsers import (
     parse_feat_from_title,
     remove_prod,
     split_artists,
+    strip_trailing_brackets,
 )
 
 
@@ -152,6 +153,10 @@ class Track:
         self._search_texts = [
             normalize_search_text(a["name"] + " " + self.title) for a in self.artists
         ]
+
+        bare_title = strip_trailing_brackets(self.title)
+        if bare_title != self.title:
+            self._search_texts.append(normalize_search_text(bare_title))
 
     def split_artists(self):
         """

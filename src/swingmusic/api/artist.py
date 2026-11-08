@@ -5,7 +5,6 @@ Contains all the artist(s) routes.
 import math
 import random
 from datetime import datetime, timezone
-from itertools import groupby
 from typing import Any
 
 from flask_openapi3 import APIBlueprint, Tag
@@ -253,12 +252,8 @@ def _album_groups(artisthash: str, split_types: bool = False) -> dict[str, list]
     albumdict = {a.albumhash: a for a in albums}
 
     config = UserConfig()
-    albumgroups = groupby(tracks, key=lambda t: t.albumhash)
-    for albumhash, tracks in albumgroups:
-        album = albumdict.get(albumhash)
-
-        if album:
-            album.check_type(list(tracks), config.showAlbumsAsSingles)
+    for album in albumdict.values():
+        album.check_type(AlbumStore.get_album_tracks(album.albumhash), config.showAlbumsAsSingles)
 
     albums = [a for a in albumdict.values()]
     all_albums = sorted(albums, key=lambda a: a.date, reverse=True)

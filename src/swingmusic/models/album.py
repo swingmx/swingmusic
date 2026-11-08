@@ -87,15 +87,14 @@ class Album:
             for a in self.albumartists
         ]
 
+        if self.og_title != self.title:
+            self._search_texts.append(normalize_search_text(self.og_title))
+
     def populate_versions(self):
         _, self.versions = get_base_title_and_versions(self.og_title, get_versions=True)
 
         if "super_deluxe" in self.versions:
             self.versions.remove("deluxe")
-
-        # at this point, we should know the type of album
-        if "original" in self.versions and self.type == "soundtrack":
-            self.versions.remove("original")
 
         self.versions = [v.replace("_", " ") for v in self.versions]
 

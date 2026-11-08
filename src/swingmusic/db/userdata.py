@@ -18,6 +18,7 @@ from sqlalchemy import (
     update,
 )
 
+from sqlalchemy.dialects.sqlite import insert as sqlite_insert
 from sqlalchemy.orm import Mapped, mapped_column
 
 from swingmusic.db.engine import DbEngine
@@ -563,6 +564,50 @@ class PlaylistTable(Base):
                 commit=True,
             )
         )
+
+
+class HashSnapshotTable(Base):
+    """
+    The track and album hashes each file had when the library was last loaded.
+    """
+
+    __tablename__ = "hashsnapshot"
+
+    filepath: Mapped[str] = mapped_column(String(), primary_key=True)
+    trackhash: Mapped[str] = mapped_column(String())
+    albumhash: Mapped[str] = mapped_column(String())
+
+    @classmethod
+    def get_all(cls) -> dict[str, tuple[str, str]]:
+        """
+        Returns the snapshot as {filepath: (trackhash, albumhash)}.
+        """
+        result = next(cls.execute(select(cls.filepath, cls.trackhash, cls.albumhash)))
+        return {filepath: (trackhash, albumhash) for filepath, trackhash, albumhash in result}
+
+    @classmethod
+    def apply(cls, changed: dict[str, tuple[str, str]], removed: Iterable[str]):
+        """
+        Upserts the changed filepaths and deletes the removed ones.
+        """
+        removed = list(removed)
+
+        with DbEngine.manager(commit=True) as session:
+            for start in range(0, len(removed), 500):
+                session.execute(delete(cls).where(cls.filepath.in_(removed[start : start + 500])))
+
+            if changed:
+                stmt = sqlite_insert(cls)
+                session.execute(
+                    stmt.on_conflict_do_update(
+                        index_elements=[cls.filepath],
+                        set_={"trackhash": stmt.excluded.trackhash, "albumhash": stmt.excluded.albumhash},
+                    ),
+                    [
+                        {"filepath": f, "trackhash": t, "albumhash": a}
+                        for f, (t, a) in changed.items()
+                    ],
+                )
 
 
 class LibDataTable(Base):

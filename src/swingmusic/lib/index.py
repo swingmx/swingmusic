@@ -14,6 +14,7 @@ from swingmusic.store.folder import FolderStore
 from swingmusic.store.artists import ArtistStore
 from swingmusic.store.general import GeneralStore
 
+from swingmusic.lib.hashmigration import map_hash_migrations
 from swingmusic.lib.mapstuff import (
     map_favorites,
     map_album_colors,
@@ -92,7 +93,8 @@ def index_everything(full_scan: bool = False):
     map_album_colors()
     map_artist_colors()
 
-    # INFO: Re-key orphaned user data before mapping it
+    # INFO: Re-key user data of changed hashes before mapping it
+    map_hash_migrations()
     map_trackhash_repairs()
 
     map_scrobble_data()

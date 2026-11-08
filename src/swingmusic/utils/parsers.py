@@ -5,7 +5,7 @@ from rapidfuzz.utils import default_process
 from unidecode import unidecode
 
 from swingmusic.config import UserConfig
-from swingmusic.enums.album_versions import AlbumVersionEnum, get_all_keywords
+from swingmusic.enums.album_versions import ANY_VERSION, VERSION_PATTERNS
 
 
 @functools.lru_cache(maxsize=8)
@@ -115,21 +115,35 @@ def parse_feat_from_title(title: str, config: UserConfig) -> tuple[list[str], st
     return artists, new_title
 
 
+TRAILING_BRACKET = re.compile(r"\s*[(\[]([^)\]]*)[)\]]$")
+
+
+def normalize_version_text(text: str) -> str:
+    """
+    Lowercases text and turns each run of non-alphanumeric characters into a space.
+    """
+    return re.sub(r"[^a-z0-9]+", " ", text.lower()).strip()
+
+
+def strip_trailing_brackets(text: str) -> str:
+    """
+    Removes all trailing bracketed blocks from text.
+    """
+    while (match := TRAILING_BRACKET.search(text)) and match.start() > 0:
+        text = text[: match.start()].rstrip()
+
+    return text
+
+
 def get_base_album_title(string: str) -> tuple[str, str | None]:
     """
-    Extracts the base album title from a string.
+    Splits an album title into the title and its trailing bracketed block,
+    when that block names an album version.
     """
-    pattern = re.compile(
-        rf"\s*(\(|\[)[^\)\]]*?({get_all_keywords()})[^\)\]]*?(\)|\])$",
-        re.IGNORECASE,
-    )
-    # TODO: Fix "Redundant character escape '\]' in RegExp "
-    match = pattern.search(string)
+    match = TRAILING_BRACKET.search(string)
 
-    if match:
-        removed_block = match.group(0)
-        title = string.replace(removed_block, "")
-        return title.strip(), removed_block.strip()
+    if match and ANY_VERSION.search(normalize_version_text(match.group(1))):
+        return string[: match.start()].strip(), match.group(0).strip()
 
     return string, None
 
@@ -148,25 +162,21 @@ def get_anniversary(text: str) -> str | None:
 
 def get_album_info(bracket_text: str | None) -> list[str]:
     """
-    Extracts album version info from the bracketed text on an album title string using regex.
+    Returns the album versions named in a bracketed album title block.
     """
     if not bracket_text:
         return []
 
-    # replace all non-alphanumeric characters with an empty string
-    bracket_text = re.sub(r"[^a-zA-Z0-9\s]", "", bracket_text)
-    versions = []
+    bracket_text = normalize_version_text(bracket_text)
+    versions = [
+        version.name.lower()
+        for version, pattern in VERSION_PATTERNS
+        if pattern.search(bracket_text)
+    ]
 
-    for version_keywords in AlbumVersionEnum:
-        for keyword in version_keywords.value:
-            if re.search(keyword, bracket_text, re.IGNORECASE):
-                versions.append(version_keywords.name.lower())
-                break
-
-    if "anniversary" in versions:
-        anniversary = get_anniversary(bracket_text)
-        versions.insert(0, anniversary)
-        versions.remove("anniversary")
+    if "anniversary_edition" in versions:
+        versions.remove("anniversary_edition")
+        versions.insert(0, get_anniversary(bracket_text))
 
     return versions
 

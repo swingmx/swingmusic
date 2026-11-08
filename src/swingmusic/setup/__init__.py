@@ -10,6 +10,7 @@ from swingmusic.config import UserConfig
 from swingmusic.lib.crypto import Cryptography
 from swingmusic.db.userdata import UserTable
 from swingmusic.lib.index import prune_outside_roots
+from swingmusic.lib.hashmigration import map_hash_migrations
 from swingmusic.lib.mapstuff import (
     map_album_colors,
     map_artist_colors,
@@ -109,7 +110,8 @@ def load_into_mem():
     ArtistStore.load_artists(key)
     FolderStore.load_filepaths()
 
-    # INFO: Re-key orphaned user data before mapping it
+    # INFO: Re-key user data of changed hashes before mapping it
+    map_hash_migrations()
     map_trackhash_repairs()
 
     map_scrobble_data()
