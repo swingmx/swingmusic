@@ -2,22 +2,28 @@
 Contains all the artist(s) routes.
 """
 
+import io
 import math
 import random
 from datetime import datetime, timezone
 from typing import Any
 
 from flask_openapi3 import APIBlueprint, Tag
+from PIL import Image
 from pydantic import BaseModel, Field
 from swingmusic.api.apischemas import (
     AlbumLimitSchema,
+    FileStorage,
     ArtistHashSchema,
     ArtistLimitSchema,
     TrackLimitSchema,
 )
 
+from swingmusic.api.auth import admin_required
 from swingmusic.config import UserConfig
 from swingmusic.db.userdata import SimilarArtistTable
+from swingmusic.lib import artistimages
+from swingmusic.lib.displaynames import DisplayNames
 from swingmusic.lib.sortlib import sort_tracks
 
 from swingmusic.serializers.album import serialize_for_card_many
@@ -168,6 +174,7 @@ def get_artist(path: ArtistHashSchema, query: GetArtistQuery):
             "albumcount": artist.albumcount,
             "genres": genres,
             "is_favorite": artist.is_favorite,
+            "display_name": DisplayNames.get(artisthash),
         },
         "tracks": tracks,
         "albums": albums,
@@ -354,3 +361,65 @@ def get_similar_artists(path: ArtistHashSchema, query: ArtistLimitSchema):
         similar = random.sample(similar, min(limit, len(similar)))
 
     return serialize_for_cards(similar[:limit])
+
+
+class ArtistImageForm(BaseModel):
+    image: FileStorage = Field(description="The image file")
+
+
+def image_response(entry):
+    return {"image": entry.artist.image, "color": entry.artist.color, "blurhash": entry.artist.blurhash}
+
+
+@api.put("/<artisthash>/image")
+@admin_required()
+def update_artist_image(path: ArtistHashSchema, form: ArtistImageForm):
+    """
+    Replaces the artist's image with a centered square crop of the uploaded image.
+    """
+    entry = ArtistStore.artistmap.get(path.artisthash)
+    if entry is None:
+        return {"msg": "Artist not found"}, 404
+
+    data = form.image.stream.read(artistimages.MAX_IMAGE_BYTES + 1)
+    if len(data) > artistimages.MAX_IMAGE_BYTES:
+        return {"msg": "Image is larger than 15MB"}, 413
+
+    try:
+        artistimages.save_artist_image(io.BytesIO(data), entry)
+    except (OSError, Image.DecompressionBombError):
+        return {"msg": "Invalid image"}, 400
+
+    return image_response(entry)
+
+
+@api.delete("/<artisthash>/image")
+@admin_required()
+def reset_artist_image(path: ArtistHashSchema):
+    """
+    Removes the artist's uploaded image and restores the downloaded one.
+    """
+    entry = ArtistStore.artistmap.get(path.artisthash)
+    if entry is None:
+        return {"msg": "Artist not found"}, 404
+
+    artistimages.reset_artist_image(entry)
+    return image_response(entry)
+
+
+class DisplayNameBody(BaseModel):
+    display_name: str | None = Field(None, max_length=200, description="The display name, empty to reset")
+
+
+@api.put("/<artisthash>/display-name")
+@admin_required()
+def update_display_name(path: ArtistHashSchema, body: DisplayNameBody):
+    """
+    Sets the name shown on the artist's page. An empty name restores the default.
+    """
+    entry = ArtistStore.artistmap.get(path.artisthash)
+    if entry is None:
+        return {"msg": "Artist not found"}, 404
+
+    DisplayNames.set(entry.artist.name, (body.display_name or "").strip() or None)
+    return {"display_name": DisplayNames.get(path.artisthash)}

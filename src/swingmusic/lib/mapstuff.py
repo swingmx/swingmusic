@@ -122,8 +122,9 @@ def map_artist_colors():
         artist = ArtistStore.artistmap.get(color["itemhash"])
 
         if artist:
-            blurhash: str = (color.get("extra", {}) or {}).get("blurhash", "")
-            artist.update_color_info(color["color"], blurhash)
+            extra = color.get("extra") or {}
+            artist.update_color_info(color["color"], extra.get("blurhash", ""))
+            artist.artist.set_image_version(extra.get("image_version"))
 
 
 def map_album_colors():

@@ -93,3 +93,9 @@ class Artist:
 
     def __post_init__(self):
         self.image = self.artisthash + ".webp"
+
+    def set_image_version(self, version: int | None):
+        """
+        Points the image at an uploaded version, or at the default image when None.
+        """
+        self.image = self.artisthash + ".webp" + (f"?v={version}" if version else "")
