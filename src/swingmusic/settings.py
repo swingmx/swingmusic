@@ -60,9 +60,20 @@ class AssetHandler:
             # no need to copy what's already copied?
             return
 
-        if assets_source.exists():
+        source_exists = (
+            assets_source._paths[0].exists()
+            if hasattr(assets_source, "_paths")
+            else assets_source.exists()
+        )
+        source_path = (
+            assets_source._paths[0]
+            if hasattr(assets_source, "_paths")
+            else Path(assets_source)
+        )
+
+        if source_exists:
             shutil.copytree(
-                Path(assets_source),
+                source_path,
                 assets_path,
                 ignore=shutil.ignore_patterns(
                     "*.pyc",
@@ -71,7 +82,7 @@ class AssetHandler:
                 dirs_exist_ok=True,
             )
         else:
-            log.error(f"Assets dir could not be found: {assets_source.as_posix()}")
+            log.error(f"Assets dir could not be found: {assets_source}")
 
     @staticmethod
     def extract_default_client(path: Path) -> bool:
