@@ -16,14 +16,14 @@ from showinfm import show_in_file_manager
 
 from swingmusic import settings
 from swingmusic.config import UserConfig
-from swingmusic.db.libdata import TrackTable
 from swingmusic.api.auth import admin_required
 from swingmusic.store.tracks import TrackStore
 from swingmusic.utils.wintools import is_windows
 from swingmusic.db.userdata import FavoritesTable, PlaylistTable
 from swingmusic.lib.folderslib import get_files_and_dirs, get_folders
+from swingmusic.lib.m3u import sort_folder_tracks
 from swingmusic.serializers.track import serialize_track, serialize_tracks
-from swingmusic.utils.paths import is_path_within_root_dirs
+from swingmusic.utils.paths import dirs_toward_root_dirs, is_path_within_root_dirs
 
 tag = Tag(name="Folders", description="Get folders and tracks in a directory")
 api = APIBlueprint("folder", __name__, url_prefix="/folder", abp_tags=[tag])
@@ -79,8 +79,16 @@ def get_folder_tree(body: FolderTree):
     """
     Get folder
 
-    Returns a list of all the folders and tracks in the given folder.
+    Returns a list of all the folders and tracks in the given folder, and the
+    server's home directory.
     """
+    res = _folder_tree(body)
+    data = res[0] if isinstance(res, tuple) else res
+    data["home"] = settings.Paths().USER_HOME_DIR.as_posix()
+    return res
+
+
+def _folder_tree(body: FolderTree):
     og_req_dir = body.folder
     req_dir = body.folder
     tracks_only = body.tracks_only
@@ -176,6 +184,16 @@ def get_folder_tree(body: FolderTree):
 
     # Validate path is within configured root directories
     if not is_path_within_root_dirs(str(resolved_path)):
+        # a folder above root directories lists only the way down to them
+        below = dirs_toward_root_dirs(str(resolved_path))
+        if below:
+            return {
+                "path": resolved_path.as_posix(),
+                "folders": natsorted(get_folders(below), key=lambda f: f.name.lower()),
+                "tracks": [],
+                "total": 0,
+            }
+
         return {
             "folders": [],
             "tracks": [],
@@ -347,6 +365,14 @@ class GetTracksInPathQuery(BaseModel):
     path: str = Field(
         description="The path to get tracks from",
     )
+    tracksortby: str = Field(
+        "default",
+        description="The field to sort tracks by. The default sort follows the folder's m3u playlist if it has one.",
+    )
+    tracksort_reverse: bool = Field(
+        False,
+        description="Whether to reverse the sort order of the tracks",
+    )
 
 
 @api.get("/tracks/all")
@@ -365,7 +391,8 @@ def get_tracks_in_path(query: GetTracksInPathQuery):
     if not is_path_within_root_dirs(str(resolved_path)):
         return {"tracks": [], "error": "Path not within allowed directories"}, 403
 
-    tracks = TrackTable.get_tracks_in_path(str(resolved_path))
+    tracks = TrackStore.get_tracks_in_path(resolved_path.as_posix())
+    tracks = sort_folder_tracks(tracks, resolved_path, query.tracksortby, query.tracksort_reverse)
     tracks = (serialize_track(t) for t in tracks if Path(t.filepath).exists())
 
     return {

@@ -2,6 +2,8 @@
 This library contains all the functions related to the search functionality.
 """
 
+from typing import Any
+
 from rapidfuzz import process, fuzz
 
 from swingmusic import models
@@ -178,6 +180,40 @@ class SearchPlaylists:
         return playlists
 
 
+def classical_search():
+    """
+    The classical search module when classical support is on, else None.
+    """
+    try:
+        from swingmusic.config import UserConfig
+        from swingmusic.premium import classical_available
+
+        if not classical_available():
+            return None
+        from swingmusic.premium.classical import search
+
+        return search
+    except Exception:  # noqa: BLE001
+        return None
+
+
+def merge_people(artists: list[Artist], people: list[tuple[float, dict]], limit: int) -> list[dict]:
+    """
+    Library artists and classical people as artist cards, best first, each
+    hash once; a person wins a tie with an artist.
+    """
+    scored = [(score, 0, card) for score, card in people]
+    scored += [(a._score, 1, serialize_for_card(a)) for a in artists]
+    scored.sort(key=lambda row: (-row[0], row[1]))
+    cards: list[dict] = []
+    seen: set[str] = set()
+    for _, _, card in scored:
+        if card["artisthash"] not in seen:
+            seen.add(card["artisthash"])
+            cards.append(card)
+    return cards[:limit]
+
+
 class TopResults:
     """
     Searches tracks, albums and artists and builds the top results page.
@@ -229,7 +265,11 @@ class TopResults:
         return items
 
     @staticmethod
-    def search(query: str, limit: int):
+    def search(query: str, limit: int, classical: bool = False):
+        cs = classical_search() if classical else None
+        if cs is not None:
+            return TopResults.search_classical(cs, query, limit)
+
         tracks = SearchTracks(query)(limit=TopResults.TRACKS_LIMIT)
         albums = SearchAlbums(query)(limit=limit)
         artists = SearchArtists(query)(limit=limit)
@@ -271,5 +311,74 @@ class TopResults:
             "top_result": top_result,
             "tracks": serialize_tracks(top_tracks),
             "artists": serialize_for_cards(artists),
+            "albums": serialize_albums(top_albums),
+        }
+
+    @staticmethod
+    def classical_top(cs, query: str, limit: int):
+        """
+        The top result with composers, performers, works and movements
+        competing for it, with the item it came from, the searched tracks,
+        albums and artists, and the classical hits.
+        """
+        tracks = SearchTracks(query)()
+        albums = SearchAlbums(query)(limit=limit)
+        artists = SearchArtists(query)(limit=limit)
+        hits = cs.classical_hits(query)
+
+        # equal scores: people, then artists, then works and movements, then tracks, then albums
+        candidates: list[tuple[float, int, str, Any]] = [
+            (hit.score, 0, "person", hit) for hit in hits if hit.kind in ("composer", "performer")
+        ]
+        candidates += [(a._score, 1, "artist", a) for a in artists]
+        candidates += [(hit.score, 2, "classical", hit) for hit in hits if hit.kind in ("work", "movement")]
+        candidates += [(t._score, 3, "track", t) for t in tracks[: TopResults.TRACKS_LIMIT]]
+        candidates += [(a._score, 4, "album", a) for a in albums]
+        candidates.sort(key=lambda row: (-row[0], row[1]))
+
+        top_result, top_item = None, None
+        for score, _, kind, item in candidates:
+            if kind in ("person", "classical"):
+                top_result = cs.top_payload(item)
+            elif kind == "track" and item.trackhash in cs.ClassicalStore.trackmap:
+                top_result = cs.top_payload(cs.Hit("movement", item.trackhash, score))
+            elif kind == "track":
+                top_result = {**serialize_track(item), "type": "track"}
+            elif kind == "artist":
+                top_result = {**serialize_for_card(item, include={"albumcount", "trackcount"}), "type": "artist"}
+            else:
+                top_result = {**serialize_album(item), "type": "album"}
+            if top_result is not None:
+                top_item = item
+                break
+
+        return top_result, top_item, tracks, albums, artists, hits
+
+    @staticmethod
+    def search_classical(cs, query: str, limit: int):
+        """
+        Top results with composers, performers, works and movements
+        competing for the top spot, and the top works.
+        """
+        top_result, item, tracks, albums, artists, hits = TopResults.classical_top(cs, query, limit)
+        if top_result is None:
+            return {"top_result": None, "tracks": [], "works": [], "artists": [], "albums": []}
+
+        top_tracks = cs.track_results(tracks, hits, top_result, query)
+        if top_result["type"] in ("artist", "album"):
+            own = TopResults.get_track_items(item, limit=TopResults.TRACKS_LIMIT)
+            top_tracks = TopResults.fill(own, top_tracks, "trackhash", TopResults.TRACKS_LIMIT)
+        top_albums = TopResults.get_album_items(item, limit=limit) if top_result["type"] == "artist" else []
+        top_albums = TopResults.fill(top_albums, albums, "albumhash", limit)
+
+        # a composer on top shows their works in place of tracks
+        works = []
+        if top_result["type"] == "composer":
+            works = cs.serialize_works(cs.work_results(hits, top_result)[: TopResults.TRACKS_LIMIT])
+        return {
+            "top_result": top_result,
+            "tracks": [] if works else cs.serialize_tracks(top_tracks[: TopResults.TRACKS_LIMIT]),
+            "works": works,
+            "artists": merge_people(artists, cs.people(hits), limit),
             "albums": serialize_albums(top_albums),
         }

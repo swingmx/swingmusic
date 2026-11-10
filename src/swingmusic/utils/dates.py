@@ -137,11 +137,12 @@ def get_duration_ago(duration: str, units_ago: int = 1) -> int:
 
 def get_duration_in_seconds(duration: str) -> int:
     """
-    Returns the number of seconds in a given duration.
+    Returns the number of seconds in the full period before the current one.
     """
     match duration:
         case "week" | "month" | "year":
-            return int(pendulum.now().subtract().start_of(duration).timestamp())
+            start = pendulum.now().start_of(duration)
+            return int((start - start.subtract(**{f"{duration}s": 1})).total_seconds())
         case "alltime":
             return int(pendulum.now().timestamp())
 

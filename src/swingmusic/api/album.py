@@ -17,7 +17,7 @@ from swingmusic.api.apischemas import (
 from swingmusic.config import UserConfig
 from swingmusic.db.userdata import SimilarArtistTable
 from swingmusic.models.album import Album
-from swingmusic.premium import ClassicalStore, CloudError, LicenseError
+from swingmusic.premium import CloudError, LicenseError, classical_available
 from swingmusic.store.albums import AlbumStore
 from swingmusic.store.artists import ArtistStore
 from swingmusic.store.tracks import TrackStore
@@ -100,7 +100,7 @@ def get_album_tracks_and_info(body: GetAlbumInfoBody):
     response = {
         "stats": get_track_group_stats(tracks, is_album=True),
         "info": {
-            **asdict(album),
+            **{key: value for key, value in asdict(album).items() if not key.startswith("_")},
             "is_favorite": album.is_favorite,
         },
         "extra": {
@@ -119,13 +119,13 @@ def get_album_tracks_and_info(body: GetAlbumInfoBody):
     if (
         body.classical_view
         and album.is_classical
-        and ClassicalStore is not None
-        and UserConfig().classicalEnabled
+        and classical_available()
     ):
         try:
-            from swingmusic.premium.classical.serializers import serialize_album_works
+            from swingmusic.premium.classical.serializers import album_performers, serialize_album_works
 
             response["works"] = serialize_album_works(sort_by_track_no(tracks))
+            response.update(album_performers(response["works"]))
             response["tracks"] = []
             return response
         except (LicenseError, CloudError, ImportError) as e:
@@ -159,13 +159,12 @@ def get_album_tracks(path: AlbumHashSchema, query: GetAlbumTracksQuery):
     if (
         query.classical_view
         and is_classical
-        and ClassicalStore is not None
-        and UserConfig().classicalEnabled
+        and classical_available()
     ):
         try:
             from swingmusic.premium.classical.serializers import serialize_album_works
 
-            return serialize_album_works(tracks)
+            return serialize_album_works(tracks, album_view=False)
         except (LicenseError, CloudError, ImportError) as e:
             print("error serializing album works", e)
             return []

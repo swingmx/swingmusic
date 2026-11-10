@@ -1,10 +1,29 @@
+import functools
 import re
 
 from rapidfuzz.utils import default_process
 from unidecode import unidecode
 
 from swingmusic.config import UserConfig
-from swingmusic.enums.album_versions import AlbumVersionEnum, get_all_keywords
+from swingmusic.enums.album_versions import ANY_VERSION, VERSION_PATTERNS
+
+
+@functools.lru_cache(maxsize=8)
+def _split_tokens(
+    ignore_list: tuple[str, ...], separators: tuple[str, ...]
+) -> dict[str, list[tuple[str, bool, int]]]:
+    """
+    Maps a lowercase first character to its (lowercase token, is_ignored, length) candidates, ignored artists first in list order, then separators longest first.
+    """
+    tokens = [(i, True) for i in ignore_list if i]
+    tokens += [(s, False) for s in sorted((s for s in separators if s), key=len, reverse=True)]
+
+    index: dict[str, list[tuple[str, bool, int]]] = {}
+    for token, ignored in tokens:
+        lowered = token.lower()
+        index.setdefault(lowered[0], []).append((lowered, ignored, len(token)))
+
+    return index
 
 
 def split_artists(src: str, config: UserConfig):
@@ -15,41 +34,34 @@ def split_artists(src: str, config: UserConfig):
     result = []
     current = ""
     i = 0
-    separators = sorted((s for s in config.artistSeparators if s), key=len, reverse=True)
+    index = _split_tokens(tuple(config.artistSplitIgnoreList), tuple(config.artistSeparators))
+    lowered = src.lower()
 
     while i < len(src):
-        # Check if any ignored artist starts at this position (case-insensitive)
-        ignored_match = next(
+        match = next(
             (
-                src[i : i + len(ignored)]
-                for ignored in config.artistSplitIgnoreList
-                if src.lower().startswith(ignored.lower(), i)
+                (ignored, length)
+                for token, ignored, length in index.get(lowered[i : i + 1], ())
+                if lowered.startswith(token, i)
             ),
             None,
         )
 
-        if ignored_match:
-            # If we have accumulated any current string, add it to result
-            if current.strip():
-                result.extend([a.strip() for a in current.split(",") if a.strip()])
-                current = ""
-            # Add the ignored artist to the result (preserving original case)
-            result.append(ignored_match)
-            # Move past the ignored artist
-            i += len(ignored_match)
-        elif sep_match := next(
-            (sep for sep in separators if src.lower().startswith(sep.lower(), i)),
-            None,
-        ):
-            # If we encounter a separator, process the current string
-            if current.strip():
-                result.extend([a.strip() for a in current.split(",") if a.strip()])
-                current = ""
-            i += len(sep_match)
-        else:
-            # If it's not an ignored artist or a separator, add to current
+        if match is None:
             current += src[i]
             i += 1
+            continue
+
+        ignored, length = match
+        if current.strip():
+            result.extend([a.strip() for a in current.split(",") if a.strip()])
+            current = ""
+
+        # INFO: Ignored artists keep their original case
+        if ignored:
+            result.append(src[i : i + length])
+
+        i += length
 
     # Process any remaining current string
     if current.strip():
@@ -103,21 +115,35 @@ def parse_feat_from_title(title: str, config: UserConfig) -> tuple[list[str], st
     return artists, new_title
 
 
+TRAILING_BRACKET = re.compile(r"\s*[(\[]([^)\]]*)[)\]]$")
+
+
+def normalize_version_text(text: str) -> str:
+    """
+    Lowercases text and turns each run of non-alphanumeric characters into a space.
+    """
+    return re.sub(r"[^a-z0-9]+", " ", text.lower()).strip()
+
+
+def strip_trailing_brackets(text: str) -> str:
+    """
+    Removes all trailing bracketed blocks from text.
+    """
+    while (match := TRAILING_BRACKET.search(text)) and match.start() > 0:
+        text = text[: match.start()].rstrip()
+
+    return text
+
+
 def get_base_album_title(string: str) -> tuple[str, str | None]:
     """
-    Extracts the base album title from a string.
+    Splits an album title into the title and its trailing bracketed block,
+    when that block names an album version.
     """
-    pattern = re.compile(
-        rf"\s*(\(|\[)[^\)\]]*?({get_all_keywords()})[^\)\]]*?(\)|\])$",
-        re.IGNORECASE,
-    )
-    # TODO: Fix "Redundant character escape '\]' in RegExp "
-    match = pattern.search(string)
+    match = TRAILING_BRACKET.search(string)
 
-    if match:
-        removed_block = match.group(0)
-        title = string.replace(removed_block, "")
-        return title.strip(), removed_block.strip()
+    if match and ANY_VERSION.search(normalize_version_text(match.group(1))):
+        return string[: match.start()].strip(), match.group(0).strip()
 
     return string, None
 
@@ -136,25 +162,21 @@ def get_anniversary(text: str) -> str | None:
 
 def get_album_info(bracket_text: str | None) -> list[str]:
     """
-    Extracts album version info from the bracketed text on an album title string using regex.
+    Returns the album versions named in a bracketed album title block.
     """
     if not bracket_text:
         return []
 
-    # replace all non-alphanumeric characters with an empty string
-    bracket_text = re.sub(r"[^a-zA-Z0-9\s]", "", bracket_text)
-    versions = []
+    bracket_text = normalize_version_text(bracket_text)
+    versions = [
+        version.name.lower()
+        for version, pattern in VERSION_PATTERNS
+        if pattern.search(bracket_text)
+    ]
 
-    for version_keywords in AlbumVersionEnum:
-        for keyword in version_keywords.value:
-            if re.search(keyword, bracket_text, re.IGNORECASE):
-                versions.append(version_keywords.name.lower())
-                break
-
-    if "anniversary" in versions:
-        anniversary = get_anniversary(bracket_text)
-        versions.insert(0, anniversary)
-        versions.remove("anniversary")
+    if "anniversary_edition" in versions:
+        versions.remove("anniversary_edition")
+        versions.insert(0, get_anniversary(bracket_text))
 
     return versions
 
@@ -226,8 +248,16 @@ def get_sort_name(name: str, articles: set[str]) -> str:
     return sort_name if article.casefold() in articles else name
 
 
+SYMBOL_LETTERS = str.maketrans({"$": "s", "¥": "y", "€": "e"})
+INWORD_SYMBOL_LETTERS = re.compile(r"(?<=[A-Za-z])[!@](?=[A-Za-z])")
+
+
 def normalize_search_text(text: str) -> str:
     """
     Lowercase ASCII text with punctuation stripped, for fuzzy matching.
+    Symbols used as letters in names (A$AP, ¥$, P!nk) become the letter.
     """
+    text = INWORD_SYMBOL_LETTERS.sub(
+        lambda m: "i" if m.group() == "!" else "a", text.translate(SYMBOL_LETTERS)
+    )
     return " ".join(default_process(unidecode(text)).split())

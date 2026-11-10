@@ -1,3 +1,4 @@
+import io
 import sqlite3
 from functools import wraps
 from pathlib import Path
@@ -12,10 +13,13 @@ from flask_jwt_extended import (
     set_access_cookies,
 )
 from flask_openapi3 import APIBlueprint, Tag
+from PIL import Image
 from pydantic import BaseModel, Field
 
+from swingmusic.api.apischemas import FileStorage
 from swingmusic.config import UserConfig
 from swingmusic.db.userdata import UserTable
+from swingmusic.lib import avatarlib
 from swingmusic.store.general import GeneralStore
 from swingmusic.store.homepage import HomepageStore
 from swingmusic.utils.auth import (
@@ -338,8 +342,60 @@ def delete_user(body: DeleteUseBody):
     if len(admins) == 1 and admins[0].username == body.username:
         return {"msg": "Cannot delete the only admin"}, 400
 
+    target = UserTable.get_by_username(body.username)
     UserTable.remove_by_username(body.username)
+
+    if target:
+        avatarlib.delete_avatar(target.image)
+
     return {"msg": f"User {body.username} deleted"}
+
+
+class UpdateUserImageForm(BaseModel):
+    image: FileStorage = Field(description="The image file")
+
+
+def can_change_image() -> bool:
+    return "guest" not in current_user["roles"] and not is_reserved_username(
+        current_user["username"]
+    )
+
+
+@api.put("/profile/image")
+def update_user_image(form: UpdateUserImageForm):
+    """
+    Set the logged in user's image
+    """
+    if not can_change_image():
+        return {"msg": "Cannot update guest user"}, 400
+
+    data = form.image.stream.read(avatarlib.MAX_AVATAR_BYTES + 1)
+    if len(data) > avatarlib.MAX_AVATAR_BYTES:
+        return {"msg": "Image is larger than 5MB"}, 413
+
+    try:
+        filename = avatarlib.save_avatar(io.BytesIO(data), current_user["id"])
+    except (OSError, Image.DecompressionBombError):
+        return {"msg": "Invalid image"}, 400
+
+    UserTable.update_one({"id": current_user["id"], "image": filename})
+    avatarlib.delete_avatar(current_user["image"])
+
+    return UserTable.get_by_id(current_user["id"]).todict()
+
+
+@api.delete("/profile/image")
+def remove_user_image():
+    """
+    Remove the logged in user's image
+    """
+    if not can_change_image():
+        return {"msg": "Cannot update guest user"}, 400
+
+    UserTable.update_one({"id": current_user["id"], "image": None})
+    avatarlib.delete_avatar(current_user["image"])
+
+    return UserTable.get_by_id(current_user["id"]).todict()
 
 
 @api.get("/logout")

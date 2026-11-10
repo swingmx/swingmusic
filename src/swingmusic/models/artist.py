@@ -1,6 +1,7 @@
 import dataclasses
 from dataclasses import dataclass
 
+from swingmusic.store.plays import PlayStats, PlayStore
 from swingmusic.utils.auth import get_current_userid
 from swingmusic.utils.hashing import create_hash
 
@@ -47,9 +48,6 @@ class Artist:
     genrehashes: list[str]
     name: str
     trackcount: int
-    lastplayed: int
-    playcount: int
-    playduration: int
     extra: dict
 
     id: int = -1
@@ -59,6 +57,25 @@ class Artist:
     color: str = ""
     blurhash: str = ""
     fav_userids: list[int] = dataclasses.field(default_factory=list)
+
+    @property
+    def plays(self) -> PlayStats:
+        """
+        The current user's play stats for this artist.
+        """
+        return PlayStore.get(get_current_userid(), "artist", self.artisthash)
+
+    @property
+    def playcount(self) -> int:
+        return self.plays.playcount
+
+    @property
+    def playduration(self) -> int:
+        return self.plays.playduration
+
+    @property
+    def lastplayed(self) -> int:
+        return self.plays.lastplayed
 
     @property
     def is_favorite(self):
@@ -76,3 +93,9 @@ class Artist:
 
     def __post_init__(self):
         self.image = self.artisthash + ".webp"
+
+    def set_image_version(self, version: int | None):
+        """
+        Points the image at an uploaded version, or at the default image when None.
+        """
+        self.image = self.artisthash + ".webp" + (f"?v={version}" if version else "")

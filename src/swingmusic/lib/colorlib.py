@@ -124,6 +124,10 @@ def extract_color_worker(item_data: dict) -> dict:
     }
 
 
+# INFO: Batches up to this size are processed in-process
+INLINE_COLOR_LIMIT = 8
+
+
 class ColorProcessor:
     """
     Generic color processor for extracting dominant colors from images.
@@ -184,6 +188,9 @@ class ColorProcessor:
             if item_hash in existing_colors:
                 continue
 
+            if not (self.path_func / (item_hash + ".webp")).exists():
+                continue
+
             yield {
                 self.hash_field: item_hash,
                 "item_type": self.item_type,
@@ -198,6 +205,17 @@ class ColorProcessor:
         items_list = list(items)
 
         if not items_list:
+            return
+
+        if len(items_list) <= INLINE_COLOR_LIMIT:
+            results = []
+            for item in items_list:
+                try:
+                    results.append(extract_color_worker(item))
+                except Exception as e:
+                    log.error(f"Error processing {self.item_type} {item[self.hash_field]}: {e}")
+
+            self._process_batch([r for r in results if r["color"] is not None])
             return
 
         cpus = max(1, (os.cpu_count() or 1) // 2)

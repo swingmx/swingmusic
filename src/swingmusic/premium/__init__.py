@@ -1,4 +1,5 @@
 import functools
+import logging
 
 PREMIUM_AVAILABLE = False
 
@@ -8,8 +9,11 @@ LicenseManager = None
 CloudClient = None
 LicenseValidation = None
 MixesCron = None
+ClassicalSync = None
 mixes_api = None
+remote_api = None
 ClassicalStore = None
+TranscodeStream = None
 
 
 # Real exception classes are defined here as stubs. When premium source is
@@ -64,6 +68,39 @@ def license_required(func):
     return wrapper
 
 
+def classical_available() -> bool:
+    """
+    Whether classical support can run: the premium code is present, the
+    setting is on, and the license is valid.
+    """
+    if ClassicalStore is None or LicenseManager is None:
+        return False
+
+    from swingmusic.config import UserConfig
+
+    if not UserConfig().classicalEnabled:
+        return False
+    try:
+        LicenseManager().check_license()
+    except LicenseError:
+        return False
+    return True
+
+
+def transcoding_available() -> bool:
+    """
+    Whether stream transcoding can run: the premium code is present and the license is valid.
+    """
+    if TranscodeStream is None or LicenseManager is None:
+        return False
+
+    try:
+        LicenseManager().check_license()
+    except LicenseError:
+        return False
+    return True
+
+
 # Attempt to load real premium implementations. In the private repo these
 # files exist; in the public repo they are stripped before push, so the
 # ImportError fallback keeps the module functional.
@@ -88,9 +125,12 @@ try:
     from swingmusic.premium.cron import LicenseValidation  # noqa: F401
     from swingmusic.premium.mixes_cron import Mixes as MixesCron  # noqa: F401
     from swingmusic.premium.api_routes import api as mixes_api  # noqa: F401
+    from swingmusic.premium.remote.api import api as remote_api  # noqa: F401
     from swingmusic.premium.recipes.because import BecauseYouListened  # noqa: F401
     from swingmusic.premium.classical.classicalstore import ClassicalStore  # noqa: F401
+    from swingmusic.premium.classical.sync_cron import ClassicalSync  # noqa: F401
+    from swingmusic.premium.transcode.stream import TranscodeStream  # noqa: F401
 
     PREMIUM_AVAILABLE = True
-except ImportError:
-    pass
+except ImportError as e:
+    logging.getLogger(__name__).warning("Premium features unavailable: %s", e)

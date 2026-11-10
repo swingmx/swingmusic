@@ -20,6 +20,7 @@ from swingmusic.serializers.track import serialize_track, serialize_tracks
 from swingmusic.settings import Defaults
 from swingmusic.store.albums import AlbumStore
 from swingmusic.store.artists import ArtistStore
+from swingmusic.store.plays import PlayStats, PlayStore, split_playcount
 from swingmusic.store.tracks import TrackStore
 from swingmusic.utils.dates import (
     get_date_range,
@@ -87,21 +88,16 @@ def log_track(body: LogTrackBody):
     # NOTE: Update the recently played homepage for this userid
     RecentlyPlayed(userid=scrobble_data["userid"])
 
-    # Update play data on the in-memory stores
     track = trackentry.tracks[0]
-    album = AlbumStore.albummap.get(track.albumhash)
-
-    if album:
-        album.increment_playcount(duration, timestamp)
-
-    for hash in track.artisthashes:
-        artist = ArtistStore.artistmap.get(hash)
-
-        if artist:
-            artist.increment_playcount(duration, timestamp)
-
-    trackentry.increment_playcount(duration, timestamp)
-    track = trackentry.tracks[0]
+    PlayStore.record(
+        scrobble_data["userid"],
+        track.trackhash,
+        track.albumhash,
+        track.artisthashes,
+        duration,
+        timestamp,
+        split_playcount(duration, track.duration),
+    )
 
     lastfm = LastFmPlugin(current_userid=get_current_userid())
 
@@ -177,7 +173,7 @@ def get_top_tracks(query: ChartItemsQuery):
     top_tracks = sorted_tracks[: query.limit]
 
     response = []
-    for track in top_tracks:
+    for track, plays in top_tracks:
         trend = calculate_track_trend(
             track, current_period_tracks, previous_period_tracks
         )
@@ -185,7 +181,7 @@ def get_top_tracks(query: ChartItemsQuery):
             **serialize_track(track),
             "trend": trend,
             "help_text": get_help_text(
-                track.playcount, track.playduration, query.order_by
+                plays.playcount, plays.playduration, query.order_by
             ),
         }
 
@@ -201,8 +197,11 @@ def get_top_tracks(query: ChartItemsQuery):
     }, 200
 
 
-def sort_tracks(tracks: list[Track], order_by: Literal["playcount", "playduration"]):
-    return sorted(tracks, key=lambda x: getattr(x, order_by), reverse=True)
+def sort_tracks(
+    tracks: list[tuple[Track, PlayStats]],
+    order_by: Literal["playcount", "playduration"],
+):
+    return sorted(tracks, key=lambda x: getattr(x[1], order_by), reverse=True)
 
 
 @api.get("/top-artists")
@@ -280,7 +279,7 @@ def get_top_albums(query: ChartItemsQuery):
     top_albums = sorted_albums[: query.limit]
 
     response = []
-    for album in top_albums:
+    for album, plays in top_albums:
         trend = calculate_album_trend(
             album, current_period_albums, previous_period_albums
         )
@@ -288,7 +287,7 @@ def get_top_albums(query: ChartItemsQuery):
             **serialize_for_album_card(album),
             "trend": trend,
             "help_text": get_help_text(
-                album.playcount, album.playduration, query.order_by
+                plays.playcount, plays.playduration, query.order_by
             ),
         }
         response.append(album)
@@ -303,8 +302,11 @@ def get_top_albums(query: ChartItemsQuery):
     }, 200
 
 
-def sort_albums(albums: list[Album], order_by: Literal["playcount", "playduration"]):
-    return sorted(albums, key=lambda x: getattr(x, order_by), reverse=True)
+def sort_albums(
+    albums: list[tuple[Album, PlayStats]],
+    order_by: Literal["playcount", "playduration"],
+):
+    return sorted(albums, key=lambda x: getattr(x[1], order_by), reverse=True)
 
 
 @api.get("/stats")
@@ -349,7 +351,7 @@ def get_stats():
         f"{seconds_to_time_string(playduration)} listened",
     )
 
-    tracks = sorted(tracks, key=lambda t: t.playduration, reverse=True)
+    tracks = [t for t, _ in sorted(tracks, key=lambda t: t[1].playduration, reverse=True)]
 
     # Find the top track from the last 7 days
     top_track = StatItem(

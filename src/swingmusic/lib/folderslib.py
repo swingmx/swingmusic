@@ -5,6 +5,7 @@ from swingmusic.models import Folder
 from swingmusic.store.folder import FolderStore
 from swingmusic.utils.filesystem import SUPPORTED_FILES, is_hidden_file
 from swingmusic.serializers.track import serialize_tracks
+from swingmusic.lib.m3u import PLAYLIST_EXTENSIONS, pick_playlist, sort_by_folder_playlist
 from swingmusic.lib.sortlib import sort_folders, sort_tracks
 
 
@@ -74,6 +75,7 @@ def get_files_and_dirs(
     # ignore hidden folder
     dirs: list[str] = []
     files: list[str] = []
+    playlists: list[str] = []
 
     for entry in path.iterdir():
         ext = entry.suffix.lower()
@@ -92,6 +94,9 @@ def get_files_and_dirs(
         elif entry.is_file() and ext in SUPPORTED_FILES:
             files.append(entry.as_posix())
 
+        elif entry.is_file() and ext in PLAYLIST_EXTENSIONS:
+            playlists.append(entry.as_posix())
+
     # convert files to tracks
     tracks = []
     if len(files) > 0:
@@ -100,7 +105,13 @@ def get_files_and_dirs(
 
         # only return tracks already indexed by us
         tracks = list(FolderStore.get_tracks_by_filepaths(files))
-        tracks = sort_tracks(tracks, tracksortby, tracksort_reverse)
+        playlist = pick_playlist(path, playlists) if tracksortby == "default" else None
+
+        # INFO: Default sort follows the folder's m3u playlist when it has one
+        if playlist is not None:
+            tracks = sort_by_folder_playlist(tracks, playlist, tracksort_reverse)
+        else:
+            tracks = sort_tracks(tracks, tracksortby, tracksort_reverse)
         tracks = tracks[start : start + limit]
 
     folders = []

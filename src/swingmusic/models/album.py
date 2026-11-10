@@ -2,6 +2,7 @@ import dataclasses
 from dataclasses import dataclass
 
 from swingmusic.models.track import Track
+from swingmusic.store.plays import PlayStats, PlayStore
 from swingmusic.utils.hashing import create_hash
 from swingmusic.utils.auth import get_current_userid
 from swingmusic.utils.parsers import get_base_title_and_versions, normalize_search_text
@@ -27,9 +28,6 @@ class Album:
     og_title: str
     title: str
     trackcount: int
-    lastplayed: int
-    playcount: int
-    playduration: int
     extra: dict
     pathhash: str = ""
 
@@ -43,6 +41,25 @@ class Album:
     fav_userids: list[int] = dataclasses.field(default_factory=list)
     weakhash: str = ""
     is_classical: bool = False
+
+    @property
+    def plays(self) -> PlayStats:
+        """
+        The current user's play stats for this album.
+        """
+        return PlayStore.get(get_current_userid(), "album", self.albumhash)
+
+    @property
+    def playcount(self) -> int:
+        return self.plays.playcount
+
+    @property
+    def playduration(self) -> int:
+        return self.plays.playduration
+
+    @property
+    def lastplayed(self) -> int:
+        return self.plays.lastplayed
 
     @property
     def is_favorite(self):
@@ -70,15 +87,14 @@ class Album:
             for a in self.albumartists
         ]
 
+        if self.og_title != self.title:
+            self._search_texts.append(normalize_search_text(self.og_title))
+
     def populate_versions(self):
         _, self.versions = get_base_title_and_versions(self.og_title, get_versions=True)
 
         if "super_deluxe" in self.versions:
             self.versions.remove("deluxe")
-
-        # at this point, we should know the type of album
-        if "original" in self.versions and self.type == "soundtrack":
-            self.versions.remove("original")
 
         self.versions = [v.replace("_", " ") for v in self.versions]
 

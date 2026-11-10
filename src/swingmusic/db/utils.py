@@ -16,7 +16,12 @@ def row_to_dict(row: Any):
     return d
 
 
+# track columns that are not Track fields
+PLAY_COLUMNS = {"lastplayed", "playcount", "playduration"}
+
+
 def track_to_dataclass(track: dict, config: UserConfig):
+    track = {k: v for k, v in track.items() if k not in PLAY_COLUMNS}
     return TrackModel(**track, config=config)
 
 

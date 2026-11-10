@@ -31,5 +31,6 @@ class User:
         return {
             "id": self.id,
             "username": self.username,
+            "image": self.image,
             "firstname": self.extra["firstname"] if self.extra else "",
         }

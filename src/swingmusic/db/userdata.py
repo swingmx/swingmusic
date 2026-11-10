@@ -10,12 +10,15 @@ from sqlalchemy import (
     String,
     and_,
     delete,
+    false,
     func,
     insert,
+    or_,
     select,
     update,
 )
 
+from sqlalchemy.dialects.sqlite import insert as sqlite_insert
 from sqlalchemy.orm import Mapped, mapped_column
 
 from swingmusic.db.engine import DbEngine
@@ -32,6 +35,7 @@ from swingmusic.db.utils import (
 from swingmusic.db import Base
 from swingmusic.models.mix import Mix
 from swingmusic.utils.auth import get_current_userid, hash_password
+from swingmusic.utils.dates import create_new_date
 
 
 class UserTable(Base):
@@ -472,13 +476,16 @@ class PlaylistTable(Base):
         dbtrackhashes = cls.get_trackhashes(id) or []
         # Preserve order: start with existing hashes, then add new ones that aren't already present
         seen = set(dbtrackhashes)
-        trackhashes = dbtrackhashes + [h for h in trackhashes if h not in seen]
+        added = [h for h in dict.fromkeys(trackhashes) if h not in seen]
+
+        if not added:
+            return
 
         return next(
             cls.execute(
                 update(cls)
                 .where((cls.id == id) & (cls.userid == get_current_userid()))
-                .values(trackhashes=trackhashes),
+                .values(trackhashes=dbtrackhashes + added, last_updated=create_new_date()),
                 commit=True,
             )
         )
@@ -497,15 +504,20 @@ class PlaylistTable(Base):
         # INFO: Get db trackhashes
         dbtrackhashes = cls.get_trackhashes(id)
         if dbtrackhashes:
+            removed = False
             for item in trackhashes:
                 if dbtrackhashes.index(item["trackhash"]) == item["index"]:
                     dbtrackhashes.remove(item["trackhash"])
+                    removed = True
+
+            if not removed:
+                return
 
             return next(
                 cls.execute(
                     update(cls)
                     .where((cls.id == id) & (cls.userid == get_current_userid()))
-                    .values(trackhashes=dbtrackhashes),
+                    .values(trackhashes=dbtrackhashes, last_updated=create_new_date()),
                     commit=True,
                 )
             )
@@ -552,6 +564,50 @@ class PlaylistTable(Base):
                 commit=True,
             )
         )
+
+
+class HashSnapshotTable(Base):
+    """
+    The track and album hashes each file had when the library was last loaded.
+    """
+
+    __tablename__ = "hashsnapshot"
+
+    filepath: Mapped[str] = mapped_column(String(), primary_key=True)
+    trackhash: Mapped[str] = mapped_column(String())
+    albumhash: Mapped[str] = mapped_column(String())
+
+    @classmethod
+    def get_all(cls) -> dict[str, tuple[str, str]]:
+        """
+        Returns the snapshot as {filepath: (trackhash, albumhash)}.
+        """
+        result = next(cls.execute(select(cls.filepath, cls.trackhash, cls.albumhash)))
+        return {filepath: (trackhash, albumhash) for filepath, trackhash, albumhash in result}
+
+    @classmethod
+    def apply(cls, changed: dict[str, tuple[str, str]], removed: Iterable[str]):
+        """
+        Upserts the changed filepaths and deletes the removed ones.
+        """
+        removed = list(removed)
+
+        with DbEngine.manager(commit=True) as session:
+            for start in range(0, len(removed), 500):
+                session.execute(delete(cls).where(cls.filepath.in_(removed[start : start + 500])))
+
+            if changed:
+                stmt = sqlite_insert(cls)
+                session.execute(
+                    stmt.on_conflict_do_update(
+                        index_elements=[cls.filepath],
+                        set_={"trackhash": stmt.excluded.trackhash, "albumhash": stmt.excluded.albumhash},
+                    ),
+                    [
+                        {"filepath": f, "trackhash": t, "albumhash": a}
+                        for f, (t, a) in changed.items()
+                    ],
+                )
 
 
 class LibDataTable(Base):
@@ -603,6 +659,99 @@ class LibDataTable(Base):
                 "color": i.color,
                 "extra": i.extra,
             }
+
+
+class ClassicalCacheTable(Base):
+    __tablename__ = "classicalcache"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    albumhash: Mapped[str] = mapped_column(String(), unique=True, index=True)
+    contenthash: Mapped[str] = mapped_column(String())
+    # kept in the column that used to hold the parser version
+    result_hash: Mapped[str] = mapped_column("parser_version", String())
+    result: Mapped[dict[str, Any]] = mapped_column(JSON())
+
+    @classmethod
+    def get_all(cls) -> dict[str, dict[str, Any]]:
+        """
+        Cached parse results keyed by albumhash.
+        """
+        rows = {}
+        result = cls.execute(select(cls))
+        for row in next(result).scalars():
+            rows[row.albumhash] = {
+                "contenthash": row.contenthash,
+                "result_hash": row.result_hash,
+                "result": row.result,
+            }
+        return rows
+
+    @classmethod
+    def replace_many(cls, rows: list[dict[str, Any]]):
+        """
+        Replace the cached rows for the given albums.
+        """
+        if not rows:
+            return
+        hashes = [row["albumhash"] for row in rows]
+        next(cls.execute(delete(cls).where(cls.albumhash.in_(hashes)), commit=True))
+        cls.insert_many(rows)
+
+
+class ClassicalEntityTable(Base):
+    __tablename__ = "classicalentity"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    kind: Mapped[str] = mapped_column(String(), index=True)
+    remote_id: Mapped[str] = mapped_column(String(), index=True)
+    hash: Mapped[str] = mapped_column(String())
+    status: Mapped[str] = mapped_column(String())
+    data: Mapped[dict[str, Any]] = mapped_column(JSON())
+    updated_at: Mapped[int] = mapped_column(Integer())
+
+    @classmethod
+    def get_all(cls) -> dict[tuple[str, str], dict[str, Any]]:
+        """
+        Enriched records keyed by (kind, remote_id).
+        """
+        rows = {}
+        result = cls.execute(select(cls))
+        for row in next(result).scalars():
+            rows[(row.kind, row.remote_id)] = {
+                "hash": row.hash,
+                "status": row.status,
+                "data": row.data,
+                "updated_at": row.updated_at,
+            }
+        return rows
+
+    @classmethod
+    def replace_many(cls, rows: list[dict[str, Any]]):
+        """
+        Replace the rows for the given (kind, remote_id) pairs.
+        """
+        if not rows:
+            return
+        for row in rows:
+            next(
+                cls.execute(
+                    delete(cls).where(
+                        and_(cls.kind == row["kind"], cls.remote_id == row["remote_id"])
+                    ),
+                    commit=True,
+                )
+            )
+        cls.insert_many(rows)
+
+    @classmethod
+    def remove_many(cls, keys: list[tuple[str, str]]):
+        for kind, remote_id in keys:
+            next(
+                cls.execute(
+                    delete(cls).where(and_(cls.kind == kind, cls.remote_id == remote_id)),
+                    commit=True,
+                )
+            )
 
 
 class MixTable(Base):
@@ -700,16 +849,109 @@ class MixTable(Base):
         return mix.saved
 
     @classmethod
-    def get_saved_track_mixes(cls):
+    def trackmix_saved(cls):
         """
-        Return all mixes that have the extra.trackmix_saved set to True.
+        SQL expression for whether a row's track mix is saved, as 0 or 1.
         """
+        return func.coalesce(func.json_extract(cls.extra, "$.trackmix_saved"), 0)
 
-        result = cls.execute(select(cls).where(cls.extra.c.trackmix_saved == True))
-        # return Mix.mixes_to_dataclasses(result.fetchall())
+    @classmethod
+    def count_saved(cls, min_trackmix_tracks: int | None) -> int:
+        """
+        Counts the current user's saved artist mixes and saved track mixes.
+        Track mixes count when their artist mix has more than `min_trackmix_tracks` tracks; None skips them.
+        """
+        trackmixes = false()
+        if min_trackmix_tracks is not None:
+            trackmixes = and_(
+                cls.trackmix_saved() == 1,
+                func.json_array_length(cls.tracks) > min_trackmix_tracks,
+            )
 
-        for i in next(result).scalars():
-            yield Mix.mix_to_dataclass(i)
+        result = cls.execute(
+            select(
+                func.count().filter(cls.saved.is_(True)),
+                func.count().filter(trackmixes),
+            ).where(cls.userid == get_current_userid())
+        )
+
+        return sum(next(result).one())
+
+    @classmethod
+    def get_saved(cls) -> list[Mix]:
+        """
+        Returns the current user's mixes whose artist mix or track mix is saved, newest first.
+        """
+        result = cls.execute(
+            select(cls)
+            .where(
+                cls.userid == get_current_userid(),
+                or_(cls.saved.is_(True), cls.trackmix_saved() == 1),
+            )
+            .order_by(cls.timestamp.desc(), cls.id.desc())
+        )
+
+        return [Mix.mix_to_dataclass(i) for i in next(result).scalars()]
+
+    @classmethod
+    def get_page(cls, ids: Any, start: int, limit: int) -> tuple[list[Mix], int]:
+        """
+        Returns the mixes with ids in the `ids` subquery from `start`, newest first, and their total.
+        """
+        total = cls.execute(select(func.count()).select_from(ids.subquery()))
+        total = next(total).scalar_one()
+
+        result = cls.execute(
+            select(cls)
+            .where(cls.id.in_(ids))
+            .order_by(cls.timestamp.desc(), cls.id.desc())
+            .offset(start)
+            .limit(limit)
+        )
+
+        return [Mix.mix_to_dataclass(i) for i in next(result).scalars()], total
+
+    @classmethod
+    def get_unsaved_artist_mixes(cls, start: int, limit: int) -> tuple[list[Mix], int]:
+        """
+        Returns a page of the current user's unsaved artist mixes and their total.
+        """
+        ids = select(cls.id).where(
+            cls.userid == get_current_userid(), cls.saved.is_not(True)
+        )
+        return cls.get_page(ids, start, limit)
+
+    @classmethod
+    def get_unsaved_trackmix_sources(
+        cls, min_tracks: int, start: int, limit: int
+    ) -> tuple[list[Mix], int]:
+        """
+        Returns a page of the newest mix per artist with more than `min_tracks` tracks,
+        skipping artists with a saved track mix, and their total.
+        """
+        artisthash = func.json_extract(cls.extra, "$.artisthash")
+        ranked = (
+            select(
+                cls.id,
+                func.row_number()
+                .over(
+                    partition_by=artisthash,
+                    order_by=(cls.timestamp.desc(), cls.id.desc()),
+                )
+                .label("rank"),
+                func.max(cls.trackmix_saved())
+                .over(partition_by=artisthash)
+                .label("anysaved"),
+            )
+            .where(
+                cls.userid == get_current_userid(),
+                func.json_array_length(cls.tracks) > min_tracks,
+            )
+            .subquery()
+        )
+
+        ids = select(ranked.c.id).where(ranked.c.rank == 1, ranked.c.anysaved == 0)
+        return cls.get_page(ids, start, limit)
 
     @classmethod
     def save_track_mix(cls, sourcehash: str):

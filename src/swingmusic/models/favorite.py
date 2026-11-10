@@ -5,7 +5,7 @@ from typing import Any, Literal
 @dataclass
 class Favorite:
     hash: str
-    type: Literal["album", "track", "artist"]
+    type: Literal["album", "track", "artist", "work", "composer"]
     timestamp: int
     userid: int
     extra: dict[str, Any]

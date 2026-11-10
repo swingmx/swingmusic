@@ -26,6 +26,25 @@ def is_path_within_root_dirs(filepath: str) -> bool:
     return False
 
 
+def dirs_toward_root_dirs(dirpath: str) -> list[str]:
+    """
+    The folders right below a path that sits above root directories: each
+    root directory or the folder leading to it.
+    """
+    path = Path(dirpath).resolve()
+    children: list[str] = []
+
+    for root_dir in UserConfig().rootDirs:
+        root_path = Path.home().resolve() if root_dir == "$home" else Path(root_dir).resolve()
+
+        if path in root_path.parents:
+            child = (path / root_path.relative_to(path).parts[0]).as_posix()
+            if child not in children:
+                children.append(child)
+
+    return children
+
+
 def get_client_files_extensions():
     """
     Get all the file extensions for the client files

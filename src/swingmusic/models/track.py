@@ -1,6 +1,7 @@
 from dataclasses import asdict, dataclass, field
 
 from swingmusic.config import UserConfig
+from swingmusic.store.plays import PlayStats, PlayStore
 from swingmusic.utils.auth import get_current_userid
 from swingmusic.utils.hashing import create_hash
 from swingmusic.utils.parsers import (
@@ -10,6 +11,7 @@ from swingmusic.utils.parsers import (
     parse_feat_from_title,
     remove_prod,
     split_artists,
+    strip_trailing_brackets,
 )
 
 
@@ -37,9 +39,6 @@ class Track:
     track: int
     trackhash: str
     extra: dict
-    lastplayed: int
-    playcount: int
-    playduration: int
     config: UserConfig
 
     color: str = ""
@@ -59,6 +58,25 @@ class Track:
     explicit: bool = False
     fav_userids: list[int] = field(default_factory=list)
     is_classical: bool = False
+
+    @property
+    def plays(self) -> PlayStats:
+        """
+        The current user's play stats for this track.
+        """
+        return PlayStore.get(get_current_userid(), "track", self.trackhash)
+
+    @property
+    def playcount(self) -> int:
+        return self.plays.playcount
+
+    @property
+    def playduration(self) -> int:
+        return self.plays.playduration
+
+    @property
+    def lastplayed(self) -> int:
+        return self.plays.lastplayed
 
     @property
     def is_favorite(self):
@@ -135,6 +153,10 @@ class Track:
         self._search_texts = [
             normalize_search_text(a["name"] + " " + self.title) for a in self.artists
         ]
+
+        bare_title = strip_trailing_brackets(self.title)
+        if bare_title != self.title:
+            self._search_texts.append(normalize_search_text(bare_title))
 
     def split_artists(self):
         """
