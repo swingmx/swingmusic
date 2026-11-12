@@ -99,7 +99,7 @@ class UserConfig(metaclass=Singleton):
     # remote control
     remoteControlEnabled: bool = True
     # after this long without playback, the next device to press play takes over (0 = never)
-    remoteIdleMinutes: int = 60
+    remoteIdleMinutes: int = 3
 
     artistSortingArticles: set[str] = field(
         default_factory=lambda: (

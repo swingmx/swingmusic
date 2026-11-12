@@ -2,20 +2,15 @@
 Uploaded artist images.
 """
 
-import logging
-import threading
 import time
 from typing import BinaryIO
 
 from PIL import Image, ImageOps
 
 from swingmusic.db.userdata import LibDataTable
-from swingmusic.lib.artistlib import CheckArtistImages
 from swingmusic.lib.colorlib import get_blurhash, get_image_colors
 from swingmusic.settings import Defaults, Paths
 from swingmusic.store.artists import ArtistMapEntry
-
-log = logging.getLogger(__name__)
 
 IMAGE_SIZE = 512
 MAX_IMAGE_BYTES = 15 * 1024 * 1024
@@ -49,11 +44,10 @@ def image_files(artisthash: str):
 
 def save_libdata(artisthash: str, color: str, extra: dict):
     """
-    Writes the artist's color and merges `extra` into its library data, removing keys set to None.
+    Writes the artist's color and merges `extra` into its library data.
     """
     existing = LibDataTable.find_one(artisthash, type="artist")
     merged = {**((existing or {}).get("extra") or {}), **extra}
-    merged = {k: v for k, v in merged.items() if v is not None}
 
     if existing is None:
         LibDataTable.insert_one(
@@ -63,7 +57,7 @@ def save_libdata(artisthash: str, color: str, extra: dict):
         LibDataTable.update_one("artist" + artisthash, {"color": color, "extra": merged})
 
 
-def refresh_colors(entry: ArtistMapEntry, version: int | None):
+def refresh_colors(entry: ArtistMapEntry, version: int):
     """
     Recomputes the artist's color and blurhash from its small image and saves them with `version`.
     """
@@ -99,21 +93,3 @@ def save_artist_image(file: BinaryIO, entry: ArtistMapEntry):
 
     refresh_colors(entry, int(time.time()))
 
-
-def reset_artist_image(entry: ArtistMapEntry):
-    """
-    Deletes the artist's uploaded image and downloads the default one in the background.
-    """
-    for path, _ in image_files(entry.artist.artisthash):
-        path.unlink(missing_ok=True)
-
-    refresh_colors(entry, None)
-
-    def download():
-        try:
-            if CheckArtistImages.download_image(entry.artist):
-                refresh_colors(entry, None)
-        except Exception as e:  # noqa: BLE001
-            log.warning("could not download image for %s: %s", entry.artist.name, e)
-
-    threading.Thread(target=download, daemon=True).start()

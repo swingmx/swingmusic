@@ -80,3 +80,10 @@ ARTIST_SPLIT_IGNORE_LIST = {
     "Nico & Vinz",
     "Yusuf / Cat Stevens"
 }
+
+# stylized names shown on the artist page, keyed by the tagged artist name
+ARTIST_DISPLAY_NAMES = {
+    "Lil Peep": "☆LiL PEEP☆",
+    "Korn": "KoЯn",
+    "CHVRCHES": "CHVRCHΞS",
+}

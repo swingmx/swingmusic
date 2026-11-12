@@ -368,7 +368,11 @@ class ArtistImageForm(BaseModel):
 
 
 def image_response(entry):
-    return {"image": entry.artist.image, "color": entry.artist.color, "blurhash": entry.artist.blurhash}
+    return {
+        "image": entry.artist.image,
+        "color": entry.artist.color,
+        "blurhash": entry.artist.blurhash,
+    }
 
 
 @api.put("/<artisthash>/image")
@@ -390,20 +394,6 @@ def update_artist_image(path: ArtistHashSchema, form: ArtistImageForm):
     except (OSError, Image.DecompressionBombError):
         return {"msg": "Invalid image"}, 400
 
-    return image_response(entry)
-
-
-@api.delete("/<artisthash>/image")
-@admin_required()
-def reset_artist_image(path: ArtistHashSchema):
-    """
-    Removes the artist's uploaded image and restores the downloaded one.
-    """
-    entry = ArtistStore.artistmap.get(path.artisthash)
-    if entry is None:
-        return {"msg": "Artist not found"}, 404
-
-    artistimages.reset_artist_image(entry)
     return image_response(entry)
 
 

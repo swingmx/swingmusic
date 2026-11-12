@@ -6,13 +6,11 @@ import json
 import logging
 from pathlib import Path
 
+from swingmusic.data import ARTIST_DISPLAY_NAMES
 from swingmusic.settings import Paths
 from swingmusic.utils.hashing import create_hash
 
 log = logging.getLogger(__name__)
-
-DEFAULTS_PATH = Path(__file__).parent.parent / "data" / "artist_display_names.json"
-
 
 def read_names(path: Path) -> dict[str, str]:
     """
@@ -45,7 +43,7 @@ class DisplayNames:
 
     @classmethod
     def load(cls):
-        entries = {**read_names(DEFAULTS_PATH), **read_names(cls.user_path())}
+        entries = {**ARTIST_DISPLAY_NAMES, **read_names(cls.user_path())}
         cls.names = {create_hash(name, decode=True): value for name, value in entries.items()}
 
     @classmethod
