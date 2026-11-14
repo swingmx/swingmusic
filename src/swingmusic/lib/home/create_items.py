@@ -208,6 +208,17 @@ def create_items(entries: list[TrackLog], limit: int):
             )
             continue
 
+        if entry.type == "library":
+            items.append(
+                {
+                    "type": "library",
+                    "hash": "library",
+                    "timestamp": entry.timestamp,
+                    "help_text": "playlist",
+                }
+            )
+            continue
+
         t = TrackStore.trackhashmap.get(entry.trackhash)
 
         if t is None:

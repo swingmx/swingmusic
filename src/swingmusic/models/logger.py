@@ -34,6 +34,7 @@ class TrackLog:
             "pl:": "playlist",
             "wk:": "work",
             "favorite": "favorite",
+            "library": "library",
         }
 
         for prefix, srctype in prefix_map.items():

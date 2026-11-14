@@ -2,11 +2,13 @@
 Contains the single-track metadata routes.
 """
 
+import random
+
 from flask_openapi3 import APIBlueprint, Tag
 from pydantic import BaseModel, Field
 
 from swingmusic.api.apischemas import TrackHashSchema
-from swingmusic.serializers.track import serialize_track
+from swingmusic.serializers.track import serialize_track, serialize_tracks
 from swingmusic.store.tracks import TrackStore
 
 bp_tag = Tag(name="Track", description="Single track metadata")
@@ -21,6 +23,22 @@ class GetTrackQuery(BaseModel):
         description="Optional filepath to select a specific duplicate file "
         "indexed under this trackhash. Must belong to the trackhash.",
     )
+
+
+class RandomTracksQuery(BaseModel):
+    limit: int = Field(1000, ge=1, le=1000, description="How many tracks to return, at most 1000.")
+
+
+@api.get("/random")
+def get_random_tracks(query: RandomTracksQuery):
+    """
+    Get random tracks from the whole library
+
+    Returns up to `limit` tracks in random order, one per trackhash.
+    """
+    groups = list(TrackStore.trackhashmap.values())
+    picked = random.sample(groups, min(query.limit, len(groups)))
+    return {"tracks": serialize_tracks([g.get_best() for g in picked])}
 
 
 @api.get("/<trackhash>")

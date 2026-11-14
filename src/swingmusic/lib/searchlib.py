@@ -47,6 +47,24 @@ class Limit:
     playlists: int = 150
 
 
+def fuzzy_match(query: str, choices: list[str], cutoff: int, limit: int | None = None) -> list[tuple[float, int]]:
+    """
+    Returns (score, index) pairs for choices matching the query, best first.
+    """
+    results: list[tuple[float, int]] = []
+
+    for choice, score, index in process.extract(query, choices, scorer=fuzz.WRatio, score_cutoff=cutoff, limit=None):
+        # WRatio scores a short choice found inside the query (eg. "iri" in "nviiri") as a near match
+        if len(query) >= 1.5 * len(choice):
+            score = fuzz.ratio(query, choice)
+
+        if score >= cutoff:
+            results.append((score, index))
+
+    results.sort(key=lambda r: r[0], reverse=True)
+    return results[:limit]
+
+
 def best_scores(query: str, items: list, cutoff: int) -> dict[int, float]:
     """
     Maps each matching item index to its highest score over the item's
@@ -63,17 +81,9 @@ def best_scores(query: str, items: list, cutoff: int) -> dict[int, float]:
             haystack.append(text)
             owners.append(index)
 
-    matches = process.extract(
-        query,
-        haystack,
-        scorer=fuzz.WRatio,
-        score_cutoff=cutoff,
-        limit=None,
-    )
-
     scores: dict[int, float] = {}
 
-    for _, score, position in matches:
+    for score, position in fuzzy_match(query, haystack, cutoff):
         index = owners[position]
 
         if score > scores.get(index, 0):
@@ -115,19 +125,11 @@ class SearchArtists:
         """
         choices = [normalize_search_text(a.name) for a in self.artists]
 
-        results = process.extract(
-            self.query,
-            choices,
-            score_cutoff=Cutoff.artists,
-            limit=limit,
-            scorer=fuzz.WRatio,
-        )
-
         artists: list[Artist] = []
 
-        for item in results:
-            artist = self.artists[item[2]]
-            artist._score = item[1]
+        for score, index in fuzzy_match(self.query, choices, Cutoff.artists, limit):
+            artist = self.artists[index]
+            artist._score = score
             artists.append(artist)
 
         return artists
@@ -162,19 +164,11 @@ class SearchPlaylists:
 
     def __call__(self, limit: int = Limit.playlists):
         choices = [normalize_search_text(p.name) for p in self.playlists]
-        results = process.extract(
-            self.query,
-            choices,
-            score_cutoff=Cutoff.playlists,
-            limit=limit,
-            scorer=fuzz.WRatio,
-        )
-
         playlists: list[Playlist] = []
 
-        for item in results:
-            playlist = self.playlists[item[2]]
-            playlist._score = item[1]
+        for score, index in fuzzy_match(self.query, choices, Cutoff.playlists, limit):
+            playlist = self.playlists[index]
+            playlist._score = score
             playlists.append(playlist)
 
         return playlists

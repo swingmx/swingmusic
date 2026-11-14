@@ -140,6 +140,11 @@ def recover_items(items: list[dict]):
                     "image": image,
                 },
             }
+        elif item["type"] == "library":
+            recovered_item = {
+                "type": "library",
+                "item": {"count": len(TrackStore.trackhashmap)},
+            }
         elif item["type"] == "track":
             track = TrackStore.trackhashmap.get(item["hash"])
             if track is None:
