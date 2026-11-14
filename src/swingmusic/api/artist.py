@@ -238,11 +238,12 @@ def get_artist_albums(path: ArtistHashSchema, query: GetArtistAlbumsQuery):
     return res
 
 
-def _album_groups(artisthash: str, split_types: bool = False) -> dict[str, list] | None:
+def _album_groups(artisthash: str, split_types: bool = False, check_types: bool = True) -> dict[str, list] | None:
     """
     A library artist's albums grouped as albums, singles_and_eps,
     compilations, and appearances, newest first. With `split_types`, live
     albums and soundtracks get their own groups. None for a non-artist.
+    Pass `check_types=False` when every album's type is already set.
     """
     entry = ArtistStore.artistmap.get(artisthash)
     if entry is None:
@@ -258,9 +259,10 @@ def _album_groups(artisthash: str, split_types: bool = False) -> dict[str, list]
     albums.extend(AlbumStore.get_albums_by_hashes(missing_albumhashes))
     albumdict = {a.albumhash: a for a in albums}
 
-    config = UserConfig()
-    for album in albumdict.values():
-        album.check_type(AlbumStore.get_album_tracks(album.albumhash), config.showAlbumsAsSingles)
+    if check_types:
+        config = UserConfig()
+        for album in albumdict.values():
+            album.check_type(AlbumStore.get_album_tracks(album.albumhash), config.showAlbumsAsSingles)
 
     albums = [a for a in albumdict.values()]
     all_albums = sorted(albums, key=lambda a: a.date, reverse=True)
@@ -295,6 +297,105 @@ def _album_groups(artisthash: str, split_types: bool = False) -> dict[str, list]
             res["albums"].append(album)
 
     return res
+
+
+ARTIST_PAGE_SECTIONS = ("albums", "singles_and_eps", "compilations", "appearances")
+
+
+def _image_version(image: str) -> str:
+    return image.partition("?")[2]
+
+
+def _year(timestamp: int) -> int:
+    try:
+        return datetime.fromtimestamp(timestamp, tz=timezone.utc).year if timestamp else 0
+    except (OverflowError, OSError, ValueError):
+        return 0
+
+
+def search_index() -> dict:
+    """
+    Every artist and album, compact, for searching on the client.
+
+    artists: [hash, name, display name, blurhash, image query, album positions in artist page order]
+    albums: [hash, title, first version, year, blurhash, album artist positions]
+    Artists come most played first; classical composers outside the artist list are appended.
+    """
+    albums = AlbumStore.get_flat_list()
+    config = UserConfig()
+    for album in albums:
+        album.check_type(AlbumStore.get_album_tracks(album.albumhash), config.showAlbumsAsSingles)
+    position = {a.albumhash: i for i, a in enumerate(albums)}
+
+    def order(albumhashes) -> list[int]:
+        return list(dict.fromkeys(position[h] for h in albumhashes if h in position))
+
+    def page_order(artisthash: str) -> list[int]:
+        if _classical_kind(artisthash) is not None:
+            from swingmusic.premium.classical.serializers import person_albums
+
+            classical = (person_albums(artisthash, album_card=lambda _: None) or {}).get("albumhashes", [])
+            groups = _album_groups(artisthash, split_types=True, check_types=False) or {}
+            rest = [a.albumhash for key in CLASSICAL_SECTIONS[1:] for a in groups.get(key, [])]
+            return order([*classical, *rest])
+
+        groups = _album_groups(artisthash, check_types=False) or {}
+        return order(a.albumhash for key in ARTIST_PAGE_SECTIONS for a in groups.get(key, []))
+
+    artists = sorted(ArtistStore.get_flat_list(), key=lambda a: a.playduration, reverse=True)
+    rows = [
+        [
+            a.artisthash,
+            a.name,
+            DisplayNames.get(a.artisthash) or "",
+            a.blurhash,
+            _image_version(a.image),
+            page_order(a.artisthash),
+        ]
+        for a in artists
+    ]
+
+    seen = {a.artisthash for a in artists}
+    for composerhash, name, image in _composers():
+        if composerhash not in seen:
+            rows.append([composerhash, name, "", "", _image_version(image), page_order(composerhash)])
+
+    artist_position = {row[0]: i for i, row in enumerate(rows)}
+    return {
+        "artists": rows,
+        "albums": [
+            [
+                a.albumhash,
+                a.title,
+                (a.versions or [""])[0],
+                _year(a.date),
+                a.blurhash,
+                [artist_position[h] for h in a.artisthashes if h in artist_position],
+            ]
+            for a in albums
+        ],
+    }
+
+
+def _composers() -> list[tuple[str, str, str]]:
+    """
+    (hash, name, image) for every composer with works, when classical support is on.
+    """
+    try:
+        from swingmusic.premium import classical_available
+
+        if not classical_available():
+            return []
+        from swingmusic.premium.classical.classicalstore import ClassicalStore
+        from swingmusic.premium.classical.home import person_card
+    except Exception:  # noqa: BLE001
+        return []
+
+    return [
+        (c.composerhash, c.name, (person_card(c.composerhash) or {}).get("image", ""))
+        for c in ClassicalStore.composermap.values()
+        if c.workhashes
+    ]
 
 
 @api.get("/<artisthash>/tracks")

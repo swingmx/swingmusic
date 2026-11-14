@@ -89,6 +89,8 @@ Replace the following with appropriate values:
 
 You can change the Swing Music port by updating both the `-p` mapping and `SWINGMUSIC_PORT` to the same value (e.g. `-p 2001:2001 -e SWINGMUSIC_PORT=2001`).
 
+Swing Music serves requests on 16 threads by default. If you use many devices at once, raise it with `-e SWINGMUSIC_THREADS=32` (or `--threads 32` when running the binary).
+
 ### Options
 
 Options flags can be passed when starting the app in the terminal to tweak runtime settings or perform tasks. You can use the `-h` flag to see all supported options.

@@ -27,6 +27,12 @@ parser.add_argument(
     type=int,
 )
 parser.add_argument(
+    "--threads",
+    default=int(os.environ.get("SWINGMUSIC_THREADS") or 16),
+    help="Request threads. Each connected RC device holds one. Falls back to $SWINGMUSIC_THREADS, then 16.",
+    type=int,
+)
+parser.add_argument(
     "--debug",
     default=False,
     action="store_true",
@@ -133,7 +139,7 @@ def run(*args, **kwargs):
         sys.exit(0)
 
     # start swingmusic
-    start_swingmusic(host=args["host"], port=args["port"])
+    start_swingmusic(host=args["host"], port=args["port"], threads=args["threads"])
 
 
 if __name__ == "__main__":

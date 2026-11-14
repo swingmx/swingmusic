@@ -99,7 +99,7 @@ def wsgi_loader(target: str):
     return app
 
 
-def start_swingmusic(host: str, port: int):
+def start_swingmusic(host: str, port: int, threads: int = 16):
     """
     Creates and starts the Flask application server for Swing Music.
 
@@ -112,6 +112,7 @@ def start_swingmusic(host: str, port: int):
 
     :param host: The host address to bind the server to (e.g., 'localhost' or '0.0.0.0')
     :param port: The port number to run the server on
+    :param threads: Granian blocking threads; each open SSE stream holds one
     """
     import os
     from granian import Granian
@@ -132,7 +133,7 @@ def start_swingmusic(host: str, port: int):
         port=port,
         interface=Interfaces.WSGI,
         workers=1,
-        blocking_threads=64,
+        blocking_threads=max(1, threads),
         workers_kill_timeout=1,
     )
 

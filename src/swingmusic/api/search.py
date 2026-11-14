@@ -3,12 +3,14 @@ Contains all the search routes.
 """
 
 from typing import Any, Literal
+from flask import make_response, request
 from pydantic import Field
 from flask_openapi3 import Tag
 from flask_openapi3 import APIBlueprint
 
 from swingmusic import models
 from swingmusic.api.apischemas import GenericLimitSchema
+from swingmusic.api.artist import search_index
 from swingmusic.lib import searchlib
 from swingmusic.serializers.album import serialize_for_card_many as serialize_albums
 from swingmusic.serializers.artist import serialize_for_cards
@@ -152,6 +154,20 @@ def search_items(query: SearchLoadMoreQuery):
         "results": results[query.start : query.start + query.limit],
         "more": len(results) > query.start + query.limit,
     }
+
+
+@api.get("/index")
+def get_search_index():
+    """
+    Get the search index
+
+    Every artist and album in a compact form, for searching on the client.
+    Revalidate with If-None-Match.
+    """
+    response = make_response(search_index())
+    response.headers["Cache-Control"] = "no-cache"
+    response.add_etag()
+    return response.make_conditional(request)
 
 
 # TODO: Rewrite this file using generators where possible

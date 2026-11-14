@@ -26,6 +26,12 @@ def _split_tokens(
     return index
 
 
+def _clean_names(text: str) -> list[str]:
+    # tinytag decodes an empty UTF-16 tag value as a lone byte order mark
+    names = (a.replace("\ufeff", "").strip() for a in text.split(","))
+    return [a for a in names if a]
+
+
 def split_artists(src: str, config: UserConfig):
     """
     Splits a string of artists into a list of artists, preserving those in ignoreList.
@@ -54,7 +60,7 @@ def split_artists(src: str, config: UserConfig):
 
         ignored, length = match
         if current.strip():
-            result.extend([a.strip() for a in current.split(",") if a.strip()])
+            result.extend(_clean_names(current))
             current = ""
 
         # INFO: Ignored artists keep their original case
@@ -65,7 +71,7 @@ def split_artists(src: str, config: UserConfig):
 
     # Process any remaining current string
     if current.strip():
-        result.extend([a.strip() for a in current.split(",") if a.strip()])
+        result.extend(_clean_names(current))
 
     return result
 
