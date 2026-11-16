@@ -4,6 +4,7 @@ from pydantic import BaseModel, Field
 from flask_openapi3 import APIBlueprint
 
 from datetime import datetime, timezone
+from typing import Literal
 from swingmusic.config import UserConfig
 from swingmusic.store.albums import AlbumStore
 from swingmusic.store.artists import ArtistStore
@@ -46,7 +47,7 @@ class GetAllItemsQuery(GenericLimitSchema):
 
 
 class GetAllItemsPath(BaseModel):
-    itemtype: str = Field(
+    itemtype: Literal["albums", "artists"] = Field(
         description="The type of items to return (albums | artists)",
         example="albums",
         default="albums",
