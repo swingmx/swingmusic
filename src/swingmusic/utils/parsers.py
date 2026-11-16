@@ -1,6 +1,7 @@
 import functools
 import re
 
+from rapidfuzz import fuzz, process
 from rapidfuzz.utils import default_process
 from unidecode import unidecode
 
@@ -267,3 +268,29 @@ def normalize_search_text(text: str) -> str:
         lambda m: "i" if m.group() == "!" else "a", text.translate(SYMBOL_LETTERS)
     )
     return " ".join(default_process(unidecode(text)).split())
+
+
+# a choice starting with the query gets this many extra points
+PREFIX_BONUS = 6
+
+
+def fuzzy_match(query: str, choices: list[str], cutoff: int, limit: int | None = None) -> list[tuple[float, int]]:
+    """
+    Returns (score, index) pairs for normalized choices matching a normalized
+    query, best first.
+    """
+    results: list[tuple[float, int]] = []
+
+    for choice, score, index in process.extract(query, choices, scorer=fuzz.WRatio, score_cutoff=cutoff, limit=None):
+        # WRatio scores a shorter choice found inside the query ("iri" in "nviiri") as a near match
+        if len(query) > len(choice):
+            score = fuzz.ratio(query, choice)
+
+        if choice.startswith(query):
+            score = min(100, score + PREFIX_BONUS)
+
+        if score >= cutoff:
+            results.append((score, index))
+
+    results.sort(key=lambda r: r[0], reverse=True)
+    return results[:limit]

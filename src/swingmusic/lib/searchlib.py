@@ -4,7 +4,6 @@ This library contains all the functions related to the search functionality.
 
 from typing import Any
 
-from rapidfuzz import process, fuzz
 
 from swingmusic import models
 
@@ -21,7 +20,7 @@ from swingmusic.store.albums import AlbumStore
 from swingmusic.store.artists import ArtistStore
 from swingmusic.store.tracks import TrackStore
 
-from swingmusic.utils.parsers import normalize_search_text
+from swingmusic.utils.parsers import fuzzy_match, normalize_search_text
 from swingmusic.utils.remove_duplicates import remove_duplicates
 
 
@@ -45,24 +44,6 @@ class Limit:
     albums: int = 150
     artists: int = 150
     playlists: int = 150
-
-
-def fuzzy_match(query: str, choices: list[str], cutoff: int, limit: int | None = None) -> list[tuple[float, int]]:
-    """
-    Returns (score, index) pairs for choices matching the query, best first.
-    """
-    results: list[tuple[float, int]] = []
-
-    for choice, score, index in process.extract(query, choices, scorer=fuzz.WRatio, score_cutoff=cutoff, limit=None):
-        # WRatio scores a short choice found inside the query (eg. "iri" in "nviiri") as a near match
-        if len(query) >= 1.5 * len(choice):
-            score = fuzz.ratio(query, choice)
-
-        if score >= cutoff:
-            results.append((score, index))
-
-    results.sort(key=lambda r: r[0], reverse=True)
-    return results[:limit]
 
 
 def best_scores(query: str, items: list, cutoff: int) -> dict[int, float]:
@@ -127,12 +108,13 @@ class SearchArtists:
 
         artists: list[Artist] = []
 
-        for score, index in fuzzy_match(self.query, choices, Cutoff.artists, limit):
+        for score, index in fuzzy_match(self.query, choices, Cutoff.artists):
             artist = self.artists[index]
             artist._score = score
             artists.append(artist)
 
-        return artists
+        artists.sort(key=lambda a: (a._score, a.playduration), reverse=True)
+        return artists[:limit]
 
 
 class SearchAlbums:
