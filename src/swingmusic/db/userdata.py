@@ -501,26 +501,59 @@ class PlaylistTable(Base):
 
     @classmethod
     def remove_from_playlist(cls, id: int, trackhashes: list[dict[str, Any]]):
-        # INFO: Get db trackhashes
         dbtrackhashes = cls.get_trackhashes(id)
-        if dbtrackhashes:
-            removed = False
-            for item in trackhashes:
-                if dbtrackhashes.index(item["trackhash"]) == item["index"]:
-                    dbtrackhashes.remove(item["trackhash"])
-                    removed = True
+        if not dbtrackhashes:
+            return
 
-            if not removed:
-                return
+        removed = False
+        for item in trackhashes:
+            trackhash = item["trackhash"]
+            if trackhash not in dbtrackhashes:
+                continue
 
-            return next(
-                cls.execute(
-                    update(cls)
-                    .where((cls.id == id) & (cls.userid == get_current_userid()))
-                    .values(trackhashes=dbtrackhashes, last_updated=create_new_date()),
-                    commit=True,
-                )
+            index = item.get("index")
+            if index is not None and 0 <= index < len(dbtrackhashes) and dbtrackhashes[index] == trackhash:
+                del dbtrackhashes[index]
+            else:
+                dbtrackhashes.remove(trackhash)
+            removed = True
+
+        if not removed:
+            return
+
+        return next(
+            cls.execute(
+                update(cls)
+                .where((cls.id == id) & (cls.userid == get_current_userid()))
+                .values(trackhashes=dbtrackhashes, last_updated=create_new_date()),
+                commit=True,
             )
+        )
+
+    @classmethod
+    def move_track(cls, id: int, trackhash: str, before: str | None):
+        dbtrackhashes = cls.get_trackhashes(id)
+        if dbtrackhashes is None:
+            return None
+
+        if trackhash not in dbtrackhashes or (before is not None and before not in dbtrackhashes):
+            return False
+
+        if before == trackhash:
+            return True
+
+        dbtrackhashes.remove(trackhash)
+        dbtrackhashes.insert(dbtrackhashes.index(before) if before else len(dbtrackhashes), trackhash)
+
+        next(
+            cls.execute(
+                update(cls)
+                .where((cls.id == id) & (cls.userid == get_current_userid()))
+                .values(trackhashes=dbtrackhashes, last_updated=create_new_date()),
+                commit=True,
+            )
+        )
+        return True
 
     @classmethod
     def get_by_id(cls, id: int):

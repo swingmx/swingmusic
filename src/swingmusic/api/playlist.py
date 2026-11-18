@@ -265,15 +265,17 @@ def get_playlist(path: PlaylistIDPath, query: GetPlaylistQuery):
     if playlist is None:
         return {"msg": "Playlist not found"}, 404
 
+    present = [h for h in playlist.trackhashes if h in TrackStore.trackhashmap]
     if query.limit == -1:
-        query.limit = len(playlist.trackhashes) - 1
+        query.limit = len(present)
 
     tracks = TrackStore.get_tracks_by_trackhashes(
-        playlist.trackhashes[query.start : query.start + query.limit]
+        present[query.start : query.start + query.limit]
     )
     duration = sum(t.duration for t in tracks)
     playlist._last_updated = date_string_to_time_passed(playlist.last_updated)
     playlist.duration = duration
+    playlist.count = len(present)
     playlist.images = playlistlib.get_first_4_images(tracks)
     playlist.clear_lists()
 
@@ -407,6 +409,30 @@ def remove_playlist(path: PlaylistIDPath):
 
 class RemoveTracksFromPlaylistBody(BaseModel):
     tracks: list[dict] = Field(..., description="A list of trackhashes to remove")
+
+
+class MoveTrackBody(BaseModel):
+    trackhash: str = Field(..., description="The trackhash to move")
+    before: str | None = Field(None, description="The trackhash to place it before, or null to move it to the end")
+
+
+@api.post("/<playlistid>/move")
+def move_playlist_track(path: PlaylistIDPath, body: MoveTrackBody):
+    """
+    Move a track within a playlist
+    """
+    if not path.playlistid.isdigit():
+        return {"msg": "Playlist not found"}, 404
+
+    moved = PlaylistTable.move_track(int(path.playlistid), body.trackhash, body.before)
+
+    if moved is None:
+        return {"msg": "Playlist not found"}, 404
+
+    if not moved:
+        return {"msg": "Track not in playlist"}, 409
+
+    return {"msg": "Done"}, 200
 
 
 @api.post("/<playlistid>/remove-tracks")
